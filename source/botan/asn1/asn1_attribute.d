@@ -14,12 +14,12 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.utils.types;
 
-alias Attribute = FreeListRef!Attribute_Impl;
+alias Attribute = FreeListRef!AttributeImpl;
 
 /**
 * Attribute
 */
-final class Attribute_Impl : ASN1_Object
+final class AttributeImpl : ASN1Object
 {
 public:
     /*
@@ -44,27 +44,27 @@ public:
     /*
     * DER encode a Attribute
     */
-    void encode_into(DER_Encoder codec) const
+    void encodeInto(DEREncoder codec) const
     {
-        codec.start_cons(ASN1_Tag.SEQUENCE)
+        codec.startCons(ASN1Tag.SEQUENCE)
             .encode(oid)
-                .start_cons(ASN1_Tag.SET)
-                .raw_bytes(parameters)
-                .end_cons()
-                .end_cons();
+                .startCons(ASN1Tag.SET)
+                .rawBytes(parameters)
+                .endCons()
+                .endCons();
     }
     
     /*
     * Decode a BER encoded Attribute
     */
-    void decode_from(BER_Decoder codec)
+    void decodeFrom(BERDecoder codec)
     {
-        codec.start_cons(ASN1_Tag.SEQUENCE)
+        codec.startCons(ASN1Tag.SEQUENCE)
             .decode(oid)
-                .start_cons(ASN1_Tag.SET)
-                .raw_bytes(parameters)
-                .end_cons()
-                .end_cons();
+                .startCons(ASN1Tag.SET)
+                .rawBytes(parameters)
+                .endCons()
+                .endCons();
     }
 
     OID oid;

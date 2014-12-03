@@ -17,7 +17,7 @@ import botan.simd.simd_32;
 /**
 * Noekeon implementation using SIMD operations
 */
-final class Noekeon_SIMD : Noekeon
+final class NoekeonSIMD : Noekeon
 {
 public:
     override @property size_t parallelism() const { return 4; }
@@ -25,50 +25,50 @@ public:
     /*
     * Noekeon Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        const Secure_Vector!uint EK = this.get_EK();
+        const SecureVector!uint EK = this.getEK();
         
-        SIMD_32 K0 = SIMD_32(EK[0]);
-        SIMD_32 K1 = SIMD_32(EK[1]);
-        SIMD_32 K2 = SIMD_32(EK[2]);
-        SIMD_32 K3 = SIMD_32(EK[3]);
+        SIMD32 K0 = SIMD32(EK[0]);
+        SIMD32 K1 = SIMD32(EK[1]);
+        SIMD32 K2 = SIMD32(EK[2]);
+        SIMD32 K3 = SIMD32(EK[3]);
         
         while (blocks >= 4)
         {
-            SIMD_32 A0 = SIMD_32.load_bigEndian(input      );
-            SIMD_32 A1 = SIMD_32.load_bigEndian(input + 16);
-            SIMD_32 A2 = SIMD_32.load_bigEndian(input + 32);
-            SIMD_32 A3 = SIMD_32.load_bigEndian(input + 48);
+            SIMD32 A0 = SIMD32.loadBigEndian(input      );
+            SIMD32 A1 = SIMD32.loadBigEndian(input + 16);
+            SIMD32 A2 = SIMD32.loadBigEndian(input + 32);
+            SIMD32 A3 = SIMD32.loadBigEndian(input + 48);
             
-            SIMD_32.transpose(A0, A1, A2, A3);
+            SIMD32.transpose(A0, A1, A2, A3);
             
             foreach (size_t i; 0 .. 16)
             {
-                A0 ^= SIMD_32(RC[i]);
+                A0 ^= SIMD32(RC[i]);
                 
                 mixin(NOK_SIMD_THETA());
                 
-                A1.rotate_left(1);
-                A2.rotate_left(5);
-                A3.rotate_left(2);
+                A1.rotateLeft(1);
+                A2.rotateLeft(5);
+                A3.rotateLeft(2);
 
                 mixin(NOK_SIMD_GAMMA());
                 
-                A1.rotate_right(1);
-                A2.rotate_right(5);
-                A3.rotate_right(2);
+                A1.rotateRight(1);
+                A2.rotateRight(5);
+                A3.rotateRight(2);
             }
             
-            A0 ^= SIMD_32(RC[16]);
+            A0 ^= SIMD32(RC[16]);
             mixin(NOK_SIMD_THETA());
             
-            SIMD_32.transpose(A0, A1, A2, A3);
+            SIMD32.transpose(A0, A1, A2, A3);
             
-            A0.store_bigEndian(output);
-            A1.store_bigEndian(output + 16);
-            A2.store_bigEndian(output + 32);
-            A3.store_bigEndian(output + 48);
+            A0.storeBigEndian(output);
+            A1.storeBigEndian(output + 16);
+            A2.storeBigEndian(output + 32);
+            A3.storeBigEndian(output + 48);
             
             input += 64;
             output += 64;
@@ -76,56 +76,56 @@ public:
         }
         
         if (blocks)
-            super.encrypt_n(input, output, blocks);
+            super.encryptN(input, output, blocks);
     }
 
     /*
     * Noekeon Encryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        const Secure_Vector!uint DK = this.get_DK();
+        const SecureVector!uint DK = this.getDK();
         
-        SIMD_32 K0 = SIMD_32(DK[0]);
-        SIMD_32 K1 = SIMD_32(DK[1]);
-        SIMD_32 K2 = SIMD_32(DK[2]);
-        SIMD_32 K3 = SIMD_32(DK[3]);
+        SIMD32 K0 = SIMD32(DK[0]);
+        SIMD32 K1 = SIMD32(DK[1]);
+        SIMD32 K2 = SIMD32(DK[2]);
+        SIMD32 K3 = SIMD32(DK[3]);
         
         while (blocks >= 4)
         {
-            SIMD_32 A0 = SIMD_32.load_bigEndian(input      );
-            SIMD_32 A1 = SIMD_32.load_bigEndian(input + 16);
-            SIMD_32 A2 = SIMD_32.load_bigEndian(input + 32);
-            SIMD_32 A3 = SIMD_32.load_bigEndian(input + 48);
+            SIMD32 A0 = SIMD32.loadBigEndian(input      );
+            SIMD32 A1 = SIMD32.loadBigEndian(input + 16);
+            SIMD32 A2 = SIMD32.loadBigEndian(input + 32);
+            SIMD32 A3 = SIMD32.loadBigEndian(input + 48);
             
-            SIMD_32.transpose(A0, A1, A2, A3);
+            SIMD32.transpose(A0, A1, A2, A3);
             
             foreach (size_t i; 0 .. 16)
             {
                 mixin(NOK_SIMD_THETA());
                 
-                A0 ^= SIMD_32(RC[16-i]);
+                A0 ^= SIMD32(RC[16-i]);
                 
-                A1.rotate_left(1);
-                A2.rotate_left(5);
-                A3.rotate_left(2);
+                A1.rotateLeft(1);
+                A2.rotateLeft(5);
+                A3.rotateLeft(2);
                 
                 mixin(NOK_SIMD_GAMMA());
                 
-                A1.rotate_right(1);
-                A2.rotate_right(5);
-                A3.rotate_right(2);
+                A1.rotateRight(1);
+                A2.rotateRight(5);
+                A3.rotateRight(2);
             }
             
             mixin(NOK_SIMD_THETA());
-            A0 ^= SIMD_32(RC[0]);
+            A0 ^= SIMD32(RC[0]);
             
-            SIMD_32.transpose(A0, A1, A2, A3);
+            SIMD32.transpose(A0, A1, A2, A3);
             
-            A0.store_bigEndian(output);
-            A1.store_bigEndian(output + 16);
-            A2.store_bigEndian(output + 32);
-            A3.store_bigEndian(output + 48);
+            A0.storeBigEndian(output);
+            A1.storeBigEndian(output + 16);
+            A2.storeBigEndian(output + 32);
+            A3.storeBigEndian(output + 48);
             
             input += 64;
             output += 64;
@@ -133,21 +133,21 @@ public:
         }
         
         if (blocks)
-            super.decrypt_n(input, output, blocks);
+            super.decryptN(input, output, blocks);
     }
 
-    BlockCipher clone() const { return new Noekeon_SIMD; }
+    BlockCipher clone() const { return new NoekeonSIMD; }
 }
 
 /*
 * Noekeon's Theta Operation
 */
 string NOK_SIMD_THETA() {
-    return `{SIMD_32 T = A0 ^ A2;
-    SIMD_32 T_l8 = T;
-    SIMD_32 T_r8 = T;
-    T_l8.rotate_left(8);
-    T_r8.rotate_right(8);
+    return `{SIMD32 T = A0 ^ A2;
+    SIMD32 T_l8 = T;
+    SIMD32 T_r8 = T;
+    T_l8.rotateLeft(8);
+    T_r8.rotateRight(8);
     T ^= T_l8;
     T ^= T_r8;
     A1 ^= T;            
@@ -159,8 +159,8 @@ string NOK_SIMD_THETA() {
     T = A1 ^ A3;            
     T_l8 = T;                
     T_r8 = T;                
-    T_l8.rotate_left(8);
-    T_r8.rotate_right(8);
+    T_l8.rotateLeft(8);
+    T_r8.rotateRight(8);
     T ^= T_l8;
     T ^= T_r8;
     A0 ^= T;            
@@ -173,7 +173,7 @@ string NOK_SIMD_THETA() {
 string NOK_SIMD_GAMMA() {
     return `{A1 ^= A3.andc(~A2);
     A0 ^= A2 & A1;
-    SIMD_32 T = A3;
+    SIMD32 T = A3;
     A3 = A0;
     A0 = T;
     A2 ^= A0 ^ A1 ^ A3;

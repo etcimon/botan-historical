@@ -11,13 +11,13 @@ import botan.utils.types;
 /**
 * EME from PKCS #1 v1.5
 */
-final class EME_PKCS1v15 : EME
+final class EMEPKCS1v15 : EME
 {
 public:
     /*
     * Return the max input size for a given key size
     */
-    size_t maximum_input_size(size_t keybits) const
+    size_t maximumInputSize(size_t keybits) const
     {
         if (keybits / 8 > 10)
             return ((keybits / 8) - 10);
@@ -29,21 +29,21 @@ private:
     /*
     * PKCS1 Pad Operation
     */
-    Secure_Vector!ubyte pad(in ubyte* input, size_t inlen, size_t olen, RandomNumberGenerator rng) const
+    SecureVector!ubyte pad(in ubyte* input, size_t inlen, size_t olen, RandomNumberGenerator rng) const
     {
         olen /= 8;
         
         if (olen < 10)
-            throw new Encoding_Error("PKCS1: Output space too small");
+            throw new EncodingError("PKCS1: Output space too small");
         if (inlen > olen - 10)
-            throw new Encoding_Error("PKCS1: Input is too large");
+            throw new EncodingError("PKCS1: Input is too large");
         
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(olen);
+        SecureVector!ubyte output = SecureVector!ubyte(olen);
         
         output[0] = 0x02;
         foreach (size_t j; 1 .. (olen - inlen - 1))
             while (output[j] == 0)
-                output[j] = rng.next_byte();
+                output[j] = rng.nextByte();
         buffer_insert(output, olen - inlen, input, inlen);
         
         return output;
@@ -52,10 +52,10 @@ private:
     /*
     * PKCS1 Unpad Operation
     */
-    Secure_Vector!ubyte unpad(in ubyte* input, size_t inlen, size_t key_len) const
+    SecureVector!ubyte unpad(in ubyte* input, size_t inlen, size_t key_len) const
     {
         if (inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
-            throw new Decoding_Error("PKCS1::unpad");
+            throw new DecodingError("PKCS1::unpad");
         
         size_t seperator = 0;
         foreach (size_t j; 0 .. inlen)
@@ -65,9 +65,9 @@ private:
             break;
         }
         if (seperator < 9)
-            throw new Decoding_Error("PKCS1::unpad");
+            throw new DecodingError("PKCS1::unpad");
         
-        return Secure_Vector!ubyte(input[seperator + 1 .. inlen]);
+        return SecureVector!ubyte(input[seperator + 1 .. inlen]);
     }
 
 }

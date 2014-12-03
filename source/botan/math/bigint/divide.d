@@ -22,7 +22,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
     /*
     * Solve x = q * y + r
     */
-    if (y_arg.is_zero())
+    if (y_arg.isZero())
         throw new BigInt.DivideByZero();
     
     BigInt y = y_arg;
@@ -31,8 +31,8 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
     r = x;
     q = 0;
     
-    r.set_sign(BigInt.Positive);
-    y.set_sign(BigInt.Positive);
+    r.setSign(BigInt.Positive);
+    y.setSign(BigInt.Positive);
     
     int compare = r.cmp(y);
     
@@ -52,9 +52,9 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
         const size_t n = r.sig_words() - 1, t = y_words - 1;
         
         if (n < t)
-            throw new Internal_Error("BigInt division word sizes");
+            throw new InternalError("BigInt division word sizes");
         
-        q.grow_to(n - t + 1);
+        q.growTo(n - t + 1);
         
         word* q_words = q.mutable_data();
         
@@ -82,15 +82,15 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
                 q_words[j-t-1] = bigint_divop(x_j0, x_j1, y_t);
             
             while (division_check(q_words[j-t-1],
-            y_t, y.word_at(t-1),
-            x_j0, x_j1, r.word_at(j-2)))
+            y_t, y.wordAt(t-1),
+            x_j0, x_j1, r.wordAt(j-2)))
             {
                 q_words[j-t-1] -= 1;
             }
             
             r -= (q_words[j-t-1] * y) << (MP_WORD_BITS * (j-t-1));
             
-            if (r.is_negative())
+            if (r.isNegative())
             {
                 r += y << (MP_WORD_BITS * (j-t-1));
                 q_words[j-t-1] -= 1;
@@ -106,18 +106,18 @@ private:
 /*
 * Handle signed operands, if necessary
 */
-void sign_fixup(in BigInt x, in BigInt y, ref BigInt q, ref BigInt r)
+void signFixup(in BigInt x, in BigInt y, ref BigInt q, ref BigInt r)
 {
     if (x.sign() == BigInt.Negative)
     {
-        q.flip_sign();
-        if (r.is_nonzero()) { --q; r = y.abs() - r; }
+        q.flipSign();
+        if (r.isNonzero()) { --q; r = y.abs() - r; }
     }
     if (y.sign() == BigInt.Negative)
-        q.flip_sign();
+        q.flipSign();
 }
 
-bool division_check(word q, word y2, word y1, word x3, word x2, word x1)
+bool divisionCheck(word q, word y2, word y1, word x3, word x2, word x1)
 {
     // Compute (y3,y2,y1) = (y2,y1) * q
     

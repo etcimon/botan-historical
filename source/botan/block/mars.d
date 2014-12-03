@@ -17,20 +17,20 @@ import botan.utils.rotate;
 /**
 * MARS, IBM's candidate for AES
 */
-final class MARS : Block_Cipher_Fixed_Params!(16, 16, 32, 4)
+final class MARS : BlockCipherFixedParams!(16, 16, 32, 4)
 {
 public:
     /*
     * MARS Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_littleEndian!uint(input, 0) + m_EK[0];
-            uint B = load_littleEndian!uint(input, 1) + m_EK[1];
-            uint C = load_littleEndian!uint(input, 2) + m_EK[2];
-            uint D = load_littleEndian!uint(input, 3) + m_EK[3];
+            uint A = loadLittleEndian!uint(input, 0) + m_EK[0];
+            uint B = loadLittleEndian!uint(input, 1) + m_EK[1];
+            uint C = loadLittleEndian!uint(input, 2) + m_EK[2];
+            uint D = loadLittleEndian!uint(input, 3) + m_EK[3];
             
             forward_mix(A, B, C, D);
             
@@ -56,7 +56,7 @@ public:
             
             A -= m_EK[36]; B -= m_EK[37]; C -= m_EK[38]; D -= m_EK[39];
             
-            store_littleEndian(output, A, B, C, D);
+            storeLittleEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -66,14 +66,14 @@ public:
     /*
     * MARS Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_littleEndian!uint(input, 3) + m_EK[39];
-            uint B = load_littleEndian!uint(input, 2) + m_EK[38];
-            uint C = load_littleEndian!uint(input, 1) + m_EK[37];
-            uint D = load_littleEndian!uint(input, 0) + m_EK[36];
+            uint A = loadLittleEndian!uint(input, 3) + m_EK[39];
+            uint B = loadLittleEndian!uint(input, 2) + m_EK[38];
+            uint C = loadLittleEndian!uint(input, 1) + m_EK[37];
+            uint D = loadLittleEndian!uint(input, 0) + m_EK[36];
             
             forward_mix(A, B, C, D);
             
@@ -99,7 +99,7 @@ public:
             
             A -= m_EK[3]; B -= m_EK[2]; C -= m_EK[1]; D -= m_EK[0];
             
-            store_littleEndian(output, D, C, B, A);
+            storeLittleEndian(output, D, C, B, A);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -113,15 +113,16 @@ public:
 
     @property string name() const { return "MARS"; }
     BlockCipher clone() const { return new MARS; }
-private:
+
+protected:
     /*
     * MARS Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
-        Secure_Vector!uint T = Secure_Vector!uint(15);
+        SecureVector!uint T = SecureVector!uint(15);
         foreach (size_t i; 0 .. (length / 4))
-            T[i] = load_littleEndian!uint(key, i);
+            T[i] = loadLittleEndian!uint(key, i);
         
         T[length / 4] = cast(uint)(length) / 4;
         
@@ -129,39 +130,39 @@ private:
         
         for (uint i = 0; i != 4; ++i)
         {
-            T[ 0] ^= rotate_left(T[ 8] ^ T[13], 3) ^ (i      );
-            T[ 1] ^= rotate_left(T[ 9] ^ T[14], 3) ^ (i +  4);
-            T[ 2] ^= rotate_left(T[10] ^ T[ 0], 3) ^ (i +  8);
-            T[ 3] ^= rotate_left(T[11] ^ T[ 1], 3) ^ (i + 12);
-            T[ 4] ^= rotate_left(T[12] ^ T[ 2], 3) ^ (i + 16);
-            T[ 5] ^= rotate_left(T[13] ^ T[ 3], 3) ^ (i + 20);
-            T[ 6] ^= rotate_left(T[14] ^ T[ 4], 3) ^ (i + 24);
-            T[ 7] ^= rotate_left(T[ 0] ^ T[ 5], 3) ^ (i + 28);
-            T[ 8] ^= rotate_left(T[ 1] ^ T[ 6], 3) ^ (i + 32);
-            T[ 9] ^= rotate_left(T[ 2] ^ T[ 7], 3) ^ (i + 36);
-            T[10] ^= rotate_left(T[ 3] ^ T[ 8], 3) ^ (i + 40);
-            T[11] ^= rotate_left(T[ 4] ^ T[ 9], 3) ^ (i + 44);
-            T[12] ^= rotate_left(T[ 5] ^ T[10], 3) ^ (i + 48);
-            T[13] ^= rotate_left(T[ 6] ^ T[11], 3) ^ (i + 52);
-            T[14] ^= rotate_left(T[ 7] ^ T[12], 3) ^ (i + 56);
+            T[ 0] ^= rotateLeft(T[ 8] ^ T[13], 3) ^ (i      );
+            T[ 1] ^= rotateLeft(T[ 9] ^ T[14], 3) ^ (i +  4);
+            T[ 2] ^= rotateLeft(T[10] ^ T[ 0], 3) ^ (i +  8);
+            T[ 3] ^= rotateLeft(T[11] ^ T[ 1], 3) ^ (i + 12);
+            T[ 4] ^= rotateLeft(T[12] ^ T[ 2], 3) ^ (i + 16);
+            T[ 5] ^= rotateLeft(T[13] ^ T[ 3], 3) ^ (i + 20);
+            T[ 6] ^= rotateLeft(T[14] ^ T[ 4], 3) ^ (i + 24);
+            T[ 7] ^= rotateLeft(T[ 0] ^ T[ 5], 3) ^ (i + 28);
+            T[ 8] ^= rotateLeft(T[ 1] ^ T[ 6], 3) ^ (i + 32);
+            T[ 9] ^= rotateLeft(T[ 2] ^ T[ 7], 3) ^ (i + 36);
+            T[10] ^= rotateLeft(T[ 3] ^ T[ 8], 3) ^ (i + 40);
+            T[11] ^= rotateLeft(T[ 4] ^ T[ 9], 3) ^ (i + 44);
+            T[12] ^= rotateLeft(T[ 5] ^ T[10], 3) ^ (i + 48);
+            T[13] ^= rotateLeft(T[ 6] ^ T[11], 3) ^ (i + 52);
+            T[14] ^= rotateLeft(T[ 7] ^ T[12], 3) ^ (i + 56);
             
             foreach (size_t j; 0 .. 4)
             {
-                T[ 0] = rotate_left(T[ 0] + SBOX[T[14] % 512], 9);
-                T[ 1] = rotate_left(T[ 1] + SBOX[T[ 0] % 512], 9);
-                T[ 2] = rotate_left(T[ 2] + SBOX[T[ 1] % 512], 9);
-                T[ 3] = rotate_left(T[ 3] + SBOX[T[ 2] % 512], 9);
-                T[ 4] = rotate_left(T[ 4] + SBOX[T[ 3] % 512], 9);
-                T[ 5] = rotate_left(T[ 5] + SBOX[T[ 4] % 512], 9);
-                T[ 6] = rotate_left(T[ 6] + SBOX[T[ 5] % 512], 9);
-                T[ 7] = rotate_left(T[ 7] + SBOX[T[ 6] % 512], 9);
-                T[ 8] = rotate_left(T[ 8] + SBOX[T[ 7] % 512], 9);
-                T[ 9] = rotate_left(T[ 9] + SBOX[T[ 8] % 512], 9);
-                T[10] = rotate_left(T[10] + SBOX[T[ 9] % 512], 9);
-                T[11] = rotate_left(T[11] + SBOX[T[10] % 512], 9);
-                T[12] = rotate_left(T[12] + SBOX[T[11] % 512], 9);
-                T[13] = rotate_left(T[13] + SBOX[T[12] % 512], 9);
-                T[14] = rotate_left(T[14] + SBOX[T[13] % 512], 9);
+                T[ 0] = rotateLeft(T[ 0] + SBOX[T[14] % 512], 9);
+                T[ 1] = rotateLeft(T[ 1] + SBOX[T[ 0] % 512], 9);
+                T[ 2] = rotateLeft(T[ 2] + SBOX[T[ 1] % 512], 9);
+                T[ 3] = rotateLeft(T[ 3] + SBOX[T[ 2] % 512], 9);
+                T[ 4] = rotateLeft(T[ 4] + SBOX[T[ 3] % 512], 9);
+                T[ 5] = rotateLeft(T[ 5] + SBOX[T[ 4] % 512], 9);
+                T[ 6] = rotateLeft(T[ 6] + SBOX[T[ 5] % 512], 9);
+                T[ 7] = rotateLeft(T[ 7] + SBOX[T[ 6] % 512], 9);
+                T[ 8] = rotateLeft(T[ 8] + SBOX[T[ 7] % 512], 9);
+                T[ 9] = rotateLeft(T[ 9] + SBOX[T[ 8] % 512], 9);
+                T[10] = rotateLeft(T[10] + SBOX[T[ 9] % 512], 9);
+                T[11] = rotateLeft(T[11] + SBOX[T[10] % 512], 9);
+                T[12] = rotateLeft(T[12] + SBOX[T[11] % 512], 9);
+                T[13] = rotateLeft(T[13] + SBOX[T[12] % 512], 9);
+                T[14] = rotateLeft(T[14] + SBOX[T[13] % 512], 9);
             }
             
             m_EK[10*i + 0] = T[ 0];
@@ -180,11 +181,11 @@ private:
         {
             const uint key3 = m_EK[i] & 3;
             m_EK[i] |= 3;
-            m_EK[i] ^= rotate_left(SBOX[265 + key3], m_EK[i-1] % 32) & gen_mask(m_EK[i]);
+            m_EK[i] ^= rotateLeft(SBOX[265 + key3], m_EK[i-1] % 32) & gen_mask(m_EK[i]);
         }
     }
 
-    Secure_Vector!uint m_EK;
+    SecureVector!uint m_EK;
 }
 
 
@@ -288,17 +289,17 @@ void encrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
                    uint EK1, uint EK2) pure
 {
     const uint X = A + EK1;
-    A  = rotate_left(A, 13);
+    A  = rotateLeft(A, 13);
     uint Y = A * EK2;
     uint Z = SBOX[X % 512];
     
-    Y  = rotate_left(Y, 5);
+    Y  = rotateLeft(Y, 5);
     Z ^= Y;
-    C += rotate_left(X, Y % 32);
-    Y  = rotate_left(Y, 5);
+    C += rotateLeft(X, Y % 32);
+    Y  = rotateLeft(Y, 5);
     Z ^= Y;
     D ^= Y;
-    B += rotate_left(Z, Y % 32);
+    B += rotateLeft(Z, Y % 32);
 }
 
 /*
@@ -312,13 +313,13 @@ void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
     const uint X = A + EK2;
     uint Z = SBOX[X % 512];
     
-    Y  = rotate_left(Y, 5);
+    Y  = rotateLeft(Y, 5);
     Z ^= Y;
-    C -= rotate_left(X, Y % 32);
-    Y  = rotate_left(Y, 5);
+    C -= rotateLeft(X, Y % 32);
+    Y  = rotateLeft(Y, 5);
     Z ^= Y;
     D ^= Y;
-    B -= rotate_left(Z, Y % 32);
+    B -= rotateLeft(Z, Y % 32);
 }
 
 /*
@@ -355,20 +356,20 @@ void reverse_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
     {
         B ^= SBOX[get_byte(3, A) + 256]; C -= SBOX[get_byte(0, A)];
         D -= SBOX[get_byte(1, A) + 256]; D ^= SBOX[get_byte(2, A)];
-        A = rotate_left(A, 24);
+        A = rotateLeft(A, 24);
         
         C ^= SBOX[get_byte(3, B) + 256]; D -= SBOX[get_byte(0, B)];
         A -= SBOX[get_byte(1, B) + 256]; A ^= SBOX[get_byte(2, B)];
-        C -= (B = rotate_left(B, 24));
+        C -= (B = rotateLeft(B, 24));
         
         D ^= SBOX[get_byte(3, C) + 256]; A -= SBOX[get_byte(0, C)];
         B -= SBOX[get_byte(1, C) + 256]; B ^= SBOX[get_byte(2, C)];
-        C = rotate_left(C, 24);
+        C = rotateLeft(C, 24);
         D -= A;
         
         A ^= SBOX[get_byte(3, D) + 256]; B -= SBOX[get_byte(0, D)];
         C -= SBOX[get_byte(1, D) + 256]; C ^= SBOX[get_byte(2, D)];
-        D = rotate_left(D, 24);
+        D = rotateLeft(D, 24);
     }
 }
 

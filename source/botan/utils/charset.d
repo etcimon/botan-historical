@@ -14,7 +14,7 @@ import std.conv : to;
 * The different charsets (nominally) supported by Botan.
 */
 typedef ubyte Character_set;
-enum : Character_Set {
+enum : CharacterSet {
     LOCAL_CHARSET,
     UCS2_CHARSET,
     UTF8_CHARSET,
@@ -27,10 +27,10 @@ enum : Character_Set {
 /*
 * Convert from UCS-2 to ISO 8859-1
 */
-string ucs2_to_latin1(in string ucs2)
+string ucs2ToLatin1(in string ucs2)
 {
     if (ucs2.length % 2 == 1)
-        throw new Decoding_Error("UCS-2 string has an odd number of bytes");
+        throw new DecodingError("UCS-2 string has an odd number of bytes");
     
     Appender!string latin1;
     latin1.reserve(ucs2.length * 2);
@@ -41,7 +41,7 @@ string ucs2_to_latin1(in string ucs2)
         const ubyte c2 = ucs2[i+1];
         
         if (c1 != 0)
-            throw new Decoding_Error("UCS-2 has non-Latin1 characters");
+            throw new DecodingError("UCS-2 has non-Latin1 characters");
         
         latin1 ~= cast(char)(c2);
     }
@@ -52,7 +52,7 @@ string ucs2_to_latin1(in string ucs2)
 /*
 * Convert from UTF-8 to ISO 8859-1
 */
-string utf8_to_latin1(in string utf8)
+string utf8ToLatin1(in string utf8)
 {
     Appender!string iso8859;
     iso8859.reserve(utf8.length);
@@ -66,18 +66,18 @@ string utf8_to_latin1(in string utf8)
         else if (c1 >= 0xC0 && c1 <= 0xC7)
         {
             if (position == utf8.length)
-                throw new Decoding_Error("UTF-8: sequence truncated");
+                throw new DecodingError("UTF-8: sequence truncated");
             
             const ubyte c2 = cast(ubyte)(utf8[position++]);
             const ubyte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
             
             if (iso_char <= 0x7F)
-                throw new Decoding_Error("UTF-8: sequence longer than needed");
+                throw new DecodingError("UTF-8: sequence longer than needed");
             
             iso8859 ~= cast(char)(iso_char);
         }
         else
-            throw new Decoding_Error("UTF-8: Unicode chars not in Latin1 used");
+            throw new DecodingError("UTF-8: Unicode chars not in Latin1 used");
     }
     
     return iso8859.data;
@@ -86,7 +86,7 @@ string utf8_to_latin1(in string utf8)
 /*
 * Convert from ISO 8859-1 to UTF-8
 */
-string latin1_to_utf8(in string iso8859)
+string latin1ToUtf8(in string iso8859)
 {
     Appender!string utf8;
     utf8.reserve(iso8859.length);
@@ -108,7 +108,7 @@ string latin1_to_utf8(in string iso8859)
 /*
 * Perform character set transcoding
 */
-string transcode(in string str, Character_Set to, Character_Set from)
+string transcode(in string str, CharacterSet to, CharacterSet from)
 {
     if (to == LOCAL_CHARSET)
         to = LATIN1_CHARSET;
@@ -125,13 +125,13 @@ string transcode(in string str, Character_Set to, Character_Set from)
     if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
         return ucs2_to_latin1(str);
     
-    throw new Invalid_Argument("Unknown transcoding operation from " ~ to!string(from) ~ " to " ~ to!string(to));
+    throw new InvalidArgument("Unknown transcoding operation from " ~ to!string(from) ~ " to " ~ to!string(to));
 }
 
 /*
 * Check if a character represents a digit
 */
-bool is_digit(char c)
+bool isDigit(char c)
 {
     if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
         c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
@@ -142,7 +142,7 @@ bool is_digit(char c)
 /*
 * Check if a character represents whitespace
 */
-bool is_space(char c)
+bool isSpace(char c)
 {
     if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
         return true;
@@ -168,7 +168,7 @@ ubyte char2digit(char c)
         case '9': return 9;
     }
     
-    throw new Invalid_Argument("char2digit: Input is not a digit character");
+    throw new InvalidArgument("char2digit: Input is not a digit character");
 }
 
 /*
@@ -190,13 +190,13 @@ char digit2char(ubyte b)
         case 9: return '9';
     }
     
-    throw new Invalid_Argument("digit2char: Input is not a digit");
+    throw new InvalidArgument("digit2char: Input is not a digit");
 }
 
 /*
 * Case-insensitive character comparison
 */
-bool caseless_cmp(T)(T a, T b)
+bool caselessCmp(T)(T a, T b)
 {
     import std.ascii : toLower;
     return (toLower(a) == toLower(b));

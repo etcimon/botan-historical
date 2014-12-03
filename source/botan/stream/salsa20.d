@@ -49,34 +49,34 @@ public:
     /*
     * Return the name of this type
     */
-    void set_iv(in ubyte* iv, size_t length)
+    void setIv(in ubyte* iv, size_t length)
     {
-        if (!valid_iv_length(length))
-            throw new Invalid_IV_Length(name(), length);
+        if (!validIvLength(length))
+            throw new InvalidIVLength(name(), length);
         
         if (length == 8)
         {
             // Salsa20
-            m_state[6] = load_littleEndian!uint(iv, 0);
-            m_state[7] = load_littleEndian!uint(iv, 1);
+            m_state[6] = loadLittleEndian!uint(iv, 0);
+            m_state[7] = loadLittleEndian!uint(iv, 1);
         }
         else
         {
             // XSalsa20
-            m_state[6] = load_littleEndian!uint(iv, 0);
-            m_state[7] = load_littleEndian!uint(iv, 1);
-            m_state[8] = load_littleEndian!uint(iv, 2);
-            m_state[9] = load_littleEndian!uint(iv, 3);
+            m_state[6] = loadLittleEndian!uint(iv, 0);
+            m_state[7] = loadLittleEndian!uint(iv, 1);
+            m_state[8] = loadLittleEndian!uint(iv, 2);
+            m_state[9] = loadLittleEndian!uint(iv, 3);
             
-            Secure_Vector!uint hsalsa = Secure_Vector!uint(8);
+            SecureVector!uint hsalsa = SecureVector!uint(8);
             hsalsa20(*cast(uint[8]*) hsalsa.ptr, *cast(uint[16]*) m_state.ptr);
             
             m_state[ 1] = hsalsa[0];
             m_state[ 2] = hsalsa[1];
             m_state[ 3] = hsalsa[2];
             m_state[ 4] = hsalsa[3];
-            m_state[ 6] = load_littleEndian!uint(iv, 4);
-            m_state[ 7] = load_littleEndian!uint(iv, 5);
+            m_state[ 6] = loadLittleEndian!uint(iv, 4);
+            m_state[ 7] = loadLittleEndian!uint(iv, 5);
             m_state[11] = hsalsa[4];
             m_state[12] = hsalsa[5];
             m_state[13] = hsalsa[6];
@@ -93,10 +93,10 @@ public:
         m_position = 0;
     }
 
-    bool valid_iv_length(size_t iv_len) const
+    bool validIvLength(size_t iv_len) const
     { return (iv_len == 8 || iv_len == 24); }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
         return Key_Length_Specification(16, 32, 16);
     }
@@ -124,7 +124,7 @@ private:
     /*
     * Salsa20 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable uint[] TAU = [ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
 
@@ -140,27 +140,27 @@ private:
         m_state[10] = CONSTANTS[2];
         m_state[15] = CONSTANTS[3];
         
-        m_state[1] = load_littleEndian!uint(key, 0);
-        m_state[2] = load_littleEndian!uint(key, 1);
-        m_state[3] = load_littleEndian!uint(key, 2);
-        m_state[4] = load_littleEndian!uint(key, 3);
+        m_state[1] = loadLittleEndian!uint(key, 0);
+        m_state[2] = loadLittleEndian!uint(key, 1);
+        m_state[3] = loadLittleEndian!uint(key, 2);
+        m_state[4] = loadLittleEndian!uint(key, 3);
         
         if (length == 32)
             key += 16;
         
-        m_state[11] = load_littleEndian!uint(key, 0);
-        m_state[12] = load_littleEndian!uint(key, 1);
-        m_state[13] = load_littleEndian!uint(key, 2);
-        m_state[14] = load_littleEndian!uint(key, 3);
+        m_state[11] = loadLittleEndian!uint(key, 0);
+        m_state[12] = loadLittleEndian!uint(key, 1);
+        m_state[13] = loadLittleEndian!uint(key, 2);
+        m_state[14] = loadLittleEndian!uint(key, 3);
         
         m_position = 0;
         
         const ubyte[8] ZERO;
-        set_iv(ZERO, ZERO.length);
+        setIv(ZERO, ZERO.length);
     }
 
-    Secure_Vector!uint m_state;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!uint m_state;
+    SecureVector!ubyte m_buffer;
     size_t m_position;
 }
 
@@ -225,33 +225,33 @@ void salsa20(ref ubyte[64] output, in uint[16] input)
               );
     }
     
-    store_littleEndian(x00 + input[ 0], output.ptr + 4 *  0);
-    store_littleEndian(x01 + input[ 1], output.ptr + 4 *  1);
-    store_littleEndian(x02 + input[ 2], output.ptr + 4 *  2);
-    store_littleEndian(x03 + input[ 3], output.ptr + 4 *  3);
-    store_littleEndian(x04 + input[ 4], output.ptr + 4 *  4);
-    store_littleEndian(x05 + input[ 5], output.ptr + 4 *  5);
-    store_littleEndian(x06 + input[ 6], output.ptr + 4 *  6);
-    store_littleEndian(x07 + input[ 7], output.ptr + 4 *  7);
-    store_littleEndian(x08 + input[ 8], output.ptr + 4 *  8);
-    store_littleEndian(x09 + input[ 9], output.ptr + 4 *  9);
-    store_littleEndian(x10 + input[10], output.ptr + 4 * 10);
-    store_littleEndian(x11 + input[11], output.ptr + 4 * 11);
-    store_littleEndian(x12 + input[12], output.ptr + 4 * 12);
-    store_littleEndian(x13 + input[13], output.ptr + 4 * 13);
-    store_littleEndian(x14 + input[14], output.ptr + 4 * 14);
-    store_littleEndian(x15 + input[15], output.ptr + 4 * 15);
+    storeLittleEndian(x00 + input[ 0], output.ptr + 4 *  0);
+    storeLittleEndian(x01 + input[ 1], output.ptr + 4 *  1);
+    storeLittleEndian(x02 + input[ 2], output.ptr + 4 *  2);
+    storeLittleEndian(x03 + input[ 3], output.ptr + 4 *  3);
+    storeLittleEndian(x04 + input[ 4], output.ptr + 4 *  4);
+    storeLittleEndian(x05 + input[ 5], output.ptr + 4 *  5);
+    storeLittleEndian(x06 + input[ 6], output.ptr + 4 *  6);
+    storeLittleEndian(x07 + input[ 7], output.ptr + 4 *  7);
+    storeLittleEndian(x08 + input[ 8], output.ptr + 4 *  8);
+    storeLittleEndian(x09 + input[ 9], output.ptr + 4 *  9);
+    storeLittleEndian(x10 + input[10], output.ptr + 4 * 10);
+    storeLittleEndian(x11 + input[11], output.ptr + 4 * 11);
+    storeLittleEndian(x12 + input[12], output.ptr + 4 * 12);
+    storeLittleEndian(x13 + input[13], output.ptr + 4 * 13);
+    storeLittleEndian(x14 + input[14], output.ptr + 4 * 14);
+    storeLittleEndian(x15 + input[15], output.ptr + 4 * 15);
 }
 
-string SALSA20_QUARTER_ROUND(alias _x1, alias _x2, alias _x3, alias _x4)()
+string sALSA20QUARTERROUND(alias _x1, alias _x2, alias _x3, alias _x4)()
 {
     alias x1 = __traits(identifier, _x1).stringof;
     alias x2 = __traits(identifier, _x2).stringof;
     alias x3 = __traits(identifier, _x3).stringof;
     alias x4 = __traits(identifier, _x4).stringof;
     
-    return x2 ~ ` ^= rotate_left(` ~ x1 ~ ` + ` ~ x4 ~ `,  7);
-            ` ~ x3 ~ ` ^= rotate_left(` ~ x2 ~ ` + ` ~ x1 ~ `,  9);
-            ` ~ x4 ~ ` ^= rotate_left(` ~ x3 ~ ` + ` ~ x2 ~ `, 13);
-            ` ~ x1 ~ ` ^= rotate_left(` ~ x4 ~ ` + ` ~ x3 ~ `, 18);`;
+    return x2 ~ ` ^= rotateLeft(` ~ x1 ~ ` + ` ~ x4 ~ `,  7);
+            ` ~ x3 ~ ` ^= rotateLeft(` ~ x2 ~ ` + ` ~ x1 ~ `,  9);
+            ` ~ x4 ~ ` ^= rotateLeft(` ~ x3 ~ ` + ` ~ x2 ~ `, 13);
+            ` ~ x1 ~ ` ^= rotateLeft(` ~ x4 ~ ` + ` ~ x3 ~ `, 18);`;
 }

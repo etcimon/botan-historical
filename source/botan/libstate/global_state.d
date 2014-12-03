@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.libstate.global_state;
+module botan.libstate.globalState;
 import botan.build;
 import botan.libstate.libstate;
 
@@ -15,7 +15,7 @@ private LibraryState g_lib_state;
 * Access the global library state
 * @return reference to the global library state
 */
-LibraryState global_state()
+LibraryState globalState()
 {
     /* Lazy initialization. Botan still needs to be deinitialized later
         on or memory might leak.
@@ -28,7 +28,7 @@ LibraryState global_state()
 * Set the global state object
 * @param state = the new global state to use
 */
-void set_global_state(LibraryState new_state)
+void setGlobalState(LibraryState new_state)
 {
     g_lib_state = new_state;
 }
@@ -41,7 +41,7 @@ void set_global_state(LibraryState new_state)
 *            state, or false if one was already set, in which case the
 *            parameter was deleted immediately
 */
-bool set_global_state_unless_set(LibraryState new_state)
+bool setGlobalStateUnlessSet(LibraryState new_state)
 {
     if (g_lib_state)
     {
@@ -58,7 +58,7 @@ bool set_global_state_unless_set(LibraryState new_state)
 * Query if the library is currently initialized
 * @return true iff the library is initialized
 */
-bool global_state_exists()
+bool globalStateExists()
 {
     return (g_lib_state !is LibraryState.init);
 }

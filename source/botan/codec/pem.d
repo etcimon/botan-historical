@@ -23,8 +23,8 @@ struct PEM
         const string PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
         const string PEM_TRAILER = "-----END " ~ label ~ "-----";
         
-        Pipe pipe = Pipe(new Base64_Encoder(true, width));
-        pipe.process_msg(der, length);
+        Pipe pipe = Pipe(new Base64Encoder(true, width));
+        pipe.processMsg(der, length);
         return (PEM_HEADER + pipe.toString() + PEM_TRAILER);
     }
 
@@ -39,7 +39,7 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-    static string encode(in Secure_Vector!ubyte data, in string label, size_t line_width = 64)
+    static string encode(in SecureVector!ubyte data, in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);
     }
@@ -52,7 +52,7 @@ struct PEM
     /*
     * Decode PEM down to raw BER/DER
     */
-    static Secure_Vector!ubyte decode(DataSource source, ref string label)
+    static SecureVector!ubyte decode(DataSource source, ref string label)
     {
         Appender!string label_buf;
         __gshared immutable size_t RANDOM_CHAR_LIMIT = 8;
@@ -64,12 +64,12 @@ struct PEM
         while (position != PEM_HEADER1.length)
         {
             ubyte b;
-            if (!source.read_byte(b))
-                throw new Decoding_Error("PEM: No PEM header found");
+            if (!source.readByte(b))
+                throw new DecodingError("PEM: No PEM header found");
             if (b == PEM_HEADER1[position])
                 ++position;
             else if (position >= RANDOM_CHAR_LIMIT)
-                throw new Decoding_Error("PEM: Malformed PEM header");
+                throw new DecodingError("PEM: Malformed PEM header");
             else
                 position = 0;
         }
@@ -77,37 +77,37 @@ struct PEM
         while (position != PEM_HEADER2.length)
         {
             ubyte b;
-            if (!source.read_byte(b))
-                throw new Decoding_Error("PEM: No PEM header found");
+            if (!source.readByte(b))
+                throw new DecodingError("PEM: No PEM header found");
             if (b == PEM_HEADER2[position])
                 ++position;
             else if (position)
-                throw new Decoding_Error("PEM: Malformed PEM header");
+                throw new DecodingError("PEM: Malformed PEM header");
             
             if (position == 0)
                 label_buf ~= cast(char) b;
         }
         label = label_buf.data;
 
-        Pipe base64 = Pipe(new Base64_Decoder);
-        base64.start_msg();
+        Pipe base64 = Pipe(new Base64Decoder);
+        base64.startMsg();
         const string PEM_TRAILER = "-----END " ~ label ~ "-----";
         position = 0;
         while (position != PEM_TRAILER.length)
         {
             ubyte b;
-            if (!source.read_byte(b))
-                throw new Decoding_Error("PEM: No PEM trailer found");
+            if (!source.readByte(b))
+                throw new DecodingError("PEM: No PEM trailer found");
             if (b == PEM_TRAILER[position])
                 ++position;
             else if (position)
-                throw new Decoding_Error("PEM: Malformed PEM trailer");
+                throw new DecodingError("PEM: Malformed PEM trailer");
             
             if (position == 0)
                 base64.write(b);
         }
-        base64.end_msg();
-        return base64.read_all();
+        base64.endMsg();
+        return base64.readAll();
     }
 
     /**
@@ -115,9 +115,9 @@ struct PEM
     * @param pem = a string containing PEM encoded data
     * @param label = is set to the PEM label found for later inspection
     */
-    static Secure_Vector!ubyte decode(in string pem, ref string label)
+    static SecureVector!ubyte decode(in string pem, ref string label)
     {
-        auto src = scoped!DataSource_Memory(pem);
+        auto src = scoped!DataSourceMemory(pem);
         return decode(src, label);
     }
     /**
@@ -125,12 +125,12 @@ struct PEM
     * @param pem = a datasource containing PEM encoded data
     * @param label = is what we expect the label to be
     */
-    static Secure_Vector!ubyte decode_check_label(DataSource source, in string label_want)
+    static SecureVector!ubyte decodeCheckLabel(DataSource source, in string label_want)
     {
         string label_got;
-        Secure_Vector!ubyte ber = decode(source, label_got);
+        SecureVector!ubyte ber = decode(source, label_got);
         if (label_got != label_want)
-            throw new Decoding_Error("PEM: Label mismatch, wanted " ~ label_want ~ ", got " ~ label_got);
+            throw new DecodingError("PEM: Label mismatch, wanted " ~ label_want ~ ", got " ~ label_got);
         return ber;
     }
 
@@ -139,10 +139,10 @@ struct PEM
     * @param pem = a string containing PEM encoded data
     * @param label = is what we expect the label to be
     */
-    static Secure_Vector!ubyte decode_check_label(in string pem,
+    static SecureVector!ubyte decodeCheckLabel(in string pem,
                                         in string label_want)
     {
-        auto src = scoped!DataSource_Memory(pem);
+        auto src = scoped!DataSourceMemory(pem);
         return decode_check_label(src, label_want);
     }
 
@@ -154,7 +154,7 @@ struct PEM
     {
         const string PEM_HEADER = "-----BEGIN " ~ extra;
         
-        Secure_Vector!ubyte search_buf = Secure_Vector!ubyte(search_range);
+        SecureVector!ubyte search_buf = SecureVector!ubyte(search_range);
         size_t got = source.peek(search_buf.ptr, search_buf.length, 0);
         
         if (got < PEM_HEADER.length)

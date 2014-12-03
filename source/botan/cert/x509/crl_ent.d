@@ -18,75 +18,75 @@ import botan.math.bigint.bigint;
 import botan.asn1.oids;
 import botan.utils.types;
 
-alias CRL_Entry = FreeListRef!CRL_Entry_Impl;
+alias CRLEntry = FreeListRef!CRLEntryImpl;
 
 /**
 * X.509v2 CRL Reason Code.
 */
-enum CRL_Code {
-    UNSPECIFIED                = 0,
-    KEY_COMPROMISE            = 1,
-    CA_COMPROMISE            = 2,
-    AFFILIATION_CHANGED         = 3,
-    SUPERSEDED                = 4,
-    CESSATION_OF_OPERATION     = 5,
+enum CRLCode {
+    UNSPECIFIED             = 0,
+    KEY_COMPROMISE          = 1,
+    CA_COMPROMISE           = 2,
+    AFFILIATION_CHANGED     = 3,
+    SUPERSEDED              = 4,
+    CESSATION_OF_OPERATION  = 5,
     CERTIFICATE_HOLD        = 6,
-    REMOVE_FROM_CRL              = 8,
-    PRIVLEDGE_WITHDRAWN         = 9,
-    AA_COMPROMISE            = 10,
+    REMOVE_FROM_CRL         = 8,
+    PRIVLEDGE_WITHDRAWN     = 9,
+    AA_COMPROMISE           = 10,
 
     DELETE_CRL_ENTRY        = 0xFF00,
-    OCSP_GOOD                = 0xFF01,
+    OCSP_GOOD               = 0xFF01,
     OCSP_UNKNOWN            = 0xFF02
 }
 
 /**
 * This class represents CRL entries
 */
-final class CRL_Entry_Impl : ASN1_Object
+final class CRLEntryImpl : ASN1Object
 {
 public:
     /*
-    * DER encode a CRL_Entry
+    * DER encode a CRLEntry
     */
-    void encode_into(DER_Encoder to_) const
+    void encodeInto(DEREncoder to_) const
     {
-        X509_Extensions extensions;
+        X509Extensions extensions;
         
-        extensions.add(new CRL_ReasonCode(reason));
+        extensions.add(new CRLReasonCode(reason));
         
-        to_.start_cons(ASN1_Tag.SEQUENCE)
+        to_.startCons(ASN1Tag.SEQUENCE)
                 .encode(BigInt.decode(serial))
                 .encode(m_time)
-                .start_cons(ASN1_Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(extensions)
-                .end_cons()
-                .end_cons();
+                .endCons()
+                .endCons();
     }
     
 
     /*
-    * Decode a BER encoded CRL_Entry
+    * Decode a BER encoded CRLEntry
     */
-    void decode_from(BER_Decoder source)
+    void decodeFrom(BERDecoder source)
     {
         BigInt serial_number_bn;
         m_reason = CRL_Code.UNSPECIFIED;
         
-        BER_Decoder entry = source.start_cons(ASN1_Tag.SEQUENCE);
+        BERDecoder entry = source.startCons(ASN1Tag.SEQUENCE);
         
         entry.decode(serial_number_bn).decode(m_time);
         
-        if (entry.more_items())
+        if (entry.moreItems())
         {
-            X509_Extensions extensions = X509_Extensions(m_throw_on_unknown_critical);
+            X509Extensions extensions = X509Extensions(m_throw_on_unknown_critical);
             entry.decode(extensions);
             Data_Store info;
-            extensions.contents_to(info, info);
-            m_reason = CRL_Code(info.get1_uint("X509v3.CRLReasonCode"));
+            extensions.contentsTo(info, info);
+            m_reason = CRL_Code(info.get1Uint("X509v3.CRLReasonCode"));
         }
         
-        entry.end_cons();
+        entry.endCons();
         
         serial = BigInt.encode(serial_number_bn);
     }
@@ -95,19 +95,19 @@ public:
     * Get the serial number of the certificate associated with this entry.
     * @return certificate's serial number
     */
-    Vector!ubyte serial_number() const { return m_serial; }
+    Vector!ubyte serialNumber() const { return m_serial; }
 
     /**
     * Get the revocation date of the certificate associated with this entry
     * @return certificate's revocation date
     */
-    X509_Time expire_time() const { return m_time; }
+    X509Time expireTime() const { return m_time; }
 
     /**
     * Get the entries reason code
     * @return reason code
     */
-    CRL_Code reason_code() const { return m_reason; }
+    CRLCode reasonCode() const { return m_reason; }
 
     /**
     * Construct an empty CRL entry.
@@ -123,24 +123,24 @@ public:
     * @param cert = the certificate to revoke
     * @param reason = the reason code to set in the entry
     */
-    this(in X509_Certificate cert, CRL_Code why = CRL_Code.UNSPECIFIED)
+    this(in X509Certificate cert, CRLCode why = CRL_Code.UNSPECIFIED)
     {
         m_throw_on_unknown_critical = false;
-        m_serial = cert.serial_number();
-        m_time = X509_Time(Clock.currTime());
+        m_serial = cert.serialNumber();
+        m_time = X509Time(Clock.currTime());
         m_reason = why;
     }
 
     /*
     * Compare two CRL_Entrys for equality
     */
-    bool opEquals(in CRL_Entry a2)
+    bool opEquals(in CRLEntry a2)
     {
-        if (serial_number() != a2.serial_number())
+        if (serialNumber() != a2.serialNumber())
             return false;
-        if (expire_time() != a2.expire_time())
+        if (expire_time() != a2.expireTime())
             return false;
-        if (reason_code() != a2.reason_code())
+        if (reason_code() != a2.reasonCode())
             return false;
         return true;
     }
@@ -148,7 +148,7 @@ public:
     /*
     * Compare two CRL_Entrys for inequality
     */
-    bool opCmp(string op)(in CRL_Entry a2)
+    bool opCmp(string op)(in CRLEntry a2)
         if (op == "!=")
     {
         return !(this == a2);
@@ -158,6 +158,6 @@ public:
 private:
     bool m_throw_on_unknown_critical;
     Vector!ubyte m_serial;
-    X509_Time m_time;
+    X509Time m_time;
     CRL_Code m_reason;
 }

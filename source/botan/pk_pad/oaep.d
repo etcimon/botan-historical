@@ -23,7 +23,7 @@ public:
     /*
     * Return the max input size for a given key size
     */
-    size_t maximum_input_size(size_t keybits) const
+    size_t maximumInputSize(size_t keybits) const
     {
         if (keybits / 8 > 2*m_Phash.length + 1)
             return ((keybits / 8) - 2*m_Phash.length - 1);
@@ -45,15 +45,15 @@ private:
     /*
     * OAEP Pad Operation
     */
-    Secure_Vector!ubyte pad(in ubyte* input, size_t in_length, size_t key_length,
+    SecureVector!ubyte pad(in ubyte* input, size_t in_length, size_t key_length,
                              RandomNumberGenerator rng) const
     {
         key_length /= 8;
         
         if (key_length < in_length + 2*m_Phash.length + 1)
-            throw new Invalid_Argument("OAEP: Input is too large");
+            throw new InvalidArgument("OAEP: Input is too large");
         
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(key_length);
+        SecureVector!ubyte output = SecureVector!ubyte(key_length);
         
         rng.randomize(output.ptr, m_Phash.length);
         
@@ -73,7 +73,7 @@ private:
     /*
     * OAEP Unpad Operation
     */
-    Secure_Vector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const
+    SecureVector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const
     {
         /*
         Must be careful about error messages here; if an attacker can
@@ -93,7 +93,7 @@ private:
         if (in_length > key_length)
             in_length = 0;
         
-        Secure_Vector!ubyte input = Secure_Vector!ubyte(key_length);
+        SecureVector!ubyte input = SecureVector!ubyte(key_length);
         buffer_insert(input, key_length - in_length, input, in_length);
         
         mgf1_mask(*m_hash,
@@ -133,11 +133,11 @@ private:
         bad_input |= !same_mem(&input[m_Phash.length], m_Phash.ptr, m_Phash.length);
         
         if (bad_input)
-            throw new Decoding_Error("Invalid OAEP encoding");
+            throw new DecodingError("Invalid OAEP encoding");
 
-        return Secure_Vector!ubyte(input.ptr[delim_idx + 1 .. input.length]);
+        return SecureVector!ubyte(input.ptr[delim_idx + 1 .. input.length]);
     }
 
-    Secure_Vector!ubyte m_Phash;
+    SecureVector!ubyte m_Phash;
     Unique!HashFunction m_hash;
 }

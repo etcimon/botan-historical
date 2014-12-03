@@ -32,38 +32,38 @@ import std.array : Appender;
 
 import botan.utils.containers.hashmap;
 
-alias X509_Certificate = FreeListRef!X509_Certificate_Impl;
+alias X509Certificate = FreeListRef!X509CertificateImpl;
 
 /**
 * This class represents X.509 Certificate
 */
-final class X509_Certificate_Impl : X509_Object
+final class X509CertificateImpl : X509Object
 {
 public:
     /**
     * Get the public key associated with this certificate.
     * @return subject public key of this certificate
     */
-    Public_Key subject_public_key() const
+    PublicKey subjectPublicKey() const
     {
-        return x509_key.load_key(
-            put_in_sequence(subject_public_key_bits()));
+        return x509_key.loadKey(
+            put_in_sequence(subjectPublicKeyBits()));
     }
 
     /**
     * Get the public key associated with this certificate.
     * @return subject public key of this certificate
     */
-    Vector!ubyte subject_public_key_bits() const
+    Vector!ubyte subjectPublicKeyBits() const
     {
-        return hex_decode(m_subject.get1("X509.Certificate.public_key"));
+        return hexDecode(m_subject.get1("X509.Certificate.public_key"));
     }
 
     /**
     * Get the issuer certificate DN.
     * @return issuer DN of this certificate
     */
-    X509_DN issuer_dn() const
+    X509DN issuerDn() const
     {
         return create_dn(m_issuer);
     }
@@ -72,7 +72,7 @@ public:
     * Get the subject certificate DN.
     * @return subject DN of this certificate
     */
-    X509_DN subject_dn() const
+    X509DN subjectDn() const
     {
         return create_dn(m_subject);
     }
@@ -90,9 +90,9 @@ public:
     * @return value(s) of the specified parameter
     */
     Vector!string
-        subject_info(in string what) const
+        subjectInfo(in string what) const
     {
-        return m_subject.get(X509_DN.deref_info_field(what));
+        return m_subject.get(X509DN.derefInfoField(what));
     }
 
     /**
@@ -101,33 +101,33 @@ public:
     * "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
     * @return value(s) of the specified parameter
     */
-    Vector!string issuer_info(in string what) const
+    Vector!string issuerInfo(in string what) const
     {
-        return m_issuer.get(X509_DN.deref_info_field(what));
+        return m_issuer.get(X509DN.derefInfoField(what));
     }
 
     /**
     * Raw subject DN
     */
-    Vector!ubyte raw_issuer_dn() const
+    Vector!ubyte rawIssuerDn() const
     {
-        return m_issuer.get1_memvec("X509.Certificate.dn_bits");
+        return m_issuer.get1Memvec("X509.Certificate.dn_bits");
     }
 
 
     /**
     * Raw issuer DN
     */
-    Vector!ubyte raw_subject_dn() const
+    Vector!ubyte rawSubjectDn() const
     {
-        return m_subject.get1_memvec("X509.Certificate.dn_bits");
+        return m_subject.get1Memvec("X509.Certificate.dn_bits");
     }
 
     /**
     * Get the notBefore of the certificate.
     * @return notBefore of the certificate
     */
-    string start_time() const
+    string startTime() const
     {
         return m_subject.get1("X509.Certificate.start");
     }
@@ -136,7 +136,7 @@ public:
     * Get the notAfter of the certificate.
     * @return notAfter of the certificate
     */
-    string end_time() const
+    string endTime() const
     {
         return m_subject.get1("X509.Certificate.end");
     }
@@ -145,60 +145,60 @@ public:
     * Get the X509 version of this certificate object.
     * @return X509 version
     */
-    uint x509_version() const
+    uint x509Version() const
     {
-        return (m_subject.get1_uint("X509.Certificate.version") + 1);
+        return (m_subject.get1Uint("X509.Certificate.version") + 1);
     }
 
     /**
     * Get the serial number of this certificate.
     * @return certificates serial number
     */
-    Vector!ubyte serial_number() const
+    Vector!ubyte serialNumber() const
     {
-        return m_subject.get1_memvec("X509.Certificate.serial");
+        return m_subject.get1Memvec("X509.Certificate.serial");
     }
 
     /**
     * Get the DER encoded AuthorityKeyIdentifier of this certificate.
     * @return DER encoded AuthorityKeyIdentifier
     */
-    Vector!ubyte authority_key_id() const
+    Vector!ubyte authorityKeyId() const
     {
-        return m_issuer.get1_memvec("X509v3.AuthorityKeyIdentifier");
+        return m_issuer.get1Memvec("X509v3.AuthorityKeyIdentifier");
     }
 
     /**
     * Get the DER encoded SubjectKeyIdentifier of this certificate.
     * @return DER encoded SubjectKeyIdentifier
     */
-    Vector!ubyte subject_key_id() const
+    Vector!ubyte subjectKeyId() const
     {
-        return m_subject.get1_memvec("X509v3.SubjectKeyIdentifier");
+        return m_subject.get1Memvec("X509v3.SubjectKeyIdentifier");
     }
 
     /**
     * Check whether this certificate is self signed.
     * @return true if this certificate is self signed
     */
-    bool is_self_signed() const { return m_self_signed; }
+    bool isSelfSigned() const { return m_self_signed; }
 
     /**
     * Check whether this certificate is a CA certificate.
     * @return true if this certificate is a CA certificate
     */
-    bool is_CA_cert() const
+    bool isCACert() const
     {
-        if (!m_subject.get1_uint("X509v3.BasicConstraints.is_ca"))
+        if (!m_subject.get1Uint("X509v3.BasicConstraints.is_ca"))
             return false;
         
         return allowed_usage(KEY_CERT_SIGN);
     }
 
 
-    bool allowed_usage(Key_Constraints usage) const
+    bool allowedUsage(KeyConstraints usage) const
     {
-        if (constraints() == Key_Constraints.NO_CONSTRAINTS)
+        if (constraints() == KeyConstraints.NO_CONSTRAINTS)
             return true;
         return (constraints() & usage);
     }
@@ -208,9 +208,9 @@ public:
     * constraint, eg "PKIX.ServerAuth") is included in the extended
     * key extension.
     */
-    bool allowed_usage(in string usage) const
+    bool allowedUsage(in string usage) const
     {
-        foreach (constraint; ex_constraints())
+        foreach (constraint; exConstraints())
             if (constraint == usage)
                 return true;
         
@@ -222,9 +222,9 @@ public:
     * this certificate.
     * @return path limit
     */
-    uint path_limit() const
+    uint pathLimit() const
     {
-        return m_subject.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
+        return m_subject.get1Uint("X509v3.BasicConstraints.path_constraint", 0);
     }
 
     /**
@@ -232,10 +232,10 @@ public:
     * certificate.
     * @return key constraints
     */
-    Key_Constraints constraints() const
+    KeyConstraints constraints() const
     {
-        return Key_Constraints(m_subject.get1_uint("X509v3.KeyUsage",
-                                                 Key_Constraints.NO_CONSTRAINTS));
+        return KeyConstraints(m_subject.get1Uint("X509v3.KeyUsage",
+                                                 KeyConstraints.NO_CONSTRAINTS));
     }
 
     /**
@@ -244,7 +244,7 @@ public:
     * certificate.
     * @return key constraints
     */
-    Vector!string ex_constraints() const
+    Vector!string exConstraints() const
     {
         return lookup_oids(m_subject.get("X509v3.ExtendedKeyUsage"));
     }
@@ -262,7 +262,7 @@ public:
     /**
     * Return the listed address of an OCSP responder, or empty if not set
     */
-    string ocsp_responder() const
+    string ocspResponder() const
     {
         return m_subject.get1("OCSP.responder", "");
     }
@@ -270,7 +270,7 @@ public:
     /**
     * Return the CRL distribution point, or empty if not set
     */
-    string crl_distribution_point() const
+    string crlDistributionPoint() const
     {
         return m_subject.get1("CRL.DistributionPoint", "");
     }
@@ -324,12 +324,12 @@ public:
         
         output ~= "Version: " ~ x509_version();
         
-        output ~= "Not valid before: " ~ start_time();
-        output ~= "Not valid after: " ~ end_time();
+        output ~= "Not valid before: " ~ startTime();
+        output ~= "Not valid after: " ~ endTime();
         
         output ~= "Constraints:";
-        Key_Constraints constraints = constraints();
-        if (constraints == Key_Constraints.NO_CONSTRAINTS)
+        KeyConstraints constraints = constraints();
+        if (constraints == KeyConstraints.NO_CONSTRAINTS)
             output ~= " None";
         else
         {
@@ -357,7 +357,7 @@ public:
                 output ~= "    " ~ policy;
         }
         
-        Vector!string ex_constraints = ex_constraints();
+        Vector!string ex_constraints = exConstraints();
         if (!ex_constraints.empty)
         {
             output ~= "Extended Constraints:";
@@ -365,23 +365,22 @@ public:
                 output ~= "    " ~ ex_constraint;
         }
         
-        if (ocsp_responder() != "")
-            output ~= "OCSP responder " ~ ocsp_responder();
-        if (crl_distribution_point() != "")
-            output ~= "CRL " ~ crl_distribution_point();
+        if (ocspResponder() != "")
+            output ~= "OCSP responder " ~ ocspResponder();
+        if (crlDistributionPoint() != "")
+            output ~= "CRL " ~ crlDistributionPoint();
         
-        output ~= "Signature algorithm: " ~
-            OIDS.lookup(signature_algorithm().oid);
+        output ~= "Signature algorithm: " ~ OIDS.lookup(signatureAlgorithm().oid);
         
-        output ~= "Serial number: " ~ hex_encode(serial_number());
+        output ~= "Serial number: " ~ hexEncode(serialNumber());
         
-        if (authority_key_id().length)
-            output ~= "Authority keyid: " ~ hex_encode(authority_key_id());
+        if (authorityKeyId().length)
+            output ~= "Authority keyid: " ~ hexEncode(authorityKeyId());
         
-        if (subject_key_id().length)
-            output ~= "Subject keyid: " ~ hex_encode(subject_key_id());
+        if (subjectKeyId().length)
+            output ~= "Subject keyid: " ~ hexEncode(subjectKeyId());
         
-        Unique!X509_PublicKey pubkey = subject_public_key();
+        Unique!X509PublicKey pubkey = subjectPublicKey();
         output ~= "Public Key:" ~ x509_key.PEM_encode(*pubkey);
         
         return output.data;
@@ -395,17 +394,17 @@ public:
     {
         Unique!HashFunction hash = get_hash(hash_name);
         hash.update(BER_encode());
-        const auto hex_print = hex_encode(hash.finished());
+        const auto hex_print = hexEncode(hash.finished());
         
         string formatted_print;
         
         for (size_t i = 0; i != hex_print.length; i += 2)
         {
-            formatted_print.push_back(hex_print[i]);
-            formatted_print.push_back(hex_print[i+1]);
+            formatted_print.pushBack(hex_print[i]);
+            formatted_print.pushBack(hex_print[i+1]);
             
             if (i != hex_print.length - 2)
-                formatted_print.push_back(':');
+                formatted_print.pushBack(':');
         }
         
         return formatted_print;
@@ -415,7 +414,7 @@ public:
     * Check if a certain DNS name matches up with the information in
     * the cert
     */
-    bool matches_dns_name(in string name) const
+    bool matchesDnsName(in string name) const
     {
         if (name == "")
             return false;
@@ -433,7 +432,7 @@ public:
     * Check to certificates for equality.
     * @return true both certificates are (binary) equal
     */
-    bool opEquals(in X509_Certificate other) const
+    bool opEquals(in X509Certificate other) const
     {
         return (sig == other.sig &&
                 sig_algo == other.sig_algo &&
@@ -446,7 +445,7 @@ public:
     * Impose an arbitrary (but consistent) ordering
     * @return true if this is less than other by some unspecified criteria
     */
-    bool opBinary(string op)(in X509_Certificate other) const
+    bool opBinary(string op)(in X509Certificate other) const
         if (op == "<")
     {
         /* If signature values are not equal, sort by lexicographic ordering of that */
@@ -466,7 +465,7 @@ public:
     * @return true if the arguments represent different certificates,
     * false if they are binary identical
     */
-    bool opCmp(string op)(in X509_Certificate cert2)
+    bool opCmp(string op)(in X509Certificate cert2)
         if (op == "!=")
     {
         return !(cert1 == cert2);
@@ -482,7 +481,7 @@ public:
     {
         super(input, "CERTIFICATE/X509 CERTIFICATE");
         m_self_signed = false;
-        do_decode();
+        doDecode();
     }
 
     /**
@@ -494,92 +493,92 @@ public:
     {
         super(filename, "CERTIFICATE/X509 CERTIFICATE");
         m_self_signed = false;
-        do_decode();
+        doDecode();
     }
 
     this(in Vector!ubyte input)
     {
         super(input, "CERTIFICATE/X509 CERTIFICATE");
         m_self_signed = false;
-        do_decode();
+        doDecode();
     }
 
 private:
     /*
     * Decode the TBSCertificate data
     */
-    void force_decode()
+    void forceDecode()
     {
         size_t _version;
         BigInt serial_bn;
-        Algorithm_Identifier sig_algo_inner;
-        X509_DN dn_issuer, dn_subject;
-        X509_Time start, end;
+        AlgorithmIdentifier sig_algo_inner;
+        X509DN dn_issuer, dn_subject;
+        X509Time start, end;
         
-        BER_Decoder tbs_cert(tbs_bits);
+        BERDecoder tbsCert(tbs_bits);
         
-        tbs_cert.decode_optional(_version, ASN1_Tag(0),
-                                 ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+        tbs_cert.decodeOptional(_version, ASN1Tag(0),
+                                 ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
             .decode(serial_bn)
                 .decode(sig_algo_inner)
                 .decode(dn_issuer)
-                .start_cons(ASN1_Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .decode(start)
                 .decode(end)
-                .verify_end()
-                .end_cons()
+                .verifyEnd()
+                .endCons()
                 .decode(dn_subject);
         
         if (_version > 2)
-            throw new Decoding_Error("Unknown X.509 cert version " ~ to!string(_version));
+            throw new DecodingError("Unknown X.509 cert version " ~ to!string(_version));
         if (sig_algo != sig_algo_inner)
-            throw new Decoding_Error("Algorithm identifier mismatch");
+            throw new DecodingError("Algorithm identifier mismatch");
         
         m_self_signed = (dn_subject == dn_issuer);
         
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         
-        m_subject.add("X509.Certificate.dn_bits", put_in_sequence(dn_subject.get_bits()));
-        m_issuer.add("X509.Certificate.dn_bits", put_in_sequence(dn_issuer.get_bits()));
+        m_subject.add("X509.Certificate.dn_bits", put_in_sequence(dn_subject.getBits()));
+        m_issuer.add("X509.Certificate.dn_bits", put_in_sequence(dn_issuer.getBits()));
         
-        BER_Object public_key = tbs_cert.get_next_object();
-        if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)
-            throw new BER_Bad_Tag("X509_Certificate: Unexpected tag for public key",
+        BER_Object public_key = tbs_cert.getNextObject();
+        if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
+            throw new BERBadTag("X509Certificate: Unexpected tag for public key",
                                   public_key.type_tag, public_key.class_tag);
         
         Vector!ubyte v2_issuer_key_id, v2_subject_key_id;
         
-        tbs_cert.decode_optional_string(v2_issuer_key_id, ASN1_Tag.BIT_STRING, 1);
-        tbs_cert.decode_optional_string(v2_subject_key_id, ASN1_Tag.BIT_STRING, 2);
+        tbs_cert.decodeOptionalString(v2_issuer_key_id, ASN1Tag.BIT_STRING, 1);
+        tbs_cert.decodeOptionalString(v2_subject_key_id, ASN1Tag.BIT_STRING, 2);
         
-        BER_Object v3_exts_data = tbs_cert.get_next_object();
+        BER_Object v3_exts_data = tbs_cert.getNextObject();
         if (v3_exts_data.type_tag == 3 &&
-            v3_exts_data.class_tag == ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+            v3_exts_data.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
-            X509_Extensions extensions;
+            X509Extensions extensions;
             
-            BER_Decoder(v3_exts_data.value).decode(extensions).verify_end();
+            BERDecoder(v3_exts_data.value).decode(extensions).verifyEnd();
             
-            extensions.contents_to(m_subject, m_issuer);
+            extensions.contentsTo(m_subject, m_issuer);
         }
-        else if (v3_exts_data.type_tag != ASN1_Tag.NO_OBJECT)
-            throw new BER_Bad_Tag("Unknown tag in X.509 cert",
+        else if (v3_exts_data.type_tag != ASN1Tag.NO_OBJECT)
+            throw new BERBadTag("Unknown tag in X.509 cert",
                                   v3_exts_data.type_tag, v3_exts_data.class_tag);
         
-        if (tbs_cert.more_items())
-            throw new Decoding_Error("TBSCertificate has more items that expected");
+        if (tbs_cert.moreItems())
+            throw new DecodingError("TBSCertificate has more items that expected");
         
         m_subject.add("X509.Certificate.version", _version);
         m_subject.add("X509.Certificate.serial", BigInt.encode(serial_bn));
-        m_subject.add("X509.Certificate.start", start.readable_string());
-        m_subject.add("X509.Certificate.end", end.readable_string());
+        m_subject.add("X509.Certificate.start", start.readableString());
+        m_subject.add("X509.Certificate.end", end.readableString());
         
         m_issuer.add("X509.Certificate.v2.key_id", v2_issuer_key_id);
         m_subject.add("X509.Certificate.v2.key_id", v2_subject_key_id);
         
         m_subject.add("X509.Certificate.public_key",
-                    hex_encode(public_key.value));
+                    hexEncode(public_key.value));
         
         if (m_self_signed && _version == 0)
         {
@@ -588,7 +587,7 @@ private:
         }
         
         if (is_CA_cert() &&
-            !m_subject.has_value("X509v3.BasicConstraints.path_constraint"))
+            !m_subject.hasValue("X509v3.BasicConstraints.path_constraint"))
         {
             const size_t limit = (x509_version() < 3) ? NO_CERT_PATH_LIMIT : 0;
             
@@ -608,36 +607,36 @@ private:
 * Data Store Extraction Operations
 */
 /*
-* Create and populate a X509_DN
+* Create and populate a X509DN
 */
-X509_DN create_dn(in Data_Store info)
+X509DN createDn(in DataStore info)
 {
     auto names = info.search_for((in string key, in string)
     {
         return (key.canFind("X520."));
     });
     
-    X509_DN dn;
+    X509DN dn;
     
     foreach (key, value; names)
-        dn.add_attribute(key, value);
+        dn.addAttribute(key, value);
     
     return dn;
 }
 
 
 /*
-* Create and populate an Alternative_Name
+* Create and populate an AlternativeName
 */
-Alternative_Name create_alt_name(in Data_Store info)
+AlternativeName createAltName(in DataStore info)
 {
     auto names = info.search_for((in string key, in string)
                                  { return (key == "RFC822" || key == "DNS" || key == "URI" || key == "IP"); });
     
-    Alternative_Name alt_name;
+    AlternativeName alt_name;
     
     foreach (key, value; names)
-        alt_name.add_attribute(key, value);
+        alt_name.addAttribute(key, value);
     
     return alt_name;
 }
@@ -647,17 +646,17 @@ Alternative_Name create_alt_name(in Data_Store info)
 /*
 * Lookup each OID in the vector
 */
-Vector!string lookup_oids(in Vector!string input)
+Vector!string lookupOids(in Vector!string input)
 {
     Vector!string output;
     
     foreach (oid_name; input)
-        output.push_back(OIDS.lookup(OID(oid_name)));
+        output.pushBack(OIDS.lookup(OID(oid_name)));
     return output;
 }
 
 
-bool cert_subject_dns_match(in string name,
+bool certSubjectDnsMatch(in string name,
                             const Vector!string cert_names)
 {
     foreach (const cn; cert_names)

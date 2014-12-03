@@ -43,7 +43,7 @@ public:
     /*
     * Start Compressing with Zlib
     */
-    void start_msg()
+    void startMsg()
     {
         clear();
         m_zlib = new Zlib_Stream;
@@ -64,7 +64,7 @@ public:
     /*
     * Finish Compressing with Zlib
     */
-    void end_msg()
+    void endMsg()
     {
         m_zlib.m_stream.next_in = 0;
         m_zlib.m_stream.avail_in = 0;
@@ -138,7 +138,7 @@ private:
     const size_t m_level;
     const bool m_raw_deflate;
 
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     Zlib_Stream m_zlib;
 }
 
@@ -188,7 +188,7 @@ public:
             if (rc == Z_STREAM_END)
             {
                 size_t read_from_block = length - m_zlib.m_stream.avail_in;
-                start_msg();
+                startMsg();
                 
                 m_zlib.m_stream.next_in = input + read_from_block;
                 m_zlib.m_stream.avail_in = length - read_from_block;
@@ -202,7 +202,7 @@ public:
     /*
     * Start Decompressing with Zlib
     */
-    void start_msg()
+    void startMsg()
     {
         clear();
         m_zlib = new Zlib_Stream;
@@ -214,7 +214,7 @@ public:
     /*
     * Finish Decompressing with Zlib
     */
-    void end_msg()
+    void endMsg()
     {
         if (m_no_writes) return;
         m_zlib.m_stream.next_in = 0;
@@ -274,7 +274,7 @@ private:
 
     const bool m_raw_deflate;
 
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     Zlib_Stream m_zlib;
     bool m_no_writes;
 }

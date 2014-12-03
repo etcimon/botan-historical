@@ -18,22 +18,22 @@ public:
     /**
         * @return object describing limits on key size
         */
-    abstract Key_Length_Specification key_spec() const;
+    abstract KeyLengthSpecification keySpec() const;
     
     /**
     * @return minimum allowed key length
     */
-    final size_t maximum_keylength() const
+    final size_t maximumKeylength() const
     {
-        return key_spec().maximum_keylength();
+        return keySpec().maximumKeylength();
     }
     
     /**
     * @return maxmium allowed key length
     */
-    final size_t minimum_keylength() const
+    final size_t minimumKeylength() const
     {
-        return key_spec().minimum_keylength();
+        return keySpec().minimumKeylength();
     }
     
     /**
@@ -41,23 +41,23 @@ public:
     * @param length = the key length to be checked.
     * @return true if the key length is valid.
     */
-    final bool valid_keylength(size_t length) const
+    final bool validKeylength(size_t length) const
     {
-        return key_spec().valid_keylength(length);
+        return keySpec().validKeylength(length);
     }
     
     /**
     * Set the symmetric key of this object.
     * @param key = the SymmetricKey to be set.
     */
-    final void set_key(in SymmetricKey key)
+    final void setKey(in SymmetricKey key)
     {
-        set_key(key.ptr, key.length);
+        setKey(key.ptr, key.length);
     }
     
-    final void set_key(Alloc)(in Vector!( ubyte, Alloc ) key)
+    final void setKey(Alloc)(in Vector!( ubyte, Alloc ) key)
     {
-        set_key(key.ptr, key.length);
+        setKey(key.ptr, key.length);
     }
     
     /**
@@ -65,11 +65,11 @@ public:
     * @param key = the to be set as a ubyte array.
     * @param length = in bytes of key param
     */
-    final void set_key(in ubyte* key, size_t length)
+    final void setKey(in ubyte* key, size_t length)
     {
-        if (!valid_keylength(length))
-            throw new Invalid_Key_Length(name, length);
-        key_schedule(key, length);
+        if (!validKeylength(length))
+            throw new InvalidKeyLength(name, length);
+        keySchedule(key, length);
     }
     
     abstract @property string name() const;
@@ -80,6 +80,6 @@ private:
     * @param key = the key
     * @param length = of key
     */
-    abstract void key_schedule(in ubyte* key, size_t length);
+    abstract void keySchedule(in ubyte* key, size_t length);
 }
 

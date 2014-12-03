@@ -20,15 +20,15 @@ import botan.utils.types;
 /**
 * ECB mode
 */
-class ECB_Mode : Cipher_Mode
+class ECBMode : Cipher_Mode
 {
 public:
-    final override Secure_Vector!ubyte start(const ubyte[], size_t nonce_len)
+    final override SecureVector!ubyte start(const ubyte[], size_t nonce_len)
     {
-        if (!valid_nonce_length(nonce_len))
-            throw new Invalid_IV_Length(name(), nonce_len);
+        if (!validNonceLength(nonce_len))
+            throw new InvalidIVLength(name(), nonce_len);
         
-        return Secure_Vector!ubyte();
+        return SecureVector!ubyte();
     }
 
     final override @property string name() const
@@ -36,22 +36,22 @@ public:
         return cipher().name ~ "/ECB/" ~ padding().name;
     }
 
-    final override size_t update_granularity() const
+    final override size_t updateGranularity() const
     {
-        return cipher().parallel_bytes();
+        return cipher().parallelBytes();
     }
 
-    final override Key_Length_Specification key_spec() const
+    final override KeyLengthSpecification keySpec() const
     {
-        return cipher().key_spec();
+        return cipher().keySpec();
     }
 
-    final override size_t default_nonce_length() const
+    final override size_t defaultNonceLength() const
     {
         return 0;
     }
 
-    final override bool valid_nonce_length(size_t n) const
+    final override bool validNonceLength(size_t n) const
     {
         return (n == 0);
     }
@@ -65,8 +65,8 @@ protected:
     {
         m_cipher = cipher;
         m_padding = padding;
-        if (!m_padding.valid_blocksize(cipher.block_size))
-            throw new Invalid_Argument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/ECB");
+        if (!m_padding.validBlocksize(cipher.block_size))
+            throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/ECB");
     }
 
     final BlockCipher cipher() const { return *m_cipher; }
@@ -74,9 +74,9 @@ protected:
     final BlockCipherModePaddingMethod padding() const { return *m_padding; }
 
 private:
-    final override void key_schedule(in ubyte* key, size_t length)
+    final override void keySchedule(in ubyte* key, size_t length)
     {
-        m_cipher.set_key(key, length);
+        m_cipher.setKey(key, length);
     }
 
     Unique!BlockCipher m_cipher;
@@ -86,7 +86,7 @@ private:
 /**
 * ECB Encryption
 */
-final class ECB_Encryption : ECB_Mode
+final class ECBEncryption : ECB_Mode
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding) 
@@ -94,7 +94,7 @@ public:
         super(cipher, padding);
     }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -105,10 +105,10 @@ public:
         assert(sz % BS == 0, "ECB input is full blocks");
         const size_t blocks = sz / BS;
         
-        cipher().encrypt_n(buf.ptr, buf.ptr, blocks);
+        cipher().encryptN(buf.ptr, buf.ptr, blocks);
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -117,7 +117,7 @@ public:
         
         const size_t bytes_in_final_block = sz % BS;
         
-        padding().add_padding(buffer, bytes_in_final_block, BS);
+        padding().addPadding(buffer, bytes_in_final_block, BS);
         
         if (buffer.length % BS)
             throw new Exception("Did not pad to full block size in " ~ name);
@@ -125,12 +125,12 @@ public:
         update(buffer, offset);
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         return round_up(input_length, cipher().block_size);
     }
 
-    override size_t minimum_final_size() const
+    override size_t minimumFinalSize() const
     {
         return 0;
     }
@@ -139,7 +139,7 @@ public:
 /**
 * ECB Decryption
 */
-final class ECB_Decryption : ECB_Mode
+final class ECBDecryption : ECB_Mode
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)
@@ -147,7 +147,7 @@ public:
         super(cipher, padding);
     }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -158,10 +158,10 @@ public:
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
         
-        cipher().decrypt_n(buf.ptr, buf.ptr, blocks);
+        cipher().decryptN(buf.ptr, buf.ptr, blocks);
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -169,7 +169,7 @@ public:
         const size_t BS = cipher().block_size;
         
         if (sz == 0 || sz % BS)
-            throw new Decoding_Error(name ~ ": Ciphertext not a multiple of block size");
+            throw new DecodingError(name ~ ": Ciphertext not a multiple of block size");
         
         update(buffer, offset);
         
@@ -177,12 +177,12 @@ public:
         buffer.resize(buffer.length - pad_bytes); // remove padding
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         return input_length;
     }
 
-    override size_t minimum_final_size() const
+    override size_t minimumFinalSize() const
     {
         return cipher().block_size;
     }

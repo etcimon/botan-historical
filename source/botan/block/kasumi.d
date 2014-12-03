@@ -17,27 +17,27 @@ import botan.utils.types;
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
-final class KASUMI : Block_Cipher_Fixed_Params!(8, 16)
+final class KASUMI : BlockCipherFixedParams!(8, 16)
 {
 public:
     /*
     * KASUMI Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort B0 = load_bigEndian!ushort(input, 0);
-            ushort B1 = load_bigEndian!ushort(input, 1);
-            ushort B2 = load_bigEndian!ushort(input, 2);
-            ushort B3 = load_bigEndian!ushort(input, 3);
+            ushort B0 = loadBigEndian!ushort(input, 0);
+            ushort B1 = loadBigEndian!ushort(input, 1);
+            ushort B2 = loadBigEndian!ushort(input, 2);
+            ushort B3 = loadBigEndian!ushort(input, 3);
             
             for (size_t j = 0; j != 8; j += 2)
             {
                 const ushort* K = &m_EK[8*j];
                 
-                ushort R = B1 ^ (rotate_left(B0, 1) & K[0]);
-                ushort L = B0 ^ (rotate_left(R, 1) | K[1]);
+                ushort R = B1 ^ (rotateLeft(B0, 1) & K[0]);
+                ushort L = B0 ^ (rotateLeft(R, 1) | K[1]);
                 
                 L = FI(L ^ K[ 2], K[ 3]) ^ R;
                 R = FI(R ^ K[ 4], K[ 5]) ^ L;
@@ -50,14 +50,14 @@ public:
                 L = FI(L ^ K[12], K[13]) ^ R;
                 R = FI(R ^ K[14], K[15]) ^ L;
                 
-                R ^= (rotate_left(L, 1) & K[8]);
-                L ^= (rotate_left(R, 1) | K[9]);
+                R ^= (rotateLeft(L, 1) & K[8]);
+                L ^= (rotateLeft(R, 1) | K[9]);
                 
                 B0 ^= L;
                 B1 ^= R;
             }
             
-            store_bigEndian(output, B0, B1, B2, B3);
+            storeBigEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -68,14 +68,14 @@ public:
     /*
     * KASUMI Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort B0 = load_bigEndian!ushort(input, 0);
-            ushort B1 = load_bigEndian!ushort(input, 1);
-            ushort B2 = load_bigEndian!ushort(input, 2);
-            ushort B3 = load_bigEndian!ushort(input, 3);
+            ushort B0 = loadBigEndian!ushort(input, 0);
+            ushort B1 = loadBigEndian!ushort(input, 1);
+            ushort B2 = loadBigEndian!ushort(input, 2);
+            ushort B3 = loadBigEndian!ushort(input, 3);
             
             for (size_t j = 0; j != 8; j += 2)
             {
@@ -87,14 +87,14 @@ public:
                 R = FI(R ^ K[12], K[13]) ^ L;
                 L = FI(L ^ K[14], K[15]) ^ R;
                 
-                L ^= (rotate_left(R, 1) & K[8]);
-                R ^= (rotate_left(L, 1) | K[9]);
+                L ^= (rotateLeft(R, 1) & K[8]);
+                R ^= (rotateLeft(L, 1) | K[9]);
                 
                 R = B0 ^= R;
                 L = B1 ^= L;
                 
-                L ^= (rotate_left(R, 1) & K[0]);
-                R ^= (rotate_left(L, 1) | K[1]);
+                L ^= (rotateLeft(R, 1) & K[0]);
+                R ^= (rotateLeft(L, 1) | K[1]);
                 
                 R = FI(R ^ K[2], K[3]) ^ L;
                 L = FI(L ^ K[4], K[5]) ^ R;
@@ -104,7 +104,7 @@ public:
                 B3 ^= R;
             }
             
-            store_bigEndian(output, B0, B1, B2, B3);
+            storeBigEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -118,19 +118,19 @@ public:
     }
     @property string name() const { return "KASUMI"; }
     BlockCipher clone() const { return new KASUMI; }
-private:
+protected:
     /*
     * KASUMI Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         __gshared immutable ushort[] RC = [ 0x0123, 0x4567, 0x89AB, 0xCDEF,
             0xFEDC, 0xBA98, 0x7654, 0x3210 ];
         
-        Secure_Vector!ushort K = Secure_Vector!ushort(16);
+        SecureVector!ushort K = SecureVector!ushort(16);
         foreach (size_t i; 0 .. 8)
         {
-            K[i] = load_bigEndian!ushort(key, i);
+            K[i] = loadBigEndian!ushort(key, i);
             K[i+8] = K[i] ^ RC[i];
         }
         
@@ -138,19 +138,19 @@ private:
         
         foreach (size_t i; 0 .. 8)
         {
-            m_EK[8*i  ] = rotate_left(K[(i+0) % 8     ], 2);
-            m_EK[8*i+1] = rotate_left(K[(i+2) % 8 + 8], 1);
-            m_EK[8*i+2] = rotate_left(K[(i+1) % 8     ], 5);
+            m_EK[8*i  ] = rotateLeft(K[(i+0) % 8     ], 2);
+            m_EK[8*i+1] = rotateLeft(K[(i+2) % 8 + 8], 1);
+            m_EK[8*i+2] = rotateLeft(K[(i+1) % 8     ], 5);
             m_EK[8*i+3] = K[(i+4) % 8 + 8];
-            m_EK[8*i+4] = rotate_left(K[(i+5) % 8     ], 8);
+            m_EK[8*i+4] = rotateLeft(K[(i+5) % 8     ], 8);
             m_EK[8*i+5] = K[(i+3) % 8 + 8];
-            m_EK[8*i+6] = rotate_left(K[(i+6) % 8     ], 13);
+            m_EK[8*i+6] = rotateLeft(K[(i+6) % 8     ], 13);
             m_EK[8*i+7] = K[(i+7) % 8 + 8];
         }
     }
 
 
-    Secure_Vector!ushort m_EK;
+    SecureVector!ushort m_EK;
 }
 
 

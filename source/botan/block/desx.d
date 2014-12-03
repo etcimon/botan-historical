@@ -15,13 +15,13 @@ import botan.utils.xor_buf;
 /**
 * DESX
 */
-final class DESX : Block_Cipher_Fixed_Params!(8, 24)
+final class DESX : BlockCipherFixedParams!(8, 24)
 {
 public:
     /*
     * DESX Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -37,7 +37,7 @@ public:
     /*
     * DESX Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {    
         foreach (size_t i; 0 .. blocks)
         {
@@ -59,17 +59,17 @@ public:
     @property string name() const { return "DESX"; }
     BlockCipher clone() const { return new DESX; }
 
-private:
+protected:
     /*
     * DESX Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_K1.replace(key[0 .. key + 8]);
-        m_des.set_key(key + 8, 8);
+        m_des.setKey(key + 8, 8);
         m_K2.replace(key[16 .. key + 24]);
     }
 
-    Secure_Vector!ubyte m_K1, m_K2;
+    SecureVector!ubyte m_K1, m_K2;
     DES m_des;
 }

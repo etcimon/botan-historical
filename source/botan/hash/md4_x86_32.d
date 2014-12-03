@@ -14,20 +14,20 @@ import botan.hash.md4;
 /**
 * MD4 using x86 assembly
 */
-class MD4_X86_32 : MD4
+class MD4X8632 : MD4
 {
 public:
-    HashFunction clone() const { return new MD4_X86_32; }
+    HashFunction clone() const { return new MD4X8632; }
 private:
     /*
     * MD4 Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
             botan_md4_x86_32_compress(m_digest.ptr, input, m_M.ptr);
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 }
@@ -39,7 +39,7 @@ private:
 * @param input = the input block
 * @param M = the message buffer
 */
-void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
+void botanMd4X8632Compress(uint* digest, in ubyte* input, uint* M)
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 

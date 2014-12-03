@@ -20,18 +20,18 @@ import botan.asn1.ber_dec;
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
-class IF_Scheme_PublicKey : Public_Key
+class IFSchemePublicKey : PublicKey
 {
 public:
 
-    this(in Algorithm_Identifier, in Secure_Vector!ubyte key_bits)
+    this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits)
     {
-        BER_Decoder(key_bits)
-                .start_cons(ASN1_Tag.SEQUENCE)
+        BERDecoder(key_bits)
+                .startCons(ASN1Tag.SEQUENCE)
                 .decode(m_n)
                 .decode(m_e)
-                .verify_end()
-                .end_cons();
+                .verifyEnd()
+                .endCons();
     }
 
     this(in BigInt n, in BigInt e)
@@ -43,43 +43,43 @@ public:
     /*
     * Check IF Scheme Public Parameters
     */
-    bool check_key(RandomNumberGenerator, bool) const
+    bool checkKey(RandomNumberGenerator, bool) const
     {
-        if (m_n < 35 || m_n.is_even() || m_e < 2)
+        if (m_n < 35 || m_n.isEven() || m_e < 2)
             return false;
         return true;
     }
 
 
-    Algorithm_Identifier algorithm_identifier() const
+    AlgorithmIdentifier algorithmIdentifier() const
     {
-        return Algorithm_Identifier(get_oid(),
-                                   Algorithm_Identifier.USE_NULL_PARAM);
+        return AlgorithmIdentifier(get_oid(),
+                                   AlgorithmIdentifier.USE_NULL_PARAM);
     }
 
-    Vector!ubyte x509_subject_public_key() const
+    Vector!ubyte x509SubjectPublicKey() const
     {
-        return DER_Encoder()
-                .start_cons(ASN1_Tag.SEQUENCE)
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(m_n)
                 .encode(m_e)
-                .end_cons()
-                .get_contents_unlocked();
+                .endCons()
+                .getContentsUnlocked();
     }
 
     /**
     * @return public modulus
     */
-    BigInt get_n() const { return m_n; }
+    BigInt getN() const { return m_n; }
 
     /**
     * @return public exponent
     */
-    BigInt get_e() const { return m_e; }
+    BigInt getE() const { return m_e; }
 
-    size_t max_input_bits() const { return (m_n.bits() - 1); }
+    size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-    override size_t estimated_strength() const
+    override size_t estimatedStrength() const
     {
         return dl_work_factor(m_n.bits());
     }
@@ -94,14 +94,14 @@ protected:
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
-final class IF_Scheme_PrivateKey : IF_Scheme_PublicKey,
-                             Private_Key
+final class IFSchemePrivateKey : IF_SchemePublicKey,
+                             PrivateKey
 {
 public:
-    this(RandomNumberGenerator rng, in Algorithm_Identifier, in Secure_Vector!ubyte key_bits)
+    this(RandomNumberGenerator rng, in AlgorithmIdentifier, in SecureVector!ubyte key_bits)
     {
-        BER_Decoder(key_bits)
-                .start_cons(ASN1_Tag.SEQUENCE)
+        BERDecoder(key_bits)
+                .startCons(ASN1Tag.SEQUENCE)
                 .decode_and_check!size_t(0, "Unknown PKCS #1 key format version")
                 .decode(m_n)
                 .decode(m_e)
@@ -111,9 +111,9 @@ public:
                 .decode(m_d1)
                 .decode(m_d2)
                 .decode(m_c)
-                .end_cons();BOTAN_HAS_PUBKEY_CRYPTO
+                .endCons();BOTANHASPUBKEYCRYPTO
         
-        load_check(rng);
+        loadCheck(rng);
     }
 
     this(RandomNumberGenerator rng,
@@ -127,20 +127,20 @@ public:
         m_q = prime2;
         e = exp;
         m_d = d_exp;
-        n = mod.is_nonzero() ? mod : m_p * m_q;
+        n = mod.isNonzero() ? mod : m_p * m_q;
         
         if (m_d == 0)
         {
             BigInt inv_for_d = lcm(m_p - 1, m_q - 1);
-            if (e.is_even())
+            if (e.isEven())
                 inv_for_d >>= 1;
             
-            m_d = inverse_mod(e, inv_for_d);
+            m_d = inverseMod(e, inv_for_d);
         }
         
         m_d1 = m_d % (m_p - 1);
         m_d2 = m_d % (m_q - 1);
-        m_c = inverse_mod(m_q, m_p);
+        m_c = inverseMod(m_q, m_p);
 
         load_check(rng);
 
@@ -149,17 +149,17 @@ public:
     /*
     * Check IF Scheme Private Parameters
     */
-    bool  check_key(RandomNumberGenerator rng, bool strong) const
+    bool  checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (m_n < 35 || m_n.is_even() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
+        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
             return false;
         
-        if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverse_mod(m_q, m_p))
+        if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
             return false;
         
         const size_t prob = (strong) ? 56 : 12;
         
-        if (!is_prime(m_p, rng, prob) || !is_prime(m_q, rng, prob))
+        if (!isPrime(m_p, rng, prob) || !isPrime(m_q, rng, prob))
             return false;
         return true;
     }
@@ -168,28 +168,28 @@ public:
     * Get the first prime p.
     * @return prime p
     */
-    BigInt get_p() const { return m_p; }
+    BigInt getP() const { return m_p; }
 
     /**
     * Get the second prime q.
     * @return prime q
     */
-    BigInt get_q() const { return m_q; }
+    BigInt getQ() const { return m_q; }
 
     /**
     * Get d with exp * d = 1 mod (p - 1, q - 1).
     * @return d
     */
-    BigInt get_d() const { return m_d; }
+    BigInt getD() const { return m_d; }
 
-    BigInt get_c() const { return m_c; }
-    BigInt get_d1() const { return m_d1; }
-    BigInt get_d2() const { return m_d2; }
+    BigInt getC() const { return m_c; }
+    BigInt getD1() const { return m_d1; }
+    BigInt getD2() const { return m_d2; }
 
-    Secure_Vector!ubyte  pkcs8_private_key() const
+    SecureVector!ubyte  pkcs8PrivateKey() const
     {
-        return DER_Encoder()
-                .start_cons(ASN1_Tag.SEQUENCE)
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(cast(size_t)(0))
                 .encode(m_n)
                 .encode(m_e)
@@ -199,8 +199,8 @@ public:
                 .encode(m_d1)
                 .encode(m_d2)
                 .encode(m_c)
-                .end_cons()
-                .get_contents();
+                .endCons()
+                .getContents();
     }
 
 protected:

@@ -16,12 +16,12 @@ import botan.utils.rotate;
 /**
 * SHA-384
 */
-final class SHA_384 : MDx_HashFunction
+final class SHA384 : MDxHashFunction
 {
 public:
     @property string name() const { return "SHA-384"; }
-    @property size_t output_length() const { return 48; }
-    HashFunction clone() const { return new SHA_384; }
+    @property size_t outputLength() const { return 48; }
+    HashFunction clone() const { return new SHA384; }
 
     /*
     * Clear memory of sensitive data
@@ -49,7 +49,7 @@ private:
     /*
     * SHA-384 compression function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         compress(m_digest, input, blocks);
     }
@@ -57,24 +57,24 @@ private:
     /*
     * Copy out the digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 8)
-            store_bigEndian(m_digest[i/8], output + i);
+            storeBigEndian(m_digest[i/8], output + i);
     }
 
-    Secure_Vector!ulong m_digest;
+    SecureVector!ulong m_digest;
 }
 
 /**
 * SHA-512
 */
-final class SHA_512 : MDx_HashFunction
+final class SHA512 : MDxHashFunction
 {
 public:
     @property string name() const { return "SHA-512"; }
-    @property size_t output_length() const { return 64; }
-    HashFunction clone() const { return new SHA_512; }
+    @property size_t outputLength() const { return 64; }
+    HashFunction clone() const { return new SHA512; }
 
     /*
     * Clear memory of sensitive data
@@ -102,7 +102,7 @@ private:
     /*
     * SHA-512 compression function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         compress(m_digest, input, blocks);
     }
@@ -110,13 +110,13 @@ private:
     /*
     * Copy out the digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 8)
-            store_bigEndian(m_digest[i/8], output + i);
+            storeBigEndian(m_digest[i/8], output + i);
     }
 
-    Secure_Vector!ulong m_digest;
+    SecureVector!ulong m_digest;
 }
 
 private:
@@ -127,8 +127,8 @@ pure:
 */
 ulong rho(ulong X, uint rot1, uint rot2, uint rot3)
 {
-    return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^
-            rotate_right(X, rot3));
+    return (rotateRight(X, rot1) ^ rotateRight(X, rot2) ^
+            rotateRight(X, rot3));
 }
 
 /*
@@ -136,7 +136,7 @@ ulong rho(ulong X, uint rot1, uint rot2, uint rot3)
 */
 ulong sigma(ulong X, uint rot1, uint rot2, uint shift)
 {
-    return (rotate_right(X, rot1) ^ rotate_right(X, rot2) ^ (X >> shift));
+    return (rotateRight(X, rot1) ^ rotateRight(X, rot2) ^ (X >> shift));
 }
 
 /*
@@ -169,7 +169,7 @@ string SHA2_64_F(alias _A, alias _B, alias _C, alias _D, alias _E, alias _F, ali
 /*
 * SHA-{384,512} Compression Function
 */
-void compress(ref Secure_Vector!ulong digest,
+void compress(ref SecureVector!ulong digest,
               in ubyte* input, size_t blocks) pure
 {
     ulong A = digest[0], B = digest[1], C = digest[2],
@@ -178,22 +178,22 @@ void compress(ref Secure_Vector!ulong digest,
     
     foreach (size_t i; 0 .. blocks)
     {
-        ulong W00 = load_bigEndian!ulong(input,  0);
-        ulong W01 = load_bigEndian!ulong(input,  1);
-        ulong W02 = load_bigEndian!ulong(input,  2);
-        ulong W03 = load_bigEndian!ulong(input,  3);
-        ulong W04 = load_bigEndian!ulong(input,  4);
-        ulong W05 = load_bigEndian!ulong(input,  5);
-        ulong W06 = load_bigEndian!ulong(input,  6);
-        ulong W07 = load_bigEndian!ulong(input,  7);
-        ulong W08 = load_bigEndian!ulong(input,  8);
-        ulong W09 = load_bigEndian!ulong(input,  9);
-        ulong W10 = load_bigEndian!ulong(input, 10);
-        ulong W11 = load_bigEndian!ulong(input, 11);
-        ulong W12 = load_bigEndian!ulong(input, 12);
-        ulong W13 = load_bigEndian!ulong(input, 13);
-        ulong W14 = load_bigEndian!ulong(input, 14);
-        ulong W15 = load_bigEndian!ulong(input, 15);
+        ulong W00 = loadBigEndian!ulong(input,  0);
+        ulong W01 = loadBigEndian!ulong(input,  1);
+        ulong W02 = loadBigEndian!ulong(input,  2);
+        ulong W03 = loadBigEndian!ulong(input,  3);
+        ulong W04 = loadBigEndian!ulong(input,  4);
+        ulong W05 = loadBigEndian!ulong(input,  5);
+        ulong W06 = loadBigEndian!ulong(input,  6);
+        ulong W07 = loadBigEndian!ulong(input,  7);
+        ulong W08 = loadBigEndian!ulong(input,  8);
+        ulong W09 = loadBigEndian!ulong(input,  9);
+        ulong W10 = loadBigEndian!ulong(input, 10);
+        ulong W11 = loadBigEndian!ulong(input, 11);
+        ulong W12 = loadBigEndian!ulong(input, 12);
+        ulong W13 = loadBigEndian!ulong(input, 13);
+        ulong W14 = loadBigEndian!ulong(input, 14);
+        ulong W15 = loadBigEndian!ulong(input, 15);
         
         mixin(
             SHA2_64_F!(A, B, C, D, E, F, G, H, W00, W14, W09, W01, 0x428A2F98D728AE22)() ~

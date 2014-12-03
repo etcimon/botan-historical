@@ -22,14 +22,14 @@ import botan.utils.exceptn;
 /**
 * This class represents abstract signed EAC object
 */
-class EAC_Signed_Object
+class EACSignedObject
 {
 public:
     /**
     * Get the TBS (to-be-signed) data in this object.
     * @return DER encoded TBS data of this object
     */
-    abstract Vector!ubyte tbs_data() const;
+    abstract Vector!ubyte tbsData() const;
 
     /**
     * Get the signature of this object as a concatenation, i.e. if the
@@ -42,13 +42,13 @@ public:
      NOTE: this is here only because abstract signature objects have
      not yet been introduced
     */
-    abstract Vector!ubyte get_concat_sig() const;
+    abstract Vector!ubyte getConcatSig() const;
 
     /**
     * Get the signature algorithm identifier used to sign this object.
     * @result the signature algorithm identifier
     */
-    Algorithm_Identifier signature_algorithm() const
+    AlgorithmIdentifier signatureAlgorithm() const
     {
         return m_sig_algo;
     }
@@ -60,7 +60,7 @@ public:
     * @return true if the signature was created by the private key
     * associated with this public key
     */
-    bool check_signature(ref Public_Key pub_key, in Vector!ubyte sig) const
+    bool checkSignature(ref PublicKey pub_key, in Vector!ubyte sig) const
     {
         try
         {
@@ -76,8 +76,8 @@ public:
             
             Vector!ubyte to_sign = tbs_data();
             
-            PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
-            return verifier.verify_message(to_sign, sig);
+            PKVerifier verifier = PKVerifier(pub_key, padding, format);
+            return verifier.verifyMessage(to_sign, sig);
         }
         catch (Throwable)
         {
@@ -91,7 +91,7 @@ public:
     * @param pipe = the pipe to write the encoded object to
     * @param encoding = the encoding type to use
     */
-    abstract void encode(Pipe pipe, X509_Encoding encoding = PEM) const;
+    abstract void encode(Pipe pipe, X509Encoding encoding = PEM) const;
 
     /**
     * BER encode this object.
@@ -100,10 +100,10 @@ public:
     Vector!ubyte BER_encode() const
     {
         Pipe ber;
-        ber.start_msg();
+        ber.startMsg();
         encode(ber, RAW_BER);
-        ber.end_msg();
-        return unlock(ber.read_all());
+        ber.endMsg();
+        return unlock(ber.readAll());
     }
 
     /**
@@ -113,9 +113,9 @@ public:
     string PEM_encode() const
     {
         Pipe pem;
-        pem.start_msg();
+        pem.startMsg();
         PEM.encode(pem, PEM);
-        end_msg();
+        endMsg();
         return toString();
     }
 
@@ -125,29 +125,29 @@ protected:
     /*
     * Try to decode the actual information
     */
-    void do_decode()
+    void doDecode()
     {
         try {
-            force_decode();
+            forceDecode();
         }
-        catch(Decoding_Error e)
+        catch(DecodingError e)
         {
             const string what = e.msg;
-            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
+            throw new DecodingError(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
         }
-        catch(Invalid_Argument e)
+        catch(InvalidArgument e)
         {
             const string what = e.msg;
-            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
+            throw new DecodingError(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
         }
     }
 
     this() {}
 
-    Algorithm_Identifier m_sig_algo;
+    AlgorithmIdentifier m_sig_algo;
     Vector!ubyte m_tbs_bits;
     string m_PEM_label_pref;
     string[] m_PEM_labels_allowed;
 private:
-    abstract void force_decode();
+    abstract void forceDecode();
 }

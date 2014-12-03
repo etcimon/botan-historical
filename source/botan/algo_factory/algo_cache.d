@@ -1,5 +1,5 @@
 /*
-* An algorithm cache (used by Algorithm_Factory)
+* An algorithm cache (used by AlgorithmFactory)
 * (C) 2008-2009,2011 Jack Lloyd
 *
 * Distributed under the terms of the botan license.
@@ -15,7 +15,7 @@ import botan.utils.containers.hashmap;
 * @param prov_name = a provider name
 * @return weight for this provider
 */
-ubyte static_provider_weight(in string prov_name)
+ubyte staticProviderWeight(in string prov_name)
 {
     /*
     * Prefer asm over D, but prefer anything over OpenSSL or GNU MP; to use
@@ -36,9 +36,9 @@ ubyte static_provider_weight(in string prov_name)
 
 
 /**
-* Algorithm_Cache (used by Algorithm_Factory)
+* Algorithm_Cache (used by AlgorithmFactory)
 */
-struct Algorithm_Cache(T)
+struct AlgorithmCache(T)
 {
 public:
     /**
@@ -112,7 +112,7 @@ public:
     * @param algo_spec = names the algorithm
     * @param provider = names the preferred provider
     */
-    void set_preferred_provider(in string algo_spec,
+    void setPreferredProvider(in string algo_spec,
                                 in string provider)
     {        
         m_pref_providers[algo_spec] = provider;
@@ -124,7 +124,7 @@ public:
     * @param algo_name = names the algorithm
     * @return list of providers of this algorithm
     */
-    Vector!string providers_of(in string algo_name)
+    Vector!string providersOf(in string algo_name)
     {
         
         Vector!string providers;
@@ -138,7 +138,7 @@ public:
 
         foreach (provider, instance; m_algorithms[algo])
         {
-            providers.push_back(provider);
+            providers.pushBack(provider);
         }
                 
         return providers;
@@ -147,7 +147,7 @@ public:
     /**
     * Clear the cache
     */
-    void clear_cache()
+    void clearCache()
     {
         /*
         foreach (provider, algorithms; m_algorithms)
@@ -168,7 +168,7 @@ private:
     * Look for an algorithm implementation in the cache, also checking aliases
     * Assumes object lock is held
     */
-    HashMap!(string, T) find_algorithm(in string algo_spec)
+    HashMap!(string, T) findAlgorithm(in string algo_spec)
     {
         auto algo = m_algorithms.get(algo_spec);
         

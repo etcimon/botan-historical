@@ -27,7 +27,7 @@ import botan.utils.types;
 /**
 * PKCS #8 General Exception
 */
-final class PKCS8_Exception : Decoding_Error
+final class PKCS8Exception : Decoding_Error
 {
     this(in string error)
     {
@@ -40,17 +40,17 @@ final class PKCS8_Exception : Decoding_Error
 * @param key = the private key to encode
 * @return BER encoded key
 */
-Secure_Vector!ubyte BER_encode(in Private_Key key)
+SecureVector!ubyte BER_encode(in PrivateKey key)
 {
     __gshared immutable size_t PKCS8_VERSION = 0;
     
-    return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
+    return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
             .encode(PKCS8_VERSION)
-            .encode(key.pkcs8_algorithm_identifier())
-            .encode(key.pkcs8_private_key(), ASN1_Tag.OCTET_STRING)
-            .end_cons()
-            .get_contents();
+            .encode(key.pkcs8AlgorithmIdentifier())
+            .encode(key.pkcs8PrivateKey(), ASN1Tag.OCTET_STRING)
+            .endCons()
+            .getContents();
 }
 
 /**
@@ -58,7 +58,7 @@ Secure_Vector!ubyte BER_encode(in Private_Key key)
 * @param key = the key to encode
 * @return encoded key
 */
-string PEM_encode(in Private_Key key)
+string PEM_encode(in PrivateKey key)
 {
     return PEM.encode(BER_encode(key), "PRIVATE KEY");
 }
@@ -74,7 +74,7 @@ string PEM_encode(in Private_Key key)
             default will be chosen.
 * @return encrypted key in binary BER form
 */
-Vector!ubyte BER_encode(in Private_Key key,
+Vector!ubyte BER_encode(in PrivateKey key,
                         RandomNumberGenerator rng,
                         in string pass,
                         Duration dur = 300.msecs,
@@ -84,17 +84,17 @@ Vector!ubyte BER_encode(in Private_Key key,
     
     Unique!PBE pbe = get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
     
-    Algorithm_Identifier pbe_algid = Algorithm_Identifier(pbe.get_oid(), pbe.encode_params());
+    AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.get_oid(), pbe.encode_params());
     
     Pipe key_encrytor = Pipe(*pbe);
-    key_encrytor.process_msg(BER_encode(key));
+    key_encrytor.processMsg(BER_encode(key));
     
-    return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
+    return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
             .encode(pbe_algid)
-            .encode(key_encrytor.read_all(), ASN1_Tag.OCTET_STRING)
-            .end_cons()
-            .get_contents_unlocked();
+            .encode(key_encrytor.readAll(), ASN1Tag.OCTET_STRING)
+            .endCons()
+            .getContentsUnlocked();
 }
 
 /**
@@ -109,7 +109,7 @@ Vector!ubyte BER_encode(in Private_Key key,
             default will be chosen.
 * @return encrypted key in PEM form
 */
-string PEM_encode(in Private_Key key,
+string PEM_encode(in PrivateKey key,
                   RandomNumberGenerator rng,
                   in string pass,
                   Duration dur = 300.msecs,
@@ -128,16 +128,16 @@ string PEM_encode(in Private_Key key,
 * @param get_passphrase = a function that returns passphrases
 * @return loaded private key object
 */
-Private_Key load_key(DataSource source,
+PrivateKey loadKey(DataSource source,
                      RandomNumberGenerator rng,
-                     Single_Shot_Passphrase get_pass)
+                     SingleShotPassphrase get_pass)
 {
-    Algorithm_Identifier alg_id;
-    Secure_Vector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
+    AlgorithmIdentifier alg_id;
+    SecureVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
     
     const string alg_name = OIDS.lookup(alg_id.oid);
     if (alg_name == "" || alg_name == alg_id.oid.toString())
-        throw new PKCS8_Exception("Unknown algorithm OID: " ~
+        throw new PKCS8Exception("Unknown algorithm OID: " ~
                                   alg_id.oid.toString());
     
     return make_private_key(alg_id, pkcs8_key, rng);
@@ -150,7 +150,7 @@ Private_Key load_key(DataSource source,
 * string if the key is not encrypted
 * @return loaded private key object
 */
-Private_Key load_key(DataSource source,
+PrivateKey loadKey(DataSource source,
                      RandomNumberGenerator rng,
                      in string pass = "")
 {
@@ -164,11 +164,11 @@ Private_Key load_key(DataSource source,
 * @param get_passphrase = a function that returns passphrases
 * @return loaded private key object
 */
-Private_Key load_key(in string filename,
+PrivateKey loadKey(in string filename,
                      RandomNumberGenerator rng,
-                     Single_Shot_Passphrase get_pass)
+                     SingleShotPassphrase get_pass)
 {
-    auto source = scoped!DataSource_Stream(filename, true);
+    auto source = scoped!DataSourceStream(filename, true);
     return load_key(source, rng, get_pass);
 }
 
@@ -179,7 +179,7 @@ Private_Key load_key(in string filename,
 * string if the key is not encrypted
 * @return loaded private key object
 */
-Private_Key load_key(in string filename,
+PrivateKey loadKey(in string filename,
                      RandomNumberGenerator rng,
                      in string pass = "")
 {
@@ -193,26 +193,26 @@ Private_Key load_key(in string filename,
 * @param rng = the rng to use
 * @return new copy of the key
 */
-Private_Key copy_key(in Private_Key key,
+PrivateKey copyKey(in PrivateKey key,
                      RandomNumberGenerator rng)
 {
-    auto source = scoped!DataSource_Memory(PEM_encode(key));
+    auto source = scoped!DataSourceMemory(PEM_encode(key));
     return load_key(source, rng);
 }
 
 /*
 * Get info from an EncryptedPrivateKeyInfo
 */
-Secure_Vector!ubyte PKCS8_extract(DataSource source,
-                               Algorithm_Identifier pbe_alg_id)
+SecureVector!ubyte pKCS8Extract(DataSource source,
+                               AlgorithmIdentifier pbe_alg_id)
 {
-    Secure_Vector!ubyte key_data;
+    SecureVector!ubyte key_data;
     
-    BER_Decoder(source)
-            .start_cons(ASN1_Tag.SEQUENCE)
+    BERDecoder(source)
+            .startCons(ASN1Tag.SEQUENCE)
             .decode(pbe_alg_id)
-            .decode(key_data, ASN1_Tag.OCTET_STRING)
-            .verify_end();
+            .decode(key_data, ASN1Tag.OCTET_STRING)
+            .verifyEnd();
     
     return key_data;
 }
@@ -220,10 +220,10 @@ Secure_Vector!ubyte PKCS8_extract(DataSource source,
 /*
 * PEM decode and/or decrypt a private key
 */
-Secure_Vector!ubyte PKCS8_decode(DataSource source,    Single_Shot_Passphrase get_passphrase,    Algorithm_Identifier pk_alg_id)
+SecureVector!ubyte pKCS8Decode(DataSource source,    SingleShotPassphrase get_passphrase,    AlgorithmIdentifier pk_alg_id)
 {
-    Algorithm_Identifier pbe_alg_id;
-    Secure_Vector!ubyte key_data, key;
+    AlgorithmIdentifier pbe_alg_id;
+    SecureVector!ubyte key_data, key;
     bool is_encrypted = true;
     
     try {
@@ -237,19 +237,19 @@ Secure_Vector!ubyte PKCS8_decode(DataSource source,    Single_Shot_Passphrase ge
                 is_encrypted = false;
             else if (label == "ENCRYPTED PRIVATE KEY")
             {
-                auto key_source = scoped!DataSource_Memory(key_data);
+                auto key_source = scoped!DataSourceMemory(key_data);
                 key_data = PKCS8_extract(key_source, pbe_alg_id);
             }
             else
-                throw new PKCS8_Exception("Unknown PEM label " ~ label);
+                throw new PKCS8Exception("Unknown PEM label " ~ label);
         }
         
         if (key_data.empty)
-            throw new PKCS8_Exception("No key data found");
+            throw new PKCS8Exception("No key data found");
     }
-    catch(Decoding_Error e)
+    catch(DecodingError e)
     {
-        throw new Decoding_Error("PKCS #8 private key decoding failed: " ~ string(e.msg));
+        throw new DecodingError("PKCS #8 private key decoding failed: " ~ string(e.msg));
     }
     
     if (!is_encrypted)
@@ -273,33 +273,33 @@ Secure_Vector!ubyte PKCS8_decode(DataSource source,    Single_Shot_Passphrase ge
                 
                 Pipe decryptor = Pipe(get_pbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
                 
-                decryptor.process_msg(key_data);
-                key = decryptor.read_all();
+                decryptor.processMsg(key_data);
+                key = decryptor.readAll();
             }
             
-            BER_Decoder(key)
-                    .start_cons(ASN1_Tag.SEQUENCE)
+            BERDecoder(key)
+                    .startCons(ASN1Tag.SEQUENCE)
                     .decode_and_check!size_t(0, "Unknown PKCS #8 version number")
                     .decode(pk_alg_id)
-                    .decode(key, ASN1_Tag.OCTET_STRING)
-                    .discard_remaining()
-                    .end_cons();
+                    .decode(key, ASN1Tag.OCTET_STRING)
+                    .discardRemaining()
+                    .endCons();
             
             break;
         }
-        catch(Decoding_Error)
+        catch(DecodingError)
         {
             ++tries;
         }
     }
     
     if (key.empty)
-        throw new Decoding_Error("PKCS #8 private key decoding failed");
+        throw new DecodingError("PKCS #8 private key decoding failed");
     return key;
 }
 
 
-private struct Single_Shot_Passphrase
+private struct SingleShotPassphrase
 {
 public:
     this(in string pass) 

@@ -59,7 +59,7 @@ public:
 
     RC4 clone() const { return new RC4(m_SKIP); }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
         return Key_Length_Specification(1, 256);
     }
@@ -74,7 +74,7 @@ private:
     /*
     * RC4 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         m_state.resize(256);
         m_buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
@@ -128,8 +128,8 @@ private:
     const size_t m_SKIP;
 
     ubyte m_X, m_Y;
-    Secure_Vector!ubyte m_state;
+    SecureVector!ubyte m_state;
 
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     size_t m_position;
 }

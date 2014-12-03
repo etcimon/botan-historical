@@ -1,5 +1,5 @@
 /*
-* EAC1_1 CVC ADO
+* EAC11 CVC ADO
 * (C) 2008 Falko Strenzke
 *
 * Distributed under the terms of the botan license.
@@ -22,13 +22,13 @@ import botan.utils.types;
 // import fstream;
 // import string;
 
-alias EAC1_1_ADO = FreeListRef!EAC1_1_ADO_Impl;
+alias EAC11ADO = FreeListRef!EAC11ADOImpl;
 /**
 * This class represents a TR03110 (EAC) v1.1 CVC ADO request
 */
 
- // CRTP continuation from EAC1_1_obj
-final class EAC1_1_ADO_Impl : public EAC1_1_obj!EAC1_1_ADO
+ // CRTP continuation from EAC11obj
+final class EAC11ADOImpl : public EAC11obj!EAC11ADO
 {
 public:
     /**
@@ -37,9 +37,9 @@ public:
     */
     this(in string input)
     {
-        auto stream = scoped!DataSource_Stream(input, true);
+        auto stream = scoped!DataSourceStream(input, true);
         init(stream);
-        do_decode();
+        doDecode();
     }
 
     /**
@@ -49,7 +49,7 @@ public:
     this(DataSource input)
     {
         init(input);
-        do_decode();
+       doDecodee();
     }
 
     /**
@@ -58,25 +58,25 @@ public:
     * @param tbs_bits = the TBS data to sign
     * @param rng = a random number generator
     */
-    static Vector!ubyte make_signed(PK_Signer signer,
+    static Vector!ubyte makeSigned(PKSigner signer,
                                     in Vector!ubyte tbs_bits,
                                     RandomNumberGenerator rng)
     {
         const Vector!ubyte concat_sig = signer.sign_message(tbs_bits, rng);
         
-        return DER_Encoder()
-                .start_cons(ASN1_Tag(7), ASN1_Tag.APPLICATION)
-                .raw_bytes(tbs_bits)
-                .encode(concat_sig, ASN1_Tag.OCTET_STRING, ASN1_Tag(55), ASN1_Tag.APPLICATION)
-                .end_cons()
-                .get_contents_unlocked();
+        return DEREncoder()
+                .startCons(ASN1Tag(7), ASN1Tag.APPLICATION)
+                .rawBytes(tbs_bits)
+                .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                .endCons()
+                .getContentsUnlocked();
     }
 
     /**
     * Get the CAR of this CVC ADO request
     * @result the CAR of this CVC ADO request
     */
-    ASN1_Car get_car() const
+    ASN1Car getCar() const
     {
         return m_car;
     }
@@ -85,7 +85,7 @@ public:
     * Get the CVC request contained in this object.
     * @result the CVC request inside this CVC ADO request
     */    
-    EAC1_1_Req get_request() const
+    EAC11Req getRequest() const
     {
         return m_req;
     }
@@ -95,39 +95,39 @@ public:
     * @param output = the pipe to encode this object into
     * @param encoding = the encoding type to use, must be DER
     */
-    void encode(Pipe output, X509_Encoding encoding) const
+    void encode(Pipe output, X509Encoding encoding) const
     {
         if (encoding == PEM)
-            throw new Invalid_Argument("encode() cannot PEM encode an EAC object");
+            throw new InvalidArgument("encode() cannot PEM encode an EAC object");
         
         auto concat_sig = m_sig.get_concatenation();
         
-        output.write(DER_Encoder()
-                     .start_cons(ASN1_Tag(7), ASN1_Tag.APPLICATION)
-                     .raw_bytes(m_tbs_bits)
-                     .encode(concat_sig, ASN1_Tag.OCTET_STRING, ASN1_Tag(55), ASN1_Tag.APPLICATION)
-                     .end_cons()
-                     .get_contents());
+        output.write(DEREncoder()
+                     .startCons(ASN1Tag(7), ASN1Tag.APPLICATION)
+                     .rawBytes(m_tbs_bits)
+                     .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                     .endCons()
+                     .getContents());
     }
 
-    bool opEquals(in EAC1_1_ADO rhs) const
+    bool opEquals(in EAC11ADO rhs) const
     {
-        return (get_concat_sig() == rhs.get_concat_sig()
-                && tbs_data() == rhs.tbs_data()
-                && get_car() ==  rhs.get_car());
+        return (get_concat_sig() == rhs.getConcatSig()
+                && tbs_data() == rhs.tbsData()
+                && get_car() ==  rhs.getCar());
     }
 
     /**
     * Get the TBS data of this CVC ADO request.
     * @result the TBS data
     */
-    Vector!ubyte tbs_data() const
+    Vector!ubyte tbsData() const
     {
         return m_tbs_bits;
     }
 
 
-    bool opCmp(string op)(in EAC1_1_ADO_Impl rhs)
+    bool opCmp(string op)(in EAC11ADOImpl rhs)
         if (op == "!=")
     {
         return (!(this == rhs));
@@ -135,56 +135,56 @@ public:
 
     ~this() {}
 private:
-    ASN1_Car m_car;
-    EAC1_1_Req m_req;
+    ASN1Car m_car;
+    EAC11Req m_req;
 
-    void force_decode()
+    void forceDecode()
     {
         Vector!ubyte inner_cert;
-        BER_Decoder(m_tbs_bits)
-                .start_cons(ASN1_Tag(33))
-                .raw_bytes(inner_cert)
-                .end_cons()
+        BERDecoder(m_tbs_bits)
+                .startCons(ASN1Tag(33))
+                .rawBytes(inner_cert)
+                .endCons()
                 .decode(m_car)
-                .verify_end();
+                .verifyEnd();
         
-        Vector!ubyte req_bits = DER_Encoder()
-                .start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
-                .raw_bytes(inner_cert)
-                .end_cons()
-                .get_contents_unlocked();
+        Vector!ubyte req_bits = DEREncoder()
+                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                .rawBytes(inner_cert)
+                .endCons()
+                .getContentsUnlocked();
         
-        auto req_source = scoped!DataSource_Memory(req_bits);
-        m_req = EAC1_1_Req(req_source);
+        auto req_source = scoped!DataSourceMemory(req_bits);
+        m_req = EAC11Req(req_source);
         sig_algo = m_req.sig_algo;
     }
 
 
-    void decode_info(DataSource source,
+    void decodeInfo(DataSource source,
                      ref Vector!ubyte res_tbs_bits,
-                     ref ECDSA_Signature res_sig)
+                     ref ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         Vector!ubyte cert_inner_bits;
-        ASN1_Car car;
+        ASN1Car car;
         
-        BER_Decoder(source)
-                .start_cons(ASN1_Tag(7))
-                .start_cons(ASN1_Tag(33))
-                .raw_bytes(cert_inner_bits)
-                .end_cons()
+        BERDecoder(source)
+                .startCons(ASN1Tag(7))
+                .startCons(ASN1Tag(33))
+                .rawBytes(cert_inner_bits)
+                .endCons()
                 .decode(car)
-                .decode(concat_sig, ASN1_Tag.OCTET_STRING, ASN1_Tag(55), ASN1_Tag.APPLICATION)
-                .end_cons();
+                .decode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                .endCons();
         
-        Vector!ubyte enc_cert = DER_Encoder()
-                .start_cons(ASN1_Tag(33), ASN1_Tag.APPLICATION)
-                .raw_bytes(cert_inner_bits)
-                .end_cons()
-                .get_contents_unlocked();
+        Vector!ubyte enc_cert = DEREncoder()
+                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                .rawBytes(cert_inner_bits)
+                .endCons()
+                .getContentsUnlocked();
         
         res_tbs_bits = enc_cert;
-        res_tbs_bits ~= DER_Encoder().encode(car).get_contents_unlocked();
-        res_sig = decode_concatenation(concat_sig);
+        res_tbs_bits ~= DEREncoder().encode(car).getContentsUnlocked();
+        res_sig = decodeConcatenation(concat_sig);
     }
 }

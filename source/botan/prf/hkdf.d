@@ -32,9 +32,9 @@ public:
         m_prf = m_extractor.clone(); 
     }
 
-    void start_extract(in ubyte* salt, size_t salt_len)
+    void startExtract(in ubyte* salt, size_t salt_len)
     {
-        m_extractor.set_key(salt, salt_len);
+        m_extractor.setKey(salt, salt_len);
     }
 
     void extract(in ubyte* input, size_t input_len)
@@ -42,9 +42,9 @@ public:
         m_extractor.update(input, input_len);
     }
 
-    void finish_extract()
+    void finishExtract()
     {
-        m_prf.set_key(m_extractor.finished());
+        m_prf.setKey(m_extractor.finished());
     }
 
 
@@ -56,11 +56,11 @@ public:
                 in ubyte* info, size_t info_len)
     {
         if (output_len > m_prf.output_length * 255)
-            throw new Invalid_Argument("HKDF requested output too large");
+            throw new InvalidArgument("HKDF requested output too large");
         
         ubyte counter = 1;
         
-        Secure_Vector!ubyte T;
+        SecureVector!ubyte T;
         
         while (output_len)
         {
@@ -70,7 +70,7 @@ public:
             T = m_prf.finished();
             
             const size_t to_write = std.algorithm.min(T.length, output_len);
-            copy_mem(output.ptr, T.ptr, to_write);
+            copyMem(output.ptr, T.ptr, to_write);
             output += to_write;
             output_len -= to_write;
         }
@@ -101,40 +101,40 @@ import botan.libstate.libstate;
 
 private __gshared size_t total_tests;
 
-Secure_Vector!ubyte hkdf(string hkdf_algo,
-                         in Secure_Vector!ubyte ikm,
-                         in Secure_Vector!ubyte salt,
-                         in Secure_Vector!ubyte info,
+SecureVector!ubyte hkdf(string hkdf_algo,
+                         in SecureVector!ubyte ikm,
+                         in SecureVector!ubyte salt,
+                         in SecureVector!ubyte info,
                          size_t L)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     const string algo = hkdf_algo[5 .. hkdf_algo.length-6+5];
     
-    const MessageAuthenticationCode mac_proto = af.prototype_mac("HMAC(" ~ algo ~ ")");
+    const MessageAuthenticationCode mac_proto = af.prototypeMac("HMAC(" ~ algo ~ ")");
     
     if (!mac_proto)
-        throw new Invalid_Argument("Bad HKDF hash '" ~ algo ~ "'");
+        throw new InvalidArgument("Bad HKDF hash '" ~ algo ~ "'");
     
     HKDF hkdf = scoped!HKDF(mac_proto.clone(), mac_proto.clone());
     
-    hkdf.start_extract(&salt[0], salt.length);
+    hkdf.startExtract(&salt[0], salt.length);
     hkdf.extract(&ikm[0], ikm.length);
-    hkdf.finish_extract();
+    hkdf.finishExtract();
     
-    Secure_Vector!ubyte key = Secure_Vector!ubyte(L);
+    SecureVector!ubyte key = SecureVector!ubyte(L);
     hkdf.expand(&key[0], key.length, &info[0], info.length);
     return key;
 }
 
-size_t hkdf_test(string algo, string ikm, string salt, string info, string okm, size_t L)
+size_t hkdfTest(string algo, string ikm, string salt, string info, string okm, size_t L)
 {
     import core.atomic;
     atomicOp!"+="(total_tests, 1);
-    const string got = hex_encode(hkdf(algo, 
-                                       hex_decode_locked(ikm), 
-                                       hex_decode_locked(salt), 
-                                       hex_decode_locked(info),
+    const string got = hexEncode(hkdf(algo, 
+                                       hexDecodeLocked(ikm), 
+                                       hexDecodeLocked(salt), 
+                                       hexDecodeLocked(info),
                                        L));
     
     if (got != okm)
@@ -150,11 +150,11 @@ unittest
 {
     File vec = File("test_data/hkdf.vec", "r");
     
-    size_t fails = run_tests_bb(vec, "HKDF", "OKM", true,
+    size_t fails = runTestsBb(vec, "HKDF", "OKM", true,
                                 (string[string] m)
                                 {
-        return hkdf_test(m["HKDF"], m["IKM"], m["salt"], m["info"], m["OKM"], to!uint(m["L"]));
+        return hkdfTest(m["HKDF"], m["IKM"], m["salt"], m["info"], m["OKM"], to!uint(m["L"]));
     });
     
-    test_report("hkdf", total_tests, fails);
+    testReport("hkdf", total_tests, fails);
 }

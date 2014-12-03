@@ -42,12 +42,12 @@ string PGP_encode(in ubyte* input, size_t length, in string label,
     pgp_encoded ~= '\n';
     
     Pipe pipe = Pipe(new Fork(
-        new Base64_Encoder(true, PGP_WIDTH),
-        new Chain(new Hash_Filter(new CRC24), new Base64_Encoder)
+        new Base64Encoder(true, PGP_WIDTH),
+        new Chain(new Hash_Filter(new CRC24), new Base64Encoder)
         )
     );
     
-    pipe.process_msg(input, length);
+    pipe.processMsg(input, length);
     
     pgp_encoded ~= pipe.toString(0);
     pgp_encoded ~= '=' ~ pipe.toString(1) ~ '\n';
@@ -73,7 +73,7 @@ string PGP_encode(in ubyte* input, size_t length, in string type)
 * @param headers = is set to any headers
 * @return decoded output as raw binary
 */
-Secure_Vector!ubyte PGP_decode(DataSource source,
+SecureVector!ubyte PGP_decode(DataSource source,
                             ref string label,
                             ref HashMap!(string, string) headers)
 {
@@ -86,12 +86,12 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
     while (position != PGP_HEADER1.length)
     {
         ubyte b;
-        if (!source.read_byte(b))
-            throw new Decoding_Error("PGP: No PGP header found");
+        if (!source.readByte(b))
+            throw new DecodingError("PGP: No PGP header found");
         if (b == PGP_HEADER1[position])
             ++position;
         else if (position >= RANDOM_CHAR_LIMIT)
-            throw new Decoding_Error("PGP: Malformed PGP header");
+            throw new DecodingError("PGP: Malformed PGP header");
         else
             position = 0;
     }
@@ -100,12 +100,12 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
     while (position != PGP_HEADER2.length)
     {
         ubyte b;
-        if (!source.read_byte(b))
-            throw new Decoding_Error("PGP: No PGP header found");
+        if (!source.readByte(b))
+            throw new DecodingError("PGP: No PGP header found");
         if (b == PGP_HEADER2[position])
             ++position;
         else if (position)
-            throw new Decoding_Error("PGP: Malformed PGP header");
+            throw new DecodingError("PGP: Malformed PGP header");
         
         if (position == 0)
             label_buf ~= cast(char)(b);
@@ -119,8 +119,8 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
         ubyte b = 0;
         while (b != '\n')
         {
-            if (!source.read_byte(b))
-                throw new Decoding_Error("PGP: Bad armor header");
+            if (!source.readByte(b))
+                throw new DecodingError("PGP: Bad armor header");
             if (b != '\n')
                 this_header ~= cast(char)(b);
         }
@@ -135,7 +135,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
             import std.algorithm : countUntil;
             ptrdiff_t pos = this_header.countUntil(": ");
             if (pos == -1)
-                throw new Decoding_Error("OpenPGP: Bad headers");
+                throw new DecodingError("OpenPGP: Bad headers");
             
             string key = this_header[0 .. pos];
             string value = this_header[pos + 2 .. $];
@@ -143,14 +143,14 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
         }
     }
     
-    Pipe base64 = Pipe(new Base64_Decoder,
+    Pipe base64 = Pipe(new Base64Decoder,
                         new Fork(    null, 
                              new Chain(new Hash_Filter(new CRC24),
-                              new Base64_Encoder)
+                              new Base64Encoder)
                          )
                        );
 
-    base64.start_msg();
+    base64.startMsg();
     
     const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";
     position = 0;
@@ -159,19 +159,19 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
     while (position != PGP_TRAILER.length)
     {
         ubyte b;
-        if (!source.read_byte(b))
-            throw new Decoding_Error("PGP: No PGP trailer found");
+        if (!source.readByte(b))
+            throw new DecodingError("PGP: No PGP trailer found");
         if (b == PGP_TRAILER[position])
             ++position;
         else if (position)
-            throw new Decoding_Error("PGP: Malformed PGP trailer");
+            throw new DecodingError("PGP: Malformed PGP trailer");
         
         if (b == '=' && newline_seen)
         {
             while (b != '\n')
             {
-                if (!source.read_byte(b))
-                    throw new Decoding_Error("PGP: Bad CRC tail");
+                if (!source.readByte(b))
+                    throw new DecodingError("PGP: Bad CRC tail");
                 if (b != '\n')
                     crc ~= cast(char)(b);
             }
@@ -184,12 +184,12 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
             newline_seen = false;
         }
     }
-    base64.end_msg();
+    base64.endMsg();
     
     if (crc.data.length > 0 && crc.data != base64.toString(1))
-        throw new Decoding_Error("PGP: Corrupt CRC");
+        throw new DecodingError("PGP: Corrupt CRC");
     
-    return base64.read_all();
+    return base64.readAll();
 }
 
 /**
@@ -197,7 +197,7 @@ Secure_Vector!ubyte PGP_decode(DataSource source,
 * @param label = is set to the human-readable label
 * @return decoded output as raw binary
 */
-Secure_Vector!ubyte PGP_decode(DataSource source, ref string label)
+SecureVector!ubyte PGP_decode(DataSource source, ref string label)
 {
     HashMap!(string, string) ignored;
     return PGP_decode(source, label, ignored);

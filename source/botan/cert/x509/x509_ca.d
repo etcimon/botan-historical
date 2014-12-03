@@ -30,7 +30,7 @@ import std.algorithm;
 /**
 * This class represents X.509 Certificate Authorities (CAs).
 */
-struct X509_CA
+struct X509CA
 {
 public:
 
@@ -42,37 +42,37 @@ public:
     * @param not_after = the expiration time for the certificate
     * @return resulting certificate
     */
-    X509_Certificate sign_request(in PKCS10_Request req,
+    X509Certificate signRequest(in PKCS10Request req,
                                   RandomNumberGenerator rng,
-                                  in X509_Time not_before,
-                                  in X509_Time not_after)
+                                  in X509Time not_before,
+                                  in X509Time not_after)
     {
-        Key_Constraints constraints;
-        if (req.is_CA())
-            constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
+        KeyConstraints constraints;
+        if (req.isCA())
+            constraints = KeyConstraints(KEY_CERT_SIGN | CRL_SIGN);
         else
         {
-            Unique!Public_Key key = req.subject_public_key();
+            Unique!PublicKey key = req.subjectPublicKey();
             constraints = find_constraints(*key, req.constraints());
         }
 
-        X509_Extensions extensions;
+        X509Extensions extensions;
         
-        extensions.add(new Basic_Constraints(req.is_CA(), req.path_limit()), true);
+        extensions.add(new BasicConstraints(req.isCA(), req.pathLimit()), true);
         
-        extensions.add(new Key_Usage(constraints), true);
+        extensions.add(new KeyUsage(constraints), true);
         
-        extensions.add(new Authority_Key_ID(m_cert.subject_key_id()));
-        extensions.add(new Subject_Key_ID(req.raw_public_key()));
+        extensions.add(new AuthorityKeyID(m_cert.subjectKeyId()));
+        extensions.add(new SubjectKeyID(req.rawPublicKey()));
         
-        extensions.add(new Subject_Alternative_Name(req.subject_alt_name()));
+        extensions.add(new SubjectAlternativeName(req.subjectAltName()));
         
-        extensions.add(new Extended_Key_Usage(req.ex_constraints()));
+        extensions.add(new ExtendedKeyUsage(req.exConstraints()));
         
-        return make_cert(m_signer, rng, m_ca_sig_algo,
-                         req.raw_public_key(),
+        return makeCert(m_signer, rng, m_ca_sig_algo,
+                         req.rawPublicKey(),
                          not_before, not_after,
-                         m_cert.subject_dn(), req.subject_dn(),
+                         m_cert.subjectDn(), req.subjectDn(),
                          extensions);
     }
 
@@ -80,7 +80,7 @@ public:
     * Get the certificate of this CA.
     * @return CA certificate
     */
-    X509_Certificate ca_certificate() const
+    X509Certificate caCertificate() const
     {
         return m_cert;
     }
@@ -92,10 +92,10 @@ public:
     * as the offset from the current time
     * @return new CRL
     */
-    X509_CRL new_crl(RandomNumberGenerator rng, Duration next_update = 0.seconds) const
+    X509CRL newCRL(RandomNumberGenerator rng, Duration next_update = 0.seconds) const
     {
-        Vector!CRL_Entry empty;
-        return make_crl(empty, 1, next_update, rng);
+        Vector!CRLEntry empty;
+        return makeCRL(empty, 1, next_update, rng);
     }
 
     /**
@@ -106,16 +106,16 @@ public:
     * @param next_update = the time to set in next update in seconds
     * as the offset from the current time
     */
-    X509_CRL update_crl(in X509_CRL crl,
-                        in Vector!CRL_Entry new_revoked,
+    X509CRL updateCRL(in X509CRL crl,
+                        in Vector!CRLEntry new_revoked,
                         RandomNumberGenerator rng,
                         Duration next_update = 0.seconds) const
     {
 
-        Vector!CRL_Entry revoked = crl.get_revoked();
+        Vector!CRLEntry revoked = crl.get_revoked();
         new_revoked = revoked.dup;
         
-        return make_crl(revoked, crl.crl_number() + 1, next_update, rng);
+        return makeCRL(revoked, crl.crlNumber() + 1, next_update, rng);
     }
 
 
@@ -132,24 +132,24 @@ public:
     * @param extensions = an optional list of certificate extensions
     * @returns newly minted certificate
     */
-    static X509_Certificate make_cert(ref PK_Signer signer,
+    static X509Certificate makeCert(ref PKSigner signer,
                                       RandomNumberGenerator rng,
-                                      in Algorithm_Identifier sig_algo,
+                                      in AlgorithmIdentifier sig_algo,
                                       in Vector!ubyte pub_key,
-                                      in X509_Time not_before,
-                                      in X509_Time not_after,
-                                      in X509_DN issuer_dn,
-                                      in X509_DN subject_dn,
-                                      in X509_Extensions extensions)
+                                      in X509Time not_before,
+                                      in X509Time not_after,
+                                      in X509DN issuer_dn,
+                                      in X509DN subject_dn,
+                                      in X509Extensions extensions)
     {
         __gshared immutable size_t X509_CERT_VERSION = 3;
         __gshared immutable size_t SERIAL_BITS = 128;
         
         BigInt serial_no = BigInt(rng, SERIAL_BITS);
         
-        const Vector!ubyte cert = X509_Object.make_signed(
+        const Vector!ubyte cert = X509Object.makeSigned(
             signer, rng, sig_algo,
-            DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
+            DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .start_explicit(0)
             .encode(X509_CERT_VERSION-1)
             .end_explicit()
@@ -159,23 +159,23 @@ public:
             .encode(sig_algo)
             .encode(issuer_dn)
             
-            .start_cons(ASN1_Tag.SEQUENCE)
+            .startCons(ASN1Tag.SEQUENCE)
             .encode(not_before)
             .encode(not_after)
-            .end_cons()
+            .endCons()
             
             .encode(subject_dn)
-            .raw_bytes(pub_key)
+            .rawBytes(pub_key)
             
             .start_explicit(3)
-            .start_cons(ASN1_Tag.SEQUENCE)
+            .startCons(ASN1Tag.SEQUENCE)
             .encode(extensions)
-            .end_cons()
+            .endCons()
             .end_explicit()
-            .end_cons()
-            .get_contents());
+            .endCons()
+            .getContents());
         
-        return X509_Certificate(cert);
+        return X509Certificate(cert);
     }
 
     /**
@@ -184,15 +184,15 @@ public:
     * @param key = the private key of the CA
     * @param hash_fn = name of a hash function to use for signing
     */
-    this(in X509_Certificate c,
-         in Private_Key key,
+    this(in X509Certificate c,
+         in PrivateKey key,
          in string hash_fn)
     {
         m_cert = c;
-        if (!m_cert.is_CA_cert())
-            throw new Invalid_Argument("X509_CA: This certificate is not for a CA");
+        if (!m_cert.isCACert())
+            throw new InvalidArgument("X509_CA: This certificate is not for a CA");
         
-        m_signer = choose_sig_format(key, hash_fn, m_ca_sig_algo);
+        m_signer = chooseSigFormat(key, hash_fn, m_ca_sig_algo);
     }
 
     /*
@@ -205,7 +205,7 @@ private:
     /*
     * Create a CRL
     */
-    X509_CRL make_crl(in Vector!CRL_Entry revoked,
+    X509CRL makeCRL(in Vector!CRLEntry revoked,
                       uint crl_number, Duration next_update,
                       RandomNumberGenerator rng) const
     {
@@ -218,39 +218,39 @@ private:
         auto current_time = Clock.currTime();
         auto expire_time = current_time + next_update;
         
-        X509_Extensions extensions;
-        extensions.add(new Authority_Key_ID(m_cert.subject_key_id()));
-        extensions.add(new CRL_Number(crl_number));
+        X509Extensions extensions;
+        extensions.add(new AuthorityKeyID(m_cert.subjectKeyId()));
+        extensions.add(new CRLNumber(crl_number));
         
-        const Vector!ubyte crl = x509_obj.make_signed(
+        const Vector!ubyte crl = x509_obj.makeSigned(
             m_signer, rng, m_ca_sig_algo,
-            DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
+            DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .encode(X509_CRL_VERSION-1)
             .encode(m_ca_sig_algo)
-            .encode(m_cert.issuer_dn())
-            .encode(X509_Time(current_time))
-            .encode(X509_Time(expire_time))
+            .encode(m_cert.issuerDn())
+            .encode(X509Time(current_time))
+            .encode(X509Time(expire_time))
             .encode_if (revoked.length > 0,
-                    DER_Encoder()
-                    .start_cons(ASN1_Tag.SEQUENCE)
+                    DEREncoder()
+                    .startCons(ASN1Tag.SEQUENCE)
                     .encode_list(revoked)
-                    .end_cons()
+                    .endCons()
                     )
             .start_explicit(0)
-            .start_cons(ASN1_Tag.SEQUENCE)
+            .startCons(ASN1Tag.SEQUENCE)
             .encode(extensions)
-            .end_cons()
+            .endCons()
             .end_explicit()
-            .end_cons()
-            .get_contents());
+            .endCons()
+            .getContents());
         
-        return X509_CRL(crl);
+        return X509CRL(crl);
     }    
 
 
-    Algorithm_Identifier m_ca_sig_algo;
-    X509_Certificate m_cert;
-    PK_Signer m_signer;
+    AlgorithmIdentifier m_ca_sig_algo;
+    X509Certificate m_cert;
+    PKSigner m_signer;
 }
 
 /**
@@ -259,14 +259,14 @@ private:
 * @param key = will be the key to choose a padding scheme for
 * @param hash_fn = is the desired hash function
 * @param alg_id = will be set to the chosen scheme
-* @return A PK_Signer object for generating signatures
+* @return A PKSigner object for generating signatures
 */
 /*
 * Choose a signing format for the key
 */
-PK_Signer choose_sig_format(in Private_Key key,
+PKSigner chooseSigFormat(in PrivateKey key,
                             in string hash_fn,
-                            Algorithm_Identifier sig_algo)
+                            AlgorithmIdentifier sig_algo)
 {
     import std.array : Appender;
     Appender!string padding;
@@ -275,10 +275,10 @@ PK_Signer choose_sig_format(in Private_Key key,
     
     const HashFunction proto_hash = retrieve_hash(hash_fn);
     if (!proto_hash)
-        throw new Algorithm_Not_Found(hash_fn);
+        throw new AlgorithmNotFound(hash_fn);
     
-    if (key.max_input_bits() < proto_hash.output_length*8)
-        throw new Invalid_Argument("Key is too small for chosen hash function");
+    if (key.maxInputBits() < proto_hash.output_length*8)
+        throw new InvalidArgument("Key is too small for chosen hash function");
     
     if (algo_name == "RSA")
         padding ~= "EMSA3";
@@ -287,14 +287,14 @@ PK_Signer choose_sig_format(in Private_Key key,
     else if (algo_name == "ECDSA")
         padding ~= "EMSA1_BSI";
     else
-        throw new Invalid_Argument("Unknown X.509 signing key type: " ~ algo_name);
+        throw new InvalidArgument("Unknown X.509 signing key type: " ~ algo_name);
     
     Signature_Format format = (key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
 
     padding ~= padding.data ~ '(' ~ proto_hash.name ~ ')';
     
     sig_algo.oid = OIDS.lookup(algo_name ~ "/" ~ padding.data);
-    sig_algo.parameters = key.algorithm_identifier().parameters;
+    sig_algo.parameters = key.algorithmIdentifier().parameters;
     
-    return PK_Signer(key, padding.data, format);
+    return PKSigner(key, padding.data, format);
 }

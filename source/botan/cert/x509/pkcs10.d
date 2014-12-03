@@ -27,22 +27,22 @@ import botan.codec.pem;
 import botan.utils.types;
 import botan.utils.exceptn;
 
-alias PKCS10_Request = FreeListRef!PKCS10_Request_Impl;
+alias PKCS10Request = FreeListRef!PKCS10RequestImpl;
 
 /**
 * PKCS #10 Certificate Request.
 */
-final class PKCS10_Request_Impl : X509_Object
+final class PKCS10RequestImpl : X509Object
 {
 public:
     /**
     * Get the subject public key.
     * @return subject public key
     */
-    Public_Key subject_public_key() const
+    PublicKey subjectPublicKey() const
     {
-        DataSource_Memory source = m_info.get1("X509.Certificate.public_key");
-        return x509_key.load_key(source);
+        DataSourceMemory source = m_info.get1("X509.Certificate.public_key");
+        return x509_key.loadKey(source);
     }
 
 
@@ -50,17 +50,17 @@ public:
     * Get the raw DER encoded public key.
     * @return the public key of the requestor
     */
-    Vector!ubyte raw_public_key() const
+    Vector!ubyte rawPublicKey() const
     {
-        auto source = scoped!DataSource_Memory(m_info.get1("X509.Certificate.public_key"));
-        return unlock(PEM.decode_check_label(source, "PUBLIC KEY"));
+        auto source = scoped!DataSourceMemory(m_info.get1("X509.Certificate.public_key"));
+        return unlock(PEM.decodeCheckLabel(source, "PUBLIC KEY"));
     }
 
     /**
     * Get the subject DN.
     * @return the name of the requestor
     */
-    X509_DN subject_dn() const
+    X509DN subjectDn() const
     {
         return create_dn(m_info);
     }
@@ -69,7 +69,7 @@ public:
     * Get the subject alternative name.
     * @return the alternative names of the requestor
     */
-    Alternative_Name subject_alt_name() const
+    AlternativeName subjectAltName() const
     {
         return create_alt_name(m_info);
     }
@@ -79,22 +79,22 @@ public:
     * PKCS#10 object.
     * @return the key constraints (if any)
     */
-    Key_Constraints constraints() const
+    KeyConstraints constraints() const
     {
-        return Key_Constraints(m_info.get1_uint("X509v3.KeyUsage", Key_Constraints.NO_CONSTRAINTS));
+        return KeyConstraints(m_info.get1Uint("X509v3.KeyUsage", KeyConstraints.NO_CONSTRAINTS));
     }
 
     /**
     * Get the extendend key constraints (if any).
     * @return the extendend key constraints (if any)
     */
-    Vector!OID ex_constraints() const
+    Vector!OID exConstraints() const
     {
         Vector!string oids = m_info.get("X509v3.ExtendedKeyUsage");
         
         Vector!OID result;
         foreach (oid; oids)
-            result.push_back(OID(oid));
+            result.pushBack(OID(oid));
         return result;
     }
 
@@ -102,9 +102,9 @@ public:
     * Find out whether this is a CA request.
     * @result true if it is a CA request, false otherwise.
     */
-    bool is_CA() const
+    bool isCA() const
     {
-        return (m_info.get1_uint("X509v3.BasicConstraints.is_ca") > 0);
+        return (m_info.get1Uint("X509v3.BasicConstraints.is_ca") > 0);
     }
 
 
@@ -113,16 +113,16 @@ public:
     * in the BasicConstraints extension.
     * @return the desired path limit (if any)
     */
-    uint path_limit() const
+    uint pathLimit() const
     {
-        return m_info.get1_uint("X509v3.BasicConstraints.path_constraint", 0);
+        return m_info.get1Uint("X509v3.BasicConstraints.path_constraint", 0);
     }
 
     /**
     * Get the challenge password for this request
     * @return challenge password for this request
     */
-    string challenge_password() const
+    string challengePassword() const
     {
         return m_info.get1("PKCS9.ChallengePassword");
     }
@@ -134,7 +134,7 @@ public:
     this(DataSource source)
     {
         super(source, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
-        do_decode();
+        doDecode();
     }
 
     /**
@@ -145,7 +145,7 @@ public:
     this(in string input)
     {
         super(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
-        do_decode();
+        doDecode();
     }
 
     /**
@@ -155,84 +155,84 @@ public:
     this(in Vector!ubyte input)
     {
         super(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
-        do_decode();
+        doDecode();
     }
 private:
     /*
     * Deocde the CertificateRequestInfo
     */
-    void force_decode()
+    void forceDecode()
     {
-        BER_Decoder cert_req_info = BER_Decoder(tbs_bits);
+        BERDecoder cert_req_info = BERDecoder(tbs_bits);
         
         size_t _version;
         cert_req_info.decode(_version);
         if (_version != 0)
-            throw new Decoding_Error("Unknown version code in PKCS #10 request: " ~ to!string(_version));
+            throw new DecodingError("Unknown version code in PKCS #10 request: " ~ to!string(_version));
         
-        X509_DN dn_subject;
+        X509DN dn_subject;
         cert_req_info.decode(dn_subject);
         
         m_info.add(dn_subject.contents());
         
-        BER_Object public_key = cert_req_info.get_next_object();
-        if (public_key.type_tag != ASN1_Tag.SEQUENCE || public_key.class_tag != ASN1_Tag.CONSTRUCTED)
-            throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for public key",
+        BER_Object public_key = cert_req_info.getNextObject();
+        if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
+            throw new BERBadTag("PKCS10Request: Unexpected tag for public key",
                                   public_key.type_tag, public_key.class_tag);
         
         m_info.add("X509.Certificate.public_key", 
                    PEM.encode(put_in_sequence(unlock(public_key.value)), "PUBLIC KEY"));
         
-        BER_Object attr_bits = cert_req_info.get_next_object();
+        BER_Object attr_bits = cert_req_info.getNextObject();
         
         if (attr_bits.type_tag == 0 &&
-            attr_bits.class_tag == ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))
+            attr_bits.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
-            auto attributes = BER_Decoder(attr_bits.value);
-            while (attributes.more_items())
+            auto attributes = BERDecoder(attr_bits.value);
+            while (attributes.moreItems())
             {
                 Attribute attr;
                 attributes.decode(attr);
                 handle_attribute(attr);
             }
-            attributes.verify_end();
+            attributes.verifyEnd();
         }
-        else if (attr_bits.type_tag != ASN1_Tag.NO_OBJECT)
-            throw new BER_Bad_Tag("PKCS10_Request: Unexpected tag for attributes",
+        else if (attr_bits.type_tag != ASN1Tag.NO_OBJECT)
+            throw new BERBadTag("PKCS10Request: Unexpected tag for attributes",
                                   attr_bits.type_tag, attr_bits.class_tag);
         
-        cert_req_info.verify_end();
+        cert_req_info.verifyEnd();
         
-        if (!this.check_signature(subject_public_key()))
-            throw new Decoding_Error("PKCS #10 request: Bad signature detected");
+        if (!this.checkSignature(subjectPublicKey()))
+            throw new DecodingError("PKCS #10 request: Bad signature detected");
     }
 
     /*
     * Handle attributes in a PKCS #10 request
     */
-    void handle_attribute(in Attribute attr)
+    void handleAttribute(in Attribute attr)
     {
-        auto value = BER_Decoder(attr.parameters);
+        auto value = BERDecoder(attr.parameters);
         
         if (attr.oid == OIDS.lookup("PKCS9.EmailAddress"))
         {
-            ASN1_String email;
+            ASN1String email;
             value.decode(email);
             m_info.add("RFC822", email.value());
         }
         else if (attr.oid == OIDS.lookup("PKCS9.ChallengePassword"))
         {
-            ASN1_String challenge_password;
+            ASN1String challenge_password;
             value.decode(challenge_password);
             m_info.add("PKCS9.ChallengePassword", challenge_password.value());
         }
         else if (attr.oid == OIDS.lookup("PKCS9.ExtensionRequest"))
         {
-            auto extensions = scoped!X509_Extensions;
-            value.decode(extensions).verify_end();
+            auto extensions = scoped!X509Extensions;
+            value.decode(extensions).verifyEnd();
             
             Data_Store issuer_info;
-            extensions.contents_to(m_info, issuer_info);
+            extensions.contentsTo(m_info, issuer_info);
         }
     }
 

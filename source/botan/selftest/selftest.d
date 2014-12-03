@@ -28,7 +28,7 @@ import botan.algo_base.symkey;
 /*
 * Perform Self Tests
 */
-void confirm_startup_self_tests(Algorithm_Factory af)
+void confirmStartupSelfTests(AlgorithmFactory af)
 {
     cipher_kat(af, "DES",
                "0123456789ABCDEF", "1234567890ABCDEF",
@@ -110,13 +110,13 @@ void confirm_startup_self_tests(Algorithm_Factory af)
 * @param af = an algorithm factory
 * @returns false if a failure occured, otherwise true
 */
-bool passes_self_tests(Algorithm_Factory af)
+bool passesSelfTests(AlgorithmFactory af)
 {
     try
     {
         confirm_startup_self_tests(af);
     }
-    catch(Self_Test_Failure)
+    catch(SelfTestFailure)
     {
         return false;
     }
@@ -134,11 +134,11 @@ bool passes_self_tests(Algorithm_Factory af)
 * @returns map from provider name to test result for that provider
 */
 HashMap!(string, bool)
-    algorithm_kat(in SCAN_Name algo_name,
+    algorithmKat(in SCANName algo_name,
                   in HashMap!(string, string) vars,
-                  Algorithm_Factory af)
+                  AlgorithmFactory af)
 {
-    const auto result = algorithm_kat_detailed(algo_name, vars, af);
+    const auto result = algorithmKatDetailed(algo_name, vars, af);
     
     HashMap!(string, bool) pass_or_fail;
     
@@ -157,9 +157,9 @@ HashMap!(string, bool)
 * @returns map from provider name to test result for that provider
 */
 HashMap!(string, string)
-    algorithm_kat_detailed(in SCAN_Name algo_name,
+    algorithmKatDetailed(in SCANName algo_name,
                            in HashMap!(string, string) vars,
-                           Algorithm_Factory af)
+                           AlgorithmFactory af)
 {
     const string algo = algo_name.algo_name_and_args();
     
@@ -180,34 +180,34 @@ HashMap!(string, string)
         const string provider = providers[i];
         
         if (const HashFunction proto =
-            af.prototype_hash_function(algo, provider))
+            af.prototypeHashFunction(algo, provider))
         {
             Filter filt = new Hash_Filter(proto.clone());
-            all_results[provider] = test_filter_kat(filt, input, output);
+            all_results[provider] = testFilterKat(filt, input, output);
         }
         else if (const MessageAuthenticationCode proto =
-                 af.prototype_mac(algo, provider))
+                 af.prototypeMac(algo, provider))
         {
-            Keyed_Filter filt = new MAC_Filter(proto.clone(), key);
-            all_results[provider] = test_filter_kat(filt, input, output);
+            KeyedFilter filt = new MACFilter(proto.clone(), key);
+            all_results[provider] = testFilterKat(filt, input, output);
         }
         else if (const StreamCipher proto =
-                 af.prototype_stream_cipher(algo, provider))
+                 af.prototypeStreamCipher(algo, provider))
         {
-            Keyed_Filter filt = new StreamCipher_Filter(proto.clone());
-            filt.set_key(key);
-            filt.set_iv(iv);
+            KeyedFilter filt = new StreamCipher_Filter(proto.clone());
+            filt.setKey(key);
+            filt.setIv(iv);
             
-            all_results[provider] = test_filter_kat(filt, input, output);
+            all_results[provider] = testFilterKat(filt, input, output);
         }
         else if (const BlockCipher proto =
-                 af.prototype_block_cipher(algo, provider))
+                 af.prototypeBlockCipher(algo, provider))
         {
-            Keyed_Filter enc = get_cipher_mode(proto, ENCRYPTION,
+            KeyedFilter enc = getCipherMode(proto, ENCRYPTION,
                                                algo_name.cipher_mode(),
                                                algo_name.cipher_mode_pad());
             
-            Keyed_Filter dec = get_cipher_mode(proto, DECRYPTION,
+            KeyedFilter dec = getCipherMode(proto, DECRYPTION,
                                                algo_name.cipher_mode(),
                                                algo_name.cipher_mode_pad());
             
@@ -218,35 +218,35 @@ HashMap!(string, string)
                 continue;
             }
             
-            enc.set_key(key);
+            enc.setKey(key);
             
-            if (enc.valid_iv_length(iv.length))
-                enc.set_iv(iv);
-            else if (!enc.valid_iv_length(0))
-                throw new Invalid_IV_Length(algo, iv.length);
+            if (enc.validIvLength(iv.length))
+                enc.setIv(iv);
+            else if (!enc.validIvLength(0))
+                throw new InvalidIVLength(algo, iv.length);
             
-            dec.set_key(key);
+            dec.setKey(key);
             
-            if (dec.valid_iv_length(iv.length))
-                dec.set_iv(iv);
-            else if (!dec.valid_iv_length(0))
-                throw new Invalid_IV_Length(algo, iv.length);
+            if (dec.validIvLength(iv.length))
+                dec.setIv(iv);
+            else if (!dec.validIvLength(0))
+                throw new InvalidIVLength(algo, iv.length);
             
-            const Vector!ubyte ad = hex_decode(vars.get("ad"));
+            const Vector!ubyte ad = hexDecode(vars.get("ad"));
             
             if (!ad.empty)
             {
-                if (AEAD_Filter enc_aead = cast(AEAD_Filter)(enc))
+                if (AEADFilter enc_aead = cast(AEADFilter)(enc))
                 {
-                    enc_aead.set_associated_data(ad.ptr, ad.length);
+                    enc_aead.setAssociatedData(ad.ptr, ad.length);
                     
-                    if (AEAD_Filter dec_aead = cast(AEAD_Filter)(dec))
-                        dec_aead.set_associated_data(ad.ptr, ad.length);
+                    if (AEADFilter dec_aead = cast(AEADFilter)(dec))
+                        dec_aead.setAssociatedData(ad.ptr, ad.length);
                 }
             }
             
-            all_results[provider ~ " (encrypt)"] = test_filter_kat(enc, input, output);
-            all_results[provider ~ " (decrypt)"] = test_filter_kat(dec, output, input);
+            all_results[provider ~ " (encrypt)"] = testFilterKat(enc, input, output);
+            all_results[provider ~ " (decrypt)"] = testFilterKat(dec, output, input);
         }
     }
     
@@ -255,26 +255,26 @@ HashMap!(string, string)
 
 private:
 
-void verify_results(in string algo, in HashMap!(string, string) results)
+void verifyResults(in string algo, in HashMap!(string, string) results)
 {
     foreach (key, value; results)
     {
         if (value != "passed")
-            throw new Self_Test_Failure(algo ~ " self-test failed (" ~ value ~ ")" ~
+            throw new SelfTestFailure(algo ~ " self-test failed (" ~ value ~ ")" ~
                                         " with provider " ~ key);
     }
 }
 
-void hash_test(Algorithm_Factory af, in string name, in string input, in string output)
+void hashTest(AlgorithmFactory af, in string name, in string input, in string output)
 {
     HashMap!(string, string) vars;
     vars["input"] = input;
     vars["output"] = output;
     
-    verify_results(name, algorithm_kat_detailed(name, vars, af));
+    verify_results(name, algorithmKatDetailed(name, vars, af));
 }
 
-void mac_test(Algorithm_Factory af,
+void macTest(AlgorithmFactory af,
               in string name,
               in string input,
               in string output,
@@ -285,13 +285,13 @@ void mac_test(Algorithm_Factory af,
     vars["output"] = output;
     vars["key"] = key;
     
-    verify_results(name, algorithm_kat_detailed(name, vars, af));
+    verify_results(name, algorithmKatDetailed(name, vars, af));
 }
 
 /*
 * Perform a KAT for a cipher
 */
-void cipher_kat(Algorithm_Factory af,
+void cipherKat(AlgorithmFactory af,
                 in string algo,
                 in string key_str,
                 in string iv_str,
@@ -313,34 +313,34 @@ void cipher_kat(Algorithm_Factory af,
     HashMap!(string, bool) results;
     
     vars["output"] = ecb_out;
-    verify_results(algo ~ "/ECB", algorithm_kat_detailed(algo ~ "/ECB", vars, af));
+    verify_results(algo ~ "/ECB", algorithmKatDetailed(algo ~ "/ECB", vars, af));
     
     vars["output"] = cbc_out;
     verify_results(algo ~ "/CBC",
-                   algorithm_kat_detailed(algo ~ "/CBC/NoPadding", vars, af));
+                   algorithmKatDetailed(algo ~ "/CBC/NoPadding", vars, af));
     
     vars["output"] = cfb_out;
-    verify_results(algo ~ "/CFB", algorithm_kat_detailed(algo ~ "/CFB", vars, af));
+    verify_results(algo ~ "/CFB", algorithmKatDetailed(algo ~ "/CFB", vars, af));
     
     vars["output"] = ofb_out;
-    verify_results(algo ~ "/OFB", algorithm_kat_detailed(algo ~ "/OFB", vars, af));
+    verify_results(algo ~ "/OFB", algorithmKatDetailed(algo ~ "/OFB", vars, af));
     
     vars["output"] = ctr_out;
-    verify_results(algo ~ "/CTR", algorithm_kat_detailed(algo ~ "/CTR-BE", vars, af));
+    verify_results(algo ~ "/CTR", algorithmKatDetailed(algo ~ "/CTR-BE", vars, af));
 }
 
 
 /*
 * Perform a Known Answer Test
 */
-string test_filter_kat(Filter filter,
+string testFilterKat(Filter filter,
                        in string input,
                        in string expected)
 {
     try
     {
-        Pipe pipe = Pipe(new Hex_Decoder, filter, new Hex_Encoder);
-        pipe.process_msg(input);
+        Pipe pipe = Pipe(new HexDecoder, filter, new HexEncoder);
+        pipe.processMsg(input);
         
         const string got = pipe.toString();
         

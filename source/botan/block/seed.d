@@ -16,20 +16,20 @@ import botan.utils.loadstor;
 /**
 * SEED, a Korean block cipher
 */
-final class SEED : Block_Cipher_Fixed_Params!(16, 16)
+final class SEED : BlockCipherFixedParams!(16, 16)
 {
 public:
     /*
     * SEED Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_bigEndian!uint(input, 0);
-            uint B1 = load_bigEndian!uint(input, 1);
-            uint B2 = load_bigEndian!uint(input, 2);
-            uint B3 = load_bigEndian!uint(input, 3);
+            uint B0 = loadBigEndian!uint(input, 0);
+            uint B1 = loadBigEndian!uint(input, 1);
+            uint B2 = loadBigEndian!uint(input, 2);
+            uint B3 = loadBigEndian!uint(input, 3);
             
             G_FUNC G;
             
@@ -52,7 +52,7 @@ public:
                 B2 ^= T0 + T1;
             }
             
-            store_bigEndian(output, B2, B3, B0, B1);
+            storeBigEndian(output, B2, B3, B0, B1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -61,14 +61,14 @@ public:
     /*
     * SEED Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_bigEndian!uint(input, 0);
-            uint B1 = load_bigEndian!uint(input, 1);
-            uint B2 = load_bigEndian!uint(input, 2);
-            uint B3 = load_bigEndian!uint(input, 3);
+            uint B0 = loadBigEndian!uint(input, 0);
+            uint B1 = loadBigEndian!uint(input, 1);
+            uint B2 = loadBigEndian!uint(input, 2);
+            uint B3 = loadBigEndian!uint(input, 3);
             
             G_FUNC G;
             
@@ -91,7 +91,7 @@ public:
                 B2 ^= T0 + T1;
             }
             
-            store_bigEndian(output, B2, B3, B0, B1);
+            storeBigEndian(output, B2, B3, B0, B1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -105,12 +105,12 @@ public:
 
     override @property string name() const { return "SEED"; }
     BlockCipher clone() const { return new SEED; }
-private:
+protected:
 
     /*
     * SEED Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         __gshared immutable uint[16] RC = [
             0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,
@@ -119,10 +119,10 @@ private:
             0x779B99E3, 0xEF3733C6, 0xDE6E678D, 0xBCDCCF1B
         ];
         
-        Secure_Vector!uint WK = Secure_Vector!uint(4);
+        SecureVector!uint WK = SecureVector!uint(4);
         
         foreach (size_t i; 0 .. 4)
-            WK[i] = load_bigEndian!uint(key, i);
+            WK[i] = loadBigEndian!uint(key, i);
         
         G_FUNC G;
         
@@ -146,7 +146,7 @@ private:
         }
     }
 
-    struct G_FUNC
+    struct GFUNC
     {
     public:
         /*
@@ -340,5 +340,5 @@ private:
 
     }
 
-    Secure_Vector!uint m_K;
+    SecureVector!uint m_K;
 }

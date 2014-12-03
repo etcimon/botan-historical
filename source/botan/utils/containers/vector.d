@@ -8,7 +8,7 @@ import botan.utils.memory.memory;
 /**
 * Existence check for values
 */
-bool value_exists(T)(in Vector!T vec, in T val)
+bool valueExists(T)(in Vector!T vec, in T val)
 {
     for (size_t i = 0; i != vec.length; ++i)
         if (vec[i] == val)
@@ -17,7 +17,7 @@ bool value_exists(T)(in Vector!T vec, in T val)
 }
 
 /// An array that uses a custom allocator.
-struct Vector(T, ALLOCATOR = Vulnerable_Allocator)
+struct Vector(T, ALLOCATOR = VulnerableAllocator)
 {
     // Payload cannot be copied
     private struct Payload
@@ -141,7 +141,7 @@ struct Vector(T, ALLOCATOR = Vulnerable_Allocator)
         }
         
         // Insert one item
-        size_t push_back(Stuff)(Stuff stuff)
+        size_t pushBack(Stuff)(Stuff stuff)
             if (isImplicitlyConvertible!(Stuff, T))
         {
             if (_capacity == length)
@@ -155,7 +155,7 @@ struct Vector(T, ALLOCATOR = Vulnerable_Allocator)
         }
         
         /// Insert a range of items
-        size_t push_back(Stuff)(Stuff stuff)
+        size_t pushBack(Stuff)(Stuff stuff)
             if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
         {
             static if (hasLength!Stuff)
@@ -616,10 +616,10 @@ struct Vector(T, ALLOCATOR = Vulnerable_Allocator)
         if (isImplicitlyConvertible!(Stuff, T) ||
             isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
     {
-        return _data.push_back(stuff);
+        return _data.pushBack(stuff);
     }
 
-    size_t push_back(U)(Vector!(U, ALLOCATOR) rhs)
+    size_t pushBack(U)(Vector!(U, ALLOCATOR) rhs)
     {
         return push_back(rhs[]);
     }

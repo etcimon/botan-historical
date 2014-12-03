@@ -40,7 +40,7 @@ public:
     * Exception if you use an invalid message as an argument to
     * read, remaining, etc
     */
-    class Invalid_Message_Number : Invalid_Argument
+    class InvalidMessageNumber : Invalid_Argument
     {
         /**
         * @param where = the error occured
@@ -70,15 +70,15 @@ public:
     void write(in ubyte* input, size_t length)
     {
         if (!m_inside_msg)
-            throw new Invalid_State("Cannot write to a Pipe while it is not processing");
+            throw new InvalidState("Cannot write to a Pipe while it is not processing");
         m_pipe_to.write(input, length);
     }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the Secure_Vector containing the data to write
+    * @param input = the SecureVector containing the data to write
     */
-    void write(in Secure_Vector!ubyte input)
+    void write(in SecureVector!ubyte input)
     { write(input.ptr, input.length); }
 
     /**
@@ -112,8 +112,8 @@ public:
     */
     void write(DataSource source)
     {
-        Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
-        while (!source.end_of_data())
+        SecureVector!ubyte buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        while (!source.endOfData())
         {
             size_t got = source.read(buffer.ptr, buffer.length);
             write(buffer.ptr, got);
@@ -139,53 +139,53 @@ public:
     }
 
     /**
-    * Perform start_msg(), write() and end_msg() sequentially.
+    * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the ubyte array containing the data to write
     * @param length = the length of the ubyte array to write
     */
-    void process_msg(in ubyte* input, size_t length)
+    void processMsg(in ubyte* input, size_t length)
     {
-        start_msg();
+        startMsg();
         write(input, length);
-        end_msg();
+        endMsg();
     }
 
     /**
-    * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input = the Secure_Vector containing the data to write
+    * Perform startMsg(), write() and endMsg() sequentially.
+    * @param input = the SecureVector containing the data to write
     */
-    void process_msg(in Secure_Vector!ubyte input)
+    void processMsg(in SecureVector!ubyte input)
     {
         process_msg(input.ptr, input.length);
     }
 
     /**
-    * Perform start_msg(), write() and end_msg() sequentially.
-    * @param input = the Secure_Vector containing the data to write
+    * Perform startMsg(), write() and endMsg() sequentially.
+    * @param input = the SecureVector containing the data to write
     */
-    void process_msg(in Vector!ubyte input)
+    void processMsg(in Vector!ubyte input)
     {
         process_msg(input.ptr, input.length);
     }
 
     /**
-    * Perform start_msg(), write() and end_msg() sequentially.
+    * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the string containing the data to write
     */
-    void process_msg(in string input)
+    void processMsg(in string input)
     {
         process_msg(cast(const ubyte*)(input.data()), input.length);
     }
 
     /**
-    * Perform start_msg(), write() and end_msg() sequentially.
+    * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the DataSource providing the data to write
     */
-    void process_msg(DataSource input)
+    void processMsg(DataSource input)
     {
-        start_msg();
+        startMsg();
         write(input);
-        end_msg();
+        endMsg();
     }
 
     /**
@@ -257,12 +257,12 @@ public:
     /**
     * Read the full contents of the pipe.
     * @param msg = the number identifying the message to read from
-    * @return Secure_Vector holding the contents of the pipe
+    * @return SecureVector holding the contents of the pipe
     */
-    Secure_Vector!ubyte read_all(message_id msg = DEFAULT_MESSAGE)
+    SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
     {
         msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-        Secure_Vector!ubyte buffer = Secure_Vector!ubyte(remaining(msg));
+        SecureVector!ubyte buffer = SecureVector!ubyte(remaining(msg));
         size_t got = read(buffer.ptr, buffer.length, msg);
         buffer.resize(got);
         return buffer;
@@ -277,7 +277,7 @@ public:
     string toString(message_id msg = DEFAULT_MESSAGE)
     {
         msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
-        Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
+        SecureVector!ubyte buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         Appender!string str;
         str.reserve(remaining(msg));
         
@@ -338,7 +338,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    size_t read_byte(ref ubyte output)
+    size_t readByte(ref ubyte output)
     {
         return read(output.ptr[0..1]);
     }
@@ -350,7 +350,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    size_t peek_byte(ref ubyte output) const
+    size_t peekByte(ref ubyte output) const
     {
         return peek(output.ptr[0..1]);
     }
@@ -361,7 +361,7 @@ public:
     * @param N = the number of bytes to discard
     * @return number of bytes actually discarded
     */
-    size_t discard_next(size_t n)
+    size_t discardNext(size_t n)
     {
         size_t discarded = 0;
         ubyte dummy;
@@ -373,33 +373,33 @@ public:
     /**
     * @return the number of bytes read from the default message.
     */
-    size_t get_bytes_read() const
+    size_t getBytesRead() const
     {
-        return m_outputs.get_bytes_read(DEFAULT_MESSAGE);
+        return m_outputs.getBytesRead(DEFAULT_MESSAGE);
     }
 
     /**
     * @return the number of bytes read from the specified message.
     */
-    size_t get_bytes_read(message_id msg = DEFAULT_MESSAGE) const
+    size_t getBytesRead(message_id msg = DEFAULT_MESSAGE) const
     {
-        return m_outputs.get_bytes_read(msg);
+        return m_outputs.getBytesRead(msg);
     }
 
     /**
     * @return currently set default message
     */
-    size_t default_msg() const { return m_default_read; }
+    size_t defaultMsg() const { return m_default_read; }
 
     /**
     * Set the default message
     * @param msg = the number identifying the message which is going to
     * be the new default message
     */
-    void set_default_msg(message_id msg)
+    void setDefaultMsg(message_id msg)
     {
         if (msg >= message_count())
-            throw new Invalid_Argument("Pipe::set_default_msg: msg number is too high");
+            throw new InvalidArgument("Pipe::set_default_msg: msg number is too high");
         m_default_read = msg;
     }
 
@@ -407,9 +407,9 @@ public:
     * Get the number of messages the are in this pipe.
     * @return number of messages the are in this pipe
     */
-    message_id message_count() const
+    message_id messageCount() const
     {
-        return m_outputs.message_count();
+        return m_outputs.messageCount();
     }
 
 
@@ -417,36 +417,36 @@ public:
     * Test whether this pipe has any data that can be read from.
     * @return true if there is more data to read, false otherwise
     */
-    bool end_of_data() const
+    bool endOfData() const
     {
         return (remaining() == 0);
     }
 
     /**
     * Start a new message in the pipe. A potential other message in this pipe
-    * must be closed with end_msg() before this function may be called.
+    * must be closed with endMsg() before this function may be called.
     */
-    void start_msg()
+    void startMsg()
     {
         if (m_inside_msg)
-            throw new Invalid_State("Pipe::start_msg: Message was already started");
+            throw new InvalidState("Pipe::startMsg: Message was already started");
         if (m_pipe_to == null)
-            m_pipe_to = new Null_Filter;
+            m_pipe_to = new NullFilter;
         find_endpoints(m_pipe_to);
-        m_pipe_to.new_msg();
+        m_pipe_to.newMsg();
         m_inside_msg = true;
     }
 
     /**
     * End the current message.
     */
-    void end_msg()
+    void endMsg()
     {
         if (!m_inside_msg)
-            throw new Invalid_State("Pipe::end_msg: Message was already ended");
-        m_pipe_to.finish_msg();
+            throw new InvalidState("Pipe::endMsg: Message was already ended");
+        m_pipe_to.finishMsg();
         clear_endpoints(m_pipe_to);
-        if (cast(Null_Filter)(m_pipe_to))
+        if (cast(NullFilter)(m_pipe_to))
         {
             delete m_pipe_to;
             m_pipe_to = null;
@@ -463,13 +463,13 @@ public:
     void prepend(Filter filter)
     {
         if (m_inside_msg)
-            throw new Invalid_State("Cannot prepend to a Pipe while it is processing");
+            throw new InvalidState("Cannot prepend to a Pipe while it is processing");
         if (!filter)
             return;
-        if (cast(Secure_Queue)(filter))
-            throw new Invalid_Argument("Pipe::prepend: Secure_Queue cannot be used");
+        if (cast(SecureQueue)(filter))
+            throw new InvalidArgument("Pipe::prepend: Secure_Queue cannot be used");
         if (filter.owned)
-            throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
+            throw new InvalidArgument("Filters cannot be shared among multiple Pipes");
         
         filter.owned = true;
         
@@ -484,13 +484,13 @@ public:
     void append(Filter filter)
     {
         if (m_inside_msg)
-            throw new Invalid_State("Cannot append to a Pipe while it is processing");
+            throw new InvalidState("Cannot append to a Pipe while it is processing");
         if (!filter)
             return;
-        if (cast(Secure_Queue)(filter))
-            throw new Invalid_Argument("Pipe::append: Secure_Queue cannot be used");
+        if (cast(SecureQueue)(filter))
+            throw new InvalidArgument("Pipe::append: Secure_Queue cannot be used");
         if (filter.owned)
-            throw new Invalid_Argument("Filters cannot be shared among multiple Pipes");
+            throw new InvalidArgument("Filters cannot be shared among multiple Pipes");
         
         filter.owned = true;
         
@@ -505,13 +505,13 @@ public:
     void pop()
     {
         if (m_inside_msg)
-            throw new Invalid_State("Cannot pop off a Pipe while it is processing");
+            throw new InvalidState("Cannot pop off a Pipe while it is processing");
         
         if (!m_pipe_to)
             return;
         
-        if (m_pipe_to.total_ports() > 1)
-            throw new Invalid_State("Cannot pop off a Filter with multiple ports");
+        if (m_pipe_to.totalPorts() > 1)
+            throw new InvalidState("Cannot pop off a Filter with multiple ports");
         
         Filter f = m_pipe_to;
         size_t owns = f.owns();
@@ -584,9 +584,9 @@ private:
     */
     void destruct(Filter to_kill)
     {
-        if (!to_kill || cast(Secure_Queue)(to_kill))
+        if (!to_kill || cast(SecureQueue)(to_kill))
             return;
-        for (size_t j = 0; j != to_kill.total_ports(); ++j)
+        for (size_t j = 0; j != to_kill.totalPorts(); ++j)
             destruct(to_kill.next[j]);
         delete to_kill;
     }
@@ -594,10 +594,10 @@ private:
     /*
     * Find the endpoints of the Pipe
     */
-    void find_endpoints(Filter f)
+    void findEndpoints(Filter f)
     {
-        for (size_t j = 0; j != f.total_ports(); ++j)
-            if (f.next[j] && !cast(Secure_Queue)(f.next[j]))
+        for (size_t j = 0; j != f.totalPorts(); ++j)
+            if (f.next[j] && !cast(SecureQueue)(f.next[j]))
                 find_endpoints(f.next[j]);
             else
         {
@@ -610,12 +610,12 @@ private:
     /*
     * Remove the SecureQueues attached to the Filter
     */
-    void clear_endpoints(Filter f)
+    void clearEndpoints(Filter f)
     {
         if (!f) return;
-        for (size_t j = 0; j != f.total_ports(); ++j)
+        for (size_t j = 0; j != f.totalPorts(); ++j)
         {
-            if (f.next[j] && cast(Secure_Queue)(f.next[j]))
+            if (f.next[j] && cast(SecureQueue)(f.next[j]))
                 f.next[j] = null;
             clear_endpoints(f.next[j]);
         }
@@ -624,7 +624,7 @@ private:
     /*
     * Look up the canonical ID for a queue
     */
-    message_id get_message_no(in string func_name,
+    message_id getMessageNo(in string func_name,
                               message_id msg) const
     {
         if (msg == DEFAULT_MESSAGE)
@@ -633,7 +633,7 @@ private:
             msg = message_count() - 1;
         
         if (msg >= message_count())
-            throw new Invalid_Message_Number(func_name, msg);
+            throw new InvalidMessageNumber(func_name, msg);
         
         return msg;
     }
@@ -647,7 +647,7 @@ private:
 /*
 * A Filter that does nothing
 */
-final class Null_Filter : Filter
+final class NullFilter : Filter
 {
 public:
     void write(in ubyte* input, size_t length)

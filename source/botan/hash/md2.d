@@ -18,8 +18,8 @@ class MD2 : HashFunction
 {
 public:
     @property string name() const { return "MD2"; }
-    @property size_t output_length() const { return 16; }
-    override @property size_t hash_block_size() const { return 16; }
+    @property size_t outputLength() const { return 16; }
+    override @property size_t hashBlockSize() const { return 16; }
     HashFunction clone() const { return new MD2; }
 
     /**
@@ -44,22 +44,22 @@ private:
     /**
     * Update the hash
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         buffer_insert(m_buffer, m_position, input, length);
         
-        if (m_position + length >= hash_block_size)
+        if (m_position + length >= hashBlockSize)
         {
             hash(m_buffer.ptr);
-            input += (hash_block_size - m_position);
-            length -= (hash_block_size - m_position);
-            while (length >= hash_block_size)
+            input += (hashBlockSize - m_position);
+            length -= (hashBlockSize - m_position);
+            while (length >= hashBlockSize)
             {
                 hash(input);
-                input += hash_block_size;
-                length -= hash_block_size;
+                input += hashBlockSize;
+                length -= hashBlockSize;
             }
-            copy_mem(m_buffer.ptr, input, length);
+            copyMem(m_buffer.ptr, input, length);
             m_position = 0;
         }
         m_position += length;
@@ -93,8 +93,8 @@ private:
             0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33,
             0x9F, 0x11, 0x83, 0x14 ];
         
-        buffer_insert(m_X, 16, input, hash_block_size);
-        xor_buf(&m_X[32], m_X.ptr, &m_X[16], hash_block_size);
+        buffer_insert(m_X, 16, input, hashBlockSize);
+        xor_buf(&m_X[32], m_X.ptr, &m_X[16], hashBlockSize);
         ubyte T = 0;
         
         foreach (size_t i; 0 .. 18)
@@ -111,24 +111,24 @@ private:
         }
         
         T = m_checksum[15];
-        foreach (size_t i; 0 .. hash_block_size)
+        foreach (size_t i; 0 .. hashBlockSize)
             T = m_checksum[i] ^= SBOX[input[i] ^ T];
     }
 
     /**
     * Finalize a MD2 Hash
     */
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
-        foreach (size_t i; m_position .. hash_block_size)
-            m_buffer[i] = cast(ubyte)(hash_block_size - m_position);
+        foreach (size_t i; m_position .. hashBlockSize)
+            m_buffer[i] = cast(ubyte)(hashBlockSize - m_position);
         
         hash(m_buffer.ptr);
         hash(m_checksum.ptr);
-        copy_mem(output, m_X.ptr, output_length);
+        copyMem(output, m_X.ptr, output_length);
         clear();
     }
 
-    Secure_Vector!ubyte m_X, m_checksum, m_buffer;
+    SecureVector!ubyte m_X, m_checksum, m_buffer;
     size_t m_position;
 }

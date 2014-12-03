@@ -23,7 +23,7 @@ import botan.utils.rounding;
 /**
 * Entropy source reading from kernel devices like /dev/random
 */
-final class Device_EntropySource : EntropySource
+final class DeviceEntropySource : EntropySource
 {
 public:
     @property string name() const { return "RNG Device Reader"; }
@@ -31,7 +31,7 @@ public:
     /**
     * Gather entropy from a RNG device
     */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         if (m_devices.empty)
             return;
@@ -57,7 +57,7 @@ public:
         if (select(max_fd + 1, &read_set, null, null, &timeout) < 0)
             return;
         
-        Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+        SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
 
         foreach (device; m_devices[])
         {
@@ -87,7 +87,7 @@ public:
             fd_type fd = open(fsname.toStringz, flags);
             
             if (fd >= 0 && fd < FD_SETSIZE)
-                m_devices.push_back(fd);
+                m_devices.pushBack(fd);
             else if (fd >= 0)
                 close(fd);
         }

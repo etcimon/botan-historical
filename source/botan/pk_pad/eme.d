@@ -19,7 +19,7 @@ public:
     * @param keybits = the size of the key in bits
     * @return upper bound of input in bytes
     */
-    abstract size_t maximum_input_size(size_t keybits) const;
+    abstract size_t maximumInputSize(size_t keybits) const;
 
     /**
     * Encode an input
@@ -29,7 +29,7 @@ public:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-    final Secure_Vector!ubyte encode(in ubyte* msg, size_t msg_len,
+    final SecureVector!ubyte encode(in ubyte* msg, size_t msg_len,
                             size_t key_bits,
                             RandomNumberGenerator rng) const
     {
@@ -43,7 +43,7 @@ public:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-    final Secure_Vector!ubyte encode(in Secure_Vector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
+    final SecureVector!ubyte encode(in SecureVector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
     {
         return pad(msg.ptr, msg.length, key_bits, rng);
     }
@@ -55,7 +55,7 @@ public:
     * @param key_bits = length of the key in bits
     * @return plaintext
     */
-    final Secure_Vector!ubyte decode(in ubyte* msg, size_t msg_len, size_t key_bits) const
+    final SecureVector!ubyte decode(in ubyte* msg, size_t msg_len, size_t key_bits) const
     {
         return unpad(msg, msg_len, key_bits);
     }
@@ -67,7 +67,7 @@ public:
     * @param key_bits = length of the key in bits
     * @return plaintext
     */
-    final Secure_Vector!ubyte decode(in Secure_Vector!ubyte msg, size_t key_bits) const
+    final SecureVector!ubyte decode(in SecureVector!ubyte msg, size_t key_bits) const
     {
         return unpad(msg.ptr, msg.length, key_bits);
     }
@@ -82,7 +82,7 @@ private:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-    abstract Secure_Vector!ubyte pad(in ubyte* input,
+    abstract SecureVector!ubyte pad(in ubyte* input,
                                      size_t in_length,
                                      size_t key_length,
                                      RandomNumberGenerator rng) const;
@@ -94,5 +94,5 @@ private:
     * @param key_length = length of the key in bits
     * @return plaintext
     */
-    abstract Secure_Vector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const;
+    abstract SecureVector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const;
 }

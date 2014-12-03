@@ -18,7 +18,7 @@ import wincrypt.h;
 /**
 * Win32 CAPI Entropy Source
 */
-final class Win32_CAPI_EntropySource : EntropySource
+final class Win32CAPIEntropySource : EntropySource
 {
 public:
     @property string name() const { return "Win32 CryptoGenRandom"; }
@@ -26,9 +26,9 @@ public:
     /*
     * Gather Entropy from Win32 CAPI
     */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
-        Secure_Vector!ubyte io_buffer = accum.get_io_buffer(32);
+        SecureVector!ubyte io_buffer = accum.getIoBuffer(32);
         
         foreach (prov_type; m_prov_types[])
         {
@@ -54,21 +54,21 @@ public:
         
         foreach (capi_prov; capi_provs)
         {
-            if (capi_prov == "RSA_FULL")  m_prov_types.push_back(PROV_RSA_FULL);
-            if (capi_prov == "INTEL_SEC") m_prov_types.push_back(PROV_INTEL_SEC);
-            if (capi_prov == "FORTEZZA")  m_prov_types.push_back(PROV_FORTEZZA);
-            if (capi_prov == "RNG")         m_prov_types.push_back(PROV_RNG);
+            if (capi_prov == "RSA_FULL")  m_prov_types.pushBack(PROV_RSA_FULL);
+            if (capi_prov == "INTEL_SEC") m_prov_types.pushBack(PROV_INTEL_SEC);
+            if (capi_prov == "FORTEZZA")  m_prov_types.pushBack(PROV_FORTEZZA);
+            if (capi_prov == "RNG")         m_prov_types.pushBack(PROV_RNG);
         }
         
         if (m_prov_types.length == 0)
-            m_prov_types.push_back(PROV_RSA_FULL);
+            m_prov_types.pushBack(PROV_RSA_FULL);
     }
 
     private:
         Vector!( ulong ) m_prov_types;
 }
 
-final class CSP_Handle
+final class CSPHandle
 {
 public:
     this(ulong capi_provider)
@@ -87,16 +87,16 @@ public:
             CryptReleaseContext(m_handle, 0);
     }
     
-    size_t gen_random(ubyte* output) const
+    size_t genRandom(ubyte* output) const
     {
         if (is_valid() && CryptGenRandom(m_handle, cast(DWORD)(output.length), output))
             return output.length;
         return 0;
     }
     
-    bool is_valid() const { return m_valid; }
+    bool isValid() const { return m_valid; }
     
-    HCRYPTPROV get_handle() const { return m_handle; }
+    HCRYPTPROV getHandle() const { return m_handle; }
 private:
     HCRYPTPROV m_handle;
     bool m_valid;

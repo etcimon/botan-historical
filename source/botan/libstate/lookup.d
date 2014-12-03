@@ -21,10 +21,10 @@ import botan.libstate.libstate;
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-BlockCipher retrieve_block_cipher(in string algo_spec) const
+BlockCipher retrieveBlockCipher(in string algo_spec) const
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
-    return af.prototype_block_cipher(algo_spec);
+    AlgorithmFactory af = globalState().algorithmFactory();
+    return af.prototypeBlockCipher(algo_spec);
 }
 
 /**
@@ -33,10 +33,10 @@ BlockCipher retrieve_block_cipher(in string algo_spec) const
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-StreamCipher retrieve_stream_cipher(in string algo_spec) const
+StreamCipher retrieveStreamCipher(in string algo_spec) const
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
-    return af.prototype_stream_cipher(algo_spec);
+    AlgorithmFactory af = globalState().algorithmFactory();
+    return af.prototypeStreamCipher(algo_spec);
 }
 
 /**
@@ -45,10 +45,10 @@ StreamCipher retrieve_stream_cipher(in string algo_spec) const
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-HashFunction retrieve_hash(in string algo_spec) const
+HashFunction retrieveHash(in string algo_spec) const
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
-    return af.prototype_hash_function(algo_spec);
+    AlgorithmFactory af = globalState().algorithmFactory();
+    return af.prototypeHashFunction(algo_spec);
 }
 
 /**
@@ -57,10 +57,10 @@ HashFunction retrieve_hash(in string algo_spec) const
 * @return constant prototype object (use clone to create usable object),
              library retains ownership
 */
-MessageAuthenticationCode retrieve_mac(in string algo_spec) const
+MessageAuthenticationCode retrieveMac(in string algo_spec) const
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
-    return af.prototype_mac(algo_spec);
+    AlgorithmFactory af = globalState().algorithmFactory();
+    return af.prototypeMac(algo_spec);
 }
 
 /**
@@ -68,14 +68,14 @@ MessageAuthenticationCode retrieve_mac(in string algo_spec) const
 * @param algo_spec = the name of the desired PBKDF algorithm
 * @return pointer to newly allocated object of that type
 */
-PBKDF get_pbkdf(in string algo_spec)
+PBKDF getPbkdf(in string algo_spec)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
-    if (PBKDF pbkdf = af.make_pbkdf(algo_spec))
+    if (PBKDF pbkdf = af.makePbkdf(algo_spec))
         return pbkdf;
     
-    throw new Algorithm_Not_Found(algo_spec);
+    throw new AlgorithmNotFound(algo_spec);
 }
 
 /**
@@ -89,13 +89,13 @@ PBKDF get_pbkdf(in string algo_spec)
 * or decrypting filter
 * @return pointer to newly allocated encryption or decryption filter
 */
-Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, in InitializationVector iv, Cipher_Dir direction)
+KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, in InitializationVector iv, CipherDir direction)
 {
-    Keyed_Filter cipher = get_cipher(algo_spec, direction);
-    cipher.set_key(key);
+    KeyedFilter cipher = getCipher(algo_spec, direction);
+    cipher.setKey(key);
     
     if (iv.length)
-        cipher.set_iv(iv);
+        cipher.setIv(iv);
     
     return cipher;
 }
@@ -109,9 +109,9 @@ Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, in Initializat
 * or decrypting filter
 * @return pointer to the encryption or decryption filter
 */
-Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, Cipher_Dir direction)
+KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, CipherDir direction)
 {
-    return get_cipher(algo_spec, key, InitializationVector(), direction);
+    return getCipher(algo_spec, key, InitializationVector(), direction);
 }
 
 
@@ -124,16 +124,16 @@ Keyed_Filter get_cipher(in string algo_spec, in SymmetricKey key, Cipher_Dir dir
 * decrypting filter
 * @return pointer to the encryption or decryption filter
 */
-Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir direction)
+KeyedFilter getCipher(in string algo_spec, CipherDir direction)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
 
     foreach (Engine engine; af.engines) {
-        if (Keyed_Filter algo = engine.get_cipher(algo_spec, direction, af))
+        if (KeyedFilter algo = engine.getCipher(algo_spec, direction, af))
             return algo;
     }
     
-    throw new Algorithm_Not_Found(algo_spec);
+    throw new AlgorithmNotFound(algo_spec);
 }
 
 /**
@@ -141,17 +141,17 @@ Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir direction)
 * @param algo_spec = the name of the algorithm to check for
 * @return true if the algorithm exists, false otherwise
 */
-bool have_algorithm(in string name)
+bool haveAlgorithm(in string name)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
-    if (af.prototype_block_cipher(name))
+    if (af.prototypeBlockCipher(name))
         return true;
-    if (af.prototype_stream_cipher(name))
+    if (af.prototypeStreamCipher(name))
         return true;
-    if (af.prototype_hash_function(name))
+    if (af.prototypeHashFunction(name))
         return true;
-    if (af.prototype_mac(name))
+    if (af.prototypeMac(name))
         return true;
     return false;
 }

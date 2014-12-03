@@ -21,56 +21,56 @@ import std.datetime;
 import botan.utils.types;
 import std.array : Appender;
 
-alias ASN1_Car = FreeListRef!ASN1_Car_Impl;
-alias ASN1_Chr = FreeListRef!ASN1_Chr_Impl;
-alias ASN1_Cex = FreeListRef!ASN1_Cex_Impl;
-alias ASN1_Ced = FreeListRef!ASN1_Ced_Impl;
+alias ASN1Car = FreeListRef!ASN1CarImpl;
+alias ASN1Chr = FreeListRef!ASN1ChrImpl;
+alias ASN1Cex = FreeListRef!ASN1CexImpl;
+alias ASN1Ced = FreeListRef!ASN1CedImpl;
 
 /**
 * This class represents CVC EAC Time objects.
 * It only models year, month and day. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class EAC_Time : ASN1_Object
+class EACTime : ASN1Object
 {
 public:
 
     /*
-    * DER encode a EAC_Time
+    * DER encode a EACTime
     */
-    void encode_into(DER_Encoder der) const
+    void encodeInto(DEREncoder der) const
     {
-        der.add_object(m_tag, ASN1_Tag.APPLICATION,
-                       encoded_eac_time());
+        der.addObject(m_tag, ASN1Tag.APPLICATION,
+                       encodedEacTime());
     }
 
     /*
-    * Decode a BER encoded EAC_Time
+    * Decode a BER encoded EACTime
     */
-    void decode_from(BER_Decoder source)
+    void decodeFrom(BERDecoder source)
     {
-        BER_Object obj = source.get_next_object();
+        BER_Object obj = source.getNextObject();
         
         if (obj.type_tag != this.m_tag)
-            throw new BER_Decoding_Error("Tag mismatch when decoding");
+            throw new BERDecodingError("Tag mismatch when decoding");
         
         if (obj.value.length != 6)
         {
-            throw new Decoding_Error("EAC_Time decoding failed");
+            throw new DecodingError("EACTime decoding failed");
         }
         
         try
         {
-            uint tmp_year = dec_two_digit(obj.value[0], obj.value[1]);
-            uint tmp_mon = dec_two_digit(obj.value[2], obj.value[3]);
-            uint tmp_day = dec_two_digit(obj.value[4], obj.value[5]);
+            uint tmp_year = decTwoDigit(obj.value[0], obj.value[1]);
+            uint tmp_mon = decTwoDigit(obj.value[2], obj.value[3]);
+            uint tmp_day = decTwoDigit(obj.value[4], obj.value[5]);
             year = tmp_year + 2000;
             month = tmp_mon;
             day = tmp_day;
         }
-        catch (Invalid_Argument)
+        catch (InvalidArgument)
         {
-            throw new Decoding_Error("EAC_Time decoding failed");
+            throw new DecodingError("EACTime decoding failed");
         }
         
     }
@@ -81,8 +81,8 @@ public:
     */
     string toString() const
     {
-        if (time_is_set() == false)
-            throw new Invalid_State("toString: No time set");
+        if (timeIsSet() == false)
+            throw new InvalidState("toString: No time set");
         
         return to!string(year * 10000 + month * 100 + day);
     }
@@ -92,10 +92,10 @@ public:
     * Get a this objects value as a readable formatted string.
     * @return date string
     */
-    string readable_string() const
+    string readableString() const
     {
-        if (time_is_set() == false)
-            throw new Invalid_State("readable_string: No time set");
+        if (timeIsSet() == false)
+            throw new InvalidState("readableString: No time set");
         
         import std.string : format;
         return format("%04d/%02d/%02d", year, month, day);
@@ -105,21 +105,21 @@ public:
     * Find out whether this object's values have been set.
     * @return true if this object's internal values are set
     */
-    bool time_is_set() const
+    bool timeIsSet() const
     {
         return (year != 0);
     }
 
     /**
-    * Compare this to another EAC_Time object.
+    * Compare this to another EACTime object.
     * @return -1 if this object's date is earlier than
     * other, +1 in the opposite case, and 0 if both dates are
     * equal.
     */
-    int cmp(in EAC_Time other) const
+    int cmp(in EACTime other) const
     {
-        if (time_is_set() == false)
-            throw new Invalid_State("cmp: No time set");
+        if (timeIsSet() == false)
+            throw new InvalidState("cmp: No time set");
         
         const int EARLIER = -1, LATER = 1, SAME_TIME = 0;
         
@@ -139,7 +139,7 @@ public:
     * @param str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
-    void set_to(in string time_str)
+    void setTo(in string time_str)
     {
         if (time_str == "")
         {
@@ -158,29 +158,29 @@ public:
             else
             {
                 if (current.data.length > 0)
-                    params.push_back(current.data);
+                    params.pushBack(current.data);
                 current.clear();
             }
         }
         if (current.data.length > 0)
-            params.push_back(current.data);
+            params.pushBack(current.data);
         
         if (params.length != 3)
-            throw new Invalid_Argument("Invalid time specification " ~ time_str);
+            throw new InvalidArgument("Invalid time specification " ~ time_str);
         
         year    = to!uint(params[0]);
         month  = to!uint(params[1]);
         day     = to!uint(params[2]);
         
-        if (!passes_sanity_check())
-            throw new Invalid_Argument("Invalid time specification " ~ time_str);
+        if (!passesSanityCheck())
+            throw new InvalidArgument("Invalid time specification " ~ time_str);
     }
 
     /**
     * Add the specified number of years to this.
     * @param years = the number of years to add
     */
-    void add_years(uint years)
+    void addYears(uint years)
     {
         year += years;
     }
@@ -190,7 +190,7 @@ public:
     * Add the specified number of months to this.
     * @param months = the number of months to add
     */
-    void add_months(uint months)
+    void addMonths(uint months)
     {
         year += months/12;
         month += months % 12;
@@ -205,25 +205,25 @@ public:
     * Get the year value of this objects.
     * @return year value
     */
-    uint get_year() const { return year; }
+    uint getYear() const { return year; }
 
     /**
     * Get the month value of this objects.
     * @return month value
     */
-    uint get_month() const { return month; }
+    uint getMonth() const { return month; }
 
     /**
     * Get the day value of this objects.
     * @return day value
     */
-    uint get_day() const { return day; }
+    uint getDay() const { return day; }
 
     /*
-    * Create an EAC_Time
+    * Create an EACTime
     */
     this(in SysTime time,
-             ASN1_Tag t = ASN1_Tag(0))
+             ASN1Tag t = ASN1Tag(0))
     {
         m_tag = t;
         
@@ -233,18 +233,18 @@ public:
     }
 
     /*
-    * Create an EAC_Time
+    * Create an EACTime
     */
-    this(in string t_spec, ASN1_Tag t = ASN1_Tag(0))
+    this(in string t_spec, ASN1Tag t = ASN1Tag(0))
     {
         m_tag = t;
-        set_to(t_spec);
+        setTo(t_spec);
     }
 
     /*
-    * Create an EAC_Time
+    * Create an EACTime
     */
-    this(uint y, uint m, uint d, ASN1_Tag t = ASN1_Tag(0))
+    this(uint y, uint m, uint d, ASN1Tag t = ASN1Tag(0))
     {
         year = y;
         month = m;
@@ -253,38 +253,38 @@ public:
     }
 
     /*
-    * Compare two EAC_Times for in various ways
+    * Compare two EACTimes for in various ways
     */
-    bool opEquals(in EAC_Time t2)
+    bool opEquals(in EACTime t2)
     {
         return (cmp(t2) == 0);
     }
     
-    bool opCmp(string op)(in EAC_Time t2)
+    bool opCmp(string op)(in EACTime t2)
         if (op == "!=")
     {
         return (cmp(t2) != 0);
     }
 
-    bool opCmp(string op)(in EAC_Time t2)
+    bool opCmp(string op)(in EACTime t2)
         if (op == "<=")
     {
         return (cmp(t2) <= 0);
     }
 
-    bool opCmp(string op)(in EAC_Time t2)
+    bool opCmp(string op)(in EACTime t2)
         if (op == ">=")
     {
         return (cmp(t2) >= 0);
     }
 
-    bool opBinary(string op)(in EAC_Time t2)
+    bool opBinary(string op)(in EACTime t2)
         if (op == ">")
     {
         return (cmp(t2) > 0);
     }
 
-    bool opBinary(string op)(in EAC_Time t2)
+    bool opBinary(string op)(in EACTime t2)
         if (op == "<")
     {
         return (cmp(t2) < 0);
@@ -295,7 +295,7 @@ private:
     /*
     * make the value an octet string for encoding
     */
-    Vector!ubyte encoded_eac_time() const
+    Vector!ubyte encodedEacTime() const
     {
         Vector!ubyte result = Vector!ubyte(6);
         result ~= enc_two_digit_arr(year);
@@ -307,7 +307,7 @@ private:
     /*
     * Do a general sanity check on the time
     */
-    bool passes_sanity_check() const
+    bool passesSanityCheck() const
     {
         if (year < 2000 || year > 2099)
             return false;
@@ -319,14 +319,14 @@ private:
         return true;
     }
     uint year, month, day;
-    ASN1_Tag m_tag;
+    ASN1Tag m_tag;
 }
 
 /**
 * This class represents CVC CEDs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-final class ASN1_Ced_Impl : EAC_Time
+final class ASN1CedImpl : EACTime
 {
 public:
     /**
@@ -335,23 +335,23 @@ public:
     * e.g. "2007 08 01"
     */
     this(in string str = "") {
-        super(str, ASN1_Tag(37));
+        super(str, ASN1Tag(37));
     }
 
     /**
     * Construct a CED from a time point
     */
     this(in SysTime time) {
-        super(time, ASN1_Tag(37));
+        super(time, ASN1Tag(37));
     }
 
     /**
-    * Copy constructor (for general EAC_Time objects).
+    * Copy constructor (for general EACTime objects).
     * @param other = the object to copy from
     */
-    this(in EAC_Time other)
+    this(in EACTime other)
     {
-        super(other.get_year(), other.get_month(), other.get_day(), ASN1_Tag(37));
+        super(other.getYear(), other.getMonth(), other.getDay(), ASN1Tag(37));
     }
 }
 
@@ -359,7 +359,7 @@ public:
 * This class represents CVC CEXs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-final class ASN1_Cex_Impl : EAC_Time
+final class ASN1CexImpl : EACTime
 {
 public:
     /**
@@ -369,53 +369,52 @@ public:
     */
     this(in string str = "") 
     {
-        super(str, ASN1_Tag(36));
+        super(str, ASN1Tag(36));
     }
 
     this(in SysTime time)
     {
-        super(time, ASN1_Tag(36));
+        super(time, ASN1Tag(36));
     }
 
-    this(in EAC_Time other)
+    this(in EACTime other)
     {
-        super(other.get_year(), other.get_month(), other.get_day(),
-              ASN1_Tag(36));
+        super(other.getYear(), other.getMonth(), other.getDay(),
+              ASN1Tag(36));
     }
 }
 
 /**
 * Base class for car/chr of cv certificates.
 */
-class ASN1_EAC_String : ASN1_Object
+class ASN1EACString : ASN1Object
 {
 public:
     /*
-    * DER encode an ASN1_EAC_String
+    * DER encode an ASN1EACString
     */
-    void encode_into(DER_Encoder encoder) const
+    void encodeInto(DEREncoder encoder) const
     {
         string value = iso_8859();
-        encoder.add_object(tagging(), ASN1_Tag.APPLICATION, value);
+        encoder.addObject(tagging(), ASN1Tag.APPLICATION, value);
     }
     
     /*
-    * Decode a BER encoded ASN1_EAC_String
+    * Decode a BER encoded ASN1EACString
     */
-    void decode_from(BER_Decoder source)
+    void decodeFrom(BERDecoder source)
     {
-        BER_Object obj = source.get_next_object();
+        BER_Object obj = source.getNextObject();
         
         if (obj.type_tag != this.m_tag)
         {
             Appender!string ss;
+            ss ~= "ASN1EACString tag mismatch, tag was "
+                   ~ obj.type_tag
+                   ~ " expected "
+                   ~ this.m_tag;
             
-            ss ~= "ASN1_EAC_String tag mismatch, tag was "
-                 ~ obj.type_tag
-                    ~ " expected "
-                     ~ this.m_tag;
-            
-            throw new Decoding_Error(ss.data);
+            throw new DecodingError(ss.data);
         }
         
         Character_Set charset_is;
@@ -423,14 +422,14 @@ public:
         
         try
         {
-            this = ASN1_EAC_String(transcode(obj.toString(),
+            this = ASN1EACString(transcode(obj.toString(),
                                              charset_is, 
                                              LOCAL_CHARSET),
                                    obj.type_tag);
         }
-        catch(Invalid_Argument inv_arg)
+        catch(InvalidArgument inv_arg)
         {
-            throw new Decoding_Error(string("ASN1_EAC_String decoding failed: ") ~ inv_arg.msg);
+            throw new DecodingError(string("ASN1EACString decoding failed: ") ~ inv_arg.msg);
         }
     }
     
@@ -448,7 +447,7 @@ public:
     * Get this objects string value.
     * @return string value in iso8859 encoding
     */
-    string iso_8859() const
+    string iso8859() const
     {
         return m_iso_8859_str;
     }
@@ -456,29 +455,29 @@ public:
     /*
     * Return the type of this string object
     */
-    ASN1_Tag tagging() const
+    ASN1Tag tagging() const
     {
         return m_tag;
     }
 
     /*
-    * Create an ASN1_EAC_String
+    * Create an ASN1EACString
     */
-    this(in string str, ASN1_Tag t)
+    this(in string str, ASN1Tag t)
     {
         m_tag = t;
         m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
         
-        if (!sanity_check())
-            throw new Invalid_Argument("ASN1_EAC_String contains illegal characters");
+        if (!sanityCheck())
+            throw new InvalidArgument("ASN1EACString contains illegal characters");
     }
 
-    bool opEquals(in ASN1_EAC_String rhs)
+    bool opEquals(in ASN1EACString rhs)
     {
-        return (iso_8859() == rhs.iso_8859());
+        return (iso_8859() == rhs.iso8859());
     }
 
-    bool opCmp(string op)(in ASN1_EAC_String rhs)
+    bool opCmp(string op)(in ASN1EACString rhs)
         if (op == "!=")
     {
         return !(lhs == rhs);
@@ -488,7 +487,7 @@ public:
 protected:
     // checks for compliance to the alphabet defined in TR-03110 v1.10, 2007-08-20
     // p. 43
-    bool sanity_check() const
+    bool sanityCheck() const
     {
         const ubyte* rep = cast(const ubyte*) m_iso_8859_str.ptr;
         const size_t rep_len = m_iso_8859_str.length;
@@ -504,13 +503,13 @@ protected:
 
 private:
     string m_iso_8859_str;
-    ASN1_Tag m_tag;
+    ASN1Tag m_tag;
 }
 
 /**
 * This class represents CARs of CVCs. (String tagged with 2)
 */
-final class ASN1_Car_Impl : ASN1_EAC_String
+final class ASN1CarImpl : ASN1EACString
 {
 public:
     /**
@@ -519,7 +518,7 @@ public:
     */
     this(in string str)
     {
-        super(str, ASN1_Tag(2));
+        super(str, ASN1Tag(2));
 
     }
         
@@ -528,7 +527,7 @@ public:
 /**
 * This class represents CHRs of CVCs (tag 32)
 */
-final class ASN1_Chr_Impl : ASN1_EAC_String
+final class ASN1ChrImpl : ASN1EACString
 {
 public:
     /**
@@ -537,19 +536,19 @@ public:
     */
     this(in string str)
     {
-        super(str, ASN1_Tag(32));
+        super(str, ASN1Tag(32));
     }
 
 }
 
 
-Vector!ubyte enc_two_digit(uint input)
+Vector!ubyte encTwoDigit(uint input)
 {
     ubyte[2] res = enc_two_digit_arr(input);
     return Vector!ubyte(res.ptr[0 .. 2]);
 }
 
-ubyte[2] enc_two_digit_arr(uint input)
+ubyte[2] encTwoDigitArr(uint input)
 {
     ubyte[2] result;
     input %= 100;
@@ -566,13 +565,13 @@ ubyte[2] enc_two_digit_arr(uint input)
     return result;
 }
 
-uint dec_two_digit(ubyte b1, ubyte b2)
+uint decTwoDigit(ubyte b1, ubyte b2)
 {
     uint upper = b1;
     uint lower = b2;
     
     if (upper > 9 || lower > 9)
-        throw new Invalid_Argument("CVC dec_two_digit value too large");
+        throw new InvalidArgument("CVC decTwoDigit value too large");
     
     return upper*10 + lower;
 }

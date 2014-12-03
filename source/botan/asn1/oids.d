@@ -9,7 +9,7 @@ module botan.asn1.oids;
 public import botan.asn1.oid_lookup.deflt;
 public import botan.asn1.asn1_oid;
 
-auto global_oid_map()
+auto globalOidMap()
 {
     static OID_Map map;
     return map;
@@ -23,25 +23,25 @@ private:
     * @param oid = the oid to register
     * @param name = the name to be associated with the oid
     */
-    void add_oid2str(in OID oid, in string name)
+    void addOid2str(in OID oid, in string name)
     {
-        global_oid_map().add_oid2str(oid, name);
+        global_oid_map().addOid2str(oid, name);
     }
 
-    void add_str2oid(in OID oid, in string name)
+    void addStr2oid(in OID oid, in string name)
     {
-        global_oid_map().add_str2oid(oid, name);
+        global_oid_map().addStr2oid(oid, name);
     }
 
-    void add_oidstr(string oidstr, string name)
+    void addOidstr(string oidstr, string name)
     {
         add_oid(OID(oidstr), name);
     }
 
 
-    void add_oid(in OID oid, in string name)
+    void addOid(in OID oid, in string name)
     {
-        global_oid_map().add_oid(oid, name);
+        global_oid_map().addOid(oid, name);
     }
 
 public static:
@@ -50,9 +50,9 @@ public static:
     * @param oid = the oid to check for
     * @return true if the oid is registered
     */
-    bool have_oid(in string name)
+    bool haveOid(in string name)
     {
-        return global_oid_map().have_oid(name);
+        return global_oid_map().haveOid(name);
     }
 
     /**
@@ -82,7 +82,7 @@ public static:
     * @param name = the name to check
     * @return true if the specified OID stands for the specified name
     */
-    bool name_of(in OID oid, in string name)
+    bool nameOf(in OID oid, in string name)
     {
         return (oid == lookup(name));
     }
@@ -90,7 +90,7 @@ public static:
     /*
     * Load all of the default OIDs
     */
-    void set_defaults()
+    void setDefaults()
     {
         /* Public key types */
         add_oidstr("1.2.840.113549.1.1.1", "RSA");
@@ -309,23 +309,23 @@ public static:
     }
 }
 
-struct OID_Map
+struct OIDMap
 {
 public:
-    void add_oid(in OID oid, in string str)
+    void addOid(in OID oid, in string str)
     {
         add_str2oid(oid, str);
         add_oid2str(oid, str);
     }
     
-    void add_str2oid(in OID oid, in string str)
+    void addStr2oid(in OID oid, in string str)
     {
         auto i = m_str2oid.find(str);
         if (i == m_str2oid.end())
             m_str2oid.insert(Pair(str, oid));
     }
     
-    void add_oid2str(in OID oid, in string str)
+    void addOid2str(in OID oid, in string str)
     {
         auto i = m_oid2str.find(oid);
         if (i == m_oid2str.end())
@@ -355,10 +355,10 @@ public:
         }
         catch (Throwable) {}
         
-        throw new Lookup_Error("No object identifier found for " ~ str);
+        throw new LookupError("No object identifier found for " ~ str);
     }
     
-    bool have_oid(in string str)
+    bool haveOid(in string str)
     {
         return m_str2oid.find(str) != m_str2oid.end();
     }

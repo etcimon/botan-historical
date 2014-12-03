@@ -13,7 +13,7 @@ import botan.utils.simd.wmmintrin;
 /**
 * AES-128 using AES-NI
 */
-final class AES_128_NI : Block_Cipher_Fixed_Params!(16, 16)
+final class AES128NI : BlockCipherFixedParams!(16, 16)
 {
 public:
     override @property size_t parallelism() const { return 4; }
@@ -21,7 +21,7 @@ public:
     /*
     * AES-128 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -97,7 +97,7 @@ public:
     /*
     * AES-128 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -181,12 +181,12 @@ public:
     }
 
     @property string name() const { return "AES-128"; }
-    BlockCipher clone() const { return new AES_128_NI; }
+    BlockCipher clone() const { return new AES128NI; }
 private:
     /*
     * AES-128 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_EK.resize(44);
         m_DK.resize(44);
@@ -233,13 +233,13 @@ private:
     }
 
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
 /**
 * AES-192 using AES-NI
 */
-final class AES_192_NI : Block_Cipher_Fixed_Params!(16, 24)
+final class AES192NI : BlockCipherFixedParams!(16, 24)
 {
 public:
     override @property size_t parallelism() const { return 4; }
@@ -247,7 +247,7 @@ public:
     /*
     * AES-192 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -329,7 +329,7 @@ public:
     /*
     * AES-192 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -419,12 +419,12 @@ public:
         zap(m_DK);
     }
     @property string name() const { return "AES-192"; }
-    BlockCipher clone() const { return new AES_192_NI; }
+    BlockCipher clone() const { return new AES192NI; }
 private:
     /*
     * AES-192 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_EK.resize(52);
         m_DK.resize(52);
@@ -433,7 +433,7 @@ private:
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
         K1 = _mm_srli_si128(K1, 8);
         
-        load_littleEndian(m_EK.ptr, key, 6);
+        loadLittleEndian(m_EK.ptr, key, 6);
         
         mixin(AES_192_key_exp!(0x01, 6)());
         mixin(AES_192_key_exp!(0x02, 12)());
@@ -464,13 +464,13 @@ private:
     }
 
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
 /**
 * AES-256 using AES-NI
 */
-final class AES_256_NI : Block_Cipher_Fixed_Params!(16, 32)
+final class AES256NI : BlockCipherFixedParams!(16, 32)
 {
 public:
     override @property size_t parallelism() const { return 4; }
@@ -478,7 +478,7 @@ public:
     /*
     * AES-256 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -566,7 +566,7 @@ public:
     /*
     * AES-256 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -661,12 +661,12 @@ public:
     }
 
     @property string name() const { return "AES-256"; }
-    BlockCipher clone() const { return new AES_256_NI; }
+    BlockCipher clone() const { return new AES256NI; }
 private:
     /*
     * AES-256 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_EK.resize(60);
         m_DK.resize(60);
@@ -731,10 +731,10 @@ private:
     }
 
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
-__m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)
+m128i aes_128_key_expansion(m128i key, m128i key_with_rcon)
 {
     key_with_rcon = _mm_shuffle_epi32(key_with_rcon, _MM_SHUFFLE(3,3,3,3));
     key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
@@ -743,7 +743,7 @@ __m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)
     return _mm_xor_si128(key, key_with_rcon);
 }
 
-void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
+void aes_192_key_expansion(m128i* K1, m128i* K2, m128i key2_with_rcon,
                            uint* output, bool last)
 {
     __m128i key1 = *K1;
@@ -756,7 +756,7 @@ void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
     key1 = _mm_xor_si128(key1, key2_with_rcon);
     
     *K1 = key1;
-    _mm_storeu_si128(cast(__m128i*)(output), key1);
+    _mm_storeu_si128(cast(m128i*)(output), key1);
     
     if (last)
         return;
@@ -772,7 +772,7 @@ void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
 /*
 * The second half of the AES-256 key expansion (other half same as AES-128)
 */
-__m128i aes_256_key_expansion(__m128i key, __m128i key2)
+m128i aes_256_key_expansion(m128i key, m128i key2)
 {
     __m128i key_with_rcon = _mm_aeskeygenassist_si128(key2, 0x00);
     key_with_rcon = _mm_shuffle_epi32(key_with_rcon, _MM_SHUFFLE(2,2,2,2));

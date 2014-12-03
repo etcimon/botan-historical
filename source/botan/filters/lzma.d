@@ -50,7 +50,7 @@ public:
     /*
     * Start Compressing with Lzma
     */
-    void start_msg()
+    void startMsg()
     {
         clear();
         m_lzma = new Lzma_Stream;
@@ -66,7 +66,7 @@ public:
     /*
     * Finish Compressing with Lzma
     */
-    void end_msg()
+    void endMsg()
     {
         m_lzma.m_stream.next_in = 0;
         m_lzma.m_stream.avail_in = 0;
@@ -138,7 +138,7 @@ private:
     }
     const size_t m_level;
 
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     Lzma_Stream* m_lzma;
 }
 
@@ -185,7 +185,7 @@ public:
             if (ret == LZMA_STREAM_END)
             {
                 size_t read_from_block = length - m_lzma.m_stream.avail_in;
-                start_msg();
+                startMsg();
                 
                 m_lzma.m_stream.next_in = input + read_from_block;
                 m_lzma.m_stream.avail_in = length - read_from_block;
@@ -199,7 +199,7 @@ public:
     /*
     * Start Decompressing with Lzma
     */
-    void start_msg()
+    void startMsg()
     {
         clear();
         m_lzma = new Lzma_Stream;
@@ -215,7 +215,7 @@ public:
     /*
     * Finish Decompressing with Lzma
     */
-    void end_msg()
+    void endMsg()
     {
         if (m_no_writes) return;
         m_lzma.m_stream.next_in = 0;
@@ -268,7 +268,7 @@ private:
         }
     }
 
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     Lzma_Stream m_lzma;
     bool m_no_writes;
 }

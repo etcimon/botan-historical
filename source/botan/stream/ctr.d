@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * CTR-BE (Counter mode, big-endian)
 */
-final class CTR_BE : StreamCipher
+final class CTRBE : StreamCipher
 {
 public:
     void cipher(in ubyte* input, ubyte* output, size_t length)
@@ -35,10 +35,10 @@ public:
     }
 
 
-    void set_iv(in ubyte* iv, size_t iv_len)
+    void setIv(in ubyte* iv, size_t iv_len)
     {
-        if (!valid_iv_length(iv_len))
-            throw new Invalid_IV_Length(name, iv_len);
+        if (!validIvLength(iv_len))
+            throw new InvalidIVLength(name, iv_len);
         
         const size_t bs = m_cipher.block_size;
         
@@ -56,16 +56,16 @@ public:
                     break;
         }
         
-        m_cipher.encrypt_n(m_counter.ptr, m_pad.ptr, 256);
+        m_cipher.encryptN(m_counter.ptr, m_pad.ptr, 256);
         m_pad_pos = 0;
     }
 
-    bool valid_iv_length(size_t iv_len) const
+    bool validIvLength(size_t iv_len) const
     { return (iv_len <= m_cipher.block_size); }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
-        return m_cipher.key_spec();
+        return m_cipher.keySpec();
     }
 
     @property string name() const
@@ -73,8 +73,8 @@ public:
         return ("CTR-BE(" ~ m_cipher.name ~ ")");
     }
 
-    CTR_BE clone() const
-    { return new CTR_BE(m_cipher.clone()); }
+    CTRBE clone() const
+    { return new CTRBE(m_cipher.clone()); }
 
     void clear()
     {
@@ -95,18 +95,18 @@ public:
         m_pad_pos = 0;
     }
 private:
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
-        m_cipher.set_key(key, key_len);
+        m_cipher.setKey(key, key_len);
         
         // Set a default all-zeros IV
-        set_iv(null, 0);
+        setIv(null, 0);
     }
 
     /*
     * Increment the counter and update the buffer
     */
-    void increment_counter()
+    void incrementCounter()
     {
         const size_t bs = m_cipher.block_size;
         
@@ -122,11 +122,11 @@ private:
                     break;
         }
         
-        m_cipher.encrypt_n(m_counter.ptr, m_pad.ptr, 256);
+        m_cipher.encryptN(m_counter.ptr, m_pad.ptr, 256);
         m_pad_pos = 0;
     }
 
     Unique!BlockCipher m_cipher;
-    Secure_Vector!ubyte m_counter, m_pad;
+    SecureVector!ubyte m_counter, m_pad;
     size_t m_pad_pos;
 }

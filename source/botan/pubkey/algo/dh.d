@@ -20,27 +20,27 @@ import botan.rng.rng;
 /**
 * This class represents Diffie-Hellman public keys.
 */
-class DH_PublicKey : DL_Scheme_PublicKey
+class DHPublicKey : DL_SchemePublicKey
 {
 public:
-    @property string algo_name() const { return "DH"; }
+    @property string algoName() const { return "DH"; }
 
     /*
     * Return the public value for key agreement
     */
-    Vector!ubyte public_value() const
+    Vector!ubyte publicValue() const
     {
-        return unlock(BigInt.encode_1363(y, group_p().bytes()));
+        return unlock(BigInt.encode1363(y, group_p().bytes()));
     }
 
-    size_t max_input_bits() const { return group_p().bits(); }
+    size_t maxInputBits() const { return group_p().bits(); }
 
-    DL_Group.Format group_format() const { return DL_Group.ANSI_X9_42; }
+    DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_42; }
 
-    this(in Algorithm_Identifier alg_id,
-                     in Secure_Vector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id,
+                     in SecureVector!ubyte key_bits)
     {
-        super(alg_id, key_bits, DL_Group.ANSI_X9_42);
+        super(alg_id, key_bits, DLGroup.ANSI_X9_42);
     }
 
     /**
@@ -48,7 +48,7 @@ public:
     * @param grp = the DL group to use in the key
     * @param y = the public value y
     */
-    this(in DL_Group grp, in BigInt y1)
+    this(in DLGroup grp, in BigInt y1)
     {
         m_group = grp;
         m_y = y1;
@@ -60,17 +60,17 @@ protected:
 /**
 * This class represents Diffie-Hellman private keys.
 */
-class DH_PrivateKey : DH_PublicKey,
-                      PK_Key_Agreement_Key,
-                      DL_Scheme_PrivateKey
+class DHPrivateKey : DHPublicKey,
+                      PKKeyAgreementKey,
+                      DL_SchemePrivateKey
 {
 public:
     /*
     * Return the public value for key agreement
     */
-    Vector!ubyte public_value() const
+    Vector!ubyte publicValue() const
     {
-        return public_value();
+        return publicValue();
     }
 
     /**
@@ -79,13 +79,13 @@ public:
     * @param key_bits = the subject public key
     * @param rng = a random number generator
     */
-    this(in Algorithm_Identifier alg_id,
-         in Secure_Vector!ubyte key_bits,
+    this(in AlgorithmIdentifier alg_id,
+         in SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        super(alg_id, key_bits, DL_Group.ANSI_X9_42);
+        super(alg_id, key_bits, DLGroup.ANSI_X9_42);
         if (m_y == 0)
-            m_y = power_mod(group_g(), m_x, group_p());
+            m_y = powerMod(group_g(), m_x, group_p());
         
         load_check(rng);
     }
@@ -97,7 +97,7 @@ public:
     * @param x_args = the key's secret value (or if zero, generate a new key)
     */
     this(RandomNumberGenerator rng,
-         in DL_Group grp,
+         in DLGroup grp,
          in BigInt x_arg = 0)
     {
         m_group = grp;
@@ -110,7 +110,7 @@ public:
         }
         
         if (m_y == 0)
-            m_y = power_mod(group_g(), m_x, group_p());
+            m_y = powerMod(group_g(), m_x, group_p());
         
         if (m_x == 0)
             gen_check(rng);
@@ -122,27 +122,27 @@ public:
 /**
 * DH operation
 */
-class DH_KA_Operation : Key_Agreement
+class DHKAOperation : Key_Agreement
 {
 public:
-    this(in DH_PrivateKey dh, RandomNumberGenerator rng) 
+    this(in DHPrivateKey dh, RandomNumberGenerator rng) 
     {
-        m_p = dh.group_p();
-        m_powermod_x_p = Fixed_Exponent_Power_Mod(dh.get_x(), m_p);
+        m_p = dh.groupP();
+        m_powermod_x_p = Fixed_Exponent_Power_Mod(dh.getX(), m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-        m_blinder = Blinder(k, m_powermod_x_p(inverse_mod(k, m_p)), m_p);
+        m_blinder = Blinder(k, m_powermod_x_p(inverseMod(k, m_p)), m_p);
     }
 
-    Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
+    SecureVector!ubyte agree(in ubyte* w, size_t w_len)
     {
         BigInt input = BigInt.decode(w, w_len);
         
         if (input <= 1 || input >= m_p - 1)
-            throw new Invalid_Argument("DH agreement - invalid key provided");
+            throw new InvalidArgument("DH agreement - invalid key provided");
         
         BigInt r = m_blinder.unblind(m_powermod_x_p(m_blinder.blind(input)));
         
-        return BigInt.encode_1363(r, m_p.bytes());
+        return BigInt.encode1363(r, m_p.bytes());
     }
 
 private:
@@ -165,7 +165,7 @@ import core.atomic;
 
 private __gshared size_t total_tests;
 
-size_t test_pk_keygen(RandomNumberGenerator rng)
+size_t testPkKeygen(RandomNumberGenerator rng)
 {
     size_t fails;
 
@@ -173,15 +173,15 @@ size_t test_pk_keygen(RandomNumberGenerator rng)
 
     foreach (dh; dh_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!DH_PrivateKey(rng, EC_Group(OIDS.lookup(dh)));
-        key.check_key(rng, true);
+        auto key = scoped!DHPrivateKey(rng, ECGroup(OIDS.lookup(dh)));
+        key.checkKey(rng, true);
         fails += validate_save_and_load(&key, rng);
     }
     
     return fails;
 }
 
-size_t dh_sig_kat(string p, string g, string x, string y, string kdf, string outlen, string key)
+size_t dhSigKat(string p, string g, string x, string y, string kdf, string outlen, string key)
 {
     atomicOp!"+="(total_tests, 1);
     AutoSeeded_RNG rng;
@@ -191,10 +191,10 @@ size_t dh_sig_kat(string p, string g, string x, string y, string kdf, string out
     BigInt x_bn = BigInt(x);
     BigInt y_bn = BigInt(y);
     
-    DL_Group domain = DL_Group(p_bn, g_bn);
+    DLGroup domain = DLGroup(p_bn, g_bn);
     
-    auto mykey = scoped!DH_PrivateKey(rng, domain, x_bn);
-    auto otherkey = scoped!DH_PublicKey(domain, y_bn);
+    auto mykey = scoped!DHPrivateKey(rng, domain, x_bn);
+    auto otherkey = scoped!DHPublicKey(domain, y_bn);
     
     if (kdf == "")
         kdf = "Raw";
@@ -203,9 +203,9 @@ size_t dh_sig_kat(string p, string g, string x, string y, string kdf, string out
     if (outlen != "")
         keylen = to!uint(outlen);
     
-    auto kas = scoped!PK_Key_Agreement(mykey, kdf);
+    auto kas = scoped!PKKeyAgreement(mykey, kdf);
     
-    return validate_kas(kas, "DH/" ~ kdf, otherkey.public_value(), key, keylen);
+    return validate_kas(kas, "DH/" ~ kdf, otherkey.publicValue(), key, keylen);
 }
 
 unittest
@@ -214,16 +214,16 @@ unittest
 
     AutoSeeded_RNG rng;
 
-    fails += test_pk_keygen(rng);
+    fails += testPkKeygen(rng);
 
     File dh_sig = File("test_data/pubkey/dh.vec", "r");
     
-    fails += run_tests_bb(dh_sig, "DH Kex", "K", true,
+    fails += runTestsBb(dh_sig, "DH Kex", "K", true,
                           (string[string] m) {
-                                return dh_sig_kat(m["P"], m["G"], m["X"], m["Y"], m["KDF"], m["OutLen"], m["K"]);
+                                return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m["KDF"], m["OutLen"], m["K"]);
                             });
 
 
-    test_report("DH", total_tests, fails);
+    testReport("DH", total_tests, fails);
 
 }

@@ -17,12 +17,12 @@ import botan.utils.types;
 /**
 * RIPEMD-128
 */
-final class RIPEMD_128 : MDx_HashFunction
+final class RIPEMD128 : MDxHashFunction
 {
 public:
     override @property string name() const { return "RIPEMD-128"; }
-    @property size_t output_length() const { return 16; }
-    HashFunction clone() const { return new RIPEMD_128; }
+    @property size_t outputLength() const { return 16; }
+    HashFunction clone() const { return new RIPEMD128; }
 
     /*
     * Clear memory of sensitive data
@@ -48,7 +48,7 @@ private:
     /*
     * RIPEMD-128 Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         
         const uint MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
@@ -57,7 +57,7 @@ private:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_littleEndian(m_M.ptr, input, m_M.length);
+            loadLittleEndian(m_M.ptr, input, m_M.length);
             
             uint A1 = m_digest[0], A2 = A1, B1 = m_digest[1], B2 = B1,
                 C1 = m_digest[2], C2 = C1, D1 = m_digest[3], D2 = D1;
@@ -136,20 +136,20 @@ private:
             m_digest[3] = m_digest[0] + B1 + C2;
             m_digest[0] = D2;
             
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
     /*
     * Copy out the m_digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_littleEndian(m_digest[i/4], output + i);
+            storeLittleEndian(m_digest[i/4], output + i);
     }
 
-    Secure_Vector!uint m_M, m_digest;
+    SecureVector!uint m_M, m_digest;
 }
 
 
@@ -161,39 +161,39 @@ private:
 /*
 * RIPEMD-128 F1 Function
 */
-void F1(ref uint A, uint B, uint C, uint D,
+void f1(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift) pure
 {
     A += (B ^ C ^ D) + msg;
-    A  = rotate_left(A, shift);
+    A  = rotateLeft(A, shift);
 }
 
 /*
 * RIPEMD-128 F2 Function
 */
-void F2(ref uint A, uint B, uint C, uint D,
+void f2(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift, uint magic) pure
 {
     A += (D ^ (B & (C ^ D))) + msg + magic;
-    A  = rotate_left(A, shift);
+    A  = rotateLeft(A, shift);
 }
 
 /*
 * RIPEMD-128 F3 Function
 */
-void F3(ref uint A, uint B, uint C, uint D,
+void f3(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift, uint magic) pure
 {
     A += (D ^ (B | ~C)) + msg + magic;
-    A  = rotate_left(A, shift);
+    A  = rotateLeft(A, shift);
 }
 
 /*
 * RIPEMD-128 F4 Function
 */
-void F4(ref uint A, uint B, uint C, uint D,
+void f4(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift, uint magic) pure
 {
     A += (C ^ (D & (B ^ C))) + msg + magic;
-    A  = rotate_left(A, shift);
+    A  = rotateLeft(A, shift);
 }

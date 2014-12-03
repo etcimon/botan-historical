@@ -33,7 +33,7 @@ enum PF_LOCAL = PF_UNIX;
 /**
 * EGD Entropy Source
 */
-final class EGD_EntropySource : EntropySource
+final class EGDEntropySource : EntropySource
 {
 public:
     @property string name() const { return "EGD/PRNGD"; }
@@ -41,11 +41,11 @@ public:
     /**
     * Gather Entropy from EGD
     */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         __gshared immutable size_t READ_ATTEMPT = 32;
         
-        Secure_Vector!ubyte io_buffer = accum.get_io_buffer(READ_ATTEMPT);
+        SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
         
         foreach (socket; m_sockets)
         {
@@ -65,7 +65,7 @@ public:
     this(in Vector!string paths)
     {
         foreach (path; paths[])
-            m_sockets.push_back(EGD_Socket(paths[i]));
+            m_sockets.pushBack(EGD_Socket(paths[i]));
     }
     ~this()
     {
@@ -74,7 +74,7 @@ public:
         m_sockets.clear();
     }
 private:
-    class EGD_Socket
+    class EGDSocket
     {
     public:
         this(in string path)
@@ -144,7 +144,7 @@ private:
         /**
         * Attempt a connection to an EGD/PRNGD socket
         */
-        static int open_socket(in string path)
+        static int openSocket(in string path)
         {
             int fd = socket(PF_LOCAL, SOCK_STREAM, 0);
             
@@ -155,7 +155,7 @@ private:
                 addr.sun_family = PF_LOCAL;
                 
                 if (addr.sun_path.sizeof < path.length + 1)
-                    throw new Invalid_Argument("EGD socket path is too long");
+                    throw new InvalidArgument("EGD socket path is too long");
                 
                 strncpy(addr.sun_path, path.toStringz, sizeof(addr.sun_path));
                 

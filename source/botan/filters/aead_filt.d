@@ -14,24 +14,24 @@ import botan.modes.aead.aead;
 /**
 * Filter interface for AEAD Modes
 */
-final class AEAD_Filter : Transformation_Filter
+final class AEADFilter : Transformation_Filter
 {
 public:
-    this(AEAD_Mode aead)
+    this(AEADMode aead)
     {
         super(aead);
     }
 
     /**
     * Set associated data that is not included in the ciphertext but
-    * that should be authenticated. Must be called after set_key
-    * and before end_msg.
+    * that should be authenticated. Must be called after setKey
+    * and before endMsg.
     *
     * @param ad = the associated data
     * @param ad_len = length of add in bytes
     */
-    void set_associated_data(in ubyte* ad, size_t ad_len)
+    void setAssociatedData(in ubyte* ad, size_t ad_len)
     {
-        (cast(AEAD_Mode)(get_transform())).set_associated_data(ad, ad_len);
+        (cast(AEADMode)(get_transform())).setAssociatedData(ad, ad_len);
     }
 }

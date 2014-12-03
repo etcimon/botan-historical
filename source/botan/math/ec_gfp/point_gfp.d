@@ -18,7 +18,7 @@ import botan.math.mp.mp_core;
 * Exception thrown if you try to convert a zero point to an affine
 * coordinate
 */
-class Illegal_Transformation : Exception
+class IllegalTransformation : Exception
 {
     this(in string err = "Requested transformation is not possible")
     {
@@ -29,7 +29,7 @@ class Illegal_Transformation : Exception
 /**
 * Exception thrown if some form of illegal point is decoded
 */
-class Illegal_Point : Exception
+class IllegalPoint : Exception
 {
     this(in string err = "Malformed ECP point detected") { super(err); }
 }
@@ -41,7 +41,7 @@ struct PointGFp
 {
 public:
     typedef ubyte Compression_Type;
-    enum : Compression_Type {
+    enum : CompressionType {
         UNCOMPRESSED    = 0,
         COMPRESSED        = 1,
         HYBRID             = 2
@@ -59,9 +59,9 @@ public:
     this(in CurveGFp _curve) 
     {
         curve = _curve;
-        ws = 2 * (curve.get_p_words() + 2);
+        ws = 2 * (curve.getPWords() + 2);
         coord_x = 0;
-        coord_y = monty_mult(1, curve.get_r2());
+        coord_y = monty_mult(1, curve.getR2());
         coord_z = 0;
     }
 
@@ -102,10 +102,10 @@ public:
     this(in CurveGFp _curve, in BigInt x, in BigInt y)
     { 
         curve = _curve;
-        ws = 2 * (curve.get_p_words() + 2);
-        coord_x = monty_mult(x, curve.get_r2());
-        coord_y = monty_mult(y, curve.get_r2());
-        coord_z = monty_mult(1, curve.get_r2());
+        ws = 2 * (curve.getPWords() + 2);
+        coord_x = monty_mult(x, curve.getR2());
+        coord_y = monty_mult(y, curve.getR2());
+        coord_z = monty_mult(1, curve.getR2());
     }
 
     /**
@@ -161,9 +161,9 @@ public:
         if (op == "*")
     {
         auto point = this;
-        const CurveGFp curve = point.get_curve();
+        const CurveGFp curve = point.getCurve()();
         
-        if (scalar.is_zero())
+        if (scalar.isZero())
             return PointGFp(curve); // zero point
         
         Vector!BigInt ws = Vector!BigInt(9);
@@ -177,7 +177,7 @@ public:
             if (value == 2)
                 result.mult2(ws);
             
-            if (scalar.is_negative())
+            if (scalar.isNegative())
                 result.negate();
             
             return result;
@@ -211,7 +211,7 @@ public:
                 --bits_left;
             }
             
-            if (scalar.is_negative())
+            if (scalar.isNegative())
                 x1.negate();
             
             return x1;
@@ -248,13 +248,13 @@ public:
             while (bits_left)
             {
                 H.mult2(ws);
-                if (scalar.get_bit(bits_left-1))
+                if (scalar.getBit(bits_left-1))
                     H.add(point, ws);
                 
                 --bits_left;
             }
             
-            if (scalar.is_negative())
+            if (scalar.isNegative())
                 H.negate();
             
             return H;
@@ -269,7 +269,7 @@ public:
     * @param z2 = a scalar
     * @result (p1 * z1 + p2 * z2)
     */
-    PointGFp multi_exponentiate(in PointGFp p1, in BigInt z1,
+    PointGFp multiExponentiate(in PointGFp p1, in BigInt z1,
                                 in PointGFp p2, in BigInt z2)
     {
         const PointGFp p3 = p1 + p2;
@@ -296,7 +296,7 @@ public:
             --bits_left;
         }
         
-        if (z1.is_negative() != z2.is_negative())
+        if (z1.isNegative() != z2.isNegative())
             H.negate();
         
         return H;
@@ -309,7 +309,7 @@ public:
     ref PointGFp negate()
     {
         if (!is_zero())
-            coord_y = curve.get_p() - coord_y;
+            coord_y = curve.getP() - coord_y;
         return this;
     }
 
@@ -317,21 +317,21 @@ public:
     * Return base curve of this point
     * @result the curve over GF(p) of this point
     */
-    ref CurveGFp get_curve() const { return curve; }
+    ref CurveGFp getCurve() const { return curve; }
 
     /**
     * get affine x coordinate
     * @result affine x coordinate
     */
-    BigInt get_affine_x() const
+    BigInt getAffineX() const
     {
         if (is_zero())
-            throw new Illegal_Transformation("Cannot convert zero point to affine");
+            throw new IllegalTransformation("Cannot convert zero point to affine");
         
         const BigInt r2 = curve.get_r2();
         
         BigInt z2 = monty_sqr(coord_z);
-        z2 = inverse_mod(z2, curve.get_p());
+        z2 = inverseMod(z2, curve.getP());
         
         z2 = monty_mult(z2, r2);
         return monty_mult(coord_x, z2);
@@ -341,15 +341,15 @@ public:
     * get affine y coordinate
     * @result affine y coordinate
     */
-    BigInt get_affine_y() const
+    BigInt getAffineY() const
     {
         if (is_zero())
-            throw new Illegal_Transformation("Cannot convert zero point to affine");
+            throw new IllegalTransformation("Cannot convert zero point to affine");
         
         const BigInt r2 = curve.get_r2();
         
         BigInt z3 = monty_mult(coord_z, monty_sqr(coord_z));
-        z3 = inverse_mod(z3, curve.get_p());
+        z3 = inverseMod(z3, curve.getP());
         z3 = monty_mult(z3, r2);
         return monty_mult(coord_y, z3);
     }
@@ -358,15 +358,15 @@ public:
     * Is this the point at infinity?
     * @result true, if this point is at infinity, false otherwise.
     */
-    bool is_zero() const
-    { return (coord_x.is_zero() && coord_z.is_zero()); }
+    bool isZero() const
+    { return (coord_x.isZero() && coord_z.isZero()); }
 
     /**
     * Checks whether the point is to be found on the underlying
     * curve; used to prevent fault attacks.
     * @return if the point is on the curve
     */
-    bool on_the_curve() const
+    bool onTheCurve() const
     {
         /*
         Is the point still on the curve?? (If everything is correct, the
@@ -424,15 +424,15 @@ public:
     */
     bool opEquals(in PointGFp other) const
     {
-        if (get_curve() != other.get_curve())
+        if (getCurve()() != other.getCurve())
             return false;
         
         // If this is zero, only equal if other is also zero
         if (is_zero())
-            return other.is_zero();
+            return other.isZero();
         
-        return (get_affine_x() == other.get_affine_x() &&
-                get_affine_y() == other.get_affine_y());
+        return (get_affine_x() == other.getAffineX() &&
+                get_affine_y() == other.getAffineY());
     }
 
 private:
@@ -443,7 +443,7 @@ private:
     * @param y = second multiplicand
     * @param workspace = temp space
     */
-    BigInt monty_mult(in BigInt x, in BigInt y) const
+    BigInt montyMult(in BigInt x, in BigInt y) const
     {
         BigInt result;
         monty_mult(result, x, y);
@@ -458,28 +458,28 @@ private:
     * @param y = second multiplicand
     */
     // Montgomery multiplication
-    void monty_mult(ref BigInt z, in BigInt x, in BigInt y) const
+    void montyMult(ref BigInt z, in BigInt x, in BigInt y) const
     {
         //assert(&z != &x && &z != &y);
         
-        if (x.is_zero() || y.is_zero())
+        if (x.isZero() || y.isZero())
         {
             z = 0;
             return;
         }
         
-        const BigInt p = curve.get_p();
+        const BigInt p = curve.getP();
         const size_t p_size = curve.get_p_words();
         const word p_dash = curve.get_p_dash();
         
         const size_t output_size = 2*p_size + 1;
         
-        z.grow_to(output_size);
+        z.growTo(output_size);
         z.clear();
         
-        bigint_monty_mul(z.mutable_data(), output_size,
-                         x.data(), x.length, x.sig_words(),
-                         y.data(), y.length, y.sig_words(),
+        bigint_monty_mul(z.mutableData(), output_size,
+                         x.data(), x.length, x.sigWords(),
+                         y.data(), y.length, y.sigWords(),
                          p.data(), p_size, p_dash,
                          ws.ptr);
     }
@@ -488,7 +488,7 @@ private:
     * Montgomery squaring/reduction
     * @param x = multiplicand
     */
-    BigInt monty_sqr(in BigInt x) const
+    BigInt montySqr(in BigInt x) const
     {
         BigInt result;
         monty_sqr(result, x);
@@ -501,27 +501,27 @@ private:
     * @param z = output
     * @param x = multiplicand
     */
-    void monty_sqr(ref BigInt z, in BigInt x) const
+    void montySqr(ref BigInt z, in BigInt x) const
     {
         //assert(&z != &x);
         
-        if (x.is_zero())
+        if (x.isZero())
         {
             z = 0;
             return;
         }
         
-        const BigInt p = curve.get_p();
+        const BigInt p = curve.getP();
         const size_t p_size = curve.get_p_words();
         const word p_dash = curve.get_p_dash();
         
         const size_t output_size = 2*p_size + 1;
         
-        z.grow_to(output_size);
+        z.growTo(output_size);
         z.clear();
         
-        bigint_monty_sqr(z.mutable_data(), output_size,
-                         x.data(), x.length, x.sig_words(),
+        bigint_monty_sqr(z.mutableData(), output_size,
+                         x.data(), x.length, x.sigWords(),
                          p.data(), p_size, p_dash,
                          ws.ptr);
     }
@@ -539,10 +539,10 @@ private:
             coord_z = rhs.coord_z;
             return;
         }
-        else if (rhs.is_zero())
+        else if (rhs.isZero())
             return;
         
-        const BigInt p = curve.get_p();
+        const BigInt p = curve.getP();
         
         BigInt rhs_z2 = ws_bn[0];
         BigInt U1 = ws_bn[1];
@@ -565,17 +565,17 @@ private:
         
         H = U2;
         H -= U1;
-        if (H.is_negative())
+        if (H.isNegative())
             H += p;
         
         r = S2;
         r -= S1;
-        if (r.is_negative())
+        if (r.isNegative())
             r += p;
         
-        if (H.is_zero())
+        if (H.isZero())
         {
-            if (r.is_zero())
+            if (r.isZero())
             {
                 mult2(ws_bn);
                 return;
@@ -594,16 +594,16 @@ private:
         monty_sqr(coord_x, r);
         coord_x -= S2;
         coord_x -= (U2 << 1);
-        while (coord_x.is_negative())
+        while (coord_x.isNegative())
             coord_x += p;
         
         U2 -= coord_x;
-        if (U2.is_negative())
+        if (U2.isNegative())
             U2 += p;
         
         monty_mult(coord_y, r, U2);
         coord_y -= monty_mult(S1, S2);
-        if (coord_y.is_negative())
+        if (coord_y.isNegative())
             coord_y += p;
         
         monty_mult(coord_z, monty_mult(coord_z, rhs.coord_z), H);
@@ -618,13 +618,13 @@ private:
     {
         if (is_zero())
             return;
-        else if (coord_y.is_zero())
+        else if (coord_y.isZero())
         {
             this = PointGFp(curve); // setting myself to zero
             return;
         }
         
-        const BigInt p = curve.get_p();
+        const BigInt p = curve.getP();
         
         BigInt y_2 = ws_bn[0];
         BigInt S = ws_bn[1];
@@ -644,7 +644,7 @@ private:
             S -= p;
         
         monty_sqr(z4, monty_sqr(coord_z));
-        monty_mult(a_z4, curve.get_a_r(), z4);
+        monty_mult(a_z4, curve.getAR(), z4);
         
         M = monty_sqr(coord_x);
         M *= 3;
@@ -654,7 +654,7 @@ private:
         
         monty_sqr(x, M);
         x -= (S << 1);
-        while (x.is_negative())
+        while (x.isNegative())
             x += p;
         
         monty_sqr(U, y_2);
@@ -663,12 +663,12 @@ private:
             U -= p;
         
         S -= x;
-        while (S.is_negative())
+        while (S.isNegative())
             S += p;
         
         monty_mult(y, M, S);
         y -= U;
-        if (y.is_negative())
+        if (y.isNegative())
             y += p;
         
         monty_mult(z, coord_y, coord_z);
@@ -715,30 +715,30 @@ private:
 
     CurveGFp curve;
     BigInt coord_x, coord_y, coord_z;
-    Secure_Vector!word ws; // workspace for Montgomery
+    SecureVector!word ws; // workspace for Montgomery
 }
 
 
 
 // encoding and decoding
 // encoding and decoding
-Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
+SecureVector!ubyte eC2OSP(in PointGFp point, ubyte format)
 {
-    if (point.is_zero())
-        return Secure_Vector!ubyte(1); // single 0 ubyte
+    if (point.isZero())
+        return SecureVector!ubyte(1); // single 0 ubyte
     
-    const size_t p_bytes = point.get_curve().get_p().bytes();
+    const size_t p_bytes = point.getCurve()().getP().bytes();
     
     BigInt x = point.get_affine_x();
     BigInt y = point.get_affine_y();
     
-    Secure_Vector!ubyte bX = BigInt.encode_1363(x, p_bytes);
-    Secure_Vector!ubyte bY = BigInt.encode_1363(y, p_bytes);
+    SecureVector!ubyte bX = BigInt.encode_1363(x, p_bytes);
+    SecureVector!ubyte bY = BigInt.encode_1363(y, p_bytes);
     
     if (format == UNCOMPRESSED)
     {
-        Secure_Vector!ubyte result;
-        result.push_back(0x04);
+        SecureVector!ubyte result;
+        result.pushBack(0x04);
         
         result ~= bX;
         result ~= bY;
@@ -747,8 +747,8 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
     }
     else if (format == COMPRESSED)
     {
-        Secure_Vector!ubyte result;
-        result.push_back(0x02 | cast(ubyte)(y.get_bit(0)));
+        SecureVector!ubyte result;
+        result.pushBack(0x02 | cast(ubyte)(y.getBit(0)));
         
         result ~= bX;
         
@@ -756,8 +756,8 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
     }
     else if (format == HYBRID)
     {
-        Secure_Vector!ubyte result;
-        result.push_back(0x06 | cast(ubyte)(y.get_bit(0)));
+        SecureVector!ubyte result;
+        result.pushBack(0x06 | cast(ubyte)(y.getBit(0)));
         
         result ~= bX;
         result ~= bY;
@@ -765,10 +765,10 @@ Secure_Vector!ubyte EC2OSP(in PointGFp point, ubyte format)
         return result;
     }
     else
-        throw new Invalid_Argument("illegal point encoding format specification");
+        throw new InvalidArgument("illegal point encoding format specification");
 }
 
-PointGFp OS2ECP(T : CurveGFp)(in ubyte* data, size_t data_len, auto ref T curve)
+PointGFp oS2ECP(T : CurveGFp)(in ubyte* data, size_t data_len, auto ref T curve)
 {
     if (data_len <= 1)
         return PointGFp(curve); // return zero
@@ -804,20 +804,20 @@ PointGFp OS2ECP(T : CurveGFp)(in ubyte* data, size_t data_len, auto ref T curve)
         const bool y_mod_2 = ((pc & 0x01) == 1);
         
         if (decompress_point(y_mod_2, x, curve) != y)
-            throw new Illegal_Point("OS2ECP: Decoding error in hybrid format");
+            throw new IllegalPoint("OS2ECP: Decoding error in hybrid format");
     }
     else
-        throw new Invalid_Argument("OS2ECP: Unknown format type " ~ to!string(pc));
+        throw new InvalidArgument("OS2ECP: Unknown format type " ~ to!string(pc));
     
     PointGFp result = PointGFp(curve, x, y);
     
-    if (!result.on_the_curve())
-        throw new Illegal_Point("OS2ECP: Decoded point was not on the curve");
+    if (!result.onTheCurve())
+        throw new IllegalPoint("OS2ECP: Decoded point was not on the curve");
     
     return result;
 }
 
-PointGFp OS2ECP(Alloc, T : CurveGFp)(in Vector!( ubyte, Alloc ) data, auto ref T curve)
+PointGFp oS2ECP(Alloc, T : CurveGFp)(in Vector!( ubyte, Alloc ) data, auto ref T curve)
 { return OS2ECP(data.ptr, data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)
@@ -825,7 +825,7 @@ void swap(ref PointGFp x, ref PointGFp y)
 
 private:
 
-BigInt decompress_point(T : CurveGFp)(bool yMod2,
+BigInt decompressPoint(T : CurveGFp)(bool yMod2,
                         in BigInt x,
                         auto ref T curve)
 {
@@ -833,16 +833,16 @@ BigInt decompress_point(T : CurveGFp)(bool yMod2,
     
     BigInt g = curve.get_a() * x;
     g += xpow3;
-    g += curve.get_b();
-    g = g % curve.get_p();
+    g += curve.getB();
+    g = g % curve.getP();
     
-    BigInt z = ressol(g, curve.get_p());
+    BigInt z = ressol(g, curve.getP());
     
     if (z < 0)
-        throw new Illegal_Point("error during decompression");
+        throw new IllegalPoint("error during decompression");
     
-    if (z.get_bit(0) != yMod2)
-        z = curve.get_p() - z;
+    if (z.getBit(0) != yMod2)
+        z = curve.getP() - z;
     
     return z;
 }

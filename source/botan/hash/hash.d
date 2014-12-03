@@ -25,7 +25,7 @@ public:
     /**
     * @return hash block size as defined for this algorithm
     */
-    abstract @property size_t hash_block_size() const { return 0; }
+    abstract @property size_t hashBlockSize() const { return 0; }
 }
 
 static if (BOTAN_TEST):
@@ -37,9 +37,9 @@ import core.atomic;
 
 private __gshared size_t total_tests;
 
-size_t hash_test(string algo, string in_hex, string out_hex)
+size_t hashTest(string algo, string in_hex, string out_hex)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     const auto providers = af.providers_of(algo);
     size_t fails = 0;
@@ -52,7 +52,7 @@ size_t hash_test(string algo, string in_hex, string out_hex)
     
     foreach (provider; providers[])
     {
-        auto proto = af.prototype_hash_function(algo, provider);
+        auto proto = af.prototypeHashFunction(algo, provider);
 
         atomicOp!"+="(total_tests, 1);
 
@@ -65,15 +65,15 @@ size_t hash_test(string algo, string in_hex, string out_hex)
         
         Unique!HashFunction hash(proto.clone());
         
-        hash.update(hex_decode(in_hex));
+        hash.update(hexDecode(in_hex));
         
         auto h = hash.finished();
 
         atomicOp!"+="(total_tests, 1);
 
-        if (h != hex_decode_locked(out_hex))
+        if (h != hexDecodeLocked(out_hex))
         {
-            writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
+            writeln(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
         
@@ -81,15 +81,15 @@ size_t hash_test(string algo, string in_hex, string out_hex)
         hash.update("some discarded input");
         hash.clear();
         
-        hash.update(hex_decode(in_hex));
+        hash.update(hexDecode(in_hex));
         
         h = hash.finished();
 
         atomicOp!"+="(total_tests, 1);
 
-        if (h != hex_decode_locked(out_hex))
+        if (h != hexDecodeLocked(out_hex))
         {
-            writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
+            writeln(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -103,13 +103,13 @@ unittest
     {
         File vec = File(input, "r");
 
-        return run_tests_bb(vec, "Hash", "Out", true,
+        return runTestsBb(vec, "Hash", "Out", true,
                             (string[string] m) {
-                                return hash_test(m["Hash"], m["In"], m["Out"]);
+                                return hashTest(m["Hash"], m["In"], m["Out"]);
                             });
     };
     
-    size_t fails = run_tests_in_dir("test_data/hash", test);
+    size_t fails = runTestsInDir("test_data/hash", test);
 
-    test_report("hash", total_tests, fails);
+    testReport("hash", total_tests, fails);
 }

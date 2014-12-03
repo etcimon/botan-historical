@@ -27,25 +27,25 @@ import botan.utils.types;
 * @param af = an algorithm factory
 * @return key encrypted under kek
 */
-Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
+SecureVector!ubyte rfc3394Keywrap(in SecureVector!ubyte key,
                                     in SymmetricKey kek,
-                                    Algorithm_Factory af)
+                                    AlgorithmFactory af)
 {
     if (key.length % 8 != 0)
-        throw new Invalid_Argument("Bad input key size for NIST key wrap");
+        throw new InvalidArgument("Bad input key size for NIST key wrap");
     
     Unique!BlockCipher aes = make_aes(kek.length, af);
-    aes.set_key(kek);
+    aes.setKey(kek);
     
     const size_t n = key.length / 8;
     
-    Secure_Vector!ubyte R = Secure_Vector!ubyte((n + 1) * 8);
-    Secure_Vector!ubyte A = Secure_Vector!ubyte(16);
+    SecureVector!ubyte R = SecureVector!ubyte((n + 1) * 8);
+    SecureVector!ubyte A = SecureVector!ubyte(16);
     
     foreach (size_t i; 0 .. 8)
         A[i] = 0xA6;
     
-    copy_mem(&R[8], key.ptr, key.length);
+    copyMem(&R[8], key.ptr, key.length);
     
     foreach (size_t j; 0 .. 5 + 1)
     {
@@ -53,18 +53,18 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
         {
             const uint t = (n * j) + i;
             
-            copy_mem(&A[8], &R[8*i], 8);
+            copyMem(&A[8], &R[8*i], 8);
             
             aes.encrypt(A.ptr);
-            copy_mem(&R[8*i], &A[8], 8);
+            copyMem(&R[8*i], &A[8], 8);
             
             ubyte[4] t_buf;
-            store_bigEndian(t, t_buf.ptr);
+            storeBigEndian(t, t_buf.ptr);
             xor_buf(&A[4], t_buf.ptr, 4);
         }
     }
     
-    copy_mem(R.ptr, A.ptr, 8);
+    copyMem(R.ptr, A.ptr, 8);
     
     return R;
 }
@@ -78,25 +78,25 @@ Secure_Vector!ubyte rfc3394_keywrap(in Secure_Vector!ubyte key,
 * @param af = an algorithm factory
 * @return key decrypted under kek
 */
-Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
+SecureVector!ubyte rfc3394Keyunwrap(in SecureVector!ubyte key,
                                       in SymmetricKey kek,
-                                      Algorithm_Factory af)
+                                      AlgorithmFactory af)
 {
     if (key.length < 16 || key.length % 8 != 0)
-        throw new Invalid_Argument("Bad input key size for NIST key unwrap");
+        throw new InvalidArgument("Bad input key size for NIST key unwrap");
     
     Unique!BlockCipher aes = make_aes(kek.length, af);
-    aes.set_key(kek);
+    aes.setKey(kek);
     
     const size_t n = (key.length - 8) / 8;
     
-    Secure_Vector!ubyte R = Secure_Vector!ubyte(n * 8);
-    Secure_Vector!ubyte A = Secure_Vector!ubyte(16);
+    SecureVector!ubyte R = SecureVector!ubyte(n * 8);
+    SecureVector!ubyte A = SecureVector!ubyte(16);
     
     foreach (size_t i; 0 .. 8)
         A[i] = key[i];
     
-    copy_mem(R.ptr, &key[8], key.length - 8);
+    copyMem(R.ptr, &key[8], key.length - 8);
     
     foreach (size_t j; 0 .. 5 + 1)
     {
@@ -105,36 +105,36 @@ Secure_Vector!ubyte rfc3394_keyunwrap(in Secure_Vector!ubyte key,
             const uint t = (5 - j) * n + i;
             
             ubyte[4] t_buf;
-            store_bigEndian(t, t_buf);
+            storeBigEndian(t, t_buf);
             
             xor_buf(&A[4], t_buf.ptr, 4);
             
-            copy_mem(&A[8], &R[8*(i-1)], 8);
+            copyMem(&A[8], &R[8*(i-1)], 8);
             
             aes.decrypt(A.ptr);
             
-            copy_mem(&R[8*(i-1)], &A[8], 8);
+            copyMem(&R[8*(i-1)], &A[8], 8);
         }
     }
     
-    if (load_bigEndian!ulong(A.ptr, 0) != 0xA6A6A6A6A6A6A6A6)
-        throw new Integrity_Failure("NIST key unwrap failed");
+    if (loadBigEndian!ulong(A.ptr, 0) != 0xA6A6A6A6A6A6A6A6)
+        throw new IntegrityFailure("NIST key unwrap failed");
     
     return R;
 }
 
 private:
 
-BlockCipher make_aes(size_t keylength, Algorithm_Factory af)
+BlockCipher makeAes(size_t keylength, AlgorithmFactory af)
 {
     if (keylength == 16)
-        return af.make_block_cipher("AES-128");
+        return af.makeBlockCipher("AES-128");
     else if (keylength == 24)
-        return af.make_block_cipher("AES-192");
+        return af.makeBlockCipher("AES-192");
     else if (keylength == 32)
-        return af.make_block_cipher("AES-256");
+        return af.makeBlockCipher("AES-256");
     else
-        throw new Invalid_Argument("Bad KEK length for NIST keywrap");
+        throw new InvalidArgument("Bad KEK length for NIST keywrap");
 }
 
 
@@ -144,7 +144,7 @@ import botan.test;
 import botan.codec.hex;
 import botan.libstate.libstate;
 
-size_t keywrap_test(const char* key_str,
+size_t keywrapTest(const char* key_str,
                     const char* expected_str,
                     const char* kek_str)
 {
@@ -156,22 +156,22 @@ size_t keywrap_test(const char* key_str,
         SymmetricKey expected = SymmetricKey(expected_str);
         SymmetricKey kek = SymmetricKey(kek_str);
         
-        Algorithm_Factory af = global_state().algorithm_factory();
+        AlgorithmFactory af = globalState().algorithmFactory();
         
-        Secure_Vector!ubyte enc = rfc3394_keywrap(key.bits_of(), kek, af);
+        SecureVector!ubyte enc = rfc3394_keywrap(key.bitsOf(), kek, af);
         
-        if (enc != expected.bits_of())
+        if (enc != expected.bitsOf())
         {
             writeln("NIST key wrap encryption failure: "
-                    << hex_encode(enc) ~ " != " ~ hex_encode(expected.bits_of()));
+                    << hexEncode(enc) ~ " != " ~ hexEncode(expected.bitsOf()));
             fail++;
         }
         
-        Secure_Vector!ubyte dec = rfc3394_keyunwrap(expected.bits_of(), kek, af);
+        SecureVector!ubyte dec = rfc3394_keyunwrap(expected.bitsOf(), kek, af);
         
-        if (dec != key.bits_of())
+        if (dec != key.bitsOf())
         {
-            writeln("NIST key wrap decryption failure: " ~ hex_encode(dec) ~ " != " ~ hex_encode(key.bits_of()));
+            writeln("NIST key wrap decryption failure: " ~ hexEncode(dec) ~ " != " ~ hexEncode(key.bitsOf()));
             fail++;
         }
     }
@@ -184,7 +184,7 @@ size_t keywrap_test(const char* key_str,
     return fail;
 }
 
-size_t test_keywrap()
+size_t testKeywrap()
 {
     size_t fails = 0;
     
@@ -212,5 +212,5 @@ size_t test_keywrap()
                           "28C9F404C4B810F4CBCCB35CFB87F8263F5786E2D80ED326CBC7F0E71A99F43BFB988B9B7A02DD21",
                           "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F");
     
-    test_report("rfc3394", 6, fails);
+    testReport("rfc3394", 6, fails);
 }

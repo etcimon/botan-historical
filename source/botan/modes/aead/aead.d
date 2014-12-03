@@ -22,58 +22,58 @@ static if (BOTAN_HAS_AEAD_OCB) import botan.modes.aead.ocb;
 * which is not included in the ciphertext (for instance a sequence
 * number).
 */
-class AEAD_Mode : Cipher_Mode
+class AEADMode : Cipher_Mode
 {
 public:
     final override bool authenticated() const { return true; }
 
     /**
     * Set associated data that is not included in the ciphertext but
-    * that should be authenticated. Must be called after set_key
+    * that should be authenticated. Must be called after setKey
     * and before finish.
     *
     * Unless reset by another call, the associated data is kept
     * between messages. Thus, if the AD does not change, calling
-    * once (after set_key) is the optimum.
+    * once (after setKey) is the optimum.
     *
     * @param ad = the associated data
     * @param ad_len = length of add in bytes
     */
-    abstract void set_associated_data(in ubyte* ad, size_t ad_len);
+    abstract void setAssociatedData(in ubyte* ad, size_t ad_len);
 
-    final void set_associated_data_vec(Alloc)(in Vector!( ubyte, Alloc ) ad)
+    final void setAssociatedDataVec(Alloc)(in Vector!( ubyte, Alloc ) ad)
     {
-        set_associated_data(ad.ptr, ad.length);
+        setAssociatedData(ad.ptr, ad.length);
     }
 
     /**
     * Default AEAD nonce size (a commonly supported value among AEAD
     * modes, and large enough that random collisions are unlikely).
     */
-    final override size_t default_nonce_length() const { return 12; }
+    final override size_t defaultNonceLength() const { return 12; }
 
     /**
     * Return the size of the authentication tag used (in bytes)
     */
-    abstract size_t tag_size() const;
+    abstract size_t tagSize() const;
 }
 
 /**
 * Get an AEAD mode by name (eg "AES-128/GCM" or "Serpent/EAX")
 */
-AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
+AEADMode getAead(in string algo_spec, CipherDir direction)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     const Vector!string algo_parts = splitter(algo_spec, '/');
     if (algo_parts.empty)
-        throw new Invalid_Algorithm_Name(algo_spec);
+        throw new InvalidAlgorithmName(algo_spec);
     
     if (algo_parts.length < 2)
         return null;
     
     const string cipher_name = algo_parts[0];
-    const BlockCipher cipher = af.prototype_block_cipher(cipher_name);
+    const BlockCipher cipher = af.prototypeBlockCipher(cipher_name);
     if (!cipher)
         return null;
     
@@ -90,9 +90,9 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
         if (mode_name == "CCM-8")
         {
             if (direction == ENCRYPTION)
-                return new CCM_Encryption(cipher.clone(), 8, 3);
+                return new CCMEncryption(cipher.clone(), 8, 3);
             else
-                return new CCM_Decryption(cipher.clone(), 8, 3);
+                return new CCMDecryption(cipher.clone(), 8, 3);
         }
         
         if (mode_name == "CCM" || mode_name == "CCM-8")
@@ -100,9 +100,9 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
             const size_t L = (mode_info.length > 2) ? to!uint(mode_info[2]) : 3;
             
             if (direction == ENCRYPTION)
-                return new CCM_Encryption(cipher.clone(), tag_size, L);
+                return new CCMEncryption(cipher.clone(), tag_size, L);
             else
-                return new CCM_Decryption(cipher.clone(), tag_size, L);
+                return new CCMDecryption(cipher.clone(), tag_size, L);
         }
     }
     
@@ -110,9 +110,9 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
         if (mode_name == "EAX")
         {
             if (direction == ENCRYPTION)
-                return new EAX_Encryption(cipher.clone(), tag_size);
+                return new EAXEncryption(cipher.clone(), tag_size);
             else
-                return new EAX_Decryption(cipher.clone(), tag_size);
+                return new EAXDecryption(cipher.clone(), tag_size);
         }
     }
     
@@ -121,9 +121,9 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
         {
             assert(tag_size == 16, "Valid tag size for SIV");
             if (direction == ENCRYPTION)
-                return new SIV_Encryption(cipher.clone());
+                return new SIVEncryption(cipher.clone());
             else
-                return new SIV_Decryption(cipher.clone());
+                return new SIVDecryption(cipher.clone());
         }
     }
     
@@ -131,9 +131,9 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
         if (mode_name == "GCM")
         {
             if (direction == ENCRYPTION)
-                return new GCM_Encryption(cipher.clone(), tag_size);
+                return new GCMEncryption(cipher.clone(), tag_size);
             else
-                return new GCM_Decryption(cipher.clone(), tag_size);
+                return new GCMDecryption(cipher.clone(), tag_size);
         }
     }
 
@@ -141,9 +141,9 @@ AEAD_Mode get_aead(in string algo_spec, Cipher_Dir direction)
         if (mode_name == "OCB")
         {
             if (direction == ENCRYPTION)
-                return new OCB_Encryption(cipher.clone(), tag_size);
+                return new OCBEncryption(cipher.clone(), tag_size);
             else
-                return new OCB_Decryption(cipher.clone(), tag_size);
+                return new OCBDecryption(cipher.clone(), tag_size);
         }
     }
     
@@ -157,12 +157,12 @@ import botan.codec.hex;
 import core.atomic;
 size_t total_tests;
 
-size_t aead_test(string algo, string input, string expected, string nonce_hex, string ad_hex, string key_hex)
+size_t aeadTest(string algo, string input, string expected, string nonce_hex, string ad_hex, string key_hex)
 {
     atomicOp!"+="(total_tests, 5);
-    const auto nonce = hex_decode_locked(nonce_hex);
-    const auto ad = hex_decode_locked(ad_hex);
-    const auto key = hex_decode_locked(key_hex);
+    const auto nonce = hexDecodeLocked(nonce_hex);
+    const auto ad = hexDecodeLocked(ad_hex);
+    const auto key = hexDecodeLocked(key_hex);
     
     Unique!Cipher_Mode enc = get_aead(algo, ENCRYPTION);
     Unique!Cipher_Mode dec = get_aead(algo, DECRYPTION);
@@ -170,39 +170,39 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
     if (!enc || !dec)
         throw new Exception("Unknown AEAD " ~ algo);
     
-    enc.set_key(key);
-    dec.set_key(key);
+    enc.setKey(key);
+    dec.setKey(key);
     
-    if (auto aead_enc = cast(AEAD_Mode)(*enc))
-        aead_enc.set_associated_data_vec(ad);
-    if (auto aead_dec = cast(AEAD_Mode)(*dec))
-        aead_dec.set_associated_data_vec(ad);
+    if (auto aead_enc = cast(AEADMode)(*enc))
+        aead_enc.setAssociatedDataVec(ad);
+    if (auto aead_dec = cast(AEADMode)(*dec))
+        aead_dec.setAssociatedDataVec(ad);
     
     size_t fail = 0;
     
-    const auto pt = hex_decode_locked(input);
-    const auto expected_ct = hex_decode_locked(expected);
+    const auto pt = hexDecodeLocked(input);
+    const auto expected_ct = hexDecodeLocked(expected);
     
     auto vec = pt;
-    enc.start_vec(nonce);
+    enc.startVec(nonce);
     // should first update if possible
     enc.finish(vec);
     
     if (vec != expected_ct)
     {
-        writeln(algo ~ " got ct " ~ hex_encode(vec) ~ " expected " ~ expected);
+        writeln(algo ~ " got ct " ~ hexEncode(vec) ~ " expected " ~ expected);
         writeln(algo ~ " \n");
         ++fail;
     }
     
     vec = expected_ct;
     
-    dec.start_vec(nonce);
+    dec.startVec(nonce);
     dec.finish(vec);
     
     if (vec != pt)
     {
-        writeln(algo ~ " got pt " ~ hex_encode(vec) ~ " expected " ~ input);
+        writeln(algo ~ " got pt " ~ hexEncode(vec) ~ " expected " ~ input);
         ++fail;
     }
     
@@ -210,7 +210,7 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
     {
         vec = expected_ct;
         vec[0] ^= 1;
-        dec.start_vec(nonce);
+        dec.startVec(nonce);
         try
         {
             dec.finish(vec);
@@ -225,7 +225,7 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
             bad_nonce[0] ^= 1;
             vec = expected_ct;
             
-            dec.start_vec(bad_nonce);
+            dec.startVec(bad_nonce);
             
             try
             {
@@ -236,19 +236,19 @@ size_t aead_test(string algo, string input, string expected, string nonce_hex, s
             catch (Throwable) {}
         }
         
-        if (auto aead_dec = cast(AEAD_Mode)(*dec))
+        if (auto aead_dec = cast(AEADMode)(*dec))
         {
             auto bad_ad = ad;
             
             if (ad.length)
                 bad_ad[0] ^= 1;
             else
-                bad_ad.push_back(0);
+                bad_ad.pushBack(0);
             
-            aead_dec.set_associated_data_vec(bad_ad);
+            aead_dec.setAssociatedDataVec(bad_ad);
             
             vec = expected_ct;
-            dec.start_vec(nonce);
+            dec.startVec(nonce);
             
             try
             {
@@ -269,15 +269,15 @@ unittest
     {
         File vec = File(input, "r");
         
-        return run_tests_bb(vec, "AEAD", "Out", true,
+        return runTestsBb(vec, "AEAD", "Out", true,
                             (string[string] m)
                             {
-            return aead_test(m["AEAD"], m["In"], m["Out"],
+            return aeadTest(m["AEAD"], m["In"], m["Out"],
             m["Nonce"], m["AD"], m["Key"]);
         });
     };
     
-    size_t fails = run_tests_in_dir("test_data/aead", test);
+    size_t fails = runTestsInDir("test_data/aead", test);
 
-    test_report("aead", total_tests, fails);
+    testReport("aead", total_tests, fails);
 }

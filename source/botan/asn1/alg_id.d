@@ -14,45 +14,45 @@ import botan.asn1.ber_dec;
 import botan.asn1.oids;
 // import string;
 
-alias Algorithm_Identifier = FreeListRef!Algorithm_Identifier_Impl;
+alias AlgorithmIdentifier = FreeListRef!AlgorithmIdentifierImpl;
 
 /**
 * Algorithm Identifier
 */
-final class Algorithm_Identifier_Impl : ASN1_Object
+final class AlgorithmIdentifierImpl : ASN1Object
 {
 public:
-    typedef bool Encoding_Option;
-    enum : Encoding_Option { USE_NULL_PARAM }
+    typedef bool EncodingOption;
+    enum : EncodingOption { USE_NULL_PARAM }
 
     /*
-    * DER encode an Algorithm_Identifier
+    * DER encode an AlgorithmIdentifier
     */
-    void encode_into(DER_Encoder codec) const
+    void encodeInto(DEREncoder codec) const
     {
-        codec.start_cons(ASN1_Tag.SEQUENCE)
+        codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)
-                .raw_bytes(m_parameters)
-                .end_cons();
+                .rawBytes(m_parameters)
+                .endCons();
     }
 
     /*
-    * Decode a BER encoded Algorithm_Identifier
+    * Decode a BER encoded AlgorithmIdentifier
     */
-    void decode_from(BER_Decoder codec)
+    void decodeFrom(BERDecoder codec)
     {
-        codec.start_cons(ASN1_Tag.SEQUENCE)
+        codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_oid)
-                .raw_bytes(m_parameters)
-                .end_cons();
+                .rawBytes(m_parameters)
+                .endCons();
     }
 
     this() {}
 
     /*
-    * Create an Algorithm_Identifier
+    * Create an AlgorithmIdentifier
     */
-    this(in OID, Encoding_Option) {
+    this(in OID, EncodingOption) {
         __gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
         
         m_oid = alg_id;
@@ -62,9 +62,9 @@ public:
     }
 
     /*
-    * Create an Algorithm_Identifier
+    * Create an AlgorithmIdentifier
     */
-    this(in string, Encoding_Option) {
+    this(in string, EncodingOption) {
         __gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
         
         m_oid = OIDS.lookup(alg_id);
@@ -74,7 +74,7 @@ public:
     }
     
     /*
-    * Create an Algorithm_Identifier
+    * Create an AlgorithmIdentifier
     */
     this(in OID alg_id, in Vector!ubyte param)
     {
@@ -83,7 +83,7 @@ public:
     }
 
     /*
-    * Create an Algorithm_Identifier
+    * Create an AlgorithmIdentifier
     */
     this(in string, in Vector!ubyte) {
         m_oid = OIDS.lookup(alg_id);
@@ -91,9 +91,9 @@ public:
     }
 
     /*
-    * Compare two Algorithm_Identifiers
+    * Compare two AlgorithmIdentifiers
     */
-    bool opEquals(in Algorithm_Identifier a2)
+    bool opEquals(in AlgorithmIdentifier a2)
     {
         if (m_oid != a2.m_oid)
             return false;
@@ -103,9 +103,9 @@ public:
     }
 
     /*
-    * Compare two Algorithm_Identifiers
+    * Compare two AlgorithmIdentifiers
     */
-    bool opCmp(in Algorithm_Identifier a2)
+    bool opCmp(in AlgorithmIdentifier a2)
     {
         return !(this == a2);
     }

@@ -210,6 +210,8 @@ private:
     void* m_pool_ptr;
 }
 
+private:
+
 size_t mlock_limit()
 {
     /*

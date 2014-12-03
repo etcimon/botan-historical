@@ -12,10 +12,10 @@ import botan.math.mp.mp_core;
 /**
 * Modular Reducer (using Barrett's technique)
 */
-struct Modular_Reducer
+struct ModularReducer
 {
 public:
-    BigInt get_modulus() const { return m_modulus; }
+    BigInt getModulus() const { return m_modulus; }
 
     /*
     * Barrett Reduction
@@ -23,41 +23,41 @@ public:
     BigInt reduce(in BigInt x) const
     {
         if (m_mod_words == 0)
-            throw new Invalid_State("Modular_Reducer: Never initalized");
+            throw new InvalidState("ModularReducer: Never initalized");
         
         if (x.cmp(m_modulus, false) < 0)
         {
-            if (x.is_negative())
+            if (x.isNegative())
                 return x + m_modulus; // make positive
             return x;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
         {
             BigInt t1 = x;
-            t1.set_sign(BigInt.Positive);
+            t1.setSign(BigInt.Positive);
             t1 >>= (MP_WORD_BITS * (m_mod_words - 1));
             t1 *= mu;
             
             t1 >>= (MP_WORD_BITS * (m_mod_words + 1));
             t1 *= modulus;
             
-            t1.mask_bits(MP_WORD_BITS * (m_mod_words + 1));
+            t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
             BigInt t2 = x;
-            t2.set_sign(BigInt.Positive);
-            t2.mask_bits(MP_WORD_BITS * (m_mod_words + 1));
+            t2.setSign(BigInt.Positive);
+            t2.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
             t2 -= t1;
             
-            if (t2.is_negative())
+            if (t2.isNegative())
             {
-                t2 += BigInt.power_of_2(MP_WORD_BITS * (m_mod_words + 1));
+                t2 += BigInt.powerOf2(MP_WORD_BITS * (m_mod_words + 1));
             }
             
             while (t2 >= m_modulus)
                 t2 -= m_modulus;
             
-            if (x.is_positive())
+            if (x.isPositive())
                 return t2;
             else
                 return (m_modulus - t2);
@@ -98,19 +98,19 @@ public:
 
     this() { m_mod_words = 0; }
     /*
-    * Modular_Reducer Constructor
+    * ModularReducer Constructor
     */
     this(in BigInt mod)
     {
         if (mod <= 0)
-            throw new Invalid_Argument("Modular_Reducer: modulus must be positive");
+            throw new InvalidArgument("ModularReducer: modulus must be positive");
         
         m_modulus = mod;
-        m_mod_words = m_modulus.sig_words();
+        m_mod_words = m_modulus.sigWords();
         
         m_modulus_2 = square(m_modulus);
         
-        m_mu = BigInt.power_of_2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
+        m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
     }
 
 private:

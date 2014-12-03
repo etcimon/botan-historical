@@ -13,7 +13,7 @@ import botan.filters.secqueue;
 /**
 * Container of output buffers for Pipe
 */
-struct Output_Buffers
+struct OutputBuffers
 {
 public:
     /*
@@ -44,11 +44,11 @@ public:
     /*
     * Return the total bytes of a message that have already been read.
     */
-    size_t get_bytes_read(Pipe.message_id msg) const
+    size_t getBytesRead(Pipe.message_id msg) const
     {
         Secure_Queue q = get(msg);
         if (q)
-            return q.get_bytes_read();
+            return q.getBytesRead();
         return 0;
     }
 
@@ -66,14 +66,14 @@ public:
     /*
     * Add a new output queue
     */
-    void add(Secure_Queue queue)
+    void add(SecureQueue queue)
     {
         assert(queue, "queue was provided");
         
-        assert(m_buffers.length < m_buffers.max_size(),
+        assert(m_buffers.length < m_buffers.maxSize(),
                      "Room was available in container");
         
-        m_buffers.push_back(queue);
+        m_buffers.pushBack(queue);
     }
 
     /*
@@ -90,15 +90,15 @@ public:
         
         while (m_buffers.length && !m_buffers[0])
         {
-            m_buffers.pop_front();
-            m_offset = m_offset + Pipe.message_id(1);
+            m_buffers.popFront();
+            m_offset = m_offset + Pipe.messageId(1);
         }
     }
 
     /*
     * Return the total number of messages
     */
-    Pipe.message_id message_count() const
+    Pipe.message_id messageCount() const
     {
         return (m_offset + m_buffers.length);
     }
@@ -113,7 +113,7 @@ private:
     /*
     * Get a particular output queue
     */
-    Secure_Queue get(Pipe.message_id msg) const
+    SecureQueue get(Pipe.message_id msg) const
     {
         if (msg < m_offset)
             return null;

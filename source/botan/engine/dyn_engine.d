@@ -13,7 +13,7 @@ import botan.utils.dyn_load.dyn_load;
 * Dynamically_Loaded_Engine just proxies the requests to the underlying
 * Engine object, and handles load/unload details
 */
-final class Dynamically_Loaded_Engine : Engine
+final class DynamicallyLoadedEngine : Engine
 {
 public:
     /**
@@ -22,7 +22,7 @@ public:
     this(in string library_path) 
     {
         m_engine = null;
-        m_lib = new Dynamically_Loaded_Library(library_path);
+        m_lib = new DynamicallyLoadedLibrary(library_path);
         
         try
         {
@@ -49,9 +49,9 @@ public:
     }
 
 
-    this(in Dynamically_Loaded_Engine);
+    this(in DynamicallyLoadedEngine);
 
-    void opAssign(Dynamically_Loaded_Engine);
+    void opAssign(DynamicallyLoadedEngine);
 
     ~this()
     {
@@ -59,66 +59,66 @@ public:
         delete m_lib;
     }
 
-    string provider_name() const { return m_engine.provider_name(); }
+    string providerName() const { return m_engine.providerName(); }
 
-    BlockCipher find_block_cipher(in SCAN_Name algo_spec, Algorithm_Factory af) const
+    BlockCipher findBlockCipher(in SCANName algo_spec, AlgorithmFactory af) const
     {
-        return m_engine.find_block_cipher(algo_spec, af);
+        return m_engine.findBlockCipher(algo_spec, af);
     }
 
-    StreamCipher find_stream_cipher(in SCAN_Name algo_spec, Algorithm_Factory af) const
+    StreamCipher findStreamCipher(in SCANName algo_spec, AlgorithmFactory af) const
     {
-        return m_engine.find_stream_cipher(algo_spec, af);
+        return m_engine.findStreamCipher(algo_spec, af);
     }
 
-    HashFunction find_hash(in SCAN_Name algo_spec, Algorithm_Factory af) const
+    HashFunction findHash(in SCANName algo_spec, AlgorithmFactory af) const
     {
-        return m_engine.find_hash(algo_spec, af);
+        return m_engine.findHash(algo_spec, af);
     }
 
-    MessageAuthenticationCode find_mac(in SCAN_Name algo_spec, Algorithm_Factory af) const
+    MessageAuthenticationCode findMac(in SCANName algo_spec, AlgorithmFactory af) const
     {
-        return m_engine.find_mac(algo_spec, af);
+        return m_engine.findMac(algo_spec, af);
     }
 
-    PBKDF find_pbkdf(in SCAN_Name algo_spec, Algorithm_Factory af) const
+    PBKDF findPbkdf(in SCANName algo_spec, AlgorithmFactory af) const
     {
-        return m_engine.find_pbkdf(algo_spec, af);
+        return m_engine.findPbkdf(algo_spec, af);
     }
 
-    Modular_Exponentiator mod_exp(in BigInt n, power_mod.Usage_Hints hints) const
+    ModularExponentiator modExp(in BigInt n, powerMod.UsageHints hints) const
     {
-        return m_engine.mod_exp(n, hints);
+        return m_engine.modExp(n, hints);
     }
 
-    Keyed_Filter get_cipher(in string algo_spec, Cipher_Dir dir, Algorithm_Factory af)
+    KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af)
     {
-        return m_engine.get_cipher(algo_spec, dir, af);
+        return m_engine.getCipher(algo_spec, dir, af);
     }
 
-    Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
+    KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
-        return m_engine.get_key_agreement_op(key, rng);
+        return m_engine.getKeyAgreementOp(key, rng);
     }
 
-    Signature get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
+    Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
-        return m_engine.get_signature_op(key, rng);
+        return m_engine.getSignatureOp(key, rng);
     }
 
-    Verification get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
+    Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
     {
-        return m_engine.get_verify_op(key, rng);
+        return m_engine.getVerifyOp(key, rng);
     }
 
-    Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator rng) const
+    Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator rng) const
     {
-        return m_engine.get_encryption_op(key, rng);
+        return m_engine.getEncryptionOp(key, rng);
     }
 
-    Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
+    Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
-        return m_engine.get_decryption_op(key, rng);
+        return m_engine.getDecryptionOp(key, rng);
     }
 
 private:

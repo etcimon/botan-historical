@@ -27,7 +27,7 @@ import botan.utils.types;
 /**
 * Options for X.509 certificates.
 */
-struct X509_Cert_Options
+struct X509CertOptions
 {
 public:
     /**
@@ -98,11 +98,11 @@ public:
     /**
     * the subject notBefore
     */
-    X509_Time start;
+    X509Time start;
     /**
     * the subject notAfter
     */
-    X509_Time end;
+    X509Time end;
 
     /**
     * Indicates whether the certificate request
@@ -117,7 +117,7 @@ public:
     /**
     * The key constraints for the subject public key
     */
-    Key_Constraints constraints;
+    KeyConstraints constraints;
 
     /**
     * The key extended constraints for the subject public key
@@ -127,14 +127,14 @@ public:
     /**
     * Check the options set in this object for validity.
     */
-    void sanity_check() const
+    void sanityCheck() const
     {
         if (common_name == "" || country == "")
-            throw new Encoding_Error("X.509 certificate: name and country MUST be set");
+            throw new EncodingError("X.509 certificate: name and country MUST be set");
         if (country.length != 2)
-            throw new Encoding_Error("Invalid ISO country code: " ~ country);
+            throw new EncodingError("Invalid ISO country code: " ~ country);
         if (start >= end)
-            throw new Encoding_Error("X509_Cert_Options: invalid time constraints");
+            throw new EncodingError("X509_Cert_Options: invalid time constraints");
     }
     
 
@@ -143,7 +143,7 @@ public:
     * Mark the certificate as a CA certificate and set the path limit.
     * @param limit = the path limit to be set in the BasicConstraints extension.
     */
-    void CA_key(size_t limit = 1)
+    void cAKey(size_t limit = 1)
     {
         is_CA = true;
         path_limit = limit;
@@ -154,25 +154,25 @@ public:
     * Set when the certificate should become valid
     * @param time = the notBefore value of the certificate
     */
-    void not_before(in string time_string)
+    void notBefore(in string time_string)
     {
-        start = X509_Time(time_string);
+        start = X509Time(time_string);
     }
 
     /**
     * Set the notAfter of the certificate.
     * @param time = the notAfter value of the certificate
     */
-    void not_after(in string time_string)
+    void notAfter(in string time_string)
     {
-        end = X509_Time(time_string);
+        end = X509Time(time_string);
     }
 
     /**
     * Add the key constraints of the KeyUsage extension.
     * @param constr = the constraints to set
     */
-    void add_constraints(Key_Constraints usage)
+    void addConstraints(KeyConstraints usage)
     {
         constraints = usage;
     }
@@ -181,18 +181,18 @@ public:
     * Add constraints to the ExtendedKeyUsage extension.
     * @param oid = the oid to add
     */
-    void add_ex_constraint(in OID oid)
+    void addExConstraint(in OID oid)
     {
-        ex_constraints.push_back(oid);
+        ex_constraints.pushBack(oid);
     }
 
     /**
     * Add constraints to the ExtendedKeyUsage extension.
     * @param name = the name to look up the oid to add
     */
-    void add_ex_constraint(in string oid_str)
+    void addExConstraint(in string oid_str)
     {
-        ex_constraints.push_back(OIDS.lookup(oid_str));
+        ex_constraints.pushBack(OIDS.lookup(oid_str));
     }
 
     /**
@@ -206,12 +206,12 @@ public:
     {
         is_CA = false;
         path_limit = 0;
-        constraints = Key_Constraints.NO_CONSTRAINTS;
+        constraints = KeyConstraints.NO_CONSTRAINTS;
         
         auto now = Clock.currTime();
         
-        start = X509_Time(now);
-        end = X509_Time(now + expiration_time);
+        start = X509Time(now);
+        end = X509Time(now + expiration_time);
         
         if (initial_opts == "")
             return;
@@ -219,7 +219,7 @@ public:
         Vector!string parsed = splitter(initial_opts, '/');
         
         if (parsed.length > 4)
-            throw new Invalid_Argument("X.509 cert options: Too many names: " ~ initial_opts);
+            throw new InvalidArgument("X.509 cert options: Too many names: " ~ initial_opts);
         
         if (parsed.length >= 1) common_name      = parsed[0];
         if (parsed.length >= 2) country            = parsed[1];
@@ -237,40 +237,40 @@ public:
 * @param rng = the rng to use
 * @return newly created self-signed certificate
 */
-X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
-                                         in Private_Key key,
+X509Certificate createSelfSignedCert(in X509CertOptions opts,
+                                         in PrivateKey key,
                                          in string hash_fn,
                                          RandomNumberGenerator rng)
 {
-    Algorithm_Identifier sig_algo;
-    X509_DN subject_dn;
-    Alternative_Name subject_alt;
+    AlgorithmIdentifier sig_algo;
+    X509DN subject_dn;
+    AlternativeName subject_alt;
     
-    opts.sanity_check();
+    opts.sanityCheck();
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
-    Unique!PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
+    Unique!PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
     load_info(opts, subject_dn, subject_alt);
     
-    Key_Constraints constraints;
+    KeyConstraints constraints;
     if (opts.is_CA)
-        constraints = Key_Constraints(KEY_CERT_SIGN | CRL_SIGN);
+        constraints = KeyConstraints(KEY_CERT_SIGN | CRL_SIGN);
     else
         constraints = find_constraints(key, opts.constraints);
     
-    X509_Extensions extensions;
+    X509Extensions extensions;
     
-    extensions.add(new Basic_Constraints(opts.is_CA, opts.path_limit), true);
+    extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit), true);
     
-    extensions.add(new Key_Usage(constraints), true);
+    extensions.add(new KeyUsage(constraints), true);
     
-    extensions.add(new Subject_Key_ID(pub_key));
+    extensions.add(new SubjectKeyID(pub_key));
     
-    extensions.add(new Subject_Alternative_Name(subject_alt));
+    extensions.add(new SubjectAlternativeName(subject_alt));
     
-    extensions.add(new Extended_Key_Usage(opts.ex_constraints));
+    extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
     
-    return X509_CA.make_cert(*signer, rng, sig_algo, pub_key,
+    return X509_CA.makeCert(*signer, rng, sig_algo, pub_key,
                               opts.start, opts.end,
                               subject_dn, subject_dn,
                               extensions);
@@ -284,75 +284,75 @@ X509_Certificate create_self_signed_cert(in X509_Cert_Options opts,
 * @param hash_fn = the hash function to use
 * @return newly created PKCS#10 request
 */
-PKCS10_Request create_cert_req(in X509_Cert_Options opts,
-                               in Private_Key key,
+PKCS10Request createCertReq(in X509CertOptions opts,
+                               in PrivateKey key,
                                in string hash_fn,
                                RandomNumberGenerator rng)
 {
-    Algorithm_Identifier sig_algo;
-    X509_DN subject_dn;
-    Alternative_Name subject_alt;
+    AlgorithmIdentifier sig_algo;
+    X509DN subject_dn;
+    AlternativeName subject_alt;
     
-    opts.sanity_check();
+    opts.sanityCheck();
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
-    PK_Signer signer = choose_sig_format(key, hash_fn, sig_algo);
+    PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
     load_info(opts, subject_dn, subject_alt);
     
     __gshared immutable size_t PKCS10_VERSION = 0;
     
-    X509_Extensions extensions;
+    X509Extensions extensions;
     
-    extensions.add(new Basic_Constraints(opts.is_CA, opts.path_limit));
-    extensions.add(new Key_Usage(opts.is_CA ? 
-                                          Key_Constraints(KEY_CERT_SIGN | CRL_SIGN) : 
+    extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
+    extensions.add(new KeyUsage(opts.is_CA ? 
+                                          KeyConstraints(KEY_CERT_SIGN | CRL_SIGN) : 
                                           find_constraints(key, opts.constraints)));
-    extensions.add(new Extended_Key_Usage(opts.ex_constraints));
-    extensions.add(new Subject_Alternative_Name(subject_alt));
+    extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
+    extensions.add(new SubjectAlternativeName(subject_alt));
     
-    DER_Encoder tbs_req;
+    DEREncoder tbs_req;
     
-    tbs_req.start_cons(ASN1_Tag.SEQUENCE)
+    tbs_req.startCons(ASN1Tag.SEQUENCE)
             .encode(PKCS10_VERSION)
             .encode(subject_dn)
-            .raw_bytes(pub_key)
-            .start_explicit(0);
+            .rawBytes(pub_key)
+            .startExplicit(0);
     
     if (opts.challenge != "")
     {
-        ASN1_String challenge(opts.challenge, ASN1_Tag.DIRECTORY_STRING);
+        ASN1String challenge(opts.challenge, ASN1Tag.DIRECTORYSTRING);
         
         tbs_req.encode(Attribute("PKCS9.ChallengePassword",
-                                 DER_Encoder().encode(challenge).get_contents_unlocked()));
+                                 DEREncoder().encode(challenge).getContentsUnlocked()));
     }
     
     tbs_req.encode(Attribute("PKCS9.ExtensionRequest",
-                      DER_Encoder()
-                      .start_cons(ASN1_Tag.SEQUENCE)
+                      DEREncoder()
+                      .startCons(ASN1Tag.SEQUENCE)
                       .encode(extensions)
-                      .end_cons()
-                      .get_contents_unlocked()
+                      .endCons()
+                      .getContentsUnlocked()
                       )
-                   ).end_explicit().end_cons();
+                   ).endExplicit().endCons();
             
-    const Vector!ubyte req = X509_Object.make_signed(signer, rng, sig_algo, tbs_req.get_contents());
+    const Vector!ubyte req = X509Object.makeSigned(signer, rng, sig_algo, tbs_req.getContents());
     
-    return PKCS10_Request(req);
+    return PKCS10Request(req);
 }
 
 /*
 * Load information from the X509_Cert_Options
 */
-private void load_info(in X509_Cert_Options opts, X509_DN subject_dn,
-                           ref Alternative_Name subject_alt)
+private void loadInfo(in X509CertOptions opts, X509DN subject_dn,
+                           ref AlternativeName subject_alt)
 {
-    subject_dn.add_attribute("X520.CommonName", opts.common_name);
-    subject_dn.add_attribute("X520.Country", opts.country);
-    subject_dn.add_attribute("X520.State", opts.state);
-    subject_dn.add_attribute("X520.Locality", opts.locality);
-    subject_dn.add_attribute("X520.Organization", opts.organization);
-    subject_dn.add_attribute("X520.OrganizationalUnit", opts.org_unit);
-    subject_dn.add_attribute("X520.SerialNumber", opts.serial_number);
-    subject_alt = Alternative_Name(opts.email, opts.uri, opts.dns, opts.ip);
-    subject_alt.add_othername(OIDS.lookup("PKIX.XMPPAddr"), opts.xmpp, ASN1_Tag.UTF8_STRING);
+    subject_dn.addAttribute("X520.CommonName", opts.common_name);
+    subject_dn.addAttribute("X520.Country", opts.country);
+    subject_dn.addAttribute("X520.State", opts.state);
+    subject_dn.addAttribute("X520.Locality", opts.locality);
+    subject_dn.addAttribute("X520.Organization", opts.organization);
+    subject_dn.addAttribute("X520.OrganizationalUnit", opts.org_unit);
+    subject_dn.addAttribute("X520.SerialNumber", opts.serial_number);
+    subject_alt = AlternativeName(opts.email, opts.uri, opts.dns, opts.ip);
+    subject_alt.addOthername(OIDS.lookup("PKIX.XMPPAddr"), opts.xmpp, ASN1Tag.UTF8_STRING);
 }

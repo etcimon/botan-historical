@@ -15,41 +15,41 @@ import botan.utils.rounding;
 /**
 * Filter interface for Transformations
 */
-class Transformation_Filter : Keyed_Filter, Buffered_Filter
+class TransformationFilter : KeyedFilter, Buffered_Filter
 {
 public:
     this(Transformation transform)
     {
-        super(choose_update_size(transform.update_granularity()),
-              transform.minimum_final_size());
-        m_nonce = transform.default_nonce_length() == 0;
+        super(chooseUpdateSize(transform.updateGranularity()),
+              transform.minimumFinalSize());
+        m_nonce = transform.defaultNonceLength() == 0;
         m_transform = transform;
-        m_buffer = m_transform.update_granularity();
+        m_buffer = m_transform.updateGranularity();
     }
 
-    final void set_iv(in InitializationVector iv)
+    final void setIv(in InitializationVector iv)
     {
         m_nonce.update(iv);
     }
 
-    final void set_key(in SymmetricKey key)
+    final void setKey(in SymmetricKey key)
     {
-        if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
-            keyed.set_key(key);
+        if (KeyedTransform keyed = cast(KeyedTransform)(*m_transform))
+            keyed.setKey(key);
         else if (key.length != 0)
             throw new Exception("Transformation " ~ name ~ " does not accept keys");
     }
 
-    final Key_Length_Specification key_spec() const
+    final KeyLengthSpecification keySpec() const
     {
-        if (Keyed_Transform keyed = cast(Keyed_Transform)(*m_transform))
-            return keyed.key_spec();
+        if (KeyedTransform keyed = cast(KeyedTransform)(*m_transform))
+            return keyed.keySpec();
         return Key_Length_Specification(0);
     }
 
-    final bool valid_iv_length(size_t length) const
+    final bool validIvLength(size_t length) const
     {
-        return m_transform.valid_nonce_length(length);
+        return m_transform.validNonceLength(length);
     }
 
     final @property string name() const
@@ -58,9 +58,9 @@ public:
     }
 
 protected:
-    final Transformation get_transform() const { return *m_transform; }
+    final Transformation getTransform() const { return *m_transform; }
 
-    final Transformation get_transform() { return *m_transform; }
+    final Transformation getTransform() { return *m_transform; }
 
 private:
     final void write(in ubyte* input, size_t input_length)
@@ -68,21 +68,21 @@ private:
         super.write(input, input_length);
     }    
 
-    final void start_msg()
+    final void startMsg()
     {
-        send(m_transform.start_vec(m_nonce));
+        send(m_transform.startVec(m_nonce));
     }
 
-    final void end_msg()
+    final void endMsg()
     {
-        super.end_msg();
+        super.endMsg();
     }
 
-    final void buffered_block(in ubyte* input, size_t input_length)
+    final void bufferedBlock(in ubyte* input, size_t input_length)
     {
         while (input_length)
         {
-            const size_t take = std.algorithm.min(m_transform.update_granularity(), input_length);
+            const size_t take = std.algorithm.min(m_transform.updateGranularity(), input_length);
             
             m_buffer.replace(input[0 .. input + take]);
             m_transform.update(m_buffer);
@@ -94,14 +94,14 @@ private:
         }
     }
 
-    final void buffered_final(in ubyte* input, size_t input_length)
+    final void bufferedFinal(in ubyte* input, size_t input_length)
     {
-        Secure_Vector!ubyte buf = Secure_Vector!ubyte(input, input + input_length);
+        SecureVector!ubyte buf = SecureVector!ubyte(input, input + input_length);
         m_transform.finish(buf);
         send(buf);
     }
 
-    final class Nonce_State
+    final class NonceState
     {
     public:
         this(bool allow_null_nonce)
@@ -111,7 +111,7 @@ private:
 
         void update(in InitializationVector iv)
         {
-            m_nonce = unlock(iv.bits_of());
+            m_nonce = unlock(iv.bitsOf());
             m_fresh_nonce = true;
         }
 
@@ -128,14 +128,14 @@ private:
         Vector!ubyte m_nonce;
     }
 
-    Nonce_State m_nonce;
+    NonceState m_nonce;
     Unique!Transformation m_transform;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
 }
 
 private:
 
-size_t choose_update_size(size_t update_granularity)
+size_t chooseUpdateSize(size_t update_granularity)
 {
     const size_t target_size = 1024;
     

@@ -19,20 +19,20 @@ import botan.utils.rotate;
 /**
 * CAST-256
 */
-final class CAST_256 : Block_Cipher_Fixed_Params!(16, 4, 32, 4)
+final class CAST256 : BlockCipherFixedParams!(16, 4, 32, 4)
 {
 public:
     /*
 * CAST-256 Encryption
 */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_bigEndian!uint(input, 0);
-            uint B = load_bigEndian!uint(input, 1);
-            uint C = load_bigEndian!uint(input, 2);
-            uint D = load_bigEndian!uint(input, 3);
+            uint A = loadBigEndian!uint(input, 0);
+            uint B = loadBigEndian!uint(input, 1);
+            uint C = loadBigEndian!uint(input, 2);
+            uint D = loadBigEndian!uint(input, 3);
             
             round1(C, D, m_MK[ 0], m_RK[ 0]); round2(B, C, m_MK[ 1], m_RK[ 1]);
             round3(A, B, m_MK[ 2], m_RK[ 2]); round1(D, A, m_MK[ 3], m_RK[ 3]);
@@ -59,7 +59,7 @@ public:
             round1(D, A, m_MK[47], m_RK[47]); round3(A, B, m_MK[46], m_RK[46]);
             round2(B, C, m_MK[45], m_RK[45]); round1(C, D, m_MK[44], m_RK[44]);
             
-            store_bigEndian(output, A, B, C, D);
+            storeBigEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -69,14 +69,14 @@ public:
     /*
     * CAST-256 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_bigEndian!uint(input, 0);
-            uint B = load_bigEndian!uint(input, 1);
-            uint C = load_bigEndian!uint(input, 2);
-            uint D = load_bigEndian!uint(input, 3);
+            uint A = loadBigEndian!uint(input, 0);
+            uint B = loadBigEndian!uint(input, 1);
+            uint C = loadBigEndian!uint(input, 2);
+            uint D = loadBigEndian!uint(input, 3);
             
             round1(C, D, m_MK[44], m_RK[44]); round2(B, C, m_MK[45], m_RK[45]);
             round3(A, B, m_MK[46], m_RK[46]); round1(D, A, m_MK[47], m_RK[47]);
@@ -103,7 +103,7 @@ public:
             round1(D, A, m_MK[ 3], m_RK[ 3]); round3(A, B, m_MK[ 2], m_RK[ 2]);
             round2(B, C, m_MK[ 1], m_RK[ 1]); round1(C, D, m_MK[ 0], m_RK[ 0]);
             
-            store_bigEndian(output, A, B, C, D);
+            storeBigEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -117,13 +117,13 @@ public:
     }
 
     @property string name() const { return "CAST-256"; }
-    BlockCipher clone() const { return new CAST_256; }
-private:
+    BlockCipher clone() const { return new CAST256; }
+protected:
 
     /*
     * CAST-256 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable uint[192] KEY_MASK = [
             0x5A827999, 0xC95C653A, 0x383650DB, 0xA7103C7C, 0x15EA281D, 0x84C413BE,
@@ -168,7 +168,7 @@ private:
         m_MK.resize(48);
         m_RK.resize(48);
         
-        Secure_Vector!uint K = Secure_Vector!uint(8);
+        SecureVector!uint K = SecureVector!uint(8);
         foreach (size_t i; 0 .. length)
             K[i/4] = (K[i/4] << 8) + key[i];
         
@@ -205,8 +205,8 @@ private:
         }
     }
 
-    Secure_Vector!uint m_MK;
-    Secure_Vector!ubyte m_RK;
+    SecureVector!uint m_MK;
+    SecureVector!ubyte m_RK;
 }
 
 
@@ -217,7 +217,7 @@ private:
 */
 void round1(ref uint output, uint input, uint mask, uint rot) pure
 {
-    uint temp = rotate_left(mask + input, rot);
+    uint temp = rotateLeft(mask + input, rot);
     output  ^= (CAST_SBOX1[get_byte(0, temp)] ^ CAST_SBOX2[get_byte(1, temp)]) -
                 CAST_SBOX3[get_byte(2, temp)] + CAST_SBOX4[get_byte(3, temp)];
 }
@@ -227,7 +227,7 @@ void round1(ref uint output, uint input, uint mask, uint rot) pure
 */
 void round2(ref uint output, uint input, uint mask, uint rot) pure
 {
-    uint temp = rotate_left(mask ^ input, rot);
+    uint temp = rotateLeft(mask ^ input, rot);
     output  ^= (CAST_SBOX1[get_byte(0, temp)]  - CAST_SBOX2[get_byte(1, temp)] +
                 CAST_SBOX3[get_byte(2, temp)]) ^ CAST_SBOX4[get_byte(3, temp)];
 }
@@ -237,7 +237,7 @@ void round2(ref uint output, uint input, uint mask, uint rot) pure
 */
 void round3(ref uint output, uint input, uint mask, uint rot) pure
 {
-    uint temp = rotate_left(mask - input, rot);
+    uint temp = rotateLeft(mask - input, rot);
     output  ^= ((CAST_SBOX1[get_byte(0, temp)]  + CAST_SBOX2[get_byte(1, temp)]) ^
                 CAST_SBOX3[get_byte(2, temp)]) - CAST_SBOX4[get_byte(3, temp)];
 }

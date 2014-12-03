@@ -14,10 +14,10 @@ import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * SHA-160 in x86 assembly
 */
-class SHA_160_X86_32 : SHA_160
+class SHA160X8632 : SHA_160
 {
 public:
-    override HashFunction clone() const { return new SHA_160_X86_32; }
+    override HashFunction clone() const { return new SHA160X8632; }
 
     // Note 81 instead of normal 80: x86-32 asm needs an extra temp
     this() 
@@ -28,12 +28,12 @@ private:
     /*
     * SHA-160 Compression Function
     */
-    override void compress_n(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
             botan_sha160_x86_32_compress(m_digest.ptr, input, m_W.ptr);
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
@@ -231,7 +231,7 @@ enum MAGIC4 = 0xCA62C1D6;
 enum MSG = ESP;
 enum T2 = EBP;
 
-string F1(string A, string B, string C, string D, string E, string F, ubyte N) 
+string f1(string A, string B, string C, string D, string E, string F, ubyte N) 
 {
     return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F) ~
@@ -246,7 +246,7 @@ string F1(string A, string B, string C, string D, string E, string F, ubyte N)
             ADD(E, F);
 }
 
-string F2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
+string f2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
 {
     return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F)     ~
@@ -260,7 +260,7 @@ string F2_4(string A, string B, string C, string D, string E, string F, ubyte N,
             ADD(E, F);
 }
 
-string F3(string A, string B, string C, string D, string E, string F, ubyte N)
+string f3(string A, string B, string C, string D, string E, string F, ubyte N)
 {
     return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F)     ~
@@ -277,12 +277,12 @@ string F3(string A, string B, string C, string D, string E, string F, ubyte N)
             ADD(E, F);
 }
 
-string F2(string A, string B, string C, string D, string E, string F, ubyte MSG2)
+string f2(string A, string B, string C, string D, string E, string F, ubyte MSG2)
 {
     return F2_4(A, B, C, D, E, F, MSG2, MAGIC2);
 }
 
-string F4(string A, string B, string C, string D, string E, string F, ubyte MSG2)
+string f4(string A, string B, string C, string D, string E, string F, ubyte MSG2)
 {
     return F2_4(A, B, C, D, E, F, MSG2, MAGIC4);
 }

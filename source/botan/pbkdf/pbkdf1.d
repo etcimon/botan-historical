@@ -19,7 +19,7 @@ import botan.utils.exceptn;
 * Can only generate a key up to the size of the hash output.
 * Unless needed for backwards compatability, use PKCS5_PBKDF2
 */
-final class PKCS5_PBKDF1 : PBKDF
+final class PKCS5PBKDF1 : PBKDF
 {
 public:
     /**
@@ -38,24 +38,24 @@ public:
 
     PBKDF clone() const
     {
-        return new PKCS5_PBKDF1(m_hash.clone());
+        return new PKCS5PBKDF1(m_hash.clone());
     }
 
     /*
     * Return a PKCS#5 PBKDF1 derived key
     */
-    Pair!(size_t, OctetString) key_derivation(size_t key_len,
+    Pair!(size_t, OctetString) keyDerivation(size_t key_len,
                                               in string passphrase,
                                               in ubyte* salt, size_t salt_len,
                                               size_t iterations,
                                               Duration loop_for) const
     {
         if (key_len > m_hash.output_length)
-            throw new Invalid_Argument("PKCS5_PBKDF1: Requested output length too long");
+            throw new InvalidArgument("PKCS5_PBKDF1: Requested output length too long");
         
         m_hash.update(passphrase);
         m_hash.update(salt, salt_len);
-        Secure_Vector!ubyte key = m_hash.finished();
+        SecureVector!ubyte key = m_hash.finished();
         
         const start = Clock.currTime();
         size_t iterations_performed = 1;

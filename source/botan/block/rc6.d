@@ -17,20 +17,20 @@ import std.algorithm;
 /**
 * RC6, Ron Rivest's AES candidate
 */
-final class RC6 : Block_Cipher_Fixed_Params!(16, 1, 32)
+final class RC6 : BlockCipherFixedParams!(16, 1, 32)
 {
 public:
     /*
     * RC6 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_littleEndian!uint(input, 0);
-            uint B = load_littleEndian!uint(input, 1);
-            uint C = load_littleEndian!uint(input, 2);
-            uint D = load_littleEndian!uint(input, 3);
+            uint A = loadLittleEndian!uint(input, 0);
+            uint B = loadLittleEndian!uint(input, 1);
+            uint C = loadLittleEndian!uint(input, 2);
+            uint D = loadLittleEndian!uint(input, 3);
             
             B += m_S[0]; D += m_S[1];
             
@@ -38,30 +38,30 @@ public:
             {
                 uint T1, T2;
                 
-                T1 = rotate_left(B*(2*B+1), 5);
-                T2 = rotate_left(D*(2*D+1), 5);
-                A = rotate_left(A ^ T1, T2 % 32) + m_S[2*j+2];
-                C = rotate_left(C ^ T2, T1 % 32) + m_S[2*j+3];
+                T1 = rotateLeft(B*(2*B+1), 5);
+                T2 = rotateLeft(D*(2*D+1), 5);
+                A = rotateLeft(A ^ T1, T2 % 32) + m_S[2*j+2];
+                C = rotateLeft(C ^ T2, T1 % 32) + m_S[2*j+3];
                 
-                T1 = rotate_left(C*(2*C+1), 5);
-                T2 = rotate_left(A*(2*A+1), 5);
-                B = rotate_left(B ^ T1, T2 % 32) + m_S[2*j+4];
-                D = rotate_left(D ^ T2, T1 % 32) + m_S[2*j+5];
+                T1 = rotateLeft(C*(2*C+1), 5);
+                T2 = rotateLeft(A*(2*A+1), 5);
+                B = rotateLeft(B ^ T1, T2 % 32) + m_S[2*j+4];
+                D = rotateLeft(D ^ T2, T1 % 32) + m_S[2*j+5];
                 
-                T1 = rotate_left(D*(2*D+1), 5);
-                T2 = rotate_left(B*(2*B+1), 5);
-                C = rotate_left(C ^ T1, T2 % 32) + m_S[2*j+6];
-                A = rotate_left(A ^ T2, T1 % 32) + m_S[2*j+7];
+                T1 = rotateLeft(D*(2*D+1), 5);
+                T2 = rotateLeft(B*(2*B+1), 5);
+                C = rotateLeft(C ^ T1, T2 % 32) + m_S[2*j+6];
+                A = rotateLeft(A ^ T2, T1 % 32) + m_S[2*j+7];
                 
-                T1 = rotate_left(A*(2*A+1), 5);
-                T2 = rotate_left(C*(2*C+1), 5);
-                D = rotate_left(D ^ T1, T2 % 32) + m_S[2*j+8];
-                B = rotate_left(B ^ T2, T1 % 32) + m_S[2*j+9];
+                T1 = rotateLeft(A*(2*A+1), 5);
+                T2 = rotateLeft(C*(2*C+1), 5);
+                D = rotateLeft(D ^ T1, T2 % 32) + m_S[2*j+8];
+                B = rotateLeft(B ^ T2, T1 % 32) + m_S[2*j+9];
             }
             
             A += m_S[42]; C += m_S[43];
             
-            store_littleEndian(output, A, B, C, D);
+            storeLittleEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -70,14 +70,14 @@ public:
     /*
     * RC6 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_littleEndian!uint(input, 0);
-            uint B = load_littleEndian!uint(input, 1);
-            uint C = load_littleEndian!uint(input, 2);
-            uint D = load_littleEndian!uint(input, 3);
+            uint A = loadLittleEndian!uint(input, 0);
+            uint B = loadLittleEndian!uint(input, 1);
+            uint C = loadLittleEndian!uint(input, 2);
+            uint D = loadLittleEndian!uint(input, 3);
             
             C -= m_S[43]; A -= m_S[42];
             
@@ -85,30 +85,30 @@ public:
             {
                 uint T1, T2;
                 
-                T1 = rotate_left(A*(2*A+1), 5);
-                T2 = rotate_left(C*(2*C+1), 5);
-                B = rotate_right(B - m_S[41 - 2*j], T1 % 32) ^ T2;
-                D = rotate_right(D - m_S[40 - 2*j], T2 % 32) ^ T1;
+                T1 = rotateLeft(A*(2*A+1), 5);
+                T2 = rotateLeft(C*(2*C+1), 5);
+                B = rotateRight(B - m_S[41 - 2*j], T1 % 32) ^ T2;
+                D = rotateRight(D - m_S[40 - 2*j], T2 % 32) ^ T1;
                 
-                T1 = rotate_left(D*(2*D+1), 5);
-                T2 = rotate_left(B*(2*B+1), 5);
-                A = rotate_right(A - m_S[39 - 2*j], T1 % 32) ^ T2;
-                C = rotate_right(C - m_S[38 - 2*j], T2 % 32) ^ T1;
+                T1 = rotateLeft(D*(2*D+1), 5);
+                T2 = rotateLeft(B*(2*B+1), 5);
+                A = rotateRight(A - m_S[39 - 2*j], T1 % 32) ^ T2;
+                C = rotateRight(C - m_S[38 - 2*j], T2 % 32) ^ T1;
                 
-                T1 = rotate_left(C*(2*C+1), 5);
-                T2 = rotate_left(A*(2*A+1), 5);
-                D = rotate_right(D - m_S[37 - 2*j], T1 % 32) ^ T2;
-                B = rotate_right(B - m_S[36 - 2*j], T2 % 32) ^ T1;
+                T1 = rotateLeft(C*(2*C+1), 5);
+                T2 = rotateLeft(A*(2*A+1), 5);
+                D = rotateRight(D - m_S[37 - 2*j], T1 % 32) ^ T2;
+                B = rotateRight(B - m_S[36 - 2*j], T2 % 32) ^ T1;
                 
-                T1 = rotate_left(B*(2*B+1), 5);
-                T2 = rotate_left(D*(2*D+1), 5);
-                C = rotate_right(C - m_S[35 - 2*j], T1 % 32) ^ T2;
-                A = rotate_right(A - m_S[34 - 2*j], T2 % 32) ^ T1;
+                T1 = rotateLeft(B*(2*B+1), 5);
+                T2 = rotateLeft(D*(2*D+1), 5);
+                C = rotateRight(C - m_S[35 - 2*j], T1 % 32) ^ T2;
+                A = rotateRight(A - m_S[34 - 2*j], T2 % 32) ^ T1;
             }
             
             D -= m_S[1]; B -= m_S[0];
             
-            store_littleEndian(output, A, B, C, D);
+            storeLittleEndian(output, A, B, C, D);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -122,11 +122,11 @@ public:
 
     override @property string name() const { return "RC6"; }
     BlockCipher clone() const { return new RC6; }
-private:
+protected:
     /*
     * RC6 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         m_S.resize(44);
         
@@ -137,7 +137,7 @@ private:
         foreach (size_t i; 1 .. m_S.length)
             m_S[i] = m_S[i-1] + 0x9E3779B9;
         
-        Secure_Vector!uint K = Secure_Vector!uint(8);
+        SecureVector!uint K = SecureVector!uint(8);
         
         for (int i = length-1; i >= 0; --i)
             K[i/4] = (K[i/4] << 8) + key[i];
@@ -145,12 +145,12 @@ private:
         uint A = 0, B = 0;
         foreach (size_t i; 0 .. MIX_ROUNDS)
         {
-            A = rotate_left(m_S[i % m_S.length] + A + B, 3);
-            B = rotate_left(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);
+            A = rotateLeft(m_S[i % m_S.length] + A + B, 3);
+            B = rotateLeft(K[i % WORD_KEYLENGTH] + A + B, (A + B) % 32);
             m_S[i % m_S.length] = A;
             K[i % WORD_KEYLENGTH] = B;
         }
     }
 
-    Secure_Vector!uint m_S;
+    SecureVector!uint m_S;
 }

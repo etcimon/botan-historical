@@ -19,17 +19,17 @@ import botan.rng.auto_rng;
 import botan.filters.filters;
 import botan.math.numbertheory.numthry;
 
-void dump_data(in Vector!ubyte output, in Vector!ubyte expected)
+void dumpData(in Vector!ubyte output, in Vector!ubyte expected)
 {
-    Pipe pipe = Pipe(new Hex_Encoder);
+    Pipe pipe = Pipe(new HexEncoder);
     
-    pipe.process_msg(output);
-    pipe.process_msg(expected);
-    writeln("Got: " ~ pipe.read_all_as_string(0));
-    writeln("Exp: " ~ pipe.read_all_as_string(1));
+    pipe.processMsg(output);
+    pipe.processMsg(expected);
+    writeln("Got: " ~ pipe.readAllAsString(0));
+    writeln("Exp: " ~ pipe.readAllAsString(1));
 }
 
-size_t validate_save_and_load(const Private_Key priv_key, RandomNumberGenerator rng)
+size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
 {
     string name = priv_key.algo_name();
     
@@ -38,15 +38,15 @@ size_t validate_save_and_load(const Private_Key priv_key, RandomNumberGenerator 
     
     try
     {
-        DataSource_Memory input_pub = scoped!DataSource_Memory(pub_pem);
-        Public_Key restored_pub = x509_key.load_key(input_pub);
+        DataSourceMemory input_pub = scoped!DataSourceMemory(pub_pem);
+        PublicKey restored_pub = x509_key.load_key(input_pub);
         
         if (!restored_pub)
         {
             writeln("Could not recover " ~ name ~ " public key");
             ++fails;
         }
-        else if (restored_pub.check_key(rng, true) == false)
+        else if (restored_pub.checkKey(rng, true) == false)
         {
             writeln("Restored pubkey failed self tests " ~ name);
             ++fails;
@@ -63,15 +63,15 @@ size_t validate_save_and_load(const Private_Key priv_key, RandomNumberGenerator 
     
     try
     {
-        auto input_priv = scoped!DataSource_Memory(priv_pem);
-        Unique!Private_Key restored_priv = pkcs8.load_key(input_priv, rng);
+        auto input_priv = scoped!DataSourceMemory(priv_pem);
+        Unique!PrivateKey restored_priv = pkcs8.load_key(input_priv, rng);
         
         if (!restored_priv)
         {
             writeln("Could not recover " ~ name ~ " private key");
             ++fails;
         }
-        else if (restored_priv.check_key(rng, true) == false)
+        else if (restored_priv.checkKey(rng, true) == false)
         {
             writeln("Restored privkey failed self tests " ~ name);
             ++fails;
@@ -87,15 +87,15 @@ size_t validate_save_and_load(const Private_Key priv_key, RandomNumberGenerator 
     return fails;
 }
 
-ubyte nonzero_byte(RandomNumberGenerator rng)
+ubyte nonzeroByte(RandomNumberGenerator rng)
 {
     ubyte b = 0;
     while(b == 0)
-        b = rng.next_byte();
+        b = rng.nextByte();
     return b;
 }
 
-string PK_TEST(string expr, string msg) 
+string pKTEST(string expr, string msg) 
 {
     return `
         {
@@ -109,13 +109,13 @@ string PK_TEST(string expr, string msg)
     `;
 }
 
-size_t validate_encryption(PK_Encryptor e, PK_Decryptor d,
+size_t validateEncryption(PKEncryptor e, PKDecryptor d,
                            string algo, string input,
                            string random, string exp)
 {
-    Vector!ubyte message = hex_decode(input);
-    Vector!ubyte expected = hex_decode(exp);
-    Fixed_Output_RNG rng = scoped!Fixed_Output_RNG(hex_decode(random));
+    Vector!ubyte message = hexDecode(input);
+    Vector!ubyte expected = hexDecode(exp);
+    Fixed_Output_RNG rng = scoped!Fixed_Output_RNG(hexDecode(random));
     
     size_t fails = 0;
     
@@ -152,8 +152,8 @@ size_t validate_encryption(PK_Encryptor e, PK_Decryptor d,
             {
                 auto bad_ptext = unlock(d.decrypt(bad_ctext));
                 writeln(algo ~ " failed - decrypted bad data");
-                writeln(hex_encode(bad_ctext) ~ " . " ~ hex_encode(bad_ptext));
-                writeln(hex_encode(ctext) ~ " . " ~ hex_encode(decrypted));
+                writeln(hexEncode(bad_ctext) ~ " . " ~ hexEncode(bad_ptext));
+                writeln(hexEncode(ctext) ~ " . " ~ hexEncode(decrypted));
                 ++fails;
             }
             catch (Throwable) {}
@@ -163,7 +163,7 @@ size_t validate_encryption(PK_Encryptor e, PK_Decryptor d,
     return fails;
 }
 
-size_t validate_signature(PK_Verifier v, PK_Signer s, string algo,
+size_t validateSignature(PKVerifier v, PKSigner s, string algo,
                           string input,
                           RandomNumberGenerator rng,
                           string exp)
@@ -171,14 +171,14 @@ size_t validate_signature(PK_Verifier v, PK_Signer s, string algo,
     return validate_signature(v, s, algo, input, rng, rng, exp);
 }
 
-size_t validate_signature(PK_Verifier v, PK_Signer s, string algo,
+size_t validateSignature(PKVerifier v, PKSigner s, string algo,
                           string input,
                           RandomNumberGenerator signer_rng,
                           RandomNumberGenerator test_rng,
                           string exp)    
 {
-    Vector!ubyte message = hex_decode(input);
-    Vector!ubyte expected = hex_decode(exp);
+    Vector!ubyte message = hexDecode(input);
+    Vector!ubyte expected = hexDecode(exp);
     Vector!ubyte sig = s.sign_message(message, signer_rng);
     
     size_t fails = 0;
@@ -209,24 +209,24 @@ size_t validate_signature(PK_Verifier v, PK_Signer s, string algo,
     return fails;
 }
 
-size_t validate_signature(PK_Verifier v, PK_Signer s, string algo,
+size_t validateSignature(PKVerifier v, PKSigner s, string algo,
                           string input,
                           RandomNumberGenerator rng,
                           string random,
                           string exp)
 {
-    Fixed_Output_RNG fixed_rng = scoped!Fixed_Output_RNG(hex_decode(random));
+    Fixed_Output_RNG fixed_rng = scoped!Fixed_Output_RNG(hexDecode(random));
     
     return validate_signature(v, s, algo, input, fixed_rng, rng, exp);
 }
 
-size_t validate_kas(PK_Key_Agreement kas, string algo,
+size_t validateKas(PKKeyAgreement kas, string algo,
                     const Vector!ubyte pubkey, string output,
                     size_t keylen)
 {
-    Vector!ubyte expected = hex_decode(output);
+    Vector!ubyte expected = hexDecode(output);
     
-    Vector!ubyte got = unlock(kas.derive_key(keylen, pubkey).bits_of());
+    Vector!ubyte got = unlock(kas.deriveKey(keylen, pubkey).bitsOf());
     
     size_t fails = 0;
     

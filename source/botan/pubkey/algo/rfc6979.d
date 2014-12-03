@@ -20,24 +20,24 @@ import botan.utils.types;
 * @param h = the message hash already reduced mod q
 * @param hash = the hash function used to generate h
 */
-BigInt generate_rfc6979_nonce(in BigInt x, in BigInt q, in BigInt h, in string hash)
+BigInt generateRfc6979Nonce(in BigInt x, in BigInt q, in BigInt h, in string hash)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     auto rng = scoped!HMAC_DRBG(af.make_mac("HMAC(" ~ hash ~ ")"), null);
 
     const size_t qlen = q.bits();
     const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
     
-    Secure_Vector!ubyte input = BigInt.encode_1363(x, rlen);
+    SecureVector!ubyte input = BigInt.encode_1363(x, rlen);
     
-    input ~= BigInt.encode_1363(h, rlen);
+    input ~= BigInt.encode1363(h, rlen);
     
-    rng.add_entropy(input.ptr, input.length);
+    rng.addEntropy(input.ptr, input.length);
     
     BigInt k;
     
-    Secure_Vector!ubyte kbits = Secure_Vector!ubyte(rlen);
+    SecureVector!ubyte kbits = SecureVector!ubyte(rlen);
     
     while (k == 0 || k >= q)
     {
@@ -52,7 +52,7 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.codec.hex;
 
-size_t rfc6979_testcase(string q_str,
+size_t rfc6979Testcase(string q_str,
                         string x_str,
                         string h_str,
                         string exp_k_str,
@@ -94,5 +94,5 @@ unittest
                               "0x7BDB6B0FF756E1BB5D53583EF979082F9AD5BD5B",
                               "SHA-1", 2);
     
-    test_report("RFC 6979", 2, fails);
+    testReport("RFC 6979", 2, fails);
 }

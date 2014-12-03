@@ -21,21 +21,21 @@ import std.algorithm;
 * Base class for CCM encryption and decryption
 * @see RFC 3610
 */
-class CCM_Mode : AEAD_Mode
+class CCMMode : AEAD_Mode
 {
 public:
-    final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
     {
-        if (!valid_nonce_length(nonce_len))
-            throw new Invalid_IV_Length(name, nonce_len);
+        if (!validNonceLength(nonce_len))
+            throw new InvalidIVLength(name, nonce_len);
         
         m_nonce.replace(nonce[0 .. nonce + nonce_len]);
         m_msg_buf.clear();
         
-        return Secure_Vector!ubyte();
+        return SecureVector!ubyte();
     }
 
-    final override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    final override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -45,7 +45,7 @@ public:
         buffer.resize(offset); // truncate msg
     }
 
-    final override void set_associated_data(in ubyte* ad, size_t length)
+    final override void setAssociatedData(in ubyte* ad, size_t length)
     {
         m_ad_buf.clear();
         
@@ -54,11 +54,11 @@ public:
             // FIXME: support larger AD using length encoding rules
             assert(length < (0xFFFF - 0xFF), "Supported CCM AD length");
             
-            m_ad_buf.push_back(get_byte!ushort(0, length));
-            m_ad_buf.push_back(get_byte!ushort(1, length));
+            m_ad_buf.pushBack(get_byte!ushort(0, length));
+            m_ad_buf.pushBack(get_byte!ushort(1, length));
             m_ad_buf += Pair(ad, length);
             while (m_ad_buf.length % BS)
-                m_ad_buf.push_back(0); // pad with zeros to full block size
+                m_ad_buf.pushBack(0); // pad with zeros to full block size
         }
     }
 
@@ -67,29 +67,29 @@ public:
         return (m_cipher.name ~ "/CCM(" ~ to!string(tag_size()) ~ "," ~ to!string(L())) ~ ")";
     }
 
-    final size_t update_granularity() const
+    final size_t updateGranularity() const
     {
         /*
         This value does not particularly matter as regardless update
         buffers all input, so in theory this could be 1. However as for instance
-        Transformation_Filter creates update_granularity() ubyte buffers, use a
+        Transformation_Filter creates updateGranularity() ubyte buffers, use a
         somewhat large size to avoid bouncing on a tiny buffer.
         */
-        return m_cipher.parallel_bytes();
+        return m_cipher.parallelBytes();
     }
 
 
-    final override Key_Length_Specification key_spec() const
+    final override KeyLengthSpecification keySpec() const
     {
-        return m_cipher.key_spec();
+        return m_cipher.keySpec();
     }
 
-    final override bool valid_nonce_length(size_t n) const
+    final override bool validNonceLength(size_t n) const
     {
         return (n == (15-L()));
     }
 
-    final override size_t default_nonce_length() const
+    final override size_t defaultNonceLength() const
     {
         return (15-L());
     }
@@ -101,7 +101,7 @@ public:
         m_ad_buf.clear();
     }
 
-    final size_t tag_size() const { return m_tag_size; }
+    final size_t tagSize() const { return m_tag_size; }
 
 protected:
     const size_t BS = 16; // intrinsic to CCM definition
@@ -115,20 +115,20 @@ protected:
         m_L = L;
         m_cipher = cipher;
         if (m_cipher.block_size != BS)
-            throw new Invalid_Argument(m_cipher.name ~ " cannot be used with CCM mode");
+            throw new InvalidArgument(m_cipher.name ~ " cannot be used with CCM mode");
         
         if (L < 2 || L > 8)
-            throw new Invalid_Argument("Invalid CCM L value " ~ to!string(L));
+            throw new InvalidArgument("Invalid CCM L value " ~ to!string(L));
         
         if (tag_size < 4 || tag_size > 16 || tag_size % 2 != 0)
-            throw new Invalid_Argument("invalid CCM tag length " ~ to!string(tag_size));
+            throw new InvalidArgument("invalid CCM tag length " ~ to!string(tag_size));
     }
 
-    final size_t L() const { return m_L; }
+    final size_t l() const { return m_L; }
 
     final BlockCipher cipher() const { return *m_cipher; }
 
-    final void encode_length(size_t len, ubyte* output)
+    final void encodeLength(size_t len, ubyte* output)
     {
         const size_t len_bytes = L();
         
@@ -140,58 +140,58 @@ protected:
         assert((len >> (len_bytes*8)) == 0, "Message length fits in field");
     }
 
-    final void inc(Secure_Vector!ubyte C)
+    final void inc(SecureVector!ubyte C)
     {
         for (size_t i = 0; i != C.length; ++i)
             if (++C[C.length-i-1])
                 break;
     }
 
-    final Secure_Vector!ubyte ad_buf() const { return m_ad_buf; }
+    final SecureVector!ubyte adBuf() const { return m_ad_buf; }
 
-    final Secure_Vector!ubyte msg_buf() { return m_msg_buf; }
+    final SecureVector!ubyte msgBuf() { return m_msg_buf; }
 
-    final Secure_Vector!ubyte format_b0(size_t sz)
+    final SecureVector!ubyte formatB0(size_t sz)
     {
-        Secure_Vector!ubyte B0 = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte B0 = SecureVector!ubyte(BS);
         
         const ubyte b_flags = (m_ad_buf.length ? 64 : 0) + (((tag_size()/2)-1) << 3) + (L()-1);
         
         B0[0] = b_flags;
-        copy_mem(&B0[1], m_nonce.ptr, m_nonce.length);
+        copyMem(&B0[1], m_nonce.ptr, m_nonce.length);
         encode_length(sz, &B0[m_nonce.length+1]);
         
         return B0;
     }
 
-    final Secure_Vector!ubyte format_c0()
+    final SecureVector!ubyte formatC0()
     {
-        Secure_Vector!ubyte C = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte C = SecureVector!ubyte(BS);
         
         const ubyte a_flags = L()-1;
         
         C[0] = a_flags;
-        copy_mem(&C[1], m_nonce.ptr, m_nonce.length);
+        copyMem(&C[1], m_nonce.ptr, m_nonce.length);
         
         return C;
     }
 private:
-    final override void key_schedule(in ubyte* key, size_t length)
+    final override void keySchedule(in ubyte* key, size_t length)
     {
-        m_cipher.set_key(key, length);
+        m_cipher.setKey(key, length);
     }
 
     const size_t m_tag_size;
     const size_t m_L;
 
     Unique!BlockCipher m_cipher;
-    Secure_Vector!ubyte m_nonce, m_msg_buf, m_ad_buf;
+    SecureVector!ubyte m_nonce, m_msg_buf, m_ad_buf;
 }
 
 /**
 * CCM Encryption
 */
-final class CCM_Encryption : CCM_Mode
+final class CCMEncryption : CCM_Mode
 {
 public:
     /**
@@ -206,7 +206,7 @@ public:
         super(cipher, tag_size, L);
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         
@@ -217,13 +217,13 @@ public:
         
         assert(sz >= tag_size(), "We have the tag");
         
-        const Secure_Vector!ubyte ad = ad_buf();
+        const SecureVector!ubyte ad = ad_buf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
         const BlockCipher E = cipher();
         
-        Secure_Vector!ubyte T = Secure_Vector!ubyte(BS);
-        E.encrypt(format_b0(sz - tag_size()), T);
+        SecureVector!ubyte T = SecureVector!ubyte(BS);
+        E.encrypt(formatB0(sz - tag_size()), T);
         
         for (size_t i = 0; i != ad.length; i += BS)
         {
@@ -231,13 +231,13 @@ public:
             E.encrypt(T);
         }
         
-        Secure_Vector!ubyte C = format_c0();
+        SecureVector!ubyte C = format_c0();
         
-        Secure_Vector!ubyte S0 = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte S0 = SecureVector!ubyte(BS);
         E.encrypt(C, S0);
         inc(C);
         
-        Secure_Vector!ubyte X = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte X = SecureVector!ubyte(BS);
         
         const ubyte* buf_end = &buf[sz - tag_size()];
         
@@ -258,21 +258,21 @@ public:
         T ^= S0;
         
         if (!same_mem(T.ptr, buf_end, tag_size()))
-            throw new Integrity_Failure("CCM tag check failed");
+            throw new IntegrityFailure("CCM tag check failed");
         
         buffer.resize(buffer.length - tag_size());
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     { return input_length + tag_size(); }
 
-    override size_t minimum_final_size() const { return 0; }
+    override size_t minimumFinalSize() const { return 0; }
 }
 
 /**
 * CCM Decryption
 */
-final class CCM_Decryption : CCM_Mode
+final class CCMDecryption : CCM_Mode
 {
 public:
     /**
@@ -287,7 +287,7 @@ public:
         super(cipher, tag_size, L);
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset)
+    override void finish(SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
         
@@ -296,13 +296,13 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const Secure_Vector!ubyte ad = ad_buf();
+        const SecureVector!ubyte ad = ad_buf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
         const BlockCipher E = cipher();
         
-        Secure_Vector!ubyte T = Secure_Vector!ubyte(BS);
-        E.encrypt(format_b0(sz), T);
+        SecureVector!ubyte T = SecureVector!ubyte(BS);
+        E.encrypt(formatB0(sz), T);
         
         for (size_t i = 0; i != ad.length; i += BS)
         {
@@ -310,12 +310,12 @@ public:
             E.encrypt(T);
         }
         
-        Secure_Vector!ubyte C = format_c0();
-        Secure_Vector!ubyte S0 = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte C = format_c0();
+        SecureVector!ubyte S0 = SecureVector!ubyte(BS);
         E.encrypt(C, S0);
         inc(C);
         
-        Secure_Vector!ubyte X = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte X = SecureVector!ubyte(BS);
         
         const ubyte* buf_end = &buf[sz];
         
@@ -338,11 +338,11 @@ public:
         buffer += Pair(T.ptr, tag_size());
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         assert(input_length > tag_size(), "Sufficient input");
         return input_length - tag_size();
     }
 
-    override size_t minimum_final_size() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tag_size(); }
 }

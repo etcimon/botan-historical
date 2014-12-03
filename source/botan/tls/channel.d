@@ -33,7 +33,7 @@ import botan.utils.containers.hashmap;
 /**
 * Generic interface for TLS endpoint
 */
-class TLS_Channel
+class TLSChannel
 {
 public:
     /**
@@ -41,7 +41,7 @@ public:
     * @return a hint as the how many more bytes we need to process the
     *            current record (this may be 0 if on a record boundary)
     */
-    size_t received_data(in ubyte* input, size_t input_size)
+    size_t receivedData(in ubyte* input, size_t input_size)
     {
         const auto get_cipherstate = (ushort epoch)
         { return this.read_cipher_state_epoch(epoch); };
@@ -52,10 +52,10 @@ public:
         {
             while (!is_closed() && input_size)
             {
-                Secure_Vector!ubyte record;
+                SecureVector!ubyte record;
                 ulong record_sequence = 0;
                 Record_Type record_type = NO_RECORD;
-                TLS_Protocol_Version record_version;
+                TLSProtocolVersion record_version;
                 
                 size_t consumed = 0;
                 
@@ -81,24 +81,24 @@ public:
                     return needed; // need more data to complete record
                 
                 if (record.length > max_fragment_size)
-                    throw new TLS_Exception(TLS_Alert.RECORD_OVERFLOW, "Plaintext record is too large");
+                    throw new TLSException(TLSAlert.RECORD_OVERFLOW, "Plaintext record is too large");
                 
                 if (record_type == HANDSHAKE || record_type == CHANGE_CIPHER_SPEC)
                 {
                     if (!m_pending_state)
                     {
-                        create_handshake_state(record_version);
-                        if (record_version.is_datagram_protocol())
-                            sequence_numbers().read_accept(record_sequence);
+                        createHandshakeState(record_version);
+                        if (record_version.isDatagramProtocol())
+                            sequence_numbers().readAccept(record_sequence);
                     }
                     
-                    m_pending_state.handshake_io().add_record(unlock(record),
+                    m_pending_state.handshakeIo().addRecord(unlock(record),
                                                               record_type,
                                                               record_sequence);
                     
                     while (true)
                     {
-                        if (Handshake_State pending = *m_pending_state) {
+                        if (HandshakeState pending = *m_pending_state) {
                             auto msg = pending.get_next_handshake_msg();
                             
                             if (msg.first == HANDSHAKE_NONE) // no full handshake yet
@@ -112,13 +112,13 @@ public:
                 else if (record_type == HEARTBEAT && peer_supports_heartbeats())
                 {
                     if (!active_state())
-                        throw new TLS_Unexpected_Message("Heartbeat sent before handshake done");
+                        throw new TLSUnexpectedMessage("Heartbeat sent before handshake done");
                     
                     Heartbeat_Message heartbeat = Heartbeat_Message(unlock(record));
                     
                     const Vector!ubyte payload = heartbeat.payload();
                     
-                    if (heartbeat.is_request())
+                    if (heartbeat.isRequest())
                     {
                         if (!pending_state())
                         {
@@ -130,13 +130,13 @@ public:
                     }
                     else
                     {
-                        m_alert_cb(TLS_Alert(TLS_Alert.HEARTBEAT_PAYLOAD), payload[]);
+                        m_alert_cb(TLSAlert(TLSAlert.HEARTBEAT_PAYLOAD), payload[]);
                     }
                 }
                 else if (record_type == APPLICATION_DATA)
                 {
                     if (!active_state())
-                        throw new TLS_Unexpected_Message("Application data before handshake done");
+                        throw new TLSUnexpectedMessage("Application data before handshake done");
                             
                     /*
                     * OpenSSL among others sends empty records in versions
@@ -148,52 +148,52 @@ public:
                 }
                 else if (record_type == ALERT)
                 {
-                    TLS_Alert alert_msg = TLS_Alert(record);
+                    TLSAlert alert_msg = TLSAlert(record);
                     
-                    if (alert_msg.type() == TLS_Alert.NO_RENEGOTIATION)
+                    if (alert_msg.type() == TLSAlert.NO_RENEGOTIATION)
                     m_pending_state.clear();
                 
                 m_alert_cb(alert_msg, null);
                 
-                if (alert_msg.is_fatal())
+                if (alert_msg.isFatal())
                 {
                     if (auto active = active_state())
-                        m_session_manager.remove_entry(active.server_hello().session_id());
+                        m_session_manager.removeEntry(active.serverHello().sessionId());
                 }
                         
-                if (alert_msg.type() == TLS_Alert.CLOSE_NOTIFY)
-                    send_warning_alert(TLS_Alert.CLOSE_NOTIFY); // reply in kind
+                if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY)
+                    send_warning_alert(TLSAlert.CLOSE_NOTIFY); // reply in kind
                             
-                if (alert_msg.type() == TLS_Alert.CLOSE_NOTIFY || alert_msg.is_fatal())
+                if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY || alert_msg.isFatal())
                 {
                     reset_state();
                     return 0;
                 }
             }
             else
-                throw new TLS_Unexpected_Message("Unexpected record type " ~ to!string(record_type) ~ " from counterparty");
+                throw new TLSUnexpectedMessage("Unexpected record type " ~ to!string(record_type) ~ " from counterparty");
             }
                     
             return 0; // on a record boundary
         }
-        catch(TLS_Exception e)
+        catch(TLSException e)
         {
             send_fatal_alert(e.type());
             throw e;
         }
-        catch(Integrity_Failure e)
+        catch(IntegrityFailure e)
         {
-            send_fatal_alert(TLS_Alert.BAD_RECORD_MAC);
+            send_fatal_alert(TLSAlert.BAD_RECORD_MAC);
             throw e;
         }
-        catch(Decoding_Error e)
+        catch(DecodingError e)
         {
-            send_fatal_alert(TLS_Alert.DECODE_ERROR);
+            send_fatal_alert(TLSAlert.DECODE_ERROR);
             throw e;
         }
         catch(Throwable e)
         {
-            send_fatal_alert(TLS_Alert.INTERNAL_ERROR);
+            send_fatal_alert(TLSAlert.INTERNAL_ERROR);
             throw e;
         }
     }
@@ -203,9 +203,9 @@ public:
     * @return a hint as the how many more bytes we need to process the
     *            current record (this may be 0 if on a record boundary)
     */
-    size_t received_data(in Vector!ubyte buf)
+    size_t receivedData(in Vector!ubyte buf)
     {
-        return this.received_data(buf.ptr, buf.length);
+        return this.receivedData(buf.ptr, buf.length);
     }
 
     /**
@@ -216,7 +216,7 @@ public:
         if (!is_active())
             throw new Exception("Data cannot be sent on inactive TLS connection");
         
-        send_record_array(sequence_numbers().current_write_epoch(), APPLICATION_DATA, buf, buf_size);
+        send_record_array(sequence_numbers().currentWriteEpoch(), APPLICATION_DATA, buf, buf_size);
     }
 
     /**
@@ -240,11 +240,11 @@ public:
     /**
     * Send a TLS alert message. If the alert is fatal, the internal
     * state (keys, etc) will be reset.
-    * @param alert = the TLS_Alert to send
+    * @param alert = the TLSAlert to send
     */
-    void send_alert(in TLS_Alert alert)
+    void sendAlert(in TLSAlert alert)
     {
-        if (alert.is_valid() && !is_closed())
+        if (alert.isValid() && !is_closed())
         {
             try
             {
@@ -253,36 +253,36 @@ public:
             catch (Throwable) { /* swallow it */ }
         }
         
-        if (alert.type() == TLS_Alert.NO_RENEGOTIATION)
+        if (alert.type() == TLSAlert.NO_RENEGOTIATION)
             m_pending_state.clear();
         
-        if (alert.is_fatal())
+        if (alert.isFatal())
             if (auto active = active_state())
-                m_session_manager.remove_entry(active.server_hello().session_id());
+                m_session_manager.removeEntry(active.serverHello().sessionId());
         
-        if (alert.type() == TLS_Alert.CLOSE_NOTIFY || alert.is_fatal())
+        if (alert.type() == TLSAlert.CLOSE_NOTIFY || alert.isFatal())
             reset_state();
     }
 
     /**
     * Send a warning alert
     */
-    void send_warning_alert(TLS_Alert_Type type) { send_alert(TLS_Alert(type, false)); }
+    void sendWarningAlert(TLSAlertType type) { send_alert(TLSAlert(type, false)); }
 
     /**
     * Send a fatal alert
     */
-    void send_fatal_alert(TLS_Alert_Type type) { send_alert(TLS_Alert(type, true)); }
+    void sendFatalAlert(TLSAlertType type) { send_alert(TLSAlert(type, true)); }
 
     /**
     * Send a close notification alert
     */
-    void close() { send_warning_alert(TLS_Alert.CLOSE_NOTIFY); }
+    void close() { send_warning_alert(TLSAlert.CLOSE_NOTIFY); }
 
     /**
     * @return true iff the connection is active for sending application data
     */
-    bool is_active() const
+    bool isActive() const
     {
         return (active_state() != null);
     }
@@ -290,7 +290,7 @@ public:
     /**
     * @return true iff the connection has been definitely closed
     */
-    bool is_closed() const
+    bool isClosed() const
     {
         if (active_state() || pending_state())
             return false;
@@ -314,8 +314,8 @@ public:
         if (pending_state()) // currently in handshake?
             return;
         
-        if (Handshake_State active = active_state())
-            initiate_handshake(create_handshake_state(active._version()),
+        if (HandshakeState active = active_state())
+            initiate_handshake(createHandshakeState(active.Version()),
                                force_full_renegotiation);
         else
             throw new Exception("Cannot renegotiate on inactive connection");
@@ -324,20 +324,20 @@ public:
     /**
     * @return true iff the peer supports heartbeat messages
     */
-    bool peer_supports_heartbeats() const
+    bool peerSupportsHeartbeats() const
     {
-        if (Handshake_State active = active_state())
-            return active.server_hello().supports_heartbeats();
+        if (HandshakeState active = active_state())
+            return active.serverHello().supportsHeartbeats();
         return false;
     }
 
     /**
     * @return true iff we are allowed to send heartbeat messages
     */
-    bool heartbeat_sending_allowed() const
+    bool heartbeatSendingAllowed() const
     {
-        if (Handshake_State active = active_state())
-            return active.server_hello().peer_can_send_heartbeats();
+        if (HandshakeState active = active_state())
+            return active.serverHello().peerCanSendHeartbeats();
         return false;
     }
 
@@ -345,7 +345,7 @@ public:
     * @return true iff the counterparty supports the secure
     * renegotiation extensions.
     */
-    bool secure_renegotiation_supported() const;
+    bool secureRenegotiationSupported() const;
 
     /**
     * Attempt to send a heartbeat message (if negotiated with counterparty)
@@ -371,11 +371,11 @@ public:
     /**
     * @return certificate chain of the peer (may be empty)
     */
-    Vector!X509_Certificate peer_cert_chain() const
+    Vector!X509Certificate peerCertChain() const
     {
-        if (Handshake_State active = active_state())
-            return get_peer_cert_chain(*active);
-        return Vector!X509_Certificate();
+        if (HandshakeState active = active_state())
+            return getPeerCertChain(*active);
+        return Vector!X509Certificate();
     }
 
     /**
@@ -385,32 +385,32 @@ public:
     * @param length = the length of the desired key in bytes
     * @return key of length bytes
     */
-    SymmetricKey key_material_export(in string label,
+    SymmetricKey keyMaterialExport(in string label,
                                      in string context,
                                      size_t length) const
     {
         if (auto active = active_state())
         {
-            Unique!KDF prf = active.protocol_specific_prf();
+            Unique!KDF prf = active.protocolSpecificPrf();
             
-            const Secure_Vector!ubyte master_secret = active.session_keys().master_secret();
+            const SecureVector!ubyte master_secret = active.sessionKeys().masterSecret();
             
             Vector!ubyte salt;
             salt ~= label;
-            salt ~= active.client_hello().random();
-            salt ~= active.server_hello().random();
+            salt ~= active.clientHello().random();
+            salt ~= active.serverHello().random();
             
             if (context != "")
             {
                 size_t context_size = context.length;
                 if (context_size > 0xFFFF)
                     throw new Exception("key_material_export context is too long");
-                salt.push_back(get_byte!ushort(0, context_size));
-                salt.push_back(get_byte!ushort(1, context_size));
+                salt.pushBack(get_byte!ushort(0, context_size));
+                salt.pushBack(get_byte!ushort(1, context_size));
                 salt ~= context;
             }
             
-            return prf.derive_key(length, master_secret, salt);
+            return prf.deriveKey(length, master_secret, salt);
         }
         else
             throw new Exception("key_material_export connection not active");
@@ -418,9 +418,9 @@ public:
 
     this(void delegate(in ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
-         void delegate(in TLS_Alert, in ubyte[]) alert_cb,
-         bool delegate(in TLS_Session) handshake_cb,
-         TLS_Session_Manager session_manager,
+         void delegate(in TLSAlert, in ubyte[]) alert_cb,
+         bool delegate(in TLSSession) handshake_cb,
+         TLSSessionManager session_manager,
          RandomNumberGenerator rng,
          size_t reserved_io_buffer_size)
     {
@@ -444,61 +444,61 @@ public:
     }
 protected:
 
-    abstract void process_handshake_msg(in Handshake_State active_state,
-                                                  Handshake_State pending_state,
-                                                  Handshake_Type type,
+    abstract void processHandshakeMsg(in HandshakeState active_state,
+                                                  HandshakeState pending_state,
+                                                  HandshakeType type,
                                                   in Vector!ubyte contents);
 
-    abstract void initiate_handshake(Handshake_State state,
+    abstract void initiateHandshake(HandshakeState state,
                                               bool force_full_renegotiation);
 
-    abstract Vector!X509_Certificate
-        get_peer_cert_chain(in Handshake_State state) const;
+    abstract Vector!X509Certificate
+        getPeerCertChain(in HandshakeState state) const;
 
-    abstract Handshake_State new_handshake_state(Handshake_IO io);
+    abstract HandshakeState newHandshakeState(HandshakeIO io);
 
-    Handshake_State create_handshake_state(TLS_Protocol_Version _version)
+    HandshakeState createHandshakeState(TLSProtocolVersion _version)
     {
         if (pending_state())
-            throw new Internal_Error("create_handshake_state called during handshake");
+            throw new InternalError("createHandshakeState called during handshake");
         
-        if (Handshake_State active = active_state())
+        if (HandshakeState active = active_state())
         {
-            TLS_Protocol_Version active_version = active._version();
+            TLSProtocolVersion active_version = active.Version();
             
-            if (active_version.is_datagram_protocol() != _version.is_datagram_protocol())
+            if (active_version.isDatagramProtocol() != _version.isDatagramProtocol())
                 throw new Exception("Active state using version " ~ active_version.toString() ~
                                     " cannot change to " ~ _version.toString() ~ " in pending");
         }
         
         if (!m_sequence_numbers)
         {
-            if (_version.is_datagram_protocol())
-                m_sequence_numbers = new Datagram_Sequence_Numbers;
+            if (_version.isDatagramProtocol())
+                m_sequence_numbers = new DatagramSequenceNumbers;
             else
-                m_sequence_numbers = new Stream_Sequence_Numbers;
+                m_sequence_numbers = new StreamSequenceNumbers;
         }
         
         Unique!Handshake_IO io;
-        if (_version.is_datagram_protocol())
-            io = new Datagram_Handshake_IO(sequence_numbers(), &send_record_under_epoch);
+        if (_version.isDatagramProtocol())
+            io = new DatagramHandshakeIO(sequence_numbers(), &send_record_under_epoch);
         else
-            io = new Stream_Handshake_IO(&send_record);
+            io = new StreamHandshakeIO(&send_record);
         
         m_pending_state = new_handshake_state(*io);
         
         if (auto active = active_state())
-            m_pending_state.set_version(active._version());
+            m_pending_state.setVersion(active.Version());
         
         return *m_pending_state;
     }
 
-    void activate_session()
+    void activateSession()
     {
         std.algorithm.swap(m_active_state, m_pending_state);
         m_pending_state.clear();
         
-        if (m_active_state._version().is_datagram_protocol())
+        if (m_active_state.Version().isDatagramProtocol())
         {
             // FIXME, remove old states when we are sure not needed anymore
         }
@@ -518,166 +518,166 @@ protected:
         }
     }
 
-    void change_cipher_spec_reader(Connection_Side side)
+    void changeCipherSpecReader(ConnectionSide side)
     {
         auto pending = pending_state();
         
-        assert(pending && pending.server_hello(), "Have received server hello");
+        assert(pending && pending.serverHello(), "Have received server hello");
         
-        if (pending.server_hello().compression_method() != NO_COMPRESSION)
-            throw new Internal_Error("Negotiated unknown compression algorithm");
+        if (pending.serverHello().compressionMethod() != NO_COMPRESSION)
+            throw new InternalError("Negotiated unknown compression algorithm");
         
-        sequence_numbers().new_read_cipher_state();
+        sequence_numbers().newReadCipherState();
         
         const ushort epoch = sequence_numbers().current_read_epoch();
         
         assert(m_read_cipher_states.count(epoch) == 0, "No read cipher state currently set for next epoch");
         
         // flip side as we are reading
-        Connection_Cipher_State read_state = Connection_Cipher_State(pending._version(),
+        ConnectionCipherState read_state = ConnectionCipherState(pending.Version(),
                                                                      (side == CLIENT) ? SERVER : CLIENT,
                                                                      false,
                                                                      pending.ciphersuite(),
-                                                                     pending.session_keys());
+                                                                     pending.sessionKeys());
         
         m_read_cipher_states[epoch] = read_state;
     }
 
-    void change_cipher_spec_writer(Connection_Side side)
+    void changeCipherSpecWriter(ConnectionSide side)
     {
         auto pending = pending_state();
         
-        assert(pending && pending.server_hello(), "Have received server hello");
+        assert(pending && pending.serverHello(), "Have received server hello");
         
-        if (pending.server_hello().compression_method() != NO_COMPRESSION)
-            throw new Internal_Error("Negotiated unknown compression algorithm");
+        if (pending.serverHello().compressionMethod() != NO_COMPRESSION)
+            throw new InternalError("Negotiated unknown compression algorithm");
         
-        sequence_numbers().new_write_cipher_state();
+        sequence_numbers().newWriteCipherState();
         
         const ushort epoch = sequence_numbers().current_write_epoch();
         
         assert(m_write_cipher_states.count(epoch) == 0, "No write cipher state currently set for next epoch");
         
-        Connection_Cipher_State write_state = new Connection_Cipher_State(pending._version(),
+        ConnectionCipherState write_state = new ConnectionCipherState(pending.Version(),
                                                                           side,
                                                                           true,
                                                                           pending.ciphersuite(),
-                                                                          pending.session_keys());
+                                                                          pending.sessionKeys());
         
         m_write_cipher_states[epoch] = write_state;
     }
 
     /* secure renegotiation handling */
-    void secure_renegotiation_check(const Client_Hello client_hello)
+    void secureRenegotiationCheck(const ClientHello client_hello)
     {
-        const bool secure_renegotiation = client_hello.secure_renegotiation();
+        const bool secure_renegotiation = client_hello.secureRenegotiation();
         
         if (auto active = active_state())
         {
-            const bool active_sr = active.client_hello().secure_renegotiation();
+            const bool active_sr = active.clientHello().secureRenegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Client changed its mind about secure renegotiation");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Client changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
         {
             const Vector!ubyte data = client_hello.renegotiation_info();
             
-            if (data != secure_renegotiation_data_for_client_hello())
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Client sent bad values for secure renegotiation");
+            if (data != secureRenegotiationDataForClientHello())
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Client sent bad values for secure renegotiation");
         }
     }
 
-    void secure_renegotiation_check(const Server_Hello server_hello)
+    void secureRenegotiationCheck(const ServerHello server_hello)
     {
-        const bool secure_renegotiation = server_hello.secure_renegotiation();
+        const bool secure_renegotiation = server_hello.secureRenegotiation();
         
         if (auto active = active_state())
         {
-            const bool active_sr = active.client_hello().secure_renegotiation();
+            const bool active_sr = active.clientHello().secureRenegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server changed its mind about secure renegotiation");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
         {
             const Vector!ubyte data = server_hello.renegotiation_info();
             
-            if (data != secure_renegotiation_data_for_server_hello())
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server sent bad values for secure renegotiation");
+            if (data != secureRenegotiationDataForServerHello())
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server sent bad values for secure renegotiation");
         }
     }
 
-    Vector!ubyte secure_renegotiation_data_for_client_hello() const
+    Vector!ubyte secureRenegotiationDataForClientHello() const
     {
         if (auto active = active_state())
-            return active.client_finished().verify_data();
+            return active.clientFinished().verifyData();
         return Vector!ubyte();
     }
 
-    Vector!ubyte secure_renegotiation_data_for_server_hello() const
+    Vector!ubyte secureRenegotiationDataForServerHello() const
     {
         if (auto active = active_state())
         {
             Vector!ubyte buf = active.client_finished().verify_data();
-            buf ~= active.server_finished().verify_data();
+            buf ~= active.serverFinished().verifyData();
             return buf;
         }
         
         return Vector!ubyte();
     }
 
-    bool secure_renegotiation_supported() const
+    bool secureRenegotiationSupported() const
     {
         if (auto active = active_state())
-            return active.server_hello().secure_renegotiation();
+            return active.serverHello().secureRenegotiation();
         
         if (auto pending = pending_state())
-            if (auto hello = pending.server_hello())
-                return hello.secure_renegotiation();
+            if (auto hello = pending.serverHello())
+                return hello.secureRenegotiation();
         
         return false;
     }
 
     RandomNumberGenerator rng() { return m_rng; }
 
-    TLS_Session_Manager session_manager() { return m_session_manager; }
+    TLSSessionManager sessionManager() { return m_session_manager; }
 
-    bool save_session(in TLS_Session session) const { return m_handshake_cb(session); }
+    bool saveSession(in TLSSession session) const { return m_handshake_cb(session); }
 
 private:
 
-    size_t maximum_fragment_size() const
+    size_t maximumFragmentSize() const
     {
         // should we be caching this value?
         
         if (auto pending = pending_state())
-            if (auto server_hello = pending.server_hello())
-                if (size_t frag = server_hello.fragment_size())
+            if (auto server_hello = pending.serverHello())
+                if (size_t frag = server_hello.fragmentSize())
                     return frag;
         
         if (auto active = active_state())
-            if (size_t frag = active.server_hello().fragment_size())
+            if (size_t frag = active.serverHello().fragmentSize())
                 return frag;
         
         return MAX_PLAINTEXT_SIZE;
     }
 
-    void send_record(ubyte record_type, in Vector!ubyte record)
+    void sendRecord(ubyte record_type, in Vector!ubyte record)
     {
-        send_record_array(sequence_numbers().current_write_epoch(),
+        send_record_array(sequence_numbers().currentWriteEpoch(),
                           record_type, record.ptr, record.length);
     }
 
-    void send_record_under_epoch(ushort epoch, ubyte record_type,
+    void sendRecordUnderEpoch(ushort epoch, ubyte record_type,
                                  in Vector!ubyte record)
     {
         send_record_array(epoch, record_type, record.ptr, record.length);
     }
 
-    void send_record_array(ushort epoch, ubyte type, in ubyte* input, size_t length)
+    void sendRecordArray(ushort epoch, ubyte type, in ubyte* input, size_t length)
     {
         if (length == 0)
             return;
@@ -696,7 +696,7 @@ private:
         
         auto cipher_state = write_cipher_state_epoch(epoch);
         
-        if (type == APPLICATION_DATA && cipher_state.cbc_without_explicit_iv())
+        if (type == APPLICATION_DATA && cipher_state.cbcWithoutExplicitIv())
         {
             write_record(cipher_state, type, input.ptr, 1);
             input += 1;
@@ -715,52 +715,52 @@ private:
         }
     }
 
-    void write_record(Connection_Cipher_State cipher_state,
+    void writeRecord(ConnectionCipherState cipher_state,
                       ubyte record_type, in ubyte* input, size_t length)
     {
         assert(m_pending_state || m_active_state,
                "Some connection state exists");
         
-        TLS_Protocol_Version record_version =
-            (m_pending_state) ? (m_pending_state._version()) : (m_active_state._version());
+        TLSProtocolVersion record_version =
+            (m_pending_state) ? (m_pending_state.Version()) : (m_active_state.Version());
         
         write_record(m_writebuf,
                      record_type,
                      input,
                      length,
                      record_version,
-                     sequence_numbers().next_write_sequence(),
+                     sequence_numbers().nextWriteSequence(),
                      cipher_state,
                      m_rng);
         
         m_output_fn(m_writebuf[]);
     }
 
-    Connection_Sequence_Numbers sequence_numbers() const
+    ConnectionSequenceNumbers sequenceNumbers() const
     {
         assert(m_sequence_numbers, "Have a sequence numbers object");
         return *m_sequence_numbers;
     }
 
-    Connection_Cipher_State read_cipher_state_epoch(ushort epoch) const
+    ConnectionCipherState readCipherStateEpoch(ushort epoch) const
     {
-        auto i = m_read_cipher_states.get(epoch, Connection_Cipher_State.init);
+        auto i = m_read_cipher_states.get(epoch, ConnectionCipherState.init);
         
-        assert(i != Connection_Cipher_State.init, "Have a cipher state for the specified epoch");
+        assert(i != ConnectionCipherState.init, "Have a cipher state for the specified epoch");
         
         return i;
     }
 
-    Connection_Cipher_State write_cipher_state_epoch(ushort epoch) const
+    ConnectionCipherState writeCipherStateEpoch(ushort epoch) const
     {
-        auto i = m_write_cipher_states.get(epoch, Connection_Cipher_State.init);
+        auto i = m_write_cipher_states.get(epoch, ConnectionCipherState.init);
         
-        assert(i != Connection_Cipher_State.init, "Have a cipher state for the specified epoch");
+        assert(i != ConnectionCipherState.init, "Have a cipher state for the specified epoch");
         
         return i;
     }
 
-    void reset_state()
+    void resetState()
     {
         m_active_state.clear();
         m_pending_state.clear();
@@ -769,14 +769,14 @@ private:
         m_read_cipher_states.clear();
     }
 
-    Handshake_State active_state() const { return *m_active_state; }
+    HandshakeState activeState() const { return *m_active_state; }
 
-    Handshake_State pending_state() const { return *m_pending_state; }
+    HandshakeState pendingState() const { return *m_pending_state; }
 
     /* callbacks */
-    bool delegate(in TLS_Session) m_handshake_cb;
+    bool delegate(in TLSSession) m_handshake_cb;
     void delegate(in ubyte[]) m_data_cb;
-    void delegate(in TLS_Alert, in ubyte[]) m_alert_cb;
+    void delegate(in TLSAlert, in ubyte[]) m_alert_cb;
     void delegate(in ubyte[]) m_output_fn;
 
     /* external state */
@@ -787,14 +787,14 @@ private:
     Unique!Connection_Sequence_Numbers m_sequence_numbers;
 
     /* pending and active connection states */
-    Unique!Handshake_State m_active_state;
-    Unique!Handshake_State m_pending_state;
+    Unique!HandshakeState m_active_state;
+    Unique!HandshakeState m_pending_state;
 
     /* cipher states for each epoch */
-    HashMap!(ushort, Connection_Cipher_State) m_write_cipher_states;
-    HashMap!(ushort, Connection_Cipher_State) m_read_cipher_states;
+    HashMap!(ushort, ConnectionCipherState) m_write_cipher_states;
+    HashMap!(ushort, ConnectionCipherState) m_read_cipher_states;
 
     /* I/O buffers */
-    Secure_Vector!ubyte m_writebuf;
-    Secure_Vector!ubyte m_readbuf;
+    SecureVector!ubyte m_writebuf;
+    SecureVector!ubyte m_readbuf;
 }

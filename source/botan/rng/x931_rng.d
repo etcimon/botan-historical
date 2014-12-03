@@ -18,7 +18,7 @@ import std.algorithm;
 /**
 * ANSI X9.31 RNG
 */
-final class ANSI_X931_RNG : RandomNumberGenerator
+final class ANSIX931RNG : RandomNumberGenerator
 {
 public:
     void randomize(ubyte* output, size_t length)
@@ -28,7 +28,7 @@ public:
             reseed(BOTAN_RNG_RESEED_POLL_BITS);
             
             if (!is_seeded())
-                throw new PRNG_Unseeded(name);
+                throw new PRNGUnseeded(name);
         }
         
         while (length)
@@ -38,14 +38,14 @@ public:
             
             const size_t copied = std.algorithm.min(length, m_R.length - m_R_pos);
             
-            copy_mem(output, &m_R[m_R_pos], copied);
+            copyMem(output, &m_R[m_R_pos], copied);
             output += copied;
             length -= copied;
             m_R_pos += copied;
         }
     }
 
-    bool is_seeded() const
+    bool isSeeded() const
     {
         return (m_V.length > 0);
     }
@@ -71,9 +71,9 @@ public:
         rekey();
     }
 
-    void add_entropy(in ubyte* input, size_t length)
+    void addEntropy(in ubyte* input, size_t length)
     {
-        m_prng.add_entropy(input, length);
+        m_prng.addEntropy(input, length);
         rekey();
     }
 
@@ -99,9 +99,9 @@ private:
     {
         const size_t BLOCK_SIZE = m_cipher.block_size;
         
-        if (m_prng.is_seeded())
+        if (m_prng.isSeeded())
         {
-            m_cipher.set_key(m_prng.random_vec(m_cipher.maximum_keylength()));
+            m_cipher.setKey(m_prng.randomVec(m_cipher.maximumKeylength()));
             
             if (m_V.length != BLOCK_SIZE)
                 m_V.resize(BLOCK_SIZE);
@@ -114,11 +114,11 @@ private:
     /*
     * Refill the internal state
     */
-    void update_buffer()
+    void updateBuffer()
     {
         const size_t BLOCK_SIZE = m_cipher.block_size;
         
-        Secure_Vector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
+        SecureVector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
         m_cipher.encrypt(DT);
         
         xor_buf(m_R.ptr, m_V.ptr, DT.ptr, BLOCK_SIZE);
@@ -133,6 +133,6 @@ private:
 
     Unique!BlockCipher m_cipher;
     Unique!RandomNumberGenerator m_prng;
-    Secure_Vector!ubyte m_V, m_R;
+    SecureVector!ubyte m_V, m_R;
     size_t m_R_pos;
 }

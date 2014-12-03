@@ -16,12 +16,12 @@ import botan.utils.rotate;
 * HAS-160, a Korean hash function standardized in
 * TTAS.KO-12.0011/R1. Used in conjuction with KCDSA
 */
-class HAS_160 : MDx_HashFunction
+class HAS160 : MDxHashFunction
 {
 public:
     @property string name() const { return "HAS-160"; }
-    @property size_t output_length() const { return 20; }
-    HashFunction clone() const { return new HAS_160; }
+    @property size_t outputLength() const { return 20; }
+    HashFunction clone() const { return new HAS160; }
 
     /*
     * Clear memory of sensitive data
@@ -48,7 +48,7 @@ private:
     /*
     * HAS-160 Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
@@ -56,7 +56,7 @@ private:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_littleEndian(m_X.ptr, input, 16);
+            loadLittleEndian(m_X.ptr, input, 16);
             
             m_X[16] = m_X[ 0] ^ m_X[ 1] ^ m_X[ 2] ^ m_X[ 3];
             m_X[17] = m_X[ 4] ^ m_X[ 5] ^ m_X[ 6] ^ m_X[ 7];
@@ -124,21 +124,21 @@ private:
             D = (m_digest[3] += D);
             E = (m_digest[4] += E);
             
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
     /*
     * Copy out the digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_littleEndian(m_digest[i/4], output + i);
+            storeLittleEndian(m_digest[i/4], output + i);
     }
 
 
-    Secure_Vector!uint m_X, m_digest;
+    SecureVector!uint m_X, m_digest;
 }
 
 private:
@@ -146,39 +146,39 @@ private:
 /*
 * HAS-160 F1 Function
 */
-void F1(uint A, ref uint B, uint C, uint D, ref uint E,
+void f1(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
-    E += rotate_left(A, rot) + (D ^ (B & (C ^ D))) + msg;
-    B  = rotate_left(B, 10);
+    E += rotateLeft(A, rot) + (D ^ (B & (C ^ D))) + msg;
+    B  = rotateLeft(B, 10);
 }
 
 /*
 * HAS-160 F2 Function
 */
-void F2(uint A, ref uint B, uint C, uint D, ref uint E,
+void f2(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
-    E += rotate_left(A, rot) + (B ^ C ^ D) + msg + 0x5A827999;
-    B  = rotate_left(B, 17);
+    E += rotateLeft(A, rot) + (B ^ C ^ D) + msg + 0x5A827999;
+    B  = rotateLeft(B, 17);
 }
 
 /*
 * HAS-160 F3 Function
 */
-void F3(uint A, ref uint B, uint C, uint D, ref uint E,
+void f3(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
-    E += rotate_left(A, rot) + (C ^ (B | ~D)) + msg + 0x6ED9EBA1;
-    B  = rotate_left(B, 25);
+    E += rotateLeft(A, rot) + (C ^ (B | ~D)) + msg + 0x6ED9EBA1;
+    B  = rotateLeft(B, 25);
 }
 
 /*
 * HAS-160 F4 Function
 */
-void F4(uint A, ref uint B, uint C, uint D, ref uint E,
+void f4(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
-    E += rotate_left(A, rot) + (B ^ C ^ D) + msg + 0x8F1BBCDC;
-    B  = rotate_left(B, 30);
+    E += rotateLeft(A, rot) + (B ^ C ^ D) + msg + 0x8F1BBCDC;
+    B  = rotateLeft(B, 30);
 }

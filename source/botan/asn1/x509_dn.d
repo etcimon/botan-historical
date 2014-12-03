@@ -19,66 +19,66 @@ import botan.asn1.oids;
 import botan.utils.containers.hashmap;
 import std.array : Appender;
 
-alias X509_DN = FreeListRef!X509_DN_Impl;
+alias X509DN = FreeListRef!X509DNImpl;
 
 /**
 * Distinguished Name
 */
-final class X509_DN_Impl : ASN1_Object
+final class X509DNImpl : ASN1Object
 {
 public:
     /*
     * DER encode a DistinguishedName
     */
-    void encode_into(DER_Encoder der) const
+    void encodeInto(DEREncoder der) const
     {
-        auto dn_info = get_attributes();
+        auto dn_info = getAttributes();
         
-        der.start_cons(ASN1_Tag.SEQUENCE);
+        der.startCons(ASN1Tag.SEQUENCE);
         
         if (!m_dn_bits.empty)
-            der.raw_bytes(m_dn_bits);
+            der.rawBytes(m_dn_bits);
         else
         {
-            do_ava(der, dn_info, ASN1_Tag.PRINTABLE_STRING, "X520.Country");
-            do_ava(der, dn_info, ASN1_Tag.DIRECTORY_STRING, "X520.State");
-            do_ava(der, dn_info, ASN1_Tag.DIRECTORY_STRING, "X520.Locality");
-            do_ava(der, dn_info, ASN1_Tag.DIRECTORY_STRING, "X520.Organization");
-            do_ava(der, dn_info, ASN1_Tag.DIRECTORY_STRING, "X520.OrganizationalUnit");
-            do_ava(der, dn_info, ASN1_Tag.DIRECTORY_STRING, "X520.CommonName");
-            do_ava(der, dn_info, ASN1_Tag.PRINTABLE_STRING, "X520.SerialNumber");
+            do_ava(der, dn_info, ASN1Tag.PRINTABLE_STRING, "X520.Country");
+            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.State");
+            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.Locality");
+            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.Organization");
+            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.OrganizationalUnit");
+            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.CommonName");
+            do_ava(der, dn_info, ASN1Tag.PRINTABLE_STRING, "X520.SerialNumber");
         }
         
-        der.end_cons();
+        der.endCons();
     }
 
     /*
     * Decode a BER encoded DistinguishedName
     */
-    void decode_from(BER_Decoder source)
+    void decodeFrom(BERDecoder source)
     {
         Vector!ubyte bits;
         
-        source.start_cons(ASN1_Tag.SEQUENCE)
-            .raw_bytes(bits)
-                .end_cons();
+        source.startCons(ASN1Tag.SEQUENCE)
+            .rawBytes(bits)
+                .endCons();
         
-        BER_Decoder sequence(bits);
+        BERDecoder sequence(bits);
         
-        while (sequence.more_items())
+        while (sequence.moreItems())
         {
-            BER_Decoder rdn = sequence.start_cons(ASN1_Tag.SET);
+            BERDecoder rdn = sequence.startCons(ASN1Tag.SET);
             
-            while (rdn.more_items())
+            while (rdn.moreItems())
             {
                 OID oid;
-                ASN1_String str;
+                ASN1String str;
                 
-                rdn.start_cons(ASN1_Tag.SEQUENCE)
+                rdn.startCons(ASN1Tag.SEQUENCE)
                         .decode(oid)
                         .decode(str)
-                        .verify_end()
-                        .end_cons();
+                        .verifyEnd()
+                        .endCons();
                 
                 add_attribute(oid, str.value());
             }
@@ -88,9 +88,9 @@ public:
     }
 
     /*
-    * Get the attributes of this X509_DN
+    * Get the attributes of this X509DN
     */
-    MultiMap!(OID, string) get_attributes() const
+    MultiMap!(OID, string) getAttributes() const
     {
         MultiMap!(OID, string) retval;
         foreach (oid, asn1_str; m_dn_info)
@@ -101,7 +101,7 @@ public:
     /*
     * Get a single attribute type
     */
-    Vector!string get_attribute(in string attr) const
+    Vector!string getAttribute(in string attr) const
     {
         const OID oid = OIDS.lookup(deref_info_field(attr));
         
@@ -109,7 +109,7 @@ public:
         
         Vector!string values;
         for (auto i = range.first; i != range.second; ++i)
-            values.push_back(i.second.value());
+            values.pushBack(i.second.value());
         return values;
     }
 
@@ -126,9 +126,9 @@ public:
 
 
     /*
-    * Add an attribute to a X509_DN
+    * Add an attribute to a X509DN
     */
-    void add_attribute(in string type,
+    void addAttribute(in string type,
                        in string str)
     {
         OID oid = OIDS.lookup(type);
@@ -136,21 +136,21 @@ public:
     }
 
     /*
-    * Add an attribute to a X509_DN
+    * Add an attribute to a X509DN
     */
-    void add_attribute(in OID oid, in string str)
+    void addAttribute(in OID oid, in string str)
     {
         if (str == "")
             return;
 
         bool exists;
-        m_dn_info.equal_range(oid, (string name) {
+        m_dn_info.equalRange(oid, (string name) {
             if (name == str)
                 exists = true;
         });
 
         if (!exists) {
-            m_dn_info.insert(oid, ASN1_String(str));
+            m_dn_info.insert(oid, ASN1String(str));
             m_dn_bits.clear();
         }
     }
@@ -158,37 +158,37 @@ public:
     /*
     * Deref aliases in a subject/issuer info request
     */
-    static string deref_info_field(in string info)
+    static string derefInfoField(in string info)
     {
-        if (info == "Name" || info == "CommonName")     return "X520.CommonName";
+        if (info == "Name" || info == "CommonName")         return "X520.CommonName";
         if (info == "SerialNumber")                         return "X520.SerialNumber";
-        if (info == "Country")                            return "X520.Country";
-        if (info == "Organization")                          return "X520.Organization";
+        if (info == "Country")                              return "X520.Country";
+        if (info == "Organization")                         return "X520.Organization";
         if (info == "Organizational Unit" || info == "OrgUnit")
             return "X520.OrganizationalUnit";
-        if (info == "Locality")                            return "X520.Locality";
-        if (info == "State" || info == "Province")      return "X520.State";
-        if (info == "Email")                            return "RFC822";
+        if (info == "Locality")                             return "X520.Locality";
+        if (info == "State" || info == "Province")          return "X520.State";
+        if (info == "Email")                                return "RFC822";
         return info;
     }
 
     /*
     * Return the BER encoded data, if any
     */
-    Vector!ubyte get_bits() const
+    Vector!ubyte getBits() const
     {
         return m_dn_bits;
     }
 
     /*
-    * Create an empty X509_DN
+    * Create an empty X509DN
     */
     this()
     {
     }
     
     /*
-    * Create an X509_DN
+    * Create an X509DN
     */
     this(in MultiMap!(OID, string) args)
     {
@@ -197,7 +197,7 @@ public:
     }
     
     /*
-    * Create an X509_DN
+    * Create an X509DN
     */
     this(in MultiMap!(string, string) args)
     {
@@ -206,16 +206,16 @@ public:
     }
 
     /*
-    * Compare two X509_DNs for equality
+    * Compare two X509DNs for equality
     */
-    bool opEquals(in X509_DN dn2)
+    bool opEquals(in X509DN dn2)
     {
         Vector!(Pair!(OID, string)) attr1;
         Vector!(Pair!(OID, string)) attr2;
 
         {
-            MultiMap!(OID, string) map1 = get_attributes();
-            MultiMap!(OID, string) map2 = dn2.get_attributes();
+            MultiMap!(OID, string) map1 = getAttributes();
+            MultiMap!(OID, string) map2 = dn2.getAttributes();
             foreach (oid, val; map1) {
                 attr1 ~= Pair(oid, val);
             }
@@ -246,9 +246,9 @@ public:
     }
 
     /*
-    * Compare two X509_DNs for inequality
+    * Compare two X509DNs for inequality
     */
-    bool opCmp(string op)(const X509_DN dn2)
+    bool opCmp(string op)(const X509DN dn2)
         if (op == "!=")
     {
         return !(this == dn2);
@@ -257,11 +257,11 @@ public:
     /*
     * Induce an arbitrary ordering on DNs
     */
-    bool opBinary(string op)(const X509_DN dn2)
+    bool opBinary(string op)(const X509DN dn2)
         if (op == "<")
     {
-        auto attr1 = get_attributes();
-        auto attr2 = dn2.get_attributes();
+        auto attr1 = getAttributes();
+        auto attr2 = dn2.getAttributes();
         
         if (attr1.length < attr2.length) return true;
         if (attr1.length > attr2.length) return false;
@@ -288,37 +288,37 @@ public:
     }
 
 private:
-    MultiMap!(OID, ASN1_String) m_dn_info;
+    MultiMap!(OID, ASN1String) m_dn_info;
     Vector!ubyte m_dn_bits;
 }
 
 /*
 * DER encode a RelativeDistinguishedName
 */
-void do_ava(DER_Encoder encoder = DER_Encoder(),
+void doAva(DEREncoder encoder = DEREncoder(),
             in MultiMap!(OID, string) dn_info,
-            ASN1_Tag string_type, in string oid_str,
+            ASN1Tag string_type, in string oid_str,
             bool must_exist = false)
 {
     const OID oid = OIDS.lookup(oid_str);
     const bool exists = (dn_info.get(oid) != null);
 
     if (!exists && must_exist)
-        throw new Encoding_Error("X509_DN: No entry for " ~ oid_str);
+        throw new EncodingError("X509DN: No entry for " ~ oid_str);
     if (!exists) return;
 
-    dn_info.equal_range(oid, (string val) {
-         encoder.start_cons(ASN1_Tag.SET)
-                .start_cons(ASN1_Tag.SEQUENCE)
+    dn_info.equalRange(oid, (string val) {
+         encoder.startCons(ASN1Tag.SET)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)
-                .encode(ASN1_String(val, string_type))
-                .end_cons()
-                .end_cons();
+                .encode(ASN1String(val, string_type))
+                .endCons()
+                .endCons();
 
     });
 }
 
-string to_short_form(in string long_id)
+string toShortForm(in string long_id)
 {
     if (long_id == "X520.CommonName")
         return "CN";

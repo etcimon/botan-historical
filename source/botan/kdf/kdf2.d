@@ -18,22 +18,22 @@ public:
     /*
     * KDF2 Key Derivation Mechanism
     */
-    Secure_Vector!ubyte derive(size_t out_len,
+    SecureVector!ubyte derive(size_t out_len,
                                in ubyte* secret, 
                                size_t secret_len,
                                in ubyte* P, 
                                size_t P_len) const
     {
-        Secure_Vector!ubyte output;
+        SecureVector!ubyte output;
         uint counter = 1;
         
         while (out_len && counter)
         {
             m_hash.update(secret, secret_len);
-            m_hash.update_bigEndian(counter);
+            m_hash.updateBigEndian(counter);
             m_hash.update(P, P_len);
             
-            Secure_Vector!ubyte hash_result = m_hash.finished();
+            SecureVector!ubyte hash_result = m_hash.finished();
             
             size_t added = std.algorithm.min(hash_result.length, out_len);
             output ~= hash_result.ptr[0 .. added];

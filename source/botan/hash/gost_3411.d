@@ -17,13 +17,13 @@ import botan.utils.xor_buf;
 /**
 * GOST 34.11
 */
-class GOST_34_11 : HashFunction
+class GOST3411 : HashFunction
 {
 public:
     @property string name() const { return "GOST-R-34.11-94" ; }
-    @property size_t output_length() const { return 32; }
-    @property size_t hash_block_size() const { return 32; }
-    HashFunction clone() const { return new GOST_34_11; }
+    @property size_t outputLength() const { return 32; }
+    @property size_t hashBlockSize() const { return 32; }
+    HashFunction clone() const { return new GOST3411; }
 
     void clear()
     {
@@ -50,7 +50,7 @@ private:
     /**
     * The GOST 34.11 compression function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -64,8 +64,8 @@ private:
             ubyte[32] S;
             
             ulong[4] U, V;
-            load_bigEndian(U, m_hash.ptr, 4);
-            load_bigEndian(V, input + 32*i, 4);
+            loadBigEndian(U, m_hash.ptr, 4);
+            loadBigEndian(V, input + 32*i, 4);
             
             foreach (size_t j; 0 .. 4)
             {
@@ -76,7 +76,7 @@ private:
                     foreach (size_t l; 0 .. 8)
                         key[4*l+k] = get_byte(l, U[k]) ^ get_byte(l, V[k]);
                 
-                m_cipher.set_key(key, 32);
+                m_cipher.setKey(key, 32);
                 m_cipher.encrypt(&m_hash[8*j], S + 8*j);
                 
                 if (j == 3)
@@ -147,7 +147,7 @@ private:
             S2[0] = S[0] ^ S[2] ^ S[4] ^ S[6] ^ S[24] ^ S[30];
             S2[1] = S[1] ^ S[3] ^ S[5] ^ S[7] ^ S[25] ^ S[31];
             
-            copy_mem(S, S+2, 30);
+            copyMem(S, S+2, 30);
             S[30] = S2[0];
             S[31] = S2[1];
             
@@ -193,14 +193,14 @@ private:
             S2[30] = S[ 2] ^ S[ 4] ^ S[ 8] ^ S[14] ^ S[16] ^ S[18] ^ S[22] ^ S[24] ^ S[28] ^ S[30];
             S2[31] = S[ 3] ^ S[ 5] ^ S[ 9] ^ S[15] ^ S[17] ^ S[19] ^ S[23] ^ S[25] ^ S[29] ^ S[31];
             
-            copy_mem(m_hash.ptr, S2.ptr, 32);
+            copyMem(m_hash.ptr, S2.ptr, 32);
         }
     }
 
     /**
     * Hash additional inputs
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         m_count += length;
         
@@ -208,29 +208,29 @@ private:
         {
             buffer_insert(m_buffer, m_position, input, length);
             
-            if (m_position + length >= hash_block_size)
+            if (m_position + length >= hashBlockSize)
             {
                 compress_n(m_buffer.ptr, 1);
-                input += (hash_block_size - m_position);
-                length -= (hash_block_size - m_position);
+                input += (hashBlockSize - m_position);
+                length -= (hashBlockSize - m_position);
                 m_position = 0;
             }
         }
         
-        const size_t full_blocks = length / hash_block_size;
-        const size_t remaining    = length % hash_block_size;
+        const size_t full_blocks = length / hashBlockSize;
+        const size_t remaining    = length % hashBlockSize;
         
         if (full_blocks)
             compress_n(input, full_blocks);
         
-        buffer_insert(m_buffer, m_position, input + full_blocks * hash_block_size, remaining);
+        buffer_insert(m_buffer, m_position, input + full_blocks * hashBlockSize, remaining);
         m_position += remaining;
     }
 
     /**
     * Produce the final GOST 34.11 output
     */
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
         if (m_position)
         {
@@ -238,22 +238,22 @@ private:
             compress_n(m_buffer.ptr, 1);
         }
         
-        Secure_Vector!ubyte length_buf = Secure_Vector!ubyte(32);
+        SecureVector!ubyte length_buf = SecureVector!ubyte(32);
         const ulong bit_count = m_count * 8;
-        store_littleEndian(bit_count, length_buf.ptr);
+        storeLittleEndian(bit_count, length_buf.ptr);
         
-        Secure_Vector!ubyte sum_buf = m_sum;
+        SecureVector!ubyte sum_buf = m_sum;
         
         compress_n(length_buf.ptr, 1);
         compress_n(sum_buf.ptr, 1);
         
-        copy_mem(output, m_hash.ptr, 32);
+        copyMem(output, m_hash.ptr, 32);
         
         clear();
     }
 
     GOST_28147_89 m_cipher;
-    Secure_Vector!ubyte m_buffer, m_sum, m_hash;
+    SecureVector!ubyte m_buffer, m_sum, m_hash;
     size_t m_position;
     ulong m_count;
 }

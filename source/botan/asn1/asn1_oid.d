@@ -15,58 +15,58 @@ import botan.utils.parsing;
 // import string;
 import botan.utils.types;
 
-alias OID = FreeListRef!OID_Impl;
+alias OID = FreeListRef!OIDImpl;
 
 /**
 * This class represents ASN.1 object identifiers.
 */
-final class OID_Impl : ASN1_Object
+final class OIDImpl : ASN1Object
 {
 public:
 
     /*
     * DER encode an OBJECT IDENTIFIER
     */
-    void encode_into(DER_Encoder der) const
+    void encodeInto(DEREncoder der) const
     {
         if (m_id.length < 2)
-            throw new Invalid_Argument("encode_into: OID is invalid");
+            throw new InvalidArgument("encodeInto: OID is invalid");
         
         Vector!ubyte encoding;
-        encoding.push_back(40 * m_id[0] + m_id[1]);
+        encoding.pushBack(40 * m_id[0] + m_id[1]);
         
         foreach (size_t i; 2 .. m_id.length)
         {
             if (m_id[i] == 0)
-                encoding.push_back(0);
+                encoding.pushBack(0);
             else
             {
                 size_t blocks = high_bit(m_id[i]) + 6;
                 blocks = (blocks - (blocks % 7)) / 7;
                 
                 foreach (size_t j; 0 .. (blocks - 1))
-                    encoding.push_back(0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F));
-                encoding.push_back(m_id[i] & 0x7F);
+                    encoding.pushBack(0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F));
+                encoding.pushBack(m_id[i] & 0x7F);
             }
         }
-        der.add_object(ASN1_Tag.OBJECT_ID, ASN1_Tag.UNIVERSAL, encoding);
+        der.addObject(ASN1Tag.OBJECT_ID, ASN1Tag.UNIVERSAL, encoding);
     }
 
 
     /*
     * Decode a BER encoded OBJECT IDENTIFIER
     */
-    void decode_from(BER_Decoder decoder)
+    void decodeFrom(BERDecoder decoder)
     {
-        BER_Object obj = decoder.get_next_object();
-        if (obj.type_tag != ASN1_Tag.OBJECT_ID || obj.class_tag != ASN1_Tag.UNIVERSAL)
-            throw new BER_Bad_Tag("Error decoding OID, unknown tag",
+        BER_Object obj = decoder.getNextObject();
+        if (obj.type_tag != ASN1Tag.OBJECT_ID || obj.class_tag != ASN1Tag.UNIVERSAL)
+            throw new BERBadTag("Error decoding OID, unknown tag",
                                   obj.type_tag, obj.class_tag);
         if (obj.value.length < 2)
-            throw new BER_Decoding_Error("OID encoding is too short");
+            throw new BERDecodingError("OID encoding is too short");
         clear();
-        m_id.push_back(obj.value[0] / 40);
-        m_id.push_back(obj.value[0] % 40);
+        m_id.pushBack(obj.value[0] / 40);
+        m_id.pushBack(obj.value[0] % 40);
         
         size_t i = 0;
         while (i != obj.value.length - 1)
@@ -77,14 +77,14 @@ public:
                 ++i;
                 
                 if (component >> (32-7))
-                    throw new Decoding_Error("OID component overflow");
+                    throw new DecodingError("OID component overflow");
                 
                 component = (component << 7) + (obj.value[i] & 0x7F);
                 
                 if (!(obj.value[i] & 0x80))
                     break;
             }
-            m_id.push_back(component);
+            m_id.pushBack(component);
         }
     }
 
@@ -99,7 +99,7 @@ public:
     * Get this OID as list (vector) of its components.
     * @return vector representing this OID
     */
-    Vector!uint get_id() const { return m_id; }
+    Vector!uint getId() const { return m_id; }
 
     /**
     * Get this OID as a string
@@ -172,8 +172,8 @@ public:
     bool opBinary(string op)(in OID b)
         if (op == "<")
     {
-        const Vector!uint oid1 = get_id();
-        const Vector!uint oid2 = b.get_id();
+        const Vector!uint oid1 = getId();
+        const Vector!uint oid2 = b.getId();
         
         if (oid1.length < oid2.length)
             return true;
@@ -198,7 +198,7 @@ public:
     ref OID opOpAssign(string op)(uint new_comp)
         if (op == "~=") 
     {
-        m_id.push_back(new_comp);
+        m_id.pushBack(new_comp);
         return this;
     }
 
@@ -217,13 +217,13 @@ public:
         }
         catch (Throwable)
         {
-            throw new Invalid_OID(oid_str);
+            throw new InvalidOID(oid_str);
         }
         
         if (m_id.length < 2 || m_id[0] > 2)
-            throw new Invalid_OID(oid_str);
+            throw new InvalidOID(oid_str);
         if ((m_id[0] == 0 || m_id[0] == 1) && m_id[1] > 39)
-            throw new Invalid_OID(oid_str);
+            throw new InvalidOID(oid_str);
 
     }
 private:

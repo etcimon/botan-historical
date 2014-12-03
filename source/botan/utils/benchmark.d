@@ -36,8 +36,8 @@ import std.datetime;
 * @return results a map from op type to operations per second
 */
 HashMap!(string, double)
-    time_algorithm_ops(in string name,
-                       Algorithm_Factory af,
+    timeAlgorithmOps(in string name,
+                       AlgorithmFactory af,
                        in string provider,
                        RandomNumberGenerator rng,
                        Duration runtime,
@@ -45,7 +45,7 @@ HashMap!(string, double)
 {
     const size_t Mebibyte = 1024*1024;
     
-    Secure_Vector!ubyte buffer = Secure_Vector!ubyte(buf_size * 1024);
+    SecureVector!ubyte buffer = SecureVector!ubyte(buf_size * 1024);
     rng.randomize(buffer.ptr, buffer.length);
     
     const double mb_mult = buffer.length / cast(double)(Mebibyte);
@@ -53,33 +53,33 @@ HashMap!(string, double)
 
     {
 
-        const BlockCipher proto = af.prototype_block_cipher(name, provider);
+        const BlockCipher proto = af.prototypeBlockCipher(name, provider);
         if (proto) {
             Unique!BlockCipher bc = proto.clone();
             
             const SymmetricKey key = SymmetricKey(rng, bc.maximum_keylength());
             
             HashMap!(string, double) ret;
-            ret["key schedule"] = time_op(runtime / 8, { bc.set_key(key); });
+            ret["key schedule"] = time_op(runtime / 8, { bc.setKey(key); });
             ret["encrypt"] = mb_mult * time_op(runtime / 2, { bc.encrypt(buffer); });
             ret["decrypt"] = mb_mult * time_op(runtime / 2, { bc.decrypt(buffer); });
             return ret;
         }
     }
     {
-        const StreamCipher proto = af.prototype_stream_cipher(name, provider);
+        const StreamCipher proto = af.prototypeStreamCipher(name, provider);
         if (proto) {
             Unique!StreamCipher sc = proto.clone();
             
             const SymmetricKey key = SymmetricKey(rng, sc.maximum_keylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] = time_op(runtime / 8, [&]() { sc.set_key(key); });
+            ret["key schedule"] = time_op(runtime / 8, [&]() { sc.setKey(key); });
             ret[""] = mb_mult * time_op(runtime, [&]() { sc.encipher(buffer); });
             return ret;
         }
     }
     {
-        const HashFunction proto = af.prototype_hash_function(name, provider);
+        const HashFunction proto = af.prototypeHashFunction(name, provider);
         if (proto) {
             Unique!HashFunction h = proto.clone();
             HashMap!(string, double) ret;
@@ -88,14 +88,14 @@ HashMap!(string, double)
         }
     }
     {
-        const MessageAuthenticationCode proto = af.prototype_mac(name, provider);
+        const MessageAuthenticationCode proto = af.prototypeMac(name, provider);
         
         if (proto) {
             Unique!MessageAuthenticationCode mac = proto.clone();
             
             const SymmetricKey key = SymmetricKey(rng, mac.maximum_keylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] =time_op(runtime / 8, { mac.set_key(key); });
+            ret["key schedule"] =time_op(runtime / 8, { mac.setKey(key); });
             ret[""] = mb_mult * time_op(runtime, { mac.update(buffer); });
             return ret;
         }
@@ -106,9 +106,9 @@ HashMap!(string, double)
         
         if (!enc.isEmpty && !dec.isEmpty)
         {
-            const SymmetricKey key = SymmetricKey(rng, enc.key_spec().maximum_keylength());
+            const SymmetricKey key = SymmetricKey(rng, enc.keySpec().maximum_keylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] = time_op(runtime / 4, { enc.set_key(key); dec.set_key(key); }) / 2;
+            ret["key schedule"] = time_op(runtime / 4, { enc.setKey(key); dec.setKey(key); }) / 2;
             ret["encrypt"] = mb_mult * time_op(runtime / 2, { enc.update(buffer, 0); buffer.resize(buf_size*1024); });
             ret["decrypt"] = mb_mult * time_op(runtime / 2, { dec.update(buffer, 0); buffer.resize(buf_size*1024); });
             return ret;
@@ -129,8 +129,8 @@ HashMap!(string, double)
 * @return results a map from provider to speed in mebibytes per second
 */
 HashMap!(string, double)
-    algorithm_benchmark(in string name,
-                        Algorithm_Factory af,
+    algorithmBenchmark(in string name,
+                        AlgorithmFactory af,
                         RandomNumberGenerator rng,
                         Duration milliseconds,
                         size_t buf_size)
@@ -154,7 +154,7 @@ HashMap!(string, double)
 }
 
 
-double time_op(Duration runtime, void delegate() op)
+double timeOp(Duration runtime, void delegate() op)
 {
     StopWatch sw;
     sw.start();
@@ -168,7 +168,7 @@ double time_op(Duration runtime, void delegate() op)
     return reps.to!double / sw.peek().seconds.to!double; // ie, return ops per second
 }
 
-private double find_first_in(in HashMap!(string, double) m, 
+private double findFirstIn(in HashMap!(string, double) m, 
                              in Vector!string keys)
 {
     foreach (key; keys[])
@@ -178,5 +178,5 @@ private double find_first_in(in HashMap!(string, double) m,
             return val;
     }
     
-    throw new Exception("algorithm_factory no usable keys found in result");
+    throw new Exception("algorithmFactory no usable keys found in result");
 }

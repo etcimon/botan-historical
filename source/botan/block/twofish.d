@@ -15,20 +15,20 @@ import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist
 */
-final class Twofish : Block_Cipher_Fixed_Params!(16, 16, 32, 8)
+final class Twofish : BlockCipherFixedParams!(16, 16, 32, 8)
 {
 public:
     /*
     * Twofish Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_littleEndian!uint(input, 0) ^ m_RK[0];
-            uint B = load_littleEndian!uint(input, 1) ^ m_RK[1];
-            uint C = load_littleEndian!uint(input, 2) ^ m_RK[2];
-            uint D = load_littleEndian!uint(input, 3) ^ m_RK[3];
+            uint A = loadLittleEndian!uint(input, 0) ^ m_RK[0];
+            uint B = loadLittleEndian!uint(input, 1) ^ m_RK[1];
+            uint C = loadLittleEndian!uint(input, 2) ^ m_RK[2];
+            uint D = loadLittleEndian!uint(input, 3) ^ m_RK[3];
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -42,8 +42,8 @@ public:
                 Y += X + m_RK[2*j + 9];
                 X += m_RK[2*j + 8];
                 
-                C = rotate_right(C ^ X, 1);
-                D = rotate_left(D, 1) ^ Y;
+                C = rotateRight(C ^ X, 1);
+                D = rotateLeft(D, 1) ^ Y;
                 
                 X = m_SB[     get_byte(3, C)] ^ m_SB[256+get_byte(2, C)] ^
                     m_SB[512+get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
@@ -53,8 +53,8 @@ public:
                 Y += X + m_RK[2*j + 11];
                 X += m_RK[2*j + 10];
                 
-                A = rotate_right(A ^ X, 1);
-                B = rotate_left(B, 1) ^ Y;
+                A = rotateRight(A ^ X, 1);
+                B = rotateLeft(B, 1) ^ Y;
             }
             
             C ^= m_RK[4];
@@ -62,7 +62,7 @@ public:
             A ^= m_RK[6];
             B ^= m_RK[7];
             
-            store_littleEndian(output, C, D, A, B);
+            storeLittleEndian(output, C, D, A, B);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -72,14 +72,14 @@ public:
     /*
     * Twofish Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A = load_littleEndian!uint(input, 0) ^ m_RK[4];
-            uint B = load_littleEndian!uint(input, 1) ^ m_RK[5];
-            uint C = load_littleEndian!uint(input, 2) ^ m_RK[6];
-            uint D = load_littleEndian!uint(input, 3) ^ m_RK[7];
+            uint A = loadLittleEndian!uint(input, 0) ^ m_RK[4];
+            uint B = loadLittleEndian!uint(input, 1) ^ m_RK[5];
+            uint C = loadLittleEndian!uint(input, 2) ^ m_RK[6];
+            uint D = loadLittleEndian!uint(input, 3) ^ m_RK[7];
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -93,8 +93,8 @@ public:
                 Y += X + m_RK[39 - 2*j];
                 X += m_RK[38 - 2*j];
                 
-                C = rotate_left(C, 1) ^ X;
-                D = rotate_right(D ^ Y, 1);
+                C = rotateLeft(C, 1) ^ X;
+                D = rotateRight(D ^ Y, 1);
                 
                 X = m_SB[     get_byte(3, C)] ^ m_SB[256+get_byte(2, C)] ^
                     m_SB[512+get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
@@ -104,8 +104,8 @@ public:
                 Y += X + m_RK[37 - 2*j];
                 X += m_RK[36 - 2*j];
                 
-                A = rotate_left(A, 1) ^ X;
-                B = rotate_right(B ^ Y, 1);
+                A = rotateLeft(A, 1) ^ X;
+                B = rotateRight(B ^ Y, 1);
             }
             
             C ^= m_RK[0];
@@ -113,7 +113,7 @@ public:
             A ^= m_RK[2];
             B ^= m_RK[3];
             
-            store_littleEndian(output, C, D, A, B);
+            storeLittleEndian(output, C, D, A, B);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -131,16 +131,18 @@ public:
 
     override @property string name() const { return "Twofish"; }
     BlockCipher clone() const { return new Twofish; }
-private:
+
+protected:
+
     /*
     * Twofish Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         m_SB.resize(1024);
         m_RK.resize(40);
         
-        Secure_Vector!ubyte S = Secure_Vector!ubyte(16);
+        SecureVector!ubyte S = SecureVector!ubyte(16);
         
         foreach (size_t i; 0 .. length)
             rs_mul(*cast(ubyte[4]*) &S[4*(i/8)], key[i], i);
@@ -165,11 +167,11 @@ private:
                     MDS1[Q0[Q1[i+1]^key[13]]^key[ 5]] ^
                     MDS2[Q1[Q0[i+1]^key[14]]^key[ 6]] ^
                     MDS3[Q1[Q1[i+1]^key[15]]^key[ 7]];
-                Y = rotate_left(Y, 8);
+                Y = rotateLeft(Y, 8);
                 X += Y; Y += X;
                 
                 m_RK[i] = X;
-                m_RK[i+1] = rotate_left(Y, 9);
+                m_RK[i+1] = rotateLeft(Y, 9);
             }
         }
         else if (length == 24)
@@ -192,11 +194,11 @@ private:
                     MDS1[Q0[Q1[Q1[i+1]^key[21]]^key[13]]^key[ 5]] ^
                     MDS2[Q1[Q0[Q0[i+1]^key[22]]^key[14]]^key[ 6]] ^
                     MDS3[Q1[Q1[Q0[i+1]^key[23]]^key[15]]^key[ 7]];
-                Y = rotate_left(Y, 8);
+                Y = rotateLeft(Y, 8);
                 X += Y; Y += X;
                 
                 m_RK[i] = X;
-                m_RK[i+1] = rotate_left(Y, 9);
+                m_RK[i+1] = rotateLeft(Y, 9);
             }
         }
         else if (length == 32)
@@ -219,17 +221,17 @@ private:
                     MDS1[Q0[Q1[Q1[Q0[i+1]^key[29]]^key[21]]^key[13]]^key[ 5]] ^
                     MDS2[Q1[Q0[Q0[Q0[i+1]^key[30]]^key[22]]^key[14]]^key[ 6]] ^
                     MDS3[Q1[Q1[Q0[Q1[i+1]^key[31]]^key[23]]^key[15]]^key[ 7]];
-                Y = rotate_left(Y, 8);
+                Y = rotateLeft(Y, 8);
                 X += Y; Y += X;
                 
                 m_RK[i] = X;
-                m_RK[i+1] = rotate_left(Y, 9);
+                m_RK[i+1] = rotateLeft(Y, 9);
             }
         }
     }
 
 
-    Secure_Vector!uint m_SB, m_RK;
+    SecureVector!uint m_SB, m_RK;
 }
 
 private:

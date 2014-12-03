@@ -17,14 +17,14 @@ public import botan.block.block_cipher;
 /**
 * DES
 */
-final class DES : Block_Cipher_Fixed_Params!(8, 8)
+final class DES : BlockCipherFixedParams!(8, 8)
 {
 public:
 
     /*
     * DES Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -42,9 +42,9 @@ public:
                     (DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
                     (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
-            T = rotate_left(T, 32);
+            T = rotateLeft(T, 32);
             
-            store_bigEndian(T, output);
+            storeBigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -55,7 +55,7 @@ public:
     /*
     * DES Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -74,9 +74,9 @@ public:
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
                     (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
             
-            T = rotate_left(T, 32);
+            T = rotateLeft(T, 32);
             
-            store_bigEndian(T, output);
+            storeBigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -90,29 +90,29 @@ public:
 
     @property string name() const { return "DES"; }
     BlockCipher clone() const { return new DES; }
-private:
+protected:
     /*
     * DES Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_round_key.resize(32);
-        des_key_schedule(*cast(uint[32]*) m_round_key.ptr, *cast(ubyte[8]*) key);
+        desKeySchedule(*cast(uint[32]*) m_round_key.ptr, *cast(ubyte[8]*) key);
     }
 
-    Secure_Vector!uint m_round_key;
+    SecureVector!uint m_round_key;
 }
 
 /**
 * Triple DES
 */
-class TripleDES : Block_Cipher_Fixed_Params!(8, 16, 24, 8)
+class TripleDES : BlockCipherFixedParams!(8, 16, 24, 8)
 {
 public:
     /*
     * TripleDES Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -133,9 +133,9 @@ public:
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
                     (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
             
-            T = rotate_left(T, 32);
+            T = rotateLeft(T, 32);
             
-            store_bigEndian(T, output);
+            storeBigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -144,7 +144,7 @@ public:
     /*
     * TripleDES Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -165,9 +165,9 @@ public:
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
                     (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
             
-            T = rotate_left(T, 32);
+            T = rotateLeft(T, 32);
             
-            store_bigEndian(T, output);
+            storeBigEndian(T, output);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -181,24 +181,24 @@ public:
 
     @property string name() const { return "TripleDES"; }
     BlockCipher clone() const { return new TripleDES; }
-private:
+protected:
     /*
     * TripleDES Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         m_round_key.resize(3*32);
-        des_key_schedule(m_round_key.ptr, key);
-        des_key_schedule(&m_round_key[32], key + 8);
+        desKeySchedule(m_round_key.ptr, key);
+        desKeySchedule(&m_round_key[32], key + 8);
         
         if (length == 24)
-            des_key_schedule(&m_round_key[64], key + 16);
+            desKeySchedule(&m_round_key[64], key + 16);
         else
-            copy_mem(&m_round_key[64], m_round_key.ptr, 32);
+            copyMem(&m_round_key[64], m_round_key.ptr, 32);
     }
 
 
-    Secure_Vector!uint m_round_key;
+    SecureVector!uint m_round_key;
 }
 
 /*

@@ -27,13 +27,13 @@ import botan.utils.containers.multimap;
 /**
 * X.509 Certificate Extension
 */
-class Certificate_Extension
+class CertificateExtension
 {
 public:
     /**
     * @return OID representing this extension
     */
-    final OID oid_of() const
+    final OID oidOf() const
     {
         return OIDS.lookup(oid_name());
     }
@@ -42,7 +42,7 @@ public:
     * Make a copy of this extension
     * @return copy of this
     */
-    abstract Certificate_Extension copy() const;
+    abstract CertificateExtension copy() const;
 
     /*
     * Add the contents of this extension into the information
@@ -50,31 +50,31 @@ public:
     * @param subject = the subject info
     * @param issuer = the issuer info
     */
-    abstract void contents_to(ref Data_Store subject,
-                              ref Data_Store issuer) const;
+    abstract void contentsTo(ref DataStore subject,
+                              ref DataStore issuer) const;
 
     /*
     * @return specific OID name
     */
-    abstract string oid_name() const;
+    abstract string oidName() const;
 
     ~this() {}
 protected:
-    abstract bool should_encode() const { return true; }
-    abstract Vector!ubyte encode_inner() const;
-    abstract void decode_inner(in Vector!ubyte);
+    abstract bool shouldEncode() const { return true; }
+    abstract Vector!ubyte encodeInner() const;
+    abstract void decodeInner(in Vector!ubyte);
 }
 
-alias X509_Extensions = FreeListRef!X509_Extensions_Impl;
+alias X509Extensions = FreeListRef!X509ExtensionsImpl;
 
 /**
 * X.509 Certificate Extension List
 */
-final class X509_Extensions_Impl : ASN1_Object
+final class X509ExtensionsImpl : ASN1Object
 {
 public:
 
-    void encode_into(DER_Encoder to) const
+    void encodeInto(DEREncoder to) const
     {
         foreach (const extension; m_extensions)
         {
@@ -85,86 +85,86 @@ public:
             
             if (should_encode)
             {
-                to_object.start_cons(ASN1_Tag.SEQUENCE)
-                           .encode(ext.oid_of())
-                        .encode_optional(is_critical, false)
-                        .encode(ext.encode_inner(), ASN1_Tag.OCTET_STRING)
-                        .end_cons();
+                to_object.startCons(ASN1Tag.SEQUENCE)
+                           .encode(ext.oidOf())
+                        .encodeOptional(is_critical, false)
+                        .encode(ext.encodeInner(), ASN1Tag.OCTET_STRING)
+                        .endCons();
             }
         }
     }
 
-    void decode_from(BER_Decoder from_source)
+    void decodeFrom(BERDecoder from_source)
     {
         foreach (extension; m_extensions)
             delete extension.first;
         m_extensions.clear();
         
-        BER_Decoder sequence = from_source.start_cons(ASN1_Tag.SEQUENCE);
+        BERDecoder sequence = from_source.startCons(ASN1Tag.SEQUENCE);
         
-        while (sequence.more_items())
+        while (sequence.moreItems())
         {
             OID oid;
             Vector!ubyte value;
             bool critical;
             
-            sequence.start_cons(ASN1_Tag.SEQUENCE)
+            sequence.startCons(ASN1Tag.SEQUENCE)
                     .decode(oid)
-                    .decode_optional(critical, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
-                    .decode(value, ASN1_Tag.OCTET_STRING)
-                    .verify_end()
-                    .end_cons();
+                    .decodeOptional(critical, BOOLEAN, ASN1Tag.UNIVERSAL, false)
+                    .decode(value, ASN1Tag.OCTET_STRING)
+                    .verifyEnd()
+                    .endCons();
             
             Certificate_Extension ext = get_extension(oid);
             
             if (!ext && critical && m_throw_on_unknown_critical)
-                throw new Decoding_Error("Encountered unknown X.509 extension marked "
+                throw new DecodingError("Encountered unknown X.509 extension marked "
                                          ~ "as critical; OID = " ~ oid.toString());
             
             if (ext)
             {
                 try
                 {
-                    ext.decode_inner(value);
+                    ext.decodeInner(value);
                 }
                 catch(Exception e)
                 {
-                    throw new Decoding_Error("Exception while decoding extension " ~
+                    throw new DecodingError("Exception while decoding extension " ~
                                              oid.toString() ~ ": " ~ e.msg);
                 }
                 
-                m_extensions.push_back(Pair(ext, critical));
+                m_extensions.pushBack(Pair(ext, critical));
             }
         }
         
-        sequence.verify_end();
+        sequence.verifyEnd();
     }
 
-    void contents_to(ref Data_Store subject_info,
-                     ref Data_Store issuer_info) const
+    void contentsTo(ref DataStore subject_info,
+                     ref DataStore issuer_info) const
     {
         foreach (extension; m_extensions)
-            extension.first.contents_to(subject_info, issuer_info);
+            extension.first.contentsTo(subject_info, issuer_info);
     }
 
-    void add(Certificate_Extension extn, bool critical)
+    void add(CertificateExtension extn, bool critical)
     {
-        m_extensions.push_back(Pair(extn, critical));
+        m_extensions.pushBack(Pair(extn, critical));
     }
 
-    X509_Extensions opAssign(in X509_Extensions other)
+    X509Extensions opAssign(in X509Extensions other)
     {
         foreach (extension; m_extensions)
             delete extension.first;
         m_extensions.clear();
         
         foreach (extension; other.m_extensions)
-            m_extensions.push_back(Pair(extension.first.copy(), extension.second));
+            m_extensions.pushBack(Pair(extension.first.copy(), extension.second));
         
         return this;
     }
 
-    this(in X509_Extensions ext) {
+    this(in X509Extensions ext) {
         this = ext;
     }
 
@@ -181,24 +181,24 @@ private:
     /*
     * List of X.509 Certificate Extensions
     */
-    Certificate_Extension get_extension(in OID oid)
+    CertificateExtension getExtension(in OID oid)
     {
-        string X509_EXTENSION(string NAME, alias T)() {
+        string x509EXTENSION(string NAME, alias T)() {
             return `if (OIDS.name_of(oid, "` ~ NAME ~ `")) return new ` ~ __traits(T, identifier).stringof ~ `();`;
         }
         
-        mixin( X509_EXTENSION!("X509v3.KeyUsage", Key_Usage)() );
-        mixin( X509_EXTENSION!("X509v3.BasicConstraints", Basic_Constraints)() );
-        mixin( X509_EXTENSION!("X509v3.SubjectKeyIdentifier", Subject_Key_ID)() );
-        mixin( X509_EXTENSION!("X509v3.AuthorityKeyIdentifier", Authority_Key_ID)() );
-        mixin( X509_EXTENSION!("X509v3.ExtendedKeyUsage", Extended_Key_Usage)() );
-        mixin( X509_EXTENSION!("X509v3.IssuerAlternativeName", Issuer_Alternative_Name)() );
-        mixin( X509_EXTENSION!("X509v3.SubjectAlternativeName", Subject_Alternative_Name)() );
-        mixin( X509_EXTENSION!("X509v3.CertificatePolicies", Certificate_Policies)() );
-        mixin( X509_EXTENSION!("X509v3.CRLDistributionPoints", CRL_Distribution_Points)() );
-        mixin( X509_EXTENSION!("PKIX.AuthorityInformationAccess", Authority_Information_Access)() );
-        mixin( X509_EXTENSION!("X509v3.CRLNumber", CRL_Number)() );
-        mixin( X509_EXTENSION!("X509v3.ReasonCode", CRL_ReasonCode)() );
+        mixin( X509_EXTENSION!("X509v3.KeyUsage", KeyUsage)() );
+        mixin( X509_EXTENSION!("X509v3.BasicConstraints", BasicConstraints)() );
+        mixin( X509_EXTENSION!("X509v3.SubjectKeyIdentifier", SubjectKeyID)() );
+        mixin( X509_EXTENSION!("X509v3.AuthorityKeyIdentifier", AuthorityKeyID)() );
+        mixin( X509_EXTENSION!("X509v3.ExtendedKeyUsage", ExtendedKeyUsage)() );
+        mixin( X509_EXTENSION!("X509v3.IssuerAlternativeName", IssuerAlternativeName)() );
+        mixin( X509_EXTENSION!("X509v3.SubjectAlternativeName", SubjectAlternativeName)() );
+        mixin( X509_EXTENSION!("X509v3.CertificatePolicies", CertificatePolicies)() );
+        mixin( X509_EXTENSION!("X509v3.CRLDistributionPoints", CRLDistributionPoints)() );
+        mixin( X509_EXTENSION!("PKIX.AuthorityInformationAccess", AuthorityInformationAccess)() );
+        mixin( X509_EXTENSION!("X509v3.CRLNumber", CRLNumber)() );
+        mixin( X509_EXTENSION!("X509v3.ReasonCode", CRLReasonCode)() );
         
         return null;
     }
@@ -213,11 +213,11 @@ __gshared immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 /**
 * Basic Constraints Extension
 */
-final class Basic_Constraints : Certificate_Extension
+final class BasicConstraints : Certificate_Extension
 {
 public:
-    Basic_Constraints copy() const
-    { return new Basic_Constraints(m_is_ca, path_limit); }
+    BasicConstraints copy() const
+    { return new BasicConstraints(m_is_ca, path_limit); }
 
     this(bool ca = false, size_t limit = 0)
     {
@@ -225,47 +225,47 @@ public:
         m_path_limit = limit; 
     }
 
-    bool get_is_ca() const { return m_is_ca; }
+    bool getIsCa() const { return m_is_ca; }
     /*
     * Checked accessor for the path_limit member
     */
-    size_t get_path_limit() const
+    size_t getPathLimit() const
     {
         if (!m_is_ca)
-            throw new Invalid_State("Basic_Constraints::get_path_limit: Not a CA");
+            throw new InvalidState("Basic_Constraints::get_path_limit: Not a CA");
         return m_path_limit;
     }
 
 private:
-    string oid_name() const { return "X509v3.BasicConstraints"; }
+    string oidName() const { return "X509v3.BasicConstraints"; }
 
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder()
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .encode_if (m_is_ca,
-                            DER_Encoder()
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
+                .encodeIf (m_is_ca,
+                            DEREncoder()
                                 .encode(m_is_ca)
-                                .encode_optional(m_path_limit, NO_CERT_PATH_LIMIT)
+                                .encodeOptional(m_path_limit, NO_CERT_PATH_LIMIT)
                             )
-                .end_cons()
-                .get_contents_unlocked();
+                .endCons()
+                .getContentsUnlocked();
     }
 
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder(input)
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .decode_optional(m_is_ca, BOOLEAN, ASN1_Tag.UNIVERSAL, false)
-                .decode_optional(m_path_limit, INTEGER, ASN1_Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
-                .verify_end()
-                .end_cons();
+        BERDecoder(input)
+                .startCons(ASN1Tag.SEQUENCE)
+                .decodeOptional(m_is_ca, BOOLEAN, ASN1Tag.UNIVERSAL, false)
+                .decodeOptional(m_path_limit, INTEGER, ASN1Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
+                .verifyEnd()
+                .endCons();
         
         if (m_is_ca == false)
             m_path_limit = 0;
@@ -274,7 +274,7 @@ private:
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store subject, ref Data_Store) const
+    void contentsTo(ref DataStore subject, ref DataStore) const
     {
         subject.add("X509v3.BasicConstraints.is_ca", (m_is_ca ? 1 : 0));
         subject.add("X509v3.BasicConstraints.path_constraint", m_path_limit);
@@ -287,36 +287,36 @@ private:
 /**
 * Key Usage Constraints Extension
 */
-final class Key_Usage : Certificate_Extension
+final class KeyUsage : Certificate_Extension
 {
 public:
-    Key_Usage copy() const { return new Key_Usage(m_constraints); }
+    KeyUsage copy() const { return new KeyUsage(m_constraints); }
 
-    this(Key_Constraints c = Key_Constraints.NO_CONSTRAINTS) { constraints = c; }
+    this(KeyConstraints c = KeyConstraints.NO_CONSTRAINTS) { constraints = c; }
 
-    Key_Constraints get_constraints() const { return constraints; }
+    KeyConstraints getConstraints() const { return constraints; }
 private:
-    string oid_name() const { return "X509v3.KeyUsage"; }
+    string oidName() const { return "X509v3.KeyUsage"; }
 
-    bool should_encode() const { return (constraints != Key_Constraints.NO_CONSTRAINTS); }
+    bool shouldEncode() const { return (constraints != KeyConstraints.NO_CONSTRAINTS); }
 
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        if (m_constraints == Key_Constraints.NO_CONSTRAINTS)
-            throw new Encoding_Error("Cannot encode zero usage constraints");
+        if (m_constraints == KeyConstraints.NO_CONSTRAINTS)
+            throw new EncodingError("Cannot encode zero usage constraints");
         
         const size_t unused_bits = low_bit(m_constraints) - 1;
         
         Vector!ubyte der;
-        der.push_back(ASN1_Tag.BIT_STRING);
-        der.push_back(2 + ((unused_bits < 8) ? 1 : 0));
-        der.push_back(unused_bits % 8);
-        der.push_back((m_constraints >> 8) & 0xFF);
+        der.pushBack(ASN1Tag.BIT_STRING);
+        der.pushBack(2 + ((unused_bits < 8) ? 1 : 0));
+        der.pushBack(unused_bits % 8);
+        der.pushBack((m_constraints >> 8) & 0xFF);
         if (m_constraints & 0xFF)
-            der.push_back(m_constraints & 0xFF);
+            der.pushBack(m_constraints & 0xFF);
         
         return der;
     }
@@ -324,21 +324,21 @@ private:
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder ber = BER_Decoder(input);
+        BERDecoder ber = BERDecoder(input);
         
-        BER_Object obj = ber.get_next_object();
+        BER_Object obj = ber.getNextObject();
         
-        if (obj.type_tag != ASN1_Tag.BIT_STRING || obj.class_tag != ASN1_Tag.UNIVERSAL)
-            throw new BER_Bad_Tag("Bad tag for usage constraint",
+        if (obj.type_tag != ASN1Tag.BIT_STRING || obj.class_tag != ASN1Tag.UNIVERSAL)
+            throw new BERBadTag("Bad tag for usage constraint",
                                   obj.type_tag, obj.class_tag);
         
         if (obj.value.length != 2 && obj.value.length != 3)
-            throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
+            throw new BERDecodingError("Bad size for BITSTRING in usage constraint");
         
         if (obj.value[0] >= 8)
-            throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
+            throw new BERDecodingError("Invalid unused bits in usage constraint");
         
         obj.value[obj.value.length-1] &= (0xFF << obj.value[0]);
         
@@ -346,27 +346,27 @@ private:
         foreach (size_t i; 1 .. obj.value.length)
             usage = (obj.value[i] << 8) | usage;
         
-        m_constraints = Key_Constraints(usage);
+        m_constraints = KeyConstraints(usage);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store subject, ref Data_Store) const
+    void contentsTo(ref DataStore subject, ref DataStore) const
     {
         subject.add("X509v3.KeyUsage", m_constraints);
     }
 
-    Key_Constraints m_constraints;
+    KeyConstraints m_constraints;
 }
 
 /**
 * Subject Key Identifier Extension
 */
-final class Subject_Key_ID : Certificate_Extension
+final class SubjectKeyID : Certificate_Extension
 {
 public:
-    Subject_Key_ID copy() const { return new Subject_Key_ID(m_key_id); }
+    SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
 
     this() {}
     this(in Vector!ubyte pub_key)
@@ -376,32 +376,32 @@ public:
     }
 
 
-    Vector!ubyte get_key_id() const { return m_key_id; }
+    Vector!ubyte getKeyId() const { return m_key_id; }
 private:
-    string oid_name() const { return "X509v3.SubjectKeyIdentifier"; }
+    string oidName() const { return "X509v3.SubjectKeyIdentifier"; }
 
-    bool should_encode() const { return (m_key_id.length > 0); }
+    bool shouldEncode() const { return (m_key_id.length > 0); }
 
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder().encode(m_key_id, ASN1_Tag.OCTET_STRING).get_contents_unlocked();
+        return DEREncoder().encode(m_key_id, ASN1Tag.OCTET_STRING).getContentsUnlocked();
     }
 
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder(input).decode(m_key_id, ASN1_Tag.OCTET_STRING).verify_end();
+        BERDecoder(input).decode(m_key_id, ASN1Tag.OCTET_STRING).verifyEnd();
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store subject, ref Data_Store) const
+    void contentsTo(ref DataStore subject, ref DataStore) const
     {
         subject.add("X509v3.SubjectKeyIdentifier", m_key_id);
     }
@@ -412,46 +412,46 @@ private:
 /**
 * Authority Key Identifier Extension
 */
-class Authority_Key_ID : Certificate_Extension
+class AuthorityKeyID : Certificate_Extension
 {
 public:
-    Authority_Key_ID copy() const { return new Authority_Key_ID(m_key_id); }
+    AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
 
     this() {}
     this(in Vector!ubyte k) { m_key_id = k; }
 
-    Vector!ubyte get_key_id() const { return m_key_id; }
+    Vector!ubyte getKeyId() const { return m_key_id; }
 private:
-    string oid_name() const { return "X509v3.AuthorityKeyIdentifier"; }
+    string oidName() const { return "X509v3.AuthorityKeyIdentifier"; }
 
-    bool should_encode() const { return (m_key_id.length > 0); }
+    bool shouldEncode() const { return (m_key_id.length > 0); }
 
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
-                .encode(m_key_id, ASN1_Tag.OCTET_STRING, ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
-                .end_cons()
-                .get_contents_unlocked();
+        return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
+                .encode(m_key_id, ASN1Tag.OCTET_STRING, ASN1Tag(0), ASN1Tag.CONTEXT_SPECIFIC)
+                .endCons()
+                .getContentsUnlocked();
     }
 
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder(input)
-            .start_cons(ASN1_Tag.SEQUENCE)
-                .decode_optional_string(m_key_id, ASN1_Tag.OCTET_STRING, 0);
+        BERDecoder(input)
+            .startCons(ASN1Tag.SEQUENCE)
+                .decodeOptionalString(m_key_id, ASN1Tag.OCTET_STRING, 0);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store, ref Data_Store issuer) const
+    void contentsTo(ref DataStore, ref DataStore issuer) const
     {
         if (m_key_id.length)
             issuer.add("X509v3.AuthorityKeyIdentifier", m_key_id);
@@ -464,14 +464,14 @@ private:
 /**
 * Alternative Name Extension Base Class
 */
-class Alternative_Name : Certificate_Extension
+class AlternativeName : Certificate_Extension
 {
 public:
-    Alternative_Name get_alt_name() const { return m_alt_name; }
+    AlternativeName getAltName() const { return m_alt_name; }
 
 protected:
 
-    this(in Alternative_Name alt_name,
+    this(in AlternativeName alt_name,
          in string oid_name_str)
     {
         m_alt_name = alt_name;
@@ -479,31 +479,31 @@ protected:
     }
 
 private:
-    string oid_name() const { return m_oid_name_str; }
+    string oidName() const { return m_oid_name_str; }
 
-    bool should_encode() const { return m_alt_name.has_items(); }
+    bool shouldEncode() const { return m_alt_name.hasItems(); }
 
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder().encode(m_alt_name).get_contents_unlocked();
+        return DEREncoder().encode(m_alt_name).getContentsUnlocked();
     }
 
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder(input).decode(m_alt_name);
+        BERDecoder(input).decode(m_alt_name);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store subject_info,
-                     ref Data_Store issuer_info) const
+    void contentsTo(ref DataStore subject_info,
+                     ref DataStore issuer_info) const
     {
         MultiMap!(string, string) contents = get_alt_name().contents();
         
@@ -512,12 +512,12 @@ private:
         else if (m_oid_name_str == "X509v3.IssuerAlternativeName")
             issuer_info.add(contents);
         else
-            throw new Internal_Error("In Alternative_Name, unknown type " ~
+            throw new InternalError("In AlternativeName, unknown type " ~
                                      m_oid_name_str);
     }
 
     string m_oid_name_str;
-    Alternative_Name m_alt_name;
+    AlternativeName m_alt_name;
 }
 
 
@@ -526,14 +526,14 @@ private:
 /**
 * Subject Alternative Name Extension
 */
-final class Subject_Alternative_Name : Alternative_Name
+final class SubjectAlternativeName : AlternativeName
 {
 public:
-    Subject_Alternative_Name copy() const
-    { return new Subject_Alternative_Name(get_alt_name()); }
+    SubjectAlternativeName copy() const
+    { return new SubjectAlternativeName(get_alt_name()); }
 
     this() {}
-    this(in Alternative_Name name = new Subject_Alternative_Name()) {
+    this(in AlternativeName name = new SubjectAlternativeName()) {
         super(name, "X509v3.SubjectAlternativeName");
     }
 }
@@ -541,13 +541,13 @@ public:
 /**
 * Issuer Alternative Name Extension
 */
-final class Issuer_Alternative_Name : Alternative_Name
+final class IssuerAlternativeName : AlternativeName
 {
 public:
-    Issuer_Alternative_Name copy() const
-    { return new Issuer_Alternative_Name(get_alt_name()); }
+    IssuerAlternativeName copy() const
+    { return new IssuerAlternativeName(get_alt_name()); }
 
-    this(in Alternative_Name name = new Issuer_Alternative_Name()) {
+    this(in AlternativeName name = new IssuerAlternativeName()) {
         super(name, "X509v3.IssuerAlternativeName");
     }
 }
@@ -555,10 +555,10 @@ public:
 /**
 * Extended Key Usage Extension
 */
-final class Extended_Key_Usage : Certificate_Extension
+final class ExtendedKeyUsage : Certificate_Extension
 {
 public:
-    Extended_Key_Usage copy() const { return new Extended_Key_Usage(m_oids); }
+    ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids); }
 
     this() {}
     this(in Vector!OID o) 
@@ -566,35 +566,35 @@ public:
         m_oids = o;
     }
 
-    Vector!OID get_oids() const { return m_oids; }
+    Vector!OID getOids() const { return m_oids; }
 private:
-    string oid_name() const { return "X509v3.ExtendedKeyUsage"; }
+    string oidName() const { return "X509v3.ExtendedKeyUsage"; }
 
-    bool should_encode() const { return (m_oids.length > 0); }
+    bool shouldEncode() const { return (m_oids.length > 0); }
     /*
 * Encode the extension
 */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
-                .encode_list(m_oids)
-                .end_cons()
-                .get_contents_unlocked();
+        return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
+                .encodeList(m_oids)
+                .endCons()
+                .getContentsUnlocked();
     }
 
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder(input).decode_list(m_oids);
+        BERDecoder(input).decodeList(m_oids);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store subject, ref Data_Store) const
+    void contentsTo(ref DataStore subject, ref DataStore) const
     {
         foreach (oid; m_oids)
             subject.add("X509v3.ExtendedKeyUsage", oid.toString());
@@ -606,55 +606,55 @@ private:
 /**
 * Certificate Policies Extension
 */
-final class Certificate_Policies : Certificate_Extension
+final class CertificatePolicies : Certificate_Extension
 {
 public:
-    Certificate_Policies copy() const
-    { return new Certificate_Policies(m_oids); }
+    CertificatePolicies copy() const
+    { return new CertificatePolicies(m_oids); }
 
     this() {}
     this(in Vector!OID o) { m_oids = o; }
 
-    Vector!OID get_oids() const { return m_oids; }
+    Vector!OID getOids() const { return m_oids; }
 private:
-    string oid_name() const { return "X509v3.CertificatePolicies"; }
+    string oidName() const { return "X509v3.CertificatePolicies"; }
 
-    bool should_encode() const { return (m_oids.length > 0); }
+    bool shouldEncode() const { return (m_oids.length > 0); }
 
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        Vector!( Policy_Information ) policies;
+        Vector!( PolicyInformation ) policies;
         
         foreach (oid; m_oids)
-            policies.push_back(m_oids[i]);
+            policies.pushBack(m_oids[i]);
         
-        return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
-                .encode_list(policies)
-                .end_cons()
-                .get_contents_unlocked();
+        return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
+                .encodeList(policies)
+                .endCons()
+                .getContentsUnlocked();
     }
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        Vector!( Policy_Information ) policies;
+        Vector!( PolicyInformation ) policies;
         
-        BER_Decoder(input).decode_list(policies);
+        BERDecoder(input).decodeList(policies);
         
         m_oids.clear();
         foreach (policy; policies)
-            m_oids.push_back(policy.oid);
+            m_oids.pushBack(policy.oid);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store info, ref Data_Store) const
+    void contentsTo(ref DataStore info, ref DataStore) const
     {
         foreach (oid; m_oids)
             info.add("X509v3.CertificatePolicies", oid.toString());
@@ -663,51 +663,51 @@ private:
     Vector!OID m_oids;
 }
 
-final class Authority_Information_Access : Certificate_Extension
+final class AuthorityInformationAccess : Certificate_Extension
 {
 public:
-    Authority_Information_Access copy() const
-    { return new Authority_Information_Access(m_ocsp_responder); }
+    AuthorityInformationAccess copy() const
+    { return new AuthorityInformationAccess(m_ocsp_responder); }
 
     this() {}
 
     this(in string ocsp) { m_ocsp_responder = ocsp; }
 
 private:
-    string oid_name() const { return "PKIX.AuthorityInformationAccess"; }
+    string oidName() const { return "PKIX.AuthorityInformationAccess"; }
 
-    bool should_encode() const { return (m_ocsp_responder != ""); }
+    bool shouldEncode() const { return (m_ocsp_responder != ""); }
 
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        ASN1_String url = ASN1_String(m_ocsp_responder, IA5_STRING);
+        ASN1String url = ASN1String(m_ocsp_responder, IA5_STRING);
         
-        return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
-                .start_cons(ASN1_Tag.SEQUENCE)
+        return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(OIDS.lookup("PKIX.OCSP"))
-                .add_object(ASN1_Tag(6), ASN1_Tag.CONTEXT_SPECIFIC, url.iso_8859())
-                .end_cons()
-                .end_cons().get_contents_unlocked();
+                .addObject(ASN1Tag(6), ASN1Tag.CONTEXT_SPECIFIC, url.iso8859())
+                .endCons()
+                .endCons().getContentsUnlocked();
     }
 
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder ber = BER_Decoder(input).start_cons(ASN1_Tag.SEQUENCE);
+        BERDecoder ber = BERDecoder(input).startCons(ASN1Tag.SEQUENCE);
         
-        while (ber.more_items())
+        while (ber.moreItems())
         {
             OID oid;
             
-            BER_Decoder info = ber.start_cons(ASN1_Tag.SEQUENCE);
+            BERDecoder info = ber.startCons(ASN1Tag.SEQUENCE);
             
             info.decode(oid);
             
             if (oid == OIDS.lookup("PKIX.OCSP"))
             {
-                BER_Object name = info.get_next_object();
+                BER_Object name = info.getNextObject();
                 
-                if (name.type_tag == 6 && name.class_tag == ASN1_Tag.CONTEXT_SPECIFIC)
+                if (name.type_tag == 6 && name.class_tag == ASN1Tag.CONTEXT_SPECIFIC)
                 {
                     m_ocsp_responder = transcode(name.toString(),
                                                  LATIN1_CHARSET,
@@ -720,7 +720,7 @@ private:
 
 
 
-    void contents_to(ref Data_Store subject, ref Data_Store) const
+    void contentsTo(ref DataStore subject, ref DataStore) const
     {
         if (m_ocsp_responder != "")
             subject.add("OCSP.responder", m_ocsp_responder);
@@ -733,17 +733,17 @@ private:
 /**
 * CRL Number Extension
 */
-final class CRL_Number : Certificate_Extension
+final class CRLNumber : Certificate_Extension
 {
 public:
     /*
     * Copy a CRL_Number extension
     */
-    CRL_Number copy() const
+    CRLNumber copy() const
     {
         if (!m_has_value)
-            throw new Invalid_State("CRL_Number::copy: Not set");
-        return new CRL_Number(m_crl_number);
+            throw new InvalidState("CRL_Number::copy: Not set");
+        return new CRLNumber(m_crl_number);
     }
 
 
@@ -753,36 +753,36 @@ public:
     /*
     * Checked accessor for the crl_number member
     */
-    size_t get_crl_number() const
+    size_t getCrlNumber() const
     {
         if (!m_has_value)
-            throw new Invalid_State("CRL_Number::get_crl_number: Not set");
+            throw new InvalidState("CRL_Number::get_crl_number: Not set");
         return m_crl_number;
     }
 
 private:
-    string oid_name() const { return "X509v3.CRLNumber"; }
+    string oidName() const { return "X509v3.CRLNumber"; }
 
-    bool should_encode() const { return m_has_value; }
+    bool shouldEncode() const { return m_has_value; }
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder().encode(m_crl_number).get_contents_unlocked();
+        return DEREncoder().encode(m_crl_number).getContentsUnlocked();
     }
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
-        BER_Decoder(input).decode(m_crl_number);
+        BERDecoder(input).decode(m_crl_number);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store info, ref Data_Store) const
+    void contentsTo(ref DataStore info, ref DataStore) const
     {
         info.add("X509v3.CRLNumber", m_crl_number);
     }
@@ -794,42 +794,42 @@ private:
 /**
 * CRL Entry Reason Code Extension
 */
-final class CRL_ReasonCode : Certificate_Extension
+final class CRLReasonCode : Certificate_Extension
 {
 public:
-    CRL_ReasonCode copy() const { return new CRL_ReasonCode(m_reason); }
+    CRLReasonCode copy() const { return new CRLReasonCode(m_reason); }
 
-    this(CRL_Code r = CRL_Code.UNSPECIFIED) { m_reason = r; }
+    this(CRLCode r = CRL_Code.UNSPECIFIED) { m_reason = r; }
 
-    CRL_Code get_reason() const { return m_reason; }
+    CRLCode getReason() const { return m_reason; }
 private:
-    string oid_name() const { return "X509v3.ReasonCode"; }
+    string oidName() const { return "X509v3.ReasonCode"; }
 
-    bool should_encode() const { return (m_reason != CRL_Code.UNSPECIFIED); }
+    bool shouldEncode() const { return (m_reason != CRL_Code.UNSPECIFIED); }
     /*
     * Encode the extension
     */
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        return DER_Encoder()
-            .encode(cast(size_t)(m_reason), ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL)
-                .get_contents_unlocked();
+        return DEREncoder()
+            .encode(cast(size_t)(m_reason), ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL)
+                .getContentsUnlocked();
     }
 
     /*
     * Decode the extension
     */
-    void decode_inner(in Vector!ubyte input)
+    void decodeInner(in Vector!ubyte input)
     {
         size_t reason_code = 0;
-        BER_Decoder(input).decode(reason_code, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
-        m_reason = cast(CRL_Code)(reason_code);
+        BERDecoder(input).decode(reason_code, ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL);
+        m_reason = cast(CRLCode)(reason_code);
     }
 
     /*
     * Return a textual representation
     */
-    void contents_to(ref Data_Store info, ref Data_Store) const
+    void contentsTo(ref DataStore info, ref DataStore) const
     {
         info.add("X509v3.CRLReasonCode", m_reason);
     }
@@ -841,82 +841,82 @@ private:
 /**
 * CRL Distribution Points Extension
 */
-final class CRL_Distribution_Points : Certificate_Extension
+final class CRLDistributionPoints : Certificate_Extension
 {
 public:
-    alias Distribution_Point = FreeListRef!Distribution_Point_Impl;
-    final class Distribution_Point_Impl : ASN1_Object
+    alias DistributionPoint = FreeListRef!DistributionPointImpl;
+    final class DistributionPointImpl : ASN1Object
     {
     public:
-        void encode_into(DER_Encoder) const
+        void encodeInto(DEREncoder) const
         {
-            throw new Exception("CRL_Distribution_Points encoding not implemented");
+            throw new Exception("CRLDistributionPoints encoding not implemented");
         }
 
-        void decode_from(BER_Decoder ber)
+        void decodeFrom(BERDecoder ber)
         {
-            ber.start_cons(ASN1_Tag.SEQUENCE)
-                .start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC)
-                    .decode_optional_implicit(m_point, ASN1_Tag(0),
-                                              ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED),
-                                              ASN1_Tag.SEQUENCE, ASN1_Tag.CONSTRUCTED)
-                    .end_cons().end_cons();
+            ber.startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag(0), ASN1Tag.CONTEXT_SPECIFIC)
+                    .decodeOptionalImplicit(m_point, ASN1Tag(0),
+                                              ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED),
+                                              ASN1Tag.SEQUENCE, ASN1Tag.CONSTRUCTED)
+                    .endCons().endCons();
         }
 
 
-        Alternative_Name point() const { return m_point; }
+        AlternativeName point() const { return m_point; }
     private:
-        Alternative_Name m_point;
+        AlternativeName m_point;
     }
 
-    CRL_Distribution_Points copy() const
-    { return new CRL_Distribution_Points(m_distribution_points); }
+    CRLDistributionPoints copy() const
+    { return new CRLDistributionPoints(m_distribution_points); }
 
     this() {}
 
-    this(in Vector!( Distribution_Point ) points) { m_distribution_points = points; }
+    this(in Vector!( DistributionPoint ) points) { m_distribution_points = points; }
 
-    Vector!( Distribution_Point ) distribution_points() const
+    Vector!( DistributionPoint ) distributionPoints() const
     { return m_distribution_points; }
 
 private:
-    string oid_name() const { return "X509v3.CRLDistributionPoints"; }
+    string oidName() const { return "X509v3.CRLDistributionPoints"; }
 
-    bool should_encode() const { return !m_distribution_points.empty; }
+    bool shouldEncode() const { return !m_distribution_points.empty; }
 
-    Vector!ubyte encode_inner() const
+    Vector!ubyte encodeInner() const
     {
-        throw new Exception("CRL_Distribution_Points encoding not implemented");
+        throw new Exception("CRLDistributionPoints encoding not implemented");
     }
 
-    void decode_inner(in Vector!ubyte buf)
+    void decodeInner(in Vector!ubyte buf)
     {
-        BER_Decoder(buf).decode_list(m_distribution_points).verify_end();
+        BERDecoder(buf).decodeList(m_distribution_points).verifyEnd();
     }
 
 
-    void contents_to(ref Data_Store info, ref Data_Store) const
+    void contentsTo(ref DataStore info, ref DataStore) const
     {
         foreach (distribution_point; m_distribution_points)
         {
             auto point = distribution_point.point().contents();
             
-            point.equal_range("URI", (string val) {
+            point.equalRange("URI", (string val) {
                 info.add("CRL.DistributionPoint", val);
             });
         }
     }
 
-    Vector!( Distribution_Point ) m_distribution_points;
+    Vector!( DistributionPoint ) m_distribution_points;
 }
 
 
-alias Policy_Information = FreeListRef!Policy_Information_Impl;
+alias PolicyInformation = FreeListRef!PolicyInformationImpl;
 
 /*
 * A policy specifier
 */
-final class Policy_Information_Impl : ASN1_Object
+final class PolicyInformationImpl : ASN1Object
 {
 public:
     OID oid;
@@ -924,18 +924,18 @@ public:
     this() {}
     this(in OID oid_) { oid = oid_; }
     
-    void encode_into(DER_Encoder codec) const
+    void encodeInto(DEREncoder codec) const
     {
-        codec.start_cons(ASN1_Tag.SEQUENCE)
+        codec.startCons(ASN1Tag.SEQUENCE)
             .encode(oid)
-                .end_cons();
+                .endCons();
     }
     
-    void decode_from(BER_Decoder codec)
+    void decodeFrom(BERDecoder codec)
     {
-        codec.start_cons(ASN1_Tag.SEQUENCE)
+        codec.startCons(ASN1Tag.SEQUENCE)
             .decode(oid)
-                .discard_remaining()
-                .end_cons();
+                .discardRemaining()
+                .endCons();
     }
 }

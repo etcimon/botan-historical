@@ -17,7 +17,7 @@ import std.algorithm;
 /**
 * CBC-MAC
 */
-final class CBC_MAC : MessageAuthenticationCode
+final class CBCMAC : MessageAuthenticationCode
 {
 public:
     /*
@@ -33,10 +33,10 @@ public:
     */
     MessageAuthenticationCode clone() const
     {
-        return new CBC_MAC(m_cipher.clone());
+        return new CBCMAC(m_cipher.clone());
     }
 
-    @property size_t output_length() const { return m_cipher.block_size; }
+    @property size_t outputLength() const { return m_cipher.block_size; }
 
     /*
     * Clear memory of sensitive data
@@ -48,9 +48,9 @@ public:
         m_position = 0;
     }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
-        return m_cipher.key_spec();
+        return m_cipher.keySpec();
     }
 
     /**
@@ -67,7 +67,7 @@ private:
     /*
     * Update an CBC-MAC Calculation
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(output_length() - m_position, length);
         xor_buf(&m_state[m_position], input, xored);
@@ -94,12 +94,12 @@ private:
     /*
     * Finalize an CBC-MAC Calculation
     */
-    void final_result(ubyte* mac)
+    void finalResult(ubyte* mac)
     {
         if (m_position)
             m_cipher.encrypt(m_state);
         
-        copy_mem(mac, m_state.ptr, m_state.length);
+        copyMem(mac, m_state.ptr, m_state.length);
         zeroise(m_state);
         m_position = 0;
     }
@@ -107,14 +107,12 @@ private:
     /*
     * CBC-MAC Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
-        m_cipher.set_key(key, length);
+        m_cipher.setKey(key, length);
     }
-    
-
 
     Unique!BlockCipher m_cipher;
-    Secure_Vector!ubyte m_state;
+    SecureVector!ubyte m_state;
     size_t m_position;
 }

@@ -24,10 +24,10 @@ import std.conv : to;
 import botan.utils.types;
 
 /**
-* TLS TLS_Policy Base Class
+* TLS TLSPolicy Base Class
 * Inherit and overload as desired to suit local policy concerns
 */
-class TLS_Policy
+class TLSPolicy
 {
 public:
 
@@ -35,7 +35,7 @@ public:
     * Returns a list of ciphers we are willing to negotiate, in
     * order of preference.
     */
-    Vector!string allowed_ciphers() const
+    Vector!string allowedCiphers() const
     {
         return Vector!string([
             "AES-256/GCM",
@@ -60,7 +60,7 @@ public:
     * Returns a list of hash algorithms we are willing to use for
     * signatures, in order of preference.
     */
-    Vector!string allowed_signature_hashes() const
+    Vector!string allowedSignatureHashes() const
     {
         return Vector!string([
             "SHA-512",
@@ -76,7 +76,7 @@ public:
     /**
     * Returns a list of MAC algorithms we are willing to use.
     */
-    Vector!string allowed_macs() const
+    Vector!string allowedMacs() const
     {
         return Vector!string([
             "AEAD",
@@ -92,7 +92,7 @@ public:
     * use, in order of preference. Allowed values: DH, empty string
     * (representing RSA using server certificate key)
     */
-    Vector!string allowed_key_exchange_methods() const
+    Vector!string allowedKeyExchangeMethods() const
     {
         return Vector!string([
             "SRP_SHA",
@@ -109,7 +109,7 @@ public:
     * Returns a list of signature algorithms we are willing to
     * use, in order of preference. Allowed values RSA and DSA.
     */
-    Vector!string allowed_signature_methods() const
+    Vector!string allowedSignatureMethods() const
     {
         return Vector!string([
             "ECDSA",
@@ -122,7 +122,7 @@ public:
     /**
     * Return list of ECC curves we are willing to use in order of preference
     */
-    Vector!string allowed_ecc_curves() const
+    Vector!string allowedEccCurves() const
     {
         return Vector!string([
             "brainpool512r1",
@@ -158,7 +158,7 @@ public:
     /**
     * Choose an elliptic curve to use
     */
-    string choose_curve(in Vector!string curve_names) const
+    string chooseCurve(in Vector!string curve_names) const
     {
         const Vector!string our_curves = allowed_ecc_curves();
 
@@ -172,7 +172,7 @@ public:
     /**
     * Attempt to negotiate the use of the heartbeat extension
     */
-    bool negotiate_heartbeat_support() const
+    bool negotiateHeartbeatSupport() const
     {
         return false;
     }
@@ -184,12 +184,12 @@ public:
     * @warning Changing this to true exposes you to injected
     * plaintext attacks. Read RFC 5746 for background.
     */
-    bool allow_insecure_renegotiation() const { return false; }
+    bool allowInsecureRenegotiation() const { return false; }
 
     /**
     * Allow servers to initiate a new handshake
     */
-    bool allow_server_initiated_renegotiation() const
+    bool allowServerInitiatedRenegotiation() const
     {
         return true;
     }
@@ -197,15 +197,15 @@ public:
     /**
     * Return the group to use for ephemeral Diffie-Hellman key agreement
     */
-    DL_Group dh_group() const
+    DLGroup dhGroup() const
     {
-        return DL_Group("modp/ietf/2048");
+        return DLGroup("modp/ietf/2048");
     }
 
     /**
     * Return the minimum DH group size we're willing to use
     */
-    size_t minimum_dh_group_size() const
+    size_t minimumDhGroupSize() const
     {
         return 1024;
     }
@@ -218,14 +218,14 @@ public:
     * proceed, causing the handshake to eventually fail without
     * revealing that the username does not exist on this system.
     */
-    bool hide_unknown_users() const { return false; }
+    bool hideUnknownUsers() const { return false; }
 
     /**
     * Return the allowed lifetime of a session ticket. If 0, session
     * tickets do not expire until the session ticket key rolls over.
     * Expired session tickets cannot be used to resume a session.
     */
-    Duration session_ticket_lifetime() const
+    Duration sessionTicketLifetime() const
     {
         return 24.hours; // 1 day
     }
@@ -235,16 +235,16 @@ public:
     * Default accepts only TLS, so if you want to enable DTLS override
     * in your application.
     */
-    bool acceptable_protocol_version(TLS_Protocol_Version _version) const
+    bool acceptableProtocolVersion(TLSProtocolVersion _version) const
     {
         // By default require TLS to minimize surprise
-        if (_version.is_datagram_protocol())
+        if (_version.isDatagramProtocol())
             return false;
         
-        return (_version > TLS_Protocol_Version.SSL_V3);
+        return (_version > TLSProtocolVersion.SSL_V3);
     }
 
-    bool acceptable_ciphersuite(in TLS_Ciphersuite) const
+    bool acceptableCiphersuite(in TLSCiphersuite) const
     {
         return true;
     }
@@ -254,50 +254,50 @@ public:
     *            their highest preference, rather than the clients.
     *            Has no effect on client side.
     */
-    bool server_uses_own_ciphersuite_preferences() const { return true; }
+    bool serverUsesOwnCiphersuitePreferences() const { return true; }
 
     /**
     * Return allowed ciphersuites, in order of preference
     */
-    Vector!ushort ciphersuite_list(TLS_Protocol_Version _version,
+    Vector!ushort ciphersuiteList(TLSProtocolVersion _version,
                                        bool have_srp) const
     {
         const Vector!string ciphers = allowed_ciphers();
         const Vector!string macs = allowed_macs();
         const Vector!string kex = allowed_key_exchange_methods();
-        const Vector!string sigs = allowed_signature_methods();
+        const Vector!string sigs = allowedSignatureMethods();
         
         Ciphersuite_Preference_Ordering order = Ciphersuite_Preference_Ordering(ciphers, macs, kex, sigs);
         
-        Appender!(TLS_Ciphersuite[]) ciphersuites;
+        Appender!(TLSCiphersuite[]) ciphersuites;
         
-        foreach (suite; TLS_Ciphersuite.all_known_ciphersuites())
+        foreach (suite; TLSCiphersuite.allKnownCiphersuites())
         {
             if (!acceptable_ciphersuite(suite))
                 continue;
             
-            if (!have_srp && suite.kex_algo() == "SRP_SHA")
+            if (!have_srp && suite.kexAlgo() == "SRP_SHA")
                 continue;
             
-            if (_version.is_datagram_protocol() && suite.cipher_algo() == "RC4")
+            if (_version.isDatagramProtocol() && suite.cipherAlgo() == "RC4")
                 continue;
             
-            if (!_version.supports_aead_modes() && suite.mac_algo() == "AEAD")
+            if (!_version.supportsAeadModes() && suite.macAlgo() == "AEAD")
                 continue;
             
-            if (!value_exists(kex, suite.kex_algo()))
+            if (!value_exists(kex, suite.kexAlgo()))
                 continue; // unsupported key exchange
             
-            if (!value_exists(ciphers, suite.cipher_algo()))
+            if (!value_exists(ciphers, suite.cipherAlgo()))
                 continue; // unsupported cipher
             
-            if (!value_exists(macs, suite.mac_algo()))
+            if (!value_exists(macs, suite.macAlgo()))
                 continue; // unsupported MAC algo
             
-            if (!value_exists(sigs, suite.sig_algo()))
+            if (!value_exists(sigs, suite.sigAlgo()))
             {
                 // allow if it's an empty sig algo and we want to use PSK
-                if (suite.sig_algo() != "" || !suite.psk_ciphersuite())
+                if (suite.sigAlgo() != "" || !suite.pskCiphersuite())
                     continue;
             }
             
@@ -306,10 +306,10 @@ public:
         }
         
         if (ciphersuites.data.empty)
-            throw new Logic_Error("TLS_Policy does not allow any available cipher suite");
+            throw new LogicError("TLSPolicy does not allow any available cipher suite");
         Vector!ushort ciphersuite_codes;
-        foreach (TLS_Ciphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(TLS_Ciphersuite[]))
-            ciphersuite_codes.push_back(i.ciphersuite_code());
+        foreach (TLSCiphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(TLSCiphersuite[]))
+            ciphersuite_codes.pushBack(i.ciphersuiteCode());
         return ciphersuite_codes;
     }
 
@@ -319,48 +319,48 @@ public:
 /**
 * NSA Suite B 128-bit security level (see @rfc 6460)
 */
-class NSA_Suite_B_128 : TLS_Policy
+class NSASuiteB128 : TLSPolicy
 {
 public:
-    override Vector!string allowed_ciphers() const
+    override Vector!string allowedCiphers() const
     { return Vector!string(["AES-128/GCM"]); }
 
-    override Vector!string allowed_signature_hashes() const
+    override Vector!string allowedSignatureHashes() const
     { return Vector!string(["SHA-256"]); }
 
-    override Vector!string allowed_macs() const
+    override Vector!string allowedMacs() const
     { return Vector!string(["AEAD"]); }
 
-    override Vector!string allowed_key_exchange_methods() const
+    override Vector!string allowedKeyExchangeMethods() const
     { return Vector!string(["ECDH"]); }
 
-    override Vector!string allowed_signature_methods() const
+    override Vector!string allowedSignatureMethods() const
     { return Vector!string(["ECDSA"]); }
 
-    override Vector!string allowed_ecc_curves() const
+    override Vector!string allowedEccCurves() const
     { return Vector!string(["secp256r1"]); }
 
-    override bool acceptable_protocol_version(TLS_Protocol_Version _version) const
-    { return _version == TLS_Protocol_Version.TLS_V12; }
+    override bool acceptableProtocolVersion(TLSProtocolVersion _version) const
+    { return _version == TLSProtocolVersion.TLS_V12; }
 }
 
 /**
-* TLS_Policy for DTLS. We require DTLS v1.2 and an AEAD mode
+* TLSPolicy for DTLS. We require DTLS v1.2 and an AEAD mode
 */
-class Datagram_Policy : TLS_Policy
+class DatagramPolicy : TLSPolicy
 {
 public:
-    override Vector!string allowed_macs() const
+    override Vector!string allowedMacs() const
     { return Vector!string(["AEAD"]); }
 
-    override bool acceptable_protocol_version(TLS_Protocol_Version _version) const
-    { return _version == TLS_Protocol_Version.DTLS_V12; }
+    override bool acceptableProtocolVersion(TLSProtocolVersion _version) const
+    { return _version == TLSProtocolVersion.DTLS_V12; }
 }
 
 
 private:
 
-struct Ciphersuite_Preference_Ordering
+struct CiphersuitePreferenceOrdering
 {
 public:
     this(in Vector!string ciphers, in Vector!string macs, in Vector!string kex, in Vector!string sigs)
@@ -371,56 +371,56 @@ public:
         m_sigs = sigs;
     }
     
-    bool compare(U : CipherSuite)(in TLS_Ciphersuite a, auto ref U b) const
+    bool compare(U : CipherSuite)(in TLSCiphersuite a, auto ref U b) const
     {
-        if (a.kex_algo() != b.kex_algo())
+        if (a.kexAlgo() != b.kexAlgo())
         {
             for (size_t i = 0; i != m_kex.length; ++i)
             {
-                if (a.kex_algo() == m_kex[i])
+                if (a.kexAlgo() == m_kex[i])
                     return true;
-                if (b.kex_algo() == m_kex[i])
+                if (b.kexAlgo() == m_kex[i])
                     return false;
             }
         }
         
-        if (a.cipher_algo() != b.cipher_algo())
+        if (a.cipherAlgo() != b.cipherAlgo())
         {
             for (size_t i = 0; i != m_ciphers.length; ++i)
             {
-                if (a.cipher_algo() == m_ciphers[i])
+                if (a.cipherAlgo() == m_ciphers[i])
                     return true;
-                if (b.cipher_algo() == m_ciphers[i])
+                if (b.cipherAlgo() == m_ciphers[i])
                     return false;
             }
         }
         
-        if (a.cipher_keylen() != b.cipher_keylen())
+        if (a.cipherKeylen() != b.cipherKeylen())
         {
-            if (a.cipher_keylen() < b.cipher_keylen())
+            if (a.cipherKeylen() < b.cipherKeylen())
                 return false;
-            if (a.cipher_keylen() > b.cipher_keylen())
+            if (a.cipherKeylen() > b.cipherKeylen())
                 return true;
         }
         
-        if (a.sig_algo() != b.sig_algo())
+        if (a.sigAlgo() != b.sigAlgo())
         {
             for (size_t i = 0; i != m_sigs.length; ++i)
             {
-                if (a.sig_algo() == m_sigs[i])
+                if (a.sigAlgo() == m_sigs[i])
                     return true;
-                if (b.sig_algo() == m_sigs[i])
+                if (b.sigAlgo() == m_sigs[i])
                     return false;
             }
         }
         
-        if (a.mac_algo() != b.mac_algo())
+        if (a.macAlgo() != b.macAlgo())
         {
             for (size_t i = 0; i != m_macs.length; ++i)
             {
-                if (a.mac_algo() == m_macs[i])
+                if (a.macAlgo() == m_macs[i])
                     return true;
-                if (b.mac_algo() == m_macs[i])
+                if (b.macAlgo() == m_macs[i])
                     return false;
             }
         }

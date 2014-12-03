@@ -18,7 +18,7 @@ import std.algorithm;
 * Converts arbitrary binary data to hex strings, optionally with
 * newlines inserted
 */
-final class Hex_Encoder : Filter
+final class HexEncoder : Filter
 {
 public:
     /**
@@ -27,7 +27,7 @@ public:
     typedef bool Case;
     enum : Case { Uppercase, Lowercase }
 
-    @property string name() const { return "Hex_Encoder"; }
+    @property string name() const { return "HexEncoder"; }
 
     /*
     * Convert some data into hex format
@@ -37,16 +37,16 @@ public:
         buffer_insert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
         {
-            encode_and_send(m_input.ptr, m_input.length);
+            encodeAndSend(m_input.ptr, m_input.length);
             input += (m_input.length - m_position);
             length -= (m_input.length - m_position);
             while (length >= m_input.length)
             {
-                encode_and_send(input, m_input.length);
+                encodeAndSend(input, m_input.length);
                 input += m_input.length;
                 length -= m_input.length;
             }
-            copy_mem(m_input.ptr, input, length);
+            copyMem(m_input.ptr, input, length);
             m_position = 0;
         }
         m_position += length;
@@ -55,9 +55,9 @@ public:
     /*
     * Flush buffers
     */
-    void end_msg()
+    void endMsg()
     {
-        encode_and_send(m_input.ptr, m_position);
+        encodeAndSend(m_input.ptr, m_position);
         if (m_counter && m_line_length)
             send('\n');
         m_counter = m_position = 0;
@@ -96,9 +96,9 @@ private:
     /*
     * Encode and send a block
     */
-    void encode_and_send(in ubyte* block, size_t length)
+    void encodeAndSend(in ubyte* block, size_t length)
     {
-        hex_encode(cast(char*)(m_output.ptr), block, length, m_casing == Uppercase);
+        hexEncode(cast(char*)(m_output.ptr), block, length, m_casing == Uppercase);
         
         if (m_line_length == 0)
             send(m_output, 2*length);
@@ -131,10 +131,10 @@ private:
 /**
 * Converts hex strings to bytes
 */
-final class Hex_Decoder : Filter
+final class HexDecoder : Filter
 {
 public:
-    @property string name() const { return "Hex_Decoder"; }
+    @property string name() const { return "HexDecoder"; }
 
     /*
     * Convert some data from hex format
@@ -144,11 +144,11 @@ public:
         while (length)
         {
             size_t to_copy = std.algorithm.min(length, m_input.length - m_position);
-            copy_mem(&m_input[m_position], input, to_copy);
+            copyMem(&m_input[m_position], input, to_copy);
             m_position += to_copy;
             
             size_t consumed = 0;
-            size_t written = hex_decode(m_output.ptr,
+            size_t written = hexDecode(m_output.ptr,
                                         cast(const(char)*)(m_input.ptr),
                                         m_position,
                                         consumed,
@@ -158,7 +158,7 @@ public:
             
             if (consumed != m_position)
             {
-                copy_mem(m_input.ptr, &m_input[consumed], m_position - consumed);
+                copyMem(m_input.ptr, &m_input[consumed], m_position - consumed);
                 m_position = m_position - consumed;
             }
             else
@@ -172,10 +172,10 @@ public:
     /*
     * Flush buffers
     */
-    void end_msg()
+    void endMsg()
     {
         size_t consumed = 0;
-        size_t written = hex_decode(m_output.ptr,
+        size_t written = hexDecode(m_output.ptr,
                                     cast(const(char)*)(m_input.ptr),
                                     m_position,
                                     consumed,
@@ -188,7 +188,7 @@ public:
         m_position = 0;
         
         if (not_full_bytes)
-            throw new Invalid_Argument("Hex_Decoder: Input not full bytes");
+            throw new InvalidArgument("HexDecoder: Input not full bytes");
     }
 
 
@@ -197,7 +197,7 @@ public:
     * character checking.
     * @param checking = the checking to use during decoding.
     */
-    this(Decoder_Checking c = NONE)
+    this(DecoderChecking c = NONE)
     {
         m_checking = c;
         m_input.resize(HEX_CODEC_BUFFER_SIZE);

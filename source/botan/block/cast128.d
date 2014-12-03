@@ -18,18 +18,18 @@ import botan.utils.types;
 /**
 * CAST-128
 */
-final class CAST_128 : Block_Cipher_Fixed_Params!(8, 11, 16)
+final class CAST128 : BlockCipherFixedParams!(8, 11, 16)
 {
 public:
     /*
     * CAST-128 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             R1(L, R, m_MK[ 0], m_RK[ 0]);
             R2(R, L, m_MK[ 1], m_RK[ 1]);
@@ -48,7 +48,7 @@ public:
             R3(L, R, m_MK[14], m_RK[14]);
             R1(R, L, m_MK[15], m_RK[15]);
             
-            store_bigEndian(output, R, L);
+            storeBigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -58,12 +58,12 @@ public:
     /*
     * CAST-128 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             R1(L, R, m_MK[15], m_RK[15]);
             R3(R, L, m_MK[14], m_RK[14]);
@@ -82,7 +82,7 @@ public:
             R2(L, R, m_MK[ 1], m_RK[ 1]);
             R1(R, L, m_MK[ 0], m_RK[ 0]);
             
-            store_bigEndian(output, R, L);
+            storeBigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -97,35 +97,37 @@ public:
     }
 
     @property string name() const { return "CAST-128"; }
-    BlockCipher clone() const { return new CAST_128; }
+    BlockCipher clone() const { return new CAST128; }
 
-private:
+protected:
     /*
     * CAST-128 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
 
         m_MK.resize(48);
         m_RK.resize(48);
         
-        Secure_Vector!uint X = Secure_Vector!uint(4);
+        SecureVector!uint X = SecureVector!uint(4);
         foreach (size_t i; 0 .. length)
             X[i/4] = (X[i/4] << 8) + key[i];
         
         cast_ks(m_MK, X);
         
-        Secure_Vector!uint RK32 = Secure_Vector!uint(48);
+        SecureVector!uint RK32 = SecureVector!uint(48);
         cast_ks(RK32, X);
         
         foreach (size_t i; 0 .. 16)
             m_RK[i] = RK32[i] % 32;
     }
+
+private:
     /*
     * S-Box Based Key Expansion
     */
-    static void cast_ks(ref Secure_Vector!uint K,
-                        ref Secure_Vector!uint X)
+    static void cast_ks(ref SecureVector!uint K,
+                        ref SecureVector!uint X)
     {
         __gshared immutable uint[256] S5 = [
             0x7EC90C04, 0x2C6E74B9, 0x9B0E66DF, 0xA6337911, 0xB86A7FFF, 0x1DD358F5,
@@ -316,7 +318,7 @@ private:
             const uint* X;
         }
         
-        Secure_Vector!uint Z = Secure_Vector!uint(4);
+        SecureVector!uint Z = SecureVector!uint(4);
         auto x = scoped!ByteReader(X.ptr);
         auto z = scoped!ByteReader(Z.ptr);
         Z[0]  = X[0] ^ S5[x(13)] ^ S6[x(15)] ^ S7[x(12)] ^ S8[x(14)] ^ S7[x( 8)];
@@ -353,8 +355,8 @@ private:
         K[15] = S5[x(14)] ^ S6[x(15)] ^ S7[x( 1)] ^ S8[x( 0)] ^ S8[x(13)];
     }
 
-    Secure_Vector!uint m_MK;
-    Secure_Vector!ube m_RK;
+    SecureVector!uint m_MK;
+    SecureVector!ube m_RK;
 }
 
 private:
@@ -364,7 +366,7 @@ private:
 */
 void R1(ref uint L, uint R, uint MK, ubyte RK) pure
 {
-    uint T = rotate_left(MK + R, RK);
+    uint T = rotateLeft(MK + R, RK);
     L ^= (CAST_SBOX1[get_byte(0, T)] ^ CAST_SBOX2[get_byte(1, T)]) -
         CAST_SBOX3[get_byte(2, T)] + CAST_SBOX4[get_byte(3, T)];
 }
@@ -374,7 +376,7 @@ void R1(ref uint L, uint R, uint MK, ubyte RK) pure
 */
 void R2(ref uint L, uint R, uint MK, ubyte RK) pure
 {
-    uint T = rotate_left(MK ^ R, RK);
+    uint T = rotateLeft(MK ^ R, RK);
     L ^= (CAST_SBOX1[get_byte(0, T)]  - CAST_SBOX2[get_byte(1, T)] +
     CAST_SBOX3[get_byte(2, T)]) ^ CAST_SBOX4[get_byte(3, T)];
 }
@@ -384,7 +386,7 @@ void R2(ref uint L, uint R, uint MK, ubyte RK) pure
 */
 void R3(ref uint L, uint R, uint MK, ubyte RK) pure
 {
-    uint T = rotate_left(MK - R, RK);
+    uint T = rotateLeft(MK - R, RK);
     L ^= ((CAST_SBOX1[get_byte(0, T)]  + CAST_SBOX2[get_byte(1, T)]) ^
           CAST_SBOX3[get_byte(2, T)]) - CAST_SBOX4[get_byte(3, T)];
 }

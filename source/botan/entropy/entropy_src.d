@@ -12,7 +12,7 @@ import botan.utils.types;
 /**
 * Class used to accumulate the poll results of EntropySources
 */
-struct Entropy_Accumulator
+struct EntropyAccumulator
 {
 public:
     /**
@@ -34,7 +34,7 @@ public:
     * @param size = requested size for the I/O buffer
     * @return cached I/O buffer for repeated polls
     */
-    Secure_Vector!ubyte get_io_buffer(size_t size)
+    SecureVector!ubyte getIoBuffer(size_t size)
     {
         m_io_buffer.clear();
         m_io_buffer.resize(size);
@@ -44,7 +44,7 @@ public:
     /**
     * @return if our polling goal has been achieved
     */
-    bool polling_goal_achieved() const { return m_done; }
+    bool pollingGoalAchieved() const { return m_done; }
 
     /**
     * Add entropy to the accumulator
@@ -72,7 +72,7 @@ public:
 private:
     bool delegate(in ubyte*, size_t, double) m_accum_fn;
     bool m_done;
-    Secure_Vector!ubyte m_io_buffer;
+    SecureVector!ubyte m_io_buffer;
 }
 
 /**
@@ -90,5 +90,5 @@ public:
     * Perform an entropy gathering poll
     * @param accum = is an accumulator object that will be given entropy
     */
-    void poll(ref Entropy_Accumulator accum);
+    void poll(ref EntropyAccumulator accum);
 }

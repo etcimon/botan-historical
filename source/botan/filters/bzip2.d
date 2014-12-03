@@ -40,7 +40,7 @@ public:
     /*
     * Start Compressing with Bzip
     */
-    void start_msg()
+    void startMsg()
     {
         clear();
         m_bz = new Bzip_Stream;
@@ -51,7 +51,7 @@ public:
     /*
     * Finish Compressing with Bzip
     */
-    void end_msg()
+    void endMsg()
     {
         m_bz.m_stream.next_in = 0;
         m_bz.m_stream.avail_in = 0;
@@ -109,7 +109,7 @@ private:
     }
 
     const size_t m_level;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     Bzip_Stream m_bz;
 }
 
@@ -159,7 +159,7 @@ public:
             if (rc == BZ_STREAM_END)
             {
                 size_t read_from_block = length - m_bz.m_stream.avail_in;
-                start_msg();
+                startMsg();
                 m_bz.m_stream.next_in = input + read_from_block;
                 m_bz.m_stream.avail_in = length - read_from_block;
                 input += read_from_block;
@@ -171,7 +171,7 @@ public:
     /*
     * Start Decompressing with Bzip
     */
-    void start_msg()
+    void startMsg()
     {
         clear();
         m_bz = new Bzip_Stream;
@@ -185,7 +185,7 @@ public:
     /*
     * Finish Decompressing with Bzip
     */
-    void end_msg()
+    void endMsg()
     {
         if (m_no_writes) return;
         m_bz.m_stream.next_in = 0;
@@ -235,7 +235,7 @@ private:
     }
 
     const bool m_small_mem;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     Bzip_Stream m_bz;
     bool m_no_writes;
 }

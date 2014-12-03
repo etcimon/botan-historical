@@ -1,5 +1,5 @@
 /*
-* TLS TLS_Session
+* TLS TLSSession
 * (C) 2011-2012 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -29,22 +29,22 @@ import std.datetime;
 /**
 * Class representing a TLS session state
 */
-struct TLS_Session
+struct TLSSession
 {
 public:
     /**
     * New session (sets session start time)
     */
     this(in Vector!ubyte session_identifier,
-         in Secure_Vector!ubyte master_secret,
-         TLS_Protocol_Version _version,
+         in SecureVector!ubyte master_secret,
+         TLSProtocolVersion _version,
          ushort ciphersuite,
          ubyte compression_method,
-         Connection_Side side,
+         ConnectionSide side,
          size_t fragment_size,
-         in Vector!X509_Certificate certs,
+         in Vector!X509Certificate certs,
          in Vector!ubyte ticket,
-         in TLS_Server_Information server_info,
+         in TLSServerInformation server_info,
          in string srp_identifier)
     {
         m_start_time = Clock.currTime();
@@ -68,11 +68,11 @@ public:
     {
         ubyte side_code = 0;
         
-        ASN1_String server_hostname;
-        ASN1_String server_service;
+        ASN1String server_hostname;
+        ASN1String server_service;
         size_t server_port;
         
-        ASN1_String srp_identifier_str;
+        ASN1String srp_identifier_str;
         
         ubyte major_version = 0, minor_version = 0;
         
@@ -80,33 +80,33 @@ public:
         
         size_t start_time = 0;
         
-        BER_Decoder(ber, ber_len)
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .decode_and_check(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION),
+        BERDecoder(ber, ber_len)
+                .startCons(ASN1Tag.SEQUENCE)
+                .decodeAndCheck(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION),
                                   "Unknown version in session structure")
-                .decode_integer_type(start_time)
-                .decode_integer_type(major_version)
-                .decode_integer_type(minor_version)
-                .decode(m_identifier, ASN1_Tag.OCTET_STRING)
-                .decode(m_session_ticket, ASN1_Tag.OCTET_STRING)
-                .decode_integer_type(m_ciphersuite)
-                .decode_integer_type(m_compression_method)
-                .decode_integer_type(side_code)
-                .decode_integer_type(m_fragment_size)
-                .decode(m_master_secret, ASN1_Tag.OCTET_STRING)
-                .decode(peer_cert_bits, ASN1_Tag.OCTET_STRING)
+                .decodeIntegerType(start_time)
+                .decodeIntegerType(major_version)
+                .decodeIntegerType(minor_version)
+                .decode(m_identifier, ASN1Tag.OCTET_STRING)
+                .decode(m_session_ticket, ASN1Tag.OCTET_STRING)
+                .decodeIntegerType(m_ciphersuite)
+                .decodeIntegerType(m_compression_method)
+                .decodeIntegerType(side_code)
+                .decodeIntegerType(m_fragment_size)
+                .decode(m_master_secret, ASN1Tag.OCTET_STRING)
+                .decode(peer_cert_bits, ASN1Tag.OCTET_STRING)
                 .decode(server_hostname)
                 .decode(server_service)
                 .decode(server_port)
                 .decode(srp_identifier_str)
-                .end_cons()
-                .verify_end();
+                .endCons()
+                .verifyEnd();
         
-        m_version = TLS_Protocol_Version(major_version, minor_version);
+        m_version = TLSProtocolVersion(major_version, minor_version);
         m_start_time = SysTime(unixTimeToStdTime(cast(time_t)start_time));
-        m_connection_side = cast(Connection_Side)(side_code);
+        m_connection_side = cast(ConnectionSide)(side_code);
         
-        m_server_info = TLS_Server_Information(server_hostname.value(),
+        m_server_info = TLSServerInformation(server_hostname.value(),
                                            server_service.value(),
                                            server_port);
         
@@ -114,9 +114,9 @@ public:
         
         if (!peer_cert_bits.empty)
         {
-            auto certs = scoped!DataSource_Memory(peer_cert_bits.ptr, peer_cert_bits.length);
-            while (!certs.end_of_data())
-                m_peer_certs.push_back(X509_Certificate(certs));
+            auto certs = scoped!DataSourceMemory(peer_cert_bits.ptr, peer_cert_bits.length);
+            while (!certs.endOfData())
+                m_peer_certs.pushBack(X509Certificate(certs));
         }
     }
 
@@ -125,7 +125,7 @@ public:
     */
     this(in string pem)
     {
-        Secure_Vector!ubyte der = PEM.decode_check_label(pem, "SSL SESSION");
+        SecureVector!ubyte der = PEM.decode_check_label(pem, "SSL SESSION");
         
         this(der.ptr, der.length);
     }
@@ -135,32 +135,32 @@ public:
     * @warning if the master secret is compromised so is the
     * session traffic
     */
-    Secure_Vector!ubyte DER_encode() const
+    SecureVector!ubyte dEREncode() const
     {
         Vector!ubyte peer_cert_bits;
         for (size_t i = 0; i != m_peer_certs.length; ++i)
             peer_cert_bits ~= m_peer_certs[i].BER_encode();
         
-        return DER_Encoder()
-                .start_cons(ASN1_Tag.SEQUENCE)
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(cast(size_t)(TLS_SESSION_PARAM_STRUCT_VERSION))
                 .encode(cast(size_t)(m_start_time.toUnixTime()))
-                .encode(cast(size_t)(m_version.major_version()))
-                .encode(cast(size_t)(m_version.minor_version()))
-                .encode(m_identifier, ASN1_Tag.OCTET_STRING)
-                .encode(m_session_ticket, ASN1_Tag.OCTET_STRING)
+                .encode(cast(size_t)(m_version.majorVersion()))
+                .encode(cast(size_t)(m_version.minorVersion()))
+                .encode(m_identifier, ASN1Tag.OCTET_STRING)
+                .encode(m_session_ticket, ASN1Tag.OCTET_STRING)
                 .encode(cast(size_t)(m_ciphersuite))
                 .encode(cast(size_t)(m_compression_method))
                 .encode(cast(size_t)(m_connection_side))
                 .encode(cast(size_t)(m_fragment_size))
-                .encode(m_master_secret, ASN1_Tag.OCTET_STRING)
-                .encode(peer_cert_bits, ASN1_Tag.OCTET_STRING)
-                .encode(ASN1_String(m_server_info.hostname(), ASN1_Tag.UTF8_STRING))
-                .encode(ASN1_String(m_server_info.service(), ASN1_Tag.UTF8_STRING))
+                .encode(m_master_secret, ASN1Tag.OCTET_STRING)
+                .encode(peer_cert_bits, ASN1Tag.OCTET_STRING)
+                .encode(ASN1String(m_server_info.hostname(), ASN1Tag.UTF8_STRING))
+                .encode(ASN1String(m_server_info.service(), ASN1Tag.UTF8_STRING))
                 .encode(cast(size_t)(m_server_info.port()))
-                .encode(ASN1_String(m_srp_identifier, ASN1_Tag.UTF8_STRING))
-                .end_cons()
-                .get_contents();
+                .encode(ASN1String(m_srp_identifier, ASN1Tag.UTF8_STRING))
+                .endCons()
+                .getContents();
     }
 
     /**
@@ -179,17 +179,17 @@ public:
     * @param ctext_size = the size of ctext in bytes
     * @param key = the same key used by the encrypting side
     */
-    static TLS_Session decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
+    static TLSSession decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
     {
         try
         {
             const auto ber = CryptoBox.decrypt(buf, buf_len, master_key);
             
-            return TLS_Session(ber.ptr, ber.length);
+            return TLSSession(ber.ptr, ber.length);
         }
         catch(Exception e)
         {
-            throw new Decoding_Error("Failed to decrypt encrypted session -" ~  e.msg);
+            throw new DecodingError("Failed to decrypt encrypted session -" ~  e.msg);
         }
     }
 
@@ -198,9 +198,9 @@ public:
     * @param ctext = the ciphertext returned by encrypt
     * @param key = the same key used by the encrypting side
     */
-    static TLS_Session decrypt(in Vector!ubyte ctext, in SymmetricKey key)
+    static TLSSession decrypt(in Vector!ubyte ctext, in SymmetricKey key)
     {
-        return TLS_Session.decrypt(ctext.ptr, ctext.length, key);
+        return TLSSession.decrypt(ctext.ptr, ctext.length, key);
     }
 
     /**
@@ -210,69 +210,69 @@ public:
     */
     string PEM_encode() const
     {
-        return PEM.encode(this.DER_encode(), "SSL SESSION");
+        return PEM.encode(this.dEREncode(), "SSL SESSION");
     }
 
     /**
     * Get the version of the saved session
     */
-    TLS_Protocol_Version _version() const { return m_version; }
+    TLSProtocolVersion Version() const { return m_version; }
 
     /**
     * Get the ciphersuite code of the saved session
     */
-    ushort ciphersuite_code() const { return m_ciphersuite; }
+    ushort ciphersuiteCode() const { return m_ciphersuite; }
 
     /**
     * Get the ciphersuite info of the saved session
     */
-    TLS_Ciphersuite ciphersuite() const { return TLS_Ciphersuite.by_id(m_ciphersuite); }
+    TLSCiphersuite ciphersuite() const { return TLSCiphersuite.byId(m_ciphersuite); }
 
     /**
     * Get the compression method used in the saved session
     */
-    ubyte compression_method() const { return m_compression_method; }
+    ubyte compressionMethod() const { return m_compression_method; }
 
     /**
     * Get which side of the connection the resumed session we are/were
     * acting as.
     */
-    Connection_Side side() const { return m_connection_side; }
+    ConnectionSide side() const { return m_connection_side; }
 
     /**
     * Get the SRP identity (if sent by the client in the initial handshake)
     */
-    string srp_identifier() const { return m_srp_identifier; }
+    string srpIdentifier() const { return m_srp_identifier; }
 
     /**
     * Get the saved master secret
     */
-    Secure_Vector!ubyte master_secret() const { return m_master_secret; }
+    SecureVector!ubyte masterSecret() const { return m_master_secret; }
 
     /**
     * Get the session identifier
     */
-    Vector!ubyte session_id() const { return m_identifier; }
+    Vector!ubyte sessionId() const { return m_identifier; }
 
     /**
     * Get the negotiated maximum fragment size (or 0 if default)
     */
-    size_t fragment_size() const { return m_fragment_size; }
+    size_t fragmentSize() const { return m_fragment_size; }
 
     /**
     * Return the certificate chain of the peer (possibly empty)
     */
-    Vector!X509_Certificate peer_certs() const { return m_peer_certs; }
+    Vector!X509Certificate peerCerts() const { return m_peer_certs; }
 
     /**
     * Get the wall clock time this session began
     */
-    SysTime start_time() const { return m_start_time; }
+    SysTime startTime() const { return m_start_time; }
 
     /**
     * Return how long this session has existed (in seconds)
     */
-    Duration session_age() const
+    Duration sessionAge() const
     {
         return Clock.currTime() - m_start_time;
     }
@@ -280,9 +280,9 @@ public:
     /**
     * Return the session ticket the server gave us
     */
-    Vector!ubyte session_ticket() const { return m_session_ticket; }
+    Vector!ubyte sessionTicket() const { return m_session_ticket; }
 
-    TLS_Server_Information server_info() const { return m_server_info; }
+    TLSServerInformation serverInfo() const { return m_server_info; }
 
 private:
     enum { TLS_SESSION_PARAM_STRUCT_VERSION = 0x2994e301 }
@@ -291,16 +291,16 @@ private:
 
     Vector!ubyte m_identifier;
     Vector!ubyte m_session_ticket; // only used by client side
-    Secure_Vector!ubyte m_master_secret;
+    SecureVector!ubyte m_master_secret;
 
-    TLS_Protocol_Version m_version;
+    TLSProtocolVersion m_version;
     ushort m_ciphersuite;
     ubyte m_compression_method;
     Connection_Side m_connection_side;
 
     size_t m_fragment_size;
 
-    Vector!X509_Certificate m_peer_certs;
-    TLS_Server_Information m_server_info; // optional
+    Vector!X509Certificate m_peer_certs;
+    TLSServerInformation m_server_info; // optional
     string m_srp_identifier; // optional
 }

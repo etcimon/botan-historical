@@ -45,27 +45,27 @@ final class ZeroizeAllocator(Base : Allocator)
 
 }
 
-alias Secure_Vector(T) = Vector!(T, Secure_Allocator);
+alias SecureVector(T) = Vector!(T, Secure_Allocator);
 
-Vector!T unlock(T)(in Secure_Vector!T input)
+Vector!T unlock(T)(in SecureVector!T input)
 {
     Vector!T output = Vector!T(input.length);
-    copy_mem(output.ptr, input.ptr, input.length);
+    copyMem(output.ptr, input.ptr, input.length);
     return output;
 }
 
 
-size_t buffer_insert(T, Alloc)(Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
+size_t bufferInsert(T, Alloc)(Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
 {
     const size_t to_copy = min(input_length, buf.length - buf_offset);
-    copy_mem(&buf[buf_offset], input, to_copy);
+    copyMem(&buf[buf_offset], input, to_copy);
     return to_copy;
 }
 
-size_t buffer_insert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, in Vector!( T, Alloc2 ) input)
+size_t bufferInsert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, in Vector!( T, Alloc2 ) input)
 {
     const size_t to_copy = min(input.length, buf.length - buf_offset);
-    copy_mem(&buf[buf_offset], input.ptr, to_copy);
+    copyMem(&buf[buf_offset], input.ptr, to_copy);
     return to_copy;
 }
 
@@ -86,5 +86,5 @@ void zap(T, Alloc)(Vector!(T, Alloc) vec)
 {
     zeroise(vec);
     vec.clear();
-    vec.shrink_to_fit();
+    vec.shrinkToFit();
 }

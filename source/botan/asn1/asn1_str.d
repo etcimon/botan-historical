@@ -13,38 +13,38 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.types;
 
-alias ASN1_String = FreeListRef!ASN1_String_Impl;
+alias ASN1String = FreeListRef!ASN1StringImpl;
 
 /**
 * Simple String
 */
-final class ASN1_String_Impl : ASN1_Object
+final class ASN1StringImpl : ASN1Object
 {
 public:
 
     /*
-    * DER encode an ASN1_String
+    * DER encode an ASN1String
     */
-    void encode_into(DER_Encoder encoder) const
+    void encodeInto(DEREncoder encoder) const
     {
         string value = iso_8859();
-        if (tagging() == ASN1_Tag.UTF8_STRING)
+        if (tagging() == ASN1Tag.UTF8_STRING)
             value = transcode(value, LATIN1_CHARSET, UTF8_CHARSET);
-        encoder.add_object(tagging(), ASN1_Tag.UNIVERSAL, value);
+        encoder.addObject(tagging(), ASN1Tag.UNIVERSAL, value);
     }
 
     /*
-    * Decode a BER encoded ASN1_String
+    * Decode a BER encoded ASN1String
     */
-    void decode_from(BER_Decoder source)
+    void decodeFrom(BERDecoder source)
     {
-        BER_Object obj = source.get_next_object();
+        BER_Object obj = source.getNextObject();
         
         Character_Set charset_is;
         
-        if (obj.type_tag == ASN1_Tag.BMP_STRING)
+        if (obj.type_tag == ASN1Tag.BMP_STRING)
             charset_is = UCS2_CHARSET;
-        else if (obj.type_tag == ASN1_Tag.UTF8_STRING)
+        else if (obj.type_tag == ASN1Tag.UTF8_STRING)
             charset_is = UTF8_CHARSET;
         else
             charset_is = LATIN1_CHARSET;
@@ -67,7 +67,7 @@ public:
     /*
     * Return this string in ISO 8859-1 encoding
     */
-    string iso_8859() const
+    string iso8859() const
     {
         return m_iso_8859_str;
     }
@@ -75,12 +75,12 @@ public:
     /*
     * Return the type of this string object
     */
-    ASN1_Tag tagging() const
+    ASN1Tag tagging() const
     {
         return m_tag;
     }
 
-    this(in string str, ASN1_Tag t)
+    this(in string str, ASN1Tag t)
     {
         initialize(str, t);
     }
@@ -93,32 +93,32 @@ public:
 
 
 private:
-    void initialize(in string str, ASN1_Tag t) {
+    void initialize(in string str, ASN1Tag t) {
         m_tag = t;
         m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
         
-        if (m_tag == ASN1_Tag.DIRECTORY_STRING)
+        if (m_tag == ASN1Tag.DIRECTORY_STRING)
             m_tag = choose_encoding(m_iso_8859_str, "latin1");
         
-        if (m_tag != ASN1_Tag.NUMERIC_STRING &&
-            m_tag != ASN1_Tag.PRINTABLE_STRING &&
-            m_tag != ASN1_Tag.VISIBLE_STRING &&
-            m_tag != ASN1_Tag.T61_STRING &&
-            m_tag != ASN1_Tag.IA5_STRING &&
-            m_tag != ASN1_Tag.UTF8_STRING &&
-            m_tag != ASN1_Tag.BMP_STRING)
-            throw new Invalid_Argument("ASN1_String: Unknown string type " ~
+        if (m_tag != ASN1Tag.NUMERIC_STRING &&
+            m_tag != ASN1Tag.PRINTABLE_STRING &&
+            m_tag != ASN1Tag.VISIBLE_STRING &&
+            m_tag != ASN1Tag.T61_STRING &&
+            m_tag != ASN1Tag.IA5_STRING &&
+            m_tag != ASN1Tag.UTF8_STRING &&
+            m_tag != ASN1Tag.BMP_STRING)
+            throw new InvalidArgument("ASN1String: Unknown string type " ~
                                        to!string(m_tag));
     }
 
     string m_iso_8859_str;
-    ASN1_Tag m_tag;
+    ASN1Tag m_tag;
 }
 
 /*
 * Choose an encoding for the string
 */
-ASN1_Tag choose_encoding(in string str,
+ASN1Tag chooseEncoding(in string str,
                          in string type)
 {
     __gshared immutable bool[256] IS_PRINTABLE = [
@@ -149,10 +149,10 @@ ASN1_Tag choose_encoding(in string str,
     {
         if (!IS_PRINTABLE[cast(size_t) c])
         {
-            if (type == "utf8")    return ASN1_Tag.UTF8_STRING;
-            if (type == "latin1") return ASN1_Tag.T61_STRING;
-            throw new Invalid_Argument("choose_encoding: Bad string type " ~ type);
+            if (type == "utf8")    return ASN1Tag.UTF8_STRING;
+            if (type == "latin1") return ASN1Tag.T61_STRING;
+            throw new InvalidArgument("choose_encoding: Bad string type " ~ type);
         }
     }
-    return ASN1_Tag.PRINTABLE_STRING;
+    return ASN1Tag.PRINTABLE_STRING;
 }

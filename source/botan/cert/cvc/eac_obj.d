@@ -1,5 +1,5 @@
 /*
-* EAC1_1 objects
+* EAC11 objects
 * (C) 2008 Falko Strenzke
 *
 * Distributed under the terms of the botan license.
@@ -21,19 +21,19 @@ import botan.utils.exceptn;
 * TR03110 v1.1 EAC CV Certificate
 */
 // CRTP is used enable the call sequence:
-class EAC1_1_obj(Derived) : EAC_Signed_Object!Derived
+class EAC11obj(Derived) : EAC_Signed_Object!Derived
 {
 public:
     /**
     * Return the signature as a concatenation of the encoded parts.
     * @result the concatenated signature
     */
-    Vector!ubyte get_concat_sig() const
-    { return m_sig.get_concatenation(); }
+    Vector!ubyte getConcatSig() const
+    { return m_sig.getConcatenation(); }
 
-    bool check_signature(ref Public_Key key) const
+    bool checkSignature(ref PublicKey key) const
     {
-        return check_signature(key, m_sig.DER_encode());
+        return check_signature(key, m_sig.dEREncode());
     }
 
 protected:
@@ -45,9 +45,9 @@ protected:
         {
             decode_info(input, m_tbs_bits, m_sig);
         }
-        catch(Decoding_Error)
+        catch(DecodingError)
         {
-            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed");
+            throw new DecodingError(m_PEM_label_pref ~ " decoding failed");
         }
     }
 

@@ -30,7 +30,7 @@ import botan.utils.types;
 * @return (A,K) the client public key and the shared secret key
 */
 Pair!(BigInt, SymmetricKey)
-    srp6_client_agree(in string identifier,
+    srp6ClientAgree(in string identifier,
                       in string password,
                       in string group_id,
                       in string hash_id,
@@ -38,11 +38,11 @@ Pair!(BigInt, SymmetricKey)
                       in BigInt B,
                       RandomNumberGenerator rng)
 {
-    DL_Group group = DL_Group(group_id);
+    DLGroup group = DLGroup(group_id);
     const BigInt g = group.get_g();
-    const BigInt p = group.get_p();
+    const BigInt p = group.getP();
     
-    const size_t p_bytes = group.get_p().bytes();
+    const size_t p_bytes = group.getP().bytes();
     
     if (B <= 0 || B >= p)
         throw new Exception("Invalid SRP parameter from server");
@@ -73,7 +73,7 @@ Pair!(BigInt, SymmetricKey)
 * @param group_id = specifies the shared SRP group
 * @param hash_id = specifies a secure hash function
 */
-BigInt generate_srp6_verifier(in string identifier,
+BigInt generateSrp6Verifier(in string identifier,
                               in string password,
                               in Vector!ubyte salt,
                               in string group_id,
@@ -81,8 +81,8 @@ BigInt generate_srp6_verifier(in string identifier,
 {
     const BigInt x = compute_x(hash_id, identifier, password, salt);
     
-    DL_Group group = DL_Group(group_id);
-    return power_mod(group.get_g(), x, group.get_p());
+    DLGroup group = DLGroup(group_id);
+    return power_mod(group.getG(), x, group.getP());
 }
 
 
@@ -93,7 +93,7 @@ BigInt generate_srp6_verifier(in string identifier,
 * @param g = the group generator
 * @return group identifier
 */
-string srp6_group_identifier(in BigInt N, in BigInt g)
+string srp6GroupIdentifier(in BigInt N, in BigInt g)
 {
     /*
     This function assumes that only one 'standard' SRP parameter set has
@@ -103,23 +103,23 @@ string srp6_group_identifier(in BigInt N, in BigInt g)
     {
         const string group_name = "modp/srp/" ~ to!string(N.bits());
         
-        DL_Group group = DL_Group(group_name);
+        DLGroup group = DLGroup(group_name);
         
-        if (group.get_p() == N && group.get_g() == g)
+        if (group.getP() == N && group.getG() == g)
             return group_name;
         
         throw new Exception("Unknown SRP params");
     }
     catch (Throwable)
     {
-        throw new Invalid_Argument("Bad SRP group parameters");
+        throw new InvalidArgument("Bad SRP group parameters");
     }
 }
 
 /**
 * Represents a SRP-6a server session
 */
-final class SRP6_Server_Session
+final class SRP6ServerSession
 {
 public:
     /**
@@ -135,9 +135,9 @@ public:
                  in string hash_id,
                  RandomNumberGenerator rng)
     {
-        DL_Group group = DL_Group(group_id);
+        DLGroup group = DLGroup(group_id);
         const BigInt g = group.get_g();
-        const BigInt p = group.get_p();
+        const BigInt p = group.getP();
         
         m_p_bytes = p.bytes();
         
@@ -169,7 +169,7 @@ public:
         
         BigInt S = power_mod(A * power_mod(m_v, u, m_p), m_b, m_p);
         
-        return BigInt.encode_1363(S, m_p_bytes);
+        return BigInt.encode1363(S, m_p_bytes);
     }
 
 private:
@@ -180,36 +180,36 @@ private:
 
 private:
     
-BigInt hash_seq(in string hash_id,
+BigInt hashSeq(in string hash_id,
                 size_t pad_to,
                 in BigInt in1,
                 in BigInt in2)
 {
-    Unique!HashFunction hash_fn = global_state().algorithm_factory().make_hash_function(hash_id);
+    Unique!HashFunction hash_fn = globalState().algorithmFactory().makeHashFunction(hash_id);
     
-    hash_fn.update(BigInt.encode_1363(in1, pad_to));
-    hash_fn.update(BigInt.encode_1363(in2, pad_to));
+    hash_fn.update(BigInt.encode1363(in1, pad_to));
+    hash_fn.update(BigInt.encode1363(in2, pad_to));
     
     return BigInt.decode(hash_fn.finished());
 }
 
-BigInt compute_x(in string hash_id,
+BigInt computeX(in string hash_id,
                  in string identifier,
                  in string password,
                  in Vector!ubyte salt)
 {
-    Unique!HashFunction hash_fn = global_state().algorithm_factory().make_hash_function(hash_id);
+    Unique!HashFunction hash_fn = globalState().algorithmFactory().makeHashFunction(hash_id);
     
     hash_fn.update(identifier);
     hash_fn.update(":");
     hash_fn.update(password);
     
-    Secure_Vector!ubyte inner_h = hash_fn.finished();
+    SecureVector!ubyte inner_h = hash_fn.finished();
     
     hash_fn.update(salt);
     hash_fn.update(inner_h);
     
-    Secure_Vector!ubyte outer_h = hash_fn.finished();
+    SecureVector!ubyte outer_h = hash_fn.finished();
     
     return BigInt.decode(outer_h);
 }

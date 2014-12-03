@@ -17,14 +17,14 @@ import botan.utils.rotate;
 /**
 * SAFER-SK
 */
-final class SAFER_SK : Block_Cipher_Fixed_Params!(8, 16)
+final class SAFERSK : BlockCipherFixedParams!(8, 16)
 {
 public:
 
     /*
     * SAFER-SK Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -60,7 +60,7 @@ public:
     /*
     * SAFER-SK Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -113,7 +113,7 @@ public:
     */
     BlockCipher clone() const
     {
-        return new SAFER_SK(m_rounds);
+        return new SAFERSK(m_rounds);
     }
 
     /**
@@ -124,14 +124,14 @@ public:
     {
         m_rounds = r;
         if (m_rounds > 13 || m_rounds == 0)
-            throw new Invalid_Argument(name ~ ": Invalid number of rounds");
+            throw new InvalidArgument(name ~ ": Invalid number of rounds");
     }
 
-private:
+protected:
     /*
     * SAFER-SK Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         __gshared immutable ubyte[208] BIAS = [
             0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,
@@ -175,18 +175,18 @@ private:
         
         m_EK.resize(16 * m_rounds + 8);
         
-        Secure_Vector!ubyte KB = Secure_Vector!ubyte(18);
+        SecureVector!ubyte KB = SecureVector!ubyte(18);
         
         foreach (size_t i; 0 .. 8)
         {
-            KB[ 8] ^= KB[i] = rotate_left(key[i], 5);
+            KB[ 8] ^= KB[i] = rotateLeft(key[i], 5);
             KB[17] ^= KB[i+9] = m_EK[i] = key[i+8];
         }
         
         foreach (size_t i; 0 .. m_rounds)
         {
             foreach (size_t j; 0 .. 18)
-                KB[j] = rotate_left(KB[j], 6);
+                KB[j] = rotateLeft(KB[j], 6);
             foreach (size_t j; 0 .. 16)
                 m_EK[16*i+j+8] = KB[KEY_INDEX[16*i+j]] + BIAS[16*i+j];
         }
@@ -194,7 +194,7 @@ private:
 
 
     size_t m_rounds;
-    Secure_Vector!ubyte m_EK;
+    SecureVector!ubyte m_EK;
 }
 
 private:

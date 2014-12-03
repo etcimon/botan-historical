@@ -52,14 +52,14 @@ public:
     this(in BigInt e, in BigInt d, in BigInt n)
     {
         if (e < 1 || d < 1 || n < 1)
-            throw new Invalid_Argument("Blinder: Arguments too small");
+            throw new InvalidArgument("Blinder: Arguments too small");
         
-        m_reducer = Modular_Reducer(n);
+        m_reducer = ModularReducer(n);
         m_e = e;
         m_d = d;
     }
 
 private:
-    Modular_Reducer m_reducer;
+    ModularReducer m_reducer;
     BigInt m_e, m_d;
 }

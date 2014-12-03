@@ -34,24 +34,24 @@ import botan.utils.exceptn;
 * cannot be used for verification until its domain parameters are set
 * by calling the corresponding member function.
 */
-class EC_PublicKey : Public_Key
+class ECPublicKey : PublicKey
 {
 public:
-    this(in EC_Group dom_par, in PointGFp pub_point) 
+    this(in ECGroup dom_par, in PointGFp pub_point) 
     {
         m_domain_params = dom_par;
         m_public_key = pub_point;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-        if (domain().get_curve() != public_point().get_curve())
-            throw new Invalid_Argument("EC_PublicKey: curve mismatch in constructor");
+        if (domain().getCurve() != public_point().getCurve())
+            throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
     }
 
-    this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_domain_params = EC_Group(alg_id.parameters);
+        m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
-        m_public_key = OS2ECP(key_bits, domain().get_curve());
+        m_public_key = OS2ECP(key_bits, domain().getCurve());
     }
 
     /**
@@ -60,21 +60,21 @@ public:
     * domain parameters of this point are not set
     * @result the public point of this key
     */
-    ref PointGFp public_point() const { return m_public_key; }
+    ref PointGFp publicPoint() const { return m_public_key; }
 
-    Algorithm_Identifier algorithm_identifier() const
+    AlgorithmIdentifier algorithmIdentifier() const
     {
-        return Algorithm_Identifier(get_oid(), DER_domain());
+        return AlgorithmIdentifier(get_oid(), DER_domain());
     }
 
-    Vector!ubyte x509_subject_public_key() const
+    Vector!ubyte x509SubjectPublicKey() const
     {
         return unlock(EC2OSP(public_point(), PointGFp.COMPRESSED));
     }
 
-    bool check_key(RandomNumberGenerator, bool) const
+    bool checkKey(RandomNumberGenerator, bool) const
     {
-        return public_point().on_the_curve();
+        return public_point().onTheCurve();
     }
 
     /**
@@ -83,19 +83,19 @@ public:
     * domain parameters of this point are not set
     * @result the domain parameters of this key
     */
-    EC_Group domain() const { return m_domain_params; }
+    ECGroup domain() const { return m_domain_params; }
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
     * @param enc = the encoding to use
     */
-    void set_parameter_encoding(EC_Group_Encoding form)
+    void setParameterEncoding(ECGroupEncoding form)
     {
         if (form != EC_DOMPAR_ENC_EXPLICIT && form != EC_DOMPAR_ENC_IMPLICITCA && form != EC_DOMPAR_ENC_OID)
-            throw new Invalid_Argument("Invalid encoding form for EC-key object specified");
+            throw new InvalidArgument("Invalid encoding form for EC-key object specified");
         
-        if ((form == EC_DOMPAR_ENC_OID) && (m_domain_params.get_oid() == ""))
-            throw new Invalid_Argument("Invalid encoding form OID specified for "
+        if ((form == EC_DOMPAR_ENC_OID) && (m_domain_params.getOid() == ""))
+            throw new InvalidArgument("Invalid encoding form OID specified for "
                                        ~ "EC-key object whose corresponding domain "
                                        ~ "parameters are without oid");
         
@@ -106,19 +106,19 @@ public:
     * Return the DER encoding of this keys domain in whatever format
     * is preset for this particular key
     */
-    Vector!ubyte DER_domain() const
-    { return domain().DER_encode(domain_format()); }
+    Vector!ubyte dERDomain() const
+    { return domain().dEREncode(domain_format()); }
 
     /**
     * Get the domain parameter encoding to be used when encoding this key.
     * @result the encoding to use
     */
-    EC_Group_Encoding domain_format() const
+    ECGroupEncoding domainFormat() const
     { return m_domain_encoding; }
 
-    override size_t estimated_strength() const
+    override size_t estimatedStrength() const
     {
-        return domain().get_curve().get_p().bits() / 2;
+        return domain().getCurve().getP().bits() / 2;
     }
 
 
@@ -129,7 +129,7 @@ protected:
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
     }
 
-    EC_Group m_domain_params;
+    ECGroup m_domain_params;
     PointGFp m_public_key;
     EC_Group_Encoding m_domain_encoding;
 }
@@ -137,79 +137,79 @@ protected:
 /**
 * This abstract class represents ECC private keys
 */
-final class EC_PrivateKey : EC_PublicKey,
-                            Private_Key
+final class ECPrivateKey : ECPublicKey,
+                            PrivateKey
 {
 public:
     /**
-    * EC_PrivateKey constructor
+    * ECPrivateKey constructor
     */
-    this(RandomNumberGenerator rng, in EC_Group ec_group, in BigInt private_key)
+    this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key)
     {
         m_domain_params = ec_group;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
         if (private_key == 0)
-            m_private_key = BigInt.random_integer(rng, 1, domain().get_order());
+            m_private_key = BigInt.randomInteger(rng, 1, domain().getOrder());
         else
             m_private_key = private_key;
         
-        m_public_key = domain().get_base_point() * m_private_key;
+        m_public_key = domain().getBasePoint() * m_private_key;
         
-        assert(m_public_key.on_the_curve(), "Generated public key point was on the curve");
+        assert(m_public_key.onTheCurve(), "Generated public key point was on the curve");
     }
 
-    this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_domain_params = EC_Group(alg_id.parameters);
+        m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
         OID key_parameters;
-        Secure_Vector!ubyte public_key_bits;
+        SecureVector!ubyte public_key_bits;
         
-        BER_Decoder(key_bits)
-                .start_cons(ASN1_Tag.SEQUENCE)
+        BERDecoder(key_bits)
+                .startCons(ASN1Tag.SEQUENCE)
                 .decode_and_check!size_t(1, "Unknown version code for ECC key")
-                .decode_octet_string_bigint(m_private_key)
-                .decode_optional(key_parameters, ASN1_Tag(0), ASN1_Tag.PRIVATE)
-                .decode_optional_string(public_key_bits, ASN1_Tag.BIT_STRING, 1, ASN1_Tag.PRIVATE)
-                .end_cons();
+                .decodeOctetStringBigint(m_private_key)
+                .decodeOptional(key_parameters, ASN1Tag(0), ASN1Tag.PRIVATE)
+                .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)
+                .endCons();
         
         if (!key_parameters.empty && key_parameters != alg_id.oid)
-            throw new Decoding_Error("EC_PrivateKey - inner and outer OIDs did not match");
+            throw new DecodingError("ECPrivateKey - inner and outer OIDs did not match");
         
         if (public_key_bits.empty)
         {
-            m_public_key = domain().get_base_point() * m_private_key;
+            m_public_key = domain().getBasePoint() * m_private_key;
             
-            assert(m_public_key.on_the_curve(), "Public point derived from loaded key was on the curve");
+            assert(m_public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
         }
         else
         {
-            public_key = OS2ECP(public_key_bits, domain().get_curve());
+            public_key = OS2ECP(public_key_bits, domain().getCurve());
             // OS2ECP verifies that the point is on the curve
         }
     }
 
-    Secure_Vector!ubyte pkcs8_private_key() const
+    SecureVector!ubyte pkcs8PrivateKey() const
     {
-        return DER_Encoder()
-                .start_cons(ASN1_Tag.SEQUENCE)
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(cast(size_t)(1))
-                .encode(BigInt.encode_1363(m_private_key, m_private_key.bytes()),
-                        ASN1_Tag.OCTET_STRING)
-                .end_cons()
-                .get_contents();
+                .encode(BigInt.encode1363(m_private_key, m_private_key.bytes()),
+                        ASN1Tag.OCTET_STRING)
+                .endCons()
+                .getContents();
     }
 
     /**
     * Get the private key value of this key object.
     * @result the private key value of this key object
     */
-    BigInt private_value() const
+    BigInt privateValue() const
     {
         if (m_private_key == 0)
-            throw new Invalid_State("EC_PrivateKey::private_value - uninitialized");
+            throw new InvalidState("ECPrivateKey::private_value - uninitialized");
         
         return m_private_key;
     }

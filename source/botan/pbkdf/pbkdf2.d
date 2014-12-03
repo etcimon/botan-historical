@@ -18,7 +18,7 @@ import botan.utils.rounding;
 /**
 * PKCS #5 PBKDF2
 */
-final class PKCS5_PBKDF2 : PBKDF
+final class PKCS5PBKDF2 : PBKDF
 {
 public:
     override @property string name() const
@@ -28,7 +28,7 @@ public:
 
     override PBKDF clone() const
     {
-        return new PKCS5_PBKDF2(m_mac.clone());
+        return new PKCS5PBKDF2(m_mac.clone());
     }
 
     /*
@@ -36,7 +36,7 @@ public:
     */
     override 
     Pair!(size_t, OctetString)
-        key_derivation(size_t key_len,
+        keyDerivation(size_t key_len,
                        in string passphrase,
                        in ubyte* salt, size_t salt_len,
                        size_t iterations,
@@ -47,19 +47,19 @@ public:
         
         try
         {
-            m_mac.set_key(cast(const ubyte*)(passphrase.data()),
+            m_mac.setKey(cast(const ubyte*)(passphrase.data()),
                         passphrase.length);
         }
-        catch(Invalid_Key_Length)
+        catch(InvalidKeyLength)
         {
             throw new Exception(name ~ " cannot accept passphrases of length " ~ to!string(passphrase.length));
         }
         
-        Secure_Vector!ubyte key = Secure_Vector!ubyte(key_len);
+        SecureVector!ubyte key = SecureVector!ubyte(key_len);
         
         ubyte* T = key.ptr;
         
-        Secure_Vector!ubyte U = Secure_Vector!ubyte(m_mac.output_length);
+        SecureVector!ubyte U = SecureVector!ubyte(m_mac.output_length);
         
         const size_t blocks_needed = round_up(key_len, m_mac.output_length) / m_mac.output_length;
         
@@ -71,7 +71,7 @@ public:
             size_t T_size = std.algorithm.min(mac.output_length, key_len);
             
             m_mac.update(salt, salt_len);
-            m_mac.update_bigEndian(counter);
+            m_mac.updateBigEndian(counter);
             m_mac.flushInto(U.ptr);
             
             xor_buf(T, U.ptr, T_size);

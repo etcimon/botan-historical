@@ -19,7 +19,7 @@ import std.exception;
 * @param input_length = length of input in bytes
 * @param uppercase = should output be upper or lower case?
 */
-void hex_encode(char* output,
+void hexEncode(char* output,
                 in ubyte* input,
                 size_t input_length,
                 bool uppercase = true)
@@ -49,13 +49,13 @@ void hex_encode(char* output,
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hex_encode(in ubyte* input, size_t input_length, bool uppercase = true)
+string hexEncode(in ubyte* input, size_t input_length, bool uppercase = true)
 {
     string output;
     output.capacity = 2 * input_length;
     
     if (input_length)
-        hex_encode(output.ptr, input, input_length, uppercase);
+        hexEncode(output.ptr, input, input_length, uppercase);
     
     return output;
 }
@@ -66,9 +66,9 @@ string hex_encode(in ubyte* input, size_t input_length, bool uppercase = true)
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hex_encode(Alloc)(in Vector!( ubyte, Alloc ) input, bool uppercase = true)
+string hexEncode(Alloc)(in Vector!( ubyte, Alloc ) input, bool uppercase = true)
 {
-    return hex_encode(input.ptr, input.length, uppercase);
+    return hexEncode(input.ptr, input.length, uppercase);
 }
 
 /**
@@ -84,7 +84,7 @@ string hex_encode(Alloc)(in Vector!( ubyte, Alloc ) input, bool uppercase = true
                          exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(ubyte* output,
+size_t hexDecode(ubyte* output,
                   const(char)** input,
                   size_t input_length,
                   ref size_t input_consumed,
@@ -147,7 +147,7 @@ size_t hex_decode(ubyte* output,
             else if (bad_char == "\n")
                 bad_char = "\\n";
             
-            throw new Invalid_Argument("hex_decode: invalid hex character '" ~ bad_char ~ "'");
+            throw new InvalidArgument("hexDecode: invalid hex character '" ~ bad_char ~ "'");
         }
         
         *out_ptr |= bin << (top_nibble*4);
@@ -182,16 +182,16 @@ size_t hex_decode(ubyte* output,
                          exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(ubyte* output,
+size_t hexDecode(ubyte* output,
                   const(char)* input,
                   size_t input_length,
                   bool ignore_ws = true)
 {
     size_t consumed = 0;
-    size_t written = hex_decode(output, input, input_length, consumed, ignore_ws);
+    size_t written = hexDecode(output, input, input_length, consumed, ignore_ws);
     
     if (consumed != input_length)
-        throw new Invalid_Argument("hex_decode: input did not have full bytes");
+        throw new InvalidArgument("hexDecode: input did not have full bytes");
     
     return written;
 }
@@ -204,9 +204,9 @@ size_t hex_decode(ubyte* output,
                          exception if whitespace is encountered
 * @return number of bytes written to output
 */
-size_t hex_decode(ubyte* output, in string input, bool ignore_ws = true)
+size_t hexDecode(ubyte* output, in string input, bool ignore_ws = true)
 {
-    return hex_decode(output, input.ptr, input.length, ignore_ws);
+    return hexDecode(output, input.ptr, input.length, ignore_ws);
 }
 
 /**
@@ -217,12 +217,12 @@ size_t hex_decode(ubyte* output, in string input, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!ubyte hex_decode(string input, size_t input_length, bool ignore_ws = true)
+Vector!ubyte hexDecode(string input, size_t input_length, bool ignore_ws = true)
 {
     Vector!ubyte bin;
     bin.reserve(1 + input_length / 2);
     
-    size_t written = hex_decode(bin.ptr, input.ptr, input_length,ignore_ws);
+    size_t written = hexDecode(bin.ptr, input.ptr, input_length,ignore_ws);
     
     bin.resize(written);
     return bin;
@@ -235,9 +235,9 @@ Vector!ubyte hex_decode(string input, size_t input_length, bool ignore_ws = true
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!ubyte hex_decode(in string input, bool ignore_ws = true)
+Vector!ubyte hexDecode(in string input, bool ignore_ws = true)
 {
-    return hex_decode(input.ptr, input.length, ignore_ws);
+    return hexDecode(input.ptr, input.length, ignore_ws);
 }
 
 /**
@@ -248,12 +248,12 @@ Vector!ubyte hex_decode(in string input, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Secure_Vector!ubyte hex_decode_locked(const(char)* input, size_t input_length, bool ignore_ws = true)
+SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool ignore_ws = true)
 {
-    Secure_Vector!ubyte bin;
+    SecureVector!ubyte bin;
     bin.reserve(1 + input_length / 2);
     
-    size_t written = hex_decode(bin.ptr, input.ptr, input_length, ignore_ws = true);
+    size_t written = hexDecode(bin.ptr, input.ptr, input_length, ignore_ws = true);
     
     bin.resize(written);
     return bin;
@@ -266,7 +266,7 @@ Secure_Vector!ubyte hex_decode_locked(const(char)* input, size_t input_length, b
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Secure_Vector!ubyte hex_decode_locked(in string input, bool ignore_ws = true)
+SecureVector!ubyte hexDecodeLocked(in string input, bool ignore_ws = true)
 {
-    return hex_decode_locked(input.ptr, input.length, ignore_ws);
+    return hexDecodeLocked(input.ptr, input.length, ignore_ws);
 }

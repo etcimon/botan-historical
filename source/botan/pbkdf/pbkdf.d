@@ -36,13 +36,13 @@ public:
     * @param salt_len = length of salt in bytes
     * @param iterations = the number of iterations to use (use 10K or more)
     */
-    final OctetString derive_key(size_t output_len,
+    final OctetString deriveKey(size_t output_len,
                            in string passphrase,
                            in ubyte* salt, size_t salt_len,
                            size_t iterations) const
     {
         if (iterations == 0)
-            throw new Invalid_Argument(name ~ ": Invalid iteration count");
+            throw new InvalidArgument(name ~ ": Invalid iteration count");
         
         auto derived = key_derivation(output_len, passphrase,
                                       salt, salt_len, iterations,
@@ -61,12 +61,12 @@ public:
     * @param salt = a randomly chosen salt
     * @param iterations = the number of iterations to use (use 10K or more)
     */
-    final OctetString derive_key(Alloc)(size_t output_len,
+    final OctetString deriveKey(Alloc)(size_t output_len,
                                   in string passphrase,
                                   ref const Vector!( ubyte, Alloc ) salt,
                                   size_t iterations) const
     {
-        return derive_key(output_len, passphrase, salt.ptr, salt.length, iterations);
+        return deriveKey(output_len, passphrase, salt.ptr, salt.length, iterations);
     }
 
     /**
@@ -78,7 +78,7 @@ public:
     * @param loop_for = is how long to run the PBKDF
     * @param iterations = is set to the number of iterations used
     */
-    final OctetString derive_key(size_t output_len,
+    final OctetString deriveKey(size_t output_len,
                            in string passphrase,
                            in ubyte* salt, size_t salt_len,
                            Duration loop_for,
@@ -99,13 +99,13 @@ public:
     * @param loop_for = is how long to run the PBKDF
     * @param iterations = is set to the number of iterations used
     */
-    final OctetString derive_key(Alloc)(size_t output_len,
+    final OctetString deriveKey(Alloc)(size_t output_len,
                                   in string passphrase,
                                   ref const Vector!( ubyte, Alloc ) salt,
                                   Duration loop_for,
                                   ref size_t iterations) const
     {
-        return derive_key(output_len, passphrase, salt.ptr, salt.length, loop_for, iterations);
+        return deriveKey(output_len, passphrase, salt.ptr, salt.length, loop_for, iterations);
     }
 
     /**
@@ -123,7 +123,7 @@ public:
     * @return the number of iterations performed and the derived key
     */
     abstract Pair!(size_t, OctetString)
-        key_derivation(size_t output_len,
+        keyDerivation(size_t output_len,
                             in string passphrase,
                             in ubyte* salt, size_t salt_len,
                             size_t iterations,
@@ -141,15 +141,15 @@ unittest {
                             
                             const size_t iterations = to!size_t(vec["Iterations"]);
                             const size_t outlen = to!size_t(vec["OutputLen"]);
-                            const auto salt = hex_decode(vec["Salt"]);
+                            const auto salt = hexDecode(vec["Salt"]);
                             const string pass = vec["Passphrase"];
                             
-                            const auto key = pbkdf.derive_key(outlen, pass, &salt[0], salt.length, iterations).bits_of();
-                            return hex_encode(key);
+                            const auto key = pbkdf.deriveKey(outlen, pass, &salt[0], salt.length, iterations).bitsOf();
+                            return hexEncode(key);
                         });
     };
     
-    size_t fails = run_tests_in_dir("test_data/pbkdf", test);
+    size_t fails = runTestsInDir("test_data/pbkdf", test);
 
-    test_report("pbkdf", 1, fails);
+    testReport("pbkdf", 1, fails);
 }

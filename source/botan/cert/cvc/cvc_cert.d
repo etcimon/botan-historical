@@ -1,5 +1,5 @@
 /*
-* EAC1_1 CVC
+* EAC11 CVC
 * (C) 2008 Falko Strenzke
 *      2008 Jack Lloyd
 *
@@ -17,19 +17,19 @@ import botan.utils.types;
 // import string;
 
 
-alias EAC1_1_CVC = FreeListRef!EAC1_1_CVC_Impl;
+alias EAC11CVC = FreeListRef!EAC11CVCImpl;
 
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-final class EAC1_1_CVC_Impl : EAC1_1_gen_CVC!EAC1_1_CVC_Impl//Signed_Object
+final class EAC11CVCImpl : EAC11GenCVC!EAC11CVCImpl//Signed_Object
 {
 public:
     /**
     * Get the CAR of the certificate.
     * @result the CAR of the certificate
     */
-    ASN1_Car get_car() const
+    ASN1Car getCar() const
     {
         return m_car;
     }
@@ -38,7 +38,7 @@ public:
     * Get the CED of this certificate.
     * @result the CED this certificate
     */
-    ASN1_Ced get_ced() const
+    ASN1Ced getCed() const
     {
         return m_ced;
     }
@@ -47,7 +47,7 @@ public:
     * Get the CEX of this certificate.
     * @result the CEX this certificate
     */
-    ASN1_Cex get_cex() const
+    ASN1Cex getCex() const
     {
         return m_cex;
     }
@@ -56,21 +56,21 @@ public:
     * Get the CHAT value.
     * @result the CHAT value
     */
-    uint get_chat_value() const
+    uint getChatValue() const
     {
         return m_chat_val;
     }
 
-    bool opEquals(in EAC1_1_CVC rhs) const
+    bool opEquals(in EAC11CVC rhs) const
     {
-        return (tbs_data() == rhs.tbs_data()
-                && get_concat_sig() == rhs.get_concat_sig());
+        return (tbs_data() == rhs.tbsData()
+                && get_concat_sig() == rhs.getConcatSig());
     }
 
     /*
     * Comparison
     */
-    bool opCmp(string op)(in EAC1_1_CVC_Impl rhs)
+    bool opCmp(string op)(in EAC11CVCImpl rhs)
         if (op == "!=")
     {
         return !(lhs == rhs);
@@ -84,7 +84,7 @@ public:
     {
         init(input);
         self_signed = false;
-        do_decode();
+        doDecode();
     }
 
     /**
@@ -93,10 +93,10 @@ public:
     */
     this(in string input)
     {
-        auto stream = scoped!DataSource_Stream(input, true);
+        auto stream = scoped!DataSourceStream(input, true);
         init(stream);
         self_signed = false;
-        do_decode();
+        doDecode();
     }
 
     ~this() {}
@@ -105,44 +105,44 @@ private:
     /*
 * Decode the TBSCertificate data
 */
-    void force_decode()
+    void forceDecode()
     {
         Vector!ubyte enc_pk;
         Vector!ubyte enc_chat_val;
         size_t cpi;
-        BER_Decoder tbs_cert = BER_Decoder(tbs_bits);
-        tbs_cert.decode(cpi, ASN1_Tag(41), ASN1_Tag.APPLICATION)
+        BERDecoder tbs_cert = BERDecoder(tbs_bits);
+        tbs_cert.decode(cpi, ASN1Tag(41), ASN1Tag.APPLICATION)
                 .decode(m_car)
-                .start_cons(ASN1_Tag(73))
-                .raw_bytes(enc_pk)
-                .end_cons()
+                .startCons(ASN1Tag(73))
+                .rawBytes(enc_pk)
+                .endCons()
                 .decode(m_chr)
-                .start_cons(ASN1_Tag(76))
+                .startCons(ASN1Tag(76))
                 .decode(m_chat_oid)
-                .decode(enc_chat_val, ASN1_Tag.OCTET_STRING, ASN1_Tag(19), ASN1_Tag.APPLICATION)
-                .end_cons()
+                .decode(enc_chat_val, ASN1Tag.OCTET_STRING, ASN1Tag(19), ASN1Tag.APPLICATION)
+                .endCons()
                 .decode(m_ced)
                 .decode(m_cex)
-                .verify_end();
+                .verifyEnd();
         
         if (enc_chat_val.length != 1)
-            throw new Decoding_Error("CertificateHolderAuthorizationValue was not of length 1");
+            throw new DecodingError("CertificateHolderAuthorizationValue was not of length 1");
         
         if (cpi != 0)
-            throw new Decoding_Error("EAC1_1 certificate's cpi was not 0");
+            throw new DecodingError("EAC1_1 certificate's cpi was not 0");
         
-        m_pk = decode_eac1_1_key(enc_pk, sig_algo);
+        m_pk = decodeEac11Key(enc_pk, sig_algo);
         
         m_chat_val = enc_chat_val[0];
         
-        self_signed = (m_car.iso_8859() == m_chr.iso_8859());
+        self_signed = (m_car.iso8859() == m_chr.iso8859());
     }
 
     this() {}
 
-    ASN1_Car m_car;
-    ASN1_Ced m_ced;
-    ASN1_Cex m_cex;
+    ASN1Car m_car;
+    ASN1Ced m_ced;
+    ASN1Cex m_cex;
     ubyte m_chat_val;
     OID m_chat_oid;
 }
@@ -161,47 +161,47 @@ private:
 * @param cex = the CEX to appear in the certificate
 * @param rng = a random number generator
 */
-EAC1_1_CVC make_cvc_cert(PK_Signer signer,
+EAC11CVC makeCvcCert(PKSigner signer,
                          in Vector!ubyte public_key,
-                         in ASN1_Car car,
-                         in ASN1_Chr chr,
+                         in ASN1Car car,
+                         in ASN1Chr chr,
                          ubyte holder_auth_templ,
-                         ASN1_Ced ced,
-                         ASN1_Cex cex,
+                         ASN1Ced ced,
+                         ASN1Cex cex,
                          RandomNumberGenerator rng)
 {
     OID chat_oid = OID(OIDS.lookup("CertificateHolderAuthorizationTemplate"));
     Vector!ubyte enc_chat_val;
-    enc_chat_val.push_back(holder_auth_templ);
+    enc_chat_val.pushBack(holder_auth_templ);
     
     Vector!ubyte enc_cpi;
-    enc_cpi.push_back(0x00);
-    Vector!ubyte tbs = DER_Encoder()
-                        .encode(enc_cpi, ASN1_Tag.OCTET_STRING, ASN1_Tag(41), ASN1_Tag.APPLICATION) // cpi
+    enc_cpi.pushBack(0x00);
+    Vector!ubyte tbs = DEREncoder()
+                        .encode(enc_cpi, ASN1Tag.OCTET_STRING, ASN1Tag(41), ASN1Tag.APPLICATION) // cpi
                         .encode(car)
-                        .raw_bytes(public_key)
+                        .rawBytes(public_key)
                         .encode(chr)
-                        .start_cons(ASN1_Tag(76), ASN1_Tag.APPLICATION)
+                        .startCons(ASN1Tag(76), ASN1Tag.APPLICATION)
                         .encode(chat_oid)
-                        .encode(enc_chat_val, ASN1_Tag.OCTET_STRING, ASN1_Tag(19), ASN1_Tag.APPLICATION)
-                        .end_cons()
+                        .encode(enc_chat_val, ASN1Tag.OCTET_STRING, ASN1Tag(19), ASN1Tag.APPLICATION)
+                        .endCons()
                         .encode(ced)
                         .encode(cex)
-                        .get_contents_unlocked();
+                        .getContentsUnlocked();
     
-    Vector!ubyte signed_cert = make_signed(signer, build_cert_body(tbs), rng);
+    Vector!ubyte signed_cert = makeSigned(signer, buildCertBody(tbs), rng);
     
-    auto source = scoped!DataSource_Memory(signed_cert);
-    return EAC1_1_CVC(source);
+    auto source = scoped!DataSourceMemory(signed_cert);
+    return EAC11CVC(source);
 }
 
 /**
 * Decode an EAC encoding ECDSA key
 */
 
-ECDSA_PublicKey decode_eac1_1_key(in Vector!ubyte,
-                                   ref Algorithm_Identifier)
+ECDSAPublicKey decodeEac11Key(in Vector!ubyte,
+                              ref AlgorithmIdentifier)
 {
-    throw new Internal_Error("decode_eac1_1_key: Unimplemented");
+    throw new InternalError("decodeEac11Key: Unimplemented");
     return 0;
 }

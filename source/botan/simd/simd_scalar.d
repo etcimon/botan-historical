@@ -14,7 +14,7 @@ import botan.utils.bswap;
 * Fake SIMD, using plain scalar operations
 * Often still faster than iterative on superscalar machines
 */
-struct SIMD_Scalar(T, size_t N)
+struct SIMDScalar(T, size_t N)
 {
 public:
     static bool enabled() { return true; }
@@ -35,50 +35,50 @@ public:
             m_v[i] = B;
     }
 
-    static SIMD_Scalar!(T, N) load_littleEndian(in void* input)
+    static SIMD_Scalar!(T, N) loadLittleEndian(in void* input)
     {
         SIMD_Scalar!(T, N) output;
         const ubyte* in_b = cast(const ubyte*)(input);
 
         for (size_t i = 0; i != size(); ++i)
-            output.m_v[i] = load_littleEndian!T(in_b, i);
+            output.m_v[i] = loadLittleEndian!T(in_b, i);
 
         return output;
     }
 
-    static SIMD_Scalar!(T, N) load_bigEndian(in void* input)
+    static SIMD_Scalar!(T, N) loadBigEndian(in void* input)
     {
         SIMD_Scalar!(T, N) output;
         const ubyte* in_b = cast(const ubyte*)(input);
 
         for (size_t i = 0; i != size(); ++i)
-            output.m_v[i] = load_bigEndian!T(in_b, i);
+            output.m_v[i] = loadBigEndian!T(in_b, i);
 
         return output;
     }
 
-    void store_littleEndian(ubyte* output) const
+    void storeLittleEndian(ubyte* output) const
     {
         for (size_t i = 0; i != size(); ++i)
-            store_littleEndian(m_v[i], output + i*T.sizeof);
+            storeLittleEndian(m_v[i], output + i*T.sizeof);
     }
 
-    void store_bigEndian(ubyte* output) const
+    void storeBigEndian(ubyte* output) const
     {
         for (size_t i = 0; i != size(); ++i)
-            store_bigEndian(m_v[i], output + i*T.sizeof);
+            storeBigEndian(m_v[i], output + i*T.sizeof);
     }
 
-    void rotate_left(size_t rot)
+    void rotateLeft(size_t rot)
     {
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] = rotate_left(m_v[i], rot);
+            m_v[i] = rotateLeft(m_v[i], rot);
     }
 
-    void rotate_right(size_t rot)
+    void rotateRight(size_t rot)
     {
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] = rotate_right(m_v[i], rot);
+            m_v[i] = rotateRight(m_v[i], rot);
     }
 
     void opOpAssign(string op)(in SIMD_Scalar!(T, N) other)

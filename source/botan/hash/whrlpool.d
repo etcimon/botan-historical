@@ -14,11 +14,11 @@ import botan.utils.loadstor;
 /**
 * Whirlpool
 */
-final class Whirlpool : MDx_HashFunction
+final class Whirlpool : MDxHashFunction
 {
 public:
     @property string name() const { return "Whirlpool"; }
-    @property size_t output_length() const { return 64; }
+    @property size_t outputLength() const { return 64; }
     HashFunction clone() const { return new Whirlpool; }
 
     /*
@@ -42,7 +42,7 @@ private:
     /*
     * Whirlpool Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         __gshared immutable ulong[10] RC = [
             0x1823C6E887B8014F, 0x36A6D2F5796F9152,
@@ -53,7 +53,7 @@ private:
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_bigEndian(m_M.ptr, input, m_M.length);
+            loadBigEndian(m_M.ptr, input, m_M.length);
             
             ulong K0, K1, K2, K3, K4, K5, K6, K7;
             K0 = m_digest[0]; K1 = m_digest[1]; K2 = m_digest[2]; K3 = m_digest[3];
@@ -148,21 +148,21 @@ private:
             m_digest[6] ^= B6 ^ m_M[6];
             m_digest[7] ^= B7 ^ m_M[7];
             
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
     
     /*
     * Copy out the digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 8)
-            store_bigEndian(m_digest[i/8], output + i);
+            storeBigEndian(m_digest[i/8], output + i);
     }
     
 
-    Secure_Vector!ulong m_M, m_digest;
+    SecureVector!ulong m_M, m_digest;
 }
 
 

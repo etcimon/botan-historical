@@ -1,5 +1,5 @@
 /*
-* Secure_Queue
+* SecureQueue
 * (C) 1999-2007 Jack Lloyd
 *      2012 Markus Wanner
 *
@@ -14,7 +14,7 @@ import std.algorithm;
 /**
 * A queue that knows how to zeroize itself
 */
-final class Secure_Queue : Fanout_Filter, DataSource
+final class SecureQueue : Fanout_Filter, DataSource
 {
 public:
     @property string name() const { return "Queue"; }
@@ -96,7 +96,7 @@ public:
     /**
     * Return how many bytes have been read so far.
     */
-    size_t get_bytes_read() const
+    size_t getBytesRead() const
     {
         return bytes_read;
     }
@@ -104,7 +104,7 @@ public:
     /*
     * Test if the queue has any data in it
     */
-    bool end_of_data() const
+    bool endOfData() const
     {
         return (size() == 0);
     }
@@ -137,7 +137,7 @@ public:
     * Secure_Queue assignment
     * @param other = the queue to copy
     */
-    Secure_Queue opAssign(in Secure_Queue input)
+    SecureQueue opAssign(in SecureQueue input)
     {
         destroy();
         m_head = m_tail = new SecureQueueNode;
@@ -165,7 +165,7 @@ public:
     * Secure_Queue copy constructor
     * @param other = the queue to copy
     */
-    this(in Secure_Queue input)
+    this(in SecureQueue input)
     {
         bytes_read = 0;
         set_next(null, 0);
@@ -223,7 +223,7 @@ public:
     size_t write(in ubyte* input, size_t length)
     {
         size_t copied = std.algorithm.min(length, m_buffer.length - m_end);
-        copy_mem(&m_buffer[end], input, copied);
+        copyMem(&m_buffer[end], input, copied);
         m_end += copied;
         return copied;
     }
@@ -231,7 +231,7 @@ public:
     size_t read(ubyte* output, size_t length)
     {
         size_t copied = std.algorithm.min(length, m_end - m_start);
-        copy_mem(output, &m_buffer[m_start], copied);
+        copyMem(output, &m_buffer[m_start], copied);
         m_start += copied;
         return copied;
     }
@@ -241,13 +241,13 @@ public:
         const size_t left = m_end - m_start;
         if (offset >= left) return 0;
         size_t copied = std.algorithm.min(length, left - offset);
-        copy_mem(output, &m_buffer[m_start + offset], copied);
+        copyMem(output, &m_buffer[m_start + offset], copied);
         return copied;
     }
     
     size_t size() const { return (m_end - m_start); }
 private:
     SecureQueueNode m_next;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     size_t m_start, m_end;
 }

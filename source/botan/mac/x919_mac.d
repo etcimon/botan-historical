@@ -17,7 +17,7 @@ import std.algorithm;
 /**
 * DES/3DES-based MAC from ANSI X9.19
 */
-final class ANSI_X919_MAC : MessageAuthenticationCode
+final class ANSIX919MAC : MessageAuthenticationCode
 {
 public:
     /*
@@ -37,14 +37,14 @@ public:
         return "X9.19-MAC";
     }
 
-    @property size_t output_length() const { return 8; }
+    @property size_t outputLength() const { return 8; }
 
     MessageAuthenticationCode clone() const
     {
-        return new ANSI_X919_MAC(m_des1.clone());
+        return new ANSIX919MAC(m_des1.clone());
     }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
         return Key_Length_Specification(8, 16, 8);
     }
@@ -59,14 +59,14 @@ public:
         m_state = 8;
         m_position = 0;
         if (cipher.name != "DES")
-            throw new Invalid_Argument("ANSI X9.19 MAC only supports DES");
+            throw new InvalidArgument("ANSI X9.19 MAC only supports DES");
     }
 
 private:
     /*
     * Update an ANSI X9.19 MAC Calculation
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(8 - m_position, length);
         xor_buf(&m_state[m_position], input, xored);
@@ -92,7 +92,7 @@ private:
     /*
     * Finalize an ANSI X9.19 MAC Calculation
     */
-    void final_result(ubyte* mac)
+    void finalResult(ubyte* mac)
     {
         if (m_position)
             m_des1.encrypt(m_state);
@@ -106,18 +106,18 @@ private:
     /*
     * ANSI X9.19 MAC Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
-        m_des1.set_key(key, 8);
+        m_des1.setKey(key, 8);
         
         if (length == 16)
             key += 8;
         
-        m_des2.set_key(key, 8);
+        m_des2.setKey(key, 8);
     }
 
 
     Unique!BlockCipher m_des1, m_des2;
-    Secure_Vector!ubyte m_state;
+    SecureVector!ubyte m_state;
     size_t m_position;
 }

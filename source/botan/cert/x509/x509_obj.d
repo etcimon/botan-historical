@@ -28,14 +28,14 @@ import std.array;
 * This class represents abstract X.509 signed objects as
 * in the X.500 SIGNED macro
 */
-class X509_Object : ASN1_Object
+class X509Object : ASN1Object
 {
 public:
     /**
     * The underlying data that is to be or was signed
     * @return data that is or was signed
     */
-    final Vector!ubyte tbs_data() const
+    final Vector!ubyte tbsData() const
     {
         return put_in_sequence(m_tbs_bits);
     }
@@ -51,7 +51,7 @@ public:
     /**
     * @return signature algorithm that was used to generate signature
     */
-    final Algorithm_Identifier signature_algorithm() const
+    final AlgorithmIdentifier signatureAlgorithm() const
     {
         return m_sig_algo;
     }
@@ -59,17 +59,17 @@ public:
     /**
     * @return hash algorithm that was used to generate signature
     */
-    final string hash_used_for_signature() const
+    final string hashUsedForSignature() const
     {
         Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
         
         if (sig_info.length != 2)
-            throw new Internal_Error("Invalid name format found for " ~ m_sig_algo.oid.toString());
+            throw new InternalError("Invalid name format found for " ~ m_sig_algo.oid.toString());
         
         Vector!string pad_and_hash = parse_algorithm_name(sig_info[1]);
         
         if (pad_and_hash.length != 2)
-            throw new Internal_Error("Invalid name format " ~ sig_info[1]);
+            throw new InternalError("Invalid name format " ~ sig_info[1]);
         
         return pad_and_hash[1];
     }
@@ -83,18 +83,18 @@ public:
     * @param tbs = the tbs bits to be signed
     * @return signed X509 object
     */
-    static Vector!ubyte make_signed(ref PK_Signer signer,
+    static Vector!ubyte makeSigned(ref PKSigner signer,
                              RandomNumberGenerator rng,
-                             const Algorithm_Identifier algo,
-                             in Secure_Vector!ubyte tbs_bits)
+                             const AlgorithmIdentifier algo,
+                             in SecureVector!ubyte tbs_bits)
     {
-        return DER_Encoder()
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .raw_bytes(m_tbs_bits)
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
+                .rawBytes(m_tbs_bits)
                 .encode(algo)
-                .encode(signer.sign_message(m_tbs_bits, rng), ASN1_Tag.BIT_STRING)
-                .end_cons()
-                .get_contents_unlocked();
+                .encode(signer.signMessage(m_tbs_bits, rng), ASN1Tag.BIT_STRING)
+                .endCons()
+                .getContentsUnlocked();
     }
     
 
@@ -104,7 +104,7 @@ public:
     * @param key = the public key purportedly used to sign this data
     * @return true if the signature is valid, otherwise false
     */
-    final bool check_signature(in Public_Key pub_key) const
+    final bool checkSignature(in PublicKey pub_key) const
     {
         try {
             Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
@@ -115,8 +115,8 @@ public:
             string padding = sig_info[1];
             Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
-            PK_Verifier verifier = PK_Verifier(pub_key, padding, format);
-            return verifier.verify_message(tbs_data(), signature());
+            PKVerifier verifier = PKVerifier(pub_key, padding, format);
+            return verifier.verifyMessage(tbs_data(), signature());
         }
         catch(Exception e)
         {
@@ -124,30 +124,30 @@ public:
         }
     }
 
-    override void encode_into(DER_Encoder to) const
+    override void encodeInto(DEREncoder to) const
     {
-        to.start_cons(ASN1_Tag.SEQUENCE)
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .raw_bytes(m_tbs_bits)
-                .end_cons()
+        to.startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
+                .rawBytes(m_tbs_bits)
+                .endCons()
                 .encode(m_sig_algo)
-                .encode(sig, ASN1_Tag.BIT_STRING)
-                .end_cons();
+                .encode(sig, ASN1Tag.BIT_STRING)
+                .endCons();
     }
 
     /*
     * Read a BER encoded X.509 object
     */
-    override void decode_from(BER_Decoder from)
+    override void decodeFrom(BERDecoder from)
     {
-        from.start_cons(ASN1_Tag.SEQUENCE)
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .raw_bytes(m_tbs_bits)
-                .end_cons()
+        from.startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
+                .rawBytes(m_tbs_bits)
+                .endCons()
                 .decode(m_sig_algo)
-                .decode(m_sig, ASN1_Tag.BIT_STRING)
-                .verify_end()
-                .end_cons();
+                .decode(m_sig, ASN1Tag.BIT_STRING)
+                .verifyEnd()
+                .endCons();
     }
 
 
@@ -156,9 +156,9 @@ public:
     */
     final Vector!ubyte BER_encode() const
     {
-        auto der = BER_Decoder();
-        encode_into(der);
-        return der.get_contents_unlocked();
+        auto der = BERDecoder();
+        encodeInto(der);
+        return der.getContentsUnlocked();
     }
 
 
@@ -185,7 +185,7 @@ protected:
     */
     this(in string file, in string labels)
     {
-        auto stream = scoped!DataSource_Stream(file, true);
+        auto stream = scoped!DataSourceStream(file, true);
         init(stream, labels);
     }
 
@@ -194,32 +194,32 @@ protected:
     */
     this(in Vector!ubyte vec, in string labels)
     {
-        auto stream = scoped!DataSource_Memory(vec.ptr, vec.length);
+        auto stream = scoped!DataSourceMemory(vec.ptr, vec.length);
         init(stream, labels);
     }
 
     /*
     * Try to decode the actual information
     */
-    final void do_decode()
+    final void doDecode()
     {
         try {
-            force_decode();
+            forceDecode();
         }
-        catch(Decoding_Error e)
+        catch(DecodingError e)
         {
-            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ e.msg ~ ")");
+            throw new DecodingError(m_PEM_label_pref ~ " decoding failed (" ~ e.msg ~ ")");
         }
-        catch(Invalid_Argument e)
+        catch(InvalidArgument e)
         {
-            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed (" ~ e.msg ~ ")");
+            throw new DecodingError(m_PEM_label_pref ~ " decoding failed (" ~ e.msg ~ ")");
         }
     }
     this() {}
-    Algorithm_Identifier m_sig_algo;
+    AlgorithmIdentifier m_sig_algo;
     Vector!ubyte m_tbs_bits, m_sig;
 private:
-    abstract void force_decode();
+    abstract void forceDecode();
 
     /*
     * Read a PEM or BER X.509 object
@@ -228,7 +228,7 @@ private:
     {
         m_PEM_labels_allowed = splitter(labels, '/').array!(string[]);
         if (m_PEM_labels_allowed.length < 1)
-            throw new Invalid_Argument("Bad labels argument to X509_Object");
+            throw new InvalidArgument("Bad labels argument to X509Object");
         
         m_PEM_label_pref = m_PEM_labels_allowed;
         std.algorithm.sort(m_PEM_labels_allowed);
@@ -236,23 +236,23 @@ private:
         try {
             if (maybe_BER(input) && !PEM.matches(input))
             {
-                auto dec = BER_Decoder(input);
-                decode_from(dec);
+                auto dec = BERDecoder(input);
+                decodeFrom(dec);
             }
             else
             {
                 string got_label;
-                auto ber = scoped!DataSource_Memory(PEM.decode(input, got_label));
+                auto ber = scoped!DataSourceMemory(PEM.decode(input, got_label));
                 if (m_PEM_labels_allowed.canFind(got_label))
-                    throw new Decoding_Error("Invalid PEM label: " ~ got_label);
+                    throw new DecodingError("Invalid PEM label: " ~ got_label);
                 
-                auto dec = BER_Decoder(ber);
-                decode_from(dec);
+                auto dec = BERDecoder(ber);
+                decodeFrom(dec);
             }
         }
-        catch(Decoding_Error e)
+        catch(DecodingError e)
         {
-            throw new Decoding_Error(m_PEM_label_pref ~ " decoding failed: " ~ e.msg);
+            throw new DecodingError(m_PEM_label_pref ~ " decoding failed: " ~ e.msg);
         }
     }
 

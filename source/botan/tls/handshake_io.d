@@ -25,24 +25,24 @@ import std.typecons : Tuple;
 /**
 * Handshake IO Interface
 */
-class Handshake_IO
+class HandshakeIO
 {
 public:
-    abstract TLS_Protocol_Version initial_record_version() const;
+    abstract TLSProtocolVersion initialRecordVersion() const;
 
-    abstract Vector!ubyte send(in Handshake_Message msg);
+    abstract Vector!ubyte send(in HandshakeMessage msg);
 
     abstract Vector!ubyte format(in Vector!ubyte handshake_msg,
-                                 Handshake_Type handshake_type) const;
+                                 HandshakeType handshake_type) const;
 
-    abstract void add_record(in Vector!ubyte record,
-                             Record_Type type,
+    abstract void addRecord(in Vector!ubyte record,
+                             RecordType type,
                              ulong sequence_number);
 
     /**
     * Returns (HANDSHAKE_NONE, Vector!(  )()) if no message currently available
     */
-    abstract Pair!(Handshake_Type, Vector!ubyte ) get_next_record(bool expecting_ccs);
+    abstract Pair!(HandshakeType, Vector!ubyte ) getNextRecord(bool expecting_ccs);
 
     this() {}
 
@@ -52,7 +52,7 @@ public:
 /**
 * Handshake IO for stream-based handshakes
 */
-package final class Stream_Handshake_IO : Handshake_IO
+package final class StreamHandshakeIO : Handshake_IO
 {
 public:
     this(void delegate(ubyte, in Vector!ubyte) writer) 
@@ -60,12 +60,12 @@ public:
         m_send_hs = writer;
     }
 
-    override TLS_Protocol_Version initial_record_version() const
+    override TLSProtocolVersion initialRecordVersion() const
     {
-        return TLS_Protocol_Version.TLS_V10;
+        return TLSProtocolVersion.TLS_V10;
     }
 
-    override Vector!ubyte send(in Handshake_Message msg)
+    override Vector!ubyte send(in HandshakeMessage msg)
     {
         const Vector!ubyte msg_bits = msg.serialize();
         
@@ -80,7 +80,7 @@ public:
         return buf;
     }
 
-    override Vector!ubyte format(in Vector!ubyte msg, Handshake_Type type) const
+    override Vector!ubyte format(in Vector!ubyte msg, HandshakeType type) const
     {
         Vector!ubyte send_buf = Vector!ubyte(4 + msg.length);
         
@@ -88,14 +88,14 @@ public:
         
         send_buf[0] = type;
         
-        store_be24(&send_buf[1], buf_size);
+        storeBigEndian24(&send_buf[1], buf_size);
         
-        copy_mem(&send_buf[4], msg.ptr, msg.length);
+        copyMem(&send_buf[4], msg.ptr, msg.length);
         
         return send_buf;
     }
 
-    override void add_record(in Vector!ubyte record, Record_Type record_type, ulong)
+    override void addRecord(in Vector!ubyte record, RecordType record_type, ulong)
     {
         if (record_type == HANDSHAKE)
         {
@@ -104,17 +104,17 @@ public:
         else if (record_type == CHANGE_CIPHER_SPEC)
         {
             if (record.length != 1 || record[0] != 1)
-                throw new Decoding_Error("Invalid ChangeCipherSpec");
+                throw new DecodingError("Invalid ChangeCipherSpec");
             
             // Pretend it's a regular handshake message of zero length
             const(ubyte)[] ccs_hs = [ HANDSHAKE_CCS, 0, 0, 0 ];
             m_queue.insert(ccs_hs);
         }
         else
-            throw new Decoding_Error("Unknown message type in handshake processing");
+            throw new DecodingError("Unknown message type in handshake processing");
     }
 
-    override Pair!(Handshake_Type, Vector!ubyte ) get_next_record(bool)
+    override Pair!(HandshakeType, Vector!ubyte ) getNextRecord(bool)
     {
         if (m_queue.length >= 4)
         {
@@ -143,22 +143,22 @@ private:
 /**
 * Handshake IO for datagram-based handshakes
 */
-package final class Datagram_Handshake_IO : Handshake_IO
+package final class DatagramHandshakeIO : Handshake_IO
 {
 public:
-    this(Connection_Sequence_Numbers seq, void delegate(ushort, ubyte, in Vector!ubyte) writer) 
+    this(ConnectionSequenceNumbers seq, void delegate(ushort, ubyte, in Vector!ubyte) writer) 
     {
         m_seqs = seq;
         m_flights.length = 1;
         m_send_hs = writer; 
     }
 
-    override TLS_Protocol_Version initial_record_version() const
+    override TLSProtocolVersion initialRecordVersion() const
     {
-        return TLS_Protocol_Version.DTLS_V10;
+        return TLSProtocolVersion.DTLS_V10;
     }
 
-    override Vector!ubyte send(in Handshake_Message msg)
+    override Vector!ubyte send(in HandshakeMessage msg)
     {
         const Vector!ubyte msg_bits = msg.serialize();
         const ushort epoch = m_seqs.current_write_epoch();
@@ -178,7 +178,7 @@ public:
             m_send_hs(epoch, HANDSHAKE, no_fragment);
         else
         {
-            const size_t parts = split_for_mtu(m_mtu, msg_bits.length);
+            const size_t parts = splitForMtu(m_mtu, msg_bits.length);
             
             const size_t parts_size = (msg_bits.length + parts) / parts;
             
@@ -189,7 +189,7 @@ public:
                 const size_t frag_len =    std.algorithm.min(msg_bits.length - frag_offset, parts_size);
                 
                 m_send_hs(epoch, HANDSHAKE, 
-                          format_fragment(&msg_bits[frag_offset],
+                          formatFragment(&msg_bits[frag_offset],
                                             frag_len,
                                             frag_offset,
                                             msg_bits.length,
@@ -201,7 +201,7 @@ public:
         }
         
         // Note: not saving CCS, instead we know it was there due to change in epoch
-        m_flights[$-1].push_back(m_out_message_seq);
+        m_flights[$-1].pushBack(m_out_message_seq);
         m_flight_data[m_out_message_seq] = msg_info;
         
         m_out_message_seq += 1;
@@ -209,13 +209,13 @@ public:
         return no_fragment;
     }
 
-    override Vector!ubyte format(in Vector!ubyte msg, Handshake_Type type) const
+    override Vector!ubyte format(in Vector!ubyte msg, HandshakeType type) const
     {
         return format_w_seq(msg, type, m_in_message_seq - 1);
     }
 
-    override void add_record(in Vector!ubyte record,
-                             Record_Type record_type,
+    override void addRecord(in Vector!ubyte record,
+                             RecordType record_type,
                              ulong record_sequence)
     {
         const ushort epoch = cast(ushort)(record_sequence >> 48);
@@ -238,19 +238,19 @@ public:
                 return; // completely bogus? at least degenerate/weird
             
             const ubyte msg_type = record_bits[0];
-            const size_t msg_len = load_be24(&record_bits[1]);
-            const ushort message_seq = load_bigEndian!ushort(&record_bits[4], 0);
-            const size_t fragment_offset = load_be24(&record_bits[6]);
-            const size_t fragment_length = load_be24(&record_bits[9]);
+            const size_t msg_len = loadBigEndian24(&record_bits[1]);
+            const ushort message_seq = loadBigEndian!ushort(&record_bits[4], 0);
+            const size_t fragment_offset = loadBigEndian24(&record_bits[6]);
+            const size_t fragment_length = loadBigEndian24(&record_bits[9]);
             
             const size_t total_size = DTLS_HANDSHAKE_HEADER_LEN + fragment_length;
             
             if (record_size < total_size)
-                throw new Decoding_Error("Bad lengths in DTLS header");
+                throw new DecodingError("Bad lengths in DTLS header");
             
             if (message_seq >= m_in_message_seq)
             {
-                m_messages[message_seq].add_fragment(&record_bits[DTLS_HANDSHAKE_HEADER_LEN],
+                m_messages[message_seq].addFragment(&record_bits[DTLS_HANDSHAKE_HEADER_LEN],
                                                         fragment_length,
                                                         fragment_offset,
                                                         epoch,
@@ -263,10 +263,10 @@ public:
         }
     }
 
-    override Pair!(Handshake_Type, Vector!ubyte) get_next_record(bool expecting_ccs)
+    override Pair!(HandshakeType, Vector!ubyte) getNextRecord(bool expecting_ccs)
     {
         if (!m_flights[$-1].empty)
-            m_flights.push_back(Vector!ushort());
+            m_flights.pushBack(Vector!ushort());
         
         if (expecting_ccs)
         {
@@ -293,40 +293,40 @@ public:
 
 private:
 
-Vector!ubyte format_fragment(in ubyte* fragment,
+Vector!ubyte formatFragment(in ubyte* fragment,
                              size_t frag_len,
                              ushort frag_offset,
                              ushort msg_len,
-                             Handshake_Type type,
+                             HandshakeType type,
                              ushort msg_sequence) const
 {
     Vector!ubyte send_buf = Vector!ubyte(12 + frag_len);
     
     send_buf[0] = type;
     
-    store_be24(&send_buf[1], msg_len);
+    storeBigEndian24(&send_buf[1], msg_len);
     
-    store_bigEndian(msg_sequence, &send_buf[4]);
+    storeBigEndian(msg_sequence, &send_buf[4]);
     
-    store_be24(&send_buf[6], frag_offset);
-    store_be24(&send_buf[9], frag_len);
+    storeBigEndian24(&send_buf[6], frag_offset);
+    storeBigEndian24(&send_buf[9], frag_len);
     
-    copy_mem(&send_buf[12], fragment.ptr, frag_len);
+    copyMem(&send_buf[12], fragment.ptr, frag_len);
     
     return send_buf;
 }
 
-Vector!ubyte format_w_seq(in Vector!ubyte msg,
-                 Handshake_Type type,
+Vector!ubyte formatWSeq(in Vector!ubyte msg,
+                 HandshakeType type,
                  ushort msg_sequence) const
 {
-    return format_fragment(msg.ptr, msg.length, 0, msg.length, type, msg_sequence);
+    return formatFragment(msg.ptr, msg.length, 0, msg.length, type, msg_sequence);
 }
 
-class Handshake_Reassembly
+class HandshakeReassembly
 {
 public:
-    void add_fragment(in ubyte* fragment,
+    void addFragment(in ubyte* fragment,
                         size_t fragment_length,
                         size_t fragment_offset,
                         ushort epoch,
@@ -344,13 +344,13 @@ public:
         }
         
         if (msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
-            throw new Decoding_Error("Inconsistent values in DTLS handshake header");
+            throw new DecodingError("Inconsistent values in DTLS handshake header");
         
         if (fragment_offset > m_msg_length)
-            throw new Decoding_Error("Fragment offset past end of message");
+            throw new DecodingError("Fragment offset past end of message");
         
         if (fragment_offset + fragment_length > m_msg_length)
-            throw new Decoding_Error("Fragment overlaps past end of message");
+            throw new DecodingError("Fragment overlaps past end of message");
         
         if (fragment_offset == 0 && fragment_length == m_msg_length)
         {
@@ -387,12 +387,12 @@ public:
 
     ushort epoch() const { return m_epoch; }
 
-    Pair!(Handshake_Type, Vector!ubyte) message() const
+    Pair!(HandshakeType, Vector!ubyte) message() const
     {
         if (!complete())
-            throw new Internal_Error("Datagram_Handshake_IO - message not complete");
+            throw new InternalError("Datagram_Handshake_IO - message not complete");
         
-        return Pair(cast(Handshake_Type)(m_msg_type), m_message);
+        return Pair(cast(HandshakeType)(m_msg_type), m_message);
     }
 
     private:
@@ -420,19 +420,19 @@ public:
 
 private:
 
-size_t load_be24(in ubyte[3] q)
+size_t loadBigEndian24(in ubyte[3] q)
 {
     return make_uint(0, q[0], q[1], q[2]);
 }
 
-void store_be24(ubyte[3] output, size_t val)
+void storeBigEndian24(ubyte[3] output, size_t val)
 {
     output[0] = get_byte!uint(1, val);
     output[1] = get_byte!uint(2, val);
     output[2] = get_byte!uint(3, val);
 }
 
-size_t split_for_mtu(size_t mtu, size_t msg_size)
+size_t splitForMtu(size_t mtu, size_t msg_size)
 {
     __gshared immutable size_t DTLS_HEADERS_SIZE = 25; // DTLS record+handshake headers
     

@@ -31,8 +31,8 @@ public:
         m_p = p;
         m_a = a;
         m_b = b;
-        m_p_words = m_p.sig_words();
-        m_p_dash = monty_inverse(m_p.word_at(0));
+        m_p_words = m_p.sigWords();
+        m_p_dash = montyInverse(m_p.wordAt(0));
         const BigInt r = BigInt.power_of_2(m_p_words * BOTAN_MP_WORD_BITS);
 
         m_r2  = (r * r) % p;
@@ -47,43 +47,43 @@ public:
     /**
     * @return curve coefficient a
     */
-    BigInt get_a() const { return m_a; }
+    BigInt getA() const { return m_a; }
 
     /**
     * @return curve coefficient b
     */
-    BigInt get_b() const { return m_b; }
+    BigInt getB() const { return m_b; }
 
     /**
     * Get prime modulus of the field of the curve
     * @return prime modulus of the field of the curve
     */
-    BigInt get_p() const { return m_p; }
+    BigInt getP() const { return m_p; }
 
     /**
     * @return Montgomery parameter r^2 % p
     */
-    BigInt get_r2() const { return m_r2; }
+    BigInt getR2() const { return m_r2; }
 
     /**
     * @return a * r mod p
     */
-    BigInt get_a_r() const { return m_a_r; }
+    BigInt getAR() const { return m_a_r; }
 
     /**
     * @return b * r mod p
     */
-    BigInt get_b_r() const { return m_b_r; }
+    BigInt getBR() const { return m_b_r; }
 
     /**
     * @return Montgomery parameter p-dash
     */
-    word get_p_dash() const { return m_p_dash; }
+    word getPDash() const { return m_p_dash; }
 
     /**
     * @return p.sig_words()
     */
-    size_t get_p_words() const { return m_p_words; }
+    size_t getPWords() const { return m_p_words; }
 
     /**
     * swaps the states of this and other, does not throw

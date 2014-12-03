@@ -12,7 +12,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_BEOS):
 /**
 * BeOS Entropy Source
 */
-final class BeOS_EntropySource : EntropySource
+final class BeOSEntropySource : EntropySource
 {
     private:
         @property string name() const { return "BeOS Statistics"; }
@@ -20,7 +20,7 @@ final class BeOS_EntropySource : EntropySource
     /**
     * BeOS entropy poll
     */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         system_info info_sys;
         get_system_info(&info_sys);
@@ -59,7 +59,7 @@ final class BeOS_EntropySource : EntropySource
             while (get_next_area_info(id, &cookie, &info_area) == B_OK)
                 accum.add(info_area, 2);
             
-            if (accum.polling_goal_achieved())
+            if (accum.pollingGoalAchieved())
                 break;
         }
     }

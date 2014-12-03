@@ -23,7 +23,7 @@ struct DefaultHashMapTraits(Key) {
 
 alias HashMap(Key, Value) = FreeListRef!(HashMap_Impl!(Key, Value));
 
-struct HashMap_Impl(Key, Value, Traits = DefaultHashMapTraits!Key)
+struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
 {
     struct TableEntry {
         UnConst!Key key;

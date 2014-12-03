@@ -18,9 +18,9 @@ import botan.rng.rng;
 class Encryption
 {
 public:
-    abstract size_t max_input_bits() const;
+    abstract size_t maxInputBits() const;
 
-    abstract Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
+    abstract SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
 
     ~this() {}
 }
@@ -31,9 +31,9 @@ public:
 class Decryption
 {
 public:
-    abstract size_t max_input_bits() const;
+    abstract size_t maxInputBits() const;
 
-    abstract Secure_Vector!ubyte decrypt(in ubyte* msg,
+    abstract SecureVector!ubyte decrypt(in ubyte* msg,
                                                   size_t msg_len);
 
     ~this() {}
@@ -49,19 +49,19 @@ public:
     * Find out the number of message parts supported by this scheme.
     * @return number of message parts
     */
-    abstract size_t message_parts() const { return 1; }
+    abstract size_t messageParts() const { return 1; }
 
     /**
     * Find out the message part size supported by this scheme/key.
     * @return size of the message parts
     */
-    abstract size_t message_part_size() const { return 0; }
+    abstract size_t messagePartSize() const { return 0; }
 
     /**
     * Get the maximum message size in bits supported by this public key.
     * @return maximum message in bits
     */
-    abstract size_t max_input_bits() const;
+    abstract size_t maxInputBits() const;
 
     /*
     * Perform a signature operation
@@ -69,7 +69,7 @@ public:
     * @param msg_len = the length of msg in bytes
     * @param rng = a random number generator
     */
-    abstract Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
+    abstract SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
 
     ~this() {}
 }
@@ -84,25 +84,25 @@ public:
     * Get the maximum message size in bits supported by this public key.
     * @return maximum message in bits
     */
-    abstract size_t max_input_bits() const;
+    abstract size_t maxInputBits() const;
 
     /**
     * Find out the number of message parts supported by this scheme.
     * @return number of message parts
     */
-    abstract size_t message_parts() const { return 1; }
+    abstract size_t messageParts() const { return 1; }
 
     /**
     * Find out the message part size supported by this scheme/key.
     * @return size of the message parts
     */
-    abstract size_t message_part_size() const { return 0; }
+    abstract size_t messagePartSize() const { return 0; }
 
     /**
     * @return boolean specifying if this key type supports message
     * recovery and thus if you need to call verify() or verify_mr()
     */
-    abstract bool with_recovery() const;
+    abstract bool withRecovery() const;
 
     /*
     * Perform a signature check operation
@@ -115,7 +115,7 @@ public:
     abstract bool verify(const ubyte*, size_t,
                               const ubyte*, size_t)
     {
-        throw new Invalid_State("Message recovery required");
+        throw new InvalidState("Message recovery required");
     }
 
     /*
@@ -125,9 +125,9 @@ public:
     * @param msg_len = the length of msg in bytes
     * @returns recovered message
     */
-    abstract Secure_Vector!ubyte verify_mr(const ubyte*, size_t)
+    abstract SecureVector!ubyte verifyMr(const ubyte*, size_t)
     {
-        throw new Invalid_State("Message recovery not supported");
+        throw new InvalidState("Message recovery not supported");
     }
 
     ~this() {}
@@ -136,7 +136,7 @@ public:
 /**
 * A generic key agreement Operation (eg DH or ECDH)
 */
-class Key_Agreement
+class KeyAgreement
 {
 public:
     /*
@@ -145,7 +145,7 @@ public:
     * @param w_len = the length of w in bytes
     * @returns the agreed key
     */
-    abstract Secure_Vector!ubyte agree(in ubyte* w, size_t w_len);
+    abstract SecureVector!ubyte agree(in ubyte* w, size_t w_len);
 
     ~this() {}
 }

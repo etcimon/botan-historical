@@ -12,7 +12,7 @@ public import botan.libstate.libstate;
 import std.file;
 import std.exception;
 
-string CHECK_MESSAGE (bool expr, string print) {
+string cHECKMESSAGE (bool expr, string print) {
     return `
     {
         try { 
@@ -28,7 +28,7 @@ string CHECK_MESSAGE (bool expr, string print) {
     }`;
 }
 
-string CHECK (string expr) {
+string cHECK (string expr) {
     return `
     {
         mixin( q{
@@ -46,19 +46,19 @@ string CHECK (string expr) {
 }
 
 
-Vector!string list_dir(string dir_path)
+Vector!string listDir(string dir_path)
 {
     Vector!string paths;
     
     foreach (file; dirEntries(dir_path, "*.vec").sort!`a.name < b.name`())
     {    
-        paths.push_back(file.name);
+        paths.pushBack(file.name);
     }
     
     return paths;
 }
 
-size_t run_tests_in_dir(string dir, size_t delegate(string) fn)
+size_t runTestsInDir(string dir, size_t delegate(string) fn)
 {
     import std.parallelism;
     import core.atomic;
@@ -72,7 +72,7 @@ size_t run_tests_in_dir(string dir, size_t delegate(string) fn)
     return shared_fails;
 }
 
-void test_report(string name, size_t ran, size_t failed)
+void testReport(string name, size_t ran, size_t failed)
 {
     writeln(name);
     
@@ -85,7 +85,7 @@ void test_report(string name, size_t ran, size_t failed)
         writeln(" all ok");
 }
 
-size_t run_tests_bb(ref File src,
+size_t runTestsBb(ref File src,
                     string name_key,
                     string output_key,
                     bool clear_between_cb,
@@ -117,7 +117,7 @@ size_t run_tests_bb(ref File src,
         if(line[0] == '[' && line[$-1] == ']')
         {
             if(fixed_name != "")
-                test_report(fixed_name, algo_count, algo_fail);
+                testReport(fixed_name, algo_count, algo_fail);
             
             test_count += algo_count;
             test_fails += algo_fail;
@@ -168,14 +168,14 @@ size_t run_tests_bb(ref File src,
     test_fails += algo_fail;
     
     if(fixed_name != "" && (algo_count > 0 || algo_fail > 0))
-        test_report(fixed_name, algo_count, algo_fail);
+        testReport(fixed_name, algo_count, algo_fail);
     else
-        test_report(name_key, test_count, test_fails);
+        testReport(name_key, test_count, test_fails);
     
     return test_fails;
 }
 
-size_t run_tests(string filename,
+size_t runTests(string filename,
                  string name_key,
                  string output_key,
                  bool clear_between_cb,
@@ -192,13 +192,13 @@ size_t run_tests(string filename,
     return run_tests(vec, name_key, output_key, clear_between_cb, cb);
 }
 
-size_t run_tests(ref File src,
+size_t runTests(ref File src,
                  string name_key,
                  string output_key,
                  bool clear_between_cb,
                  string delegate(string[string]) cb)
 {
-    return run_tests_bb(src, name_key, output_key, clear_between_cb, 
+    return runTestsBb(src, name_key, output_key, clear_between_cb, 
                         (string[string] vars)
                         {
                             const string got = cb(vars);

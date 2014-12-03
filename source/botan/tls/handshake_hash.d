@@ -24,7 +24,7 @@ import botan.utils.types;
 /**
 * TLS Handshake Hash
 */
-class Handshake_Hash
+class HandshakeHash
 {
 public:
     void update(in ubyte* input, size_t length)
@@ -36,21 +36,21 @@ public:
     /**
     * Return a TLS Handshake Hash
     */
-    Secure_Vector!ubyte flushInto(TLS_Protocol_Version _version, in string mac_algo) const
+    SecureVector!ubyte flushInto(TLSProtocolVersion _version, in string mac_algo) const
     {
-        Algorithm_Factory af = global_state().algorithm_factory();
+        AlgorithmFactory af = globalState().algorithmFactory();
         
         Unique!HashFunction hash;
         
-        if (_version.supports_ciphersuite_specific_prf())
+        if (_version.supportsCiphersuiteSpecificPrf())
         {
             if (mac_algo == "MD5" || mac_algo == "SHA-1")
-                hash = af.make_hash_function("SHA-256");
+                hash = af.makeHashFunction("SHA-256");
             else
-                hash = af.make_hash_function(mac_algo);
+                hash = af.makeHashFunction(mac_algo);
         }
         else
-            hash = af.make_hash_function("Parallel(MD5,SHA-160)");
+            hash = af.makeHashFunction("Parallel(MD5,SHA-160)");
         
         hash.update(m_data);
         return hash.finished();
@@ -59,14 +59,14 @@ public:
     /**
     * Return a SSLv3 Handshake Hash
     */
-    Secure_Vector!ubyte final_ssl3(in Secure_Vector!ubyte secret) const
+    SecureVector!ubyte finalSSL3(in SecureVector!ubyte secret) const
     {
         const ubyte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
         
-        Algorithm_Factory af = global_state().algorithm_factory();
+        AlgorithmFactory af = globalState().algorithmFactory();
         
-        Unique!HashFunction md5 = af.make_hash_function("MD5");
-        Unique!HashFunction sha1 = af.make_hash_function("SHA-1");
+        Unique!HashFunction md5 = af.makeHashFunction("MD5");
+        Unique!HashFunction sha1 = af.makeHashFunction("SHA-1");
         
         md5.update(m_data);
         sha1.update(m_data);
@@ -79,7 +79,7 @@ public:
         foreach (size_t i; 0 .. 40)
             sha1.update(PAD_INNER);
         
-        Secure_Vector!ubyte inner_md5 = md5.finished(), inner_sha1 = sha1.finished();
+        SecureVector!ubyte inner_md5 = md5.finished(), inner_sha1 = sha1.finished();
         
         md5.update(secret);
         sha1.update(secret);
@@ -92,13 +92,13 @@ public:
         md5.update(inner_md5);
         sha1.update(inner_sha1);
         
-        Secure_Vector!ubyte output;
+        SecureVector!ubyte output;
         output ~= md5.finished();
         output ~= sha1.finished();
         return output;
     }
 
-    Vector!ubyte get_contents() const
+    Vector!ubyte getContents() const
     { return m_data; }
 
     void reset() { m_data.clear(); }

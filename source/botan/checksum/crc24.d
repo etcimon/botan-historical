@@ -18,7 +18,7 @@ final class CRC24 : HashFunction
 {
 public:
     @property string name() const { return "CRC24"; }
-    @property size_t output_length() const { return 3; }
+    @property size_t outputLength() const { return 3; }
     HashFunction clone() const { return new CRC24; }
 
     void clear() { m_crc = 0xB704CE; }
@@ -29,7 +29,7 @@ private:
     /*
     * Update a CRC24 Checksum
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         __gshared immutable uint[256] TABLE = [
             0x00000000, 0x00864CFB, 0x008AD50D, 0x000C99F6, 0x0093E6E1, 0x0015AA1A,
@@ -108,7 +108,7 @@ private:
     /*
     * Finalize a CRC24 Checksum
     */
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
         foreach (size_t i; 0 .. 3)
             output[i] = get_byte(i+1, m_crc);

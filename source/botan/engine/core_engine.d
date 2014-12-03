@@ -111,151 +111,151 @@ static if (BOTAN_HAS_SALSA20)          import botan.stream.salsa20;
 /**
 * Core Engine
 */
-final class Core_Engine : Engine
+final class CoreEngine : Engine
 {
 public:
-    string provider_name() const { return "core"; }
+    string providerName() const { return "core"; }
 
-    Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator rng) const
+    KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-            if (const DH_PrivateKey dh = cast(const DH_PrivateKey)(key))
-                return new DH_KA_Operation(dh, rng);
+            if (const DHPrivateKey dh = cast(const DHPrivateKey)(key))
+                return new DHKAOperation(dh, rng);
         }
         
         static if (BOTAN_HAS_ECDH) {
-            if (const ECDH_PrivateKey ecdh = cast(const ECDH_PrivateKey)(key))
-                return new ECDH_KA_Operation(ecdh);
+            if (const ECDHPrivateKey ecdh = cast(const ECDHPrivateKey)(key))
+                return new ECDHKAOperation(ecdh);
         }
         
         return null;
     }
 
-    Signature get_signature_op(in Private_Key key, RandomNumberGenerator rng) const
+    Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
-                return new RSA_Private_Operation(s, rng);
+            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
+                return new RSAPrivateOperation(s, rng);
         }
         
         static if (BOTAN_HAS_RW) {
-            if (const RW_PrivateKey s = cast(const RW_PrivateKey)(key))
-                return new RW_Signature_Operation(s);
+            if (const RWPrivateKey s = cast(const RWPrivateKey)(key))
+                return new RWSignatureOperation(s);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSA_PrivateKey s = cast(const DSA_PrivateKey)(key))
-                return new DSA_Signature_Operation(s);
+            if (const DSAPrivateKey s = cast(const DSAPrivateKey)(key))
+                return new DSASignatureOperation(s);
         }
         
         static if (BOTAN_HAS_ECDSA) {
-            if (const ECDSA_PrivateKey s = cast(const ECDSA_PrivateKey)(key))
-                return new ECDSA_Signature_Operation(s);
+            if (const ECDSAPrivateKey s = cast(const ECDSAPrivateKey)(key))
+                return new ECDSASignatureOperation(s);
         }
         
         static if (BOTAN_HAS_GOST_34_10_2001) {
-            if (const GOST_3410_PrivateKey s = cast(const GOST_3410_PrivateKey)(key))
-                return new GOST_3410_Signature_Operation(s);
+            if (const GOST3410PrivateKey s = cast(const GOST3410PrivateKey)(key))
+                return new GOST3410SignatureOperation(s);
         }
         
         static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-            if (const NR_PrivateKey s = cast(const NR_PrivateKey)(key))
-                return new NR_Signature_Operation(s);
+            if (const NRPrivateKey s = cast(const NRPrivateKey)(key))
+                return new NRSignatureOperation(s);
         }
         
         return null;
     }
 
-    Verification get_verify_op(in Public_Key key, RandomNumberGenerator rng) const
+    Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
-                return new RSA_Public_Operation(s);
+            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
+                return new RSAPublicOperation(s);
         }
         
         static if (BOTAN_HAS_RW) {
-            if (const RW_PublicKey s = cast(const RW_PublicKey)(key))
-                return new RW_Verification_Operation(s);
+            if (const RWPublicKey s = cast(const RWPublicKey)(key))
+                return new RWVerificationOperation(s);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSA_PublicKey s = cast(const DSA_PublicKey)(key))
-                return new DSA_Verification_Operation(s);
+            if (const DSAPublicKey s = cast(const DSAPublicKey)(key))
+                return new DSAVerificationOperation(s);
         }
         
         static if (BOTAN_HAS_ECDSA) {
-            if (const ECDSA_PublicKey s = cast(const ECDSA_PublicKey)(key))
-                return new ECDSA_Verification_Operation(s);
+            if (const ECDSAPublicKey s = cast(const ECDSAPublicKey)(key))
+                return new ECDSAVerificationOperation(s);
         }
         
         static if (BOTAN_HAS_GOST_34_10_2001) {
-            if (const GOST_3410_PublicKey s = cast(const GOST_3410_PublicKey)(key))
-                return new GOST_3410_Verification_Operation(s);
+            if (const GOST3410PublicKey s = cast(const GOST3410PublicKey)(key))
+                return new GOST3410VerificationOperation(s);
         }
         
         static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-            if (const NR_PublicKey s = cast(const NR_PublicKey)(key))
-                return new NR_Verification_Operation(s);
+            if (const NRPublicKey s = cast(const NRPublicKey)(key))
+                return new NRVerificationOperation(s);
         }
         
         return null;
     }
 
 
-    Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
+    Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
-                return new RSA_Public_Operation(s);
+            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
+                return new RSAPublicOperation(s);
         }
         
         static if (BOTAN_HAS_ELGAMAL) {
-            if (const ElGamal_PublicKey s = cast(const ElGamal_PublicKey)(key))
-                return new ElGamal_Encryption_Operation(s);
+            if (const ElGamalPublicKey s = cast(const ElGamalPublicKey)(key))
+                return new ElGamalEncryptionOperation(s);
         }
         
         return null;
     }
 
-    Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator rng) const
+    Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
-                return new RSA_Private_Operation(s, rng);
+            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
+                return new RSAPrivateOperation(s, rng);
         }
         
         static if (BOTAN_HAS_ELGAMAL) {
-            if (const ElGamal_PrivateKey s = cast(const ElGamal_PrivateKey)(key))
-                return new ElGamal_Decryption_Operation(s, rng);
+            if (const ElGamalPrivateKey s = cast(const ElGamalPrivateKey)(key))
+                return new ElGamalDecryptionOperation(s, rng);
         }
         
         return null;
     }
 
-    Modular_Exponentiator mod_exp(in BigInt n, Power_Mod.Usage_Hints hints) const
+    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
     {
-        if (n.is_odd())
-            return new Montgomery_Exponentiator(n, hints);
-        return new Fixed_Window_Exponentiator(n, hints);
+        if (n.isOdd())
+            return new MontgomeryExponentiator(n, hints);
+        return new FixedWindowExponentiator(n, hints);
     }
 
 
-    Keyed_Filter get_cipher(in string algo_spec,
-                            Cipher_Dir direction,
-                            Algorithm_Factory af)
+    KeyedFilter getCipher(in string algo_spec,
+                            CipherDir direction,
+                            AlgorithmFactory af)
     {
         Vector!string algo_parts = splitter(algo_spec, '/');
         if (algo_parts.empty)
-            throw new Invalid_Algorithm_Name(algo_spec);
+            throw new InvalidAlgorithmName(algo_spec);
         
         const string cipher_name = algo_parts[0];
         
         // check if it is a stream cipher first (easy case)
-        const StreamCipher stream_cipher = af.prototype_stream_cipher(cipher_name);
+        const StreamCipher stream_cipher = af.prototypeStreamCipher(cipher_name);
         if (stream_cipher)
-            return new StreamCipher_Filter(stream_cipher.clone());
+            return new StreamCipherFilter(stream_cipher.clone());
         
-        const BlockCipher block_cipher = af.prototype_block_cipher(cipher_name);
+        const BlockCipher block_cipher = af.prototypeBlockCipher(cipher_name);
         if (!block_cipher)
             return null;
         
@@ -263,7 +263,7 @@ public:
             return null; // 4 part mode, not something we know about
         
         if (algo_parts.length < 2)
-            throw new Lookup_Error("Cipher specification '" ~ algo_spec ~ "' is missing mode identifier");
+            throw new LookupError("Cipher specification '" ~ algo_spec ~ "' is missing mode identifier");
         
         string mode = algo_parts[1];
         
@@ -276,29 +276,29 @@ public:
         if (mode == "ECB" && padding == "CTS")
             return null;
         else if ((mode != "CBC" && mode != "ECB") && padding != "NoPadding")
-            throw new Invalid_Algorithm_Name(algo_spec);
+            throw new InvalidAlgorithmName(algo_spec);
         
-        Keyed_Filter filt = get_cipher_mode(block_cipher, direction, mode, padding);
+        KeyedFilter filt = getCipherMode(block_cipher, direction, mode, padding);
         if (filt)
             return filt;
         
         if (padding != "NoPadding")
-            throw new Algorithm_Not_Found(cipher_name ~ "/" ~ mode ~ "/" ~ padding);
+            throw new AlgorithmNotFound(cipher_name ~ "/" ~ mode ~ "/" ~ padding);
         else
-            throw new Algorithm_Not_Found(cipher_name ~ "/" ~ mode);
+            throw new AlgorithmNotFound(cipher_name ~ "/" ~ mode);
     }
 
 
-    BlockCipher find_block_cipher(in SCAN_Name request, Algorithm_Factory af) const
+    BlockCipher findBlockCipher(in SCANName request, AlgorithmFactory af) const
     {
         
         static if (BOTAN_HAS_AES) {
             if (request.algo_name == "AES-128")
-                return new AES_128;
+                return new AES128;
             if (request.algo_name == "AES-192")
-                return new AES_192;
+                return new AES192;
             if (request.algo_name == "AES-256")
-                return new AES_256;
+                return new AES256;
         }
         
         static if (BOTAN_HAS_BLOWFISH) {
@@ -308,18 +308,18 @@ public:
         
         static if (BOTAN_HAS_CAMELLIA) {
             if (request.algo_name == "Camellia-128")
-                return new Camellia_128;
+                return new Camellia128;
             if (request.algo_name == "Camellia-192")
-                return new Camellia_192;
+                return new Camellia192;
             if (request.algo_name == "Camellia-256")
-                return new Camellia_256;
+                return new Camellia256;
         }
         
         static if (BOTAN_HAS_CAST) {
             if (request.algo_name == "CAST-128")
-                return new CAST_128;
+                return new CAST128;
             if (request.algo_name == "CAST-256")
-                return new CAST_256;
+                return new CAST256;
         }
         
         static if (BOTAN_HAS_DES) {
@@ -333,7 +333,7 @@ public:
         
         static if (BOTAN_HAS_GOST_28147_89) {
             if (request.algo_name == "GOST-28147-89")
-                return new GOST_28147_89(request.arg(0, "R3411_94_TestParam"));
+                return new GOST2814789(request.arg(0, "R3411_94_TestParam"));
         }
         
         static if (BOTAN_HAS_IDEA) {
@@ -353,7 +353,7 @@ public:
         
         static if (BOTAN_HAS_MISTY1) {
             if (request.algo_name == "MISTY1")
-                return new MISTY1(request.arg_as_integer(0, 8));
+                return new MISTY1(request.argAsInteger(0, 8));
         }
         
         static if (BOTAN_HAS_NOEKEON) {
@@ -368,7 +368,7 @@ public:
         
         static if (BOTAN_HAS_RC5) {
             if (request.algo_name == "RC5")
-                return new RC5(request.arg_as_integer(0, 12));
+                return new RC5(request.argAsInteger(0, 12));
         }
         
         static if (BOTAN_HAS_RC6) {
@@ -378,7 +378,7 @@ public:
         
         static if (BOTAN_HAS_SAFER) {
             if (request.algo_name == "SAFER-SK")
-                return new SAFER_SK(request.arg_as_integer(0, 10));
+                return new SAFERSK(request.argAsInteger(0, 10));
         }
         
         static if (BOTAN_HAS_SEED) {
@@ -403,7 +403,7 @@ public:
         
         static if (BOTAN_HAS_TWOFISH) {
             if (request.algo_name == "Threefish-512")
-                return new Threefish_512;
+                return new Threefish512;
         }
         
         static if (BOTAN_HAS_XTEA) {
@@ -412,24 +412,24 @@ public:
         }
         
         static if (BOTAN_HAS_CASCADE) {
-            if (request.algo_name == "Cascade" && request.arg_count() == 2)
+            if (request.algo_name == "Cascade" && request.argCount() == 2)
             {
-                const BlockCipher c1 = af.prototype_block_cipher(request.arg(0));
-                const BlockCipher c2 = af.prototype_block_cipher(request.arg(1));
+                const BlockCipher c1 = af.prototypeBlockCipher(request.arg(0));
+                const BlockCipher c2 = af.prototypeBlockCipher(request.arg(1));
                 
                 if (c1 && c2)
-                    return new Cascade_Cipher(c1.clone(), c2.clone());
+                    return new CascadeCipher(c1.clone(), c2.clone());
             }
         }
         
         static if (BOTAN_HAS_LION) {
-            if (request.algo_name == "Lion" && request.arg_count_between(2, 3))
+            if (request.algo_name == "Lion" && request.argCountBetween(2, 3))
             {
                 const size_t block_size = request.arg_as_integer(2, 1024);
                 
-                const HashFunction hash = af.prototype_hash_function(request.arg(0));
+                const HashFunction hash = af.prototypeHashFunction(request.arg(0));
                 
-                const StreamCipher stream_cipher = af.prototype_stream_cipher(request.arg(1));
+                const StreamCipher stream_cipher = af.prototypeStreamCipher(request.arg(1));
                 
                 if (!hash || !stream_cipher)
                     return null;
@@ -441,27 +441,27 @@ public:
         return null;
     }
 
-    StreamCipher find_stream_cipher(in SCAN_Name request, Algorithm_Factory af) const
+    StreamCipher findStreamCipher(in SCANName request, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_OFB) {
-            if (request.algo_name == "OFB" && request.arg_count() == 1)
+            if (request.algo_name == "OFB" && request.argCount() == 1)
             {
-                if (auto proto = af.prototype_block_cipher(request.arg(0)))
+                if (auto proto = af.prototypeBlockCipher(request.arg(0)))
                     return new OFB(proto.clone());
             }
         }
         
         static if (BOTAN_HAS_CTR_BE) {
-            if (request.algo_name == "CTR-BE" && request.arg_count() == 1)
+            if (request.algo_name == "CTR-BE" && request.argCount() == 1)
             {
-                if (auto proto = af.prototype_block_cipher(request.arg(0)))
-                    return new CTR_BE(proto.clone());
+                if (auto proto = af.prototypeBlockCipher(request.arg(0)))
+                    return new CTRBE(proto.clone());
             }
         }
         
         static if (BOTAN_HAS_RC4) {
             if (request.algo_name == "RC4")
-                return new RC4(request.arg_as_integer(0, 0));
+                return new RC4(request.argAsInteger(0, 0));
             if (request.algo_name == "RC4_drop")
                 return new RC4(768);
         }
@@ -479,7 +479,7 @@ public:
         return null;
     }
 
-    HashFunction find_hash(in SCAN_Name request, Algorithm_Factory af) const
+    HashFunction findHash(in SCANName request, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_ADLER32) {
             if (request.algo_name == "Adler32")
@@ -498,17 +498,17 @@ public:
         
         static if (BOTAN_HAS_GOST_34_11) {
             if (request.algo_name == "GOST-R-34.11-94")
-                return new GOST_34_11;
+                return new GOST3411;
         }
         
         static if (BOTAN_HAS_HAS_160) {
             if (request.algo_name == "HAS-160")
-                return new HAS_160;
+                return new HAS160;
         }
         
         static if (BOTAN_HAS_KECCAK) {
             if (request.algo_name == "Keccak-1600")
-                return new Keccak_1600(request.arg_as_integer(0, 512));
+                return new Keccak1600(request.argAsInteger(0, 512));
         }
         
         static if (BOTAN_HAS_MD2) {
@@ -528,42 +528,42 @@ public:
         
         static if (BOTAN_HAS_RIPEMD_128) {
             if (request.algo_name == "RIPEMD-128")
-                return new RIPEMD_128;
+                return new RIPEMD128;
         }
         
         static if (BOTAN_HAS_RIPEMD_160) {
             if (request.algo_name == "RIPEMD-160")
-                return new RIPEMD_160;
+                return new RIPEMD160;
         }
         
         static if (BOTAN_HAS_SHA1) {
             if (request.algo_name == "SHA-160")
-                return new SHA_160;
+                return new SHA160;
         }
         
         static if (BOTAN_HAS_SHA2_32) {
             if (request.algo_name == "SHA-224")
-                return new SHA_224;
+                return new SHA224;
             if (request.algo_name == "SHA-256")
-                return new SHA_256;
+                return new SHA256;
         }
         
         static if (BOTAN_HAS_SHA2_64) {
             if (request.algo_name == "SHA-384")
-                return new SHA_384;
+                return new SHA384;
             if (request.algo_name == "SHA-512")
-                return new SHA_512;
+                return new SHA512;
         }
         
         static if (BOTAN_HAS_TIGER) {
             if (request.algo_name == "Tiger")
-                return new Tiger(request.arg_as_integer(0, 24), // hash output
-                                 request.arg_as_integer(1, 3)); // # passes
+                return new Tiger(request.argAsInteger(0, 24), // hash output
+                                 request.argAsInteger(1, 3)); // # passes
         }
         
         static if (BOTAN_HAS_SKEIN_512) {
             if (request.algo_name == "Skein-512")
-                return new Skein_512(request.arg_as_integer(0, 512),
+                return new Skein512(request.argAsInteger(0, 512),
                                      request.arg(1, ""));
         }
         
@@ -573,10 +573,10 @@ public:
         }
         
         static if (BOTAN_HAS_COMB4P) {
-            if (request.algo_name == "Comb4P" && request.arg_count() == 2)
+            if (request.algo_name == "Comb4P" && request.argCount() == 2)
             {
-                const HashFunction h1 = af.prototype_hash_function(request.arg(0));
-                const HashFunction h2 = af.prototype_hash_function(request.arg(1));
+                const HashFunction h1 = af.prototypeHashFunction(request.arg(0));
+                const HashFunction h2 = af.prototypeHashFunction(request.arg(1));
                 
                 if (h1 && h2)
                     return new Comb4P(h1.clone(), h2.clone());
@@ -592,18 +592,18 @@ public:
                 /* First pass, just get the prototypes (no memory allocation). Then
                     if all were found, replace each prototype with a newly created clone
                 */
-                foreach (size_t i; 0 .. request.arg_count())
+                foreach (size_t i; 0 .. request.argCount())
                 {
-                    const HashFunction hash = af.prototype_hash_function(request.arg(i));
+                    const HashFunction hash = af.prototypeHashFunction(request.arg(i));
                     if (!hash)
                         return null;
                     
-                    hash_prototypes.push_back(hash);
+                    hash_prototypes.pushBack(hash);
                 }
                 
                 Vector!HashFunction hashes;
                 foreach (hash_prototype; hash_prototypes)
-                    hashes.push_back(hash_prototype.clone());
+                    hashes.pushBack(hash_prototype.clone());
                 
                 return new Parallel(hashes);
             }
@@ -613,52 +613,52 @@ public:
         
     }
 
-    MessageAuthenticationCode find_mac(in SCAN_Name request, Algorithm_Factory af) const
+    MessageAuthenticationCode findMac(in SCANName request, AlgorithmFactory af) const
     {
         
         static if (BOTAN_HAS_CBC_MAC) {
-            if (request.algo_name == "CBC-MAC" && request.arg_count() == 1)
-                return new CBC_MAC(af.make_block_cipher(request.arg(0)));
+            if (request.algo_name == "CBC-MAC" && request.argCount() == 1)
+                return new CBCMAC(af.makeBlockCipher(request.arg(0)));
         }
         
         static if (BOTAN_HAS_CMAC) {
-            if (request.algo_name == "CMAC" && request.arg_count() == 1)
-                return new CMAC(af.make_block_cipher(request.arg(0)));
+            if (request.algo_name == "CMAC" && request.argCount() == 1)
+                return new CMAC(af.makeBlockCipher(request.arg(0)));
         }
         
         static if (BOTAN_HAS_HMAC) {
-            if (request.algo_name == "HMAC" && request.arg_count() == 1)
-                return new HMAC(af.make_hash_function(request.arg(0)));
+            if (request.algo_name == "HMAC" && request.argCount() == 1)
+                return new HMAC(af.makeHashFunction(request.arg(0)));
         }
         
         static if (BOTAN_HAS_SSL3_MAC) {
-            if (request.algo_name == "SSL3-MAC" && request.arg_count() == 1)
-                return new SSL3_MAC(af.make_hash_function(request.arg(0)));
+            if (request.algo_name == "SSL3-MAC" && request.argCount() == 1)
+                return new SSL3MAC(af.makeHashFunction(request.arg(0)));
         }
         
         static if (BOTAN_HAS_ANSI_X919_MAC) {
-            if (request.algo_name == "X9.19-MAC" && request.arg_count() == 0)
-                return new ANSI_X919_MAC(af.make_block_cipher("DES"));
+            if (request.algo_name == "X9.19-MAC" && request.argCount() == 0)
+                return new ANSIX919MAC(af.makeBlockCipher("DES"));
         }
         
         return null;
     }
 
 
-    PBKDF find_pbkdf(in SCAN_Name algo_spec, Algorithm_Factory af) const
+    PBKDF findPbkdf(in SCANName algo_spec, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_PBKDF1) {
-            if (algo_spec.algo_name == "PBKDF1" && algo_spec.arg_count() == 1)
-                return new PKCS5_PBKDF1(af.make_hash_function(algo_spec.arg(0)));
+            if (algo_spec.algo_name == "PBKDF1" && algo_spec.argCount() == 1)
+                return new PKCS5PBKDF1(af.makeHashFunction(algo_spec.arg(0)));
         }
         
         static if (BOTAN_HAS_PBKDF2) {
-            if (algo_spec.algo_name == "PBKDF2" && algo_spec.arg_count() == 1)
+            if (algo_spec.algo_name == "PBKDF2" && algo_spec.argCount() == 1)
             {
-                if (const MessageAuthenticationCode mac_proto = af.prototype_mac(algo_spec.arg(0)))
-                    return new PKCS5_PBKDF2(mac_proto.clone());
+                if (const MessageAuthenticationCode mac_proto = af.prototypeMac(algo_spec.arg(0)))
+                    return new PKCS5PBKDF2(mac_proto.clone());
                 
-                return new PKCS5_PBKDF2(af.make_mac("HMAC(" ~ algo_spec.arg(0) ~ ")"));
+                return new PKCS5PBKDF2(af.makeMac("HMAC(" ~ algo_spec.arg(0) ~ ")"));
             }
         }
         
@@ -674,30 +674,30 @@ public:
 * @param mode = the name of the cipher mode to use
 * @param padding = the mode padding to use (only used for ECB, CBC)
 */
-Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
-                             Cipher_Dir direction,
+KeyedFilter getCipherMode(const BlockCipher block_cipher,
+                             CipherDir direction,
                              in string mode,
                              in string padding)
 {
     static if (BOTAN_HAS_OFB) {
         if (mode == "OFB")
-            return new StreamCipher_Filter(new OFB(block_cipher.clone()));
+            return new StreamCipherFilter(new OFB(block_cipher.clone()));
     }
         
     static if (BOTAN_HAS_CTR_BE) {
         if (mode == "CTR-BE")
-            return new StreamCipher_Filter(new CTR_BE(block_cipher.clone()));
+            return new StreamCipherFilter(new CTRBE(block_cipher.clone()));
     }
         
     static if (BOTAN_HAS_MODE_ECB) {
         if (mode == "ECB" || mode == "")
         {
             if (direction == ENCRYPTION)
-                return new Transformation_Filter(
-                    new ECB_Encryption(block_cipher.clone(), get_bc_pad(padding, "NoPadding")));
+                return new TransformationFilter(
+                    new ECBEncryption(block_cipher.clone(), get_bc_pad(padding, "NoPadding")));
             else
-                return new Transformation_Filter(
-                    new ECB_Decryption(block_cipher.clone(), get_bc_pad(padding, "NoPadding")));
+                return new TransformationFilter(
+                    new ECBDecryption(block_cipher.clone(), get_bc_pad(padding, "NoPadding")));
         }
     }
     
@@ -707,17 +707,17 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                 if (padding == "CTS")
                 {
                     if (direction == ENCRYPTION)
-                        return new Transformation_Filter(new CTS_Encryption(block_cipher.clone()));
+                        return new TransformationFilter(new CTSEncryption(block_cipher.clone()));
                     else
-                        return new Transformation_Filter(new CTS_Decryption(block_cipher.clone()));
+                        return new TransformationFilter(new CTSDecryption(block_cipher.clone()));
                 }
                 
                 if (direction == ENCRYPTION)
-                    return new Transformation_Filter(
-                        new CBC_Encryption(block_cipher.clone(), get_bc_pad(padding, "PKCS7")));
+                    return new TransformationFilter(
+                        new CBCEncryption(block_cipher.clone(), get_bc_pad(padding, "PKCS7")));
                 else
-                    return new Transformation_Filter(
-                        new CBC_Decryption(block_cipher.clone(), get_bc_pad(padding, "PKCS7")));
+                    return new TransformationFilter(
+                        new CBCDecryption(block_cipher.clone(), get_bc_pad(padding, "PKCS7")));
         } else {
                 return null;
         }
@@ -727,9 +727,9 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
         if (mode == "XTS")
         {
             if (direction == ENCRYPTION)
-                return new Transformation_Filter(new XTS_Encryption(block_cipher.clone()));
+                return new TransformationFilter(new XTSEncryption(block_cipher.clone()));
             else
-                return new Transformation_Filter(new XTS_Decryption(block_cipher.clone()));
+                return new TransformationFilter(new XTSDecryption(block_cipher.clone()));
         }
     }
     
@@ -750,14 +750,14 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                 if (mode_name == "CFB")
                 {
                     if (direction == ENCRYPTION)
-                        return new Transformation_Filter(new CFB_Encryption(block_cipher.clone(), bits));
+                        return new TransformationFilter(new CFBEncryption(block_cipher.clone(), bits));
                     else
-                        return new Transformation_Filter(new CFB_Decryption(block_cipher.clone(), bits));
+                        return new TransformationFilter(new CFBDecryption(block_cipher.clone(), bits));
                 }
         }
                 
         if (bits % 8 != 0)
-            throw new Invalid_Argument("AEAD interface does not support non-octet length tags");
+            throw new InvalidArgument("AEAD interface does not support non-octet length tags");
         
         static if (BOTAN_HAS_AEAD_FILTER) {
         
@@ -768,9 +768,9 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                     {
                         const size_t L = (algo_info.length == 3) ? to!uint(algo_info[2]) : 3;
                         if (direction == ENCRYPTION)
-                            return new AEAD_Filter(new CCM_Encryption(block_cipher.clone(), tag_size, L));
+                            return new AEADFilter(new CCMEncryption(block_cipher.clone(), tag_size, L));
                         else
-                            return new AEAD_Filter(new CCM_Decryption(block_cipher.clone(), tag_size, L));
+                            return new AEADFilter(new CCMDecryption(block_cipher.clone(), tag_size, L));
                     }
             }
                     
@@ -778,9 +778,9 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                     if (mode_name == "EAX")
                     {
                         if (direction == ENCRYPTION)
-                            return new AEAD_Filter(new EAX_Encryption(block_cipher.clone(), tag_size));
+                            return new AEADFilter(new EAXEncryption(block_cipher.clone(), tag_size));
                         else
-                            return new AEAD_Filter(new EAX_Decryption(block_cipher.clone(), tag_size));
+                            return new AEADFilter(new EAXDecryption(block_cipher.clone(), tag_size));
                     }
             }
                     
@@ -788,9 +788,9 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                     if (mode_name == "OCB")
                     {
                         if (direction == ENCRYPTION)
-                            return new AEAD_Filter(new OCB_Encryption(block_cipher.clone(), tag_size));
+                            return new AEADFilter(new OCBEncryption(block_cipher.clone(), tag_size));
                         else
-                            return new AEAD_Filter(new OCB_Decryption(block_cipher.clone(), tag_size));
+                            return new AEADFilter(new OCBDecryption(block_cipher.clone(), tag_size));
                     }
             }
                     
@@ -798,9 +798,9 @@ Keyed_Filter get_cipher_mode(const BlockCipher block_cipher,
                     if (mode_name == "GCM")
                     {
                         if (direction == ENCRYPTION)
-                            return new AEAD_Filter(new GCM_Encryption(block_cipher.clone(), tag_size));
+                            return new AEADFilter(new GCMEncryption(block_cipher.clone(), tag_size));
                         else
-                            return new AEAD_Filter(new GCM_Decryption(block_cipher.clone(), tag_size));
+                            return new AEADFilter(new GCMDecryption(block_cipher.clone(), tag_size));
                     }
             }
             
@@ -815,24 +815,24 @@ private {
     /**
     * Get a block cipher padding method by name
     */
-    BlockCipherModePaddingMethod get_bc_pad(in string algo_spec, in string def_if_empty)
+    BlockCipherModePaddingMethod getBcPad(in string algo_spec, in string def_if_empty)
     {
         static if (BOTAN_HAS_CIPHER_MODE_PADDING) {
             if (algo_spec == "NoPadding" || (algo_spec == "" && def_if_empty == "NoPadding"))
-                return new Null_Padding;
+                return new NullPadding;
             
             if (algo_spec == "PKCS7" || (algo_spec == "" && def_if_empty == "PKCS7"))
-                return new PKCS7_Padding;
+                return new PKCS7Padding;
             
             if (algo_spec == "OneAndZeros")
-                return new OneAndZeros_Padding;
+                return new OneAndZerosPadding;
             
             if (algo_spec == "X9.23")
-                return new ANSI_X923_Padding;
+                return new ANSIX923Padding;
             
         }
         
-        throw new Algorithm_Not_Found(algo_spec);
+        throw new AlgorithmNotFound(algo_spec);
     }
     
 }

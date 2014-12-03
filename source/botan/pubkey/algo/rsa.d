@@ -22,19 +22,19 @@ import future;
 /**
 * RSA Public Key
 */
-class RSA_PublicKey : IF_Scheme_PublicKey
+class RSAPublicKey : IF_SchemePublicKey
 {
 public:
-    @property string algo_name() const { return "RSA"; }
+    @property string algoName() const { return "RSA"; }
 
-    this(in Algorithm_Identifier alg_id,
-         in Secure_Vector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id,
+         in SecureVector!ubyte key_bits) 
     {
         super(alg_id, key_bits);
     }
 
     /**
-    * Create a RSA_PublicKey
+    * Create a RSAPublicKey
     * @arg n the modulus
     * @arg e the exponent
     */
@@ -50,16 +50,16 @@ protected:
 /**
 * RSA Private Key
 */
-final class RSA_PrivateKey : RSA_PublicKey,
-                               IF_Scheme_PrivateKey
+final class RSAPrivateKey : RSAPublicKey,
+                               IF_SchemePrivateKey
 {
 public:
     /*
     * Check Private RSA Parameters
     */
-    bool check_key(RandomNumberGenerator rng, bool strong) const
+    bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.check_key(rng, strong))
+        if (!super.checkKey(rng, strong))
             return false;
         
         if (!strong)
@@ -71,7 +71,7 @@ public:
         return signature_consistency_check(rng, this, "EMSA4(SHA-1)");
     }
 
-    this(in Algorithm_Identifier alg_id, in Secure_Vector!ubyte key_bits, RandomNumberGenerator rng) 
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
     {
         super(rng, alg_id, key_bits);
     }
@@ -102,23 +102,23 @@ public:
     this(RandomNumberGenerator rng, size_t bits, size_t exp = 65537)
     {
         if (bits < 1024)
-            throw new Invalid_Argument(algo_name ~ ": Can't make a key that is only " ~ to!string(bits) ~ " bits long");
+            throw new InvalidArgument(algo_name ~ ": Can't make a key that is only " ~ to!string(bits) ~ " bits long");
         if (exp < 3 || exp % 2 == 0)
-            throw new Invalid_Argument(algo_name ~ ": Invalid encryption exponent");
+            throw new InvalidArgument(algo_name ~ ": Invalid encryption exponent");
         
         m_e = exp;
         
         do
         {
-            m_p = random_prime(rng, (bits + 1) / 2, m_e);
-            m_q = random_prime(rng, bits - m_p.bits(), m_e);
+            m_p = randomPrime(rng, (bits + 1) / 2, m_e);
+            m_q = randomPrime(rng, bits - m_p.bits(), m_e);
             m_n = m_p * m_q;
         } while (m_n.bits() != bits);
         
-        m_d = inverse_mod(e, lcm(m_p - 1, m_q - 1));
+        m_d = inverseMod(e, lcm(m_p - 1, m_q - 1));
         m_d1 = m_d % (m_p - 1);
         m_d2 = m_d % (m_q - 1);
-        m_c = inverse_mod(m_q, m_p);
+        m_c = inverseMod(m_q, m_p);
         
         gen_check(rng);
     }
@@ -127,57 +127,57 @@ public:
 /**
 * RSA private (decrypt/sign) operation
 */
-final class RSA_Private_Operation : Signature,
+final class RSAPrivateOperation : Signature,
                                       Decryption
 {
 public:
-    this(in RSA_PrivateKey rsa, RandomNumberGenerator rng) 
+    this(in RSAPrivateKey rsa, RandomNumberGenerator rng) 
     {
-        m_n = rsa.get_n();
-        m_q = rsa.get_q();
-        m_c = rsa.get_c();
-        m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.get_e(), rsa.get_n());
-        m_powermod_d1_p = Fixed_Exponent_Power_Mod(rsa.get_d1(), rsa.get_p());
-        m_powermod_d2_q = Fixed_Exponent_Power_Mod(rsa.get_d2(), rsa.get_q());
-        m_mod_p = rsa.get_p();
+        m_n = rsa.getN();
+        m_q = rsa.getQ();
+        m_c = rsa.getC();
+        m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.getE(), rsa.getN());
+        m_powermod_d1_p = Fixed_Exponent_Power_Mod(rsa.getD1(), rsa.getP());
+        m_powermod_d2_q = Fixed_Exponent_Power_Mod(rsa.getD2(), rsa.getQ());
+        m_mod_p = rsa.getP();
         BigInt k = BigInt(rng, m_n.bits() - 1);
-        m_blinder = Blinder(m_powermod_e_n(k), inverse_mod(k, m_n), m_n);
+        m_blinder = Blinder(m_powermod_e_n(k), inverseMod(k, m_n), m_n);
     }
 
-    size_t max_input_bits() const { return (n.bits() - 1); }
+    size_t maxInputBits() const { return (n.bits() - 1); }
 
-    Secure_Vector!ubyte
+    SecureVector!ubyte
         sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-        rng.add_entropy(msg, msg_len);
+        rng.addEntropy(msg, msg_len);
         
         /* We don't check signatures against powermod_e_n here because
-            PK_Signer checks verification consistency for all signature
+            PKSigner checks verification consistency for all signature
             algorithms.
         */
         
         const BigInt m = BigInt(msg, msg_len);
         const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
-        return BigInt.encode_1363(x, n.bytes());
+        return BigInt.encode1363(x, n.bytes());
     }
 
     /*
     * RSA Decryption Operation
     */
-    Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+    SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
     {
         const BigInt m = BigInt(msg, msg_len);
         const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
         
         assert(m == m_powermod_e_n(x), "RSA decrypt passed consistency check");
         
-        return BigInt.encode_locked(x);
+        return BigInt.encodeLocked(x);
     }
 private:
-    BigInt private_op(in BigInt m) const
+    BigInt privateOp(in BigInt m) const
     {
         if (m >= m_n)
-            throw new Invalid_Argument("RSA private op - input is too large");
+            throw new InvalidArgument("RSA private op - input is too large");
 
         import std.concurrency : spawn, receiveOnly, thidTid, send;
         auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, 
@@ -185,52 +185,52 @@ private:
         BigInt j2 = m_powermod_d2_q(m);
         BigInt j1 = receiveOnly!BigInt();
         
-        j1 = m_mod_p.reduce(sub_mul(j1, j2, c));
+        j1 = m_mod_p.reduce(subMul(j1, j2, c));
         
-        return mul_add(j1, q, j2);
+        return mulAdd(j1, q, j2);
     }
 
     const BigInt m_n;
     const BigInt m_q;
     const BigInt m_c;
     Fixed_Exponent_Power_Mod m_powermod_e_n, m_powermod_d1_p, m_powermod_d2_q;
-    Modular_Reducer m_mod_p;
+    ModularReducer m_mod_p;
     Blinder m_blinder;
 }
 
 /**
 * RSA public (encrypt/verify) operation
 */
-final class RSA_Public_Operation : Verification,
+final class RSAPublicOperation : Verification,
                                    Encryption
 {
 public:
-    this(in RSA_PublicKey rsa)
+    this(in RSAPublicKey rsa)
     {
-        m_n = rsa.get_n();
-        m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.get_e(), rsa.get_n());
+        m_n = rsa.getN();
+        m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.getE(), rsa.getN());
     }
 
-    size_t max_input_bits() const { return (n.bits() - 1); }
-    bool with_recovery() const { return true; }
+    size_t maxInputBits() const { return (n.bits() - 1); }
+    bool withRecovery() const { return true; }
 
-    Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+    SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
     {
         BigInt m = BigInt(msg, msg_len);
-        return BigInt.encode_1363(public_op(m), m_n.bytes());
+        return BigInt.encode1363(public_op(m), m_n.bytes());
     }
 
-    Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+    SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
-        return BigInt.encode_locked(public_op(m));
+        return BigInt.encodeLocked(public_op(m));
     }
 
 private:
-    BigInt public_op(in BigInt m) const
+    BigInt publicOp(in BigInt m) const
     {
         if (m >= m_n)
-            throw new Invalid_Argument("RSA public op - input is too large");
+            throw new InvalidArgument("RSA public op - input is too large");
         return m_powermod_e_n(m);
     }
 
@@ -250,7 +250,7 @@ import core.atomic;
 __gshared size_t total_tests;
 
 
-size_t rsaes_kat(string e,
+size_t rsaesKat(string e,
                  string p,
                  string q,
                  string msg,
@@ -261,9 +261,9 @@ size_t rsaes_kat(string e,
     atomicOp!"+="(total_tests, 1);
     AutoSeeded_RNG rng;
     
-    auto privkey = scoped!RSA_PrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = scoped!RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = scoped!RSA_PublicKey(privkey);
+    auto pubkey = scoped!RSAPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";
@@ -274,7 +274,7 @@ size_t rsaes_kat(string e,
     return validate_encryption(enc, dec, "RSAES/" ~ padding, msg, nonce, output);
 }
 
-size_t rsa_sig_kat(string e,
+size_t rsaSigKat(string e,
                    string p,
                    string q,
                    string msg,
@@ -285,20 +285,20 @@ size_t rsa_sig_kat(string e,
     atomicOp!"+="(total_tests, 1);
     AutoSeeded_RNG rng;
     
-    auto privkey = scoped!RSA_PrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = scoped!RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = scoped!RSA_PublicKey(privkey);
+    auto pubkey = scoped!RSAPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";
     
-    PK_Verifier verify = PK_Verifier(pubkey, padding);
-    PK_Signer sign = PK_Signer(privkey, padding);
+    PKVerifier verify = PKVerifier(pubkey, padding);
+    PKSigner sign = PKSigner(privkey, padding);
     
     return validate_signature(verify, sign, "RSA/" ~ padding, msg, rng, nonce, output);
 }
 
-size_t rsa_sig_verify(string e,
+size_t rsaSigVerify(string e,
                       string n,
                       string msg,
                       string padding,
@@ -310,28 +310,28 @@ size_t rsa_sig_verify(string e,
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
     
-    auto key = scoped!RSA_PublicKey(n_bn, e_bn);
+    auto key = scoped!RSAPublicKey(n_bn, e_bn);
     
     if (padding == "")
         padding = "Raw";
     
-    PK_Verifier verify = PK_Verifier(key, padding);
+    PKVerifier verify = PKVerifier(key, padding);
     
-    if (!verify.verify_message(hex_decode(msg), hex_decode(signature)))
+    if (!verify.verifyMessage(hexDecode(msg), hexDecode(signature)))
         return 1;
     return 0;
 }
 
-size_t test_pk_keygen(RandomNumberGenerator rng)
+size_t testPkKeygen(RandomNumberGenerator rng)
 {
 
-    auto rsa1024 = scoped!RSA_PrivateKey(rng, 1024);
-    rsa1024.check_key(rng, true);
+    auto rsa1024 = scoped!RSAPrivateKey(rng, 1024);
+    rsa1024.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
     fails += validate_save_and_load(&rsa1024, rng);
     
-    auto rsa2048 = scoped!RSA_PrivateKey(rng, 2048);
-    rsa2048.check_key(rng, true);
+    auto rsa2048 = scoped!RSAPrivateKey(rng, 2048);
+    rsa2048.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
     fails += validate_save_and_load(&rsa2048, rng);
 
@@ -349,26 +349,26 @@ unittest
     File rsa_verify = File("test_data/pubkey/rsa_verify.vec", "r");
     
     
-    fails += run_tests_bb(rsa_enc, "RSA Encryption", "Ciphertext", true,
+    fails += runTestsBb(rsa_enc, "RSA Encryption", "Ciphertext", true,
                           (string[string] m)
                           {
-        return rsaes_kat(m["E"], m["P"], m["Q"], m["Msg"],
+        return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"],
         m["Padding"], m["Nonce"], m["Ciphertext"]);
     });
     
-    fails += run_tests_bb(rsa_sig, "RSA Signature", "Signature", true,
+    fails += runTestsBb(rsa_sig, "RSA Signature", "Signature", true,
                           (string[string] m)
                           {
-        return rsa_sig_kat(m["E"], m["P"], m["Q"], m["Msg"],
+        return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"],
         m["Padding"], m["Nonce"], m["Signature"]);
     });
     
-    fails += run_tests_bb(rsa_verify, "RSA Verify", "Signature", true,
+    fails += runTestsBb(rsa_verify, "RSA Verify", "Signature", true,
                           (string[string] m)
                           {
-        return rsa_sig_verify(m["E"], m["N"], m["Msg"],
+        return rsaSigVerify(m["E"], m["N"], m["Msg"],
         m["Padding"], m["Signature"]);
     });
     
-    test_report("rsa", total_tests, fails);
+    testReport("rsa", total_tests, fails);
 }

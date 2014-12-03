@@ -21,35 +21,35 @@ alias Secure_Deque(T) = Vector!( T, Secure_Allocator);
 /**
 * Blocking TLS Client
 */
-class TLS_Blocking_Client
+class TLSBlockingClient
 {
 public:
     this(size_t delegate(ref ubyte[]) read_fn,
          void delegate(in ubyte[]) write_fn,
-         TLS_Session_Manager session_manager,
-         TLS_Credentials_Manager creds,
-         in TLS_Policy policy,
+         TLSSessionManager session_manager,
+         TLSCredentialsManager creds,
+         in TLSPolicy policy,
          RandomNumberGenerator rng,
-         in TLS_Server_Information server_info = TLS_Server_Information(),
-         in TLS_Protocol_Version offer_version = TLS_Protocol_Version.latest_tls_version(),
+         in TLSServerInformation server_info = TLSServerInformation(),
+         in TLSProtocolVersion offer_version = TLSProtocolVersion.latestTlsVersion(),
          string delegate(string[]) next_protocol = null)
     {
         m_read_fn = read_fn;
-        m_channel = new TLS_Channel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
+        m_channel = new TLSChannel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
                                     policy, rng, server_info, offer_version, next_protocol);
     }
 
     /**
     * Completes full handshake then returns
     */
-    final void do_handshake()
+    final void doHandshake()
     {
         Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
         
-        while (!m_channel.is_closed() && !m_channel.is_active())
+        while (!m_channel.isClosed() && !m_channel.isActive())
         {
             const size_t from_socket = m_read_fn(readbuf[]);
-            m_channel.received_data(readbuf.ptr, from_socket);
+            m_channel.receivedData(readbuf.ptr, from_socket);
         }
     }
 
@@ -66,10 +66,10 @@ public:
     {
         Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
         
-        while (m_plaintext.empty && !m_channel.is_closed())
+        while (m_plaintext.empty && !m_channel.isClosed())
         {
             const size_t from_socket = m_read_fn(readbuf.ptr, readbuf.length);
-            m_channel.received_data(readbuf.ptr, from_socket);
+            m_channel.receivedData(readbuf.ptr, from_socket);
         }
         
         const size_t returned = std.algorithm.min(buf_len, m_plaintext.length);
@@ -78,7 +78,7 @@ public:
             buf[i] = m_plaintext[i];
         m_plaintext.erase(m_plaintext.ptr, m_plaintext.ptr + returned);
 
-        assert(returned == 0 && m_channel.is_closed(),
+        assert(returned == 0 && m_channel.isClosed(),
                                  "Only return zero if channel is closed");
         
         return returned;
@@ -86,15 +86,15 @@ public:
 
     final void write(in ubyte* buf, size_t len) { m_channel.send(buf, len); }
 
-    final TLS_Channel underlying_channel() const { return m_channel; }
-    final TLS_Channel underlying_channel() { return m_channel; }
+    final TLSChannel underlyingChannel() const { return m_channel; }
+    final TLSChannel underlyingChannel() { return m_channel; }
 
     final void close() { m_channel.close(); }
 
-    final bool is_closed() const { return m_channel.is_closed(); }
+    final bool isClosed() const { return m_channel.isClosed(); }
 
-    final X509_Certificate[] peer_cert_chain() const
-    { return m_channel.peer_cert_chain(); }
+    final X509Certificate[] peerCertChain() const
+    { return m_channel.peerCertChain(); }
 
     ~this() {}
 
@@ -102,28 +102,28 @@ protected:
     /**
      * Can to get the handshake complete notification override
     */
-    abstract bool handshake_complete(in TLS_Session) { return true; }
+    abstract bool handshakeComplete(in TLSSession) { return true; }
 
     /**
     * Can to get notification of alerts override
     */
-    abstract void alert_notification(in TLS_Alert) {}
+    abstract void alertNotification(in TLSAlert) {}
 
 private:
 
-    final bool handshake_cb(in TLS_Session session)
+    final bool handshakeCb(in TLSSession session)
     {
-        return this.handshake_complete(session);
+        return this.handshakeComplete(session);
     }
 
-    final void data_cb(in ubyte[] data)
+    final void dataCb(in ubyte[] data)
     {
         m_plaintext.insert(m_plaintext.end(), data.ptr, data.length);
     }
 
-    final void alert_cb(in TLS_Alert alert, in ubyte[])
+    final void alertCb(in TLSAlert alert, in ubyte[])
     {
-        this.alert_notification(alert);
+        this.alertNotification(alert);
     }
 
     size_t delegate(ref ubyte[]) m_read_fn;

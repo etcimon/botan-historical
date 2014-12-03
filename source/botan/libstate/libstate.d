@@ -9,7 +9,7 @@ module botan.libstate.libstate;
 public import botan.utils.types;
 public import botan.algo_factory.algo_factory;
 public import botan.libstate.lookup;
-import botan.libstate.global_state;
+import botan.libstate.globalState;
 import botan.rng.rng;
 import botan.utils.charset;
 import botan.engine.engine;
@@ -67,7 +67,7 @@ public:
     shared this()
     {
         m_entropy_src_mutex = new Mutex;
-        m_global_prng = new shared Serialized_RNG();
+        m_global_prng = new shared SerializedRNG();
     }
 
     void initialize()
@@ -75,52 +75,52 @@ public:
         if (m_initialized)
             return false;
 
-        SCAN_Name.set_default_aliases();
-        OIDS.set_defaults();
+        SCANName.setDefaultAliases();
+        OIDS.setDefaults();
 
-        m_algorithm_factory = Algorithm_Factory.init;
+        m_algorithm_factory = AlgorithmFactory.init;
         
         static if (BOTAN_HAS_ENGINE_GNU_MP)
-            algorithm_factory().add_engine(new GMP_Engine);
+            algorithmFactory().addEngine(new GMPEngine);
         
         
         static if (BOTAN_HAS_ENGINE_OPENSSL)
-            algorithm_factory().add_engine(new OpenSSL_Engine);
+            algorithmFactory().addEngine(new OpenSSLEngine);
         
         
         static if (BOTAN_HAS_ENGINE_AES_ISA)
-            algorithm_factory().add_engine(new AES_ISA_Engine);
+            algorithmFactory().addEngine(new AESISAEngine);
         
         
         static if (BOTAN_HAS_ENGINE_SIMD)
-            algorithm_factory().add_engine(new SIMD_Engine);
+            algorithmFactory().addEngine(new SIMDEngine);
         
         
         static if (BOTAN_HAS_ENGINE_ASSEMBLER)
-            algorithm_factory().add_engine(new Assembler_Engine);
+            algorithmFactory().addEngine(new AssemblerEngine);
         
         
-        algorithm_factory().add_engine(new Core_Engine);
+        algorithmFactory().addEngine(new CoreEngine);
 
         synchronized(m_entropy_src_mutex)
             if (!m_sources)
                 m_sources = entropy_sources();
 
         static if (BOTAN_HAS_SELFTESTS)
-            confirm_startup_self_tests(algorithm_factory());
+            confirm_startup_self_tests(algorithmFactory());
 
         m_initialized = true;
 
     }
 
     /**
-    * Return a reference to the Algorithm_Factory
-    * @return global Algorithm_Factory
+    * Return a reference to the AlgorithmFactory
+    * @return global AlgorithmFactory
     */
-    Algorithm_Factory algorithm_factory() const
+    AlgorithmFactory algorithmFactory() const
     {
         if (!m_algorithm_factory)
-            throw new Invalid_State("Uninitialized in algorithm_factory");
+            throw new InvalidState("Uninitialized in algorithmFactory");
         return m_algorithm_factory;
     }
 
@@ -128,12 +128,12 @@ public:
     * Return a reference to the global PRNG
     * @return global RandomNumberGenerator
     */
-    RandomNumberGenerator global_rng()
+    RandomNumberGenerator globalRng()
     {
         return m_global_prng;
     }
 
-    void poll_available_sources(ref Entropy_Accumulator accum)
+    void pollAvailableSources(ref EntropyAccumulator accum)
     {
         synchronized(m_entropy_src_mutex){
             if (m_sources.empty)
@@ -141,7 +141,7 @@ public:
             
             size_t poll_attempt = 0;
             
-            while (!accum.polling_goal_achieved() && poll_attempt < 16)
+            while (!accum.pollingGoalAchieved() && poll_attempt < 16)
             {
                 const size_t src_idx = poll_attempt % m_sources.length;
                 m_sources[src_idx].poll(accum);
@@ -152,44 +152,44 @@ public:
 
     ~this() { }
 private:
-    static Vector!( EntropySource ) entropy_sources()
+    static Vector!( EntropySource ) entropySources()
     {
         Vector!( EntropySource ) sources;
         
         static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
-            sources.push_back(new High_Resolution_Timestamp);
+            sources.pushBack(new HighResolutionTimestamp);
                 
         static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
-            sources.push_back(new Intel_Rdrand);
+            sources.pushBack(new IntelRdrand);
                 
         static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-            sources.push_back(new UnixProcessInfo_EntropySource);
+            sources.pushBack(new UnixProcessInfoEntropySource);
                 
         static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
-            sources.push_back(new Device_EntropySource(
+            sources.pushBack(new DeviceEntropySource(
                 [ "/dev/random", "/dev/srandom", "/dev/urandom" ]
             ));
                 
         static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
-            sources.push_back(EntropySource(new Win32_CAPI_EntropySource));
+            sources.pushBack(EntropySource(new Win32CAPIEntropySource));
                 
         static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
-            sources.push_back(new ProcWalking_EntropySource("/proc"));
+            sources.pushBack(new ProcWalkingEntropySource("/proc"));
                 
         static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
-            sources.push_back(new Win32_EntropySource);
+            sources.pushBack(new Win32EntropySource);
                 
         static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
-            sources.push_back(new BeOS_EntropySource);
+            sources.pushBack(new BeOSEntropySource);
 
         static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
-            sources.push_back(
-                new Unix_EntropySource(    [ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] )
+            sources.pushBack(
+                new UnixEntropySource(    [ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] )
             );
                 
         static if (BOTAN_HAS_ENTROPY_SRC_EGD)
-            sources.push_back(
-                new EGD_EntropySource( [ "/var/run/egd-pool", "/dev/egd-pool" ] )
+            sources.pushBack(
+                new EGDEntropySource( [ "/var/run/egd-pool", "/dev/egd-pool" ] )
                 );
                 
         return sources;
@@ -199,6 +199,6 @@ private:
     __gshared Mutex m_entropy_src_mutex;
     __gshared Vector!( EntropySource ) m_sources;
 
-    Algorithm_Factory m_algorithm_factory;
+    AlgorithmFactory m_algorithm_factory;
     bool m_initialized;
 }

@@ -207,7 +207,7 @@ public:
             
             if (relative_size < 0)
             {
-                Secure_Vector!word z(reg_size - 1);
+                SecureVector!word z(reg_size - 1);
                 bigint_sub3(z.ptr, y.data(), reg_size - 1, data(), x_sw);
                 std.algorithm.swap(m_reg, z);
                 set_sign(y.sign());
@@ -245,7 +245,7 @@ public:
             else
                 bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
             
-            set_sign(y.reverse_sign());
+            set_sign(y.reverseSign());
         }
         else if (relative_size == 0)
         {
@@ -291,14 +291,14 @@ public:
         else if (y_sw == 1 && x_sw)
         {
             grow_to(x_sw + 2);
-            bigint_linmul2(mutable_data(), x_sw, y.word_at(0));
+            bigint_linmul2(mutable_data(), x_sw, y.wordAt(0));
         }
         else
         {
             grow_to(size() + y.length);
             
-            Secure_Vector!word z = Secure_Vector!word(data(), data() + x_sw);
-            Secure_Vector!word workspace = Secure_Vector!word(size());
+            SecureVector!word z = SecureVector!word(data(), data() + x_sw);
+            SecureVector!word workspace = SecureVector!word(size());
             
             bigint_mul(mutable_data(), size(), workspace.ptr, z.ptr, z.length, x_sw, y.data(), y.length, y_sw);
         }
@@ -314,7 +314,7 @@ public:
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "/=")
     {
-        if (y.sig_words() == 1 && is_power_of_2(y.word_at(0)))
+        if (y.sigWords() == 1 && is_power_of_2(y.wordAt(0)))
             this >>= (y.bits() - 1);
         else
             this = this / y;
@@ -454,17 +454,17 @@ public:
     {
         if (check_signs)
         {
-            if (other.is_positive() && this.is_negative())
+            if (other.isPositive() && this.isNegative())
                 return -1;
             
-            if (other.is_negative() && this.is_positive())
+            if (other.isNegative() && this.isPositive())
                 return 1;
             
-            if (other.is_negative() && this.is_negative())
-                return (-bigint_cmp(this.data(), this.sig_words(), other.data(), other.sig_words()));
+            if (other.isNegative() && this.isNegative())
+                return (-bigint_cmp(this.data(), this.sigWords(), other.data(), other.sigWords()));
         }
         
-        return bigint_cmp(this.data(), this.sig_words(), other.data(), other.sig_words());
+        return bigint_cmp(this.data(), this.sigWords(), other.data(), other.sigWords());
     }
     /*
     * Comparison Operators
@@ -486,25 +486,25 @@ public:
     * Test if the integer has an even value
     * @result true if the integer is even, false otherwise
     */
-    bool is_even() const { return (get_bit(0) == 0); }
+    bool isEven() const { return (get_bit(0) == 0); }
 
     /**
     * Test if the integer has an odd value
     * @result true if the integer is odd, false otherwise
     */
-    bool is_odd()  const { return (get_bit(0) == 1); }
+    bool isOdd()  const { return (get_bit(0) == 1); }
 
     /**
     * Test if the integer is not zero
     * @result true if the integer is non-zero, false otherwise
     */
-    bool is_nonzero() const { return (!is_zero()); }
+    bool isNonzero() const { return (!is_zero()); }
 
     /**
     * Test if the integer is zero
     * @result true if the integer is zero, false otherwise
     */
-    bool is_zero() const
+    bool isZero() const
     {
         const size_t sw = sig_words();
 
@@ -518,7 +518,7 @@ public:
     * Set bit at specified position
     * @param n = bit position to set
     */
-    void set_bit(size_t n)
+    void setBit(size_t n)
     {
         const size_t which = n / MP_WORD_BITS;
         const word mask = cast(word)(1) << (n % MP_WORD_BITS);
@@ -530,7 +530,7 @@ public:
     * Clear bit at specified position
     * @param n = bit position to clear
     */
-    void clear_bit(size_t n)
+    void clearBit(size_t n)
     {
         const size_t which = n / MP_WORD_BITS;
         const word mask = cast(word)(1) << (n % MP_WORD_BITS);
@@ -542,7 +542,7 @@ public:
     * Clear all but the lowest n bits
     * @param n = amount of bits to keep
     */
-    void mask_bits(size_t n)
+    void maskBits(size_t n)
     {
         if (n == 0) { clear(); return; }
         if (n >= bits()) return;
@@ -561,7 +561,7 @@ public:
     * @param n = the bit offset to test
     * @result true, if the bit at position n is set, false otherwise
     */
-    bool get_bit(size_t n) const
+    bool getBit(size_t n) const
     {
         return ((word_at(n / MP_WORD_BITS) >> (n % MP_WORD_BITS)) & 1);
     }
@@ -573,10 +573,10 @@ public:
     * @result the integer extracted from the register starting at
     * offset with specified length
     */
-    uint get_substring(size_t offset, size_t length) const
+    uint getSubstring(size_t offset, size_t length) const
     {
         if (length > 32)
-            throw new Invalid_Argument("BigInt.get_substring: Substring size too big");
+            throw new InvalidArgument("BigInt.get_substring: Substring size too big");
         
         ulong piece = 0;
         foreach (size_t i; 0 .. 8)
@@ -596,12 +596,12 @@ public:
     * [0 ... 2**32-1], or otherwise throw new an exception.
     * @result the value as a uint if conversion is possible
     */
-    uint to_uint() const
+    uint toUint() const
     {
         if (is_negative())
-            throw new Encoding_Error("BigInt.to_uint: Number is negative");
+            throw new EncodingError("BigInt.to_uint: Number is negative");
         if (bits() >= 32)
-            throw new Encoding_Error("BigInt.to_uint: Number is too big to convert");
+            throw new EncodingError("BigInt.to_uint: Number is too big to convert");
         
         uint output = 0;
         for (uint j = 0; j != 4; ++j)
@@ -613,7 +613,7 @@ public:
     * @param n = the offset to get a ubyte from
     * @result ubyte at offset n
     */
-    ubyte byte_at(size_t n) const
+    ubyte byteAt(size_t n) const
     {
         const size_t WORD_BYTES = (word).sizeof;
         size_t word_num = n / WORD_BYTES, byte_num = n % WORD_BYTES;
@@ -628,20 +628,20 @@ public:
     * @param n = position in the register
     * @return value at position n
     */
-    word word_at(size_t n) const
+    word wordAt(size_t n) const
     { return ((n < size()) ? m_reg[n] : 0); }
 
     /**
     * Tests if the sign of the integer is negative
     * @result true, iff the integer has a negative sign
     */
-    bool is_negative() const { return (sign() == Negative); }
+    bool isNegative() const { return (sign() == Negative); }
 
     /**
     * Tests if the sign of the integer is positive
     * @result true, iff the integer has a positive sign
     */
-    bool is_positive() const { return (sign() == Positive); }
+    bool isPositive() const { return (sign() == Positive); }
 
     /**
     * Return the sign of the integer
@@ -652,7 +652,7 @@ public:
     /**
     * @result the opposite sign of the represented integer value
     */
-    Sign reverse_sign() const
+    Sign reverseSign() const
     {
         if (sign() == Positive)
             return Negative;
@@ -662,7 +662,7 @@ public:
     /**
     * Flip the sign of this BigInt
     */
-    void flip_sign()
+    void flipSign()
     {
         set_sign(reverse_sign());
     }
@@ -671,7 +671,7 @@ public:
     * Set sign of the integer
     * @param sign = new Sign to set
     */
-    void set_sign(Sign s)
+    void setSign(Sign s)
     {
         if (is_zero())
             m_signedness = Positive;
@@ -698,7 +698,7 @@ public:
     * Return how many words we need to hold this value
     * @result significant words of the represented integer value
     */
-    size_t sig_words() const
+    size_t sigWords() const
     {
         const word* x = m_reg.ptr;
         size_t sig = m_reg.length;
@@ -741,7 +741,7 @@ public:
     * Return a mutable pointer to the register
     * @result a pointer to the start of the internal register
     */
-    word* mutable_data() { return m_reg.ptr; }
+    word* mutableData() { return m_reg.ptr; }
 
     /**
     * Return a const pointer to the register
@@ -753,7 +753,7 @@ public:
     * Increase internal register buffer to at least n words
     * @param n = new size of register
     */
-    void grow_to(size_t n)
+    void growTo(size_t n)
     {
         if (n > size())
             m_reg.resize(round_up!size_t(n, 8));
@@ -773,7 +773,7 @@ public:
             clear();
         else
         {
-            Secure_Vector!ubyte array = rng.random_vec((bitsize + 7) / 8);
+            SecureVector!ubyte array = rng.random_vec((bitsize + 7) / 8);
             
             if (bitsize % 8)
                 array[0] &= 0xFF >> (8 - (bitsize % 8));
@@ -786,7 +786,7 @@ public:
     * Store BigInt-value in a given ubyte array
     * @param buf = destination ubyte array for the integer value
     */
-    void binary_encode(ubyte* output) const
+    void binaryEncode(ubyte* output) const
     {
         const size_t sig_bytes = bytes();
         foreach (size_t i; 0 .. sig_bytes)
@@ -798,7 +798,7 @@ public:
     * @param buf = ubyte array buffer containing the integer
     * @param length = size of buf
     */
-    void binary_decode(in ubyte* buf, size_t length)
+    void binaryDecode(in ubyte* buf, size_t length)
     {
         const size_t WORD_BYTES = (word).sizeof;
         
@@ -818,10 +818,10 @@ public:
 
 
     /**
-    * Read integer value from a ubyte array (Secure_Vector!ubyte)
+    * Read integer value from a ubyte array (SecureVector!ubyte)
     * @param buf = the array to load from
     */
-    void binary_decode(in Secure_Vector!ubyte buf)
+    void binaryDecode(in SecureVector!ubyte buf)
     {
         binary_decode(buf.ptr, buf.length);
     }
@@ -830,7 +830,7 @@ public:
     * @param base = the base to measure the size for
     * @return size of this integer in base base
     */
-    size_t encoded_size(Base base = Binary) const
+    size_t encodedSize(Base base = Binary) const
     {
         static const double LOG_2_BASE_10 = 0.30102999566;
         
@@ -841,7 +841,7 @@ public:
         else if (base == Decimal)
             return cast(size_t)((bits() * LOG_2_BASE_10) + 1);
         else
-            throw new Invalid_Argument("Unknown base for BigInt encoding");
+            throw new InvalidArgument("Unknown base for BigInt encoding");
     }
 
     /**
@@ -850,12 +850,12 @@ public:
     * @param max = the maximum value
     * @return random integer in [min,max)
     */
-    static BigInt random_integer(RandomNumberGenerator rng, in BigInt min, in BigInt max)
+    static BigInt randomInteger(RandomNumberGenerator rng, in BigInt min, in BigInt max)
     {
         BigInt range = max - min;
         
         if (range <= 0)
-            throw new Invalid_Argument("random_integer: invalid min/max values");
+            throw new InvalidArgument("random_integer: invalid min/max values");
         
         return (min + (BigInt(rng, range.bits() + 2) % range));
     }
@@ -865,10 +865,10 @@ public:
     * @param n = the power of two to create
     * @return bigint representing 2^n
     */
-    static ref BigInt power_of_2(size_t n)
+    static ref BigInt powerOf2(size_t n)
     {
         BigInt b;
-        b.set_bit(n);
+        b.setBit(n);
         return b;
     }
 
@@ -876,7 +876,7 @@ public:
     * Encode the integer value from a BigInt to a std::vector of bytes
     * @param n = the BigInt to use as integer source
     * @param base = number-base of resulting ubyte array representation
-    * @result Secure_Vector of bytes containing the integer with given base
+    * @result SecureVector of bytes containing the integer with given base
     */
     static Vector!ubyte encode(in BigInt n, Base base = Binary)
     {
@@ -890,14 +890,14 @@ public:
     }
 
     /**
-    * Encode the integer value from a BigInt to a Secure_Vector of bytes
+    * Encode the integer value from a BigInt to a SecureVector of bytes
     * @param n = the BigInt to use as integer source
     * @param base = number-base of resulting ubyte array representation
-    * @result Secure_Vector of bytes containing the integer with given base
+    * @result SecureVector of bytes containing the integer with given base
     */
-    static Secure_Vector!ubyte encode_locked(in BigInt n, Base base = Binary)
+    static SecureVector!ubyte encodeLocked(in BigInt n, Base base = Binary)
     {
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(n.encoded_size(base));
+        SecureVector!ubyte output = SecureVector!ubyte(n.encoded_size(base));
         encode(output.ptr, n, base);
         if (base != Binary)
             for (size_t j = 0; j != output.length; ++j)
@@ -917,31 +917,31 @@ public:
     {
         if (base == Binary)
         {
-            n.binary_encode(output);
+            n.binaryEncode(output);
         }
         else if (base == Hexadecimal)
         {
-            Secure_Vector!ubyte binary = Secure_Vector!ubyte(n.encoded_size(Binary));
-            n.binary_encode(binary.ptr);
+            SecureVector!ubyte binary = SecureVector!ubyte(n.encoded_size(Binary));
+            n.binaryEncode(binary.ptr);
             
-            hex_encode(cast(char*)(output), binary.ptr, binary.length);
+            hexEncode(cast(char*)(output), binary.ptr, binary.length);
         }
         else if (base == Decimal)
         {
             BigInt copy = n;
             BigInt remainder;
-            copy.set_sign(Positive);
+            copy.setSign(Positive);
             const size_t output_size = n.encoded_size(Decimal);
             foreach (size_t j; 0 .. output_size)
             {
                 divide(copy, 10, copy, remainder);
-                output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.word_at(0)));
-                if (copy.is_zero())
+                output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
+                if (copy.isZero())
                     break;
             }
         }
         else
-            throw new Invalid_Argument("Unknown BigInt encoding method");
+            throw new InvalidArgument("Unknown BigInt encoding method");
     }
 
     /**
@@ -955,24 +955,24 @@ public:
     {
         BigInt r;
         if (base == Binary)
-            r.binary_decode(buf, length);
+            r.binaryDecode(buf, length);
         else if (base == Hexadecimal)
         {
-            Secure_Vector!ubyte binary;
+            SecureVector!ubyte binary;
             
             if (length % 2)
             {
                 // Handle lack of leading 0
                 const char[2] buf0_with_leading_0 = [ '0', cast(char)(buf[0]) ];
                 
-                binary = hex_decode_locked(buf0_with_leading_0.ptr, 2);
+                binary = hexDecodeLocked(buf0_with_leading_0.ptr, 2);
                 
-                binary ~= hex_decode_locked(&buf[1], length - 1, false);
+                binary ~= hexDecodeLocked(&buf[1], length - 1, false);
             }
             else
-                binary = hex_decode_locked(buf.ptr, length, false);
+                binary = hexDecodeLocked(buf.ptr, length, false);
             
-            r.binary_decode(binary.ptr, binary.length);
+            r.binaryDecode(binary.ptr, binary.length);
         }
         else if (base == Decimal)
         {
@@ -982,20 +982,20 @@ public:
                     continue;
                 
                 if (!is_digit(buf[i]))
-                    throw new Invalid_Argument("BigInt.decode: "
+                    throw new InvalidArgument("BigInt.decode: "
                                                ~ "Invalid character in decimal input");
                 
                 const ubyte x = char2digit(buf[i]);
                 
                 if (x >= 10)
-                    throw new Invalid_Argument("BigInt: Invalid decimal string");
+                    throw new InvalidArgument("BigInt: Invalid decimal string");
                 
                 r *= 10;
                 r += x;
             }
         }
         else
-            throw new Invalid_Argument("Unknown BigInt decoding method");
+            throw new InvalidArgument("Unknown BigInt decoding method");
         return r;
     }
 
@@ -1006,7 +1006,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static ref BigInt decode(in Secure_Vector!ubyte buf,
+    static ref BigInt decode(in SecureVector!ubyte buf,
                              Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
@@ -1027,19 +1027,19 @@ public:
     /**
     * Encode a BigInt to a ubyte array according to IEEE 1363
     * @param n = the BigInt to encode
-    * @param bytes = the length of the resulting Secure_Vector!ubyte
-    * @result a Secure_Vector!ubyte containing the encoded BigInt
+    * @param bytes = the length of the resulting SecureVector!ubyte
+    * @result a SecureVector!ubyte containing the encoded BigInt
     */
-    static Secure_Vector!ubyte encode_1363(in BigInt n,
+    static SecureVector!ubyte encode1363(in BigInt n,
                                            size_t bytes)
     {
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
-            throw new Encoding_Error("encode_1363: n is too large to encode properly");
+            throw new EncodingError("encode_1363: n is too large to encode properly");
         
         const size_t leading_0s = bytes - n_bytes;
         
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes);
+        SecureVector!ubyte output = SecureVector!ubyte(bytes);
         encode(&output[leading_0s], n, Binary);
         return output;
     }
@@ -1056,20 +1056,20 @@ public:
         BigInt z = BigInt(x.sign(), std.algorithm.max(x_sw, y_sw) + 1);
         
         if ((x.sign() == y.sign()))
-            bigint_add3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);
+            bigint_add3(z.mutableData(), x.data(), x_sw, y.data(), y_sw);
         else
         {
             int relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
             
             if (relative_size < 0)
             {
-                bigint_sub3(z.mutable_data(), y.data(), y_sw, x.data(), x_sw);
-                z.set_sign(y.sign());
+                bigint_sub3(z.mutableData(), y.data(), y_sw, x.data(), x_sw);
+                z.setSign(y.sign());
             }
             else if (relative_size == 0)
-                z.set_sign(BigInt.Positive);
+                z.setSign(BigInt.Positive);
             else if (relative_size > 0)
-                bigint_sub3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);
+                bigint_sub3(z.mutableData(), x.data(), x_sw, y.data(), y_sw);
         }
         
         return z;
@@ -1091,23 +1091,23 @@ public:
         if (relative_size < 0)
         {
             if (x.sign() == y.sign())
-                bigint_sub3(z.mutable_data(), y.data(), y_sw, x.data(), x_sw);
+                bigint_sub3(z.mutableData(), y.data(), y_sw, x.data(), x_sw);
             else
-                bigint_add3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);
-            z.set_sign(y.reverse_sign());
+                bigint_add3(z.mutableData(), x.data(), x_sw, y.data(), y_sw);
+            z.setSign(y.reverseSign());
         }
         else if (relative_size == 0)
         {
             if (x.sign() != y.sign())
-                bigint_shl2(z.mutable_data(), x.data(), x_sw, 0, 1);
+                bigint_shl2(z.mutableData(), x.data(), x_sw, 0, 1);
         }
         else if (relative_size > 0)
         {
             if (x.sign() == y.sign())
-                bigint_sub3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);
+                bigint_sub3(z.mutableData(), x.data(), x_sw, y.data(), y_sw);
             else
-                bigint_add3(z.mutable_data(), x.data(), x_sw, y.data(), y_sw);
-            z.set_sign(x.sign());
+                bigint_add3(z.mutableData(), x.data(), x_sw, y.data(), y_sw);
+            z.setSign(x.sign());
         }
         return z;
     }
@@ -1124,19 +1124,19 @@ public:
         BigInt z(BigInt.Positive, x.length + y.length);
         
         if (x_sw == 1 && y_sw)
-            bigint_linmul3(z.mutable_data(), y.data(), y_sw, x.word_at(0));
+            bigint_linmul3(z.mutableData(), y.data(), y_sw, x.wordAt(0));
         else if (y_sw == 1 && x_sw)
-            bigint_linmul3(z.mutable_data(), x.data(), x_sw, y.word_at(0));
+            bigint_linmul3(z.mutableData(), x.data(), x_sw, y.wordAt(0));
         else if (x_sw && y_sw)
         {
-            Secure_Vector!word workspace(z.length);
-            bigint_mul(z.mutable_data(), z.length, workspace.ptr,
+            SecureVector!word workspace(z.length);
+            bigint_mul(z.mutableData(), z.length, workspace.ptr,
             x.data(), x.length, x_sw,
             y.data(), y.length, y_sw);
         }
         
         if (x_sw && y_sw && x.sign() != y.sign())
-            z.flip_sign();
+            z.flipSign();
         return z;
     }
     
@@ -1159,11 +1159,11 @@ public:
         if (op == "%")
     {
         const BigInt n = this;
-        if (mod.is_zero())
+        if (mod.isZero())
             throw new BigInt.DivideByZero();
-        if (mod.is_negative())
-            throw new Invalid_Argument("BigInt.operator%: modulus must be > 0");
-        if (n.is_positive() && mod.is_positive() && n < mod)
+        if (mod.isNegative())
+            throw new InvalidArgument("BigInt.operator%: modulus must be > 0");
+        if (n.isPositive() && mod.isPositive() && n < mod)
             return n;
         
         BigInt q, r;
@@ -1182,12 +1182,12 @@ public:
             throw new BigInt.DivideByZero();
         
         if (is_power_of_2(mod))
-            return (n.word_at(0) & (mod - 1));
+            return (n.wordAt(0) & (mod - 1));
         
         word remainder = 0;
         
         for (size_t j = n.sig_words(); j > 0; --j)
-            remainder = bigint_modop(remainder, n.word_at(j-1), mod);
+            remainder = bigint_modop(remainder, n.wordAt(j-1), mod);
         
         if (remainder && n.sign() == BigInt.Negative)
             return mod - remainder;
@@ -1210,7 +1210,7 @@ public:
         const size_t x_sw = x.sig_words();
         
         BigInt y(x.sign(), x_sw + shift_words + (shift_bits ? 1 : 0));
-        bigint_shl2(y.mutable_data(), x.data(), x_sw, shift_words, shift_bits);
+        bigint_shl2(y.mutableData(), x.data(), x_sw, shift_words, shift_bits);
         return y;
     }
     
@@ -1231,11 +1231,11 @@ public:
             x_sw = x.sig_words();
         
         BigInt y(x.sign(), x_sw - shift_words);
-        bigint_shr2(y.mutable_data(), x.data(), x_sw, shift_words, shift_bits);
+        bigint_shr2(y.mutableData(), x.data(), x_sw, shift_words, shift_bits);
         return y;
     }
 private:
-    Secure_Vector!word m_reg;
+    SecureVector!word m_reg;
     Sign m_signedness = Positive;
 }
 

@@ -63,96 +63,96 @@ public:
     /**
     * Return a best guess of the cache line size
     */
-    static size_t cache_line_size() { return m_cache_line_size; }
+    static size_t cacheLineSize() { return m_cache_line_size; }
 
     /**
     * Check if the processor supports RDTSC
     */
-    static bool has_rdtsc()
+    static bool hasRdtsc()
     { return x86_processor_flags_has(CPUID_RDTSC_BIT); }
 
     /**
     * Check if the processor supports SSE2
     */
-    static bool has_sse2()
+    static bool hasSse2()
     { return x86_processor_flags_has(CPUID_SSE2_BIT); }
 
     /**
     * Check if the processor supports SSSE3
     */
-    static bool has_ssse3()
+    static bool hasSsse3()
     { return x86_processor_flags_has(CPUID_SSSE3_BIT); }
 
     /**
     * Check if the processor supports SSE4.1
     */
-    static bool has_sse41()
+    static bool hasSse41()
     { return x86_processor_flags_has(CPUID_SSE41_BIT); }
 
     /**
     * Check if the processor supports SSE4.2
     */
-    static bool has_sse42()
+    static bool hasSse42()
     { return x86_processor_flags_has(CPUID_SSE42_BIT); }
 
     /**
     * Check if the processor supports AVX2
     */
-    static bool has_avx2()
+    static bool hasAvx2()
     { return x86_processor_flags_has(CPUID_AVX2_BIT); }
 
     /**
     * Check if the processor supports AVX-512F
     */
-    static bool has_avx512f()
+    static bool hasAvx512f()
     { return x86_processor_flags_has(CPUID_AVX512F_BIT); }
 
     /**
     * Check if the processor supports BMI2
     */
-    static bool has_bmi2()
+    static bool hasBmi2()
     { return x86_processor_flags_has(CPUID_BMI2_BIT); }
 
     /**
     * Check if the processor supports AES-NI
     */
-    static bool has_aes_ni()
+    static bool hasAesNi()
     { return x86_processor_flags_has(CPUID_AESNI_BIT); }
 
     /**
     * Check if the processor supports CLMUL
     */
-    static bool has_clmul()
+    static bool hasClmul()
     { return x86_processor_flags_has(CPUID_CLMUL_BIT); }
 
     /**
     * Check if the processor supports Intel SHA extension
     */
-    static bool has_intel_sha()
+    static bool hasIntelSha()
     { return x86_processor_flags_has(CPUID_SHA_BIT); }
 
     /**
     * Check if the processor supports ADX extension
     */
-    static bool has_adx()
+    static bool hasAdx()
     { return x86_processor_flags_has(CPUID_ADX_BIT); }
 
     /**
     * Check if the processor supports RDRAND
     */
-    static bool has_rdrand()
+    static bool hasRdrand()
     { return x86_processor_flags_has(CPUID_RDRAND_BIT); }
 
     /**
     * Check if the processor supports RDSEED
     */
-    static bool has_rdseed()
+    static bool hasRdseed()
     { return x86_processor_flags_has(CPUID_RDSEED_BIT); }
 
     /**
     * Check if the processor supports AltiVec/VMX
     */
-    static bool has_altivec() { return m_altivec_capable; }
+    static bool hasAltivec() { return m_altivec_capable; }
 
     static string toString()
     {
@@ -181,7 +181,7 @@ public:
         return app.data;
     }
 private:
-    enum CPUID_bits {
+    enum CPUIDbits {
         CPUID_RDTSC_BIT = 4,
         CPUID_SSE2_BIT = 26,
         CPUID_CLMUL_BIT = 33,
@@ -199,7 +199,7 @@ private:
         CPUID_SHA_BIT = 64+29,
     }
 
-    static bool x86_processor_flags_has(ulong bit)
+    static bool x86ProcessorFlagsHas(ulong bit)
     {
         return ((m_x86_processor_flags[bit/64] >> (bit % 64)) & 1);
     }
@@ -465,7 +465,7 @@ shared static this() {
 
 
 version (PPC) {
-    bool altivec_check_sysctl()
+    bool altivecCheckSysctl()
     {
         version (OSX)
             enum supported = true;
@@ -486,7 +486,7 @@ version (PPC) {
         return false;
     }
     
-    bool altivec_check_pvr_emul()
+    bool altivecCheckPvrEmul()
     {
         bool altivec_capable = false;
         

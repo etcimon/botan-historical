@@ -29,10 +29,10 @@ public:
         m_hash1 = h1;
         m_hash2 = h2;
         if (m_hash1.name == m_hash2.name)
-            throw new Invalid_Argument("Comb4P: Must use two distinct hashes");
+            throw new InvalidArgument("Comb4P: Must use two distinct hashes");
         
         if (m_hash1.output_length != m_hash2.output_length)
-            throw new Invalid_Argument("Comb4P: Incompatible hashes " ~
+            throw new InvalidArgument("Comb4P: Incompatible hashes " ~
                                        m_hash1.name ~ " and " ~
                                        m_hash2.name);
         
@@ -40,10 +40,10 @@ public:
     }
 
 
-    @property size_t hash_block_size() const
+    @property size_t hashBlockSize() const
     {
-        if (m_hash1.hash_block_size == m_hash2.hash_block_size)
-            return m_hash1.hash_block_size;
+        if (m_hash1.hashBlockSize == m_hash2.hashBlockSize)
+            return m_hash1.hashBlockSize;
         
         /*
     * Return LCM of the block sizes? This would probably be OK for
@@ -52,7 +52,7 @@ public:
         return 0;
     }
 
-    @property size_t output_length() const
+    @property size_t outputLength() const
     {
         return m_hash1.output_length + m_hash2.output_length;
     }
@@ -77,16 +77,16 @@ public:
         m_hash2.update(0);
     }
 private:
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         m_hash1.update(input, length);
         m_hash2.update(input, length);
     }
 
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
-        Secure_Vector!ubyte h1 = m_hash1.finished();
-        Secure_Vector!ubyte h2 = m_hash2.finished();
+        SecureVector!ubyte h1 = m_hash1.finished();
+        SecureVector!ubyte h2 = m_hash2.finished();
         
         // First round
         xor_buf(h1.ptr, h2.ptr, std.algorithm.min(h1.length, h2.length));
@@ -97,8 +97,8 @@ private:
         // Third round
         comb4p_round(h1, h2, 2, *m_hash1, *m_hash2);
         
-        copy_mem(output            , h1.ptr, h1.length);
-        copy_mem(output + h1.length, h2.ptr, h2.length);
+        copyMem(output            , h1.ptr, h1.length);
+        copyMem(output + h1.length, h2.ptr, h2.length);
         
         // Prep for processing next message, if any
         m_hash1.update(0);
@@ -110,8 +110,8 @@ private:
 
 private:
     
-void comb4p_round(Secure_Vector!ubyte output,
-                  in Secure_Vector!ubyte input,
+void comb4p_round(SecureVector!ubyte output,
+                  in SecureVector!ubyte input,
                   ubyte round_no,
                   HashFunction h1,
                   HashFunction h2)
@@ -122,7 +122,7 @@ void comb4p_round(Secure_Vector!ubyte output,
     h1.update(input.ptr, input.length);
     h2.update(input.ptr, input.length);
     
-    Secure_Vector!ubyte h_buf = h1.finished();
+    SecureVector!ubyte h_buf = h1.finished();
     xor_buf(output.ptr, h_buf.ptr, std.algorithm.min(output.length, h_buf.length));
     
     h_buf = h2.finished();

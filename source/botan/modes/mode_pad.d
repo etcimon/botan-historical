@@ -22,7 +22,7 @@ import botan.utils.exceptn;
 class BlockCipherModePaddingMethod
 {
 public:
-    abstract void add_padding(Secure_Vector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
+    abstract void addPadding(SecureVector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
 
     /**
     * @param block = the last block
@@ -35,7 +35,7 @@ public:
     * @param block_size = of the cipher
     * @return valid block size for this padding mode
     */
-    abstract bool valid_blocksize(size_t block_size) const;
+    abstract bool validBlocksize(size_t block_size) const;
 
     /**
     * @return name of the mode
@@ -51,18 +51,18 @@ public:
 /**
 * PKCS#7 Padding
 */
-final class PKCS7_Padding : BlockCipherModePaddingMethod
+final class PKCS7Padding : BlockCipherModePaddingMethod
 {
 public:
     /*
     * Pad with PKCS #7 Method
     */
-    override void add_padding(Secure_Vector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
+    override void addPadding(SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
     {
         const ubyte pad_value = block_size - last_byte_pos;
         
         foreach (size_t i; 0 .. pad_value)
-            buffer.push_back(pad_value);
+            buffer.pushBack(pad_value);
     }
 
     /*
@@ -73,16 +73,16 @@ public:
         size_t position = block[size-1];
         
         if (position > size)
-            throw new Decoding_Error("Bad padding in " ~ name);
+            throw new DecodingError("Bad padding in " ~ name);
         
         foreach (size_t j; (size-position) .. (size-1))
             if (block[j] != position)
-                throw new Decoding_Error("Bad padding in " ~ name);
+                throw new DecodingError("Bad padding in " ~ name);
         
         return (size-position);
     }
 
-    bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
+    bool validBlocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
     @property string name() const { return "PKCS7"; }
 }
@@ -90,21 +90,21 @@ public:
 /**
 * ANSI X9.23 Padding
 */
-final class ANSI_X923_Padding : BlockCipherModePaddingMethod
+final class ANSIX923Padding : BlockCipherModePaddingMethod
 {
 public:
     /*
     * Pad with ANSI X9.23 Method
     */
-    override void add_padding(Secure_Vector!ubyte buffer,
+    override void addPadding(SecureVector!ubyte buffer,
                                  size_t last_byte_pos,
                                  size_t block_size) const
     {
         const ubyte pad_value = block_size - last_byte_pos;
         
         for (size_t i = last_byte_pos; i < block_size; ++i)
-            buffer.push_back(0);
-        buffer.push_back(pad_value);
+            buffer.pushBack(0);
+        buffer.pushBack(pad_value);
     }
 
     /*
@@ -114,14 +114,14 @@ public:
     {
         size_t position = block[size-1];
         if (position > size)
-            throw new Decoding_Error(name);
+            throw new DecodingError(name);
         foreach (size_t j; (size-position) .. (size-1))
             if (block[j] != 0)
-                throw new Decoding_Error(name);
+                throw new DecodingError(name);
         return (size-position);
     }
 
-    bool valid_blocksize(size_t bs) const { return (bs > 0 && bs < 256); }
+    bool validBlocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
     @property string name() const { return "X9.23"; }
 }
@@ -129,18 +129,18 @@ public:
 /**
 * One And Zeros Padding
 */
-final class OneAndZeros_Padding : BlockCipherModePaddingMethod
+final class OneAndZerosPadding : BlockCipherModePaddingMethod
 {
 public:
     /*
     * Pad with One and Zeros Method
     */
-    override void add_padding(Secure_Vector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
+    override void addPadding(SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
     {
-        buffer.push_back(0x80);
+        buffer.pushBack(0x80);
         
         for (size_t i = last_byte_pos + 1; i % block_size; ++i)
-            buffer.push_back(0x00);
+            buffer.pushBack(0x00);
     }
 
     /*
@@ -153,15 +153,15 @@ public:
             if (block[size-1] == 0x80)
                 break;
             if (block[size-1] != 0x00)
-                throw new Decoding_Error(name);
+                throw new DecodingError(name);
             size--;
         }
         if (!size)
-            throw new Decoding_Error(name);
+            throw new DecodingError(name);
         return (size-1);
     }
 
-    bool valid_blocksize(size_t bs) const { return (bs > 0); }
+    bool validBlocksize(size_t bs) const { return (bs > 0); }
 
     @property string name() const { return "OneAndZeros"; }
 }
@@ -169,14 +169,14 @@ public:
 /**
 * Null Padding
 */
-final class Null_Padding : BlockCipherModePaddingMethod
+final class NullPadding : BlockCipherModePaddingMethod
 {
 public:
-    override void add_padding(Secure_Vector!ubyte, size_t, size_t) const {}
+    override void addPadding(SecureVector!ubyte, size_t, size_t) const {}
 
     size_t unpad(in ubyte[], size_t size) const { return size; }
 
-    bool valid_blocksize(size_t) const { return true; }
+    bool validBlocksize(size_t) const { return true; }
 
     @property string name() const { return "NoPadding"; }
 }

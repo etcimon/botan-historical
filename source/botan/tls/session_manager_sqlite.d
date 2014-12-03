@@ -1,5 +1,5 @@
 /*
-* SQLite3 TLS TLS_Session Manager
+* SQLite3 TLS TLSSession Manager
 * (C) 2012 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -25,7 +25,7 @@ import std.datetime;
 * sessions are stored in the database in plaintext. This may be a
 * serious privacy risk in some situations.
 */
-final class TLS_Session_Manager_SQLite : TLS_Session_Manager
+final class TLSSessionManagerSQLite : TLS_Session_Manager
 {
 public:
     /**
@@ -50,7 +50,7 @@ public:
         m_session_lifetime = session_lifetime;
         m_db = new sqlite3_database(db_filename);
 
-        m_db.create_table(
+        m_db.createTable(
             "create table if not exists tls_sessions "
             ~ "("
             ~ "session_id TEXT PRIMARY KEY, "
@@ -60,7 +60,7 @@ public:
             ~ "session BLOB"
             ~ ")");
         
-        m_db.create_table(
+        m_db.createTable(
             "create table if not exists tls_sessions_metadata "
             ~ "("
             ~ "passphrase_salt BLOB, "
@@ -82,14 +82,14 @@ public:
                 const size_t check_val_db = stmt.get_size_t(2);
                 
                 size_t check_val_created;
-                m_session_key = derive_key(passphrase,
+                m_session_key = deriveKey(passphrase,
                                            salt.first,
                                            salt.second,
                                            iterations,
                                            check_val_created);
                 
                 if (check_val_created != check_val_db)
-                    throw new Exception("TLS_Session database password not valid");
+                    throw new Exception("TLSSession database password not valid");
             }
         }
         else
@@ -104,7 +104,7 @@ public:
             const size_t iterations = 256 * 1024;
             size_t check_val = 0;
             
-            m_session_key = derive_key(passphrase, salt.ptr, salt.length,
+            m_session_key = deriveKey(passphrase, salt.ptr, salt.length,
             iterations, check_val);
             
             sqlite3_statement stmt = sqlite3_statement(m_db, "insert into tls_sessions_metadata"
@@ -123,11 +123,11 @@ public:
         delete m_db;
     }
 
-    override bool load_from_session_id(in Vector!ubyte session_id, ref TLS_Session session)
+    override bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions where session_id = ?1");
         
-        stmt.bind(1, hex_encode(session_id));
+        stmt.bind(1, hexEncode(session_id));
         
         while (stmt.step())
         {
@@ -135,7 +135,7 @@ public:
             
             try
             {
-                session = TLS_Session.decrypt(blob.first, blob.second, m_session_key);
+                session = TLSSession.decrypt(blob.first, blob.second, m_session_key);
                 return true;
             }
             catch (Throwable)
@@ -146,8 +146,8 @@ public:
         return false;
     }
 
-    override bool load_from_server_info(in TLS_Server_Information server,
-                                        ref TLS_Session session)
+    override bool loadFromServerInfo(in TLSServerInformation server,
+                                        ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions"
                                                    ~ " where hostname = ?1 and hostport = ?2"
@@ -162,7 +162,7 @@ public:
             
             try
             {
-                session = TLS_Session.decrypt(blob.first, blob.second, m_session_key);
+                session = TLSSession.decrypt(blob.first, blob.second, m_session_key);
                 return true;
             }
             catch (Throwable)
@@ -173,24 +173,24 @@ public:
         return false;
     }
 
-    override void remove_entry(in Vector!ubyte session_id)
+    override void removeEntry(in Vector!ubyte session_id)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "delete from tls_sessions where session_id = ?1");
         
-        stmt.bind(1, hex_encode(session_id));
+        stmt.bind(1, hexEncode(session_id));
         
         stmt.spin();
     }
 
-    override void save(in TLS_Session session)
+    override void save(in TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "insert or replace into tls_sessions"
                                ~ " values(?1, ?2, ?3, ?4, ?5)");
         
-        stmt.bind(1, hex_encode(session.session_id()));
-        stmt.bind(2, session.start_time());
-        stmt.bind(3, session.server_info().hostname());
-        stmt.bind(4, session.server_info().port());
+        stmt.bind(1, hexEncode(session.sessionId()));
+        stmt.bind(2, session.startTime());
+        stmt.bind(3, session.serverInfo().hostname());
+        stmt.bind(4, session.serverInfo().port());
         stmt.bind(5, session.encrypt(m_session_key, m_rng));
         
         stmt.spin();
@@ -198,14 +198,14 @@ public:
         prune_session_cache();
     }
 
-    override Duration session_lifetime() const
+    override Duration sessionLifetime() const
     { return m_session_lifetime; }
 
 private:
-    @disable this(in TLS_Session_Manager_SQLite);
-    TLS_Session_Manager_SQLite opAssign(in TLS_Session_Manager_SQLite);
+    @disable this(in TLSSessionManagerSQLite);
+    TLSSessionManagerSQLite opAssign(in TLSSessionManagerSQLite);
 
-    void prune_session_cache()
+    void pruneSessionCache()
     {
         sqlite3_statement remove_expired = sqlite3_statement(m_db, "delete from tls_sessions where session_start <= ?1");
         
@@ -232,7 +232,7 @@ private:
     sqlite3_database m_db;
 }
 
-SymmetricKey derive_key(in string passphrase,
+SymmetricKey deriveKey(in string passphrase,
                         in ubyte* salt,
                         size_t salt_len,
                         size_t iterations,
@@ -240,10 +240,10 @@ SymmetricKey derive_key(in string passphrase,
 {
     Unique!PBKDF pbkdf = get_pbkdf("PBKDF2(SHA-512)");
     
-    Secure_Vector!ubyte x = pbkdf.derive_key(32 + 2,
+    SecureVector!ubyte x = pbkdf.deriveKey(32 + 2,
                                           passphrase,
                                           salt, salt_len,
-                                          iterations).bits_of();
+                                          iterations).bitsOf();
     
     check_val = make_ushort(x[0], x[1]);
     return SymmetricKey(&x[2], x.length - 2);

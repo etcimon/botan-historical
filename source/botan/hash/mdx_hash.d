@@ -14,7 +14,7 @@ import botan.utils.loadstor;
 /**
 * MDx Hash Function Base Class
 */
-class MDx_HashFunction : HashFunction
+class MDxHashFunction : HashFunction
 {
 public:
     /**
@@ -32,12 +32,12 @@ public:
         m_count = m_position = 0;
     }
 
-    final override @property size_t hash_block_size() const { return m_buffer.length; }
+    final override @property size_t hashBlockSize() const { return m_buffer.length; }
 protected:
     /*
     * Update the hash
     */
-    final void add_data(in ubyte* input, size_t length)
+    final void addData(in ubyte* input, size_t length)
     {
         m_count += length;
         
@@ -68,7 +68,7 @@ protected:
     /*
     * Finalize a hash
     */
-    final void final_result(ubyte* output)
+    final void finalResult(ubyte* output)
     {
         m_buffer[m_position] = (m_BIG_BIT_ENDIAN ? 0x80 : 0x01);
         foreach (size_t i; (m_position+1) .. m_buffer.length)
@@ -92,7 +92,7 @@ protected:
     * @param blocks = the input
     * @param block_n = the number of blocks
     */
-    abstract void compress_n(in ubyte* blocks, size_t block_n);
+    abstract void compressN(in ubyte* blocks, size_t block_n);
 
     /*
     * Clear memory of sensitive data
@@ -107,28 +107,28 @@ protected:
     * Copy the output to the buffer
     * @param buffer = to put the output into
     */
-    abstract void copy_out(ubyte* buffer);
+    abstract void copyOut(ubyte* buffer);
 
     /**
     * Write the count, if used, to this spot
     * @param output = where to write the counter to
     */
-    final void write_count(ubyte* output)
+    final void writeCount(ubyte* output)
     {
         if (m_COUNT_SIZE < 8)
-            throw new Invalid_State("MDx_HashFunction::write_count: COUNT_SIZE < 8");
-        if (m_COUNT_SIZE >= output_length() || m_COUNT_SIZE >= hash_block_size)
-            throw new Invalid_Argument("MDx_HashFunction: COUNT_SIZE is too big");
+            throw new InvalidState("MDxHashFunction::write_count: COUNT_SIZE < 8");
+        if (m_COUNT_SIZE >= output_length() || m_COUNT_SIZE >= hashBlockSize)
+            throw new InvalidArgument("MDxHashFunction: COUNT_SIZE is too big");
         
         const ulong bit_count = m_count * 8;
         
         if (m_BIG_BYTE_ENDIAN)
-            store_bigEndian(bit_count, output + m_COUNT_SIZE - 8);
+            storeBigEndian(bit_count, output + m_COUNT_SIZE - 8);
         else
-            store_littleEndian(bit_count, output + m_COUNT_SIZE - 8);
+            storeLittleEndian(bit_count, output + m_COUNT_SIZE - 8);
     }
 private:
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     ulong m_count;
     size_t m_position;
 

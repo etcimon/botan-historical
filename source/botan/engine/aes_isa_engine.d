@@ -17,23 +17,23 @@ static if (BOTAN_HAS_AES_NI) import botan.block.aes_ni;
 * Engine for implementations that hook into CPU-specific
 * AES implementations (eg AES-NI, VIA C7, or AMD Geode)
 */
-final class AES_ISA_Engine : Engine
+final class AESISAEngine : Engine
 {
 public:
-    string provider_name() const { return "aes_isa"; }
+    string providerName() const { return "aes_isa"; }
 
-    BlockCipher find_block_cipher(in SCAN_Name request,
-                                  Algorithm_Factory af) const
+    BlockCipher findBlockCipher(in SCANName request,
+                                  AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_AES_NI) {
-            if (CPUID.has_aes_ni())
+            if (CPUID.hasAesNi())
             {
                 if (request.algo_name == "AES-128")
-                    return new AES_128_NI;
+                    return new AES128NI;
                 if (request.algo_name == "AES-192")
-                    return new AES_192_NI;
+                    return new AES192NI;
                 if (request.algo_name == "AES-256")
-                    return new AES_256_NI;
+                    return new AES256NI;
             }
         }
         

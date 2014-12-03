@@ -80,7 +80,7 @@ class Fork : Fanout_Filter
 {
 public:
     final void write(in ubyte* input, size_t length) { send(input, length); }
-    final void set_port(size_t n) { super.set_port(n); }
+    final void setPort(size_t n) { super.setPort(n); }
 
     @property string name() const
     {
@@ -112,7 +112,7 @@ public:
 * threads, the class itself is NOT thread-safe. This is meant as a drop-
 * in replacement for Fork where performance gains are possible.
 */
-class Threaded_Fork : Fork
+class ThreadedFork : Fork
 {
 public:
     @property string name() const
@@ -126,7 +126,7 @@ public:
     this(Filter f1, Filter f2, Filter f3 = null, Filter f4 = null)
     { 
         super(null, cast(size_t)(0));
-        m_thread_data = new Threaded_Fork_Data;
+        m_thread_data = new ThreadedForkData;
         Filter[4] filters = [ f1, f2, f3, f4 ];
         set_next(filters, 4);
     }
@@ -140,7 +140,7 @@ public:
     {
         
         super(null, cast(size_t)(0));
-        m_thread_data = new Threaded_Fork_Data;
+        m_thread_data = new ThreadedForkData;
         set_next(filter_arr, length);
     }
 
@@ -156,9 +156,9 @@ public:
     }
 
 protected:
-    void set_next(Filter* f, size_t n)
+    void setNext(Filter* f, size_t n)
     {
-        super.set_next(f, n);
+        super.setNext(f, n);
         n = next.length;
         
         if (n < m_threads.length)
@@ -168,7 +168,7 @@ protected:
             m_threads.reserve(n);
             foreach (size_t i; m_threads.length .. n)
             {
-                m_threads.push_back(
+                m_threads.pushBack(
                     FreeListRef!Thread(
                         spawn(&thread_entry, this, next[i])));
             }
@@ -193,7 +193,7 @@ protected:
     }
 
 private:
-    void thread_delegate_work(in ubyte* input, size_t length)
+    void threadDelegateWork(in ubyte* input, size_t length)
     {
         //Set the data to do.
         m_thread_data.m_input = input;
@@ -211,7 +211,7 @@ private:
         m_thread_data.m_input_length = 0;
     }
 
-    static void thread_entry(Threaded_Fork This, Filter filter)
+    static void threadEntry(ThreadedFork This, Filter filter)
     {
         while (true)
         {
@@ -229,7 +229,7 @@ private:
     Unique!Threaded_Fork_Data m_thread_data;
 }
 
-struct Threaded_Fork_Data
+struct ThreadedForkData
 {
     /*
     * Semaphore for indicating that there is work to be done (or to

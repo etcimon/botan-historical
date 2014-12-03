@@ -14,7 +14,7 @@ import std.math : pow, log;
 * @param prime_group_size = size of the group in bits
 * @return estimated security level for this group
 */
-size_t dl_work_factor(size_t prime_group_size)
+size_t dlWorkFactor(size_t prime_group_size)
 {
     /*
     Based on GNFS work factors. Constant is 1.43 times the asymptotic

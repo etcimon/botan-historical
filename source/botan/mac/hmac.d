@@ -45,9 +45,9 @@ public:
         return new HMAC(m_hash.clone());
     }
 
-    @property size_t output_length() const { return m_hash.output_length; }
+    @property size_t outputLength() const { return m_hash.output_length; }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
         // Absurd max length here is to support PBKDF2
         return Key_Length_Specification(0, 512);
@@ -59,14 +59,14 @@ public:
     this(HashFunction hash) 
     {
         m_hash = hash;
-        if (m_hash.hash_block_size == 0)
-            throw new Invalid_Argument("HMAC cannot be used with " ~ m_hash.name);
+        if (m_hash.hashBlockSize == 0)
+            throw new InvalidArgument("HMAC cannot be used with " ~ m_hash.name);
     }
 private:
     /*
     * Update a HMAC Calculation
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         m_hash.update(input, length);
     }
@@ -74,7 +74,7 @@ private:
     /*
     * Finalize a HMAC Calculation
     */
-    void final_result(ubyte* mac)
+    void finalResult(ubyte* mac)
     {
         m_hash.flushInto(mac);
         m_hash.update(m_okey);
@@ -86,19 +86,19 @@ private:
     /*
     * HMAC Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         m_hash.clear();
         
-        m_ikey.resize(m_hash.hash_block_size);
-        m_okey.resize(m_hash.hash_block_size);
+        m_ikey.resize(m_hash.hashBlockSize);
+        m_okey.resize(m_hash.hashBlockSize);
         
         std.algorithm.fill(m_ikey.ptr, m_ikey.end(), 0x36);
         std.algorithm.fill(m_okey.ptr, m_okey.end(), 0x5C);
         
-        if (length > m_hash.hash_block_size)
+        if (length > m_hash.hashBlockSize)
         {
-            Secure_Vector!ubyte hmac_key = m_hash.process(key, length);
+            SecureVector!ubyte hmac_key = m_hash.process(key, length);
             xor_buf(m_ikey, hmac_key, hmac_key.length);
             xor_buf(m_okey, hmac_key, hmac_key.length);
         }
@@ -112,5 +112,5 @@ private:
     }
 
     Unique!HashFunction m_hash;
-    Secure_Vector!ubyte m_ikey, m_okey;
+    SecureVector!ubyte m_ikey, m_okey;
 }

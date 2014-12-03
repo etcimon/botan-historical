@@ -31,39 +31,39 @@ static if (BOTAN_HAS_GCM_CLMUL) {
 /**
 * GCM Mode
 */
-class GCM_Mode : AEAD_Mode
+class GCMMode : AEAD_Mode
 {
 public:
-    final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
     {
-        if (!valid_nonce_length(nonce_len))
-            throw new Invalid_IV_Length(name, nonce_len);
+        if (!validNonceLength(nonce_len))
+            throw new InvalidIVLength(name, nonce_len);
         
-        Secure_Vector!ubyte y0 = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte y0 = SecureVector!ubyte(BS);
         
         if (nonce_len == 12)
         {
-            copy_mem(y0.ptr, nonce, nonce_len);
+            copyMem(y0.ptr, nonce, nonce_len);
             y0[15] = 1;
         }
         else
         {
-            y0 = m_ghash.nonce_hash(nonce, nonce_len);
+            y0 = m_ghash.nonceHash(nonce, nonce_len);
         }
         
-        m_ctr.set_iv(y0.ptr, y0.length);
+        m_ctr.setIv(y0.ptr, y0.length);
         
-        Secure_Vector!ubyte m_enc_y0 = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte m_enc_y0 = SecureVector!ubyte(BS);
         m_ctr.encipher(m_enc_y0);
         
         m_ghash.start(m_enc_y0.ptr, m_enc_y0.length);
         
-        return Secure_Vector!ubyte();
+        return SecureVector!ubyte();
     }
 
-    final override void set_associated_data(in ubyte* ad, size_t ad_len)
+    final override void setAssociatedData(in ubyte* ad, size_t ad_len)
     {
-        m_ghash.set_associated_data(ad, ad_len);
+        m_ghash.setAssociatedData(ad, ad_len);
     }
 
     final override @property string name() const
@@ -71,20 +71,20 @@ public:
         return (m_cipher_name ~ "/GCM");
     }
 
-    final override size_t update_granularity() const
+    final override size_t updateGranularity() const
     {
         return 4096; // CTR-BE's internal block size
     }
 
-    final override Key_Length_Specification key_spec() const
+    final override KeyLengthSpecification keySpec() const
     {
-        return m_ctr.key_spec();
+        return m_ctr.keySpec();
     }
 
     // GCM supports arbitrary nonce lengths
-    final override bool valid_nonce_length(size_t) const { return true; }
+    final override bool validNonceLength(size_t) const { return true; }
 
-    final override size_t tag_size() const { return m_tag_size; }
+    final override size_t tagSize() const { return m_tag_size; }
 
     final override void clear()
     {
@@ -92,16 +92,16 @@ public:
         m_ghash.clear();
     }
 protected:
-    override void key_schedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
-        m_ctr.set_key(key, keylen);
+        m_ctr.setKey(key, keylen);
         
         const Vector!ubyte zeros = Vector!ubyte(BS);
-        m_ctr.set_iv(zeros.ptr, zeros.length);
+        m_ctr.setIv(zeros.ptr, zeros.length);
         
-        Secure_Vector!ubyte H = Secure_Vector!ubyte(BS);
+        SecureVector!ubyte H = SecureVector!ubyte(BS);
         m_ctr.encipher(H);
-        m_ghash.set_key(H);
+        m_ghash.setKey(H);
     }
 
     /*
@@ -112,14 +112,14 @@ protected:
         m_tag_size = tag_size;
         m_cipher_name = cipher.name;
         if (cipher.block_size != BS)
-            throw new Invalid_Argument("GCM requires a 128 bit cipher so cannot be used with " ~ cipher.name);
+            throw new InvalidArgument("GCM requires a 128 bit cipher so cannot be used with " ~ cipher.name);
         
         m_ghash = new GHASH;
 
-        m_ctr = new CTR_BE(cipher); // CTR_BE takes ownership of cipher
+        m_ctr = new CTRBE(cipher); // CTR_BE takes ownership of cipher
         
         if (m_tag_size != 8 && m_tag_size != 16)
-            throw new Invalid_Argument(name ~ ": Bad tag size " ~ to!string(m_tag_size));
+            throw new InvalidArgument(name ~ ": Bad tag size " ~ to!string(m_tag_size));
     }
 
     __gshared immutable size_t BS = 16;
@@ -134,7 +134,7 @@ protected:
 /**
 * GCM Encryption
 */
-final class GCM_Encryption : GCM_Mode
+final class GCMEncryption : GCM_Mode
 {
 public:
     /**
@@ -146,12 +146,12 @@ public:
         super(cipher, tag_size);
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     { return input_length + tag_size(); }
 
-    override size_t minimum_final_size() const { return 0; }
+    override size_t minimumFinalSize() const { return 0; }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -161,7 +161,7 @@ public:
         m_ghash.update(buf, sz);
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
         auto mac = m_ghash.finished();
@@ -172,7 +172,7 @@ public:
 /**
 * GCM Decryption
 */
-final class GCM_Decryption : GCM_Mode
+final class GCMDecryption : GCM_Mode
 {
 public:
     /**
@@ -184,15 +184,15 @@ public:
         super(cipher, tag_size);
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         assert(input_length > tag_size(), "Sufficient input");
         return input_length - tag_size();
     }
 
-    override size_t minimum_final_size() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tag_size(); }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -202,7 +202,7 @@ public:
         m_ctr.cipher(buf, buf, sz);
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset)
+    override void finish(SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -224,7 +224,7 @@ public:
         const ubyte* included_tag = &buffer[remaining];
         
         if (!same_mem(mac.ptr, included_tag, tag_size()))
-            throw new Integrity_Failure("GCM tag check failed");
+            throw new IntegrityFailure("GCM tag check failed");
         
         buffer.resize(offset + remaining);
     }
@@ -237,7 +237,7 @@ public:
 final class GHASH : SymmetricAlgorithm
 {
 public:
-    void set_associated_data(in ubyte* input, size_t length)
+    void setAssociatedData(in ubyte* input, size_t length)
     {
         zeroise(m_H_ad);
         
@@ -245,10 +245,10 @@ public:
         m_ad_len = length;
     }
 
-    Secure_Vector!ubyte nonce_hash(in ubyte* nonce, size_t nonce_len)
+    SecureVector!ubyte nonceHash(in ubyte* nonce, size_t nonce_len)
     {
         assert(m_ghash.length == 0, "nonce_hash called during wrong time");
-        Secure_Vector!ubyte y0 = Secure_Vector!ubyte(16);
+        SecureVector!ubyte y0 = SecureVector!ubyte(16);
         
         ghash_update(y0, nonce, nonce_len);
         add_final_block(y0, 0, nonce_len);
@@ -274,11 +274,11 @@ public:
         ghash_update(m_ghash, input, length);
     }
 
-    Secure_Vector!ubyte finished()
+    SecureVector!ubyte finished()
     {
         add_final_block(m_ghash, m_ad_len, m_text_len);
         
-        Secure_Vector!ubyte mac;
+        SecureVector!ubyte mac;
         mac.swap(m_ghash);
         
         mac ^= m_nonce;
@@ -286,7 +286,7 @@ public:
         return mac;
     }
 
-    Key_Length_Specification key_spec() const { return Key_Length_Specification(16); }
+    KeyLengthSpecification keySpec() const { return Key_Length_Specification(16); }
 
     override void clear()
     {
@@ -298,7 +298,7 @@ public:
 
     @property string name() const { return "GHASH"; }
 private:
-    override void key_schedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_H.replace(key[0 .. key+length]);
         m_H_ad.resize(16);
@@ -307,16 +307,16 @@ private:
     }
 
 
-    void gcm_multiply(Secure_Vector!ubyte x) const
+    void gcmMultiply(SecureVector!ubyte x) const
     {
         static if (BOTAN_HAS_GCM_CLMUL) {
-            if (CPUID.has_clmul())
+            if (CPUID.hasClmul())
                 return gcm_multiply_clmul(*cast(ubyte[16]*) x.ptr, *cast(ubyte[16]*) m_H.ptr);
         }
         
         __gshared immutable ulong R = 0xE100000000000000;
 
-        ulong[2] H = [ load_bigEndian!ulong(m_H.ptr, 0), load_bigEndian!ulong(m_H.ptr, 1) ];
+        ulong[2] H = [ loadBigEndian!ulong(m_H.ptr, 0), loadBigEndian!ulong(m_H.ptr, 1) ];
         
         ulong[2] Z = [ 0, 0 ];
         
@@ -324,7 +324,7 @@ private:
         
         foreach (size_t i; 0 .. 2)
         {
-            const ulong X = load_bigEndian!ulong(x.ptr, i);
+            const ulong X = loadBigEndian!ulong(x.ptr, i);
             
             foreach (size_t j; 0 .. 64)
             {
@@ -341,10 +341,10 @@ private:
             }
         }
         
-        store_bigEndian!ulong(x.ptr, Z[0], Z[1]);
+        storeBigEndian!ulong(x.ptr, Z[0], Z[1]);
     }
 
-    void ghash_update(Secure_Vector!ubyte ghash, in ubyte* input, size_t length)
+    void ghashUpdate(SecureVector!ubyte ghash, in ubyte* input, size_t length)
     {
         __gshared immutable size_t BS = 16;
         
@@ -365,22 +365,22 @@ private:
         }
     }
 
-    void add_final_block(Secure_Vector!ubyte hash,
+    void addFinalBlock(SecureVector!ubyte hash,
                          size_t ad_len, size_t text_len)
     {
-        Secure_Vector!ubyte final_block = Secure_Vector!ubyte(16);
-        store_bigEndian!ulong(final_block.ptr, 8*ad_len, 8*text_len);
+        SecureVector!ubyte final_block = SecureVector!ubyte(16);
+        storeBigEndian!ulong(final_block.ptr, 8*ad_len, 8*text_len);
         ghash_update(hash, final_block.ptr, final_block.length);
     }
 
-    Secure_Vector!ubyte m_H;
-    Secure_Vector!ubyte m_H_ad;
-    Secure_Vector!ubyte m_nonce;
-    Secure_Vector!ubyte m_ghash;
+    SecureVector!ubyte m_H;
+    SecureVector!ubyte m_H_ad;
+    SecureVector!ubyte m_nonce;
+    SecureVector!ubyte m_ghash;
     size_t m_ad_len = 0, m_text_len = 0;
 }
 
-void gcm_multiply_clmul(ref ubyte[16] x, in ubyte[16] H) pure
+void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) pure
 {
     /*
     * Algorithms 1 and 5 from Intel's CLMUL guide
@@ -440,5 +440,5 @@ void gcm_multiply_clmul(ref ubyte[16] x, in ubyte[16] H) pure
     
     T3 = _mm_shuffle_epi8(T3, BSWAP_MASK);
     
-    _mm_storeu_si128(cast(__m128i*) x, T3);
+    _mm_storeu_si128(cast(m128i*) x, T3);
 }

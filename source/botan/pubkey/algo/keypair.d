@@ -21,8 +21,8 @@ import botan.utils.types;
 * @param padding = the encryption padding method to use
 * @return true if consistent otherwise false
 */
-bool encryption_consistency_check(RandomNumberGenerator rng,
-                                  in Private_Key key,
+bool encryptionConsistencyCheck(RandomNumberGenerator rng,
+                                  in PrivateKey key,
                                   in string padding)
 {
     auto encryptor = scoped!PK_Encryptor_EME(key, padding);
@@ -32,7 +32,7 @@ bool encryption_consistency_check(RandomNumberGenerator rng,
     Weird corner case, if the key is too small to encrypt anything at
     all. This can happen with very small RSA keys with PSS
     */
-    if (encryptor.maximum_input_size() == 0)
+    if (encryptor.maximumInputSize() == 0)
         return true;
     
     Vector!ubyte plaintext = unlock(rng.random_vec(encryptor.maximum_input_size() - 1));
@@ -54,32 +54,32 @@ bool encryption_consistency_check(RandomNumberGenerator rng,
 * @param padding = the signature padding method to use
 * @return true if consistent otherwise false
 */
-bool signature_consistency_check(RandomNumberGenerator rng,
-                                 in Private_Key key,
+bool signatureConsistencyCheck(RandomNumberGenerator rng,
+                                 in PrivateKey key,
                                  in string padding)
 {
-    auto signer = PK_Signer(key, padding);
-    auto verifier = PK_Verifier(key, padding);
+    auto signer = PKSigner(key, padding);
+    auto verifier = PKVerifier(key, padding);
     Vector!ubyte message = unlock(rng.random_vec(16));
     
     Vector!ubyte signature;
     
     try
     {
-        signature = signer.sign_message(message, rng);
+        signature = signer.signMessage(message, rng);
     }
-    catch(Encoding_Error)
+    catch(EncodingError)
     {
         return false;
     }
     
-    if (!verifier.verify_message(message, signature))
+    if (!verifier.verifyMessage(message, signature))
         return false;
     
     // Now try to check a corrupt signature, ensure it does not succeed
     ++message[0];
     
-    if (verifier.verify_message(message, signature))
+    if (verifier.verifyMessage(message, signature))
         return false;
     
     return true;

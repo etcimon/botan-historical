@@ -18,7 +18,7 @@ import botan.utils.types;
 * @return ubyte sequence identifying the hash
 * @throw new Invalid_Argument if the hash has no known PKCS #1 hash id
 */
-Vector!ubyte pkcs_hash_id(in string name)
+Vector!ubyte pkcsHashId(in string name)
 {
     // Special case for SSL/TLS RSA signatures
     if (name == "Parallel(MD5,SHA-160)")
@@ -26,7 +26,7 @@ Vector!ubyte pkcs_hash_id(in string name)
     
     if (name == "MD2")
         return Vector!ubyte(MD2_PKCS_ID,
-                            MD2_PKCS_ID + (MD2_PKCS_ID).length);
+                            MD2_PKCS_ID + (MD2PKCSID).length);
     
     if (name == "MD5")
         return Vector!ubyte(MD5_PKCS_ID);
@@ -55,7 +55,7 @@ Vector!ubyte pkcs_hash_id(in string name)
     if (name == "Tiger(24,3)")
         return Vector!ubyte(TIGER_PKCS_ID);
     
-    throw new Invalid_Argument("No PKCS #1 identifier for " ~ name);
+    throw new InvalidArgument("No PKCS #1 identifier for " ~ name);
 }
 
 /**
@@ -64,7 +64,7 @@ Vector!ubyte pkcs_hash_id(in string name)
 * @return ubyte code identifying the hash, or 0 if not known
 */
 
-ubyte ieee1363_hash_id(in string name)
+ubyte ieee1363HashId(in string name)
 {
     if (name == "SHA-160")     return 0x33;
     

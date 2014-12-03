@@ -16,15 +16,15 @@ import std.conv : to;
 
 typedef ushort TLS_Alert_Type;
 /**
-* SSL/TLS TLS_Alert Message
+* SSL/TLS TLSAlert Message
 */
-struct TLS_Alert
+struct TLSAlert
 {
 public:
     /**
     * Type codes for TLS alerts
     */
-    enum : TLS_Alert_Type {
+    enum : TLSAlertType {
         CLOSE_NOTIFY                        = 0,
         UNEXPECTED_MESSAGE                  = 10,
         BAD_RECORD_MAC                      = 20,
@@ -64,22 +64,22 @@ public:
     /**
     * @return true iff this alert is non-empty
     */
-    bool is_valid() const { return (m_type_code != NULL_ALERT); }
+    bool isValid() const { return (m_type_code != NULL_ALERT); }
 
     /**
     * @return if this alert is a fatal one or not
     */
-    bool is_fatal() const { return m_fatal; }
+    bool isFatal() const { return m_fatal; }
 
     /**
     * @return type of alert
     */
-    TLS_Alert_Type type() const { return m_type_code; }
+    TLSAlertType type() const { return m_type_code; }
 
     /**
     * @return type of alert
     */
-    string type_string() const
+    string typeString() const
     {
         switch(type())
         {
@@ -173,18 +173,18 @@ public:
     }
 
     /**
-    * Deserialize an TLS_Alert message
+    * Deserialize an TLSAlert message
     * @param buf = the serialized alert
     */
-    this(in Secure_Vector!ubyte buf)
+    this(in SecureVector!ubyte buf)
     {
         if (buf.length != 2)
-            throw new Decoding_Error("TLS_Alert: Bad size " ~ to!string(buf.length) ~ " for alert message");
+            throw new DecodingError("TLSAlert: Bad size " ~ to!string(buf.length) ~ " for alert message");
         
         if (buf[0] == 1)        m_fatal = false;
         else if (buf[0] == 2)     m_fatal = true;
         else
-            throw new Decoding_Error("TLS_Alert: Bad code for alert level");
+            throw new DecodingError("TLSAlert: Bad code for alert level");
         
         const ubyte dc = buf[1];
         
@@ -192,11 +192,11 @@ public:
     }
 
     /**
-    * Create a new TLS_Alert
+    * Create a new TLSAlert
     * @param type_code = the type of alert
     * @param fatal = specifies if this is a fatal alert
     */
-    this(TLS_Alert_Type type_code = NULL_ALERT, bool fatal = false)
+    this(TLSAlertType type_code = NULL_ALERT, bool fatal = false)
     {
         m_fatal = fatal;
         m_type_code = type_code;

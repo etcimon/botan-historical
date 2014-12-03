@@ -17,7 +17,7 @@ import std.algorithm : swap;
 * aka PKCS #1 block type 1
 * aka EMSA3 from IEEE 1363
 */
-final class EMSA_PKCS1v15 : EMSA
+final class EMSAPKCS1v15 : EMSA
 {
 public:
     /**
@@ -34,25 +34,25 @@ public:
         m_hash.update(input, length);
     }
 
-    Secure_Vector!ubyte raw_data()
+    SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-    Secure_Vector!ubyte
-        encoding_of(in Secure_Vector!ubyte msg,
+    SecureVector!ubyte
+        encodingOf(in SecureVector!ubyte msg,
                     size_t output_bits,
                     RandomNumberGenerator)
     {
         if (msg.length != m_hash.output_length)
-            throw new Encoding_Error("encoding_of: Bad input length");
+            throw new EncodingError("encoding_of: Bad input length");
         
         return emsa3_encoding(msg, output_bits,
                               m_hash_id.ptr, m_hash_id.length);
     }
 
-    bool verify(in Secure_Vector!ubyte coded,
-                in Secure_Vector!ubyte raw,
+    bool verify(in SecureVector!ubyte coded,
+                in SecureVector!ubyte raw,
                 size_t key_bits)
     {
         if (raw.length != m_hash.output_length)
@@ -78,7 +78,7 @@ private:
 * (which according to QCA docs is "identical to PKCS#11's CKM_RSA_PKCS
 * mechanism", something I have not confirmed)
 */
-final class EMSA_PKCS1v15_Raw : EMSA
+final class EMSAPKCS1v15Raw : EMSA
 {
 public:
     void update(in ubyte* input, size_t length)
@@ -86,22 +86,22 @@ public:
         m_message += Pair(input, length);
     }
 
-    Secure_Vector!ubyte raw_data()
+    SecureVector!ubyte rawData()
     {
-        Secure_Vector!ubyte ret;
+        SecureVector!ubyte ret;
         std.algorithm.swap(ret, m_message);
         return ret;
     }
 
-    Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                     size_t output_bits,
                                     RandomNumberGenerator)
     {
         return emsa3_encoding(msg, output_bits, null, 0);
     }
 
-    bool verify(in Secure_Vector!ubyte coded,
-                in Secure_Vector!ubyte raw,
+    bool verify(in SecureVector!ubyte coded,
+                in SecureVector!ubyte raw,
                 size_t key_bits)
     {
         try
@@ -115,21 +115,21 @@ public:
     }
 
 private:
-    Secure_Vector!ubyte m_message;
+    SecureVector!ubyte m_message;
 }
 
 private:
 
-Secure_Vector!ubyte emsa3_encoding(in Secure_Vector!ubyte msg,
+SecureVector!ubyte emsa3Encoding(in SecureVector!ubyte msg,
                                 size_t output_bits,
                                 in ubyte* hash_id,
                                 size_t hash_id_length)
 {
     size_t output_length = output_bits / 8;
     if (output_length < hash_id_length + msg.length + 10)
-        throw new Encoding_Error("emsa3_encoding: Output length is too small");
+        throw new EncodingError("emsa3_encoding: Output length is too small");
     
-    Secure_Vector!ubyte T = Secure_Vector!ubyte(output_length);
+    SecureVector!ubyte T = SecureVector!ubyte(output_length);
     const size_t P_LENGTH = output_length - msg.length - hash_id_length - 2;
     
     T[0] = 0x01;

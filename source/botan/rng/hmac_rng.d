@@ -25,7 +25,7 @@ import std.datetime;
 * Krawczyk's paper), for instance one could use HMAC(SHA-512) as the
 * extractor and CMAC(AES-256) as the PRF.
 */
-final class HMAC_RNG : RandomNumberGenerator
+final class HMACRNG : RandomNumberGenerator
 {
 public:
     /*
@@ -37,7 +37,7 @@ public:
         {
             reseed(256);
             if (!is_seeded())
-                throw new PRNG_Unseeded(name);
+                throw new PRNGUnseeded(name);
         }
         
         const size_t max_per_prf_iter = m_prf.output_length / 2;
@@ -51,7 +51,7 @@ public:
             
             const size_t copied = std.algorithm.min(length, max_per_prf_iter);
             
-            copy_mem(output, m_K.ptr, copied);
+            copyMem(output, m_K.ptr, copied);
             output += copied;
             length -= copied;
             
@@ -62,7 +62,7 @@ public:
         }
     }
 
-    bool is_seeded() const
+    bool isSeeded() const
     {
         return (m_collected_entropy_estimate >= 256);
     }
@@ -111,7 +111,7 @@ public:
             }
         );
         
-        global_state().poll_available_sources(accum);
+        globalState().pollAvailableSources(accum);
         
         /*
         * It is necessary to feed forward poll data. Otherwise, a good poll
@@ -132,11 +132,11 @@ public:
         
         /* Now derive the new PRK using everything that has been fed into
         the extractor, and set the PRF key to that */
-        m_prf.set_key(m_extractor.finished());
+        m_prf.setKey(m_extractor.finished());
         
         // Now generate a new PRF output to use as the XTS extractor salt
         hmac_prf(*m_prf, m_K, m_counter, "xts");
-        m_extractor.set_key(m_K);
+        m_extractor.setKey(m_K);
         
         // Reset state
         zeroise(m_K);
@@ -151,7 +151,7 @@ public:
     /*
     * Add user-supplied entropy to the extractor input
     */
-    void add_entropy(in ubyte* input, size_t length)
+    void addEntropy(in ubyte* input, size_t length)
     {
         m_extractor.update(input, length);
         reseed(BOTAN_RNG_RESEED_POLL_BITS);
@@ -166,9 +166,9 @@ public:
     {
         m_extractor = extractor; 
         m_prf = prf;
-        if (!m_prf.valid_keylength(m_extractor.output_length) ||
-            !m_extractor.valid_keylength(m_prf.output_length))
-            throw new Invalid_Argument("HMAC_RNG: Bad algo combination " ~
+        if (!m_prf.validKeylength(m_extractor.output_length) ||
+            !m_extractor.validKeylength(m_prf.output_length))
+            throw new InvalidArgument("HMAC_RNG: Bad algo combination " ~
                                        m_extractor.name ~ " and " ~
                                        m_prf.name);
         
@@ -188,8 +188,8 @@ public:
         The PRF key will not be used to generate outputs until after reseed
         sets m_seeded to true.
         */
-        Secure_Vector!ubyte prf_key = Secure_Vector!ubyte(m_extractor.output_length);
-        m_prf.set_key(prf_key);
+        SecureVector!ubyte prf_key = SecureVector!ubyte(m_extractor.output_length);
+        m_prf.setKey(prf_key);
         
         /*
         Use PRF("Botan HMAC_RNG XTS") as the intitial XTS key.
@@ -200,7 +200,7 @@ public:
         If I understand the E-t-E paper correctly (specifically Section 4),
         using this fixed extractor key is safe to do.
         */
-        m_extractor.set_key(prf.process("Botan HMAC_RNG XTS"));
+        m_extractor.setKey(prf.process("Botan HMAC_RNG XTS"));
     }
 private:
     Unique!MessageAuthenticationCode m_extractor;
@@ -209,7 +209,7 @@ private:
     size_t m_collected_entropy_estimate = 0;
     size_t m_output_since_reseed = 0;
 
-    Secure_Vector!ubyte m_K;
+    SecureVector!ubyte m_K;
     uint m_counter = 0;
 }
 
@@ -217,8 +217,8 @@ private:
 
 private:
 
-void hmac_prf(MessageAuthenticationCode prf,
-              Secure_Vector!ubyte K,
+void hmacPrf(MessageAuthenticationCode prf,
+              SecureVector!ubyte K,
               ref uint counter,
               in string label)
 {
@@ -227,8 +227,8 @@ void hmac_prf(MessageAuthenticationCode prf,
     
     prf.update(K);
     prf.update(label);
-    prf.update_bigEndian(timestamp);
-    prf.update_bigEndian(counter);
+    prf.updateBigEndian(timestamp);
+    prf.updateBigEndian(counter);
     prf.flushInto(K.ptr);
     
     ++counter;

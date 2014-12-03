@@ -18,13 +18,13 @@ import botan.utils.types;
 /**
 * Blowfish
 */
-final class Blowfish : Block_Cipher_Fixed_Params!(8, 1, 56)
+final class Blowfish : BlockCipherFixedParams!(8, 1, 56)
 {
 public:
     /*
     * Blowfish Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
@@ -33,8 +33,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -49,7 +49,7 @@ public:
             
             L ^= m_P[16]; R ^= m_P[17];
             
-            store_bigEndian(output, R, L);
+            storeBigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -60,7 +60,7 @@ public:
     /*
     * Blowfish Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
@@ -69,8 +69,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             for (size_t j = 17; j != 1; j -= 2)
             {
@@ -85,7 +85,7 @@ public:
             
             L ^= m_P[1]; R ^= m_P[0];
             
-            store_bigEndian(output, R, L);
+            storeBigEndian(output, R, L);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -96,14 +96,14 @@ public:
     /**
     * Modified EKSBlowfish key schedule, used for bcrypt password hashing
     */
-    void eks_key_schedule(in ubyte* key, size_t length,
+    void eksKeySchedule(in ubyte* key, size_t length,
                           in ubyte[16] salt, size_t workfactor)
     {
         // Truncate longer passwords to the 56 ubyte limit Blowfish enforces
         length = std.algorithm.min(length, 55);
         
         if (workfactor == 0)
-            throw new Invalid_Argument("Bcrypt work factor must be at least 1");
+            throw new InvalidArgument("Bcrypt work factor must be at least 1");
         
         /*
         * On a 2.8 GHz Core-i7, workfactor == 18 takes about 25 seconds to
@@ -111,7 +111,7 @@ public:
         * time being.
         */
         if (workfactor > 18)
-            throw new Invalid_Argument("Requested Bcrypt work factor " ~
+            throw new InvalidArgument("Requested Bcrypt work factor " ~
                                        to!string(workfactor) ~ " too large");
         
         m_P.resize(18);
@@ -143,11 +143,11 @@ public:
 
     override @property string name() const { return "Blowfish"; }
     BlockCipher clone() const { return new Blowfish; }
-private:
+protected:
     /*
     * Blowfish Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         m_P.resize(18);
         std.algorithm.copy(P_INIT[0 .. 18], m_P);
@@ -160,7 +160,7 @@ private:
         key_expansion(key, length, null_salt);
     }
 
-
+private:
     void key_expansion(in ubyte* key,
                        size_t length,
                        in ubyte[16] salt)
@@ -178,7 +178,7 @@ private:
     /*
     * Generate one of the Sboxes
     */
-    void generate_sbox(ref Secure_Vector!uint box,
+    void generate_sbox(ref SecureVector!uint box,
                        ref uint L, ref uint R,
                        in ubyte[16] salt,
                        size_t salt_off) const
@@ -190,8 +190,8 @@ private:
         
         for (size_t i = 0; i != box.length; i += 2)
         {
-            L ^= load_bigEndian!uint(salt, (i + salt_off) % 4);
-            R ^= load_bigEndian!uint(salt, (i + salt_off + 1) % 4);
+            L ^= loadBigEndian!uint(salt, (i + salt_off) % 4);
+            R ^= loadBigEndian!uint(salt, (i + salt_off + 1) % 4);
             
             foreach (size_t j; iota(0, 16, 2))
             {
@@ -387,5 +387,5 @@ private:
         0x01C36AE4, 0xD6EBE1F9, 0x90D4F869, 0xA65CDEA0, 0x3F09252D, 0xC208E69F,
         0xB74E6132, 0xCE77E25B, 0x578FDFE3, 0x3AC372E6 ];
 
-    Secure_Vector!uint m_S, m_P;
+    SecureVector!uint m_S, m_P;
 }

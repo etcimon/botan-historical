@@ -17,16 +17,16 @@ import botan.utils.simd.immintrin;
 * Entropy source using the rdrand instruction first introduced on
 * Intel's Ivy Bridge architecture.
 */
-final class Intel_Rdrand : EntropySource
+final class IntelRdrand : EntropySource
 {
 public:
     @property string name() const { return "Intel Rdrand"; }
     /*
     * Get the timestamp
     */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
-        if (!CPUID.has_rdrand())
+        if (!CPUID.hasRdrand())
             return;
         
         /*

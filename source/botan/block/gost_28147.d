@@ -20,7 +20,7 @@ import botan.utils.exceptn;
 * considered a local configuration issue. Several different sets are
 * used.
 */
-final class GOST_28147_89_Params
+final class GOST2814789Params
 {
 public:
     /**
@@ -28,7 +28,7 @@ public:
     * @param col = the column
     * @return sbox entry at this row/column
     */
-    ubyte sbox_entry(size_t row, size_t col) const
+    ubyte sboxEntry(size_t row, size_t col) const
     {
         ubyte x = m_sboxes[4 * col + (row / 2)];
         
@@ -38,7 +38,7 @@ public:
     /**
     * @return name of this parameter set
     */
-    string param_name() const { return m_name; }
+    string paramName() const { return m_name; }
 
     /**
     * Default GOST parameters are the ones given in GOST R 34.11 for
@@ -75,7 +75,7 @@ public:
         else if (m_name == "R3411_CryptoPro")
             m_sboxes = GOST_R_3411_CRYPTOPRO_PARAMS;
         else
-            throw new Invalid_Argument("GOST_28147_89_Params: Unknown " ~ m_name);
+            throw new InvalidArgument("GOST_28147_89_Params: Unknown " ~ m_name);
     }
 private:
     const ubyte[64] m_sboxes;
@@ -85,19 +85,19 @@ private:
 /**
 * GOST 28147-89
 */
-final class GOST_28147_89 : Block_Cipher_Fixed_Params!(8, 32)
+final class GOST2814789 : BlockCipherFixedParams!(8, 32)
 {
 public:
 
     /*
     * GOST Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint N1 = load_littleEndian!uint(input, 0);
-            uint N2 = load_littleEndian!uint(input, 1);
+            uint N1 = loadLittleEndian!uint(input, 0);
+            uint N2 = loadLittleEndian!uint(input, 1);
             
             foreach (size_t j; 0 .. 3)
             {
@@ -112,7 +112,7 @@ public:
             mixin(GOST_2ROUND!(N1, N2, 3, 2)());
             mixin(GOST_2ROUND!(N1, N2, 1, 0)());
             
-            store_littleEndian(output, N2, N1);
+            storeLittleEndian(output, N2, N1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -122,12 +122,12 @@ public:
     /*
     * GOST Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint N1 = load_littleEndian!uint(input, 0);
-            uint N2 = load_littleEndian!uint(input, 1);
+            uint N1 = loadLittleEndian!uint(input, 0);
+            uint N2 = loadLittleEndian!uint(input, 1);
             
             mixin(GOST_2ROUND!(N1, N2, 0, 1)());
             mixin(GOST_2ROUND!(N1, N2, 2, 3)());
@@ -142,7 +142,7 @@ public:
                 mixin(GOST_2ROUND!(N1, N2, 1, 0)());
             }
             
-            store_littleEndian(output, N2, N1);
+            storeLittleEndian(output, N2, N1);
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
         }
@@ -167,29 +167,29 @@ public:
         else if (m_SBOX[0] == 0x0002D000)
             sbox_name = "R3411_CryptoPro";
         else
-            throw new Internal_Error("GOST-28147 unrecognized sbox value");
+            throw new InternalError("GOST-28147 unrecognized sbox value");
         
         return "GOST-28147-89(" ~ sbox_name ~ ")";
     }
 
-    BlockCipher clone() const { return new GOST_28147_89(m_SBOX); }
+    BlockCipher clone() const { return new GOST2814789(m_SBOX); }
 
     /**
     * @param params = the sbox parameters to use
     */
-    this(in GOST_28147_89_Params param)
+    this(in GOST2814789Params param)
     {
         m_SBOX = 1024;
         // Convert the parallel 4x4 sboxes into larger word-based sboxes
         foreach (size_t i; 0 .. 4)
             foreach (size_t j; 0 .. 256)
         {
-            const uint T = (param.sbox_entry(2*i  , j % 16)) |
-                (param.sbox_entry(2*i+1, j / 16) << 4);
-            m_SBOX[256*i+j] = rotate_left(T, (11+8*i) % 32);
+            const uint T = (param.sboxEntry(2*i  , j % 16)) |
+                (param.sboxEntry(2*i+1, j / 16) << 4);
+            m_SBOX[256*i+j] = rotateLeft(T, (11+8*i) % 32);
         }
     }
-private:
+protected:
     this(in Vector!uint other_SBOX) {
         m_SBOX = other_SBOX; 
         m_EK = 8;
@@ -198,11 +198,11 @@ private:
     /*
     * GOST Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_EK.resize(8);
         foreach (size_t i; 0 .. 8)
-            m_EK[i] = load_littleEndian!uint(key, i);
+            m_EK[i] = loadLittleEndian!uint(key, i);
     }
 
     /*
@@ -211,7 +211,7 @@ private:
     */
     Vector!uint m_SBOX;
 
-    Secure_Vector!uint m_EK;
+    SecureVector!uint m_EK;
 }
 
 protected:

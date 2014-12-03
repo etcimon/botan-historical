@@ -615,7 +615,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     // add an element to the tree, returns the node added, or the existing node
     // if it has already been added and allowDuplicates is false
     
-    private auto _add(Elem n)
+    private auto Add(Elem n)
     {
         Node result;
         static if(!allowDuplicates)
@@ -704,7 +704,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     private Node   _begin;
     private size_t _length;
     
-    private void _setup()
+    private void Setup()
     {
         assert(!_end); //Make sure that _setup isn't run more than once.
         _begin = _end = allocate();
@@ -790,7 +790,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     }
         
     // find a node based on an element value
-    private Node _find(Elem e)
+    private Node Find(Elem e)
     {
         static if(allowDuplicates)
         {
@@ -1146,7 +1146,7 @@ assert(equal(rbt[], [5]));
     }
     
     // find the first node where the value is > e
-    private Node _firstGreater(Elem e)
+    private Node FirstGreater(Elem e)
     {
         // can't use _find, because we cannot return null
         auto cur = _end.left;
@@ -1165,7 +1165,7 @@ assert(equal(rbt[], [5]));
     }
     
     // find the first node where the value is >= e
-    private Node _firstGreaterEqual(Elem e)
+    private Node FirstGreaterEqual(Elem e)
     {
         // can't use _find, because we cannot return null.
         auto cur = _end.left;

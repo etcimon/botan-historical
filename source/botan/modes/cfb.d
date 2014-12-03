@@ -17,19 +17,19 @@ import botan.utils.xor_buf;
 /**
 * CFB Mode
 */
-class CFB_Mode : Cipher_Mode
+class CFBMode : Cipher_Mode
 {
 public:
-    final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
     {
-        if (!valid_nonce_length(nonce_len))
-            throw new Invalid_IV_Length(name, nonce_len);
+        if (!validNonceLength(nonce_len))
+            throw new InvalidIVLength(name, nonce_len);
         
         m_shift_register.replace(nonce[0 .. nonce + nonce_len]);
         m_keystream_buf.resize(m_shift_register.length);
         cipher().encrypt(m_shift_register, m_keystream_buf);
         
-        return Secure_Vector!ubyte();
+        return SecureVector!ubyte();
     }
 
     final override @property string name() const
@@ -40,32 +40,32 @@ public:
             return cipher().name ~ "/CFB(" ~ to!string(feedback()*8) ~ ")";
     }
 
-    final override size_t update_granularity() const
+    final override size_t updateGranularity() const
     {
         return feedback();
     }
 
-    final override size_t minimum_final_size() const
+    final override size_t minimumFinalSize() const
     {
         return 0;
     }
 
-    final override Key_Length_Specification key_spec() const
+    final override KeyLengthSpecification keySpec() const
     {
-        return cipher().key_spec();
+        return cipher().keySpec();
     }
 
-    final override size_t output_length(size_t input_length) const
+    final override size_t outputLength(size_t input_length) const
     {
         return input_length;
     }
 
-    final override size_t default_nonce_length() const
+    final override size_t defaultNonceLength() const
     {
         return cipher().block_size;
     }
 
-    final override bool valid_nonce_length(size_t n) const
+    final override bool validNonceLength(size_t n) const
     {
         return (n == cipher().block_size);
     }
@@ -81,7 +81,7 @@ protected:
         m_cipher = cipher;
         m_feedback_bytes = feedback_bits ? feedback_bits / 8 : cipher.block_size;
         if (feedback_bits % 8 || feedback() > cipher.block_size)
-            throw new Invalid_Argument(name() ~ ": feedback bits " ~
+            throw new InvalidArgument(name() ~ ": feedback bits " ~
                                        to!string(feedback_bits) ~ " not supported");
     }
 
@@ -89,26 +89,26 @@ protected:
 
     final size_t feedback() const { return m_feedback_bytes; }
 
-    final Secure_Vector!ubyte shift_register() { return m_shift_register; }
+    final SecureVector!ubyte shiftRegister() { return m_shift_register; }
 
-    final Secure_Vector!ubyte keystream_buf() { return m_keystream_buf; }
+    final SecureVector!ubyte keystreamBuf() { return m_keystream_buf; }
 
 private:
-    final override void key_schedule(in ubyte* key, size_t length)
+    final override void keySchedule(in ubyte* key, size_t length)
     {
-        m_cipher.set_key(key, length);
+        m_cipher.setKey(key, length);
     }
 
     Unique!BlockCipher m_cipher;
-    Secure_Vector!ubyte m_shift_register;
-    Secure_Vector!ubyte m_keystream_buf;
+    SecureVector!ubyte m_shift_register;
+    SecureVector!ubyte m_keystream_buf;
     size_t m_feedback_bytes;
 }
 
 /**
 * CFB Encryption
 */
-final class CFB_Encryption : CFB_Mode
+final class CFBEncryption : CFB_Mode
 {
 public:
     this(BlockCipher cipher, size_t feedback_bits)
@@ -116,7 +116,7 @@ public:
         super(cipher, feedback_bits) 
     }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         size_t sz = buffer.length - offset;
@@ -124,7 +124,7 @@ public:
         
         const size_t BS = cipher().block_size;
         
-        Secure_Vector!ubyte state = shift_register();
+        SecureVector!ubyte state = shift_register();
         const size_t shift = feedback();
         
         while (sz)
@@ -133,8 +133,8 @@ public:
             xor_buf(buf.ptr, &keystream_buf()[0], took);
             
             // Assumes feedback-sized block except for last input
-            copy_mem(state.ptr, &state[shift], BS - shift);
-            copy_mem(&state[BS-shift], buf.ptr, took);
+            copyMem(state.ptr, &state[shift], BS - shift);
+            copyMem(&state[BS-shift], buf.ptr, took);
             cipher().encrypt(state, keystream_buf());
             
             buf += took;
@@ -143,7 +143,7 @@ public:
     }
 
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
     }
@@ -152,7 +152,7 @@ public:
 /**
 * CFB Decryption
 */
-final class CFB_Decryption : CFB_Mode
+final class CFBDecryption : CFB_Mode
 {
 public:
     this(BlockCipher cipher, size_t feedback_bits) 
@@ -160,7 +160,7 @@ public:
         super(cipher, feedback_bits);
     }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         size_t sz = buffer.length - offset;
@@ -168,7 +168,7 @@ public:
         
         const size_t BS = cipher().block_size;
         
-        Secure_Vector!ubyte state = shift_register();
+        SecureVector!ubyte state = shift_register();
         const size_t shift = feedback();
         
         while (sz)
@@ -176,8 +176,8 @@ public:
             const size_t took = std.algorithm.min(shift, sz);
             
             // first update shift register with ciphertext
-            copy_mem(state.ptr, &state[shift], BS - shift);
-            copy_mem(&state[BS-shift], buf.ptr, took);
+            copyMem(state.ptr, &state[shift], BS - shift);
+            copyMem(&state[BS-shift], buf.ptr, took);
             
             // then decrypt
             xor_buf(buf.ptr, &keystream_buf()[0], took);
@@ -190,7 +190,7 @@ public:
         }
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
     }

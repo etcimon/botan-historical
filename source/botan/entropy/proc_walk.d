@@ -23,7 +23,7 @@ import core.sys.posix.unistd;
 import core.sys.posix.dirent;
 
 
-final class Directory_Walker : File_Descriptor_Source
+final class DirectoryWalker : File_Descriptor_Source
 {
 public:
     this(in string root) 
@@ -39,14 +39,14 @@ public:
             closedir(m_cur_dir.first);
     }
     
-    int next_fd();
+    int nextFd();
 private:
-    void add_directory(in string dirname)
+    void addDirectory(in string dirname)
     {
-        m_dirlist.push_back(dirname);
+        m_dirlist.pushBack(dirname);
     }
     
-    Pair!(dirent*, string) get_next_dirent()
+    Pair!(dirent*, string) getNextDirent()
     {
         while (m_cur_dir.first)
         {
@@ -59,7 +59,7 @@ private:
             while (!m_dirlist.empty && !m_cur_dir.first)
             {
                 const string next_dir_name = m_dirlist[0];
-                m_dirlist.pop_front();
+                m_dirlist.popFront();
                 
                 if (DIR* next_dir = opendir(next_dir_name.toStringz))
                     m_cur_dir = Pair(next_dir, next_dir_name);
@@ -74,10 +74,10 @@ private:
 }
 
 
-final class File_Descriptor_Source
+final class FileDescriptorSource
 {
 public:
-    int next_fd()
+    int nextFd()
     {
         while (true)
         {
@@ -119,20 +119,20 @@ public:
 /**
 * File Tree Walking Entropy Source
 */
-final class ProcWalking_EntropySource : EntropySource
+final class ProcWalkingEntropySource : EntropySource
 {
 public:
     @property string name() const { return "Proc Walker"; }
 
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         __gshared immutable size_t MAX_FILES_READ_PER_POLL = 2048;
         const double ENTROPY_ESTIMATE = 1.0 / (8*1024);
         
         if (!m_dir)
-            m_dir = new Directory_Walker(m_path);
+            m_dir = new DirectoryWalker(m_path);
         
-        Secure_Vector!ubyte io_buffer = accum.get_io_buffer(4096);
+        SecureVector!ubyte io_buffer = accum.getIoBuffer(4096);
         
         foreach (size_t i; 0 .. MAX_FILES_READ_PER_POLL)
         {
@@ -151,7 +151,7 @@ public:
             if (got > 0)
                 accum.add(io_buffer.ptr, got, ENTROPY_ESTIMATE);
             
-            if (accum.polling_goal_achieved())
+            if (accum.pollingGoalAchieved())
                 break;
         }
     }

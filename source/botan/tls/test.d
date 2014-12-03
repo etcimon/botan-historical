@@ -13,27 +13,27 @@ import botan.codec.hex;
 import botan.utils.memory.memory;
 import botan.utils.types;
 
-class TLS_Credentials_Manager_Test : public TLS_Credentials_Manager
+class TLSCredentialsManagerTest : public TLSCredentialsManager
 {
 public:
-    this(in X509_Certificate server_cert, in X509_Certificate ca_cert, Private_Key server_key) 
+    this(in X509Certificate server_cert, in X509Certificate ca_cert, PrivateKey server_key) 
     {
         m_server_cert = server_cert;
         m_ca_cert = ca_cert;
         m_key = server_key;
         auto store = new Certificate_Store_In_Memory;
-        store.add_certificate(m_ca_cert);
-        m_stores.push_back(store);
+        store.addCertificate(m_ca_cert);
+        m_stores.pushBack(store);
     }
     
-    override Vector!Certificate_Store trusted_certificate_authorities(string, string)
+    override Vector!Certificate_Store trustedCertificateAuthorities(string, string)
     {
         return m_stores;
     }
     
-    override Vector!X509_Certificate cert_chain( in Vector!string cert_key_types, string type, string) 
+    override Vector!X509Certificate certChain( in Vector!string cert_key_types, string type, string) 
     {
-        Vector!X509_Certificate chain;
+        Vector!X509Certificate chain;
         
         if (type == "tls-server")
         {
@@ -44,19 +44,19 @@ public:
             
             if (have_match)
             {
-                chain.push_back(m_server_cert);
-                chain.push_back(m_ca_cert);
+                chain.pushBack(m_server_cert);
+                chain.pushBack(m_ca_cert);
             }
         }
         
         return chain;
     }
     
-    override void verify_certificate_chain(string type, string purported_hostname, in Vector!X509_Certificate cert_chain)
+    override void verifyCertificateChain(string type, string purported_hostname, in Vector!X509Certificate cert_chain)
     {
         try
         {
-            super.verify_certificate_chain(type, purported_hostname, cert_chain);
+            super.verifyCertificateChain(type, purported_hostname, cert_chain);
         }
         catch(Exception e)
         {
@@ -64,63 +64,63 @@ public:
         }
     }
     
-    override Private_Key private_key_for(in X509_Certificate, string, string)
+    override PrivateKey privateKeyFor(in X509Certificate, string, string)
     {
         return m_key;
     }
 public:
-    X509_Certificate m_server_cert, m_ca_cert;
-    Private_Key m_key;
+    X509Certificate m_server_cert, m_ca_cert;
+    PrivateKey m_key;
     Vector!Certificate_Store m_stores;
 }
 
-TLS_Credentials_Manager create_creds(RandomNumberGenerator rng)
+TLSCredentialsManager createCreds(RandomNumberGenerator rng)
 {
-    Private_Key ca_key = new RSA_PrivateKey(rng, 1024);
+    PrivateKey ca_key = new RSAPrivateKey(rng, 1024);
     
     X509_Cert_Options ca_opts;
     ca_opts.common_name = "Test CA";
     ca_opts.country = "US";
-    ca_opts.CA_key(1);
+    ca_opts.cAKey(1);
     
-    X509_Certificate ca_cert = x509self.create_self_signed_cert(ca_opts, ca_key, "SHA-256", rng);
+    X509Certificate ca_cert = x509self.createSelfSignedCert(ca_opts, ca_key, "SHA-256", rng);
     
-    Private_Key server_key = new RSA_PrivateKey(rng, 1024);
+    PrivateKey server_key = new RSAPrivateKey(rng, 1024);
     
     X509_Cert_Options server_opts;
     server_opts.common_name = "localhost";
     server_opts.country = "US";
     
-    PKCS10_Request req = x509self.create_cert_req(server_opts, server_key, "SHA-256", rng);
+    PKCS10Request req = x509self.create_cert_req(server_opts, server_key, "SHA-256", rng);
     
     X509_CA ca = X509_CA(ca_cert, ca_key, "SHA-256");
     
     auto now = Clock.currTime(UTC());
-    X509_Time start_time = X509_Time(now);
-    X509_Time end_time = X509_Time(now + 1.years);
+    X509Time start_time = X509Time(now);
+    X509Time end_time = X509Time(now + 1.years);
     
-    X509_Certificate server_cert = ca.sign_request(req, rng, start_time, end_time);
+    X509Certificate server_cert = ca.sign_request(req, rng, start_time, end_time);
     
-    return new TLS_Credentials_Manager_Test(server_cert, ca_cert, server_key);
+    return new TLSCredentialsManagerTest(server_cert, ca_cert, server_key);
 }
 
-size_t basic_test_handshake(RandomNumberGenerator rng,
-                            TLS_Protocol_Version offer_version,
-                            TLS_Credentials_Manager creds,
-                            TLS_Policy policy)
+size_t basicTestHandshake(RandomNumberGenerator rng,
+                            TLSProtocolVersion offer_version,
+                            TLSCredentialsManager creds,
+                            TLSPolicy policy)
 {
     auto server_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
     auto client_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
     
     Vector!ubyte c2s_q, s2c_q, c2s_data, s2c_data;
     
-    auto handshake_complete = (in TLS_Session session) {
-        if (session._version() != offer_version)
+    auto handshake_complete = (in TLSSession session) {
+        if (session.Version() != offer_version)
             writeln("Wrong version negotiated");
         return true;
     };
     
-    auto print_alert = (TLS_Alert alert, in ubyte[])
+    auto print_alert = (TLSAlert alert, in ubyte[])
     {
         if (alert.is_valid())
             writeln("TLS_Server recvd alert " ~ alert.type_string());
@@ -160,18 +160,18 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
                                     creds,
                                     policy,
                                     rng,
-                                    TLS_Server_Information(),
+                                    TLSServerInformation(),
                                     offer_version,
                                     next_protocol_chooser);
     
     while(true)
     {
-        if (client.is_active())
+        if (client.isActive())
             client.send("1");
-        if (server.is_active())
+        if (server.isActive())
         {
-            if (server.next_protocol() != "test/3")
-                writeln("Wrong protocol " ~ server.next_protocol());
+            if (server.nextProtocol() != "test/3")
+                writeln("Wrong protocol " ~ server.nextProtocol());
             server.send("2");
         }
         
@@ -185,7 +185,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         
         try
         {
-            server.received_data(&input[0], input.length);
+            server.receivedData(&input[0], input.length);
         }
         catch(Exception e)
         {
@@ -198,7 +198,7 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
         
         try
         {
-            client.received_data(&input[0], input.length);
+            client.receivedData(&input[0], input.length);
         }
         catch(Exception e)
         {
@@ -231,10 +231,10 @@ size_t basic_test_handshake(RandomNumberGenerator rng,
     return 0;
 }
 
-class Test_Policy : TLS_Policy
+class TestPolicy : TLSPolicy
 {
 public:
-    bool acceptable_protocol_version(TLS_Protocol_Version) const { return true; }
+    bool acceptableProtocolVersion(TLSProtocolVersion) const { return true; }
 }
 
 unittest
@@ -243,13 +243,13 @@ unittest
     
     Test_Policy default_policy;
     AutoSeeded_RNG rng;
-    TLS_Credentials_Manager basic_creds = create_creds(rng);
+    TLSCredentialsManager basic_creds = create_creds(rng);
     
-    errors += basic_test_handshake(rng, TLS_Protocol_Version.SSL_V3, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, TLS_Protocol_Version.TLS_V10, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, TLS_Protocol_Version.TLS_V11, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, TLS_Protocol_Version.TLS_V12, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLSProtocolVersion.SSL_V3, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLSProtocolVersion.TLS_V10, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLSProtocolVersion.TLS_V11, basic_creds, default_policy);
+    errors += basic_test_handshake(rng, TLSProtocolVersion.TLS_V12, basic_creds, default_policy);
     
-    test_report("TLS", 4, errors);
+    testReport("TLS", 4, errors);
 
 }

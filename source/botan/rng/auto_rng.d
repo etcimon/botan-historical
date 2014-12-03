@@ -10,13 +10,13 @@ public import botan.rng.rng;
 import botan.utils.types;
 // import string;
 
-final class AutoSeeded_RNG : RandomNumberGenerator
+final class AutoSeededRNG : RandomNumberGenerator
 {
 public:
     void randomize(ubyte* output, size_t len)
     { m_rng.randomize(output, len); }
 
-    bool is_seeded() const { return m_rng.is_seeded(); }
+    bool isSeeded() const { return m_rng.isSeeded(); }
 
     void clear() { m_rng.clear(); }
 
@@ -24,12 +24,12 @@ public:
 
     void reseed(size_t poll_bits = 256) { m_rng.reseed(poll_bits); }
 
-    void add_entropy(in ubyte* input, size_t len)
-    { m_rng.add_entropy(input, len); }
+    void addEntropy(in ubyte* input, size_t len)
+    { m_rng.addEntropy(input, len); }
 
     this()
     {
-        m_rng = RandomNumberGenerator.make_rng();
+        m_rng = RandomNumberGenerator.makeRng();
     }
 private:
     Unique!RandomNumberGenerator m_rng;

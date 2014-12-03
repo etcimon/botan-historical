@@ -16,15 +16,15 @@ static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
 /**
 * Swap a 16 bit integer
 */
-ushort reverse_bytes(ushort val)
+ushort reverseBytes(ushort val)
 {
-    return rotate_left(val, 8);
+    return rotateLeft(val, 8);
 }
 
 /**
 * Swap a 32 bit integer
 */
-uint reverse_bytes(uint val)
+uint reverseBytes(uint val)
 {
     import core.bitop : bswap;
     return bswap(val);
@@ -33,7 +33,7 @@ uint reverse_bytes(uint val)
 /**
 * Swap a 64 bit integer
 */
-ulong reverse_bytes(ulong val)
+ulong reverseBytes(ulong val)
 {
     static if (is(typeof(bswap64)))
         return bswap64(val);
@@ -49,7 +49,7 @@ ulong reverse_bytes(ulong val)
 /**
 * Swap 4 Ts in an array
 */
-void bswap_4(T)(ref T[4] x)
+void bswap4(T)(ref T[4] x)
 {
     x[0] = reverse_bytes(x[0]);
     x[1] = reverse_bytes(x[1]);
@@ -62,7 +62,7 @@ static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
     /**
     * Swap 4 uints in an array using SSE2 shuffle instructions
     */
-    void bswap_4(ref uint[4] x)
+    void bswap4(ref uint[4] x)
     {
         __m128i T = _mm_loadu_si128(cast(const(__m128i)*)(x.ptr));
 
@@ -71,6 +71,6 @@ static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
 
         T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
 
-        _mm_storeu_si128(cast(__m128i*)(x.ptr), T);
+        _mm_storeu_si128(cast(m128i*)(x.ptr), T);
     }
 }

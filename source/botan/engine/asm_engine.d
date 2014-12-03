@@ -20,44 +20,44 @@ static if (BOTAN_HAS_SHA1_X86_32)        import botan.hash.sha1_x86_32;
 /**
 * Engine for x86-32 specific implementations
 */
-final class Assembler_Engine : Engine
+final class AssemblerEngine : Engine
 {
 public:
-    string provider_name() const { return "asm"; }
+    string providerName() const { return "asm"; }
 
         
-    BlockCipher find_block_cipher(    in SCAN_Name request,
-                                             Algorithm_Factory af) const
+    BlockCipher findBlockCipher(    in SCANName request,
+                                             AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_SERPENT_X86_32) { 
             if (request.algo_name == "Serpent")
             {
                 
-                return new Serpent_X86_32;
+                return new SerpentX8632;
             }
         }
         return null;
     }
 
-    HashFunction find_hash(in SCAN_Name request,
-                                    Algorithm_Factory af) const
+    HashFunction findHash(in SCANName request,
+                                    AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_MD4_X86_32) {
             if (request.algo_name == "MD4")
-                return new MD4_X86_32;
+                return new MD4X8632;
         }
         
         static if (BOTAN_HAS_MD5_X86_32) {
             if (request.algo_name == "MD5")
-                return new MD5_X86_32;
+                return new MD5X8632;
         }
         
         if (request.algo_name == "SHA-160")
         {
             static if (BOTAN_HAS_SHA1_X86_64)
-                return new SHA_160_X86_64;
+                return new SHA160X8664;
             else static if (BOTAN_HAS_SHA1_X86_32)
-                return new SHA_160_X86_32;
+                return new SHA160X8632;
         }
         
         return null;

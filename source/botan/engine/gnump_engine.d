@@ -74,60 +74,60 @@ public:
 
     string provider_name() const { return "gmp"; }
 
-    Key_Agreement get_key_agreement_op(in Private_Key key, RandomNumberGenerator) const
+    Key_Agreement get_key_agreement_op(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-            if (const DH_PrivateKey dh = cast(const DH_PrivateKey)(key))
+            if (const DHPrivateKey dh = cast(const DHPrivateKey)(key))
                 return new GMP_DH_KA_Operation(dh);
         }
         
         return null;
     }
 
-    Signature get_signature_op(in Private_Key key, RandomNumberGenerator) const
+    Signature get_signature_op(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
+            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
                 return new GMP_RSA_Private_Operation(s);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSA_PrivateKey s = cast(const DSA_PrivateKey)(key))
+            if (const DSAPrivateKey s = cast(const DSAPrivateKey)(key))
                 return new GMP_DSA_Signature_Operation(s);
         }
         
         return null;
     }
 
-    Verification get_verify_op(in Public_Key key, RandomNumberGenerator) const
+    Verification get_verify_op(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
+            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
                 return new GMP_RSA_Public_Operation(s);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSA_PublicKey s = cast(const DSA_PublicKey)(key))
+            if (const DSAPublicKey s = cast(const DSAPublicKey)(key))
                 return new GMP_DSA_Verification_Operation(s);
         }
         
         return null;
     }
     
-    Encryption get_encryption_op(in Public_Key key, RandomNumberGenerator) const
+    Encryption get_encryption_op(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PublicKey s = cast(const RSA_PublicKey)(key))
+            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
                 return new GMP_RSA_Public_Operation(s);
         }
         
         return null;
     }
     
-    Decryption get_decryption_op(in Private_Key key, RandomNumberGenerator) const
+    Decryption get_decryption_op(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSA_PrivateKey s = cast(const RSA_PrivateKey)(key))
+            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
                 return new GMP_RSA_Private_Operation(s);
         }
         
@@ -137,7 +137,7 @@ public:
     /*
     * Return the GMP-based modular exponentiator
     */
-    Modular_Exponentiator mod_exp(in BigInt n, Power_Mod.Usage_Hints) const
+    Modular_Exponentiator mod_exp(in BigInt n, PowerMod.Usage_Hints) const
     {
         return new GMP_Modular_Exponentiator(n);
     }
@@ -211,7 +211,7 @@ public:
         return ((mpz_sizeinbase(value, 2) + 7) / 8);
     }
     
-    Secure_Vector!ubyte to_bytes() const
+    SecureVector!ubyte to_bytes() const
     { return BigInt.encode_locked(to_bigint()); }
     
     /*
@@ -262,13 +262,13 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
     final class GMP_DH_KA_Operation : Key_Agreement
     {
     public:
-        this(in DH_PrivateKey dh) 
+        this(in DHPrivateKey dh) 
         {
             m_x = dh.get_x();
             m_p = dh.group_p();
         }
         
-        Secure_Vector!ubyte agree(in ubyte* w, size_t w_len)
+        SecureVector!ubyte agree(in ubyte* w, size_t w_len)
         {
             GMP_MPZ z = GMP_MPZ(w, w_len);
             mpz_powm(z.value, z.value, m_x.value, m_p.value);
@@ -285,7 +285,7 @@ static if (BOTAN_HAS_DSA) {
     final class GMP_DSA_Signature_Operation : Signature
     {
     public:
-        this(in DSA_PrivateKey dsa) 
+        this(in DSAPrivateKey dsa) 
         {
             m_x = dsa.get_x();
             m_p = dsa.group_p();
@@ -298,7 +298,7 @@ static if (BOTAN_HAS_DSA) {
         size_t message_part_size() const { return (m_q_bits + 7) / 8; }
         size_t max_input_bits() const { return m_q_bits; }
         
-        Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+        SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
         {
             const size_t q_bytes = (m_q_bits + 7) / 8;
             
@@ -327,7 +327,7 @@ static if (BOTAN_HAS_DSA) {
             if (mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
                 throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
             
-            Secure_Vector!ubyte output = Secure_Vector(2*q_bytes);
+            SecureVector!ubyte output = SecureVector(2*q_bytes);
             r.encode(output.ptr, q_bytes);
             s.encode(&output[q_bytes], q_bytes);
             return output;
@@ -342,7 +342,7 @@ static if (BOTAN_HAS_DSA) {
     final class GMP_DSA_Verification_Operation : Verification
     {
     public:
-        this(in DSA_PublicKey dsa) 
+        this(in DSAPublicKey dsa) 
         {
             m_y = dsa.get_y();
             m_p = dsa.group_p();
@@ -407,10 +407,10 @@ static if (BOTAN_HAS_DSA) {
         final class GMP_RSA_Private_Operation : Signature, Decryption
         {
         public:
-            this(in RSA_PrivateKey rsa)
+            this(in RSAPrivateKey rsa)
             {
                 m_mod = rsa.get_n();
-                m_p = rsa.get_p();
+                m_p = rsa.getP();
                 m_q = rsa.get_q();
                 m_d1 = rsa.get_d1();
                 m_d2 = rsa.get_d2();
@@ -420,14 +420,14 @@ static if (BOTAN_HAS_DSA) {
             
             size_t max_input_bits() const { return (m_n_bits - 1); }
             
-            Secure_Vector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+            SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 BigInt x = private_op(m);
                 return BigInt.encode_1363(x, (m_n_bits + 7) / 8);
             }
             
-            Secure_Vector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encode_locked(private_op(m));
@@ -457,7 +457,7 @@ static if (BOTAN_HAS_DSA) {
         final class GMP_RSA_Public_Operation : Verification, Encryption
         {
         public:
-            this(in RSA_PublicKey rsa)
+            this(in RSAPublicKey rsa)
             {
                 m_n = rsa.get_n();
                 m_e = rsa.get_e();
@@ -467,7 +467,7 @@ static if (BOTAN_HAS_DSA) {
             size_t max_input_bits() const { return (m_n.bits() - 1); }
             bool with_recovery() const { return true; }
             
-            Secure_Vector!ubyte encrypt(in ubyte* msg, size_t msg_len,
+            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
                                      RandomNumberGenerator)
             {
 
@@ -475,7 +475,7 @@ static if (BOTAN_HAS_DSA) {
                 return BigInt.encode_1363(public_op(m), m_n.bytes());
             }
             
-            Secure_Vector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encode_locked(public_op(m));

@@ -13,24 +13,24 @@ import botan.engine.engine;
 /**
 * Modular Exponentiator Interface
 */
-class Modular_Exponentiator
+class ModularExponentiator
 {
 public:
-    abstract void set_base(in BigInt);
-    abstract void set_exponent(in BigInt);
+    abstract void setBase(in BigInt);
+    abstract void setExponent(in BigInt);
     abstract BigInt execute() const;
-    abstract Modular_Exponentiator copy() const;
+    abstract ModularExponentiator copy() const;
     ~this() {}
 }
 
 /**
 * Modular Exponentiator Proxy
 */
-class Power_Mod
+class PowerMod
 {
 public:
     typedef ushort Usage_Hints;
-    enum : Usage_Hints {
+    enum : UsageHints {
         NO_HINTS          = 0x0000,
 
         BASE_IS_FIXED    = 0x0001,
@@ -46,8 +46,8 @@ public:
     /*
     * Try to choose a good window size
     */
-    static size_t window_bits(size_t exp_bits, size_t,
-                              Power_Mod.Usage_Hints hints)
+    static size_t windowBits(size_t exp_bits, size_t,
+                              PowerMod.UsageHints hints)
     {
         __gshared immutable size_t[2][] wsize = [
             [ 1434, 7 ],
@@ -72,9 +72,9 @@ public:
             }
         }
         
-        if (hints & Power_Mod.BASE_IS_FIXED)
+        if (hints & PowerMod.BASE_IS_FIXED)
             window_bits += 2;
-        if (hints & Power_Mod.EXP_IS_LARGE)
+        if (hints & PowerMod.EXP_IS_LARGE)
             ++window_bits;
         
         return window_bits;
@@ -83,51 +83,51 @@ public:
     /*
     * Set the modulus
     */
-    void set_modulus(in BigInt n, Usage_Hints hints = NO_HINTS)
+    void setModulus(in BigInt n, UsageHints hints = NO_HINTS)
     {
         delete core;
         core = null;
         
         if (n != 0)
         {
-            Algorithm_Factory af = global_state().algorithm_factory();
+            AlgorithmFactory af = globalState().algorithmFactory();
 
             foreach (Engine engine; af.engines) {
-                core = engine.mod_exp(n, hints);
+                core = engine.modExp(n, hints);
                 
                 if (core)
                     break;
             }
             
             if (!core)
-                throw new Lookup_Error("Power_Mod: Unable to find a working engine");
+                throw new LookupError("PowerMod: Unable to find a working engine");
         }
     }
 
     /*
     * Set the base
     */
-    void set_base(in BigInt b) const
+    void setBase(in BigInt b) const
     {
-        if (b.is_zero() || b.is_negative())
-            throw new Invalid_Argument("Power_Mod::set_base: arg must be > 0");
+        if (b.isZero() || b.isNegative())
+            throw new InvalidArgument("PowerMod.set_base: arg must be > 0");
         
         if (!core)
-            throw new Internal_Error("Power_Mod::set_base: core was NULL");
-        core.set_base(b);
+            throw new InternalError("PowerMod.set_base: core was NULL");
+        core.setBase(b);
     }
 
     /*
     * Set the exponent
     */
-    void set_exponent(in BigInt e) const
+    void setExponent(in BigInt e) const
     {
-        if (e.is_negative())
-            throw new Invalid_Argument("Power_Mod::set_exponent: arg must be > 0");
+        if (e.isNegative())
+            throw new InvalidArgument("PowerMod.set_exponent: arg must be > 0");
         
         if (!core)
-            throw new Internal_Error("Power_Mod::set_exponent: core was NULL");
-        core.set_exponent(e);
+            throw new InternalError("PowerMod.set_exponent: core was NULL");
+        core.setExponent(e);
     }
 
     /*
@@ -136,14 +136,14 @@ public:
     BigInt execute()
     {
         if (!core)
-            throw new Internal_Error("Power_Mod::execute: core was NULL");
+            throw new InternalError("PowerMod.execute: core was NULL");
         return core.execute();
     }
 
     /*
-    * Power_Mod Assignment Operator
+    * PowerMod Assignment Operator
     */
-    ref Power_Mod opAssign(in Power_Mod other)
+    ref PowerMod opAssign(in PowerMod other)
     {
         delete core;
         core = null;
@@ -152,13 +152,13 @@ public:
         return this;
     }
 
-    this(in BigInt n, Usage_Hints hints = NO_HINTS)
+    this(in BigInt n, UsageHints hints = NO_HINTS)
     {
         core = null;
         set_modulus(n, hints);
     }
 
-    this(in Power_Mod other)
+    this(in PowerMod other)
     {
         core = null;
         if (other.core)
@@ -176,7 +176,7 @@ private:
 /**
 * Fixed Exponent Modular Exponentiator Proxy
 */
-class Fixed_Exponent_Power_Mod : Power_Mod
+class FixedExponentPowerMod : PowerMod
 {
 public:
     BigInt opCall(in BigInt b) const
@@ -189,7 +189,7 @@ public:
     */
     this(in BigInt e,
          in BigInt n,
-         Usage_Hints hints = NO_HINTS)
+         UsageHints hints = NO_HINTS)
     { 
         super(n, Usage_Hints(hints | EXP_IS_FIXED | choose_exp_hints(e, n)));
         set_exponent(e);
@@ -201,7 +201,7 @@ public:
 /**
 * Fixed Base Modular Exponentiator Proxy
 */
-class Fixed_Base_Power_Mod : Power_Mod
+class FixedBasePowerMod : PowerMod
 {
 public:
     BigInt opCall(in BigInt e) const
@@ -211,7 +211,7 @@ public:
     /*
     * Fixed_Base_Power_Mod Constructor
     */
-    this(in BigInt b, in BigInt n, Usage_Hints hints = NO_HINTS)
+    this(in BigInt b, in BigInt n, UsageHints hints = NO_HINTS)
     {
         super(n, Usage_Hints(hints | BASE_IS_FIXED | choose_base_hints(b, n)));
         set_base(b);
@@ -223,34 +223,34 @@ public:
 /*
 * Choose potentially useful hints
 */
-Power_Mod.Usage_Hints choose_base_hints(in BigInt b, in BigInt n)
+PowerMod.UsageHints chooseBaseHints(in BigInt b, in BigInt n)
 {
     if (b == 2)
-        return Power_Mod.Usage_Hints(Power_Mod.BASE_IS_2 |
-                                     Power_Mod.BASE_IS_SMALL);
+        return PowerMod.usageHints(PowerMod.BASE_IS_2 |
+                                     PowerMod.BASE_IS_SMALL);
     
     const size_t b_bits = b.bits();
     const size_t n_bits = n.bits();
 
     if (b_bits < n_bits / 32)
-        return Power_Mod.BASE_IS_SMALL;
+        return PowerMod.BASE_IS_SMALL;
     if (b_bits > n_bits / 4)
-        return Power_Mod.BASE_IS_LARGE;
+        return PowerMod.BASE_IS_LARGE;
 
-    return Power_Mod.NO_HINTS;
+    return PowerMod.NO_HINTS;
 }
 
 /*
 * Choose potentially useful hints
 */
-Power_Mod.Usage_Hints choose_exp_hints(in BigInt e, in BigInt n) pure
+PowerMod.UsageHints chooseExpHints(in BigInt e, in BigInt n) pure
 {
     const size_t e_bits = e.bits();
     const size_t n_bits = n.bits();
 
     if (e_bits < n_bits / 32)
-        return Power_Mod.BASE_IS_SMALL;
+        return PowerMod.BASE_IS_SMALL;
     if (e_bits > n_bits / 4)
-        return Power_Mod.BASE_IS_LARGE;
-    return Power_Mod.NO_HINTS;
+        return PowerMod.BASE_IS_LARGE;
+    return PowerMod.NO_HINTS;
 }

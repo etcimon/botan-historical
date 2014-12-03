@@ -17,7 +17,7 @@ import std.stdio;
 /**
 * A GnuTLS compatible SRP6 authenticator file
 */
-final class SRP6_Authenticator_File
+final class SRP6AuthenticatorFile
 {
 public:
     /**
@@ -34,12 +34,12 @@ public:
             string[] parts = cast(string[]) splitter(line, ':').array;
             
             if (parts.length != 4)
-                throw new Decoding_Error("Invalid line in SRP authenticator file");
+                throw new DecodingError("Invalid line in SRP authenticator file");
             
             string username = parts[0];
-            BigInt v = BigInt.decode(base64_decode(parts[1]));
-            Vector!ubyte salt = unlock(base64_decode(parts[2]));
-            BigInt group_id_idx = BigInt.decode(base64_decode(parts[3]));
+            BigInt v = BigInt.decode(base64Decode(parts[1]));
+            Vector!ubyte salt = unlock(base64Decode(parts[2]));
+            BigInt group_id_idx = BigInt.decode(base64Decode(parts[3]));
             
             string group_id;
             
@@ -56,7 +56,7 @@ public:
         }
     }
 
-    bool lookup_user(in string username,
+    bool lookupUser(in string username,
                      ref BigInt v,
                        ref Vector!ubyte salt,
                      ref string group_id) const
@@ -73,7 +73,7 @@ public:
     }
 
 private:
-    struct SRP6_Data
+    struct SRP6Data
     {
 
         this(in BigInt _v,

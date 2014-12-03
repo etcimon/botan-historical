@@ -46,7 +46,7 @@ public:
     * Test whether the source still has data that can be read.
     * @return true if there is still data to read, false otherwise
     */
-    abstract bool end_of_data() const;
+    abstract bool endOfData() const;
     /**
     * return the id of this data source
     * @return string representing the id of this data source
@@ -59,7 +59,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    final size_t read_byte(ref ubyte output)
+    final size_t readByte(ref ubyte output)
     {
         return read(output.ptr[0..1]);
     }
@@ -71,7 +71,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    final size_t peek_byte(ref ubyte output) const
+    final size_t peekByte(ref ubyte output) const
     {
         return peek(output.ptr[0..1]);
     }
@@ -82,7 +82,7 @@ public:
     * @param N = the number of bytes to discard
     * @return number of bytes actually discarded
     */
-    final size_t discard_next(size_t n)
+    final size_t discardNext(size_t n)
     {
         size_t discarded = 0;
         ubyte dummy;
@@ -95,7 +95,7 @@ public:
     /**
     * @return number of bytes read so far.
     */
-    abstract size_t get_bytes_read() const;
+    abstract size_t getBytesRead() const;
 
     this() {}
     ~this() {}
@@ -105,13 +105,13 @@ public:
 /**
 * This class represents a Memory-Based DataSource
 */
-final class DataSource_Memory : DataSource
+final class DataSourceMemory : DataSource
 {
 public:
     size_t read(ubyte* output, size_t length)
     {
         size_t got = std.algorithm.min(m_source.length - offset, length);
-        copy_mem(output, &m_source[offset], got);
+        copyMem(output, &m_source[offset], got);
         offset += got;
         return got;
     }
@@ -125,14 +125,14 @@ public:
         if (peek_offset >= bytes_left) return 0;
         
         size_t got = std.algorithm.min(bytes_left - peek_offset, length);
-        copy_mem(output, &m_source[offset + peek_offset], got);
+        copyMem(output, &m_source[offset + peek_offset], got);
         return got;
     }
 
     /*
     * Check if the memory buffer is empty
     */
-    bool end_of_data() const
+    bool endOfData() const
     {
         return (offset == m_source.length);
     }
@@ -144,7 +144,7 @@ public:
     */
     this(in string input) 
     {
-        m_source = Secure_Vector!ubyte(cast(ubyte*) input.ptr, (cast(ubyte*) input.ptr) + input.length);
+        m_source = SecureVector!ubyte(cast(ubyte*) input.ptr, (cast(ubyte*) input.ptr) + input.length);
         offset = 0;
     }
 
@@ -156,15 +156,15 @@ public:
     */
     this(in ubyte* input, size_t length)
     {
-        m_source = Secure_Vector!ubyte(input, input + length);
+        m_source = SecureVector!ubyte(input, input + length);
         offset = 0; 
     }
 
     /**
-    * Construct a memory source that reads from a Secure_Vector
+    * Construct a memory source that reads from a SecureVector
     * @param input = the MemoryRegion to read from
     */
-    this(in Secure_Vector!ubyte input)
+    this(in SecureVector!ubyte input)
     {
         m_source = input;
         offset = 0;
@@ -175,20 +175,20 @@ public:
     * @param input = the MemoryRegion to read from
     */
     this(in Vector!ubyte input) {
-        m_source = Secure_Vector!ubyte(input.ptr[0 .. input.length]);
+        m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
         offset = 0;
     }
 
-    abstract size_t get_bytes_read() const { return offset; }
+    abstract size_t getBytesRead() const { return offset; }
 private:
-    Secure_Vector!ubyte m_source;
+    SecureVector!ubyte m_source;
     size_t m_offset;
 }
 
 /**
 * This class represents a Stream-Based DataSource.
 */
-final class DataSource_Stream : DataSource
+final class DataSourceStream : DataSource
 {
 public:
     /*
@@ -199,7 +199,7 @@ public:
         ubyte[] data;
         try data = m_source.rawRead(output[0..length]);
         catch (Exception e)
-            throw new Stream_IO_Error("read: Source failure..." ~ e.toString());
+            throw new StreamIOError("read: Source failure..." ~ e.toString());
         
         size_t got = data.length;
         m_total_read += got;
@@ -212,17 +212,17 @@ public:
     size_t peek(ubyte* output, size_t length, size_t offset) const
     {
         if (end_of_data())
-            throw new Invalid_State("DataSource_Stream: Cannot peek when out of data");
+            throw new InvalidState("DataSourceStream: Cannot peek when out of data");
         
         size_t got = 0;
         
         if (offset)
         {
-            Secure_Vector!ubyte buf = Secure_Vector!ubyte(offset);
+            SecureVector!ubyte buf = SecureVector!ubyte(offset);
             ubyte[] data;
             try data = m_source.rawRead(buf[0..length]);
             catch (Exception e)
-                throw new Stream_IO_Error("peek: Source failure..." ~ e.toString());
+                throw new StreamIOError("peek: Source failure..." ~ e.toString());
             
             got = data.length;
         }
@@ -232,7 +232,7 @@ public:
             ubyte[] data;
             try data = m_source.rawRead(output[0..length]);
             catch (Exception e)
-                throw new Stream_IO_Error("peek: Source failure" ~ e.toString());
+                throw new StreamIOError("peek: Source failure" ~ e.toString());
             got = data.length;
         }
         
@@ -248,7 +248,7 @@ public:
     /*
     * Check if the stream is empty or in error
     */
-    bool end_of_data() const
+    bool endOfData() const
     {
         return (!m_source.eof && !m_source.error());
     }
@@ -262,7 +262,7 @@ public:
     }
 
     /*
-    * DataSource_Stream Constructor
+    * DataSourceStream Constructor
     */
     this(ref File input,
                       in string name)
@@ -285,19 +285,19 @@ public:
         m_total_read = 0;
         if (m_source.error())
         {
-            throw new Stream_IO_Error("DataSource: Failure opening file " ~ path);
+            throw new StreamIOError("DataSource: Failure opening file " ~ path);
         }
     }
 
     /*
-    * DataSource_Stream Destructor
+    * DataSourceStream Destructor
     */
     ~this()
     {
 
     }
 
-    size_t get_bytes_read() const { return m_total_read; }
+    size_t getBytesRead() const { return m_total_read; }
 private:
     const string m_identifier;
 

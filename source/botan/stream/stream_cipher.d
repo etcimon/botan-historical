@@ -50,10 +50,10 @@ public:
     * @param iv = the initialization vector
     * @param iv_len = the length of the IV in bytes
     */
-    abstract void set_iv(const ubyte*, size_t iv_len)
+    abstract void setIv(const ubyte*, size_t iv_len)
     {
         if (iv_len)
-            throw new Invalid_Argument("The stream cipher " ~ name ~
+            throw new InvalidArgument("The stream cipher " ~ name ~
                                        " does not support resyncronization");
     }
 
@@ -61,7 +61,7 @@ public:
     * @param iv_len = the length of the IV in bytes
     * @return if the length is valid for this algorithm
     */
-    abstract bool valid_iv_length(size_t iv_len) const
+    abstract bool validIvLength(size_t iv_len) const
     {
         return (iv_len == 0);
     }
@@ -80,18 +80,18 @@ import core.atomic;
 
 private __gshared size_t total_tests;
 
-size_t stream_test(string algo,
+size_t streamTest(string algo,
                    string key_hex,
                    string in_hex,
                    string out_hex,
                    string nonce_hex)
 {
-    const Secure_Vector!ubyte key = hex_decode_locked(key_hex);
-    const Secure_Vector!ubyte pt = hex_decode_locked(in_hex);
-    const Secure_Vector!ubyte ct = hex_decode_locked(out_hex);
-    const Secure_Vector!ubyte nonce = hex_decode_locked(nonce_hex);
+    const SecureVector!ubyte key = hexDecodeLocked(key_hex);
+    const SecureVector!ubyte pt = hexDecodeLocked(in_hex);
+    const SecureVector!ubyte ct = hexDecodeLocked(out_hex);
+    const SecureVector!ubyte nonce = hexDecodeLocked(nonce_hex);
     
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     const auto providers = af.providers_of(algo);
     size_t fails = 0;
@@ -105,7 +105,7 @@ size_t stream_test(string algo,
     foreach (provider; providers)
     {
         atomicOp!"+="(total_tests, 1);
-        const StreamCipher* proto = af.prototype_stream_cipher(algo, provider);
+        const StreamCipher* proto = af.prototypeStreamCipher(algo, provider);
         
         if (!proto)
         {
@@ -115,18 +115,18 @@ size_t stream_test(string algo,
         }
         
         Unique!StreamCipher cipher = proto.clone();
-        cipher.set_key(key);
+        cipher.setKey(key);
         
         if (nonce.length)
-            cipher.set_iv(&nonce[0], nonce.length);
+            cipher.setIv(&nonce[0], nonce.length);
         
-        Secure_Vector!ubyte buf = pt;
+        SecureVector!ubyte buf = pt;
         
         cipher.encrypt(buf);
         
         if (buf != ct)
         {
-            writeln(algo ~ " " ~ provider ~ " enc " ~ hex_encode(buf) ~ " != " ~ out_hex);
+            writeln(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -140,13 +140,13 @@ unittest
     {
         File vec = File(input, "r");
         
-        return run_tests_bb(vec, "StreamCipher", "Out", true,
+        return runTestsBb(vec, "StreamCipher", "Out", true,
                             (string[string] m) {
-                                return stream_test(m["StreamCipher"], m["Key"], m["In"], m["Out"], m["Nonce"]);
+                                return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m["Nonce"]);
                             });
     };
     
-    size_t fails = run_tests_in_dir("test_data/stream", test);
+    size_t fails = runTestsInDir("test_data/stream", test);
     
-    test_report("stream", total_tests, fails);
+    testReport("stream", total_tests, fails);
 }

@@ -26,7 +26,7 @@ version (Have_vibe_d) {
 }
 // import string;
 
-struct HTTP_Response
+struct HTTPResponse
 {
 public:
     this() {
@@ -44,15 +44,15 @@ public:
         m_headers = headers;
     }
 
-    uint status_code() const { return m_status_code; }
+    uint statusCode() const { return m_status_code; }
 
-    string _body() const { return m_body; }
+    string Body() const { return m_body; }
 
     HashMap!(string, string) headers() const { return m_headers; }
 
-    string status_message() const { return m_status_message; }
+    string statusMessage() const { return m_status_message; }
 
-    void throw_unless_ok()
+    void throwUnlessOk()
     {
         if (status_code() != 200)
             throw new Exception("HTTP error: " ~ status_message());
@@ -64,8 +64,8 @@ public:
         output ~= "HTTP " ~ status_code() ~ " " ~ status_message() ~ "";
         foreach (k, v; headers())
             output ~= "Header '" ~ k ~ "' = '" ~ v ~ "'";
-        output ~= "Body " ~ to!string(resp._body().length) ~ " bytes:";
-        output ~= cast(string) resp._body();
+        output ~= "Body " ~ to!string(resp.Body().length) ~ " bytes:";
+        output ~= cast(string) resp.Body();
         return output.data;
     }
 
@@ -76,7 +76,7 @@ private:
     HashMap!(string, string) m_headers;
 }
 
-HTTP_Response http_sync(in string verb,
+HTTPResponse httpSync(in string verb,
                    in string url,
                    in string content_type,
                    in Vector!ubyte _body,
@@ -196,7 +196,7 @@ HTTP_Response http_sync(in string verb,
     return Response(status_code, status_message, resp_body, headers);
 }
 
-string url_encode(in string input)
+string urlEncode(in string input)
 {
     import std.array : Appender;
     Appender!string output;
@@ -213,7 +213,7 @@ string url_encode(in string input)
             output ~= c;
         else {
             char[2] buf;
-            hex_encode(buf.ptr, cast(ubyte*) &c, 1);
+            hexEncode(buf.ptr, cast(ubyte*) &c, 1);
             output ~= '%' ~ buf.ptr[0 .. 2];
         }
     }
@@ -221,12 +221,12 @@ string url_encode(in string input)
     return output.data;
 }
 
-HTTP_Response GET_sync(in string url, size_t allowable_redirects = 1)
+HTTPResponse gETSync(in string url, size_t allowable_redirects = 1)
 {
     return http_sync("GET", url, "", Vector!ubyte(), allowable_redirects);
 }
 
-HTTP_Response POST_sync(in string url, in string content_type,
+HTTPResponse pOSTSync(in string url, in string content_type,
                       in Vector!ubyte _body,
                       size_t allowable_redirects = 1)
 {
@@ -235,7 +235,7 @@ HTTP_Response POST_sync(in string url, in string content_type,
 
 
 
-string http_transact(in string hostname, in string message)
+string httpTransact(in string hostname, in string message)
 {
 
     version (Have_vibe_d) {

@@ -52,7 +52,7 @@ private:
     /*
     * Return the raw (unencoded) data
     */
-    Secure_Vector!ubyte raw_data()
+    SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -60,28 +60,28 @@ private:
     /*
     * PSSR Encode Operation
     */
-    Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                  size_t output_bits,
                                  RandomNumberGenerator rng)
     {
         const size_t HASH_SIZE = m_hash.output_length;
         
         if (msg.length != HASH_SIZE)
-            throw new Encoding_Error("encoding_of: Bad input length");
+            throw new EncodingError("encoding_of: Bad input length");
         if (output_bits < 8*HASH_SIZE + 8*m_SALT_SIZE + 9)
-            throw new Encoding_Error("encoding_of: Output length is too small");
+            throw new EncodingError("encoding_of: Output length is too small");
         
         const size_t output_length = (output_bits + 7) / 8;
         
-        Secure_Vector!ubyte salt = rng.random_vec(m_SALT_SIZE);
+        SecureVector!ubyte salt = rng.random_vec(m_SALT_SIZE);
         
         foreach (size_t j; 0 .. 8)
             m_hash.update(0);
         m_hash.update(msg);
         m_hash.update(salt);
-        Secure_Vector!ubyte H = m_hash.finished();
+        SecureVector!ubyte H = m_hash.finished();
         
-        Secure_Vector!ubyte EM = Secure_Vector!ubyte(output_length);
+        SecureVector!ubyte EM = SecureVector!ubyte(output_length);
         
         EM[output_length - HASH_SIZE - m_SALT_SIZE - 2] = 0x01;
         buffer_insert(EM, output_length - 1 - HASH_SIZE - m_SALT_SIZE, salt);
@@ -96,8 +96,8 @@ private:
     /*
     * PSSR Decode/Verify Operation
     */
-    bool verify(in Secure_Vector!ubyte const_coded,
-                in Secure_Vector!ubyte raw, size_t key_bits)
+    bool verify(in SecureVector!ubyte const_coded,
+                in SecureVector!ubyte raw, size_t key_bits)
     {
         const size_t HASH_SIZE = m_hash.output_length;
         const size_t KEY_BYTES = (key_bits + 7) / 8;
@@ -114,10 +114,10 @@ private:
         if (const_coded[const_coded.length-1] != 0xBC)
             return false;
         
-        Secure_Vector!ubyte coded = const_coded;
+        SecureVector!ubyte coded = const_coded;
         if (coded.length < KEY_BYTES)
         {
-            Secure_Vector!ubyte temp = Secure_Vector!ubyte(KEY_BYTES);
+            SecureVector!ubyte temp = SecureVector!ubyte(KEY_BYTES);
             buffer_insert(temp, KEY_BYTES - coded.length, coded);
             coded = temp;
         }
@@ -150,7 +150,7 @@ private:
             m_hash.update(0);
         m_hash.update(raw);
         m_hash.update(&DB[salt_offset], DB_size - salt_offset);
-        Secure_Vector!ubyte H2 = m_hash.finished();
+        SecureVector!ubyte H2 = m_hash.finished();
         
         return same_mem(H.ptr, H2.ptr, HASH_SIZE);
     }

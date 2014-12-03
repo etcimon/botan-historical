@@ -16,34 +16,34 @@ import botan.utils.rotate;
 /**
 * RC2
 */
-final class RC2 : Block_Cipher_Fixed_Params!(8, 1, 32)
+final class RC2 : BlockCipherFixedParams!(8, 1, 32)
 {
 public:
     /*
     * RC2 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort R0 = load_littleEndian!ushort(input, 0);
-            ushort R1 = load_littleEndian!ushort(input, 1);
-            ushort R2 = load_littleEndian!ushort(input, 2);
-            ushort R3 = load_littleEndian!ushort(input, 3);
+            ushort R0 = loadLittleEndian!ushort(input, 0);
+            ushort R1 = loadLittleEndian!ushort(input, 1);
+            ushort R2 = loadLittleEndian!ushort(input, 2);
+            ushort R3 = loadLittleEndian!ushort(input, 3);
             
             foreach (size_t j; 0 .. 16)
             {
                 R0 += (R1 & ~R3) + (R2 & R3) + m_K[4*j];
-                R0 = rotate_left(R0, 1);
+                R0 = rotateLeft(R0, 1);
                 
                 R1 += (R2 & ~R0) + (R3 & R0) + m_K[4*j + 1];
-                R1 = rotate_left(R1, 2);
+                R1 = rotateLeft(R1, 2);
                 
                 R2 += (R3 & ~R1) + (R0 & R1) + m_K[4*j + 2];
-                R2 = rotate_left(R2, 3);
+                R2 = rotateLeft(R2, 3);
                 
                 R3 += (R0 & ~R2) + (R1 & R2) + m_K[4*j + 3];
-                R3 = rotate_left(R3, 5);
+                R3 = rotateLeft(R3, 5);
                 
                 if (j == 4 || j == 10)
                 {
@@ -54,7 +54,7 @@ public:
                 }
             }
             
-            store_littleEndian(output, R0, R1, R2, R3);
+            storeLittleEndian(output, R0, R1, R2, R3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -64,27 +64,27 @@ public:
     /*
     * RC2 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort R0 = load_littleEndian!ushort(input, 0);
-            ushort R1 = load_littleEndian!ushort(input, 1);
-            ushort R2 = load_littleEndian!ushort(input, 2);
-            ushort R3 = load_littleEndian!ushort(input, 3);
+            ushort R0 = loadLittleEndian!ushort(input, 0);
+            ushort R1 = loadLittleEndian!ushort(input, 1);
+            ushort R2 = loadLittleEndian!ushort(input, 2);
+            ushort R3 = loadLittleEndian!ushort(input, 3);
             
             foreach (size_t j; 0 .. 16)
             {
-                R3 = rotate_right(R3, 5);
+                R3 = rotateRight(R3, 5);
                 R3 -= (R0 & ~R2) + (R1 & R2) + m_K[63 - (4*j + 0)];
                 
-                R2 = rotate_right(R2, 3);
+                R2 = rotateRight(R2, 3);
                 R2 -= (R3 & ~R1) + (R0 & R1) + m_K[63 - (4*j + 1)];
                 
-                R1 = rotate_right(R1, 2);
+                R1 = rotateRight(R1, 2);
                 R1 -= (R2 & ~R0) + (R3 & R0) + m_K[63 - (4*j + 2)];
                 
-                R0 = rotate_right(R0, 1);
+                R0 = rotateRight(R0, 1);
                 R0 -= (R1 & ~R3) + (R2 & R3) + m_K[63 - (4*j + 3)];
                 
                 if (j == 4 || j == 10)
@@ -96,7 +96,7 @@ public:
                 }
             }
             
-            store_littleEndian(output, R0, R1, R2, R3);
+            storeLittleEndian(output, R0, R1, R2, R3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -108,7 +108,7 @@ public:
     * @param bits = key length
     * @return EKB code
     */
-    static ubyte EKB_code(size_t ekb)
+    static ubyte eKBCode(size_t ekb)
     {
         __gshared immutable ubyte[256] EKB = [
             0xBD, 0x56, 0xEA, 0xF2, 0xA2, 0xF1, 0xAC, 0x2A, 0xB0, 0x93, 0xD1, 0x9C,
@@ -137,7 +137,7 @@ public:
         if (ekb < 256)
             return EKB[ekb];
         else
-            throw new Encoding_Error("EKB_code: EKB is too large");
+            throw new EncodingError("EKB_code: EKB is too large");
     }
 
     void clear()
@@ -147,11 +147,11 @@ public:
 
     override @property string name() const { return "RC2"; }
     BlockCipher clone() const { return new RC2; }
-private:
+protected:
     /*
     * RC2 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable ubyte[256] TABLE = [
             0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,
@@ -177,8 +177,8 @@ private:
                 0xC5, 0xF3, 0xDB, 0x47, 0xE5, 0xA5, 0x9C, 0x77, 0x0A, 0xA6, 0x20, 0x68,
             0xFE, 0x7F, 0xC1, 0xAD ];
         
-        Secure_Vector!ubyte L = Secure_Vector!ubyte(128);
-        copy_mem(L.ptr, key, length);
+        SecureVector!ubyte L = SecureVector!ubyte(128);
+        copyMem(L.ptr, key, length);
         
         foreach (size_t i; length .. 128)
             L[i] = TABLE[(L[i-1] + L[i-length]) % 256];
@@ -189,8 +189,8 @@ private:
             L[i] = TABLE[L[i+1] ^ L[i+length]];
         
         m_K.resize(64);
-        load_littleEndian!ushort(m_K.ptr, L.ptr, 64);
+        loadLittleEndian!ushort(m_K.ptr, L.ptr, 64);
     }
 
-    Secure_Vector!ushort m_K;
+    SecureVector!ushort m_K;
 }

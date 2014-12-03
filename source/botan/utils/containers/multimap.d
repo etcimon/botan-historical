@@ -107,7 +107,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
 
         Note that the version returning an array will allocate for each call.
     */
-    const(ValueType)[] equal_range(KeyType key)
+    const(ValueType)[] equalRange(KeyType key)
     const {
         import std.array;
         auto ret = appender!(const(ValueType)[])();
@@ -115,7 +115,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         return ret.data;
     }
     /// ditto
-    void equal_range(KeyType key, scope void delegate(const(ValueType)) del)
+    void equalRange(KeyType key, scope void delegate(const(ValueType)) del)
     const {
         uint keysum = computeCheckSumI(key);
         foreach (ref f; m_fields[0 .. m_fieldCount]) {

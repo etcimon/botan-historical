@@ -25,14 +25,14 @@ else version(Posix) import core.sys.posix.time;
 * @note Any results from timers are marked as not contributing entropy
 * to the poll, as a local attacker could observe them directly.
 */
-final class High_Resolution_Timestamp : EntropySource
+final class HighResolutionTimestamp : EntropySource
 {
 public:
     @property string name() const { return "High Resolution Timestamp"; }
     /*
 * Get the timestamp
 */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         // Don't count any timestamps as contributing any entropy
         const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;
@@ -52,7 +52,7 @@ public:
         
         static if (is(typeof(clock_gettime))) {
 
-            void CLOCK_GETTIME_POLL(clockid_t src)()
+            void cLOCKGETTIMEPOLL(clockid_t src)()
             {
                 timespec ts;
                 clock_gettime(src, &ts);
@@ -103,14 +103,14 @@ version (Windows)
 {
     extern (Windows)
     {
-        export int QueryPerformanceCounter(long *);
+        export int queryPerformanceCounter(long *);
     }
 }
 else version (D_InlineAsm_X86)
 {
     extern (D)
     {
-        void QueryPerformanceCounter(long* ctr)
+        void queryPerformanceCounter(long* ctr)
         {
             asm
             {
@@ -128,7 +128,7 @@ else version (D_InlineAsm_X86_64)
 {
     extern (D)
     {
-        void QueryPerformanceCounter(long* ctr)
+        void queryPerformanceCounter(long* ctr)
         {
             asm
             {

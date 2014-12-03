@@ -21,7 +21,7 @@ import botan.pubkey.workfactor;
 * This class represents discrete logarithm groups. It holds a prime p,
 * a prime q = (p-1)/2 and m_g = x^((p-1)/q) mod p.
 */
-struct DL_Group
+struct DLGroup
 {
 public:
 
@@ -29,7 +29,7 @@ public:
     * Get the prime m_p.
     * @return prime m_p
     */
-    BigInt get_p() const
+    BigInt getP() const
     {
         init_check();
         return m_p;
@@ -39,11 +39,11 @@ public:
     * Get the prime q.
     * @return prime q
     */
-    BigInt get_q() const
+    BigInt getQ() const
     {
         init_check();
         if (m_q == 0)
-            throw new Invalid_State("DLP group has no m_q prime specified");
+            throw new InvalidState("DLP group has no m_q prime specified");
         return m_q;
     }
 
@@ -51,7 +51,7 @@ public:
     * Get the base m_g.
     * @return base m_g
     */
-    BigInt get_g() const
+    BigInt getG() const
     {
         init_check();
         return m_g;
@@ -83,7 +83,7 @@ public:
     * @param strong = whether to perform stronger by lengthier tests
     * @return true if the object is consistent, false otherwise
     */
-    bool verify_group(RandomNumberGenerator rng,
+    bool verifyGroup(RandomNumberGenerator rng,
                       bool strong) const
     {
         init_check();
@@ -95,9 +95,9 @@ public:
         
         const size_t prob = (strong) ? 56 : 10;
         
-        if (!is_prime(m_p, rng, prob))
+        if (!isPrime(m_p, rng, prob))
             return false;
-        if ((m_q > 0) && !is_prime(m_q, rng, prob))
+        if ((m_q > 0) && !isPrime(m_q, rng, prob))
             return false;
         return true;
     }
@@ -118,7 +118,7 @@ public:
         else if (format == ANSI_X9_42)
             return PEM.encode(encoding, "X942 DH PARAMETERS");
         else
-            throw new Invalid_Argument("Unknown DL_Group encoding " ~ to!string(format));
+            throw new InvalidArgument("Unknown DLGroup encoding " ~ to!string(format));
     }
 
     /**
@@ -126,44 +126,44 @@ public:
     * @param format = the encoding format
     * @return string holding the DER encoded group
     */
-    Vector!ubyte DER_encode(Format format) const
+    Vector!ubyte dEREncode(Format format) const
     {
         init_check();
         
         if ((m_q == 0) && (format != PKCS_3))
-            throw new Encoding_Error("The ANSI DL parameter formats require a subgroup");
+            throw new EncodingError("The ANSI DL parameter formats require a subgroup");
         
         if (format == ANSI_X9_57)
         {
-            return DER_Encoder()
-                    .start_cons(ASN1_Tag.SEQUENCE)
+            return DEREncoder()
+                    .startCons(ASN1Tag.SEQUENCE)
                     .encode(m_p)
                     .encode(m_q)
                     .encode(m_g)
-                    .end_cons()
-                    .get_contents_unlocked();
+                    .endCons()
+                    .getContentsUnlocked();
         }
         else if (format == ANSI_X9_42)
         {
-            return DER_Encoder()
-                    .start_cons(ASN1_Tag.SEQUENCE)
+            return DEREncoder()
+                    .startCons(ASN1Tag.SEQUENCE)
                     .encode(m_p)
                     .encode(m_g)
                     .encode(m_q)
-                    .end_cons()
-                    .get_contents_unlocked();
+                    .endCons()
+                    .getContentsUnlocked();
         }
         else if (format == PKCS_3)
         {
-            return DER_Encoder()
-                    .start_cons(ASN1_Tag.SEQUENCE)
+            return DEREncoder()
+                    .startCons(ASN1Tag.SEQUENCE)
                     .encode(m_p)
                     .encode(m_g)
-                    .end_cons()
-                    .get_contents_unlocked();
+                    .endCons()
+                    .getContentsUnlocked();
         }
         
-        throw new Invalid_Argument("Unknown DL_Group encoding " ~ to!string(format));
+        throw new InvalidArgument("Unknown DLGroup encoding " ~ to!string(format));
     }
 
     /**
@@ -171,36 +171,36 @@ public:
     * @param ber = a vector containing the DER/BER encoded group
     * @param format = the format of the encoded group
     */
-    void BER_decode(in Vector!ubyte data,
+    void bERDecode(in Vector!ubyte data,
                     Format format)
     {
         BigInt new_p, new_q, new_g;
         
-        BER_Decoder decoder = BER_Decoder(data);
-        BER_Decoder ber = decoder.start_cons(ASN1_Tag.SEQUENCE);
+        BERDecoder decoder = BERDecoder(data);
+        BERDecoder ber = decoder.startCons(ASN1Tag.SEQUENCE);
         
         if (format == ANSI_X9_57)
         {
             ber.decode(new_p)
                     .decode(new_q)
                     .decode(new_g)
-                    .verify_end();
+                    .verifyEnd();
         }
         else if (format == ANSI_X9_42)
         {
             ber.decode(new_p)
                     .decode(new_g)
                     .decode(new_q)
-                    .discard_remaining();
+                    .discardRemaining();
         }
         else if (format == PKCS_3)
         {
             ber.decode(new_p)
                     .decode(new_g)
-                    .discard_remaining();
+                    .discardRemaining();
         }
         else
-            throw new Invalid_Argument("Unknown DL_Group encoding " ~ to!string(format));
+            throw new InvalidArgument("Unknown DLGroup encoding " ~ to!string(format));
         
         initialize(new_p, new_q, new_g);
     }
@@ -209,7 +209,7 @@ public:
     * Decode a PEM encoded group into this instance.
     * @param pem = the PEM encoding of the group
     */
-    void PEM_decode(in string pem)
+    void pEMDecode(in string pem)
     {
         string label;
         
@@ -222,7 +222,7 @@ public:
         else if (label == "X942 DH PARAMETERS")
             BER_decode(ber, ANSI_X9_42);
         else
-            throw new Decoding_Error("DL_Group: Invalid PEM label " ~ label);
+            throw new DecodingError("DLGroup: Invalid PEM label " ~ label);
     }
 
     /**
@@ -247,7 +247,7 @@ public:
         string pem = PEM_for_named_group(name);
         
         if (!pem)
-            throw new Invalid_Argument("DL_Group: Unknown group " ~ name);
+            throw new InvalidArgument("DLGroup: Unknown group " ~ name);
         
         PEM_decode(pem);
     }
@@ -268,11 +268,11 @@ public:
     this(RandomNumberGenerator rng, PrimeType type, size_t pbits, size_t qbits = 0)
     {
         if (pbits < 512)
-            throw new Invalid_Argument("DL_Group: prime size " ~ to!string(pbits) ~ " is too small");
+            throw new InvalidArgument("DLGroup: prime size " ~ to!string(pbits) ~ " is too small");
         
         if (type == Strong)
         {
-            m_p = random_safe_prime(rng, pbits);
+            m_p = randomSafePrime(rng, pbits);
             m_q = (m_p - 1) / 2;
             m_g = 2;
         }
@@ -281,9 +281,9 @@ public:
             if (!qbits)
                 qbits = 2 * dl_work_factor(pbits);
             
-            m_q = random_prime(rng, qbits);
+            m_q = randomPrime(rng, qbits);
             BigInt X;
-            while (m_p.bits() != pbits || !is_prime(m_p, rng))
+            while (m_p.bits() != pbits || !isPrime(m_p, rng))
             {
                 X.randomize(rng, pbits);
                 m_p = X - (X % (2*m_q) - 1);
@@ -295,8 +295,8 @@ public:
         {
             qbits = qbits ? qbits : ((pbits <= 1024) ? 160 : 256);
             
-            generate_dsa_primes(rng,
-                                global_state().algorithm_factory(),
+            generateDsaPrimes(rng,
+                                globalState().algorithmFactory(),
                                 m_p, m_q,
                                 pbits, qbits);
             
@@ -315,8 +315,8 @@ public:
     */
     this(RandomNumberGenerator rng, in Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
     {
-        if (!generate_dsa_primes(rng, global_state().algorithm_factory(), m_p, m_q, pbits, qbits, seed))
-            throw new Invalid_Argument("DL_Group: The seed given does not "
+        if (!generateDsaPrimes(rng, globalState().algorithmFactory(), m_p, m_q, pbits, qbits, seed))
+            throw new InvalidArgument("DLGroup: The seed given does not "
                                        ~ "generate a DSA group");
         
         m_g = make_dsa_generator(m_p, m_q);
@@ -346,42 +346,42 @@ public:
     }
 
 
-    static string PEM_for_named_group(in string name);
+    static string pEMForNamedGroup(in string name);
 private:
     /*
     * Create generator of the q-sized subgroup (DSA style generator)
     */
-    static BigInt make_dsa_generator(in BigInt p, in BigInt q)
+    static BigInt makeDsaGenerator(in BigInt p, in BigInt q)
     {
         const BigInt e = (p - 1) / q;
         
         if (e == 0 || (p - 1) % q > 0)
-            throw new Invalid_Argument("make_dsa_generator q does not divide p-1");
+            throw new InvalidArgument("make_dsa_generator q does not divide p-1");
 
         foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
         {
-            BigInt g = power_mod(PRIMES[i], e, p);
+            BigInt g = powerMod(PRIMES[i], e, p);
             if (g > 1)
                 return g;
         }
         
-        throw new Internal_Error("DL_Group: Couldn't create a suitable generator");
+        throw new InternalError("DLGroup: Couldn't create a suitable generator");
     }
 
-    void init_check() const
+    void initCheck() const
     {
         if (!m_initialized)
-            throw new Invalid_State("DLP group cannot be used uninitialized");
+            throw new InvalidState("DLP group cannot be used uninitialized");
     }
 
     void initialize(in BigInt p1, in BigInt q1, in BigInt g1)
     {
         if (p1 < 3)
-            throw new Invalid_Argument("DL_Group: Prime invalid");
+            throw new InvalidArgument("DLGroup: Prime invalid");
         if (g1 < 2 || g1 >= p1)
-            throw new Invalid_Argument("DL_Group: Generator invalid");
+            throw new InvalidArgument("DLGroup: Generator invalid");
         if (q1 < 0 || q1 >= p1)
-            throw new Invalid_Argument("DL_Group: Subgroup invalid");
+            throw new InvalidArgument("DLGroup: Subgroup invalid");
         
         m_p = p1;
         m_g = g1;
@@ -396,7 +396,7 @@ private:
     /**
     * Return PEM representation of named DL group
     */
-    public static string PEM_for_named_group(in string name)
+    public static string pEMForNamedGroup(in string name)
     {
         if (name == "modp/ietf/1024")
             return

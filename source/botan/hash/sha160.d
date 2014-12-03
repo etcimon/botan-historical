@@ -18,12 +18,12 @@ import botan.utils.types;
 /**
 * NIST's SHA-160
 */
-class SHA_160 : MDx_HashFunction
+class SHA160 : MDxHashFunction
 {
 public:
     final override @property string name() const { return "SHA-160"; }
-    final @property size_t output_length() const { return 20; }
-    HashFunction clone() const { return new SHA_160; }
+    final @property size_t outputLength() const { return 20; }
+    HashFunction clone() const { return new SHA160; }
 
     /*
     * Clear memory of sensitive data
@@ -64,25 +64,25 @@ protected:
     /*
     * SHA-160 Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
             D = m_digest[3], E = m_digest[4];
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_bigEndian(m_W.ptr, input, 16);
+            loadBigEndian(m_W.ptr, input, 16);
             
             for (size_t j = 16; j != 80; j += 8)
             {
-                m_W[j  ] = rotate_left((m_W[j-3] ^ m_W[j-8] ^ m_W[j-14] ^ m_W[j-16]), 1);
-                m_W[j+1] = rotate_left((m_W[j-2] ^ m_W[j-7] ^ m_W[j-13] ^ m_W[j-15]), 1);
-                m_W[j+2] = rotate_left((m_W[j-1] ^ m_W[j-6] ^ m_W[j-12] ^ m_W[j-14]), 1);
-                m_W[j+3] = rotate_left((m_W[j  ] ^ m_W[j-5] ^ m_W[j-11] ^ m_W[j-13]), 1);
-                m_W[j+4] = rotate_left((m_W[j+1] ^ m_W[j-4] ^ m_W[j-10] ^ m_W[j-12]), 1);
-                m_W[j+5] = rotate_left((m_W[j+2] ^ m_W[j-3] ^ m_W[j- 9] ^ m_W[j-11]), 1);
-                m_W[j+6] = rotate_left((m_W[j+3] ^ m_W[j-2] ^ m_W[j- 8] ^ m_W[j-10]), 1);
-                m_W[j+7] = rotate_left((m_W[j+4] ^ m_W[j-1] ^ m_W[j- 7] ^ m_W[j- 9]), 1);
+                m_W[j  ] = rotateLeft((m_W[j-3] ^ m_W[j-8] ^ m_W[j-14] ^ m_W[j-16]), 1);
+                m_W[j+1] = rotateLeft((m_W[j-2] ^ m_W[j-7] ^ m_W[j-13] ^ m_W[j-15]), 1);
+                m_W[j+2] = rotateLeft((m_W[j-1] ^ m_W[j-6] ^ m_W[j-12] ^ m_W[j-14]), 1);
+                m_W[j+3] = rotateLeft((m_W[j  ] ^ m_W[j-5] ^ m_W[j-11] ^ m_W[j-13]), 1);
+                m_W[j+4] = rotateLeft((m_W[j+1] ^ m_W[j-4] ^ m_W[j-10] ^ m_W[j-12]), 1);
+                m_W[j+5] = rotateLeft((m_W[j+2] ^ m_W[j-3] ^ m_W[j- 9] ^ m_W[j-11]), 1);
+                m_W[j+6] = rotateLeft((m_W[j+3] ^ m_W[j-2] ^ m_W[j- 8] ^ m_W[j-10]), 1);
+                m_W[j+7] = rotateLeft((m_W[j+4] ^ m_W[j-1] ^ m_W[j- 7] ^ m_W[j- 9]), 1);
             }
             
             F1(A, B, C, D, E, m_W[ 0]);    F1(E, A, B, C, D, m_W[ 1]);
@@ -135,28 +135,28 @@ protected:
             D = (m_digest[3] += D);
             E = (m_digest[4] += E);
             
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
     /*
     * Copy out the digest
     */
-    final void copy_out(ubyte* output)
+    final void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length(); i += 4)
-            store_bigEndian(m_digest[i/4], output + i);
+            storeBigEndian(m_digest[i/4], output + i);
     }
 
     /**
     * The digest value, exposed for use by subclasses (asm, SSE2)
     */
-    Secure_Vector!uint m_digest;
+    SecureVector!uint m_digest;
 
     /**
     * The message buffer, exposed for use by subclasses (asm, SSE2)
     */
-    Secure_Vector!uint m_W;
+    SecureVector!uint m_W;
 }
 
 private:
@@ -164,35 +164,35 @@ pure:
 /*
 * SHA-160 F1 Function
 */
-void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += (D ^ (B & (C ^ D))) + msg + 0x5A827999 + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += (D ^ (B & (C ^ D))) + msg + 0x5A827999 + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }
 
 /*
 * SHA-160 F2 Function
 */
-void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += (B ^ C ^ D) + msg + 0x6ED9EBA1 + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += (B ^ C ^ D) + msg + 0x6ED9EBA1 + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }
 
 /*
 * SHA-160 F3 Function
 */
-void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += ((B & C) | ((B | C) & D)) + msg + 0x8F1BBCDC + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += ((B & C) | ((B | C) & D)) + msg + 0x8F1BBCDC + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }
 
 /*
 * SHA-160 F4 Function
 */
-void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += (B ^ C ^ D) + msg + 0xCA62C1D6 + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += (B ^ C ^ D) + msg + 0xCA62C1D6 + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }

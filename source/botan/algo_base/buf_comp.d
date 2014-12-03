@@ -14,13 +14,13 @@ import botan.utils.get_byte;
 * This class represents any kind of computation which uses an internal
 * state, such as hash functions or MACs
 */
-class Buffered_Computation
+class BufferedComputation
 {
 public:
     /**
     * @return length of the output of this function in bytes
     */
-    abstract @property size_t output_length() const;
+    abstract @property size_t outputLength() const;
 
     /**
     * Add new input to process.
@@ -37,9 +37,9 @@ public:
 
     /**
     * Add new input to process.
-    * @param input = the input to process as a Secure_Vector
+    * @param input = the input to process as a SecureVector
     */
-    final void update(in Secure_Vector!ubyte input)
+    final void update(in SecureVector!ubyte input)
     {
         add_data(input.ptr, input.length);
     }
@@ -57,7 +57,7 @@ public:
     * Add an integer in big-endian order
     * @param input = the value
     */
-    final void update_bigEndian(T)(in T input)
+    final void updateBigEndian(T)(in T input)
     {
         foreach (size_t i; 0 .. T.sizeof)
         {
@@ -104,11 +104,11 @@ public:
     /**
     * Complete the computation and retrieve the
     * final result.
-    * @return Secure_Vector holding the result
+    * @return SecureVector holding the result
     */
-    final Secure_Vector!ubyte finished()
+    final SecureVector!ubyte finished()
     {
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(output_length());
+        SecureVector!ubyte output = SecureVector!ubyte(output_length());
         final_result(output.ptr);
         return output;
     }
@@ -120,7 +120,7 @@ public:
     * @param length = the length of the ubyte array
     * @result the result of the call to finished()
     */
-    final Secure_Vector!ubyte process(in ubyte[] input)
+    final SecureVector!ubyte process(in ubyte[] input)
     {
         add_data(input);
         return finished();
@@ -133,7 +133,7 @@ public:
     * @param length = the length of the ubyte array
     * @result the result of the call to finished()
     */
-    final Secure_Vector!ubyte process(in ubyte* input, size_t length)
+    final SecureVector!ubyte process(in ubyte* input, size_t length)
     {
         add_data(input, length);
         return finished();
@@ -145,7 +145,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final Secure_Vector!ubyte process(in Secure_Vector!ubyte input)
+    final SecureVector!ubyte process(in SecureVector!ubyte input)
     {
         add_data(input[]);
         return finished();
@@ -157,7 +157,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final Secure_Vector!ubyte process(in Vector!ubyte input)
+    final SecureVector!ubyte process(in Vector!ubyte input)
     {
         add_data(input[]);
         return finished();
@@ -169,7 +169,7 @@ public:
     * @param input = the input to process as a string
     * @result the result of the call to finished()
     */
-    final Secure_Vector!ubyte process(in string input)
+    final SecureVector!ubyte process(in string input)
     {
         update(input);
         return finished();
@@ -182,11 +182,11 @@ private:
     * @param input = is an input buffer
     * @param length = is the length of input in bytes
     */
-    abstract void add_data(in ubyte* input, size_t length);
+    abstract void addData(in ubyte* input, size_t length);
 
     /**
     * Write the final output to out
     * @param output = is an output buffer of output_length()
     */
-    abstract void final_result(ubyte* output);
+    abstract void finalResult(ubyte* output);
 }

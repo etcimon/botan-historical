@@ -21,11 +21,11 @@ public:
     * DER encode the params (the number of iterations and the salt value)
     * @return encoded params
     */
-    abstract Vector!ubyte encode_params() const;
+    abstract Vector!ubyte encodeParams() const;
 
     /**
     * Get this PBE's OID.
     * @return object identifier
     */
-    abstract OID get_oid() const;
+    abstract OID getOid() const;
 }

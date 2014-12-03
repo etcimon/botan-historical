@@ -34,10 +34,10 @@ public:
         m_buf_pos += length;
     }
 
-    void set_iv(in ubyte* iv, size_t iv_len)
+    void setIv(in ubyte* iv, size_t iv_len)
     {
-        if (!valid_iv_length(iv_len))
-            throw new Invalid_IV_Length(name, iv_len);
+        if (!validIvLength(iv_len))
+            throw new InvalidIVLength(name, iv_len);
         
         zeroise(m_buffer);
         buffer_insert(m_buffer, 0, iv, iv_len);
@@ -46,12 +46,12 @@ public:
         m_buf_pos = 0;
     }
 
-    bool valid_iv_length(size_t iv_len) const
+    bool validIvLength(size_t iv_len) const
     { return (iv_len <= m_cipher.block_size); }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
-        return m_cipher.key_spec();
+        return m_cipher.keySpec();
     }
 
     @property string name() const
@@ -79,15 +79,15 @@ public:
         m_buf_pos = 0;
     }
 private:
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
-        m_cipher.set_key(key, key_len);
+        m_cipher.setKey(key, key_len);
         
         // Set a default all-zeros IV
-        set_iv(null, 0);
+        setIv(null, 0);
     }
 
     Unique!BlockCipher m_cipher;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     size_t m_buf_pos;
 }

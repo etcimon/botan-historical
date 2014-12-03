@@ -1,5 +1,5 @@
 /*
-* TLS TLS_Session Manager
+* TLS TLSSession Manager
 * (C) 2011 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -28,7 +28,7 @@ import botan.utils.containers.hashmap;
 *
 * Implementations should strive to be thread safe
 */
-class TLS_Session_Manager
+class TLSSessionManager
 {
 public:
     /**
@@ -38,8 +38,8 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-    abstract bool load_from_session_id(in Vector!ubyte session_id,
-                                                 TLS_Session session);
+    abstract bool loadFromSessionId(in Vector!ubyte session_id,
+                                                 TLSSession session);
 
     /**
     * Try to load a saved session (using info about server)
@@ -48,13 +48,13 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-    abstract bool load_from_server_info(in TLS_Server_Information info,
-                                                  TLS_Session session);
+    abstract bool loadFromServerInfo(in TLSServerInformation info,
+                                                  TLSSession session);
 
     /**
     * Remove this session id from the cache, if it exists
     */
-    abstract void remove_entry(in Vector!ubyte session_id);
+    abstract void removeEntry(in Vector!ubyte session_id);
 
     /**
     * Save a session on a best effort basis; the manager may not in
@@ -64,14 +64,14 @@ public:
     *
     * @param session = to save
     */
-    abstract void save(in TLS_Session session);
+    abstract void save(in TLSSession session);
 
     /**
     * Return the allowed lifetime of a session; beyond this time,
     * sessions are not resumed. Returns 0 if unknown/no explicit
     * expiration policy.
     */
-    abstract Duration session_lifetime() const;
+    abstract Duration sessionLifetime() const;
 
     ~this() {}
 }
@@ -80,27 +80,27 @@ public:
 * An implementation of TLS_Session_Manager that does not save sessions at
 * all, preventing session resumption.
 */
-final class TLS_Session_Manager_Noop : TLS_Session_Manager
+final class TLSSessionManagerNoop : TLS_Session_Manager
 {
 public:
-    override bool load_from_session_id(in Vector!ubyte, TLS_Session)
+    override bool loadFromSessionId(in Vector!ubyte, TLSSession)
     { return false; }
 
-    override bool load_from_server_info(in TLS_Server_Information, TLS_Session)
+    override bool loadFromServerInfo(in TLSServerInformation, TLSSession)
     { return false; }
 
-    override void remove_entry(in Vector!ubyte) {}
+    override void removeEntry(in Vector!ubyte) {}
 
-    override void save(in TLS_Session) {}
+    override void save(in TLSSession) {}
 
-    override Duration session_lifetime() const
+    override Duration sessionLifetime() const
     { return Duration.init; }
 }
 
 /**
 * An implementation of TLS_Session_Manager that saves values in memory.
 */
-final class TLS_Session_Manager_In_Memory : TLS_Session_Manager
+final class TLSSessionManagerInMemory : TLS_Session_Manager
 {
 public:
     /**
@@ -118,15 +118,15 @@ public:
         
     }
 
-    override bool load_from_session_id(
-        in Vector!ubyte session_id, TLS_Session session)
+    override bool loadFromSessionId(
+        in Vector!ubyte session_id, TLSSession session)
     {
         
-        return load_from_session_str(hex_encode(session_id), session);
+        return load_from_session_str(hexEncode(session_id), session);
     }
 
-    override bool load_from_server_info(
-        const TLS_Server_Information info, TLS_Session session)
+    override bool loadFromServerInfo(
+        const TLSServerInformation info, TLSSession session)
     {
         
         auto i = m_info_sessions.find(info);
@@ -146,15 +146,15 @@ public:
         return false;
     }
 
-    override void remove_entry(in Vector!ubyte session_id)
+    override void removeEntry(in Vector!ubyte session_id)
     {        
-        auto i = m_sessions.find(hex_encode(session_id));
+        auto i = m_sessions.find(hexEncode(session_id));
         
         if (i != m_sessions.end())
             m_sessions.erase(i);
     }
 
-    override void save(in TLS_Session session)
+    override void save(in TLSSession session)
     {
         
         if (m_max_sessions != 0)
@@ -167,19 +167,19 @@ public:
                 m_sessions.erase(m_sessions.ptr);
         }
         
-        const string session_id_str = hex_encode(session.session_id());
+        const string session_id_str = hexEncode(session.sessionId());
         
         m_sessions[session_id_str] = session.encrypt(m_session_key, m_rng);
         
-        if (session.side() == CLIENT && !session.server_info().empty)
-            m_info_sessions[session.server_info()] = session_id_str;
+        if (session.side() == CLIENT && !session.serverInfo().empty)
+            m_info_sessions[session.serverInfo()] = session_id_str;
     }
 
-    override Duration session_lifetime() const
+    override Duration sessionLifetime() const
     { return m_session_lifetime; }
 
 private:
-    bool load_from_session_str(in string session_str, TLS_Session session)
+    bool loadFromSessionStr(in string session_str, TLSSession session)
     {
         // assert(lock is held)
         
@@ -190,7 +190,7 @@ private:
         
         try
         {
-            session = TLS_Session.decrypt(i.second, m_session_key);
+            session = TLSSession.decrypt(i.second, m_session_key);
         }
         catch (Throwable)
         {
@@ -200,7 +200,7 @@ private:
         // if session has expired, remove it
         const auto now = Clock.currTime();
         
-        if (session.start_time() + session_lifetime() < now)
+        if (session.startTime() + session_lifetime() < now)
         {
             m_sessions.erase(i);
             return false;
@@ -217,5 +217,5 @@ private:
     SymmetricKey m_session_key;
 
     HashMap!(string, Vector!ubyte) m_sessions; // hex(session_id) . session
-    HashMap!(TLS_Server_Information, string) m_info_sessions;
+    HashMap!(TLSServerInformation, string) m_info_sessions;
 }

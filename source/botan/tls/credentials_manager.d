@@ -23,7 +23,7 @@ import botan.utils.types;
 * and "tls-server". Context represents a hostname, email address,
 * username, or other identifier.
 */
-class TLS_Credentials_Manager
+class TLSCredentialsManager
 {
 public:
     ~this() {}
@@ -38,7 +38,7 @@ public:
     *          for type "tls-client", context specifies the servers name.
     */
     abstract Vector!Certificate_Store 
-        trusted_certificate_authorities(in string type, in string context)
+        trustedCertificateAuthorities(in string type, in string context)
     {
         return Vector!Certificate_Store();
     }
@@ -57,12 +57,12 @@ public:
     * @param cert_chain = specifies a certificate chain leading to a
     *          trusted root CA certificate.
     */
-    abstract void verify_certificate_chain(in string type,
+    abstract void verifyCertificateChain(in string type,
                                            in string purported_hostname,
-                                           in Vector!X509_Certificate cert_chainput)
+                                           in Vector!X509Certificate cert_chainput)
     {
         if (cert_chain.empty)
-            throw new Invalid_Argument("Certificate chain was empty");
+            throw new InvalidArgument("Certificate chain was empty");
         
         auto trusted_CAs = trusted_certificate_authorities(type, purported_hostname);
         
@@ -72,13 +72,13 @@ public:
                                          restrictions,
                                          trusted_CAs);
         
-        if (!result.successful_validation())
-            throw new Exception("Certificate validation failure: " ~ result.result_string());
+        if (!result.successfulValidation())
+            throw new Exception("Certificate validation failure: " ~ result.resultString());
         
-        if (!cert_in_some_store(trusted_CAs, result.trust_root()))
+        if (!cert_in_some_store(trusted_CAs, result.trustRoot()))
             throw new Exception("Certificate chain roots in unknown/untrusted CA");
         
-        if (purported_hostname != "" && !cert_chainput[0].matches_dns_name(purported_hostname))
+        if (purported_hostname != "" && !cert_chainput[0].matchesDnsName(purported_hostname))
             throw new Exception("Certificate did not match hostname");
     }
 
@@ -97,17 +97,17 @@ public:
     *
     * @param context = specifies a context relative to type.
     */
-    abstract Vector!X509_Certificate cert_chain(in Vector!string cert_key_types,
+    abstract Vector!X509Certificate certChain(in Vector!string cert_key_types,
                                                     in string type,
                                                     in string context)
     {
-        return Vector!X509_Certificate();
+        return Vector!X509Certificate();
     }
 
     /// ditto
-    final Vector!X509_Certificate cert_chain(T : string[])(auto ref T cert_key_types, in string type, in string context)
+    final Vector!X509Certificate certChain(T : string[])(auto ref T cert_key_types, in string type, in string context)
     {
-        return cert_chain(Vector!string(cert_key_types), type, context);
+        return certChain(Vector!string(cert_key_types), type, context);
     }
 
     /**
@@ -124,13 +124,13 @@ public:
     *
     * @param context = specifies a context relative to type.
     */
-    abstract Vector!X509_Certificate cert_chain_single_type( in string cert_key_type,
+    abstract Vector!X509Certificate certChainSingleType( in string cert_key_type,
                                                                 in string type,
                                                                 in string context)
     {
         Vector!string cert_types;
-        cert_types.push_back(cert_key_type);
-        return cert_chain(cert_types, type, context);
+        cert_types.pushBack(cert_key_type);
+        return certChain(cert_types, type, context);
     }
 
     /**
@@ -139,7 +139,7 @@ public:
     * @note this object should retain ownership of the returned key;
     *         it should not be deleted by the caller.
     */
-    abstract Private_Key private_key_for(in X509_Certificate cert, in string type, in string context)
+    abstract PrivateKey privateKeyFor(in X509Certificate cert, in string type, in string context)
     {
         return null;
     }
@@ -149,7 +149,7 @@ public:
     * @param context = specifies a context relative to type.
     * @return true if we should attempt SRP authentication
     */
-    abstract bool attempt_srp(in string, in string)
+    abstract bool attemptSrp(in string, in string)
     {
         return false;
     }
@@ -161,7 +161,7 @@ public:
                  for this type/context. Should return empty string
                  if password auth not desired/available.
     */
-    abstract string srp_identifier(in string type, in string context)
+    abstract string srpIdentifier(in string type, in string context)
     {
         return "";
     }
@@ -175,7 +175,7 @@ public:
     * @return password for client-side SRP auth, if available
                  for this identifier/type/context.
     */
-    abstract string srp_password(in string type,
+    abstract string srpPassword(in string type,
                                  in string context,
                                  in string identifier)
     {
@@ -185,7 +185,7 @@ public:
     /**
     * Retrieve SRP verifier parameters
     */
-    abstract bool srp_verifier(in string type,
+    abstract bool srpVerifier(in string type,
                                in string context,
                                in string identifier,
                                ref string group_name,
@@ -201,7 +201,7 @@ public:
     * @param context = specifies a context relative to type.
     * @return the PSK identity hint for this type/context
     */
-    abstract string psk_identity_hint(in string type, in string context)
+    abstract string pskIdentityHint(in string type, in string context)
     {
         return "";
     }
@@ -212,7 +212,7 @@ public:
     * @param identity_hint = was passed by the server (but may be empty)
     * @return the PSK identity we want to use
     */
-    abstract string psk_identity(in string type, in string context, in string identity_hint)
+    abstract string pskIdentity(in string type, in string context, in string identity_hint)
     {
         return "";
     }
@@ -227,16 +227,16 @@ public:
     */
     abstract SymmetricKey psk(in string type, in string context, in string identity)
     {
-        throw new Internal_Error("No PSK set for identity " ~ identity);
+        throw new InternalError("No PSK set for identity " ~ identity);
     }
 }
 
 private:
 
-bool cert_in_some_store(in Vector!Certificate_Store trusted_CAs, in X509_Certificate trust_root)
+bool certInSomeStore(in Vector!Certificate_Store trusted_CAs, in X509Certificate trust_root)
 {
     foreach (CAs; trusted_CAs)
-        if (CAs.certificate_known(trust_root))
+        if (CAs.certificateKnown(trust_root))
             return true;
     return false;
 }

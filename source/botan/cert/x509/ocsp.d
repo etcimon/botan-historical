@@ -26,13 +26,13 @@ import botan.cert.x509.x509path;
 import botan.utils.http_util.http_util;
 import botan.utils.types;
 
-struct OCSP_Request
+struct OCSPRequest
 {
 public:
     @disable this();
 
-    this(in X509_Certificate issuer_cert,
-         in X509_Certificate subject_cert) 
+    this(in X509Certificate issuer_cert,
+         in X509Certificate subject_cert) 
         
     {
         m_issuer = issuer_cert;
@@ -43,117 +43,117 @@ public:
     {
         CertID certid = CertID(m_issuer, m_subject);
         
-        return DER_Encoder().start_cons(ASN1_Tag.SEQUENCE)
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .start_explicit(0)
+        return DEREncoder().startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
+                .startExplicit(0)
                 .encode(cast(size_t)(0)) // version #
-                .end_explicit()
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .start_cons(ASN1_Tag.SEQUENCE)
+                .endExplicit()
+                .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(certid)
-                .end_cons()
-                .end_cons()
-                .end_cons()
-                .end_cons().get_contents_unlocked();
+                .endCons()
+                .endCons()
+                .endCons()
+                .endCons().getContentsUnlocked();
     }
 
-    string base64_encode() const
+    string base64Encode() const
     {
-        return base64_encode(BER_encode());
+        return base64Encode(BER_encode());
     }
 
-    X509_Certificate issuer() const { return m_issuer; }
+    X509Certificate issuer() const { return m_issuer; }
 
-    X509_Certificate subject() const { return m_subject; }
+    X509Certificate subject() const { return m_subject; }
 private:
-    X509_Certificate m_issuer, m_subject;
+    X509Certificate m_issuer, m_subject;
 }
 
-struct OCSP_Response
+struct OCSPResponse
 {
 public:
     @disable this();
 
-    this(in Certificate_Store trusted_roots,
+    this(in CertificateStore trusted_roots,
              in Vector!ubyte response_bits)
     {
-        BER_Decoder response_outer = BER_Decoder(response_bits).start_cons(ASN1_Tag.SEQUENCE);
+        BERDecoder response_outer = BERDecoder(response_bits).startCons(ASN1Tag.SEQUENCE);
         
         size_t resp_status = 0;
         
-        response_outer.decode(resp_status, ASN1_Tag.ENUMERATED, ASN1_Tag.UNIVERSAL);
+        response_outer.decode(resp_status, ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL);
         
         if (resp_status != 0)
             throw new Exception("OCSP response status " ~ to!string(resp_status));
         
-        if (response_outer.more_items())
+        if (response_outer.moreItems())
         {
-            BER_Decoder response_bytes = response_outer.start_cons(ASN1_Tag(0), ASN1_Tag.CONTEXT_SPECIFIC).start_cons(ASN1_Tag.SEQUENCE);
+            BERDecoder response_bytes = response_outer.startCons(ASN1Tag(0), ASN1Tag.CONTEXT_SPECIFIC).startCons(ASN1Tag.SEQUENCE);
             
-            response_bytes.decode_and_check(OID("1.3.6.1.5.5.7.48.1.1"), "Unknown response type in OCSP response");
+            response_bytes.decodeAndCheck(OID("1.3.6.1.5.5.7.48.1.1"), "Unknown response type in OCSP response");
             
-            BER_Decoder basicresponse = BER_Decoder(response_bytes.get_next_octet_string()).start_cons(ASN1_Tag.SEQUENCE);
+            BERDecoder basicresponse = BERDecoder(response_bytes.get_next_octet_string()).startCons(ASN1Tag.SEQUENCE);
             
             Vector!ubyte tbs_bits;
-            Algorithm_Identifier sig_algo;
+            AlgorithmIdentifier sig_algo;
             Vector!ubyte signature;
-            Vector!X509_Certificate certs;
+            Vector!X509Certificate certs;
             
-            basicresponse.start_cons(ASN1_Tag.SEQUENCE)
-                    .raw_bytes(tbs_bits)
-                    .end_cons()
+            basicresponse.startCons(ASN1Tag.SEQUENCE)
+                    .rawBytes(tbs_bits)
+                    .endCons()
                     .decode(sig_algo)
-                    .decode(signature, ASN1_Tag.BIT_STRING);
+                    .decode(signature, ASN1Tag.BIT_STRING);
 
-            decode_optional_list(basicresponse, ASN1_Tag(0), certs);
+            decode_optional_list(basicresponse, ASN1Tag(0), certs);
             
             size_t responsedata_version;
-            X509_DN name;
+            X509DN name;
             Vector!ubyte key_hash;
-            X509_Time produced_at;
-            X509_Extensions extensions;
+            X509Time produced_at;
+            X509Extensions extensions;
             
-            BER_Decoder(tbs_bits)
-                    .decode_optional(responsedata_version, ASN1_Tag(0), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))                    
-                    .decode_optional(name, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))                    
-                    .decode_optional_string(key_hash, ASN1_Tag.OCTET_STRING, 2,ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC))                    
+            BERDecoder(tbs_bits)
+                    .decodeOptional(responsedata_version, ASN1Tag(0), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
+                    .decodeOptional(name, ASN1Tag(1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
+                    .decodeOptionalString(key_hash, ASN1Tag.OCTET_STRING, 2,ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
                     .decode(produced_at)                    
-                    .decode_list(m_responses)                    
-                    .decode_optional(extensions, ASN1_Tag(1), ASN1_Tag(ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC));
+                    .decodeList(m_responses)                    
+                    .decodeOptional(extensions, ASN1Tag(1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC));
             
             if (certs.empty)
             {
-                if (auto cert = trusted_roots.find_cert(name, Vector!ubyte()))
-                    certs.push_back(*cert);
+                if (auto cert = trusted_roots.findCert(name, Vector!ubyte()))
+                    certs.pushBack(*cert);
                 else
                     throw new Exception("Could not find certificate that signed OCSP response");
             }
             
-            check_signature(tbs_bits, sig_algo, signature, trusted_roots, certs);
+            checkSignature(tbs_bits, sig_algo, signature, trusted_roots, certs);
         }
         
-        response_outer.end_cons();
+        response_outer.endCons();
     }
 
-    Certificate_Status_Code status_for(in X509_Certificate issuer,
-                                       in X509_Certificate subject) const
+    CertificateStatusCode statusFor(in X509Certificate issuer,
+                                       in X509Certificate subject) const
     {
         foreach (response; m_responses)
         {
-            if (response.certid().is_id_for(issuer, subject))
+            if (response.certid().isIdFor(issuer, subject))
             {
-                X509_Time current_time(Clock.currTime());
+                X509Time current_time(Clock.currTime());
                 
-                if (response.cert_status() == 1)
+                if (response.certStatus() == 1)
                     return Certificate_Status_Code.CERT_IS_REVOKED;
                 
-                if (response.this_update() > current_time)
+                if (response.thisUpdate() > current_time)
                     return Certificate_Status_Code.OCSP_NOT_YET_VALID;
                 
-                if (response.next_update().time_is_set() && current_time > response.next_update())
+                if (response.nextUpdate().timeIsSet() && current_time > response.nextUpdate())
                     return Certificate_Status_Code.OCSP_HAS_EXPIRED;
                 
-                if (response.cert_status() == 0)
+                if (response.certStatus() == 0)
                     return Certificate_Status_Code.OCSP_RESPONSE_GOOD;
                 else
                     return Certificate_Status_Code.OCSP_BAD_STATUS;
@@ -169,36 +169,36 @@ private:
 }
 
 
-void decode_optional_list(BER_Decoder ber,
-                          ASN1_Tag tag,
-                          ref Vector!X509_Certificate output)
+void decodeOptionalList(BERDecoder ber,
+                          ASN1Tag tag,
+                          ref Vector!X509Certificate output)
 {
-    BER_Object obj = ber.get_next_object();
+    BER_Object obj = ber.getNextObject();
     
-    if (obj.type_tag != tag || obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
+    if (obj.type_tag != tag || obj.class_tag != (ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
     {
-        ber.push_back(obj);
+        ber.pushBack(obj);
         return;
     }
     
-    BER_Decoder list = BER_Decoder(obj.value);
+    BERDecoder list = BERDecoder(obj.value);
     
-    while (list.more_items())
+    while (list.moreItems())
     {
-        BER_Object certbits = list.get_next_object();
-        X509_Certificate cert = X509_Certificate(unlock(certbits.value));
-        output.push_back(cert);
+        BER_Object certbits = list.getNextObject();
+        X509Certificate cert = X509Certificate(unlock(certbits.value));
+        output.pushBack(cert);
     }
 }
 
 /// Does not use trusted roots
 /// Throws if not trusted
-void check_signature(in Vector!ubyte tbs_response,
-                     const Algorithm_Identifier sig_algo,
+void checkSignature(in Vector!ubyte tbs_response,
+                     const AlgorithmIdentifier sig_algo,
                      in Vector!ubyte signature,
-                     const X509_Certificate cert)
+                     const X509Certificate cert)
 {
-    Unique!Public_Key pub_key = cert.subject_public_key();
+    Unique!PublicKey pub_key = cert.subjectPublicKey();
     
     const Vector!string sig_info = splitter(OIDS.lookup(sig_algo.oid), '/');
     
@@ -208,49 +208,49 @@ void check_signature(in Vector!ubyte tbs_response,
     string padding = sig_info[1];
     Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
     
-    PK_Verifier verifier = PK_Verifier(*pub_key, padding, format);
-    if (!verifier.verify_message(put_in_sequence(tbs_response), signature))
+    PKVerifier verifier = PKVerifier(*pub_key, padding, format);
+    if (!verifier.verifyMessage(put_in_sequence(tbs_response), signature))
         throw new Exception("Signature on OCSP response does not verify");
 }
 
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
-void check_signature(in Vector!ubyte tbs_response,
-                     const Algorithm_Identifier sig_algo,
+void checkSignature(in Vector!ubyte tbs_response,
+                     const AlgorithmIdentifier sig_algo,
                      in Vector!ubyte signature,
-                     const Certificate_Store trusted_roots,
-                     const ref Vector!X509_Certificate certs)
+                     const CertificateStore trusted_roots,
+                     const ref Vector!X509Certificate certs)
 {
     if (certs.length < 1)
-        throw new Invalid_Argument("Short cert chain for check_signature");
+        throw new InvalidArgument("Short cert chain for checkSignature");
     
-    if (trusted_roots.certificate_known(certs[0]))
-        return check_signature(tbs_response, sig_algo, signature, certs[0]);
+    if (trusted_roots.certificateKnown(certs[0]))
+        return checkSignature(tbs_response, sig_algo, signature, certs[0]);
     
     // Otherwise attempt to chain the signing cert to a trust root
     
-    if (!certs[0].allowed_usage("PKIX.OCSPSigning"))
+    if (!certs[0].allowedUsage("PKIX.OCSPSigning"))
         throw new Exception("OCSP response cert does not allow OCSP signing");
     
     auto result = x509_path_validate(certs, Path_Validation_Restrictions(), trusted_roots);
     
-    if (!result.successful_validation())
-        throw new Exception("Certificate validation failure: " ~ result.result_string());
+    if (!result.successfulValidation())
+        throw new Exception("Certificate validation failure: " ~ result.resultString());
     
-    if (!trusted_roots.certificate_known(result.trust_root())) // not needed anymore?
+    if (!trusted_roots.certificateKnown(result.trustRoot())) // not needed anymore?
         throw new Exception("Certificate chain roots in unknown/untrusted CA");
     
-    const Vector!X509_Certificate cert_path = result.cert_path();
+    const Vector!X509Certificate cert_path = result.cert_path();
     
-    check_signature(tbs_response, sig_algo, signature, cert_path[0]);
+    checkSignature(tbs_response, sig_algo, signature, cert_path[0]);
 }
 
 /// Checks the certificate online
-OCSP_Response online_check(in X509_Certificate issuer,
-                      const X509_Certificate subject,
-                      const Certificate_Store trusted_roots)
+OCSPResponse onlineCheck(in X509Certificate issuer,
+                      const X509Certificate subject,
+                      const CertificateStore trusted_roots)
 {
-    const string responder_url = subject.ocsp_responder();
+    const string responder_url = subject.ocspResponder();
     
     if (responder_url == "")
         throw new Exception("No OCSP responder specified");
@@ -259,7 +259,7 @@ OCSP_Response online_check(in X509_Certificate issuer,
     
     HTTP_Response res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
     
-    res.throw_unless_ok();
+    res.throwUnlessOk();
     
     // Check the MIME type?
     

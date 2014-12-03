@@ -16,10 +16,10 @@ import std.algorithm;
 /**
 * This class represents a Base64 encoder.
 */
-final class Base64_Encoder : Filter
+final class Base64Encoder : Filter
 {
 public:
-    @property string name() const { return "Base64_Encoder"; }
+    @property string name() const { return "Base64Encoder"; }
 
     /**
     * Input a part of a message to the encoder.
@@ -31,16 +31,16 @@ public:
         buffer_insert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
         {
-            encode_and_send(m_input.ptr, m_input.length);
+            encodeAndSend(m_input.ptr, m_input.length);
             input += (m_input.length - m_position);
             length -= (m_input.length - m_position);
             while (length >= m_input.length)
             {
-                encode_and_send(input, m_input.length);
+                encodeAndSend(input, m_input.length);
                 input += m_input.length;
                 length -= m_input.length;
             }
-            copy_mem(m_input.ptr, input, length);
+            copyMem(m_input.ptr, input, length);
             m_position = 0;
         }
         m_position += length;
@@ -50,9 +50,9 @@ public:
     /**
     * Inform the Encoder that the current message shall be closed.
     */
-    void end_msg()
+    void endMsg()
     {
-        encode_and_send(m_input.ptr, m_position, true);
+        encodeAndSend(m_input.ptr, m_position, true);
         
         if (m_trailing_newline || (m_out_position && m_line_length))
             send('\n');
@@ -80,7 +80,7 @@ private:
     /*
     * Encode and send a block
     */
-    void encode_and_send(in ubyte* input, size_t length,
+    void encodeAndSend(in ubyte* input, size_t length,
                          bool final_inputs = false)
     {
         while (length)
@@ -88,7 +88,7 @@ private:
             const size_t proc = std.algorithm.min(length, input.length);
             
             size_t consumed = 0;
-            size_t produced = base64_encode(cast(char*)(m_output.ptr), input,
+            size_t produced = base64Encode(cast(char*)(m_output.ptr), input,
                                             proc, consumed, final_inputs);
             
             do_output(m_output.ptr, produced);
@@ -102,7 +102,7 @@ private:
     /*
     * Handle the output
     */
-    void do_output(in ubyte* input, size_t length)
+    void doOutput(in ubyte* input, size_t length)
     {
         if (m_line_length == 0)
             send(input, length);
@@ -135,10 +135,10 @@ private:
 /**
 * This object represents a Base64 decoder.
 */
-final class Base64_Decoder : Filter
+final class Base64Decoder : Filter
 {
 public:
-    @property string name() const { return "Base64_Decoder"; }
+    @property string name() const { return "Base64Decoder"; }
 
     /**
     * Input a part of a message to the decoder.
@@ -150,11 +150,11 @@ public:
         while (length)
         {
             size_t to_copy = std.algorithm.min(length, m_input.length - m_position);
-            copy_mem(&m_input[m_position], input, to_copy);
+            copyMem(&m_input[m_position], input, to_copy);
             m_position += to_copy;
             
             size_t consumed = 0;
-            size_t written = base64_decode(m_output.ptr,
+            size_t written = base64Decode(m_output.ptr,
                                            cast(const(char)*)(m_input.ptr),
                                            m_position,
                                            consumed,
@@ -165,7 +165,7 @@ public:
             
             if (consumed != m_position)
             {
-                copy_mem(m_input.ptr, &m_input[consumed], m_position - consumed);
+                copyMem(m_input.ptr, &m_input[consumed], m_position - consumed);
                 m_position = m_position - consumed;
             }
             else
@@ -179,10 +179,10 @@ public:
     /**
     * Finish up the current message
     */
-    void end_msg()
+    void endMsg()
     {
         size_t consumed = 0;
-        size_t written = base64_decode(m_output.ptr,
+        size_t written = base64Decode(m_output.ptr,
                                        cast(const(char)*)(m_input.ptr),
                                        m_position,
                                        consumed,
@@ -196,7 +196,7 @@ public:
         m_position = 0;
         
         if (not_full_bytes)
-            throw new Invalid_Argument("Base64_Decoder: Input not full bytes");
+            throw new InvalidArgument("Base64Decoder: Input not full bytes");
     }
 
     /**
@@ -204,7 +204,7 @@ public:
     * @param checking = the type of checking that shall be performed by
     * the decoder
     */
-    this(Decoder_Checking c = NONE)
+    this(DecoderChecking c = NONE)
     {
         m_checking = c;
         m_input = 64;

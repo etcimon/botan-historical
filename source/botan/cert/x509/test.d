@@ -6,7 +6,7 @@ module botan.cert.x509.test;
 
 Known Failures/Problems
 
-TLS_Policy extensions are not implemented, so we skip tests #34-#53.
+TLSPolicy extensions are not implemented, so we skip tests #34-#53.
 
 Tests #75 and #76 are skipped as they make use of relatively obscure CRL
 extensions which are not supported.
@@ -18,19 +18,19 @@ import botan.test;
 import botan.cert.x509.x509path;
 import botan.utils.types;
 
-Vector!string dir_listing(string dir_name)
+Vector!string dirListing(string dir_name)
 {
     Vector!string paths;
     
     foreach (file; dirEntries(dir_name, "*.vec").sort!`a.name < b.name`())
     {    
-        paths.push_back(file.name);
+        paths.pushBack(file.name);
     }
     
     return paths;
 }
 
-Certificate_Status_Code[size_t] get_expected();
+CertificateStatusCode[size_t] getExpected();
 
 /*
   The expected results are essentially the error codes that best coorespond
@@ -41,7 +41,7 @@ Certificate_Status_Code[size_t] get_expected();
   what they "should" be: these changes are marked as such, and have comments
   explaining the problem at hand.
 */
-Certificate_Status_Code[size_t] get_expected()
+CertificateStatusCode[size_t] getExpected()
 {
     Certificate_Status_Code[size_t] expected_results;
     
@@ -85,7 +85,7 @@ Certificate_Status_Code[size_t] get_expected()
     expected_results[33] = Certificate_Status_Code.VERIFIED;
     
     /*
-     TLS_Policy tests: a little trickier because there are other inputs
+     TLSPolicy tests: a little trickier because there are other inputs
      which affect the result.
 
      In the case of the tests currently in the suite, the default
@@ -191,13 +191,13 @@ unittest
                 const string current = all_files[k];
                 
                 if (current.canFind("int") && current.canFind(".crt"))
-                    certs.push_back(current);
+                    certs.pushBack(current);
                 else if (current.canFind("root.crt"))
                     root_cert = current;
                 else if (current.canFind("end.crt"))
                     to_verify = current;
                 else if (current.canFind(".crl"))
-                    crls.push_back(current);
+                    crls.pushBack(current);
             }
             
             if (expected_results.canFind(i+1) == -1)
@@ -210,18 +210,18 @@ unittest
             
             Certificate_Store_In_Memory store;
             
-            store.add_certificate(X509_Certificate(root_cert));
+            store.addCertificate(X509Certificate(root_cert));
             
-            X509_Certificate end_user = X509_Certificate(to_verify);
+            X509Certificate end_user = X509Certificate(to_verify);
             
             foreach(cert; certs[])
-                store.add_certificate(X509_Certificate(cert));
+                store.addCertificate(X509Certificate(cert));
             
             foreach(crl; crls[])
             {
-                DataSource_Stream input = scoped!DataSource_Stream(crl);
-                X509_CRL crl = X509_CRL(input);
-                store.add_crl(crl);
+                DataSourceStream input = scoped!DataSourceStream(crl);
+                X509CRL crl = X509CRL(input);
+                store.addCrl(crl);
             }
             
             auto restrictions = Path_Validation_Restrictions(true);
@@ -254,5 +254,5 @@ unittest
     
     const size_t all_failures = unexp_failure + unexp_success + wrong_error;
     
-    test_report("NIST X.509 path validation", ran, all_failures);
+    testReport("NIST X.509 path validation", ran, all_failures);
 }

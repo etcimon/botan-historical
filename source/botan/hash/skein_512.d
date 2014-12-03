@@ -23,7 +23,7 @@ import std.algorithm;
 /**
 * Skein-512, a SHA-3 candidate
 */
-final class Skein_512 : HashFunction
+final class Skein512 : HashFunction
 {
 public:
     /**
@@ -36,23 +36,23 @@ public:
     {
         m_personalization = arg_personalization;
         m_output_bits = arg_output_bits;
-        m_threefish = new Threefish_512;
+        m_threefish = new Threefish512;
         m_T = 2;
         m_buffer = 64; 
         m_buf_pos = 0;
 
         if (m_output_bits == 0 || m_output_bits % 8 != 0 || m_output_bits > 512)
-            throw new Invalid_Argument("Bad output bits size for Skein-512");
+            throw new InvalidArgument("Bad output bits size for Skein-512");
         
         initial_block();
     }
 
-    override @property size_t hash_block_size() const { return 64; }
-    @property size_t output_length() const { return m_output_bits / 8; }
+    override @property size_t hashBlockSize() const { return 64; }
+    @property size_t outputLength() const { return m_output_bits / 8; }
 
     HashFunction clone() const
     {
-        return new Skein_512(m_output_bits, m_personalization);
+        return new Skein512(m_output_bits, m_personalization);
     }
 
     @property string name() const
@@ -83,7 +83,7 @@ private:
         SKEIN_OUTPUT = 63
     }
 
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         if (length == 0)
             return;
@@ -112,7 +112,7 @@ private:
         m_buf_pos += length;
     }
 
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
         m_T[1] |= ((cast(ulong)1) << 63); // final block flag
         
@@ -123,7 +123,7 @@ private:
         
         const ubyte[8] counter;
         
-        reset_tweak(type_code.SKEIN_OUTPUT, true);
+        resetTweak(type_code.SKEIN_OUTPUT, true);
         ubi_512(counter.ptr, counter.length);
         
         const size_t out_bytes = m_output_bits / 8;
@@ -137,14 +137,14 @@ private:
 
     void ubi_512(in ubyte* msg, size_t msg_len)
     {
-        Secure_Vector!ulong M = Secure_Vector!ulong(8);
+        SecureVector!ulong M = SecureVector!ulong(8);
         
         do
         {
             const size_t to_proc = std.algorithm.min(msg_len, 64);
             m_T[0] += to_proc;
             
-            load_littleEndian(M.ptr, msg, to_proc / 8);
+            loadLittleEndian(M.ptr, msg, to_proc / 8);
             
             if (to_proc % 8)
             {
@@ -152,7 +152,7 @@ private:
                     M[to_proc/8] |= cast(ulong)(msg[8*(to_proc/8)+j]) << (8*j);
             }
             
-            m_threefish.skein_feedfwd(M, m_T);
+            m_threefish.skeinFeedfwd(M, m_T);
             
             // clear first flag if set
             m_T[1] &= ~(cast(ulong)(1) << 62);
@@ -163,17 +163,17 @@ private:
     }
 
 
-    void initial_block()
+    void initialBlock()
     {
         const ubyte[64] zeros;
         
-        m_threefish.set_key(zeros.ptr, zeros.length);
+        m_threefish.setKey(zeros.ptr, zeros.length);
         
         // ASCII("SHA3") followed by version (0x0001) code
         ubyte[32] config_str = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
-        store_littleEndian(uint(m_output_bits), config_str + 8);
+        storeLittleEndian(uint(m_output_bits), config_str + 8);
         
-        reset_tweak(type_code.SKEIN_CONFIG, true);
+        resetTweak(type_code.SKEIN_CONFIG, true);
         ubi_512(config_str.ptr, config_str.length);
         
         if (m_personalization != "")
@@ -184,17 +184,17 @@ private:
               doesn't seem worth the trouble.
             */
             if (m_personalization.length > 64)
-                throw new Invalid_Argument("Skein m_personalization must be less than 64 bytes");
+                throw new InvalidArgument("Skein m_personalization must be less than 64 bytes");
             
             const ubyte* bits = cast(const ubyte*)(m_personalization.data());
-            reset_tweak(type_code.SKEIN_PERSONALIZATION, true);
+            resetTweak(type_code.SKEIN_PERSONALIZATION, true);
             ubi_512(bits, m_personalization.length);
         }
         
-        reset_tweak(type_code.SKEIN_MSG, false);
+        resetTweak(type_code.SKEIN_MSG, false);
     }
 
-    void reset_tweak(type_code type, bool fin)
+    void resetTweak(type_code type, bool fin)
     {
         m_T[0] = 0;
         
@@ -207,7 +207,7 @@ private:
     size_t m_output_bits;
 
     Unique!Threefish_512 m_threefish;
-    Secure_Vector!ulong m_T;
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ulong m_T;
+    SecureVector!ubyte m_buffer;
     size_t m_buf_pos;
 }

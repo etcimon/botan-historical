@@ -19,14 +19,14 @@ import std.conv : to;
 /**
 * ASN.1 Type and Class Tags
 */
-enum ASN1_Tag {
+enum ASN1Tag {
     UNIVERSAL            = 0x00,
     APPLICATION          = 0x40,
     CONTEXT_SPECIFIC     = 0x80,
     
     CONSTRUCTED          = 0x20,
 
-    PRIVATE              = ASN1_Tag.CONSTRUCTED | ASN1_Tag.CONTEXT_SPECIFIC,
+    PRIVATE              = ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC,
 
     EOC                  = 0x00,
     BOOLEAN              = 0x01,
@@ -57,21 +57,21 @@ enum ASN1_Tag {
 /**
 * Basic ASN.1 Object Interface
 */
-class ASN1_Object
+class ASN1Object
 {
 
 public:
     /**
     * Encode whatever this object is into to
-    * @param to = the DER_Encoder that will be written to
+    * @param to = the DEREncoder that will be written to
     */
-    abstract void encode_into(DER_Encoder to) const;
+    abstract void encodeInto(DEREncoder to) const;
 
     /**
     * Decode whatever this object is from from
-    * @param from = the BER_Decoder that will be read from
+    * @param from = the BERDecoder that will be read from
     */
-    abstract void decode_from(BER_Decoder from);
+    abstract void decodeFrom(BERDecoder from);
 
     ~this() {}
 }
@@ -79,16 +79,16 @@ public:
 /**
 * BER Encoded Object
 */
-struct BER_Object
+struct BERObject
 {
 public:
     /*
     * Check a type invariant on BER data
     */
-    void assert_is_a(ASN1_Tag type_tag, ASN1_Tag class_tag)
+    void assertIsA(ASN1Tag type_tag, ASN1Tag class_tag)
     {
         if (this.type_tag != type_tag || this.class_tag != class_tag)
-            throw new BER_Decoding_Error("Tag mismatch when decoding got " ~
+            throw new BERDecodingError("Tag mismatch when decoding got " ~
                                          to!string(this.type_tag) ~ "/" ~
                                          to!string(this.class_tag) ~ " expected " ~
                                          to!string(type_tag) ~ "/" ~
@@ -103,14 +103,14 @@ public:
         return value[];
     }
 
-    ASN1_Tag type_tag, class_tag;
-    Secure_Vector!ubyte value;
+    ASN1Tag type_tag, class_tag;
+    SecureVector!ubyte value;
 }
 
 /**
 * General BER Decoding Error Exception
 */
-class BER_Decoding_Error : Decoding_Error
+class BERDecodingError : Decoding_Error
 {
     this(in string str) {
         super("BER: " ~ str);
@@ -120,47 +120,47 @@ class BER_Decoding_Error : Decoding_Error
 /**
 * Exception For Incorrect BER Taggings
 */
-class BER_Bad_Tag : BER_Decoding_Error
+class BERBadTag : BER_Decoding_Error
 {
 
     /*
     * BER Decoding Exceptions
     */
-    this(in string str, ASN1_Tag tag) {
+    this(in string str, ASN1Tag tag) {
         super(str ~ ": " ~ to!string(tag));
     }
 
     /*
     * BER Decoding Exceptions
     */
-    this(in string str, ASN1_Tag tag1, ASN1_Tag tag2) {
+    this(in string str, ASN1Tag tag1, ASN1Tag tag2) {
         super(str ~ ": " ~ to!string(tag1) ~ "/" ~ to!string(tag2));
     }
 }
     
 /*
-* Put some arbitrary bytes into a ASN1_Tag.SEQUENCE
+* Put some arbitrary bytes into a ASN1Tag.SEQUENCE
 */
-Vector!ubyte put_in_sequence(in Vector!ubyte contents)
+Vector!ubyte putInSequence(in Vector!ubyte contents)
 {
-    return DER_Encoder()
-            .start_cons(ASN1_Tag.SEQUENCE)
-            .raw_bytes(contents)
-            .end_cons()
-            .get_contents_unlocked();
+    return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
+            .rawBytes(contents)
+            .endCons()
+            .getContentsUnlocked();
 }
 
 /**
 * Heuristics tests; is this object possibly BER?
 * @param src = a data source that will be peeked at but not modified
 */
-bool maybe_BER(DataSource source)
+bool maybeBER(DataSource source)
 {
     ubyte first_byte;
-    if (!source.peek_byte(first_byte))
-        throw new Stream_IO_Error("maybe_BER: Source was empty");
+    if (!source.peekByte(first_byte))
+        throw new StreamIOError("maybe_BER: Source was empty");
     
-    if (first_byte == (ASN1_Tag.SEQUENCE | ASN1_Tag.CONSTRUCTED))
+    if (first_byte == (ASN1Tag.SEQUENCE | ASN1Tag.CONSTRUCTED))
         return true;
     return false;
 }

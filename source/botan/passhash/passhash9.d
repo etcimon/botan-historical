@@ -30,7 +30,7 @@ import botan.utils.exceptn;
 *          4 is HMAC(SHA-512)
 *          all other values are currently undefined
 */
-string generate_passhash9(in string pass,
+string generatePasshash9(in string pass,
                           RandomNumberGenerator rng,
                           ushort work_factor = 10,
                           ubyte alg_id = 1)
@@ -38,27 +38,27 @@ string generate_passhash9(in string pass,
     MessageAuthenticationCode prf = get_pbkdf_prf(alg_id);
     
     if (!prf)
-        throw new Invalid_Argument("Passhash9: Algorithm id " ~ to!string(alg_id) ~ " is not defined");
+        throw new InvalidArgument("Passhash9: Algorithm id " ~ to!string(alg_id) ~ " is not defined");
     
     auto kdf = scoped!PKCS5_PBKDF2(prf); // takes ownership of pointer
     
-    Secure_Vector!ubyte salt = Secure_Vector!ubyte(SALT_BYTES);
+    SecureVector!ubyte salt = SecureVector!ubyte(SALT_BYTES);
     rng.randomize(salt.ptr, salt.length);
     
     const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
     
-    Secure_Vector!ubyte pbkdf2_output = kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN,
+    SecureVector!ubyte pbkdf2_output = kdf.deriveKey(PASSHASH9_PBKDF_OUTPUT_LEN,
                                                        pass, salt.ptr, salt.length,
-                                                       kdf_iterations).bits_of();
+                                                       kdf_iterations).bitsOf();
     
-    Pipe pipe = Pipe(new Base64_Encoder);
-    pipe.start_msg();
+    Pipe pipe = Pipe(new Base64Encoder);
+    pipe.startMsg();
     pipe.write(alg_id);
     pipe.write(get_byte(0, work_factor));
     pipe.write(get_byte(1, work_factor));
     pipe.write(salt);
     pipe.write(pbkdf2_output);
-    pipe.end_msg();
+    pipe.endMsg();
     
     return MAGIC_PREFIX + pipe.toString();
 }
@@ -69,7 +69,7 @@ string generate_passhash9(in string pass,
 * @param password = the password to check against
 * @param hash = the stored hash to check against
 */
-bool check_passhash9(in string password, in string hash)
+bool checkPasshash9(in string password, in string hash)
 {
     __gshared immutable size_t BINARY_LENGTH = ALGID_BYTES + WORKFACTOR_BYTES + PASSHASH9_PBKDF_OUTPUT_LEN + SALT_BYTES;
     
@@ -82,26 +82,26 @@ bool check_passhash9(in string password, in string hash)
         if (hash[i] != MAGIC_PREFIX[i])
             return false;
     
-    Pipe pipe = Pipe(new Base64_Decoder);
-    pipe.start_msg();
+    Pipe pipe = Pipe(new Base64Decoder);
+    pipe.startMsg();
     pipe.write(hash.toStringz + MAGIC_PREFIX.length);
-    pipe.end_msg();
+    pipe.endMsg();
     
-    Secure_Vector!ubyte bin = pipe.read_all();
+    SecureVector!ubyte bin = pipe.read_all();
     
     if (bin.length != BINARY_LENGTH)
         return false;
     
     ubyte alg_id = binput[0];
     
-    const size_t work_factor = load_bigEndian!ushort(&binput[ALGID_BYTES], 0);
+    const size_t work_factor = loadBigEndian!ushort(&binput[ALGID_BYTES], 0);
     
     // Bug in the format, bad states shouldn't be representable, but are...
     if (work_factor == 0)
         return false;
     
     if (work_factor > 512)
-        throw new Invalid_Argument("Requested Bcrypt work factor " ~ to!string(work_factor) ~ " too large");
+        throw new InvalidArgument("Requested Bcrypt work factor " ~ to!string(work_factor) ~ " too large");
     
     const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
     
@@ -110,11 +110,11 @@ bool check_passhash9(in string password, in string hash)
     if (!pbkdf_prf)
         return false; // unknown algorithm, reject
     
-    PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
+    PKCS5PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
     
-    Secure_Vector!ubyte cmp = kdf.derive_key(PASSHASH9_PBKDF_OUTPUT_LEN, password,
+    SecureVector!ubyte cmp = kdf.deriveKey(PASSHASH9_PBKDF_OUTPUT_LEN, password,
                                              &binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
-                                             kdf_iterations).bits_of();
+                                             kdf_iterations).bitsOf();
     
     return same_mem(cmp.ptr, &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
 }
@@ -128,24 +128,24 @@ __gshared immutable size_t SALT_BYTES = 12; // 96 bits of salt
 __gshared immutable size_t PASSHASH9_PBKDF_OUTPUT_LEN = 24; // 192 bits output
 __gshared immutable size_t WORK_FACTOR_SCALE = 10000;
 
-MessageAuthenticationCode get_pbkdf_prf(ubyte alg_id)
+MessageAuthenticationCode getPbkdfPrf(ubyte alg_id)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     try
     {
         if (alg_id == 0)
-            return af.make_mac("HMAC(SHA-1)");
+            return af.makeMac("HMAC(SHA-1)");
         else if (alg_id == 1)
-            return af.make_mac("HMAC(SHA-256)");
+            return af.makeMac("HMAC(SHA-256)");
         else if (alg_id == 2)
-            return af.make_mac("CMAC(Blowfish)");
+            return af.makeMac("CMAC(Blowfish)");
         else if (alg_id == 3)
-            return af.make_mac("HMAC(SHA-384)");
+            return af.makeMac("HMAC(SHA-384)");
         else if (alg_id == 4)
-            return af.make_mac("HMAC(SHA-512)");
+            return af.makeMac("HMAC(SHA-512)");
     }
-    catch(Algorithm_Not_Found) {}
+    catch(AlgorithmNotFound) {}
     
     return null;
 }
@@ -164,7 +164,7 @@ unittest
     size_t ran = 0;
     
     ++ran;
-    if (!check_passhash9(input, fixed_hash))
+    if (!checkPasshash9(input, fixed_hash))
     {
         writeln("Passhash9 fixed input test failed");
         fails++;
@@ -174,7 +174,7 @@ unittest
     
     for(ubyte alg_id = 0; alg_id <= 4; ++alg_id)
     {
-        string gen_hash = generate_passhash9(input, rng, 2, alg_id);
+        string gen_hash = generatePasshash9(input, rng, 2, alg_id);
         
         ++ran;
         if (!check_passhash9(input, gen_hash))
@@ -184,5 +184,5 @@ unittest
         }
     }
     
-    test_report("Passhash9", ran, fails);
+    testReport("Passhash9", ran, fails);
 }

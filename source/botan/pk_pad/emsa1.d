@@ -26,7 +26,7 @@ public:
     }
 
 protected:
-    size_t hash_output_length() const { return m_hash.output_length; }
+    size_t hashOutputLength() const { return m_hash.output_length; }
 
 private:
     void update(in ubyte* input, size_t length)
@@ -34,28 +34,28 @@ private:
         m_hash.update(input, length);
     }
 
-    Secure_Vector!ubyte raw_data()
+    SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-    Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                  size_t output_bits,
                                  RandomNumberGenerator)
     {
         if (msg.length != hash_output_length())
-            throw new Encoding_Error("encoding_of: Invalid size for input");
+            throw new EncodingError("encoding_of: Invalid size for input");
         return emsa1_encoding(msg, output_bits);
     }
 
-    bool verify(in Secure_Vector!ubyte coded,
-                in Secure_Vector!ubyte raw, size_t key_bits)
+    bool verify(in SecureVector!ubyte coded,
+                in SecureVector!ubyte raw, size_t key_bits)
     {
         try {
             if (raw.length != m_hash.output_length)
-                throw new Encoding_Error("encoding_of: Invalid size for input");
+                throw new EncodingError("encoding_of: Invalid size for input");
             
-            Secure_Vector!ubyte our_coding = emsa1_encoding(raw, key_bits);
+            SecureVector!ubyte our_coding = emsa1_encoding(raw, key_bits);
             
             if (our_coding == coded) return true;
             if (our_coding.empty || our_coding[0] != 0) return false;
@@ -73,7 +73,7 @@ private:
             
             return true;
         }
-        catch(Invalid_Argument)
+        catch(InvalidArgument)
         {
             return false;
         }
@@ -84,7 +84,7 @@ private:
 
 private:
 
-Secure_Vector!ubyte emsa1_encoding(in Secure_Vector!ubyte msg,
+SecureVector!ubyte emsa1Encoding(in SecureVector!ubyte msg,
                                 size_t output_bits)
 {
     if (8*msg.length <= output_bits)
@@ -93,7 +93,7 @@ Secure_Vector!ubyte emsa1_encoding(in Secure_Vector!ubyte msg,
     size_t shift = 8*msg.length - output_bits;
     
     size_t byte_shift = shift / 8, bit_shift = shift % 8;
-    Secure_Vector!ubyte digest = Secure_Vector!ubyte(msg.length - byte_shift);
+    SecureVector!ubyte digest = SecureVector!ubyte(msg.length - byte_shift);
     
     for (size_t j = 0; j != msg.length - byte_shift; ++j)
         digest[j] = msg[j];

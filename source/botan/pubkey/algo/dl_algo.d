@@ -17,75 +17,75 @@ import botan.asn1.ber_dec;
 /**
 * This class represents discrete logarithm (DL) public keys.
 */
-class DL_Scheme_PublicKey : Public_Key
+class DLSchemePublicKey : PublicKey
 {
 public:
-    bool check_key(RandomNumberGenerator rng, bool strong) const
+    bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (m_y < 2 || m_y >= group_p())
             return false;
-        if (!m_group.verify_group(rng, strong))
+        if (!m_group.verifyGroup(rng, strong))
             return false;
         return true;
     }
 
-    Algorithm_Identifier algorithm_identifier() const
+    AlgorithmIdentifier algorithmIdentifier() const
     {
-        return Algorithm_Identifier(get_oid(), m_group.DER_encode(group_format()));
+        return AlgorithmIdentifier(get_oid(), m_group.dEREncode(group_format()));
     }
 
-    Vector!ubyte x509_subject_public_key() const
+    Vector!ubyte x509SubjectPublicKey() const
     {
-        return DER_Encoder().encode(m_y).get_contents_unlocked();
+        return DEREncoder().encode(m_y).getContentsUnlocked();
     }
 
     /**
     * Get the DL domain parameters of this key.
     * @return DL domain parameters of this key
     */
-    ref DL_Group get_domain() const { return m_group; }
+    ref DLGroup getDomain() const { return m_group; }
 
     /**
     * Get the public value m_y with m_y = g^m_x mod p where m_x is the secret key.
     */
-    BigInt get_y() const { return m_y; }
+    BigInt getY() const { return m_y; }
 
     /**
     * Get the prime p of the underlying DL m_group.
     * @return prime p
     */
-    BigInt group_p() const { return m_group.get_p(); }
+    BigInt groupP() const { return m_group.getP(); }
 
     /**
     * Get the prime q of the underlying DL m_group.
     * @return prime q
     */
-    BigInt group_q() const { return m_group.get_q(); }
+    BigInt groupQ() const { return m_group.getQ(); }
 
     /**
     * Get the generator g of the underlying DL m_group.
     * @return generator g
     */
-    BigInt group_g() const { return m_group.get_g(); }
+    BigInt groupG() const { return m_group.getG(); }
 
     /**
     * Get the underlying groups encoding format.
     * @return encoding format
     */
-    abstract DL_Group.Format group_format() const;
+    abstract DLGroup.Format groupFormat() const;
 
-    override size_t estimated_strength() const
+    override size_t estimatedStrength() const
     {
-        return dl_work_factor(m_group.get_p().bits());
+        return dl_work_factor(m_group.getP().bits());
     }
 
-    this(in Algorithm_Identifier alg_id,
-         in Secure_Vector!ubyte key_bits,
-         DL_Group.Format format)
+    this(in AlgorithmIdentifier alg_id,
+         in SecureVector!ubyte key_bits,
+         DLGroup.Format format)
     {
-        m_group.BER_decode(alg_id.parameters, format);
+        m_group.bERDecode(alg_id.parameters, format);
         
-        BER_Decoder(key_bits).decode(m_y);
+        BERDecoder(key_bits).decode(m_y);
     }
 
 protected:
@@ -99,18 +99,18 @@ protected:
     /**
     * The DL m_group
     */
-    DL_Group m_group;
+    DLGroup m_group;
 }
 
 /**
 * This class represents discrete logarithm (DL) private keys.
 */
-class DL_Scheme_PrivateKey : DL_Scheme_PublicKey,
-                             Private_Key
+class DLSchemePrivateKey : DL_SchemePublicKey,
+                             PrivateKey
 {
 public:
 
-    bool check_key(RandomNumberGenerator rng,
+    bool checkKey(RandomNumberGenerator rng,
                    bool strong) const
     {
         const BigInt p = group_p();
@@ -118,13 +118,13 @@ public:
         
         if (m_y < 2 || m_y >= p || m_x < 2 || m_x >= p)
             return false;
-        if (!m_group.verify_group(rng, strong))
+        if (!m_group.verifyGroup(rng, strong))
             return false;
         
         if (!strong)
             return true;
         
-        if (m_y != power_mod(g, m_x, p))
+        if (m_y != powerMod(g, m_x, p))
             return false;
         
         return true;
@@ -134,20 +134,20 @@ public:
     * Get the secret key m_x.
     * @return secret key
     */
-    BigInt get_x() const { return m_x; }
+    BigInt getX() const { return m_x; }
 
-    Secure_Vector!ubyte pkcs8_private_key() const
+    SecureVector!ubyte pkcs8PrivateKey() const
     {
-        return DER_Encoder().encode(m_x).get_contents();
+        return DEREncoder().encode(m_x).getContents();
     }
 
-    this(in Algorithm_Identifier alg_id,
-         in Secure_Vector!ubyte key_bits,
-         DL_Group.Format format)
+    this(in AlgorithmIdentifier alg_id,
+         in SecureVector!ubyte key_bits,
+         DLGroup.Format format)
     {
-        m_group.BER_decode(alg_id.parameters, format);
+        m_group.bERDecode(alg_id.parameters, format);
         
-        BER_Decoder(key_bits).decode(m_x);
+        BERDecoder(key_bits).decode(m_x);
     }
 
 protected:

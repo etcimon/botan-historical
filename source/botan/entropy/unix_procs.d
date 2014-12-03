@@ -28,12 +28,12 @@ import std.c.stdlib;
 * effective against local attackers as they can sample from the same
 * distribution.
 */
-final class Unix_EntropySource : EntropySource
+final class UnixEntropySource : EntropySource
 {
 public:
     @property string name() const { return "Unix Process Runner"; }
 
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         // refuse to run as root (maybe instead setuid to nobody before exec?)
         // fixme: this should also check for setgid
@@ -50,7 +50,7 @@ public:
                 if (path != "")
                 {
                     src[0] = path;
-                    m_sources.push_back(src);
+                    m_sources.pushBack(src);
                 }
             }
         }
@@ -61,12 +61,12 @@ public:
         __gshared immutable size_t MS_WAIT_TIME = 32;
         __gshared immutable double ENTROPY_ESTIMATE = 1.0 / 1024;
         
-        Secure_Vector!ubyte io_buffer = accum.get_io_buffer(4*1024); // page
+        SecureVector!ubyte io_buffer = accum.getIoBuffer(4*1024); // page
         
-        while (!accum.polling_goal_achieved())
+        while (!accum.pollingGoalAchieved())
         {
             while (m_procs.length < m_concurrent)
-                m_procs.emplace_back(Unix_Process(next_source()));
+                m_procs.emplaceBack(Unix_Process(next_source()));
             
             fd_set read_set;
             FD_ZERO(&read_set);
@@ -78,7 +78,7 @@ public:
                 int fd = proc.fd();
                 if (fd > 0)
                 {
-                    fds.push_back(fd);
+                    fds.pushBack(fd);
                     FD_SET(fd, &read_set);
                 }
             }
@@ -127,57 +127,57 @@ private:
     /**
     * Default Commands for Entropy Gathering
     */
-    static Vector!(string[]) get_default_sources()
+    static Vector!(string[]) getDefaultSources()
     {
         Vector!(string[]) srcs;
         
-        srcs.push_back([ "netstat", "-in" ]);
-        srcs.push_back([ "pfstat" ]);
-        srcs.push_back([ "vmstat", "-s" ]);
-        srcs.push_back([ "vmstat" ]);
+        srcs.pushBack([ "netstat", "-in" ]);
+        srcs.pushBack([ "pfstat" ]);
+        srcs.pushBack([ "vmstat", "-s" ]);
+        srcs.pushBack([ "vmstat" ]);
         
-        srcs.push_back([ "arp", "-a", "-n" ]);
-        srcs.push_back([ "ifconfig", "-a" ]);
-        srcs.push_back([ "iostat" ]);
-        srcs.push_back([ "ipcs", "-a" ]);
-        srcs.push_back([ "mpstat" ]);
-        srcs.push_back([ "netstat", "-an" ]);
-        srcs.push_back([ "netstat", "-s" ]);
-        srcs.push_back([ "nfsstat" ]);
-        srcs.push_back([ "portstat" ]);
-        srcs.push_back([ "procinfo", "-a" ]);
-        srcs.push_back([ "pstat", "-T" ]);
-        srcs.push_back([ "pstat", "-s" ]);
-        srcs.push_back([ "uname", "-a" ]);
-        srcs.push_back([ "uptime" ]);
+        srcs.pushBack([ "arp", "-a", "-n" ]);
+        srcs.pushBack([ "ifconfig", "-a" ]);
+        srcs.pushBack([ "iostat" ]);
+        srcs.pushBack([ "ipcs", "-a" ]);
+        srcs.pushBack([ "mpstat" ]);
+        srcs.pushBack([ "netstat", "-an" ]);
+        srcs.pushBack([ "netstat", "-s" ]);
+        srcs.pushBack([ "nfsstat" ]);
+        srcs.pushBack([ "portstat" ]);
+        srcs.pushBack([ "procinfo", "-a" ]);
+        srcs.pushBack([ "pstat", "-T" ]);
+        srcs.pushBack([ "pstat", "-s" ]);
+        srcs.pushBack([ "uname", "-a" ]);
+        srcs.pushBack([ "uptime" ]);
         
-        srcs.push_back([ "listarea" ]);
-        srcs.push_back([ "listdev" ]);
-        srcs.push_back([ "ps", "-A" ]);
-        srcs.push_back([ "sysinfo" ]);
+        srcs.pushBack([ "listarea" ]);
+        srcs.pushBack([ "listdev" ]);
+        srcs.pushBack([ "ps", "-A" ]);
+        srcs.pushBack([ "sysinfo" ]);
         
-        srcs.push_back([ "finger" ]);
-        srcs.push_back([ "mailstats" ]);
-        srcs.push_back([ "rpcinfo", "-p", "localhost" ]);
-        srcs.push_back([ "who" ]);
+        srcs.pushBack([ "finger" ]);
+        srcs.pushBack([ "mailstats" ]);
+        srcs.pushBack([ "rpcinfo", "-p", "localhost" ]);
+        srcs.pushBack([ "who" ]);
         
-        srcs.push_back([ "df", "-l" ]);
-        srcs.push_back([ "dmesg" ]);
-        srcs.push_back([ "last", "-5" ]);
-        srcs.push_back([ "ls", "-alni", "/proc" ]);
-        srcs.push_back([ "ls", "-alni", "/tmp" ]);
-        srcs.push_back([ "pstat", "-f" ]);
+        srcs.pushBack([ "df", "-l" ]);
+        srcs.pushBack([ "dmesg" ]);
+        srcs.pushBack([ "last", "-5" ]);
+        srcs.pushBack([ "ls", "-alni", "/proc" ]);
+        srcs.pushBack([ "ls", "-alni", "/tmp" ]);
+        srcs.pushBack([ "pstat", "-f" ]);
         
-        srcs.push_back([ "ps", "-elf" ]);
-        srcs.push_back([ "ps", "aux" ]);
+        srcs.pushBack([ "ps", "-elf" ]);
+        srcs.pushBack([ "ps", "aux" ]);
         
-        srcs.push_back([ "lsof", "-n" ]);
-        srcs.push_back([ "sar", "-A" ]);
+        srcs.pushBack([ "lsof", "-n" ]);
+        srcs.pushBack([ "sar", "-A" ]);
         
         return srcs;
     }
 
-    struct Unix_Process
+    struct UnixProcess
     {
     public:
         int fd() const { return m_fd; }
@@ -258,7 +258,7 @@ private:
 
         ~this() { shutdown(); }
 
-        this(ref Unix_Process other)
+        this(ref UnixProcess other)
         {
             std.algorithm.swap(m_fd, other.m_fd);
             std.algorithm.swap(m_pid, other.m_pid);
@@ -268,7 +268,7 @@ private:
         pid_t m_pid = -1;
     }
 
-    string[] next_source()
+    string[] nextSource()
     {
         const src = m_sources[m_sources_idx];
         m_sources_idx = (m_sources_idx + 1) % m_sources.length;
@@ -285,12 +285,12 @@ private:
     Vector!Unix_Process m_procs;
 }
 
-final class UnixProcessInfo_EntropySource : EntropySource
+final class UnixProcessInfoEntropySource : EntropySource
 {
 public:
     @property string name() const { return "Unix Process Info"; }
 
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         accum.add(getpid(),  0.0);
         accum.add(getppid(), 0.0);
@@ -311,7 +311,7 @@ public:
 
 private:
 
-string find_full_path_if_exists(in Vector!string trusted_path, in string proc)
+string findFullPathIfExists(in Vector!string trusted_path, in string proc)
 {
     foreach (dir; trusted_path)
     {
@@ -323,7 +323,7 @@ string find_full_path_if_exists(in Vector!string trusted_path, in string proc)
     return "";
 }
 
-size_t concurrent_processes(size_t user_request)
+size_t concurrentProcesses(size_t user_request)
 {
     __gshared immutable size_t DEFAULT_CONCURRENT = 2;
     __gshared immutable size_t MAX_CONCURRENT = 8;
@@ -339,7 +339,7 @@ size_t concurrent_processes(size_t user_request)
     return DEFAULT_CONCURRENT;
 }
 
-void do_exec(in string[] args)
+void doExec(in string[] args)
 {
     // cleaner way to do this?
     string arg0 = (args.length > 0) ? args[0].toStringz : null;

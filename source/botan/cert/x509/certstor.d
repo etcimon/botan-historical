@@ -17,7 +17,7 @@ import std.file;
 /**
 * Certificate Store Interface
 */
-class Certificate_Store
+class CertificateStore
 {
 public:
     ~this() {}
@@ -25,27 +25,27 @@ public:
     /**
     * Subject DN and (optionally) key identifier
     */
-    abstract X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const;
+    abstract X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const;
 
-    abstract X509_CRL find_crl_for(in X509_Certificate subject) const
+    abstract X509CRL findCrlFor(in X509Certificate subject) const
     {
         return null;
     }
 
 
-    bool certificate_known(in X509_Certificate cert) const
+    bool certificateKnown(in X509Certificate cert) const
     {
-        return find_cert(cert.subject_dn(), cert.subject_key_id());
+        return find_cert(cert.subjectDn(), cert.subjectKeyId());
     }
 
     // remove this (used by TLS_Server)
-    abstract Vector!X509_DN all_subjects() const;
+    abstract Vector!X509DN allSubjects() const;
 }
 
 /**
 * In Memory Certificate Store
 */
-final class Certificate_Store_In_Memory : Certificate_Store
+final class CertificateStoreInMemory : Certificate_Store
 {
 public:
     /**
@@ -58,13 +58,13 @@ public:
             return;
         foreach(string name; dirEntries(dir, SpanMode.breadth)) {
             if (isFile(name))
-                m_certs.push_back(X509_Certificate(name));
+                m_certs.pushBack(X509Certificate(name));
         }
     }
 
     this() {}
 
-    void add_certificate(in X509_Certificate cert)
+    void addCertificate(in X509Certificate cert)
     {
         foreach (const cert_stored; m_certs[])
         {
@@ -72,57 +72,57 @@ public:
                 return;
         }
         
-        m_certs.push_back(cert);
+        m_certs.pushBack(cert);
     }
 
-    Vector!X509_DN all_subjects() const
+    Vector!X509DN allSubjects() const
     {
-        Vector!X509_DN subjects;
+        Vector!X509DN subjects;
         foreach (ref cert; m_certs)
-            subjects.push_back(cert.subject_dn());
+            subjects.pushBack(cert.subjectDn());
         return subjects;
     }
 
-    X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
+    X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
     {
         return cert_search(subject_dn, key_id, m_certs);
     }
 
-    void add_crl(in X509_CRL crl)
+    void addCrl(in X509CRL crl)
     {
-        X509_DN crl_issuer = crl.issuer_dn();
+        X509DN crl_issuer = crl.issuerDn();
         
         foreach (crl_stored; m_crls[])
         {
             // Found an update of a previously existing one; replace it
-            if (crl_stored.issuer_dn() == crl_issuer)
+            if (crl_stored.issuerDn() == crl_issuer)
             {
-                if (crl_stored.this_update() <= crl.this_update())
+                if (crl_stored.thisUpdate() <= crl.thisUpdate())
                     crl_stored = crl;
                 return;
             }
         }
         
         // Totally new CRL, add to the list
-        m_crls.push_back(crl);
+        m_crls.pushBack(crl);
     }
 
-    X509_CRL find_crl_for(in X509_Certificate subject) const
+    X509CRL findCrlFor(in X509Certificate subject) const
     {
-        const Vector!ubyte key_id = subject.authority_key_id();
+        const Vector!ubyte key_id = subject.authorityKeyId();
         
         foreach (const crl; m_crls)
         {
             // Only compare key ids if set in both call and in the CRL
             if (key_id.length)
             {
-                Vector!ubyte akid = crl.authority_key_id();
+                Vector!ubyte akid = crl.authorityKeyId();
                 
                 if (akid.length && akid != key_id) // no match
                     continue;
             }
             
-            if (crl.issuer_dn() == subject.issuer_dn())
+            if (crl.issuerDn() == subject.issuerDn())
                 return crl;
         }
         
@@ -131,50 +131,50 @@ public:
 
 private:
     // TODO: Add indexing on the DN and key id to avoid linear search
-    Vector!X509_Certificate m_certs;
-    Vector!X509_CRL m_crls;
+    Vector!X509Certificate m_certs;
+    Vector!X509CRL m_crls;
 }
 
-final class Certificate_Store_Overlay : Certificate_Store
+final class CertificateStoreOverlay : Certificate_Store
 {
 public:
-    this(in Vector!X509_Certificate certs)
+    this(in Vector!X509Certificate certs)
     {
         m_certs = certs;
     }
 
-    Vector!X509_DN all_subjects() const
+    Vector!X509DN allSubjects() const
     {
-        Vector!X509_DN subjects;
+        Vector!X509DN subjects;
         foreach (cert; m_certs)
-            subjects.push_back(cert.subject_dn());
+            subjects.pushBack(cert.subjectDn());
         return subjects;
     }
 
-    X509_Certificate find_cert(in X509_DN subject_dn, in Vector!ubyte key_id) const
+    X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
     {
         return cert_search(subject_dn, key_id, m_certs);
     }
 private:
-    const Vector!X509_Certificate m_certs;
+    const Vector!X509Certificate m_certs;
 }
 
-X509_Certificate cert_search(in X509_DN subject_dn, 
+X509Certificate certSearch(in X509DN subject_dn, 
                                    in Vector!ubyte key_id, 
-                                   in Vector!X509_Certificate certs) const
+                                   in Vector!X509Certificate certs) const
 {
     foreach (const cert; certs[])
     {
         // Only compare key ids if set in both call and in the cert
         if (key_id.length)
         {
-            Vector!ubyte skid = cert.subject_key_id();
+            Vector!ubyte skid = cert.subjectKeyId();
             
             if (skid.length && skid != key_id) // no match
                 continue;
         }
         
-        if (cert.subject_dn() == subject_dn)
+        if (cert.subjectDn() == subject_dn)
             return cert;
     }
     

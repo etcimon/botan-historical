@@ -17,24 +17,24 @@ import botan.utils.types;
 /**
 * Threefish-512
 */
-class Threefish_512 : Block_Cipher_Fixed_Params!(64, 64)
+class Threefish512 : BlockCipherFixedParams!(64, 64)
 {
 public:
-    override void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         assert(m_K.length == 9, "Key was set");
         assert(m_T.length == 3, "Tweak was set");
         
         foreach (size_t i; 0 .. blocks)
         {
-            ulong X0 = load_littleEndian!ulong(input, 0);
-            ulong X1 = load_littleEndian!ulong(input, 1);
-            ulong X2 = load_littleEndian!ulong(input, 2);
-            ulong X3 = load_littleEndian!ulong(input, 3);
-            ulong X4 = load_littleEndian!ulong(input, 4);
-            ulong X5 = load_littleEndian!ulong(input, 5);
-            ulong X6 = load_littleEndian!ulong(input, 6);
-            ulong X7 = load_littleEndian!ulong(input, 7);
+            ulong X0 = loadLittleEndian!ulong(input, 0);
+            ulong X1 = loadLittleEndian!ulong(input, 1);
+            ulong X2 = loadLittleEndian!ulong(input, 2);
+            ulong X3 = loadLittleEndian!ulong(input, 3);
+            ulong X4 = loadLittleEndian!ulong(input, 4);
+            ulong X5 = loadLittleEndian!ulong(input, 5);
+            ulong X6 = loadLittleEndian!ulong(input, 6);
+            ulong X7 = loadLittleEndian!ulong(input, 7);
             
             mixin(THREEFISH_ENC_INJECT_KEY!(0)());
 
@@ -48,28 +48,28 @@ public:
             mixin(THREEFISH_ENC_8_ROUNDS!(15,16)());
             mixin(THREEFISH_ENC_8_ROUNDS!(17,18)());
             
-            store_littleEndian(output, X0, X1, X2, X3, X4, X5, X6, X7);
+            storeLittleEndian(output, X0, X1, X2, X3, X4, X5, X6, X7);
             
             input += 64;
             output += 64;
         }
     }
 
-    override void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         assert(m_K.length == 9, "Key was set");
         assert(m_T.length == 3, "Tweak was set");
         
         foreach (size_t i; 0 .. blocks)
         {
-            ulong X0 = load_littleEndian!ulong(input, 0);
-            ulong X1 = load_littleEndian!ulong(input, 1);
-            ulong X2 = load_littleEndian!ulong(input, 2);
-            ulong X3 = load_littleEndian!ulong(input, 3);
-            ulong X4 = load_littleEndian!ulong(input, 4);
-            ulong X5 = load_littleEndian!ulong(input, 5);
-            ulong X6 = load_littleEndian!ulong(input, 6);
-            ulong X7 = load_littleEndian!ulong(input, 7);
+            ulong X0 = loadLittleEndian!ulong(input, 0);
+            ulong X1 = loadLittleEndian!ulong(input, 1);
+            ulong X2 = loadLittleEndian!ulong(input, 2);
+            ulong X3 = loadLittleEndian!ulong(input, 3);
+            ulong X4 = loadLittleEndian!ulong(input, 4);
+            ulong X5 = loadLittleEndian!ulong(input, 5);
+            ulong X6 = loadLittleEndian!ulong(input, 6);
+            ulong X7 = loadLittleEndian!ulong(input, 7);
             
             mixin(THREEFISH_DEC_INJECT_KEY!(18)());
 
@@ -83,19 +83,19 @@ public:
             mixin(THREEFISH_DEC_8_ROUNDS!(3,2)());
             mixin(THREEFISH_DEC_8_ROUNDS!(1,0)());
             
-            store_littleEndian(output, X0, X1, X2, X3, X4, X5, X6, X7);
+            storeLittleEndian(output, X0, X1, X2, X3, X4, X5, X6, X7);
             
             input += 64;
             output += 64;
         }
     }
 
-    final void set_tweak(in ubyte* tweak, size_t len)
+    final void setTweak(in ubyte* tweak, size_t len)
     {
         if (len != 16)
             throw new Exception("Unsupported twofish tweak length");
-        m_T[0] = load_littleEndian!ulong(tweak, 0);
-        m_T[1] = load_littleEndian!ulong(tweak, 1);
+        m_T[0] = loadLittleEndian!ulong(tweak, 0);
+        m_T[1] = loadLittleEndian!ulong(tweak, 1);
         m_T[2] = m_T[0] ^ m_T[1];
     }
 
@@ -106,30 +106,30 @@ public:
     }
 
     final override @property string name() const { return "Threefish-512"; }
-    override BlockCipher clone() const { return new Threefish_512; }
+    override BlockCipher clone() const { return new Threefish512; }
 
     this() {
         m_T = 3;
     }
 
 protected:
-    final Secure_Vector!ulong get_T() const { return m_T; }
-    final Secure_Vector!ulong get_K() const { return m_K; }
+    final SecureVector!ulong getT() const { return m_T; }
+    final SecureVector!ulong getK() const { return m_K; }
 private:
-    override void key_schedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
         // todo: define key schedule for smaller keys
         m_K.resize(9);
         
         foreach (size_t i; 0 .. 8)
-            m_K[i] = load_littleEndian!ulong(key, i);
+            m_K[i] = loadLittleEndian!ulong(key, i);
         
         m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^
                  m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
     }
 
 
-    final void skein_feedfwd(in Secure_Vector!ulong M, in Secure_Vector!ulong T)
+    final void skeinFeedfwd(in SecureVector!ulong M, in SecureVector!ulong T)
     {
         assert(m_K.length == 9, "Key was set");
         assert(M.length == 8, "Single block");
@@ -173,8 +173,8 @@ private:
     }
 
     // Private data
-    Secure_Vector!ulong m_T;
-    Secure_Vector!ulong m_K;
+    SecureVector!ulong m_T;
+    SecureVector!ulong m_K;
 }
 
 package:
@@ -201,10 +201,10 @@ string THREEFISH_ENC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
         ` ~ X1 ~ ` += ` ~ X5 ~ `;
         ` ~ X2 ~ ` += ` ~ X6 ~ `;
         ` ~ X3 ~ ` += ` ~ X7 ~ `;
-        ` ~ X4 ~ ` = rotate_left(` ~ X4 ~ `, ` ~ ROT1 ~ `);
-        ` ~ X5 ~ ` = rotate_left(` ~ X5 ~ `, ` ~ ROT2 ~ `);
-        ` ~ X6 ~ ` = rotate_left(` ~ X6 ~ `, ` ~ ROT3 ~ `);
-        ` ~ X7 ~ ` = rotate_left(` ~ X7 ~ `, ` ~ ROT4 ~ `);
+        ` ~ X4 ~ ` = rotateLeft(` ~ X4 ~ `, ` ~ ROT1 ~ `);
+        ` ~ X5 ~ ` = rotateLeft(` ~ X5 ~ `, ` ~ ROT2 ~ `);
+        ` ~ X6 ~ ` = rotateLeft(` ~ X6 ~ `, ` ~ ROT3 ~ `);
+        ` ~ X7 ~ ` = rotateLeft(` ~ X7 ~ `, ` ~ ROT4 ~ `);
         ` ~ X4 ~ ` ^= ` ~ X0 ~ `;
         ` ~ X5 ~ ` ^= ` ~ X1 ~ `;
         ` ~ X6 ~ ` ^= ` ~ X2 ~ `;
@@ -260,10 +260,10 @@ string THREEFISH_DEC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
         ` ~ X5 ~ ` ^= ` ~ X1 ~ `;
         ` ~ X6 ~ ` ^= ` ~ X2 ~ `;
         ` ~ X7 ~ ` ^= ` ~ X3 ~ `;
-        ` ~ X4 ~ ` = rotate_right(` ~ X4 ~ `, ` ~ ROT1 ~ `);
-        ` ~ X5 ~ ` = rotate_right(` ~ X5 ~ `, ` ~ ROT2 ~ `);
-        ` ~ X6 ~ ` = rotate_right(` ~ X6 ~ `, ` ~ ROT3 ~ `);
-        ` ~ X7 ~ ` = rotate_right(` ~ X7 ~ `, ` ~ ROT4 ~ `);
+        ` ~ X4 ~ ` = rotateRight(` ~ X4 ~ `, ` ~ ROT1 ~ `);
+        ` ~ X5 ~ ` = rotateRight(` ~ X5 ~ `, ` ~ ROT2 ~ `);
+        ` ~ X6 ~ ` = rotateRight(` ~ X6 ~ `, ` ~ ROT3 ~ `);
+        ` ~ X7 ~ ` = rotateRight(` ~ X7 ~ `, ` ~ ROT4 ~ `);
         ` ~ X0 ~ ` -= ` ~ X4 ~ `;
         ` ~ X1 ~ ` -= ` ~ X5 ~ `;
         ` ~ X2 ~ ` -= ` ~ X6 ~ `;

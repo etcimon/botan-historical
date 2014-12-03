@@ -31,12 +31,12 @@ typedef bool Signature_Format;
 /**
 * The two types of signature format supported by Botan.
 */
-enum : Signature_Format { IEEE_1363, DER_SEQUENCE }
+enum : SignatureFormat { IEEE_1363, DER_SEQUENCE }
 typedef bool Fault_Protection;
 /**
 * Enum marking if protection against fault attacks should be used
 */
-enum : Fault_Protection {
+enum : FaultProtection {
     ENABLE_FAULT_PROTECTION,
     DISABLE_FAULT_PROTECTION
 }
@@ -44,7 +44,7 @@ enum : Fault_Protection {
 /**
 * Public Key Encryptor
 */
-class PK_Encryptor
+class PKEncryptor
 {
 public:
 
@@ -75,7 +75,7 @@ public:
     * Return the maximum allowed message size in bytes.
     * @return maximum message size in bytes
     */
-    abstract size_t maximum_input_size() const;
+    abstract size_t maximumInputSize() const;
 
     this() {}
     ~this() {}
@@ -87,7 +87,7 @@ private:
 /**
 * Public Key Decryptor
 */
-class PK_Decryptor
+class PKDecryptor
 {
 public:
     /**
@@ -96,7 +96,7 @@ public:
     * @param length = the length of the above ubyte array
     * @return decrypted message
     */
-    Secure_Vector!ubyte decrypt(in ubyte* input, size_t length) const
+    SecureVector!ubyte decrypt(in ubyte* input, size_t length) const
     {
         return dec(input, length);
     }
@@ -106,7 +106,7 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    Secure_Vector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
+    SecureVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
     {
         return dec(input.ptr, input.length);
     }
@@ -115,7 +115,7 @@ public:
     ~this() {}
 
 private:
-    abstract Secure_Vector!ubyte dec(in ubyte*, size_t) const;
+    abstract SecureVector!ubyte dec(in ubyte*, size_t) const;
 }
 
 /**
@@ -123,7 +123,7 @@ private:
 * messages. Use multiple calls update() to process large messages and
 * generate the signature by finally calling signature().
 */
-struct PK_Signer
+struct PKSigner
 {
 public:
     /**
@@ -133,7 +133,7 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte sign_message(in ubyte* msg, size_t length, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(in ubyte* msg, size_t length, RandomNumberGenerator rng)
     {
         update(msg, length);
         return signature(rng);
@@ -145,10 +145,10 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte sign_message(in Vector!ubyte input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(in Vector!ubyte input, RandomNumberGenerator rng)
     { return sign_message(input.ptr, input.length, rng); }
 
-    Vector!ubyte sign_message(in Secure_Vector!ubyte input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(in SecureVector!ubyte input, RandomNumberGenerator rng)
     { return sign_message(input.ptr, input.length, rng); }
 
     /**
@@ -187,27 +187,27 @@ public:
         
         assert(self_test_signature(encoded, plain_sig), "Signature was consistent");
         
-        if (m_op.message_parts() == 1 || m_sig_format == IEEE_1363)
+        if (m_op.messageParts() == 1 || m_sig_format == IEEE_1363)
             return plain_sig;
         
         if (m_sig_format == DER_SEQUENCE)
         {
-            if (plain_sig.length % m_op.message_parts())
-                throw new Encoding_Error("PK_Signer: strange signature size found");
+            if (plain_sig.length % m_op.messageParts())
+                throw new EncodingError("PKSigner: strange signature size found");
             const size_t SIZE_OF_PART = plain_sig.length / m_op.message_parts();
 
             Vector!BigInt sig_parts = Vector!BigInt(m_op.message_parts());
             for (size_t j = 0; j != sig_parts.length; ++j)
-                sig_parts[j].binary_decode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
+                sig_parts[j].binaryDecode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
             
-            return DER_Encoder()
-                    .start_cons(ASN1_Tag.SEQUENCE)
-                    .encode_list(sig_parts)
-                    .end_cons()
-                    .get_contents_unlocked();
+            return DEREncoder()
+                    .startCons(ASN1Tag.SEQUENCE)
+                    .encodeList(sig_parts)
+                    .endCons()
+                    .getContentsUnlocked();
         }
         else
-            throw new Encoding_Error("PK_Signer: Unknown signature format " ~
+            throw new EncodingError("PKSigner: Unknown signature format " ~
                                      to!string(m_sig_format));
     }
 
@@ -215,7 +215,7 @@ public:
     * Set the output format of the signature.
     * @param format = the signature format to use
     */
-    void set_output_format(Signature_Format format) { m_sig_format = format; }
+    void setOutputFormat(SignatureFormat format) { m_sig_format = format; }
 
     /**
     * Construct a PK Signer.
@@ -225,13 +225,13 @@ public:
     * @param format = the signature format to use
     * @param prot = says if fault protection should be enabled
     */
-    this(in Private_Key key, in string emsa_name,
-         Signature_Format format = IEEE_1363,
-         Fault_Protection prot = ENABLE_FAULT_PROTECTION)
+    this(in PrivateKey key, in string emsa_name,
+         SignatureFormat format = IEEE_1363,
+         FaultProtection prot = ENABLE_FAULT_PROTECTION)
     {
-        Algorithm_Factory af = global_state().algorithm_factory();
+        AlgorithmFactory af = globalState().algorithmFactory();
 
-        RandomNumberGenerator rng = global_state().global_rng();
+        RandomNumberGenerator rng = globalState().global_rng();
         
         m_op = null;
         m_verify_op = null;
@@ -239,17 +239,17 @@ public:
         foreach (Engine engine; af.engines) {
 
             if (!m_op)
-                m_op = engine.get_signature_op(key, rng);
+                m_op = engine.getSignatureOp(key, rng);
             
             if (!m_verify_op && prot == ENABLE_FAULT_PROTECTION)
-                m_verify_op = engine.get_verify_op(key, rng);
+                m_verify_op = engine.getVerifyOp(key, rng);
             
             if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
                 break;
         }
         
         if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
-            throw new Lookup_Error("Signing with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Signing with " ~ key.algo_name ~ " not supported");
         
         m_emsa = get_emsa(emsa_name);
         m_sig_format = format;
@@ -258,12 +258,12 @@ private:
     /*
     * Check the signature we just created, to help prevent fault attacks
     */
-    bool self_test_signature(in Vector!ubyte msg, in Vector!ubyte sig) const
+    bool selfTestSignature(in Vector!ubyte msg, in Vector!ubyte sig) const
     {
         if (!m_verify_op)
             return true; // checking disabled, assume ok
         
-        if (m_verify_op.with_recovery())
+        if (m_verify_op.withRecovery())
         {
             Vector!ubyte recovered = unlock(m_verify_op.verify_mr(sig.ptr, sig.length));
             
@@ -295,7 +295,7 @@ private:
 * messages. Use multiple calls update() to process large messages and
 * verify the signature by finally calling check_signature().
 */
-struct PK_Verifier
+struct PKVerifier
 {
 public:
     /**
@@ -306,7 +306,7 @@ public:
     * @param sig_length = the length of the above ubyte array sig
     * @return true if the signature is valid
     */
-    bool verify_message(in ubyte* msg, size_t msg_length,
+    bool verifyMessage(in ubyte* msg, size_t msg_length,
                         in ubyte* sig, size_t sig_length)
     {
         update(msg, msg_length);
@@ -319,7 +319,7 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-    bool verify_message(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg, 
+    bool verifyMessage(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg, 
                                        in Vector!( ubyte, Alloc2 ) sig)
     {
         return verify_message(msg.ptr, msg.length, sig.ptr, sig.length);
@@ -358,35 +358,35 @@ public:
     * @param length = the length of the above ubyte array
     * @return true if the signature is valid, false otherwise
     */
-    bool check_signature(in ubyte* sig, size_t length)
+    bool checkSignature(in ubyte* sig, size_t length)
     {
         try {
             if (m_sig_format == IEEE_1363)
-                return validate_signature(m_emsa.raw_data(), sig, length);
+                return validate_signature(m_emsa.rawData(), sig, length);
             else if (m_sig_format == DER_SEQUENCE)
             {
-                BER_Decoder decoder = BER_Decoder(sig, length);
-                BER_Decoder ber_sig = decoder.start_cons(ASN1_Tag.SEQUENCE);
+                BERDecoder decoder = BERDecoder(sig, length);
+                BERDecoder ber_sig = decoder.startCons(ASN1Tag.SEQUENCE);
                 
                 size_t count = 0;
                 Vector!ubyte real_sig;
-                while (ber_sig.more_items())
+                while (ber_sig.moreItems())
                 {
                     BigInt sig_part;
                     ber_sig.decode(sig_part);
-                    real_sig ~= BigInt.encode_1363(sig_part, m_op.message_part_size());
+                    real_sig ~= BigInt.encode1363(sig_part, m_op.messagePartSize());
                     ++count;
                 }
                 
-                if (count != m_op.message_parts())
-                    throw new Decoding_Error("PK_Verifier: signature size invalid");
+                if (count != m_op.messageParts())
+                    throw new DecodingError("PKVerifier: signature size invalid");
                 
-                return validate_signature(m_emsa.raw_data(), real_sig.ptr, real_sig.length);
+                return validate_signature(m_emsa.rawData(), real_sig.ptr, real_sig.length);
             }
             else
-                throw new Decoding_Error("PK_Verifier: Unknown signature format " ~ to!string(m_sig_format));
+                throw new DecodingError("PKVerifier: Unknown signature format " ~ to!string(m_sig_format));
         }
-        catch(Invalid_Argument) { return false; }
+        catch(InvalidArgument) { return false; }
     }
 
     /**
@@ -395,7 +395,7 @@ public:
     * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
-    bool check_signature(Alloc)(in Vector!( ubyte, Alloc ) sig)
+    bool checkSignature(Alloc)(in Vector!( ubyte, Alloc ) sig)
     {
         return check_signature(sig.ptr, sig.length);
     }
@@ -404,10 +404,10 @@ public:
     * Set the format of the signatures fed to this verifier.
     * @param format = the signature format to use
     */
-    void set_input_format(Signature_Format format)
+    void setInputFormat(SignatureFormat format)
     {
-        if (m_op.message_parts() == 1 && format != IEEE_1363)
-            throw new Invalid_State("PK_Verifier: This algorithm always uses IEEE 1363");
+        if (m_op.messageParts() == 1 && format != IEEE_1363)
+            throw new InvalidState("PKVerifier: This algorithm always uses IEEE 1363");
         m_sig_format = format;
     }
 
@@ -417,38 +417,38 @@ public:
     * @param emsa = the EMSA to use (eg "EMSA3(SHA-1)")
     * @param format = the signature format to use
     */
-    this(in Public_Key key, in string emsa_name, Signature_Format format = IEEE_1363)
+    this(in PublicKey key, in string emsa_name, SignatureFormat format = IEEE_1363)
     {
-        Algorithm_Factory af = global_state().algorithm_factory();
+        AlgorithmFactory af = globalState().algorithmFactory();
 
-        RandomNumberGenerator rng = global_state().global_rng();
+        RandomNumberGenerator rng = globalState().global_rng();
 
         foreach (Engine engine; af.engines) {
-            m_op = engine.get_verify_op(key, rng);
+            m_op = engine.getVerifyOp(key, rng);
             if (m_op)
                 break;
         }
         
         if (!m_op)
-            throw new Lookup_Error("Verification with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Verification with " ~ key.algo_name ~ " not supported");
         
         m_emsa = get_emsa(emsa_name);
         m_sig_format = format;
     }
 
 private:
-    bool validate_signature(in Secure_Vector!ubyte msg, in ubyte* sig, size_t sig_len)
+    bool validateSignature(in SecureVector!ubyte msg, in ubyte* sig, size_t sig_len)
     {
-        if (m_op.with_recovery())
+        if (m_op.withRecovery())
         {
-            Secure_Vector!ubyte output_of_key = m_op.verify_mr(sig, sig_len);
-            return m_emsa.verify(output_of_key, msg, m_op.max_input_bits());
+            SecureVector!ubyte output_of_key = m_op.verify_mr(sig, sig_len);
+            return m_emsa.verify(output_of_key, msg, m_op.maxInputBits());
         }
         else
         {
-            RandomNumberGenerator rng = global_state().global_rng();
+            RandomNumberGenerator rng = globalState().global_rng();
             
-            Secure_Vector!ubyte encoded = m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
+            SecureVector!ubyte encoded = m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
             
             return m_op.verify(encoded.ptr, encoded.length, sig, sig_len);
         }
@@ -462,7 +462,7 @@ private:
 /**
 * Key used for key agreement
 */
-class PK_Key_Agreement
+class PKKeyAgreement
 {
 public:
 
@@ -474,16 +474,16 @@ public:
     * @param params = extra derivation params
     * @param params_len = the length of params in bytes
     */
-    SymmetricKey derive_key(size_t key_len, in ubyte* input,
+    SymmetricKey deriveKey(size_t key_len, in ubyte* input,
                             size_t in_len, in ubyte* params,
                             size_t params_len) const
     {
-        Secure_Vector!ubyte z = m_op.agree(input, in_len);
+        SecureVector!ubyte z = m_op.agree(input, in_len);
         
         if (!m_kdf)
             return z;
         
-        return m_kdf.derive_key(key_len, z, params, params_len);
+        return m_kdf.deriveKey(key_len, z, params, params_len);
     }
 
     /*
@@ -494,9 +494,9 @@ public:
     * @param params = extra derivation params
     * @param params_len = the length of params in bytes
     */
-    SymmetricKey derive_key(size_t key_len, in Vector!ubyte input, in ubyte* params, size_t params_len) const
+    SymmetricKey deriveKey(size_t key_len, in Vector!ubyte input, in ubyte* params, size_t params_len) const
     {
-        return derive_key(key_len, input.ptr, input.length, params, params_len);
+        return deriveKey(key_len, input.ptr, input.length, params, params_len);
     }
 
     /*
@@ -506,9 +506,9 @@ public:
     * @param in_len = the length of in in bytes
     * @param params = extra derivation params
     */
-    SymmetricKey derive_key(size_t key_len, in ubyte* input, size_t in_len, in string params = "") const
+    SymmetricKey deriveKey(size_t key_len, in ubyte* input, size_t in_len, in string params = "") const
     {
-        return derive_key(key_len, input, in_len, cast(const ubyte*)(params.ptr), params.length);
+        return deriveKey(key_len, input, in_len, cast(const ubyte*)(params.ptr), params.length);
     }
 
     /*
@@ -517,11 +517,11 @@ public:
     * @param input = the other parties key
     * @param params = extra derivation params
     */
-    SymmetricKey derive_key(size_t key_len,
+    SymmetricKey deriveKey(size_t key_len,
                                     in Vector!ubyte input,
                                     in string params = "") const
     {
-        return derive_key(key_len, input.ptr, input.length,
+        return deriveKey(key_len, input.ptr, input.length,
                                 cast(const ubyte*)(params.ptr),
                                 params.length);
     }
@@ -531,20 +531,20 @@ public:
     * @param key = the key to use
     * @param kdf_name = name of the KDF to use (or 'Raw' for no KDF)
     */
-    this(in PK_Key_Agreement_Key key, in string kdf_name)
+    this(in PKKeyAgreementKey key, in string kdf_name)
     {
-        Algorithm_Factory af = global_state().algorithm_factory();
-        RandomNumberGenerator rng = global_state().global_rng();
+        AlgorithmFactory af = globalState().algorithmFactory();
+        RandomNumberGenerator rng = globalState().global_rng();
 
         foreach (Engine engine; af.engines)
         {
-            m_op = engine.get_key_agreement_op(key, rng);
+            m_op = engine.getKeyAgreementOp(key, rng);
             if (m_op)
                 break;
         }
         
         if (!m_op)
-            throw new Lookup_Error("Key agreement with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Key agreement with " ~ key.algo_name ~ " not supported");
         
         m_kdf = get_kdf(kdf_name);
     }
@@ -556,18 +556,18 @@ private:
 /**
 * Encryption with an MR algorithm and an EME.
 */
-class PK_Encryptor_EME : PK_Encryptor
+class PKEncryptorEME : PK_Encryptor
 {
 public:
     /*
     * Return the max size, in bytes, of a message
     */
-    size_t maximum_input_size() const
+    size_t maximumInputSize() const
     {
         if (!m_eme)
-            return (m_op.max_input_bits() / 8);
+            return (m_op.maxInputBits() / 8);
         else
-            return m_eme.maximum_input_size(m_op.max_input_bits());
+            return m_eme.maximumInputSize(m_op.maxInputBits());
     }
 
     /**
@@ -575,20 +575,20 @@ public:
     * @param key = the key to use inside the decryptor
     * @param eme = the EME to use
     */
-    this(in Public_Key key, in string eme_name)
+    this(in PublicKey key, in string eme_name)
     {
         
-        Algorithm_Factory af = global_state().algorithm_factory();
-        RandomNumberGenerator rng = global_state().global_rng();
+        AlgorithmFactory af = globalState().algorithmFactory();
+        RandomNumberGenerator rng = globalState().global_rng();
 
         foreach (Engine engine; af.engines) {
-            m_op = engine.get_encryption_op(key, rng);
+            m_op = engine.getEncryptionOp(key, rng);
             if (m_op)
                 break;
         }
         
         if (!m_op)
-            throw new Lookup_Error("Encryption with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Encryption with " ~ key.algo_name ~ " not supported");
         
         m_eme = get_eme(eme_name);
     }
@@ -598,17 +598,17 @@ private:
     {
         if (m_eme)
         {
-            Secure_Vector!ubyte encoded = m_eme.encode(input, length, m_op.max_input_bits(), rng);
+            SecureVector!ubyte encoded = m_eme.encode(input, length, m_op.max_input_bits(), rng);
             
-            if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.max_input_bits())
-                throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");
+            if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.maxInputBits())
+                throw new InvalidArgument("PK_Encryptor_EME: Input is too large");
             
             return unlock(m_op.encrypt(encoded.ptr, encoded.length, rng));
         }
         else
         {
-            if (8*(length - 1) + high_bit(input[0]) > m_op.max_input_bits())
-                throw new Invalid_Argument("PK_Encryptor_EME: Input is too large");
+            if (8*(length - 1) + high_bit(input[0]) > m_op.maxInputBits())
+                throw new InvalidArgument("PK_Encryptor_EME: Input is too large");
             
             return unlock(m_op.encrypt(input.ptr, length, rng));
         }
@@ -621,7 +621,7 @@ private:
 /**
 * Decryption with an MR algorithm and an EME.
 */
-class PK_Decryptor_EME : PK_Decryptor
+class PKDecryptorEME : PK_Decryptor
 {
 public:
   /**
@@ -629,20 +629,20 @@ public:
     * @param key = the key to use inside the encryptor
     * @param eme = the EME to use
     */
-    this(in Private_Key key, in string eme_name)
+    this(in PrivateKey key, in string eme_name)
     {
-        Algorithm_Factory af = global_state().algorithm_factory();
-        RandomNumberGenerator rng = global_state().global_rng();
+        AlgorithmFactory af = globalState().algorithmFactory();
+        RandomNumberGenerator rng = globalState().global_rng();
 
         foreach (Engine engine; af.engines)
         {
-            m_op = engine.get_decryption_op(key, rng);
+            m_op = engine.getDecryptionOp(key, rng);
             if (m_op)
                 break;
         }
         
         if (!m_op)
-            throw new Lookup_Error("Decryption with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Decryption with " ~ key.algo_name ~ " not supported");
         
         m_eme = get_eme(eme_name);
     }
@@ -651,18 +651,18 @@ private:
     /*
     * Decrypt a message
     */
-    Secure_Vector!ubyte dec(in ubyte* msg, size_t length) const
+    SecureVector!ubyte dec(in ubyte* msg, size_t length) const
     {
         try {
-            Secure_Vector!ubyte decrypted = m_op.decrypt(msg, length);
+            SecureVector!ubyte decrypted = m_op.decrypt(msg, length);
             if (m_eme)
-                return m_eme.decode(decrypted, m_op.max_input_bits());
+                return m_eme.decode(decrypted, m_op.maxInputBits());
             else
                 return decrypted;
         }
-        catch(Invalid_Argument)
+        catch(InvalidArgument)
         {
-            throw new Decoding_Error("PK_Decryptor_EME: Input is invalid");
+            throw new DecodingError("PK_Decryptor_EME: Input is invalid");
         }
     }
 

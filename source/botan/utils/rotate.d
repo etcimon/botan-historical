@@ -15,7 +15,7 @@ pure:
 * @param rot = the number of bits to rotate
 * @return input rotated left by rot bits
 */
-T rotate_left(T)(T input, size_t rot)
+T rotateLeft(T)(T input, size_t rot)
 {
     if (rot == 0)
         return input;
@@ -28,7 +28,7 @@ T rotate_left(T)(T input, size_t rot)
 * @param rot = the number of bits to rotate
 * @return input rotated right by rot bits
 */
-T rotate_right(T)(T input, size_t rot)
+T rotateRight(T)(T input, size_t rot)
 {
     if (rot == 0)
         return input;

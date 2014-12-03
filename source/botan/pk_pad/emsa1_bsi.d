@@ -17,7 +17,7 @@ import botan.utils.types;
 * only hash values which are less or equal than the maximum key
 * length. The implementation comes from InSiTo
 */
-final class EMSA1_BSI : EMSA1
+final class EMSA1BSI : EMSA1
 {
 public:
     /**
@@ -31,17 +31,17 @@ private:
     /*
     * EMSA1 BSI Encode Operation
     */
-    Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                  size_t output_bits,
                                  RandomNumberGenerator)
     {
         if (msg.length != hash_output_length())
-            throw new Encoding_Error("EMSA1_BSI::encoding_of: Invalid size for input");
+            throw new EncodingError("EMSA1_BSI::encoding_of: Invalid size for input");
         
         if (8*msg.length <= output_bits)
             return msg;
         
-        throw new Encoding_Error("EMSA1_BSI::encoding_of: max key input size exceeded");
+        throw new EncodingError("EMSA1_BSI::encoding_of: max key input size exceeded");
     }
 }
 

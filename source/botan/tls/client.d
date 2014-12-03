@@ -21,7 +21,7 @@ import botan.utils.types;
 /**
 * SSL/TLS Client
 */
-final class TLS_Client : TLS_Channel
+final class TLSClient : TLS_Channel
 {
 public:
     /**
@@ -63,14 +63,14 @@ public:
     */
     this(void delegate(in ubyte[]) socket_output_fn,
          void delegate(in ubyte[]) proc_cb,
-         void delegate(in TLS_Alert, in ubyte[]) alert_cb,
-         bool delegate(in TLS_Session) handshake_cb,
-         TLS_Session_Manager session_manager,
-         TLS_Credentials_Manager creds,
-         in TLS_Policy policy,
+         void delegate(in TLSAlert, in ubyte[]) alert_cb,
+         bool delegate(in TLSSession) handshake_cb,
+         TLSSessionManager session_manager,
+         TLSCredentialsManager creds,
+         in TLSPolicy policy,
          RandomNumberGenerator rng,
-         in TLS_Server_Information server_info = TLS_Server_Information(),
-         in TLS_Protocol_Version offer_version = TLS_Protocol_Version.latest_tls_version(),
+         in TLSServerInformation server_info = TLSServerInformation(),
+         in TLSProtocolVersion offer_version = TLSProtocolVersion.latestTlsVersion(),
          string delegate(string[]) next_protocol = null,
          size_t reserved_io_buffer_size = 16*1024)
     { 
@@ -78,42 +78,42 @@ public:
         m_policy = policy;
         m_creds = creds;
         m_info = server_info;
-        const string srp_identifier = m_creds.srp_identifier("tls-client", m_info.hostname());
+        const string srp_identifier = m_creds.srpIdentifier("tls-client", m_info.hostname());
         
-        Handshake_State state = create_handshake_state(offer_version);
-        send_client_hello(state, false, offer_version, srp_identifier, next_protocol);
+        HandshakeState state = createHandshakeState(offer_version);
+        sendClientHello(state, false, offer_version, srp_identifier, next_protocol);
     }
 private:
-    override Vector!X509_Certificate
-        get_peer_cert_chain(in Handshake_State state) const
+    override Vector!X509Certificate
+        getPeerCertChain(in HandshakeState state) const
     {
-        if (state.server_certs())
-            return state.server_certs().cert_chain();
-        return Vector!X509_Certificate();
+        if (state.serverCerts())
+            return state.serverCerts().certChain();
+        return Vector!X509Certificate();
     }
 
     /*
     * Send a new client hello to renegotiate
     */
-    override void initiate_handshake(Handshake_State state,
+    override void initiateHandshake(HandshakeState state,
                             bool force_full_renegotiation)
     {
-        send_client_hello(state,
+        sendClientHello(state,
                           force_full_renegotiation,
-                          state._version());
+                          state.Version());
     }
 
-    void send_client_hello(Handshake_State state_base,
+    void sendClientHello(HandshakeState state_base,
                            bool force_full_renegotiation,
-                           TLS_Protocol_Version _version,
+                           TLSProtocolVersion _version,
                            in string srp_identifier = "",
                            string delegate(string[]) next_protocol = null)
     {
-        Client_Handshake_State state = cast(Client_Handshake_State)(state_base);
+        ClientHandshakeState state = cast(ClientHandshakeState)(state_base);
         
-        if (state._version().is_datagram_protocol())
-            state.set_expected_next(HELLO_VERIFY_REQUEST); // optional
-        state.set_expected_next(SERVER_HELLO);
+        if (state.Version().isDatagramProtocol())
+            state.setExpectedNext(HELLO_VERIFY_REQUEST); // optional
+        state.setExpectedNext(SERVER_HELLO);
         
         state.client_npn_cb = next_protocol;
         
@@ -121,122 +121,122 @@ private:
         
         if (!force_full_renegotiation && !m_info.empty)
         {
-            TLS_Session session_info;
-            if (session_manager().load_from_server_info(m_info, session_info))
+            TLSSession session_info;
+            if (session_manager().loadFromServerInfo(m_info, session_info))
             {
-                if (srp_identifier == "" || session_info.srp_identifier() == srp_identifier)
+                if (srp_identifier == "" || session_info.srpIdentifier() == srp_identifier)
                 {
-                    state.client_hello(new Client_Hello(
-                        state.handshake_io(),
+                    state.clientHello(new ClientHello(
+                        state.handshakeIo(),
                         state.hash(),
                         m_policy,
                         rng(),
-                        secure_renegotiation_data_for_client_hello(),
+                        secureRenegotiationDataForClientHello(),
                         session_info,
                         send_npn_request));
                     
-                    state.resume_master_secret = session_info.master_secret();
+                    state.resume_master_secret = session_info.masterSecret();
                 }
             }
         }
         
-        if (!state.client_hello()) // not resuming
+        if (!state.clientHello()) // not resuming
         {
-            state.client_hello(new Client_Hello(
-                               state.handshake_io(),
+            state.clientHello(new ClientHello(
+                               state.handshakeIo(),
                                state.hash(),
                                _version,
                                m_policy,
                                rng(),
-                               secure_renegotiation_data_for_client_hello(),
+                               secureRenegotiationDataForClientHello(),
                                send_npn_request,
                                m_info.hostname(),
                                srp_identifier));
         }
         
-        secure_renegotiation_check(state.client_hello());
+        secureRenegotiationCheck(state.clientHello());
     }
 
     /*
     * Process a handshake message
     */
-    override void process_handshake_msg(in Handshake_State active_state,
-                               Handshake_State state_base,
-                               Handshake_Type type,
+    override void processHandshakeMsg(in HandshakeState active_state,
+                               HandshakeState state_base,
+                               HandshakeType type,
                                in Vector!ubyte contents)
     {
-        Client_Handshake_State state = cast(Client_Handshake_State)(state_base);
+        ClientHandshakeState state = cast(ClientHandshakeState)(state_base);
         
         if (type == HELLO_REQUEST && active_state)
         {
-            Hello_Request hello_request(contents);
+            auto hello_request = scoped!HelloRequest(contents);
             
             // Ignore request entirely if we are currently negotiating a handshake
-            if (state.client_hello())
+            if (state.clientHello())
                 return;
             
-            if (!m_policy.allow_server_initiated_renegotiation() ||
-                (!m_policy.allow_insecure_renegotiation() && !secure_renegotiation_supported()))
+            if (!m_policy.allowServerInitiatedRenegotiation() ||
+                (!m_policy.allowInsecureRenegotiation() && !secureRenegotiationSupported()))
             {
                 // RFC 5746 section 4.2
-                send_warning_alert(TLS_Alert.NO_RENEGOTIATION);
+                send_warning_alert(TLSAlert.NO_RENEGOTIATION);
                 return;
             }
             
-            this.initiate_handshake(state, false);
+            this.initiateHandshake(state, false);
             
             return;
         }
         
-        state.confirm_transition_to(type);
+        state.confirmTransitionTo(type);
         
         if (type != HANDSHAKE_CCS && type != FINISHED && type != HELLO_VERIFY_REQUEST)
-            state.hash().update(state.handshake_io().format(contents, type));
+            state.hash().update(state.handshakeIo().format(contents, type));
         
         if (type == HELLO_VERIFY_REQUEST)
         {
-            state.set_expected_next(SERVER_HELLO);
-            state.set_expected_next(HELLO_VERIFY_REQUEST); // might get it again
+            state.setExpectedNext(SERVER_HELLO);
+            state.setExpectedNext(HELLO_VERIFY_REQUEST); // might get it again
             
             Hello_Verify_Request hello_verify_request = scoped!Hello_Verify_Request(contents);
 
-            state.hello_verify_request(hello_verify_request);
+            state.helloVerifyRequest(hello_verify_request);
         }
         else if (type == SERVER_HELLO)
         {
-            state.server_hello(new Server_Hello(contents));
+            state.serverHello(new ServerHello(contents));
             
-            if (!state.client_hello().offered_suite(state.server_hello().ciphersuite()))
+            if (!state.clientHello().offeredSuite(state.serverHello().ciphersuite()))
             {
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
                                         "TLS_Server replied with ciphersuite we didn't send");
             }
             
-            if (!value_exists(state.client_hello().compression_methods(),
-                              state.server_hello().compression_method()))
+            if (!value_exists(state.clientHello().compressionMethods(),
+                              state.serverHello().compressionMethod()))
             {
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
                                         "TLS_Server replied with compression method we didn't send");
             }
             
-            auto client_extn = state.client_hello().extension_types();
-            auto server_extn = state.server_hello().extension_types();
+            auto client_extn = state.clientHello().extensionTypes();
+            auto server_extn = state.serverHello().extensionTypes();
             
             import std.algorithm : setDifference;
             import std.range : empty, array;
             auto diff = setDifference(server_extn, client_extn);
             if (!diff.empty)
             {
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE,
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
                                         "TLS_Server sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
             }
             
-            state.set_version(state.server_hello()._version());
+            state.setVersion(state.serverHello().Version());
             
-            secure_renegotiation_check(state.server_hello());
+            secureRenegotiationCheck(state.serverHello());
             
-            const bool server_returned_same_session_id = !state.server_hello().session_id().empty &&
-                                                         (state.server_hello().session_id() == state.client_hello().session_id());
+            const bool server_returned_same_session_id = !state.serverHello().sessionId().empty &&
+                                                         (state.serverHello().sessionId() == state.clientHello().sessionId());
             
             if (server_returned_same_session_id)
             {
@@ -246,41 +246,41 @@ private:
                 * In this case, we offered the version used in the original
                 * session, and the server must resume with the same version.
                 */
-                if (state.server_hello()._version() != state.client_hello()._version())
-                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server resumed session but with wrong version");
+                if (state.serverHello().Version() != state.clientHello().Version())
+                    throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server resumed session but with wrong version");
                 
-                state.compute_session_keys(state.resume_master_secret);
+                state.computeSessionKeys(state.resume_master_secret);
                 
-                if (state.server_hello().supports_session_ticket())
-                    state.set_expected_next(NEW_SESSION_TICKET);
+                if (state.serverHello().supportsSessionTicket())
+                    state.setExpectedNext(NEW_SESSION_TICKET);
                 else
-                    state.set_expected_next(HANDSHAKE_CCS);
+                    state.setExpectedNext(HANDSHAKE_CCS);
             }
             else
             {
                 // new session
                 
-                if (state.client_hello()._version().is_datagram_protocol() !=
-                    state.server_hello()._version().is_datagram_protocol())
+                if (state.clientHello().Version().isDatagramProtocol() !=
+                    state.serverHello().Version().isDatagramProtocol())
                 {
-                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "TLS_Server replied with different protocol type than we offered");
+                    throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLS_Server replied with different protocol type than we offered");
                 }
                 
-                if (state._version() > state.client_hello()._version())
+                if (state.Version() > state.clientHello().Version())
                 {
-                    throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Server replied with later version than in hello");
+                    throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server replied with later version than in hello");
                 }
                 
-                if (!m_policy.acceptable_protocol_version(state._version()))
+                if (!m_policy.acceptableProtocolVersion(state.Version()))
                 {
-                    throw new TLS_Exception(TLS_Alert.PROTOCOL_VERSION, "TLS_Server version is unacceptable by policy");
+                    throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLS_Server version is unacceptable by policy");
                 }
                 
-                if (state.ciphersuite().sig_algo() != "")
+                if (state.ciphersuite().sigAlgo() != "")
                 {
-                    state.set_expected_next(CERTIFICATE);
+                    state.setExpectedNext(CERTIFICATE);
                 }
-                else if (state.ciphersuite().kex_algo() == "PSK")
+                else if (state.ciphersuite().kexAlgo() == "PSK")
                 {
                     /* PSK is anonymous so no certificate/cert req message is
                         ever sent. The server may or may not send a server kex,
@@ -290,94 +290,94 @@ private:
                         DH exchange portion.
                     */
                     
-                    state.set_expected_next(SERVER_KEX);
-                    state.set_expected_next(SERVER_HELLO_DONE);
+                    state.setExpectedNext(SERVER_KEX);
+                    state.setExpectedNext(SERVER_HELLO_DONE);
                 }
-                else if (state.ciphersuite().kex_algo() != "RSA")
+                else if (state.ciphersuite().kexAlgo() != "RSA")
                 {
-                    state.set_expected_next(SERVER_KEX);
+                    state.setExpectedNext(SERVER_KEX);
                 }
                 else
                 {
-                    state.set_expected_next(CERTIFICATE_REQUEST); // optional
-                    state.set_expected_next(SERVER_HELLO_DONE);
+                    state.setExpectedNext(CERTIFICATE_REQUEST); // optional
+                    state.setExpectedNext(SERVER_HELLO_DONE);
                 }
             }
         }
         else if (type == CERTIFICATE)
         {
-            if (state.ciphersuite().kex_algo() != "RSA")
+            if (state.ciphersuite().kexAlgo() != "RSA")
             {
-                state.set_expected_next(SERVER_KEX);
+                state.setExpectedNext(SERVER_KEX);
             }
             else
             {
-                state.set_expected_next(CERTIFICATE_REQUEST); // optional
-                state.set_expected_next(SERVER_HELLO_DONE);
+                state.setExpectedNext(CERTIFICATE_REQUEST); // optional
+                state.setExpectedNext(SERVER_HELLO_DONE);
             }
             
-            state.server_certs(new Certificate(contents));
+            state.serverCerts(new Certificate(contents));
             
-            const Vector!X509_Certificate server_certs = state.server_certs().cert_chain();
+            const Vector!X509Certificate server_certs = state.server_certs().certChain();
             
             if (server_certs.empty)
-                throw new TLS_Exception(TLS_Alert.HANDSHAKE_FAILURE, "TLS_Client: No certificates sent by server");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Client: No certificates sent by server");
             
             try
             {
-                m_creds.verify_certificate_chain("tls-client", m_info.hostname(), server_certs);
+                m_creds.verifyCertificateChain("tls-client", m_info.hostname(), server_certs);
             }
             catch(Exception e)
             {
-                throw new TLS_Exception(TLS_Alert.BAD_CERTIFICATE, e.msg);
+                throw new TLSException(TLSAlert.BAD_CERTIFICATE, e.msg);
             }
             
-            Unique!Public_Key peer_key = server_certs[0].subject_public_key();
+            Unique!PublicKey peer_key = server_certs[0].subjectPublicKey();
             
-            if (peer_key.algo_name != state.ciphersuite().sig_algo())
-                throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER, "Certificate key type did not match ciphersuite");
+            if (peer_key.algo_name != state.ciphersuite().sigAlgo())
+                throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Certificate key type did not match ciphersuite");
             
             state.server_public_key = peer_key;
         }
         else if (type == SERVER_KEX)
         {
-            state.set_expected_next(CERTIFICATE_REQUEST); // optional
-            state.set_expected_next(SERVER_HELLO_DONE);
+            state.setExpectedNext(CERTIFICATE_REQUEST); // optional
+            state.setExpectedNext(SERVER_HELLO_DONE);
             
-            state.server_kex(new Server_Key_Exchange(contents,
-                                                     state.ciphersuite().kex_algo(),
-                                                     state.ciphersuite().sig_algo(),
-                                                     state._version()));
+            state.serverKex(new ServerKeyExchange(contents,
+                                                     state.ciphersuite().kexAlgo(),
+                                                     state.ciphersuite().sigAlgo(),
+                                                     state.Version()));
             
-            if (state.ciphersuite().sig_algo() != "")
+            if (state.ciphersuite().sigAlgo() != "")
             {
-                const Public_Key server_key = state.get_server_public_Key();
+                const PublicKey server_key = state.get_server_public_Key();
                 
-                if (!state.server_kex().verify(server_key, state))
+                if (!state.serverKex().verify(server_key, state))
                 {
-                    throw new TLS_Exception(TLS_Alert.DECRYPT_ERROR, "Bad signature on server key exchange");
+                    throw new TLSException(TLSAlert.DECRYPT_ERROR, "Bad signature on server key exchange");
                 }
             }
         }
         else if (type == CERTIFICATE_REQUEST)
         {
-            state.set_expected_next(SERVER_HELLO_DONE);
-            state.cert_req(new Certificate_Req(contents, state._version()));
+            state.setExpectedNext(SERVER_HELLO_DONE);
+            state.certReq(new CertificateReq(contents, state.Version()));
         }
         else if (type == SERVER_HELLO_DONE)
         {
-            state.server_hello_done(new Server_Hello_Done(contents));
+            state.serverHelloDone(new ServerHelloDone(contents));
             
-            if (state.received_handshake_msg(CERTIFICATE_REQUEST))
+            if (state.receivedHandshakeMsg(CERTIFICATE_REQUEST))
             {
-                const Vector!string types =    state.cert_req().acceptable_cert_types();
+                const Vector!string types = state.certReq().acceptableCertTypes();
                 
-                Vector!X509_Certificate client_certs = m_creds.cert_chain(types, "tls-client", m_info.hostname());
+                Vector!X509Certificate client_certs = m_creds.certChain(types, "tls-client", m_info.hostname());
                 
-                state.client_certs(new Certificate(state.handshake_io(), state.hash(), client_certs));
+                state.clientCerts(new Certificate(state.handshakeIo(), state.hash(), client_certs));
             }
             
-            state.client_kex(new Client_Key_Exchange(state.handshake_io(),
+            state.clientKex(new ClientKeyExchange(state.handshakeIo(),
                                                      state,
                                                      m_policy,
                                                      m_creds,
@@ -385,140 +385,139 @@ private:
                                                      m_info.hostname(),
                                                      rng()));
             
-            state.compute_session_keys();
+            state.computeSessionKeys();
             
-            if (state.received_handshake_msg(CERTIFICATE_REQUEST) &&
-                !state.client_certs().empty)
+            if (state.receivedHandshakeMsg(CERTIFICATE_REQUEST) && !state.clientCerts().empty)
             {
-                Private_Key priv_key =    m_creds.private_key_for(state.client_certs().cert_chain()[0], "tls-client",    m_info.hostname());
+                PrivateKey priv_key =    m_creds.private_key_for(state.client_certs().certChain()[0], "tls-client",    m_info.hostname());
                 
-                state.client_verify(new Certificate_Verify(state.handshake_io(),
+                state.clientVerify(new CertificateVerify(state.handshakeIo(),
                                                            state,
                                                            m_policy,
                                                            rng(),
                                                            priv_key));
             }
             
-            state.handshake_io().send(scoped!Change_Cipher_Spec());
+            state.handshakeIo().send(scoped!ChangeCipherSpec());
             
             change_cipher_spec_writer(CLIENT);
             
-            if (state.server_hello().next_protocol_notification())
+            if (state.serverHello().nextProtocolNotification())
             {
-                const string protocol = state.client_npn_cb(state.server_hello().next_protocols());
+                const string protocol = state.clientNpnCb(state.serverHello().nextProtocols());
                 
-                state.next_protocol(new Next_Protocol(state.handshake_io(), state.hash(), protocol));
+                state.nextProtocol(new NextProtocol(state.handshakeIo(), state.hash(), protocol));
             }
             
-            state.client_finished(new Finished(state.handshake_io(), state, CLIENT));
+            state.clientFinished(new Finished(state.handshakeIo(), state, CLIENT));
             
-            if (state.server_hello().supports_session_ticket())
-                state.set_expected_next(NEW_SESSION_TICKET);
+            if (state.serverHello().supportsSessionTicket())
+                state.setExpectedNext(NEW_SESSION_TICKET);
             else
-                state.set_expected_next(HANDSHAKE_CCS);
+                state.setExpectedNext(HANDSHAKE_CCS);
         }
         else if (type == NEW_SESSION_TICKET)
         {
-            state.new_session_ticket(new New_Session_Ticket(contents));
+            state.newSessionTicket(new NewSessionTicket(contents));
             
-            state.set_expected_next(HANDSHAKE_CCS);
+            state.setExpectedNext(HANDSHAKE_CCS);
         }
         else if (type == HANDSHAKE_CCS)
         {
-            state.set_expected_next(FINISHED);
+            state.setExpectedNext(FINISHED);
             
             change_cipher_spec_reader(CLIENT);
         }
         else if (type == FINISHED)
         {
-            state.server_finished(new Finished(contents));
+            state.serverFinished(new Finished(contents));
             
-            if (!state.server_finished().verify(state, SERVER))
-                throw new TLS_Exception(TLS_Alert.DECRYPT_ERROR, "Finished message didn't verify");
+            if (!state.serverFinished().verify(state, SERVER))
+                throw new TLSException(TLSAlert.DECRYPT_ERROR, "Finished message didn't verify");
             
-            state.hash().update(state.handshake_io().format(contents, type));
+            state.hash().update(state.handshakeIo().format(contents, type));
             
-            if (!state.client_finished()) // session resume case
+            if (!state.clientFinished()) // session resume case
             {
-                state.handshake_io().send(scoped!Change_Cipher_Spec());
+                state.handshakeIo().send(scoped!ChangeCipherSpec());
                 
                 change_cipher_spec_writer(CLIENT);
                 
-                if (state.server_hello().next_protocol_notification())
+                if (state.serverHello().nextProtocolNotification())
                 {
-                    const string protocol = state.client_npn_cb(state.server_hello().next_protocols());
+                    const string protocol = state.clientNpnCb(state.serverHello().nextProtocols());
                     
-                    state.next_protocol(new Next_Protocol(state.handshake_io(), state.hash(), protocol));
+                    state.nextProtocol(new NextProtocol(state.handshakeIo(), state.hash(), protocol));
                 }
                 
-                state.client_finished(new Finished(state.handshake_io(), state, CLIENT));
+                state.clientFinished(new Finished(state.handshakeIo(), state, CLIENT));
             }
             
-            Vector!ubyte session_id = state.server_hello().session_id();
+            Vector!ubyte session_id = state.serverHello().sessionId();
             
-            const Vector!ubyte session_ticket = state.session_ticket();
+            const Vector!ubyte session_ticket = state.sessionTicket();
             
             if (session_id.empty && !session_ticket.empty)
-                session_id = make_hello_random(rng());
+                session_id = makeHelloRandom(rng());
             
-            TLS_Session session_info = TLS_Session(session_id,
-                                            state.session_keys().master_secret(),
-                                            state.server_hello()._version(),
-                                            state.server_hello().ciphersuite(),
-                                            state.server_hello().compression_method(),
+            TLSSession session_info = TLSSession(session_id,
+                                            state.sessionKeys().masterSecret(),
+                                            state.serverHello().Version(),
+                                            state.serverHello().ciphersuite(),
+                                            state.serverHello().compressionMethod(),
                                             CLIENT,
-                                            state.server_hello().fragment_size(),
-                                            get_peer_cert_chain(state),
+                                            state.serverHello().fragmentSize(),
+                                            getPeerCertChain(state),
                                             session_ticket,
                                             m_info,
                                             "");
             
-            const bool should_save = save_session(session_info);
+            const bool should_save = saveSession(session_info);
             
             if (!session_id.empty)
             {
                 if (should_save)
                     session_manager().save(session_info);
                 else
-                    session_manager().remove_entry(session_info.session_id());
+                    session_manager().removeEntry(session_info.sessionId());
             }
             
             activate_session();
         }
         else
-            throw new TLS_Unexpected_Message("Unknown handshake message received");
+            throw new TLSUnexpectedMessage("Unknown handshake message received");
     }
 
-    override Handshake_State new_handshake_state(Handshake_IO io)
+    override HandshakeState newHandshakeState(HandshakeIO io)
     {
-        return new Client_Handshake_State(io);
+        return new ClientHandshakeState(io);
     }
 
-    const TLS_Policy m_policy;
-    TLS_Credentials_Manager m_creds;
-    const TLS_Server_Information m_info;
+    const TLSPolicy m_policy;
+    TLSCredentialsManager m_creds;
+    const TLSServerInformation m_info;
 }
 
 
-private final class Client_Handshake_State : Handshake_State
+private final class ClientHandshakeState : HandshakeState
 {
 public:
     
-    this(Handshake_IO io, void delegate(in Handshake_Message) msg_callback) 
+    this(HandshakeIO io, void delegate(in HandshakeMessage) msg_callback) 
     { 
         super(io, msg_callback);
     }
     
-    Public_Key get_server_public_Key() const
+    PublicKey getServerPublicKey() const
     {
         assert(server_public_key, "TLS_Server sent us a certificate");
         return *server_public_key;
     }
     
     // Used during session resumption
-    Secure_Vector!ubyte resume_master_secret;
+    SecureVector!ubyte resume_master_secret;
     
-    Unique!Public_Key server_public_key;
+    Unique!PublicKey server_public_key;
     
     // Used by client using NPN
     string delegate(Vector!string) client_npn_cb;

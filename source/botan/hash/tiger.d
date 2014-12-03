@@ -19,7 +19,7 @@ import botan.utils.types;
 /**
 * Tiger
 */
-final class Tiger : MDx_HashFunction
+final class Tiger : MDxHashFunction
 {
 public:
     /*
@@ -30,7 +30,7 @@ public:
         return "Tiger(" ~ to!string(output_length()) ~ "," ~ to!string(m_passes) ~ ")";
     }
 
-    @property size_t output_length() const { return m_hash_len; }
+    @property size_t outputLength() const { return m_hash_len; }
 
     HashFunction clone() const
     {
@@ -43,7 +43,7 @@ public:
     */
     void clear()
     {
-        MDx_HashFunction.clear();
+        MDxHashFunction.clear();
         zeroise(m_X);
         m_digest[0] = 0x0123456789ABCDEF;
         m_digest[1] = 0xFEDCBA9876543210;
@@ -62,23 +62,23 @@ public:
         m_hash_len = hash_len;
         m_passes = passes;
         if (output_length() != 16 && output_length() != 20 && output_length() != 24)
-            throw new Invalid_Argument("Tiger: Illegal hash output size: " ~ to!string(output_length()));
+            throw new InvalidArgument("Tiger: Illegal hash output size: " ~ to!string(output_length()));
         
         if (m_passes < 3)
-            throw new Invalid_Argument("Tiger: Invalid number of m_passes: " ~ to!string(m_passes));
+            throw new InvalidArgument("Tiger: Invalid number of m_passes: " ~ to!string(m_passes));
         clear();
     }
 private:
     /*
     * Tiger Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         ulong A = m_digest[0], B = m_digest[1], C = m_digest[2];
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_littleEndian(m_X.ptr, input, m_X.length);
+            loadLittleEndian(m_X.ptr, input, m_X.length);
             
             pass(A, B, C, m_X, 5); mix(m_X);
             pass(C, A, B, m_X, 7); mix(m_X);
@@ -95,7 +95,7 @@ private:
             B = m_digest[1] = B - m_digest[1];
             C = (m_digest[2] += C);
             
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
@@ -103,7 +103,7 @@ private:
     /*
     * Copy out the digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         foreach (size_t i; 0 .. output_length())
             output[i] = get_byte(7 - (i % 8), m_digest[i/8]);
@@ -113,7 +113,7 @@ private:
     /*
     * Tiger Pass
     */
-    void pass(ref ulong A, ref ulong B, ref ulong C, in Secure_Vector!ulong m_X, ubyte mul)
+    void pass(ref ulong A, ref ulong B, ref ulong C, in SecureVector!ulong m_X, ubyte mul)
     {
         C ^= m_X[0];
         A -= SBOX1[get_byte(7, C)] ^ SBOX2[get_byte(5, C)] ^
@@ -173,7 +173,7 @@ private:
     }
 
 
-    Secure_Vector!ulong m_X, m_digest;
+    SecureVector!ulong m_X, m_digest;
     const size_t m_hash_len, m_passes;
 }
 
@@ -182,7 +182,7 @@ private:
 /*
 * Tiger Mixing Function
 */
-void mix(ref Secure_Vector!ulong X) pure
+void mix(ref SecureVector!ulong X) pure
 {
     X[0] -= X[7] ^ 0xA5A5A5A5A5A5A5A5;
     X[1] ^= X[0];

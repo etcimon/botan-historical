@@ -19,13 +19,13 @@ import botan.utils.simd.tmmintrin;
 /**
 * AES-128 using SSSE3
 */
-final class AES_128_SSSE3 : Block_Cipher_Fixed_Params!(16, 16)
+final class AES128SSSE3 : BlockCipherFixedParams!(16, 16)
 {
 public:
     /*
     * AES-128 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -42,7 +42,7 @@ public:
     /*
     * AES-128 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -63,13 +63,13 @@ public:
     }
 
     @property string name() const { return "AES-128"; }
-    BlockCipher clone() const { return new AES_128_SSSE3; }
-private:
+    BlockCipher clone() const { return new AES128SSSE3; }
+protected:
 
     /*
     * AES-128 Key Schedule
     */
-    void key_schedule(in ubyte* keyb, size_t)
+    void keySchedule(in ubyte* keyb, size_t)
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();
@@ -102,19 +102,19 @@ private:
         _mm_storeu_si128(DK_mm, aes_schedule_mangle_last_dec(key));
     }
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
 /**
 * AES-192 using SSSE3
 */
-final class AES_192_SSSE3 : Block_Cipher_Fixed_Params!(16, 24)
+final class AES192SSSE3 : BlockCipherFixedParams!(16, 24)
 {
 public:
     /*
     * AES-192 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -131,7 +131,7 @@ public:
     /*
     * AES-192 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -152,12 +152,12 @@ public:
     }
 
     @property string name() const { return "AES-192"; }
-    BlockCipher clone() const { return new AES_192_SSSE3; }
-private:
+    BlockCipher clone() const { return new AES192SSSE3; }
+protected:
     /*
     * AES-192 Key Schedule
     */
-    void key_schedule(in ubyte* keyb, size_t)
+    void keySchedule(in ubyte* keyb, size_t)
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();
@@ -212,19 +212,19 @@ private:
         }
     }
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
 /**
 * AES-256 using SSSE3
 */
-final class AES_256_SSSE3 : Block_Cipher_Fixed_Params!(16, 32)
+final class AES256SSSE3 : BlockCipherFixedParams!(16, 32)
 {
 public:
     /*
     * AES-256 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -241,7 +241,7 @@ public:
     /*
     * AES-256 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -262,12 +262,12 @@ public:
     }
 
     @property string name() const { return "AES-256"; }
-    BlockCipher clone() const { return new AES_256_SSSE3; }
-private:
+    BlockCipher clone() const { return new AES256SSSE3; }
+protected:
     /*
     * AES-256 Key Schedule
     */
-    void key_schedule(in ubyte* keyb, size_t)
+    void keySchedule(in ubyte* keyb, size_t)
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();
@@ -310,7 +310,7 @@ private:
         _mm_storeu_si128(DK_mm + 0, aes_schedule_mangle_last_dec(key2));
     }
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
 shared static this() {
@@ -350,9 +350,9 @@ __gshared immutable __m128i[4] sr;
 
 package:
 
-__m128i aes_schedule_transform(__m128i input,
-                               __m128i table_1,
-                               __m128i table_2)
+m128i aes_schedule_transform(m128i input,
+                               m128i table_1,
+                               m128i table_2)
 {
     __m128i i_1 = _mm_and_si128(low_nibs, input);
     __m128i i_2 = _mm_srli_epi32(_mm_andnot_si128(low_nibs, input), 4);
@@ -364,7 +364,7 @@ __m128i aes_schedule_transform(__m128i input,
         _mm_shuffle_epi8(table_2, i_2));
 }
     
-__m128i aes_schedule_mangle(__m128i k, ubyte round_no)
+m128i aes_scheduleMangle(m128i k, ubyte round_no)
 {
     __m128i t = _mm_shuffle_epi8(_mm_xor_si128(k, _mm_set1_epi8!(0x5B)()), mc_forward[0]);
     
@@ -377,14 +377,14 @@ __m128i aes_schedule_mangle(__m128i k, ubyte round_no)
     return _mm_shuffle_epi8(t2, sr[round_no % 4]);
 }
 
-__m128i aes_schedule_192_smear(__m128i x, __m128i y)
+m128i aes_schedule192Smear(m128i x, m128i y)
 {
 return _mm_xor_si128(y,_mm_xor_si128(
                    _mm_shuffle_epi32(x, 0xFE),
                    _mm_shuffle_epi32(y, 0x80)));
 }
 
-__m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)
+m128i aes_schedule_mangle_dec(m128i k, ubyte round_no)
 {
     __gshared immutable(__m128i)[8] dsk = [
             _mm_set_epi32!(0x4AED9334, 0x82255BFC, 0xB6116FC8, 0x7ED9A700)(),
@@ -412,7 +412,7 @@ __m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)
     return _mm_shuffle_epi8(output, sr[round_no % 4]);
 }
 
-__m128i aes_schedule_mangle_last(__m128i k, ubyte round_no)
+m128i aes_schedule_mangle_last(m128i k, ubyte round_no)
 {
     immutable(__m128i) out_tr1 = _mm_set_epi32!(0xF7974121, 0xDEBE6808, 0xFF9F4929, 0xD6B66000)();
     immutable(__m128i) out_tr2 = _mm_set_epi32!(0xE10D5DB1, 0xB05C0CE0, 0x01EDBD51, 0x50BCEC00)();
@@ -422,7 +422,7 @@ __m128i aes_schedule_mangle_last(__m128i k, ubyte round_no)
     return aes_schedule_transform(k, out_tr1, out_tr2);
 }
 
-__m128i aes_schedule_mangle_last_dec(__m128i k)
+m128i aes_schedule_mangle_last_dec(m128i k)
 {
     immutable(__m128i) deskew1 = _mm_set_epi32!(0x1DFEB95A, 0x5DBEF91A, 0x07E4A340, 0x47A4E300)();
     immutable(__m128i) deskew2 = _mm_set_epi32!(0x2841C2AB, 0xF49D1E77, 0x5F36B5DC, 0x83EA6900)();
@@ -431,7 +431,7 @@ __m128i aes_schedule_mangle_last_dec(__m128i k)
     return aes_schedule_transform(k, deskew1, deskew2);
 }
 
-__m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
+m128i aes_schedule_round(m128i* rcon, m128i input1, m128i input2)
 {
     if (rcon)
     {
@@ -466,7 +466,7 @@ __m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
                    smeared));
 }
 
-__m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
+m128i aes_ssse3_encrypt(m128i B, const(m128i)* keys, size_t rounds)
 {
     immutable(__m128i) sb2u = _mm_set_epi32!(0x5EB7E955, 0xBC982FCD, 0xE27A93C6, 0x0B712400)();
     immutable(__m128i) sb2t = _mm_set_epi32!(0xC2A163C8, 0xAB82234A, 0x69EB8840, 0x0AE12900)();
@@ -523,7 +523,7 @@ __m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
     }
 }
 
-__m128i aes_ssse3_decrypt(__m128i B, const(__m128i)* keys, size_t rounds)
+m128i aes_ssse3_decrypt(m128i B, const(m128i)* keys, size_t rounds)
 {
     immutable(__m128i) k_dipt1 = _mm_set_epi32!(0x154A411E, 0x114E451A, 0x0F505B04, 0x0B545F00)();
     immutable(__m128i) k_dipt2 = _mm_set_epi32!(0x12771772, 0xF491F194, 0x86E383E6, 0x60056500)();

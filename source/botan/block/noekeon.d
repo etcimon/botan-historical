@@ -16,41 +16,41 @@ import botan.utils.rotate;
 /**
 * Noekeon
 */
-class Noekeon : Block_Cipher_Fixed_Params!(16, 16)
+class Noekeon : BlockCipherFixedParams!(16, 16)
 {
 public:
     /*
     * Noekeon Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A0 = load_bigEndian!uint(input, 0);
-            uint A1 = load_bigEndian!uint(input, 1);
-            uint A2 = load_bigEndian!uint(input, 2);
-            uint A3 = load_bigEndian!uint(input, 3);
+            uint A0 = loadBigEndian!uint(input, 0);
+            uint A1 = loadBigEndian!uint(input, 1);
+            uint A2 = loadBigEndian!uint(input, 2);
+            uint A3 = loadBigEndian!uint(input, 3);
             
             foreach (size_t j; 0 .. 16)
             {
                 A0 ^= m_RC[j];
                 theta(A0, A1, A2, A3, m_EK.ptr);
                 
-                A1 = rotate_left(A1, 1);
-                A2 = rotate_left(A2, 5);
-                A3 = rotate_left(A3, 2);
+                A1 = rotateLeft(A1, 1);
+                A2 = rotateLeft(A2, 5);
+                A3 = rotateLeft(A3, 2);
                 
                 gamma(A0, A1, A2, A3);
                 
-                A1 = rotate_right(A1, 1);
-                A2 = rotate_right(A2, 5);
-                A3 = rotate_right(A3, 2);
+                A1 = rotateRight(A1, 1);
+                A2 = rotateRight(A2, 5);
+                A3 = rotateRight(A3, 2);
             }
             
             A0 ^= m_RC[16];
             theta(A0, A1, A2, A3, m_EK.ptr);
             
-            store_bigEndian(output, A0, A1, A2, A3);
+            storeBigEndian(output, A0, A1, A2, A3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -60,35 +60,35 @@ public:
     /*
     * Noekeon Encryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint A0 = load_bigEndian!uint(input, 0);
-            uint A1 = load_bigEndian!uint(input, 1);
-            uint A2 = load_bigEndian!uint(input, 2);
-            uint A3 = load_bigEndian!uint(input, 3);
+            uint A0 = loadBigEndian!uint(input, 0);
+            uint A1 = loadBigEndian!uint(input, 1);
+            uint A2 = loadBigEndian!uint(input, 2);
+            uint A3 = loadBigEndian!uint(input, 3);
             
             for (size_t j = 16; j != 0; --j)
             {
                 theta(A0, A1, A2, A3, m_DK.ptr);
                 A0 ^= m_RC[j];
                 
-                A1 = rotate_left(A1, 1);
-                A2 = rotate_left(A2, 5);
-                A3 = rotate_left(A3, 2);
+                A1 = rotateLeft(A1, 1);
+                A2 = rotateLeft(A2, 5);
+                A3 = rotateLeft(A3, 2);
                 
                 gamma(A0, A1, A2, A3);
                 
-                A1 = rotate_right(A1, 1);
-                A2 = rotate_right(A2, 5);
-                A3 = rotate_right(A3, 2);
+                A1 = rotateRight(A1, 1);
+                A2 = rotateRight(A2, 5);
+                A3 = rotateRight(A3, 2);
             }
             
             theta(A0, A1, A2, A3, m_DK.ptr);
             A0 ^= m_RC[0];
             
-            store_bigEndian(output, A0, A1, A2, A3);
+            storeBigEndian(output, A0, A1, A2, A3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -121,38 +121,38 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    Secure_Vector!uint get_EK() const { return m_EK; }
+    SecureVector!uint getEK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    Secure_Vector!uint get_DK() const { return m_DK; }
+    SecureVector!uint getDK() const { return m_DK; }
 
-private:
+protected:
     /*
     * Noekeon Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
-        uint A0 = load_bigEndian!uint(key, 0);
-        uint A1 = load_bigEndian!uint(key, 1);
-        uint A2 = load_bigEndian!uint(key, 2);
-        uint A3 = load_bigEndian!uint(key, 3);
+        uint A0 = loadBigEndian!uint(key, 0);
+        uint A1 = loadBigEndian!uint(key, 1);
+        uint A2 = loadBigEndian!uint(key, 2);
+        uint A3 = loadBigEndian!uint(key, 3);
         
         foreach (size_t i; 0 .. 16)
         {
             A0 ^= m_RC[i];
             theta(A0, A1, A2, A3);
             
-            A1 = rotate_left(A1, 1);
-            A2 = rotate_left(A2, 5);
-            A3 = rotate_left(A3, 2);
+            A1 = rotateLeft(A1, 1);
+            A2 = rotateLeft(A2, 5);
+            A3 = rotateLeft(A3, 2);
             
             gamma(A0, A1, A2, A3);
             
-            A1 = rotate_right(A1, 1);
-            A2 = rotate_right(A2, 5);
-            A3 = rotate_right(A3, 2);
+            A1 = rotateRight(A1, 1);
+            A2 = rotateRight(A2, 5);
+            A3 = rotateRight(A3, 2);
         }
         
         A0 ^= m_RC[16];
@@ -172,7 +172,7 @@ private:
         m_EK[3] = A3;
     }
 
-    Secure_Vector!uint m_EK, m_DK;
+    SecureVector!uint m_EK, m_DK;
 }
 
 package:
@@ -185,7 +185,7 @@ void theta(ref uint A0, ref uint A1,
            in uint[4] EK) pure
 {
     uint T = A0 ^ A2;
-    T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
+    T ^= rotateLeft(T, 8) ^ rotateRight(T, 8);
     A1 ^= T;
     A3 ^= T;
     
@@ -195,7 +195,7 @@ void theta(ref uint A0, ref uint A1,
     A3 ^= EK[3];
     
     T = A1 ^ A3;
-    T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
+    T ^= rotateLeft(T, 8) ^ rotateRight(T, 8);
     A0 ^= T;
     A2 ^= T;
 }
@@ -207,12 +207,12 @@ void theta(ref uint A0, ref uint A1,
            ref uint A2, ref uint A3) pure
 {
     uint T = A0 ^ A2;
-    T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
+    T ^= rotateLeft(T, 8) ^ rotateRight(T, 8);
     A1 ^= T;
     A3 ^= T;
     
     T = A1 ^ A3;
-    T ^= rotate_left(T, 8) ^ rotate_right(T, 8);
+    T ^= rotateLeft(T, 8) ^ rotateRight(T, 8);
     A0 ^= T;
     A2 ^= T;
 }

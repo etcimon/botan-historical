@@ -23,9 +23,9 @@ public:
     * @param length = the length of param in
     * @return true if the MAC is valid, false otherwise
     */
-    final bool verify_mac(in ubyte* mac, size_t length)
+    final bool verifyMac(in ubyte* mac, size_t length)
     {
-        Secure_Vector!ubyte our_mac = finished();
+        SecureVector!ubyte our_mac = finished();
         
         if (our_mac.length != length)
             return false;
@@ -53,9 +53,9 @@ import botan.codec.hex;
 
 private __gshared size_t total_tests;
 
-size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
+size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
 {
-    Algorithm_Factory af = global_state().algorithm_factory();
+    AlgorithmFactory af = globalState().algorithmFactory();
     
     const auto providers = af.providers_of(algo);
     size_t fails = 0;
@@ -70,7 +70,7 @@ size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
     foreach (provider; providers)
     {
         atomicOp!"+="(total_tests, 1);
-        auto proto = af.prototype_mac(algo, provider);
+        auto proto = af.prototypeMac(algo, provider);
         
         if(!proto)
         {
@@ -81,15 +81,15 @@ size_t mac_test(string algo, string key_hex, string in_hex, string out_hex)
         
         Unique!MessageAuthenticationCode mac = proto.clone();
         
-        mac.set_key(hex_decode(key_hex));
-        mac.update(hex_decode(in_hex));
+        mac.setKey(hexDecode(key_hex));
+        mac.update(hexDecode(in_hex));
         
         auto h = mac.finished();
 
         atomicOp!"+="(total_tests, 1);
-        if(h != hex_decode_locked(out_hex))
+        if(h != hexDecodeLocked(out_hex))
         {
-            writeln(algo ~ " " ~ provider ~ " got " ~ hex_encode(h) ~ " != " ~ out_hex);
+            writeln(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -101,13 +101,13 @@ unittest {
     auto test = (string input) {
         File vec = File(input, "r");
         
-        return run_tests_bb(vec, "Mac", "Out", true,
+        return runTestsBb(vec, "Mac", "Out", true,
                             (string[string] m) {
-                                return mac_test(m["Mac"], m["Key"], m["In"], m["Out"]);
+                                return macTest(m["Mac"], m["Key"], m["In"], m["Out"]);
                             });
     };
     
-    size_t fails = run_tests_in_dir("test_data/mac", test);
+    size_t fails = runTestsInDir("test_data/mac", test);
 
-    test_report("mac", total_tests, fails);
+    testReport("mac", total_tests, fails);
 }

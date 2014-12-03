@@ -16,20 +16,20 @@ import botan.utils.parsing;
 /**
 * MISTY1
 */
-final class MISTY1 : Block_Cipher_Fixed_Params!(8, 16)
+final class MISTY1 : BlockCipherFixedParams!(8, 16)
 {
 public:
     /*
     * MISTY1 Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort B0 = load_bigEndian!ushort(input, 0);
-            ushort B1 = load_bigEndian!ushort(input, 1);
-            ushort B2 = load_bigEndian!ushort(input, 2);
-            ushort B3 = load_bigEndian!ushort(input, 3);
+            ushort B0 = loadBigEndian!ushort(input, 0);
+            ushort B1 = loadBigEndian!ushort(input, 1);
+            ushort B2 = loadBigEndian!ushort(input, 2);
+            ushort B3 = loadBigEndian!ushort(input, 3);
             
             for (size_t j = 0; j != 12; j += 3)
             {
@@ -62,7 +62,7 @@ public:
             B3 ^= B2 & m_EK[98];
             B2 ^= B3 | m_EK[99];
             
-            store_bigEndian(output, B2, B3, B0, B1);
+            storeBigEndian(output, B2, B3, B0, B1);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -72,14 +72,14 @@ public:
     /*
     * MISTY1 Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ushort B0 = load_bigEndian!ushort(input, 2);
-            ushort B1 = load_bigEndian!ushort(input, 3);
-            ushort B2 = load_bigEndian!ushort(input, 0);
-            ushort B3 = load_bigEndian!ushort(input, 1);
+            ushort B0 = loadBigEndian!ushort(input, 2);
+            ushort B1 = loadBigEndian!ushort(input, 3);
+            ushort B2 = loadBigEndian!ushort(input, 0);
+            ushort B3 = loadBigEndian!ushort(input, 1);
             
             for (size_t j = 0; j != 12; j += 3)
             {
@@ -112,7 +112,7 @@ public:
             B0 ^= B1 | m_DK[98];
             B1 ^= B0 & m_DK[99];
             
-            store_bigEndian(output, B0, B1, B2, B3);
+            storeBigEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -135,19 +135,19 @@ public:
     this(size_t rounds = 8)
     {
         if (rounds != 8)
-            throw new Invalid_Argument("MISTY1: Invalid number of rounds: "
+            throw new InvalidArgument("MISTY1: Invalid number of rounds: "
                                        + to!string(rounds));
     }
 
-private:
+protected:
     /*
     * MISTY1 Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
-        Secure_Vector!ushort KS = Secure_Vector!ushort(32);
+        SecureVector!ushort KS = SecureVector!ushort(32);
         foreach (size_t i; 0 .. (length / 2))
-            KS[i] = load_bigEndian!ushort(key, i);
+            KS[i] = loadBigEndian!ushort(key, i);
         
         foreach (size_t i; 0 .. 8)
         {
@@ -194,7 +194,7 @@ private:
     
 
 
-    Secure_Vector!ushort m_EK, m_DK;
+    SecureVector!ushort m_EK, m_DK;
 }
 
 private:

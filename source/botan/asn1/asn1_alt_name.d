@@ -21,78 +21,78 @@ import botan.utils.loadstor;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 
-alias Alternative_Name = FreeListRef!Alternative_Name_Impl;
+alias AlternativeName = FreeListRef!AlternativeNameImpl;
 
 /**
 * Alternative Name
 */
-final class Alternative_Name_Impl : ASN1_Object
+final class AlternativeNameImpl : ASN1Object
 {
 public:
     /*
-    * DER encode an Alternative_Name extension
+    * DER encode an AlternativeName extension
     */
-    void encode_into(DER_Encoder der) const
+    void encodeInto(DEREncoder der) const
     {
-        der.start_cons(ASN1_Tag.SEQUENCE);
+        der.startCons(ASN1Tag.SEQUENCE);
         
-        encode_entries(der, m_alt_info, "RFC822", ASN1_Tag(1));
-        encode_entries(der, m_alt_info, "DNS", ASN1_Tag(2));
-        encode_entries(der, m_alt_info, "URI", ASN1_Tag(6));
-        encode_entries(der, m_alt_info, "IP", ASN1_Tag(7));
+        encode_entries(der, m_alt_info, "RFC822", ASN1Tag(1));
+        encode_entries(der, m_alt_info, "DNS", ASN1Tag(2));
+        encode_entries(der, m_alt_info, "URI", ASN1Tag(6));
+        encode_entries(der, m_alt_info, "IP", ASN1Tag(7));
         
         foreach (oid, asn1_str; m_othernames)
         {
-            der.start_explicit(0)
+            der.startExplicit(0)
                     .encode(oid)
-                    .start_explicit(0)
+                    .startExplicit(0)
                     .encode(asn1_str)
-                    .end_explicit()
-                    .end_explicit();
+                    .endExplicit()
+                    .endExplicit();
         }
         
-        der.end_cons();
+        der.endCons();
     }
 
     /*
-    * Decode a BER encoded Alternative_Name
+    * Decode a BER encoded AlternativeName
     */
-    void decode_from(BER_Decoder source)
+    void decodeFrom(BERDecoder source)
     {
-        BER_Decoder names = source.start_cons(ASN1_Tag.SEQUENCE);
+        BERDecoder names = source.startCons(ASN1Tag.SEQUENCE);
         
-        while (names.more_items())
+        while (names.moreItems())
         {
-            BER_Object obj = names.get_next_object();
-            if ((obj.class_tag != ASN1_Tag.CONTEXT_SPECIFIC) &&
-                (obj.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED)))
+            BER_Object obj = names.getNextObject();
+            if ((obj.class_tag != ASN1Tag.CONTEXT_SPECIFIC) &&
+                (obj.class_tag != (ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED)))
                 continue;
             
-            const ASN1_Tag tag = obj.type_tag;
+            const ASN1Tag tag = obj.type_tag;
             
             if (tag == 0)
             {
-                auto othername = BER_Decoder(obj.value);
+                auto othername = BERDecoder(obj.value);
                 
                 OID oid;
                 othername.decode(oid);
-                if (othername.more_items())
+                if (othername.moreItems())
                 {
-                    BER_Object othername_value_outer = othername.get_next_object();
-                    othername.verify_end();
+                    BER_Object othername_value_outer = othername.getNextObject();
+                    othername.verifyEnd();
                     
-                    if (othername_value_outer.type_tag != ASN1_Tag(0) ||
-                        othername_value_outer.class_tag != (ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
-                        throw new Decoding_Error("Invalid tags on otherName value");
+                    if (othername_value_outer.type_tag != ASN1Tag(0) ||
+                        othername_value_outer.class_tag != (ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
+                        throw new DecodingError("Invalid tags on otherName value");
                     
-                    auto othername_value_inner = BER_Decoder(othername_value_outer.value);
+                    auto othername_value_inner = BERDecoder(othername_value_outer.value);
                     
-                    BER_Object value = othername_value_inner.get_next_object();
-                    othername_value_inner.verify_end();
+                    BER_Object value = othername_value_inner.getNextObject();
+                    othername_value_inner.verifyEnd();
                     
-                    const ASN1_Tag value_type = value.type_tag;
+                    const ASN1Tag value_type = value.type_tag;
                     
-                    if (is_string_type(value_type) && value.class_tag == ASN1_Tag.UNIVERSAL)
+                    if (is_string_type(value_type) && value.class_tag == ASN1Tag.UNIVERSAL)
                         add_othername(oid, value.toString(), value_type);
                 }
             }
@@ -110,7 +110,7 @@ public:
             {
                 if (obj.value.length == 4)
                 {
-                    const uint ip = load_bigEndian!uint(obj.value.ptr, 0);
+                    const uint ip = loadBigEndian!uint(obj.value.ptr, 0);
                     add_attribute("IP", ipv4_to_string(ip));
                 }
             }
@@ -139,13 +139,13 @@ public:
     /*
     * Add an attribute to an alternative name
     */
-    void add_attribute(in string type, in string str)
+    void addAttribute(in string type, in string str)
     {
         if (type == "" || str == "")
             return;
 
         bool exists;
-        m_alt_info.equal_range(type, 
+        m_alt_info.equalRange(type, 
                                (string val) { 
                                     if (val == str)
                                         exists = true;
@@ -158,7 +158,7 @@ public:
     /*
     * Get the attributes of this alternative name
     */
-    MultiMap!(string, string) get_attributes() const
+    MultiMap!(string, string) getAttributes() const
     {
         return m_alt_info;
     }
@@ -166,17 +166,17 @@ public:
     /*
     * Add an OtherName field
     */
-    void add_othername(in OID oid, in string value, ASN1_Tag type)
+    void addOthername(in OID oid, in string value, ASN1Tag type)
     {
         if (value == "")
             return;
-        m_othernames.insert(oid, ASN1_String(value, type));
+        m_othernames.insert(oid, ASN1String(value, type));
     }
 
     /*
     * Get the otherNames
     */
-    MultiMap!(OID, ASN1_String) get_othernames() const
+    MultiMap!(OID, ASN1String) getOthernames() const
     {
         return m_othernames;
     }
@@ -184,13 +184,13 @@ public:
     /*
     * Return if this object has anything useful
     */
-    bool has_items() const
+    bool hasItems() const
     {
         return (m_alt_info.length > 0 || m_othernames.length > 0);
     }
 
     /*
-    * Create an Alternative_Name
+    * Create an AlternativeName
     */
     this(in string email_addr = "",
          in string uri = "",
@@ -205,7 +205,7 @@ public:
 
 private:
     MultiMap!(string, string) m_alt_info;
-    MultiMap!(OID, ASN1_String) m_othernames;
+    MultiMap!(OID, ASN1String) m_othernames;
 }
 
 
@@ -213,38 +213,38 @@ private:
 /*
 * Check if type is a known ASN.1 string type
 */
-bool is_string_type(ASN1_Tag tag)
+bool isStringType(ASN1Tag tag)
 {
-    return (tag == ASN1_Tag.NUMERIC_STRING ||
-            tag == ASN1_Tag.PRINTABLE_STRING ||
-            tag == ASN1_Tag.VISIBLE_STRING ||
-            tag == ASN1_Tag.T61_STRING ||
-            tag == ASN1_Tag.IA5_STRING ||
-            tag == ASN1_Tag.UTF8_STRING ||
-            tag == ASN1_Tag.BMP_STRING);
+    return (tag == ASN1Tag.NUMERIC_STRING ||
+            tag == ASN1Tag.PRINTABLE_STRING ||
+            tag == ASN1Tag.VISIBLE_STRING ||
+            tag == ASN1Tag.T61_STRING ||
+            tag == ASN1Tag.IA5_STRING ||
+            tag == ASN1Tag.UTF8_STRING ||
+            tag == ASN1Tag.BMP_STRING);
 }
 
 
 /*
-* DER encode an Alternative_Name entry
+* DER encode an AlternativeName entry
 */
-void encode_entries(DER_Encoder encoder = DER_Encoder(),
+void encodeEntries(DEREncoder encoder = DEREncoder(),
                     in MultiMap!(string, string) attr,
-                    in string type, ASN1_Tag tagging)
+                    in string type, ASN1Tag tagging)
 {
-    attr.equal_range(type, (string alt_name) {
+    attr.equalRange(type, (string alt_name) {
     
         if (type == "RFC822" || type == "DNS" || type == "URI")
         {
-            ASN1_String asn1_string = ASN1_String(alt_name, IA5_STRING);
-            encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, asn1_string.iso_8859());
+            ASN1String asn1_string = ASN1String(alt_name, IA5_STRING);
+            encoder.addObject(tagging, ASN1Tag.CONTEXT_SPECIFIC, asn1_string.iso8859());
         }
         else if (type == "IP")
         {
             const uint ip = string_to_ipv4(alt_name);
             ubyte[4] ip_buf;
-            store_bigEndian(ip, ip_buf);
-            encoder.add_object(tagging, ASN1_Tag.CONTEXT_SPECIFIC, ip_buf.ptr, 4);
+            storeBigEndian(ip, ip_buf);
+            encoder.addObject(tagging, ASN1Tag.CONTEXT_SPECIFIC, ip_buf.ptr, 4);
         }
     });
 }

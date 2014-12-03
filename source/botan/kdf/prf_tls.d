@@ -15,17 +15,17 @@ import botan.hash.sha160;
 /**
 * PRF used in TLS 1.0/1.1
 */
-class TLS_PRF : KDF
+class TLSPRF : KDF
 {
 public:
     /*
     * TLS PRF
     */
-    Secure_Vector!ubyte derive(size_t key_len,
+    SecureVector!ubyte derive(size_t key_len,
                             in ubyte* secret, size_t secret_len,
                             in ubyte* seed, size_t seed_len) const
     {
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
+        SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
         size_t S1_len = (secret_len + 1) / 2;
         size_t S2_len = (secret_len + 1) / 2;
@@ -39,7 +39,7 @@ public:
     }
 
     @property string name() const { return "TLS-PRF"; }
-    KDF clone() const { return new TLS_PRF; }
+    KDF clone() const { return new TLSPRF; }
 
     /*
     * TLS PRF Constructor and Destructor
@@ -47,7 +47,7 @@ public:
     this()
     {
         m_hmac_md5 = new HMAC(new MD5);
-        m_hmac_sha1= new HMAC(new SHA_160);
+        m_hmac_sha1= new HMAC(new SHA160);
     }
 
 private:
@@ -58,14 +58,14 @@ private:
 /**
 * PRF used in TLS 1.2
 */
-class TLS_12_PRF : KDF
+class TLS12PRF : KDF
 {
 public:
-    Secure_Vector!ubyte derive(size_t key_len,
+    SecureVector!ubyte derive(size_t key_len,
                                    in ubyte* secret, size_t secret_len,
                                    in ubyte* seed, size_t seed_len) const
     {
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(key_len);
+        SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
         P_hash(output, *m_hmac, secret, secret_len, seed, seed_len);
         
@@ -73,7 +73,7 @@ public:
     }
 
     @property string name() const { return "TLSv12-PRF(" ~ m_hmac.name ~ ")"; }
-    KDF clone() const { return new TLS_12_PRF(m_hmac.clone()); }
+    KDF clone() const { return new TLS12PRF(m_hmac.clone()); }
 
     /*
     * TLS v1.2 PRF Constructor and Destructor
@@ -91,21 +91,21 @@ private:
 /*
 * TLS PRF P_hash function
 */
-void P_hash(Secure_Vector!ubyte output,
+void pHash(SecureVector!ubyte output,
             MessageAuthenticationCode mac,
             in ubyte* secret, size_t secret_len,
             in ubyte* seed, size_t seed_len) pure
 {
     try
     {
-        mac.set_key(secret, secret_len);
+        mac.setKey(secret, secret_len);
     }
-    catch(Invalid_Key_Length)
+    catch(InvalidKeyLength)
     {
-        throw new Internal_Error("The premaster secret of " ~ to!string(secret_len) ~ " bytes is too long for the PRF");
+        throw new InternalError("The premaster secret of " ~ to!string(secret_len) ~ " bytes is too long for the PRF");
     }
     
-    Secure_Vector!ubyte A = Secure_Vector!ubyte(seed, seed + seed_len);
+    SecureVector!ubyte A = SecureVector!ubyte(seed, seed + seed_len);
     
     size_t offset = 0;
     
@@ -117,7 +117,7 @@ void P_hash(Secure_Vector!ubyte output,
         
         mac.update(A);
         mac.update(seed, seed_len);
-        Secure_Vector!ubyte block = mac.finished();
+        SecureVector!ubyte block = mac.finished();
         
         xor_buf(&output[offset], block.ptr, this_block_len);
         offset += this_block_len;

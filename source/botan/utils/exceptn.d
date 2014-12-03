@@ -11,7 +11,7 @@ import botan.utils.parsing;
 import std.exception;
 // import string;
 
-class Range_Error : Exception
+class RangeError : Exception
 {
     this(in string err)
     { super("Out of bounds: " ~ err); }
@@ -20,7 +20,7 @@ class Range_Error : Exception
 /**
 * Invalid_Argument Exception
 */
-class Invalid_Argument : Exception
+class InvalidArgument : Exception
 {
     this(in string err)
     { super("Invalid argument: " ~ err); }
@@ -29,7 +29,7 @@ class Invalid_Argument : Exception
 /**
 * Invalid_State Exception
 */
-class Invalid_State : Exception
+class InvalidState : Exception
 {
     this(in string err)
     { super(err); }
@@ -38,7 +38,7 @@ class Invalid_State : Exception
 /**
 * Logic_Error Exception
 */
-final class Logic_Error : Exception
+final class LogicError : Exception
 {
     this(in string err)
     { super(err); }
@@ -47,7 +47,7 @@ final class Logic_Error : Exception
 /**
 * Lookup_Error Exception
 */
-final class Lookup_Error : Exception
+final class LookupError : Exception
 {
     this(in string err)
     { super(err); }
@@ -56,7 +56,7 @@ final class Lookup_Error : Exception
 /**
 * Internal_Error Exception
 */
-class Internal_Error : Exception
+class InternalError : Exception
 {
     this(in string err) 
     { super("Internal error: " ~ err); }
@@ -65,7 +65,7 @@ class Internal_Error : Exception
 /**
 * Invalid_Key_Length Exception
 */
-final class Invalid_Key_Length : Invalid_Argument
+final class InvalidKeyLength : Invalid_Argument
 {
     this(in string name, size_t length) {
         super(name ~ " cannot accept a key of length " ~
@@ -76,7 +76,7 @@ final class Invalid_Key_Length : Invalid_Argument
 /**
 * Invalid_IV_Length Exception
 */
-final class Invalid_IV_Length : Invalid_Argument
+final class InvalidIVLength : Invalid_Argument
 {
     this(in string mode, size_t bad_len) {
         super("IV length " ~ to!string(bad_len) ~ " is invalid for " ~ mode);
@@ -86,7 +86,7 @@ final class Invalid_IV_Length : Invalid_Argument
 /**
 * PRNG_Unseeded Exception
 */
-final class PRNG_Unseeded : Invalid_State
+final class PRNGUnseeded : Invalid_State
 {
     this(in string algo) {
         super("PRNG not seeded: " ~ algo);
@@ -96,17 +96,17 @@ final class PRNG_Unseeded : Invalid_State
 /**
 * Policy_Violation Exception
 */
-final class Policy_Violation : Invalid_State
+final class PolicyViolation : Invalid_State
 {
     this(in string err) {
-        super("TLS_Policy violation: " ~ err);
+        super("TLSPolicy violation: " ~ err);
     }
 }
 
 /**
 * Algorithm_Not_Found Exception
 */
-final class Algorithm_Not_Found : Lookup_Error
+final class AlgorithmNotFound : Lookup_Error
 {
     this(in string name) {
         super("Could not find any algorithm named \"" ~ name ~ "\"");
@@ -116,7 +116,7 @@ final class Algorithm_Not_Found : Lookup_Error
 /**
 * Invalid_Algorithm_Name Exception
 */
-final class Invalid_Algorithm_Name : Invalid_Argument
+final class InvalidAlgorithmName : Invalid_Argument
 {
     this(in string name) {
         super("Invalid algorithm name: " ~ name);
@@ -126,7 +126,7 @@ final class Invalid_Algorithm_Name : Invalid_Argument
 /**
 * Encoding_Error Exception
 */
-final class Encoding_Error : Invalid_Argument
+final class EncodingError : Invalid_Argument
 {
     this(in string name) {
         super("Encoding error: " ~ name);
@@ -136,7 +136,7 @@ final class Encoding_Error : Invalid_Argument
 /**
 * Decoding_Error Exception
 */
-class Decoding_Error : Invalid_Argument
+class DecodingError : Invalid_Argument
 {
     this(in string name) 
     {
@@ -147,7 +147,7 @@ class Decoding_Error : Invalid_Argument
 /**
 * Integrity_Failure Exception
 */
-final class Integrity_Failure : Exception
+final class IntegrityFailure : Exception
 {
     this(in string msg) {
         super("Integrity failure: " ~ msg);
@@ -157,7 +157,7 @@ final class Integrity_Failure : Exception
 /**
 * Invalid_OID Exception
 */
-final class Invalid_OID : Decoding_Error
+final class InvalidOID : Decoding_Error
 {
     this(in string oid) {
         super("Invalid ASN.1 OID: " ~ oid);
@@ -167,7 +167,7 @@ final class Invalid_OID : Decoding_Error
 /**
 * Stream_IO_Error Exception
 */
-final class Stream_IO_Error : Exception
+final class StreamIOError : Exception
 {
     this(in string err) {
         super("I/O error: " ~ err);
@@ -177,7 +177,7 @@ final class Stream_IO_Error : Exception
 /**
 * Self Test Failure Exception
 */
-final class Self_Test_Failure : Internal_Error
+final class SelfTestFailure : Internal_Error
 {
     this(in string err) {
         super("Self test failed: " ~ err);
@@ -187,7 +187,7 @@ final class Self_Test_Failure : Internal_Error
 /**
 * Memory Allocation Exception
 */
-final class Memory_Exhaustion : Exception
+final class MemoryExhaustion : Exception
 {
     string what() const nothrow
     { return "Ran out of memory, allocation failed"; }

@@ -24,16 +24,16 @@ public:
     * Create a seeded and active RNG object for general application use
     * Added in 1.8.0
     */
-    static RandomNumberGenerator make_rng()
+    static RandomNumberGenerator makeRng()
     {
-        return make_rng(global_state().algorithm_factory());
+        return make_rng(globalState().algorithmFactory());
     }
 
     /**
     * Create a seeded and active RNG object for general application use
     * Added in 1.11.5
     */
-    static RandomNumberGenerator make_rng(Algorithm_Factory af)
+    static RandomNumberGenerator makeRng(AlgorithmFactory af)
     {
         RandomNumberGenerator rng = new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
                                                  af.make_mac("HMAC(SHA-256)"));
@@ -54,9 +54,9 @@ public:
     * @param bytes = number of bytes in the result
     * @return randomized vector of length bytes
     */
-    abstract Secure_Vector!ubyte random_vec(size_t bytes)
+    abstract SecureVector!ubyte randomVec(size_t bytes)
     {
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(bytes);
+        SecureVector!ubyte output = SecureVector!ubyte(bytes);
         randomize(output.ptr, output.length);
         return output;
     }
@@ -65,7 +65,7 @@ public:
     * Return a random ubyte
     * @return random ubyte
     */
-    final ubyte next_byte()
+    final ubyte nextByte()
     {
         ubyte output;
         this.randomize(&output, 1);
@@ -76,7 +76,7 @@ public:
     * Check whether this RNG is seeded.
     * @return true if this RNG was already seeded, false otherwise.
     */
-    abstract bool is_seeded() const;
+    abstract bool isSeeded() const;
 
     /**
     * Clear all internally held values of this RNG.
@@ -100,7 +100,7 @@ public:
     * @param input = a ubyte array containg the entropy to be added
     * @param length = the length of the ubyte array in
     */
-    abstract void add_entropy(in ubyte* input, size_t length);
+    abstract void addEntropy(in ubyte* input, size_t length);
 
     this() {}
     ~this() {}
@@ -109,24 +109,24 @@ public:
 /**
 * Null/stub RNG - fails if you try to use it for anything
 */
-class Null_RNG : RandomNumberGenerator
+class NullRNG : RandomNumberGenerator
 {
 public:
-    override void randomize(ubyte*, size_t) { throw new PRNG_Unseeded("Null_RNG"); }
+    override void randomize(ubyte*, size_t) { throw new PRNGUnseeded("Null_RNG"); }
 
     override void clear() {}
 
     override @property string name() const { return "Null_RNG"; }
 
     override void reseed(size_t) {}
-    override bool is_seeded() const { return false; }
-    override void add_entropy(const ubyte[], size_t) {}
+    override bool isSeeded() const { return false; }
+    override void addEntropy(const ubyte[], size_t) {}
 }
 
 /**
 * Wraps access to a RNG in a mutex
 */
-shared class Serialized_RNG : RandomNumberGenerator
+shared class SerializedRNG : RandomNumberGenerator
 {
 public:
     synchronized void randomize(ubyte* output, size_t length)
@@ -134,9 +134,9 @@ public:
         m_rng.randomize(output, len);
     }
 
-    synchronized bool is_seeded() const
+    synchronized bool isSeeded() const
     {
-        return m_rng.is_seeded();
+        return m_rng.isSeeded();
     }
 
     synchronized void clear()
@@ -154,14 +154,14 @@ public:
         m_rng.reseed(poll_bits);
     }
 
-    synchronized void add_entropy(in ubyte* input, size_t len)
+    synchronized void addEntropy(in ubyte* input, size_t len)
     {
-        m_rng.add_entropy(input, len);
+        m_rng.addEntropy(input, len);
     }
 
     this()
     {
-        m_rng = RandomNumberGenerator.make_rng();
+        m_rng = RandomNumberGenerator.makeRng();
     }
 
 private:

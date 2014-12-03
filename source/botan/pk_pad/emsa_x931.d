@@ -15,7 +15,7 @@ import botan.pk_pad.hash_id;
 * Useful for Rabin-Williams, also sometimes used with RSA in
 * odd protocols.
 */
-final class EMSA_X931 : EMSA
+final class EMSAX931 : EMSA
 {
 public:
     /**
@@ -29,7 +29,7 @@ public:
         m_hash_id = ieee1363_hash_id(hash.name);
         
         if (!m_hash_id)
-            throw new Encoding_Error("EMSA_X931 no hash identifier for " ~ hash.name);
+            throw new EncodingError("EMSA_X931 no hash identifier for " ~ hash.name);
     }
 private:
     void update(in ubyte* input, size_t length)
@@ -37,7 +37,7 @@ private:
         m_hash.update(input, length);
     }
 
-    Secure_Vector!ubyte raw_data()
+    SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -45,7 +45,7 @@ private:
     /*
     * EMSA_X931 Encode Operation
     */
-    Secure_Vector!ubyte encoding_of(in Secure_Vector!ubyte msg,
+    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                  size_t output_bits,
                                  RandomNumberGenerator)
     {
@@ -55,8 +55,8 @@ private:
     /*
     * EMSA_X931 Verify Operation
     */
-    bool verify(in Secure_Vector!ubyte coded,
-                in Secure_Vector!ubyte raw,
+    bool verify(in SecureVector!ubyte coded,
+                in SecureVector!ubyte raw,
                 size_t key_bits)
     {
         try
@@ -70,16 +70,16 @@ private:
         }
     }
 
-    Secure_Vector!ubyte m_empty_hash;
+    SecureVector!ubyte m_empty_hash;
     Unique!HashFunction m_hash;
     ubyte m_hash_id;
 }
 
 private:
 
-Secure_Vector!ubyte emsa2_encoding(in Secure_Vector!ubyte msg,
+SecureVector!ubyte emsa2Encoding(in SecureVector!ubyte msg,
                                    size_t output_bits,
-                                   in Secure_Vector!ubyte empty_hash,
+                                   in SecureVector!ubyte empty_hash,
                                    ubyte hash_id)
 {
     const size_t HASH_SIZE = empty_hash.length;
@@ -87,13 +87,13 @@ Secure_Vector!ubyte emsa2_encoding(in Secure_Vector!ubyte msg,
     size_t output_length = (output_bits + 1) / 8;
     
     if (msg.length != HASH_SIZE)
-        throw new Encoding_Error("encoding_of: Bad input length");
+        throw new EncodingError("encoding_of: Bad input length");
     if (output_length < HASH_SIZE + 4)
-        throw new Encoding_Error("encoding_of: Output length is too small");
+        throw new EncodingError("encoding_of: Output length is too small");
     
     const bool empty_input = (msg == empty_hash);
     
-    Secure_Vector!ubyte output = Secure_Vector!ubyte(output_length);
+    SecureVector!ubyte output = SecureVector!ubyte(output_length);
     
     output[0] = (empty_input ? 0x4B : 0x6B);
     output[output_length - 3 - HASH_SIZE] = 0xBA;

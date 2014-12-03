@@ -29,18 +29,18 @@ public:
     /*
     * Lion Encryption
     */
-    override void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const size_t LEFT_SIZE = left_size();
         const size_t RIGHT_SIZE = right_size();
         
-        Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
+        SecureVector!ubyte buffer_vec = SecureVector!ubyte(LEFT_SIZE);
         ubyte* buffer = buffer_vec.ptr;
         
         foreach (size_t i; 0 .. blocks)
         {
             xor_buf(buffer, input, m_key1.ptr, LEFT_SIZE);
-            m_cipher.set_key(buffer, LEFT_SIZE);
+            m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
             
             m_hash.update(output + LEFT_SIZE, RIGHT_SIZE);
@@ -48,7 +48,7 @@ public:
             xor_buf(output, input, buffer, LEFT_SIZE);
             
             xor_buf(buffer, output, m_key2.ptr, LEFT_SIZE);
-            m_cipher.set_key(buffer, LEFT_SIZE);
+            m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
             
             input += m_block_size;
@@ -59,18 +59,18 @@ public:
     /*
     * Lion Decryption
     */
-    override void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const size_t LEFT_SIZE = left_size();
         const size_t RIGHT_SIZE = right_size();
         
-        Secure_Vector!ubyte buffer_vec = Secure_Vector!ubyte(LEFT_SIZE);
+        SecureVector!ubyte buffer_vec = SecureVector!ubyte(LEFT_SIZE);
         ubyte* buffer = buffer_vec.ptr;
         
         foreach (size_t i; 0 .. blocks)
         {
             xor_buf(buffer, input, m_key2.ptr, LEFT_SIZE);
-            m_cipher.set_key(buffer, LEFT_SIZE);
+            m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
             
             m_hash.update(output + LEFT_SIZE, RIGHT_SIZE);
@@ -78,7 +78,7 @@ public:
             xor_buf(output, input, buffer, LEFT_SIZE);
             
             xor_buf(buffer, output, m_key1.ptr, LEFT_SIZE);
-            m_cipher.set_key(buffer, LEFT_SIZE);
+            m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
             
             input += m_block_size;
@@ -86,9 +86,9 @@ public:
         }
     }
 
-    @property size_t block_size() const { return m_block_size; }
+    @property size_t blockSize() const { return m_block_size; }
 
-    override Key_Length_Specification key_spec() const
+    override KeyLengthSpecification keySpec() const
     {
         return Key_Length_Specification(2, 2*m_hash.output_length, 2);
     }
@@ -111,7 +111,7 @@ public:
     {
         return "Lion(" ~ m_hash.name ~ "," ~
             m_cipher.name ~ "," ~
-                to!string(block_size()) ~ ")";
+                to!string(blockSize()) ~ ")";
     }
 
     /*
@@ -119,7 +119,7 @@ public:
     */
     override BlockCipher clone() const
     {
-        return new Lion(m_hash.clone(), m_cipher.clone(), block_size());
+        return new Lion(m_hash.clone(), m_cipher.clone(), blockSize());
     }
 
 
@@ -135,33 +135,34 @@ public:
         m_cipher = cipher;
         
         if (2*left_size() + 1 > m_block_size)
-            throw new Invalid_Argument(name ~ ": Chosen block size is too small");
+            throw new InvalidArgument(name ~ ": Chosen block size is too small");
         
-        if (!m_cipher.valid_keylength(left_size()))
-            throw new Invalid_Argument(name ~ ": This stream/hash combo is invalid");
+        if (!m_cipher.validKeylength(left_size()))
+            throw new InvalidArgument(name ~ ": This stream/hash combo is invalid");
         
         m_key1.resize(left_size());
         m_key2.resize(left_size());
     }
-private:
+protected:
 
     /*
     * Lion Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         clear();
         
         const size_t half = length / 2;
-        copy_mem(m_key1.ptr, key, half);
-        copy_mem(m_key2.ptr, key + half, half);
+        copyMem(m_key1.ptr, key, half);
+        copyMem(m_key2.ptr, key + half, half);
     }
 
+private:
     size_t left_size() const { return m_hash.output_length; }
     size_t right_size() const { return m_block_size - left_size(); }
 
     const size_t m_block_size;
     Unique!HashFunction m_hash;
     Unique!StreamCipher m_cipher;
-    Secure_Vector!ubyte m_key1, m_key2;
+    SecureVector!ubyte m_key1, m_key2;
 }

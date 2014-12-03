@@ -7,7 +7,7 @@ import botan.utils.exceptn;
 import botan.math.numbertheory.numthry;
 import botan.test;
 
-void strip_comments(string line)
+void stripComments(string line)
 {
     if (line.canFind('#'))
         line = line[0 .. line.indexOf('#')];
@@ -35,14 +35,14 @@ Vector!string parse(string line)
     string line_ = line;
     while(end != -1)
     {
-        substr.push_back(line_[0 .. end]);
+        substr.pushBack(line_[0 .. end]);
         if (end+1 >= line.length)
             break;
         line_ = line_[end+1 .. $];
         end = line_.indexOf(DELIMITER);
     }
     while(substr.length <= 4) // at least 5 substr, some possibly empty
-        substr.push_back("");
+        substr.pushBack("");
     return substr;
 }
 
@@ -75,7 +75,7 @@ size_t results(string op, in BigInt a, in BigInt b,    in BigInt c, in BigInt d,
     }
 }
 
-size_t check_add(in Vector!string args)
+size_t checkAdd(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -95,7 +95,7 @@ size_t check_add(in Vector!string args)
     return results("+", a, b, c, d, e);
 }
 
-size_t check_sub(in Vector!string args)
+size_t checkSub(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -108,7 +108,7 @@ size_t check_sub(in Vector!string args)
     return results("-", a, b, c, d, e);
 }
 
-size_t check_mul(in Vector!string args)
+size_t checkMul(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -122,8 +122,8 @@ size_t check_mul(in Vector!string args)
         which is what we really want to test here (the simple n^2 multiply is
         pretty well tested at this point).
     */
-    a.grow_to(64);
-    b.grow_to(64);
+    a.growTo(64);
+    b.growTo(64);
     
     BigInt d = a * b;
     BigInt e = a;
@@ -139,13 +139,13 @@ size_t check_mul(in Vector!string args)
     return results("*", a, b, c, d, e);
 }
 
-size_t check_sqr(in Vector!string args)
+size_t checkSqr(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
     
-    a.grow_to(64);
-    b.grow_to(64);
+    a.growTo(64);
+    b.growTo(64);
     
     BigInt c = square(a);
     BigInt d = a * a;
@@ -153,7 +153,7 @@ size_t check_sqr(in Vector!string args)
     return results("sqr", a, a, b, c, d);
 }
 
-size_t check_div(in Vector!string args)
+size_t checkDiv(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -166,7 +166,7 @@ size_t check_div(in Vector!string args)
     return results("/", a, b, c, d, e);
 }
 
-size_t check_mod(in Vector!string args, RandomNumberGenerator rng)
+size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -185,7 +185,7 @@ size_t check_mod(in Vector!string args, RandomNumberGenerator rng)
     /* Won't work for us, just pick one at random */
     while(b_word == 0)
         for(size_t j = 0; j != 2*word.sizeof; j++)
-            b_word = (b_word << 4) ^ rng.next_byte();
+            b_word = (b_word << 4) ^ rng.nextByte();
     
     b = b_word;
     
@@ -198,7 +198,7 @@ size_t check_mod(in Vector!string args, RandomNumberGenerator rng)
     return results("%(word)", a, b, c, d2, e);
 }
 
-size_t check_shl(in Vector!string args)
+size_t checkShl(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     size_t b = args[1].to!size_t;
@@ -211,7 +211,7 @@ size_t check_shl(in Vector!string args)
     return results("<<", a, b, c, d, e);
 }
 
-size_t check_shr(in Vector!string args)
+size_t checkShr(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     size_t b = args[1].to!size_t;
@@ -225,18 +225,18 @@ size_t check_shr(in Vector!string args)
 }
 
 /* Make sure that (a^b)%m == r */
-size_t check_powmod(in Vector!string args)
+size_t checkPowmod(in Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
     BigInt m = BigInt(args[2]);
     BigInt c = BigInt(args[3]);
     
-    BigInt r = power_mod(a, b, m);
+    BigInt r = powerMod(a, b, m);
     
     if (c != r)
     {
-        writeln("ERROR: power_mod");
+        writeln("ERROR: powerMod");
         writeln("a = ", a);
         writeln("b = ", b);
         writeln("m = ", m);
@@ -248,7 +248,7 @@ size_t check_powmod(in Vector!string args)
 }
 
 /* Make sure that n is prime or not prime, according to should_be_prime */
-size_t is_primetest(in Vector!string args, RandomNumberGenerator rng)
+size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
 {
     BigInt n = BigInt(args[0]);
     bool should_be_prime = (args[1] == "1");
@@ -272,7 +272,7 @@ unittest
     File test_data = File(filename, "r");
     
     if (test_data.error || test_data.eof)
-        throw new Stream_IO_Error("Couldn't open test file " ~ filename);
+        throw new StreamIOError("Couldn't open test file " ~ filename);
     
     size_t total_errors = 0;
     size_t errors = 0, alg_count = 0;
@@ -285,7 +285,7 @@ unittest
     while(!test_data.eof)
     {
         if (test_data.error)
-            throw new Stream_IO_Error("File I/O error reading from " ~ filename);
+            throw new StreamIOError("File I/O error reading from " ~ filename);
         
         string line = test_data.readln().strip();
         
@@ -303,7 +303,7 @@ unittest
         if (line[0] == '[' && line[line.length - 1] == ']')
         {
             if (!first)
-                test_report("Bigint " ~ algorithm, alg_count, errors);
+                testReport("Bigint " ~ algorithm, alg_count, errors);
             
             algorithm = line[1 .. line.length - 2 + 1];
             
@@ -322,25 +322,25 @@ unittest
         
         size_t new_errors = 0;
         if (algorithm.canFind("Addition"))
-            new_errors = check_add(substr);
+            new_errors = checkAdd(substr);
         else if (algorithm.canFind("Subtraction"))
-            new_errors = check_sub(substr);
+            new_errors = checkSub(substr);
         else if (algorithm.canFind("Multiplication"))
-            new_errors = check_mul(substr);
+            new_errors = checkMul(substr);
         else if (algorithm.canFind("Square"))
-            new_errors = check_sqr(substr);
+            new_errors = checkSqr(substr);
         else if (algorithm.canFind("Division"))
-            new_errors = check_div(substr);
+            new_errors = checkDiv(substr);
         else if (algorithm.canFind("Modulo"))
-            new_errors = check_mod(substr, rng);
+            new_errors = checkMod(substr, rng);
         else if (algorithm.canFind("LeftShift"))
-            new_errors = check_shl(substr);
+            new_errors = checkShl(substr);
         else if (algorithm.canFind("RightShift"))
-            new_errors = check_shr(substr);
+            new_errors = checkShr(substr);
         else if (algorithm.canFind("ModExp"))
-            new_errors = check_powmod(substr);
+            new_errors = checkPowmod(substr);
         else if (algorithm.canFind("PrimeTest"))
-            new_errors = is_primetest(substr, rng);
+            new_errors = isPrimetest(substr, rng);
         else
             writeln("Unknown MPI test " ~ algorithm);
         
@@ -353,5 +353,5 @@ unittest
     }
 
     
-    test_report("BigInt", alg_count, total_errors);
+    testReport("BigInt", alg_count, total_errors);
 }

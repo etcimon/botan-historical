@@ -16,7 +16,7 @@ import botan.asn1.ber_dec;
 /**
 * X.509v3 Key Constraints.
 */
-enum Key_Constraints {
+enum KeyConstraints {
     NO_CONSTRAINTS      = 0,
     DIGITAL_SIGNATURE  = 32768,
     NON_REPUDIATION     = 16384,
@@ -38,8 +38,8 @@ enum Key_Constraints {
 * @return combination of key type specific constraints and
 * additional limits
 */
-Key_Constraints find_constraints(in Public_Key pub_key,
-                                 Key_Constraints limits)
+KeyConstraints findConstraints(in PublicKey pub_key,
+                                 KeyConstraints limits)
 {
     const string name = pub_key.algo_name;
     
@@ -58,23 +58,23 @@ Key_Constraints find_constraints(in Public_Key pub_key,
     if (limits)
         constraints &= limits;
     
-    return Key_Constraints(constraints);
+    return KeyConstraints(constraints);
 }
 
 /*
 * Decode a BER encoded KeyUsage
 */
-void decode(BER_Decoder source, ref Key_Constraints key_usage)
+void decode(BERDecoder source, ref KeyConstraints key_usage)
 {
-    BER_Object obj = source.get_next_object();
+    BER_Object obj = source.getNextObject();
 
-    if (obj.type_tag != ASN1_Tag.BIT_STRING || obj.class_tag != ASN1_Tag.UNIVERSAL)
-        throw new BER_Bad_Tag("Bad tag for usage constraint",
+    if (obj.type_tag != ASN1Tag.BIT_STRING || obj.class_tag != ASN1Tag.UNIVERSAL)
+        throw new BERBadTag("Bad tag for usage constraint",
                               obj.type_tag, obj.class_tag);
     if (obj.value.length != 2 && obj.value.length != 3)
-        throw new BER_Decoding_Error("Bad size for BITSTRING in usage constraint");
+        throw new BERDecodingError("Bad size for BITSTRING in usage constraint");
     if (obj.value[0] >= 8)
-        throw new BER_Decoding_Error("Invalid unused bits in usage constraint");
+        throw new BERDecodingError("Invalid unused bits in usage constraint");
     
     const ubyte mask = (0xFF << obj.value[0]);
     obj.value[obj.value.length-1] &= mask;
@@ -83,5 +83,5 @@ void decode(BER_Decoder source, ref Key_Constraints key_usage)
     for (size_t j = 1; j != obj.value.length; ++j)
         usage = (obj.value[j] << 8) | usage;
     
-    key_usage = Key_Constraints(usage);
+    key_usage = KeyConstraints(usage);
 }

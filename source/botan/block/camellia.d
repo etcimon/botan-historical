@@ -16,15 +16,15 @@ import botan.utils.types;
 /**
 * Camellia-128
 */
-final class Camellia_128 : Block_Cipher_Fixed_Params!(16, 16)
+final class Camellia128 : BlockCipherFixedParams!(16, 16)
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         encrypt(input, output, blocks, m_SK, 9);
     }
 
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         decrypt(input, output, blocks, m_SK, 9);
     }
@@ -34,28 +34,28 @@ public:
         zap(m_SK);
     }
     @property string name() const { return "Camellia-128"; }
-    BlockCipher clone() const { return new Camellia_128; }
-private:
-    void key_schedule(in ubyte* key, size_t length)
+    BlockCipher clone() const { return new Camellia128; }
+protected:
+    void keySchedule(in ubyte* key, size_t length)
     {
-        key_schedule(m_SK, key, length);
+        keySchedule(m_SK, key, length);
     }
 
-    Secure_Vector!ulong m_SK;
+    SecureVector!ulong m_SK;
 }
 
 /**
 * Camellia-192
 */
-final class Camellia_192 : Block_Cipher_Fixed_Params!(16, 24)
+final class Camellia192 : BlockCipherFixedParams!(16, 24)
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         encrypt(input, output, blocks, m_SK, 12);
     }
 
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         decrypt(input, output, blocks, m_SK, 12);
     }
@@ -65,28 +65,28 @@ public:
         zap(m_SK);
     }
     @property string name() const { return "Camellia-192"; }
-    BlockCipher clone() const { return new Camellia_192; }
-private:
-    void key_schedule(in ubyte* key, size_t length)
+    BlockCipher clone() const { return new Camellia192; }
+protected:
+    void keySchedule(in ubyte* key, size_t length)
     {
-        key_schedule(m_SK, key, length);
+        keySchedule(m_SK, key, length);
     }
 
-    Secure_Vector!ulong m_SK;
+    SecureVector!ulong m_SK;
 }
 
 /**
 * Camellia-256
 */
-final class Camellia_256 : Block_Cipher_Fixed_Params!(16, 32)
+final class Camellia256 : BlockCipherFixedParams!(16, 32)
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         encrypt(input, output, blocks, m_SK, 12);
     }
 
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         decrypt(input, output, blocks, m_SK, 12);
     }
@@ -96,14 +96,14 @@ public:
         zap(m_SK);
     }
     @property string name() const { return "Camellia-256"; }
-    BlockCipher clone() const { return new Camellia_256; }
-private:
-    void key_schedule(in ubyte* key, size_t length)
+    BlockCipher clone() const { return new Camellia256; }
+protected:
+    void keySchedule(in ubyte* key, size_t length)
     {
-        key_schedule(m_SK, key, length);
+        keySchedule(m_SK, key, length);
     }
 
-    Secure_Vector!ulong m_SK;
+    SecureVector!ulong m_SK;
 }
 
 
@@ -144,12 +144,12 @@ ulong F_SLOW(ulong v, ulong K)
     const ulong x = v ^ K;
     
     const ubyte t1 = SBOX[get_byte(0, x)];
-    const ubyte t2 = rotate_left(SBOX[get_byte(1, x)], 1);
-    const ubyte t3 = rotate_left(SBOX[get_byte(2, x)], 7);
-    const ubyte t4 = SBOX[rotate_left(get_byte(3, x), 1)];
-    const ubyte t5 = rotate_left(SBOX[get_byte(4, x)], 1);
-    const ubyte t6 = rotate_left(SBOX[get_byte(5, x)], 7);
-    const ubyte t7 = SBOX[rotate_left(get_byte(6, x), 1)];
+    const ubyte t2 = rotateLeft(SBOX[get_byte(1, x)], 1);
+    const ubyte t3 = rotateLeft(SBOX[get_byte(2, x)], 7);
+    const ubyte t4 = SBOX[rotateLeft(get_byte(3, x), 1)];
+    const ubyte t5 = rotateLeft(SBOX[get_byte(4, x)], 1);
+    const ubyte t6 = rotateLeft(SBOX[get_byte(5, x)], 7);
+    const ubyte t7 = SBOX[rotateLeft(get_byte(6, x), 1)];
     const ubyte t8 = SBOX[get_byte(7, x)];
     
     const ubyte y1 = t1 ^ t3 ^ t4 ^ t6 ^ t7 ^ t8;
@@ -160,8 +160,7 @@ ulong F_SLOW(ulong v, ulong K)
     const ubyte y6 = t2 ^ t3 ^ t5 ^ t7 ^ t8;
     const ubyte y7 = t3 ^ t4 ^ t5 ^ t6 ^ t8;
     const ubyte y8 = t1 ^ t4 ^ t5 ^ t6 ^ t7;
-    
-    return make_ulong(y1, y2, y3, y4, y5, y6, y7, y8);
+	return make_ulong(y1, y2, y3, y4, y5, y6, y7, y8);
 }
 
 ulong F(ulong v, ulong K)
@@ -186,7 +185,7 @@ ulong FL(ulong v, ulong K)
     const uint k1 = (K >> 32);
     const uint k2 = (K & 0xFFFFFFFF);
     
-    x2 ^= rotate_left(x1 & k1, 1);
+    x2 ^= rotateLeft(x1 & k1, 1);
     x1 ^= (x2 | k2);
     
     return ((cast(ulong)(x1) << 32) | x2);
@@ -201,7 +200,7 @@ ulong FLINV(ulong v, ulong K)
     const uint k2 = (K & 0xFFFFFFFF);
     
     x1 ^= (x2 | k2);
-    x2 ^= rotate_left(x1 & k1, 1);
+    x2 ^= rotateLeft(x1 & k1, 1);
     
     return ((cast(ulong)(x1) << 32) | x2);
 }
@@ -210,13 +209,13 @@ ulong FLINV(ulong v, ulong K)
 * Camellia Encryption
 */
 void encrypt(ubyte* input, ubyte* output, size_t blocks,
-             in Secure_Vector!ulong SK, in size_t rounds)
+             in SecureVector!ulong SK, in size_t rounds)
 {
     size_t blocks = input.length;
     foreach (size_t i; 0 .. blocks)
     {
-        ulong D1 = load_bigEndian!ulong(input, 0);
-        ulong D2 = load_bigEndian!ulong(input, 1);
+        ulong D1 = loadBigEndian!ulong(input, 0);
+        ulong D2 = loadBigEndian!ulong(input, 1);
         
         const ulong* K = SK.ptr;
         
@@ -244,7 +243,7 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
         D2 ^= *K++;
         D1 ^= *K++;
         
-        store_bigEndian(output, D2, D1);
+        storeBigEndian(output, D2, D1);
         
         input += 16;
         output += 16;
@@ -255,13 +254,13 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
 * Camellia Decryption
 */
 void decrypt(ubyte* input, ubyte* output, size_t blocks,
-             in Secure_Vector!ulong SK, in size_t rounds)
+             in SecureVector!ulong SK, in size_t rounds)
 {
     size_t blocks = input.length;
     foreach (size_t i; 0 .. blocks)
     {
-        ulong D1 = load_bigEndian!ulong(input, 0);
-        ulong D2 = load_bigEndian!ulong(input, 1);
+        ulong D1 = loadBigEndian!ulong(input, 0);
+        ulong D2 = loadBigEndian!ulong(input, 1);
         
         const ulong* K = &SK[SK.length-1];
         
@@ -289,7 +288,7 @@ void decrypt(ubyte* input, ubyte* output, size_t blocks,
         D1 ^= *K--;
         D2 ^= *K;
         
-        store_bigEndian(output, D2, D1);
+        storeBigEndian(output, D2, D1);
         
         input += 16;
         output += 16;
@@ -309,7 +308,7 @@ ulong left_rot_lo(ulong h, ulong l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(ref Secure_Vector!ulong SK, in ubyte* key)
+void key_schedule(ref SecureVector!ulong SK, in ubyte* key)
 {
     const ulong Sigma1 = 0xA09E667F3BCC908B;
     const ulong Sigma2 = 0xB67AE8584CAA73B2;
@@ -318,11 +317,11 @@ void key_schedule(ref Secure_Vector!ulong SK, in ubyte* key)
     const ulong Sigma5 = 0x10E527FADE682D1D;
     const ulong Sigma6 = 0xB05688C2B3E6C1FD;
     
-    const ulong KL_H = load_bigEndian!ulong(key, 0);
-    const ulong KL_L = load_bigEndian!ulong(key, 1);
+    const ulong KL_H = loadBigEndian!ulong(key, 0);
+    const ulong KL_L = loadBigEndian!ulong(key, 1);
     
-    const ulong KR_H = (length >= 24) ? load_bigEndian!ulong(key, 2) : 0;
-    const ulong KR_L = (length == 32) ? load_bigEndian!ulong(key, 3) : ((length == 24) ? ~KR_H : 0);
+    const ulong KR_H = (length >= 24) ? loadBigEndian!ulong(key, 2) : 0;
+    const ulong KR_L = (length == 32) ? loadBigEndian!ulong(key, 3) : ((length == 24) ? ~KR_H : 0);
     
     ulong D1 = KL_H ^ KR_H;
     ulong D2 = KL_L ^ KR_L;

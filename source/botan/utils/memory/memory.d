@@ -416,7 +416,7 @@ private void* adjustPointerAlignment(void* base)
 }
 
 unittest {
-    void test_align(void* p, size_t adjustment) {
+    void testAlign(void* p, size_t adjustment) {
         void* pa = adjustPointerAlignment(p);
         assert((cast(size_t)pa & Allocator.alignmentMask) == 0, "Non-aligned pointer.");
         assert(*(cast(ubyte*)pa-1) == adjustment, "Invalid adjustment "~to!string(p)~": "~to!string(*(cast(ubyte*)pa-1)));

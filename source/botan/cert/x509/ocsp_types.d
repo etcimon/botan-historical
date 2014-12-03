@@ -20,15 +20,15 @@ import botan.hash.hash;
 import botan.asn1.oids;
 import botan.utils.types;
 
-alias CertID = FreeListRef!CertID_Impl;
+alias CertID = FreeListRef!CertIDImpl;
 
-final class CertID_Impl : ASN1_Object
+final class CertIDImpl : ASN1Object
 {
 public:
     this() {}
 
-    this(in X509_Certificate issuer,
-         const X509_Certificate subject)
+    this(in X509Certificate issuer,
+         const X509Certificate subject)
     {
         /*
         In practice it seems some responders, including, notably,
@@ -36,26 +36,26 @@ public:
         */
         Unique!HashFunction hash = get_hash("SHA-160");
         
-        m_hash_id = Algorithm_Identifier(hash.name, Algorithm_Identifier.USE_NULL_PARAM);
-        m_issuer_key_hash = unlock(hash.process(extract_key_bitstr(issuer)));
-        m_issuer_dn_hash = unlock(hash.process(subject.raw_issuer_dn()));
-        m_subject_serial = BigInt.decode(subject.serial_number());
+        m_hash_id = AlgorithmIdentifier(hash.name, AlgorithmIdentifier.USE_NULL_PARAM);
+        m_issuer_key_hash = unlock(hash.process(extractKeyBitstr(issuer)));
+        m_issuer_dn_hash = unlock(hash.process(subject.rawIssuerDn()));
+        m_subject_serial = BigInt.decode(subject.serialNumber());
     }
 
-    bool is_id_for(in X509_Certificate issuer,
-                   const X509_Certificate subject) const
+    bool isIdFor(in X509Certificate issuer,
+                   const X509Certificate subject) const
     {
         try
         {
-            if (BigInt.decode(subject.serial_number()) != m_subject_serial)
+            if (BigInt.decode(subject.serialNumber()) != m_subject_serial)
                 return false;
             
             Unique!HashFunction hash = get_hash(OIDS.lookup(m_hash_id.oid));
             
-            if (m_issuer_dn_hash != unlock(hash.process(subject.raw_issuer_dn())))
+            if (m_issuer_dn_hash != unlock(hash.process(subject.rawIssuerDn())))
                 return false;
             
-            if (m_issuer_key_hash != unlock(hash.process(extract_key_bitstr(issuer))))
+            if (m_issuer_key_hash != unlock(hash.process(extractKeyBitstr(issuer))))
                 return false;
         }
         catch (Throwable)
@@ -66,81 +66,81 @@ public:
         return true;
     }
 
-    override void encode_into(DER_Encoder to) const
+    override void encodeInto(DEREncoder to) const
     {
-        to.start_cons(ASN1_Tag.SEQUENCE)
+        to.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_hash_id)
-                .encode(m_issuer_dn_hash, ASN1_Tag.OCTET_STRING)
-                .encode(m_issuer_key_hash, ASN1_Tag.OCTET_STRING)
+                .encode(m_issuer_dn_hash, ASN1Tag.OCTET_STRING)
+                .encode(m_issuer_key_hash, ASN1Tag.OCTET_STRING)
                 .encode(m_subject_serial)
-                .end_cons();
+                .endCons();
     }
 
 
-    void decode_from(BER_Decoder from)
+    void decodeFrom(BERDecoder from)
     {
-        from.start_cons(ASN1_Tag.SEQUENCE)
+        from.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_hash_id)
-                .decode(m_issuer_dn_hash, ASN1_Tag.OCTET_STRING)
-                .decode(m_issuer_key_hash, ASN1_Tag.OCTET_STRING)
+                .decode(m_issuer_dn_hash, ASN1Tag.OCTET_STRING)
+                .decode(m_issuer_key_hash, ASN1Tag.OCTET_STRING)
                 .decode(m_subject_serial)
-                .end_cons();
+                .endCons();
         
     }
 
 private:
-    Vector!ubyte extract_key_bitstr(in X509_Certificate cert) const
+    Vector!ubyte extractKeyBitstr(in X509Certificate cert) const
     {
-        const auto key_bits = cert.subject_public_key_bits();
+        const auto key_bits = cert.subjectPublicKeyBits();
         
-        Algorithm_Identifier public_key_algid;
+        AlgorithmIdentifier public_key_algid;
         Vector!ubyte public_key_bitstr;
         
-        BER_Decoder(key_bits)
+        BERDecoder(key_bits)
                 .decode(public_key_algid)
-                .decode(public_key_bitstr, ASN1_Tag.BIT_STRING);
+                .decode(public_key_bitstr, ASN1Tag.BIT_STRING);
         
         return public_key_bitstr;
     }
 
-    Algorithm_Identifier m_hash_id;
+    AlgorithmIdentifier m_hash_id;
     Vector!ubyte m_issuer_dn_hash;
     Vector!ubyte m_issuer_key_hash;
     BigInt m_subject_serial;
 }
 
-alias SingleResponse = FreeListRef!SingleResponse_Impl;
+alias SingleResponse = FreeListRef!SingleResponseImpl;
 
-final class SingleResponse_Impl : ASN1_Object
+final class SingleResponseImpl : ASN1Object
 {
 public:
     CertID certid() const { return m_certid; }
 
-    size_t cert_status() const { return m_cert_status; }
+    size_t certStatus() const { return m_cert_status; }
 
-    X509_Time this_update() const { return m_thisupdate; }
+    X509Time thisUpdate() const { return m_thisupdate; }
 
-    X509_Time next_update() const { return m_nextupdate; }
+    X509Time nextUpdate() const { return m_nextupdate; }
 
-    override void encode_into(DER_Encoder) const
+    override void encodeInto(DEREncoder) const
     {
-        throw new Exception("Not implemented (SingleResponse::encode_into)");
+        throw new Exception("Not implemented (SingleResponse::encodeInto)");
     }
 
-    override void decode_from(BER_Decoder from)
+    override void decodeFrom(BERDecoder from)
     {
         BER_Object cert_status;
-        X509_Extensions extensions;
+        X509Extensions extensions;
         
-        from.start_cons(ASN1_Tag.SEQUENCE)
+        from.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_certid)
-                .get_next(cert_status)
+                .getNext(cert_status)
                 .decode(m_thisupdate)
-                .decode_optional(m_nextupdate, ASN1_Tag(0),
-                                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
-                .decode_optional(extensions, ASN1_Tag(1),
-                                 ASN1_Tag(ASN1_Tag.CONTEXT_SPECIFIC | ASN1_Tag.CONSTRUCTED))
-                .end_cons();
+                .decodeOptional(m_nextupdate, ASN1Tag(0),
+                                 ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
+                .decodeOptional(extensions, ASN1Tag(1),
+                                 ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
+                .endCons();
         
         m_cert_status = cert_status.type_tag;
     }
@@ -148,6 +148,6 @@ public:
 private:
     CertID m_certid;
     size_t m_cert_status = 2; // unknown
-    X509_Time m_thisupdate;
-    X509_Time m_nextupdate;
+    X509Time m_thisupdate;
+    X509Time m_nextupdate;
 }

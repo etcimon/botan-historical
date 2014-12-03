@@ -17,15 +17,15 @@ import botan.utils.types;
 /**
 * AES-128
 */
-final class AES_128 : Block_Cipher_Fixed_Params!(16, 16)
+final class AES128 : BlockCipherFixedParams!(16, 16)
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_encrypt_n(input, output, blocks, m_EK, ME);
     }
     
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -39,29 +39,29 @@ public:
     }
 
     @property string name() const { return "AES-128"; }
-    BlockCipher clone() const { return new AES_128; }
+    BlockCipher clone() const { return new AES128; }
 private:
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
 
-    Secure_Vector!uint m_EK, m_DK;
-    Secure_Vector!ubyte m_ME, m_MD;
+    SecureVector!uint m_EK, m_DK;
+    SecureVector!ubyte m_ME, m_MD;
 }
 
 /**
 * AES-192
 */
-final class AES_192 : Block_Cipher_Fixed_Params!(16, 24)
+final class AES192 : BlockCipherFixedParams!(16, 24)
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -75,29 +75,29 @@ public:
     }
 
     @property string name() const { return "AES-192"; }
-    BlockCipher clone() const { return new AES_192; }
+    BlockCipher clone() const { return new AES192; }
 private:    
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
 
-    Secure_Vector!uint m_EK, m_DK;
-    Secure_Vector!ubyte m_ME, m_MD;
+    SecureVector!uint m_EK, m_DK;
+    SecureVector!ubyte m_ME, m_MD;
 }
 
 /**
 * AES-256
 */
-final class AES_256 : Block_Cipher_Fixed_Params!(16, 32)
+final class AES256 : BlockCipherFixedParams!(16, 32)
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -111,15 +111,15 @@ public:
     }
 
     @property string name() const { return "AES-256"; }
-    BlockCipher clone() const { return new AES_256; }
+    BlockCipher clone() const { return new AES256; }
 private:
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
 
-    Secure_Vector!uint m_EK, m_DK;
-    Secure_Vector!ubyte m_ME, m_MD;
+    SecureVector!uint m_EK, m_DK;
+    SecureVector!ubyte m_ME, m_MD;
 }
 
 package :
@@ -523,8 +523,8 @@ __gshared immutable uint[1024] TD = [
 */
 void aes_encrypt_n(ubyte* input, ubyte* output,
                    size_t blocks,
-                   in Secure_Vector!uint EK,
-                   in Secure_Vector!ubyte ME) pure
+                   in SecureVector!uint EK,
+                   in SecureVector!ubyte ME) pure
 {
     assert(EK.length && ME.length == 16, "Key was set");
     
@@ -537,10 +537,10 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
     
     foreach (size_t i; 0 .. blocks)
     {
-        uint T0 = load_bigEndian!uint(input, 0) ^ EK[0];
-        uint T1 = load_bigEndian!uint(input, 1) ^ EK[1];
-        uint T2 = load_bigEndian!uint(input, 2) ^ EK[2];
-        uint T3 = load_bigEndian!uint(input, 3) ^ EK[3];
+        uint T0 = loadBigEndian!uint(input, 0) ^ EK[0];
+        uint T1 = loadBigEndian!uint(input, 1) ^ EK[1];
+        uint T2 = loadBigEndian!uint(input, 2) ^ EK[2];
+        uint T3 = loadBigEndian!uint(input, 3) ^ EK[3];
         
         /* Use only the first 256 entries of the TE table and do the
         * rotations directly in the code. This reduces the number of
@@ -551,24 +551,24 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
         */
         
         uint B0 = TE[get_byte(0, T0)] ^
-                rotate_right(TE[get_byte(1, T1)],  8) ^
-                rotate_right(TE[get_byte(2, T2)], 16) ^
-                rotate_right(TE[get_byte(3, T3)], 24) ^ EK[4];
+                rotateRight(TE[get_byte(1, T1)],  8) ^
+                rotateRight(TE[get_byte(2, T2)], 16) ^
+                rotateRight(TE[get_byte(3, T3)], 24) ^ EK[4];
         
         uint B1 = TE[get_byte(0, T1)] ^
-                rotate_right(TE[get_byte(1, T2)],  8) ^
-                rotate_right(TE[get_byte(2, T3)], 16) ^
-                rotate_right(TE[get_byte(3, T0)], 24) ^ EK[5];
+                rotateRight(TE[get_byte(1, T2)],  8) ^
+                rotateRight(TE[get_byte(2, T3)], 16) ^
+                rotateRight(TE[get_byte(3, T0)], 24) ^ EK[5];
         
         uint B2 = TE[get_byte(0, T2)] ^
-                rotate_right(TE[get_byte(1, T3)],  8) ^
-                rotate_right(TE[get_byte(2, T0)], 16) ^
-                rotate_right(TE[get_byte(3, T1)], 24) ^ EK[6];
+                rotateRight(TE[get_byte(1, T3)],  8) ^
+                rotateRight(TE[get_byte(2, T0)], 16) ^
+                rotateRight(TE[get_byte(3, T1)], 24) ^ EK[6];
         
         uint B3 = TE[get_byte(0, T3)] ^
-                rotate_right(TE[get_byte(1, T0)],  8) ^
-                rotate_right(TE[get_byte(2, T1)], 16) ^
-                rotate_right(TE[get_byte(3, T2)], 24) ^ EK[7];
+                rotateRight(TE[get_byte(1, T0)],  8) ^
+                rotateRight(TE[get_byte(2, T1)], 16) ^
+                rotateRight(TE[get_byte(3, T2)], 24) ^ EK[7];
         
         for (size_t r = 2*4; r < EK.length; r += 2*4)
         {
@@ -636,8 +636,8 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
-                   in Secure_Vector!uint DK,
-                   in Secure_Vector!ubyte MD) pure
+                   in SecureVector!uint DK,
+                   in SecureVector!ubyte MD) pure
 {
     assert(DK.length && MD.length == 16, "Key was set");
     
@@ -650,30 +650,30 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
     
     foreach (size_t i; 0 .. blocks)
     {
-        uint T0 = load_bigEndian!uint(input, 0) ^ DK[0];
-        uint T1 = load_bigEndian!uint(input, 1) ^ DK[1];
-        uint T2 = load_bigEndian!uint(input, 2) ^ DK[2];
-        uint T3 = load_bigEndian!uint(input, 3) ^ DK[3];
+        uint T0 = loadBigEndian!uint(input, 0) ^ DK[0];
+        uint T1 = loadBigEndian!uint(input, 1) ^ DK[1];
+        uint T2 = loadBigEndian!uint(input, 2) ^ DK[2];
+        uint T3 = loadBigEndian!uint(input, 3) ^ DK[3];
         
         uint B0 = TD[get_byte(0, T0)] ^
-                rotate_right(TD[get_byte(1, T3)],  8) ^
-                rotate_right(TD[get_byte(2, T2)], 16) ^
-                rotate_right(TD[get_byte(3, T1)], 24) ^ DK[4];
+                rotateRight(TD[get_byte(1, T3)],  8) ^
+                rotateRight(TD[get_byte(2, T2)], 16) ^
+                rotateRight(TD[get_byte(3, T1)], 24) ^ DK[4];
         
         uint B1 = TD[get_byte(0, T1)] ^
-                rotate_right(TD[get_byte(1, T0)],  8) ^
-                rotate_right(TD[get_byte(2, T3)], 16) ^
-                rotate_right(TD[get_byte(3, T2)], 24) ^ DK[5];
+                rotateRight(TD[get_byte(1, T0)],  8) ^
+                rotateRight(TD[get_byte(2, T3)], 16) ^
+                rotateRight(TD[get_byte(3, T2)], 24) ^ DK[5];
         
         uint B2 = TD[get_byte(0, T2)] ^
-                rotate_right(TD[get_byte(1, T1)],  8) ^
-                rotate_right(TD[get_byte(2, T0)], 16) ^
-                rotate_right(TD[get_byte(3, T3)], 24) ^ DK[6];
+                rotateRight(TD[get_byte(1, T1)],  8) ^
+                rotateRight(TD[get_byte(2, T0)], 16) ^
+                rotateRight(TD[get_byte(3, T3)], 24) ^ DK[6];
         
         uint B3 = TD[get_byte(0, T3)] ^
-            rotate_right(TD[get_byte(1, T2)],  8) ^
-                rotate_right(TD[get_byte(2, T1)], 16) ^
-                rotate_right(TD[get_byte(3, T0)], 24) ^ DK[7];
+            rotateRight(TD[get_byte(1, T2)],  8) ^
+                rotateRight(TD[get_byte(2, T1)], 16) ^
+                rotateRight(TD[get_byte(3, T0)], 24) ^ DK[7];
         
         for (size_t r = 2*4; r < DK.length; r += 2*4)
         {
@@ -719,10 +719,10 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
 }
 
 void aes_key_schedule(in ubyte* key, size_t length,
-                      ref Secure_Vector!uint EK,
-                      ref Secure_Vector!uint DK,
-                      Secure_Vector!ubyte ME,
-                      Secure_Vector!ubyte MD) pure
+                      ref SecureVector!uint EK,
+                      ref SecureVector!uint DK,
+                      SecureVector!ubyte ME,
+                      SecureVector!ubyte MD) pure
 {
     __gshared immutable uint[10] RC = [
         0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
@@ -730,12 +730,12 @@ void aes_key_schedule(in ubyte* key, size_t length,
     
     const size_t rounds = (length / 4) + 6;
     
-    Secure_Vector!uint XEK = SecureVector!uint(length + 32);
-    Secure_Vector!uint XDK = SecureVector!uint(length + 32);
+    SecureVector!uint XEK = SecureVector!uint(length + 32);
+    SecureVector!uint XDK = SecureVector!uint(length + 32);
     
     const size_t X = length / 4;
     foreach (size_t i; 0 .. X)
-        XEK[i] = load_bigEndian!uint(key, i);
+        XEK[i] = loadBigEndian!uint(key, i);
     
     for (size_t i = X; i < 4*(rounds+1); i += X)
     {
@@ -778,12 +778,12 @@ void aes_key_schedule(in ubyte* key, size_t length,
     
     foreach (size_t i; 0 .. 4)
     {
-        store_bigEndian(XEK[i+4*rounds], &ME[4*i]);
-        store_bigEndian(XEK[i], &MD[4*i]);
+        storeBigEndian(XEK[i+4*rounds], &ME[4*i]);
+        storeBigEndian(XEK[i], &MD[4*i]);
     }
     
     EK.resize(length + 24);
     DK.resize(length + 24);
-    copy_mem(EK.ptr, XEK.ptr, EK.length);
-    copy_mem(DK.ptr, XDK.ptr, DK.length);
+    copyMem(EK.ptr, XEK.ptr, EK.length);
+    copyMem(DK.ptr, XDK.ptr, DK.length);
 }

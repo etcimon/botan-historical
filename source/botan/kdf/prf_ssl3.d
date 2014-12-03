@@ -17,18 +17,18 @@ import botan.utils.types;
 /**
 * PRF used in SSLv3
 */
-class SSL3_PRF : KDF
+class SSL3PRF : KDF
 {
 public:    
     /*
     * SSL3 PRF
     */
-    Secure_Vector!ubyte derive(size_t key_len,
+    SecureVector!ubyte derive(size_t key_len,
                             in ubyte* secret, size_t secret_len,
                             in ubyte* seed, size_t seed_len) const
     {
         if (key_len > 416)
-            throw new Invalid_Argument("SSL3_PRF: Requested key length is too large");
+            throw new InvalidArgument("SSL3_PRF: Requested key length is too large");
         
         auto md5 = scoped!MD5();
         auto sha1 = scoped!SHA_160();
@@ -46,11 +46,11 @@ public:
             key_len -= produce;
         }
         
-        return output.bits_of();
+        return output.bitsOf();
     }
 
     @property string name() const { return "SSL3-PRF"; }
-    KDF clone() const { return new SSL3_PRF; }
+    KDF clone() const { return new SSL3PRF; }
 }
 
 private:
@@ -58,7 +58,7 @@ private:
 /*
 * Return the next inner hash
 */
-OctetString next_hash(size_t where, size_t want,
+OctetString nextHash(size_t where, size_t want,
                       HashFunction md5, HashFunction sha1,
                       in ubyte* secret, size_t secret_len,
                       in ubyte* seed, size_t seed_len) pure
@@ -72,11 +72,11 @@ OctetString next_hash(size_t where, size_t want,
         sha1.update(cast(ubyte)(ASCII_A_CHAR + where));
     sha1.update(secret, secret_len);
     sha1.update(seed, seed_len);
-    Secure_Vector!ubyte sha1_hash = sha1.finished();
+    SecureVector!ubyte sha1_hash = sha1.finished();
     
     md5.update(secret, secret_len);
     md5.update(sha1_hash);
-    Secure_Vector!ubyte md5_hash = md5.finished();
+    SecureVector!ubyte md5_hash = md5.finished();
     
     return OctetString(md5_hash.ptr, want);
 }

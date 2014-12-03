@@ -17,20 +17,20 @@ import botan.utils.types;
 /**
 * Serpent, an AES finalist
 */
-class Serpent : Block_Cipher_Fixed_Params!(16, 16, 32, 8)
+class Serpent : BlockCipherFixedParams!(16, 16, 32, 8)
 {
 public:
     /*
     * Serpent Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_littleEndian!uint(input, 0);
-            uint B1 = load_littleEndian!uint(input, 1);
-            uint B2 = load_littleEndian!uint(input, 2);
-            uint B3 = load_littleEndian!uint(input, 3);
+            uint B0 = loadLittleEndian!uint(input, 0);
+            uint B1 = loadLittleEndian!uint(input, 1);
+            uint B2 = loadLittleEndian!uint(input, 2);
+            uint B3 = loadLittleEndian!uint(input, 3);
             
             mixin(key_xor!( 0)()); mixin(SBoxE1!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
             mixin(key_xor!( 1)()); mixin(SBoxE2!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
@@ -65,7 +65,7 @@ public:
             mixin(key_xor!(30)()); mixin(SBoxE7!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
             mixin(key_xor!(31)()); mixin(SBoxE8!(B0,B1,B2,B3)()); mixin(key_xor!(32)());
             
-            store_littleEndian(output, B0, B1, B2, B3);
+            storeLittleEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -75,14 +75,14 @@ public:
     /*
     * Serpent Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint B0 = load_littleEndian!uint(input, 0);
-            uint B1 = load_littleEndian!uint(input, 1);
-            uint B2 = load_littleEndian!uint(input, 2);
-            uint B3 = load_littleEndian!uint(input, 3);
+            uint B0 = loadLittleEndian!uint(input, 0);
+            uint B1 = loadLittleEndian!uint(input, 1);
+            uint B2 = loadLittleEndian!uint(input, 2);
+            uint B3 = loadLittleEndian!uint(input, 3);
             
             mixin(key_xor!(32)());  mixin(SBoxD8()); mixin(key_xor!(31)());
             i_transform(B0,B1,B2,B3); mixin(SBoxD7()); mixin(key_xor!(30)());
@@ -117,7 +117,7 @@ public:
             i_transform(B0,B1,B2,B3); mixin(SBoxD2()); mixin(key_xor!( 1)());
             i_transform(B0,B1,B2,B3); mixin(SBoxD1()); mixin(key_xor!( 0)());
             
-            store_littleEndian(output, B0, B1, B2, B3);
+            storeLittleEndian(output, B0, B1, B2, B3);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -136,36 +136,35 @@ protected:
     * For use by subclasses using SIMD, asm, etc
     * @return const reference to the key schedule
     */
-    Secure_Vector!uint get_round_keys() const
+    SecureVector!uint getRoundKeys() const
     { return m_round_key; }
 
     /**
     * For use by subclasses that implement the key schedule
     * @param ks = is the new key schedule value to set
     */
-    void set_round_keys(in uint[132] ks)
+    void setRoundKeys(in uint[132] ks)
     {
         m_round_key.replace(ks.ptr[0 .. 132]);
     }
 
-private:
     /*
     * Serpent Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         const uint PHI = 0x9E3779B9;
         
-        Secure_Vector!uint W = Secure_Vector!uint(140);
+        SecureVector!uint W = SecureVector!uint(140);
         foreach (size_t i; 0 .. (length / 4))
-            W[i] = load_littleEndian!uint(key, i);
+            W[i] = loadLittleEndian!uint(key, i);
         
         W[length / 4] |= uint(1) << ((length%4)*8);
         
         foreach (size_t i; 8 .. 140)
         {
             uint wi = W[i-8] ^ W[i-5] ^ W[i-3] ^ W[i-1] ^ PHI ^ uint(i-8);
-            W[i] = rotate_left(wi, 11);
+            W[i] = rotateLeft(wi, 11);
         }
 
         mixin(SBoxE4!(W[  8],W[  9],W[ 10],W[ 11])()); mixin(SBoxE3!(W[ 12],W[ 13],W[ 14],W[ 15])());
@@ -189,7 +188,7 @@ private:
         m_round_key.replace(W.ptr[8 .. 140]);
     }
 
-    Secure_Vector!uint m_round_key;
+    SecureVector!uint m_round_key;
 }
 
 
@@ -640,11 +639,11 @@ private:
 */
 void transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 {
-    B0  = rotate_left(B0, 13);    B2  = rotate_left(B2, 3);
+    B0  = rotateLeft(B0, 13);    B2  = rotateLeft(B2, 3);
     B1 ^= B0 ^ B2;B3 ^= B2 ^ (B0 << 3);
-    B1  = rotate_left(B1, 1);     B3  = rotate_left(B3, 7);
+    B1  = rotateLeft(B1, 1);     B3  = rotateLeft(B3, 7);
     B0 ^= B1 ^ B3;B2 ^= B3 ^ (B1 << 7);
-    B0  = rotate_left(B0, 5);     B2  = rotate_left(B2, 22);
+    B0  = rotateLeft(B0, 5);     B2  = rotateLeft(B2, 22);
 }
 
 /*
@@ -652,11 +651,11 @@ void transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 */
 void i_transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 {
-    B2  = rotate_right(B2, 22);  B0  = rotate_right(B0, 5);
+    B2  = rotateRight(B2, 22);  B0  = rotateRight(B0, 5);
     B2 ^= B3 ^ (B1 << 7);          B0 ^= B1 ^ B3;
-    B3  = rotate_right(B3, 7);    B1  = rotate_right(B1, 1);
+    B3  = rotateRight(B3, 7);    B1  = rotateRight(B1, 1);
     B3 ^= B2 ^ (B0 << 3);          B1 ^= B0 ^ B2;
-    B2  = rotate_right(B2, 3);    B0  = rotate_right(B0, 13);
+    B2  = rotateRight(B2, 3);    B0  = rotateRight(B0, 13);
 }
 /*
 * XOR a key block with a data block

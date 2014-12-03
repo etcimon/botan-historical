@@ -20,7 +20,7 @@ import botan.utils.parsing;
 * No particular format should be assumed.
 * @return version string
 */
-string version_string()
+string versionString()
 {
         
     /*
@@ -44,30 +44,30 @@ string version_string()
 *
 * @return release date, or zero if unreleased
 */
-uint version_datestamp() { return BOTAN_VERSION_DATESTAMP; }
+uint versionDatestamp() { return BOTAN_VERSION_DATESTAMP; }
 
 /**
 * Get the major version number.
 * @return major version number
 */
-uint version_major() { return BOTAN_VERSION_MAJOR; }
+uint versionMajor() { return BOTAN_VERSION_MAJOR; }
 
 /**
 * Get the minor version number.
 * @return minor version number
 */
-uint version_minor() { return BOTAN_VERSION_MINOR; }
+uint versionMinor() { return BOTAN_VERSION_MINOR; }
 
 /**
 * Get the patch number.
 * @return patch number
 */
-uint version_patch() { return BOTAN_VERSION_PATCH; }
+uint versionPatch() { return BOTAN_VERSION_PATCH; }
 
 /*
 * Allows compile-time version checks
 */
-long BOTAN_VERSION_CODE_FOR(ubyte a, ubyte b, ubyte c) {
+long bOTANVERSIONCODEFOR(ubyte a, ubyte b, ubyte c) {
     return ((a << 16) | (b << 8) | (c));
 }
 

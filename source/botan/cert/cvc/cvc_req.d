@@ -1,5 +1,5 @@
 /*
-* EAC1_1 CVC Request
+* EAC11 CVC Request
 * (C) 2008 Falko Strenzke
 *      2010 Jack Lloyd
 *
@@ -15,11 +15,11 @@ import botan.asn1.oids;
 import botan.asn1.ber_dec;
 import botan.utils.types;
 
-alias EAC1_1_Req = FreeListRef!EAC1_1_Req_Impl;
+alias EAC11Req = FreeListRef!EAC11ReqImpl;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */
-final class EAC1_1_Req_Impl : EAC1_1_gen_CVC!EAC1_1_Req_Impl
+final class EAC11ReqImpl : EAC11GenCVC!EAC11ReqImpl
 {
 public:
 
@@ -27,13 +27,13 @@ public:
     * Compare for equality with other
     * @param other = compare for equality with this object
     */
-    bool opEquals(in EAC1_1_Req rhs) const
+    bool opEquals(in EAC11Req rhs) const
     {
-        return (this.tbs_data() == rhs.tbs_data() &&
-                this.get_concat_sig() == rhs.get_concat_sig());
+        return (this.tbsData() == rhs.tbsData() &&
+                this.getConcatSig() == rhs.getConcatSig());
     }
 
-    bool opCmp(string op)(in EAC1_1_Req_Impl rhs)
+    bool opCmp(string op)(in EAC11ReqImpl rhs)
         if (op == "!=")
     {
         return !(this == rhs);
@@ -47,7 +47,7 @@ public:
     {
         init(input);
         self_signed = true;
-        do_decode();
+        doDecode();
     }
 
     /**
@@ -56,30 +56,30 @@ public:
     */
     this(in string str)
     {
-        auto stream = scoped!DataSource_Stream(input, true);
+        auto stream = scoped!DataSourceStream(input, true);
         init(stream);
         self_signed = true;
-        do_decode();
+        doDecode();
     }
 
     ~this(){}
 private:
-    void force_decode()
+    void forceDecode()
     {
         Vector!ubyte enc_pk;
-        BER_Decoder tbs_cert = BER_Decoder(tbs_bits);
+        BERDecoder tbs_cert = BERDecoder(tbs_bits);
         size_t cpi;
-        tbs_cert.decode(cpi, ASN1_Tag(41), ASN1_Tag.APPLICATION)
-            .start_cons(ASN1_Tag(73))
-                .raw_bytes(enc_pk)
-                .end_cons()
+        tbs_cert.decode(cpi, ASN1Tag(41), ASN1Tag.APPLICATION)
+                .startCons(ASN1Tag(73))
+                .rawBytes(enc_pk)
+                .endCons()
                 .decode(m_chr)
-                .verify_end();
+                .verifyEnd();
         
         if (cpi != 0)
-            throw new Decoding_Error("EAC1_1 requests cpi was not 0");
+            throw new DecodingError("EAC1_1 requests cpi was not 0");
         
-        m_pk = decode_eac1_1_key(enc_pk, sig_algo);
+        m_pk = decodeEac11Key(enc_pk, sig_algo);
     }
 
     this() {}

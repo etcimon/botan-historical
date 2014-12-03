@@ -19,13 +19,13 @@ import botan.utils.containers.hashmap;
 /**
 * Data Store
 */
-struct Data_Store
+struct DataStore
 {
 public:
     /*
     * Data_Store Equality Comparison
     */
-    bool opEquals(in Data_Store other) const
+    bool opEquals(in DataStore other) const
     {
         return (m_contents == other.m_contents);
     }
@@ -33,7 +33,7 @@ public:
     /*
     * Search based on an arbitrary predicate
     */
-    MultiMap!(string, string) search_for(bool delegate(string, string) predicate) const
+    MultiMap!(string, string) searchFor(bool delegate(string, string) predicate) const
     {
         MultiMap!(string, string) output;
 
@@ -52,7 +52,7 @@ public:
         Vector!string output;
         foreach (el; m_contents)
             if (looking_for == el.first)
-                output.push_back(el.second);
+                output.pushBack(el.second);
         return output;
     }
 
@@ -65,9 +65,9 @@ public:
         Vector!string vals = get(key);
         
         if (vals.empty)
-            throw new Invalid_State("get1: No values set for " ~ key);
+            throw new InvalidState("get1: No values set for " ~ key);
         if (vals.length > 1)
-            throw new Invalid_State("get1: More than one value for " ~ key);
+            throw new InvalidState("get1: More than one value for " ~ key);
         
         return vals[0];
     }
@@ -78,7 +78,7 @@ public:
         Vector!string vals = get(key);
         
         if (vals.length > 1)
-            throw new Invalid_State("get1: More than one value for " ~ key);
+            throw new InvalidState("get1: More than one value for " ~ key);
         
         if (vals.empty)
             return default_value;
@@ -90,7 +90,7 @@ public:
     * Get a single std::vector atom
     */
     Vector!ubyte
-        get1_memvec(in string key) const
+        get1Memvec(in string key) const
     {
         Vector!string vals = get(key);
         
@@ -98,16 +98,16 @@ public:
             return Vector!ubyte();
         
         if (vals.length > 1)
-            throw new Invalid_State("get1_memvec: Multiple values for " ~
+            throw new InvalidState("get1_memvec: Multiple values for " ~
                                     key);
         
-        return hex_decode(vals[0]);
+        return hexDecode(vals[0]);
     }
 
     /*
     * Get a single uint atom
     */
-    uint get1_uint(in string key,
+    uint get1Uint(in string key,
                    uint default_val) const
     {
         Vector!string vals = get(key);
@@ -115,7 +115,7 @@ public:
         if (vals.empty)
             return default_val;
         else if (vals.length > 1)
-            throw new Invalid_State("get1_uint: Multiple values for " ~
+            throw new InvalidState("get1_uint: Multiple values for " ~
                                     key);
         
         return to!uint(vals[0]);
@@ -124,9 +124,9 @@ public:
     /*
     * Check if this key has at least one value
     */
-    bool has_value(in string key) const
+    bool hasValue(in string key) const
     {
-        return (m_contents.lower_bound(key) != m_contents.end());
+        return (m_contents.lowerBound(key) != m_contents.end());
     }
 
 
@@ -150,14 +150,14 @@ public:
     /*
     * Insert a single key and value
     */
-    void add(in string key, in Secure_Vector!ubyte val)
+    void add(in string key, in SecureVector!ubyte val)
     {
-        add(key, hex_encode(val.ptr, val.length));
+        add(key, hexEncode(val.ptr, val.length));
     }
     
     void add(in string key, in Vector!ubyte val)
     {
-        add(key, hex_encode(val.ptr, val.length));
+        add(key, hexEncode(val.ptr, val.length));
     }
     
     /*

@@ -16,10 +16,10 @@ import botan.utils.simd.emmintrin;
 /**
 * SHA-160 using SSE2 for the message expansion
 */
-class SHA_160_SSE2 : SHA_160
+class SHA160SSE2 : SHA_160
 {
 public:
-    HashFunction clone() const { return new SHA_160_SSE2; }
+    HashFunction clone() const { return new SHA160SSE2; }
     this() 
     {
         super(0);
@@ -29,7 +29,7 @@ private:
     /*
     * SHA-160 Compression Function using SSE for message expansion
     */
-    void compress_n(in ubyte* input_bytes, size_t blocks)
+    void compressN(in ubyte* input_bytes, size_t blocks)
     {
         
         const(__m128i) K00_19 = _mm_set1_epi32!(0x5A827999)();
@@ -72,97 +72,97 @@ private:
         F1(E, A, B, C, D, ` ~ GET_P_32!(P0, 1)() ~ `);
         F1(D, E, A, B, C, ` ~ GET_P_32!(P0, 2)() ~ `);
         F1(C, D, E, A, B, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K00_19)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K0019)() ~ `
 
         F1(B, C, D, E, A, ` ~ GET_P_32!(P1, 0)() ~ `);
         F1(A, B, C, D, E, ` ~ GET_P_32!(P1, 1)() ~ `);
         F1(E, A, B, C, D, ` ~ GET_P_32!(P1, 2)() ~ `);
         F1(D, E, A, B, C, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K20_39)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K2039)() ~ `
 
         F1(C, D, E, A, B, ` ~ GET_P_32!(P2, 0)() ~ `);
         F1(B, C, D, E, A, ` ~ GET_P_32!(P2, 1)() ~ `);
         F1(A, B, C, D, E, ` ~ GET_P_32!(P2, 2)() ~ `);
         F1(E, A, B, C, D, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K20_39)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K2039)() ~ `
 
         F1(D, E, A, B, C, ` ~ GET_P_32!(P3, 0)() ~ `);
         F1(C, D, E, A, B, ` ~ GET_P_32!(P3, 1)() ~ `);
         F1(B, C, D, E, A, ` ~ GET_P_32!(P3, 2)() ~ `);
         F1(A, B, C, D, E, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K20_39)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K2039)() ~ `
 
         F1(E, A, B, C, D, ` ~ GET_P_32!(P0, 0)() ~ `);
         F1(D, E, A, B, C, ` ~ GET_P_32!(P0, 1)() ~ `);
         F1(C, D, E, A, B, ` ~ GET_P_32!(P0, 2)() ~ `);
         F1(B, C, D, E, A, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K20_39)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K2039)() ~ `
 
         F2(A, B, C, D, E, ` ~ GET_P_32!(P1, 0)() ~ `);
         F2(E, A, B, C, D, ` ~ GET_P_32!(P1, 1)() ~ `);
         F2(D, E, A, B, C, ` ~ GET_P_32!(P1, 2)() ~ `);
         F2(C, D, E, A, B, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K20_39)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K2039)() ~ `
 
         F2(B, C, D, E, A, ` ~ GET_P_32!(P2, 0)() ~ `);
         F2(A, B, C, D, E, ` ~ GET_P_32!(P2, 1)() ~ `);
         F2(E, A, B, C, D, ` ~ GET_P_32!(P2, 2)() ~ `);
         F2(D, E, A, B, C, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K40_59)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K4059)() ~ `
 
         F2(C, D, E, A, B, ` ~ GET_P_32!(P3, 0)() ~ `);
         F2(B, C, D, E, A, ` ~ GET_P_32!(P3, 1)() ~ `);
         F2(A, B, C, D, E, ` ~ GET_P_32!(P3, 2)() ~ `);
         F2(E, A, B, C, D, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K40_59)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K4059)() ~ `
 
         F2(D, E, A, B, C, ` ~ GET_P_32!(P0, 0)() ~ `);
         F2(C, D, E, A, B, ` ~ GET_P_32!(P0, 1)() ~ `);
         F2(B, C, D, E, A, ` ~ GET_P_32!(P0, 2)() ~ `);
         F2(A, B, C, D, E, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K40_59)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K4059)() ~ `
 
         F2(E, A, B, C, D, ` ~ GET_P_32!(P1, 0)() ~ `);
         F2(D, E, A, B, C, ` ~ GET_P_32!(P1, 1)() ~ `);
         F2(C, D, E, A, B, ` ~ GET_P_32!(P1, 2)() ~ `);
         F2(B, C, D, E, A, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K40_59)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K4059)() ~ `
 
         F3(A, B, C, D, E, ` ~ GET_P_32!(P2, 0)() ~ `);
         F3(E, A, B, C, D, ` ~ GET_P_32!(P2, 1)() ~ `);
         F3(D, E, A, B, C, ` ~ GET_P_32!(P2, 2)() ~ `);
         F3(C, D, E, A, B, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K40_59)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K4059)() ~ `
 
         F3(B, C, D, E, A, ` ~ GET_P_32!(P3, 0)() ~ `);
         F3(A, B, C, D, E, ` ~ GET_P_32!(P3, 1)() ~ `);
         F3(E, A, B, C, D, ` ~ GET_P_32!(P3, 2)() ~ `);
         F3(D, E, A, B, C, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K60_79)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K6079)() ~ `
 
         F3(C, D, E, A, B, ` ~ GET_P_32!(P0, 0)() ~ `);
         F3(B, C, D, E, A, ` ~ GET_P_32!(P0, 1)() ~ `);
         F3(A, B, C, D, E, ` ~ GET_P_32!(P0, 2)() ~ `);
         F3(E, A, B, C, D, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K60_79)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K6079)() ~ `
 
         F3(D, E, A, B, C, ` ~ GET_P_32!(P1, 0)() ~ `);
         F3(C, D, E, A, B, ` ~ GET_P_32!(P1, 1)() ~ `);
         F3(B, C, D, E, A, ` ~ GET_P_32!(P1, 2)() ~ `);
         F3(A, B, C, D, E, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K60_79)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K6079)() ~ `
 
         F3(E, A, B, C, D, ` ~ GET_P_32!(P2, 0)() ~ `);
         F3(D, E, A, B, C, ` ~ GET_P_32!(P2, 1)() ~ `);
         F3(C, D, E, A, B, ` ~ GET_P_32!(P2, 2)() ~ `);
         F3(B, C, D, E, A, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K60_79)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K6079)() ~ `
 
         F4(A, B, C, D, E, ` ~ GET_P_32!(P3, 0)() ~ `);
         F4(E, A, B, C, D, ` ~ GET_P_32!(P3, 1)() ~ `);
         F4(D, E, A, B, C, ` ~ GET_P_32!(P3, 2)() ~ `);
         F4(C, D, E, A, B, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K60_79)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K6079)() ~ `
 
         F4(B, C, D, E, A, ` ~ GET_P_32!(P0, 0)() ~ `);
         F4(A, B, C, D, E, ` ~ GET_P_32!(P0, 1)() ~ `);
@@ -190,7 +190,7 @@ private:
             D = (m_digest[3] += D);
             E = (m_digest[4] += E);
             
-            input += (hash_block_size / 16);
+            input += (hashBlockSize / 16);
         }
     }
 
@@ -318,35 +318,35 @@ pure:
 /*
 * SHA-160 F1 Function
 */
-void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += (D ^ (B & (C ^ D))) + msg + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += (D ^ (B & (C ^ D))) + msg + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }
 
 /*
 * SHA-160 F2 Function
 */
-void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += (B ^ C ^ D) + msg + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += (B ^ C ^ D) + msg + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }
 
 /*
 * SHA-160 F3 Function
 */
-void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += ((B & C) | ((B | C) & D)) + msg + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += ((B & C) | ((B | C) & D)) + msg + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }
 
 /*
 * SHA-160 F4 Function
 */
-void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void f4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
-    E += (B ^ C ^ D) + msg + rotate_left(A, 5);
-    B  = rotate_left(B, 30);
+    E += (B ^ C ^ D) + msg + rotateLeft(A, 5);
+    B  = rotateLeft(B, 30);
 }

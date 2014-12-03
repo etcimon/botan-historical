@@ -21,7 +21,7 @@ import botan.utils.xor_buf;
 /**
 * Keccak[1600], a SHA-3 candidate
 */
-final class Keccak_1600 : HashFunction
+final class Keccak1600 : HashFunction
 {
 public:
 
@@ -40,15 +40,15 @@ public:
         
         if (output_bits != 224 && output_bits != 256 &&
             output_bits != 384 && output_bits != 512)
-            throw new Invalid_Argument("Keccak_1600: Invalid output length " ~ to!string(output_bits));
+            throw new InvalidArgument("Keccak_1600: Invalid output length " ~ to!string(output_bits));
     }
 
-    override @property size_t hash_block_size() const { return m_bitrate / 8; }
-    override @property size_t output_length() const { return m_output_bits / 8; }
+    override @property size_t hashBlockSize() const { return m_bitrate / 8; }
+    override @property size_t outputLength() const { return m_output_bits / 8; }
 
     HashFunction clone() const
     {
-        return new Keccak_1600(m_output_bits);
+        return new Keccak1600(m_output_bits);
     }
 
     @property string name() const
@@ -63,7 +63,7 @@ public:
     }
 
 private:
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         if (length == 0)
             return;
@@ -85,7 +85,7 @@ private:
             
             while (to_take && to_take % 8 == 0)
             {
-                m_S[m_S_pos / 8] ^= load_littleEndian!ulong(input, 0);
+                m_S[m_S_pos / 8] ^= loadLittleEndian!ulong(input, 0);
                 m_S_pos += 8;
                 input += 8;
                 to_take -= 8;
@@ -108,7 +108,7 @@ private:
         }
     }
 
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
         Vector!ubyte padding = Vector!ubyte(m_bitrate / 8 - m_S_pos);
         
@@ -128,14 +128,14 @@ private:
     }
 
     size_t m_output_bits, m_bitrate;
-    Secure_Vector!ulong m_S;
+    SecureVector!ulong m_S;
     size_t m_S_pos;
 }
 
 
 
 
-void keccak_f_1600(ref ulong[25] A) pure
+void keccakF1600(ref ulong[25] A) pure
 {
     __gshared immutable ulong[24] RC = [
         0x0000000000000001, 0x0000000000008082, 0x800000000000808A,
@@ -156,37 +156,37 @@ void keccak_f_1600(ref ulong[25] A) pure
         const ulong C3 = A[3] ^ A[8] ^ A[13] ^ A[18] ^ A[23];
         const ulong C4 = A[4] ^ A[9] ^ A[14] ^ A[19] ^ A[24];
         
-        const ulong D0 = rotate_left(C0, 1) ^ C3;
-        const ulong D1 = rotate_left(C1, 1) ^ C4;
-        const ulong D2 = rotate_left(C2, 1) ^ C0;
-        const ulong D3 = rotate_left(C3, 1) ^ C1;
-        const ulong D4 = rotate_left(C4, 1) ^ C2;
+        const ulong D0 = rotateLeft(C0, 1) ^ C3;
+        const ulong D1 = rotateLeft(C1, 1) ^ C4;
+        const ulong D2 = rotateLeft(C2, 1) ^ C0;
+        const ulong D3 = rotateLeft(C3, 1) ^ C1;
+        const ulong D4 = rotateLeft(C4, 1) ^ C2;
         
         const ulong B00 = A[ 0] ^ D1;
-        const ulong B01 = rotate_left(A[ 6] ^ D2, 44);
-        const ulong B02 = rotate_left(A[12] ^ D3, 43);
-        const ulong B03 = rotate_left(A[18] ^ D4, 21);
-        const ulong B04 = rotate_left(A[24] ^ D0, 14);
-        const ulong B05 = rotate_left(A[ 3] ^ D4, 28);
-        const ulong B06 = rotate_left(A[ 9] ^ D0, 20);
-        const ulong B07 = rotate_left(A[10] ^ D1, 3);
-        const ulong B08 = rotate_left(A[16] ^ D2, 45);
-        const ulong B09 = rotate_left(A[22] ^ D3, 61);
-        const ulong B10 = rotate_left(A[ 1] ^ D2, 1);
-        const ulong B11 = rotate_left(A[ 7] ^ D3, 6);
-        const ulong B12 = rotate_left(A[13] ^ D4, 25);
-        const ulong B13 = rotate_left(A[19] ^ D0, 8);
-        const ulong B14 = rotate_left(A[20] ^ D1, 18);
-        const ulong B15 = rotate_left(A[ 4] ^ D0, 27);
-        const ulong B16 = rotate_left(A[ 5] ^ D1, 36);
-        const ulong B17 = rotate_left(A[11] ^ D2, 10);
-        const ulong B18 = rotate_left(A[17] ^ D3, 15);
-        const ulong B19 = rotate_left(A[23] ^ D4, 56);
-        const ulong B20 = rotate_left(A[ 2] ^ D3, 62);
-        const ulong B21 = rotate_left(A[ 8] ^ D4, 55);
-        const ulong B22 = rotate_left(A[14] ^ D0, 39);
-        const ulong B23 = rotate_left(A[15] ^ D1, 41);
-        const ulong B24 = rotate_left(A[21] ^ D2, 2);
+        const ulong B01 = rotateLeft(A[ 6] ^ D2, 44);
+        const ulong B02 = rotateLeft(A[12] ^ D3, 43);
+        const ulong B03 = rotateLeft(A[18] ^ D4, 21);
+        const ulong B04 = rotateLeft(A[24] ^ D0, 14);
+        const ulong B05 = rotateLeft(A[ 3] ^ D4, 28);
+        const ulong B06 = rotateLeft(A[ 9] ^ D0, 20);
+        const ulong B07 = rotateLeft(A[10] ^ D1, 3);
+        const ulong B08 = rotateLeft(A[16] ^ D2, 45);
+        const ulong B09 = rotateLeft(A[22] ^ D3, 61);
+        const ulong B10 = rotateLeft(A[ 1] ^ D2, 1);
+        const ulong B11 = rotateLeft(A[ 7] ^ D3, 6);
+        const ulong B12 = rotateLeft(A[13] ^ D4, 25);
+        const ulong B13 = rotateLeft(A[19] ^ D0, 8);
+        const ulong B14 = rotateLeft(A[20] ^ D1, 18);
+        const ulong B15 = rotateLeft(A[ 4] ^ D0, 27);
+        const ulong B16 = rotateLeft(A[ 5] ^ D1, 36);
+        const ulong B17 = rotateLeft(A[11] ^ D2, 10);
+        const ulong B18 = rotateLeft(A[17] ^ D3, 15);
+        const ulong B19 = rotateLeft(A[23] ^ D4, 56);
+        const ulong B20 = rotateLeft(A[ 2] ^ D3, 62);
+        const ulong B21 = rotateLeft(A[ 8] ^ D4, 55);
+        const ulong B22 = rotateLeft(A[14] ^ D0, 39);
+        const ulong B23 = rotateLeft(A[15] ^ D1, 41);
+        const ulong B24 = rotateLeft(A[21] ^ D2, 2);
         
         A[ 0] = B00 ^ (~B01 & B02);
         A[ 1] = B01 ^ (~B02 & B03);

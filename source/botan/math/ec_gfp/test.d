@@ -18,15 +18,15 @@ import botan.utils.types;
 string toString(PointGFp point) {
     import std.array : Appender;
     Appender!string output;
-    output ~= "(" ~ point.get_affine_x() ~ " " ~ point.get_affine_y() ~ " )";
+    output ~= "(" ~ point.getAffineX() ~ " " ~ point.getAffineY() ~ " )";
     return output.data;
 }
 
-PointGFp create_random_point(RandomNumberGenerator rng, const CurveGFp curve)
+PointGFp createRandomPoint(RandomNumberGenerator rng, const CurveGFp curve)
 {
-    const BigInt p = curve.get_p();
+    const BigInt p = curve.getP();
     
-    Modular_Reducer mod_p = Modular_Reducer(p);
+    ModularReducer mod_p = ModularReducer(p);
     
     while(true)
     {
@@ -45,7 +45,7 @@ PointGFp create_random_point(RandomNumberGenerator rng, const CurveGFp curve)
     }
 }
 
-size_t test_point_turn_on_sp_red_mul()
+size_t testPointTurnOnSpRedMul()
 {
     size_t fails = 0;
     
@@ -59,10 +59,10 @@ size_t test_point_turn_on_sp_red_mul()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode(p_secp);
-    Vector!ubyte sv_a_secp = hex_decode(a_secp);
-    Vector!ubyte sv_b_secp = hex_decode(b_secp);
-    Vector!ubyte sv_G_secp_comp = hex_decode(G_secp_comp);
+    Vector!ubyte sv_p_secp = hexDecode(p_secp);
+    Vector!ubyte sv_a_secp = hexDecode(a_secp);
+    Vector!ubyte sv_b_secp = hexDecode(b_secp);
+    Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
     BigInt bi_p_secp = BigInt.decode(&sv_p_secp[0], sv_p_secp.length);
     BigInt bi_a_secp = BigInt.decode(&sv_a_secp[0], sv_a_secp.length);
     BigInt bi_b_secp = BigInt.decode(&sv_b_secp[0], sv_b_secp.length);
@@ -85,7 +85,7 @@ size_t test_point_turn_on_sp_red_mul()
     
     p_r1 *= 2;
     p_r2 *= 2;
-    mixin( CHECK_MESSAGE( p_r1.get_affine_x() == p_r2.get_affine_x(), "error with mult2 after extra turn on sp red mul" ) );
+    mixin( CHECK_MESSAGE( p_r1.getAffineX() == p_r2.getAffineX(), "error with mult2 after extra turn on sp red mul" ) );
     mixin( CHECK(` p_r1.get_affine_x() != 0 `) );
     mixin( CHECK(` p_r2.get_affine_x() != 0 `) );
     r1 *= 2;
@@ -93,7 +93,7 @@ size_t test_point_turn_on_sp_red_mul()
     r2 *= 2;
     
     mixin( CHECK_MESSAGE( r1 == r2, "error with mult2 after extra turn on sp red mul" ) );
-    mixin( CHECK_MESSAGE( r1.get_affine_x() == r2.get_affine_x(), "error with mult2 after extra turn on sp red mul" ) );
+    mixin( CHECK_MESSAGE( r1.getAffineX() == r2.getAffineX(), "error with mult2 after extra turn on sp red mul" ) );
     mixin( CHECK(` r1.get_affine_x() != 0 `) );
     r1 += p_G;
     r2 += p_G2;
@@ -111,7 +111,7 @@ size_t test_point_turn_on_sp_red_mul()
     return fails;
 }
 
-size_t test_coordinates()
+size_t testCoordinates()
 {
     size_t fails = 0;
     
@@ -123,10 +123,10 @@ size_t test_coordinates()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
@@ -136,8 +136,8 @@ size_t test_coordinates()
     PointGFp p0 = p_G;
     PointGFp p1 = p_G * 2;
     PointGFp point_exp = PointGFp(secp160r1, exp_affine_x, exp_affine_y);
-    if (!point_exp.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
+    if (!point_exp.onTheCurve())
+        throw new InternalError("Point not on the curve");
     
     mixin( CHECK_MESSAGE(  p1.get_affine_x() == exp_affine_x, " p1_x = " ~ p1.get_affine_x() " ~\n" ~ "exp_x = " ~ exp_affine_x " ~\n" ) );
     mixin( CHECK_MESSAGE(  p1.get_affine_y() == exp_affine_y, " p1_y = " ~ p1.get_affine_y() " ~\n" ~ "exp_y = " ~ exp_affine_y " ~\n" ) );
@@ -157,32 +157,32 @@ Section 2.1.2
 --------
 */
 
-size_t test_point_transformation ()
+size_t testPointTransformation ()
 {
     size_t fails = 0;
     
     // get a vailid point
-    EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
+    ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     PointGFp p = dom_pars.get_base_point();
     
     // get a copy
     PointGFp q = p;
     
-    mixin( CHECK_MESSAGE(  p.get_affine_x() == q.get_affine_x(), "affine_x changed during copy" ) );
-    mixin( CHECK_MESSAGE(  p.get_affine_y() == q.get_affine_y(), "affine_y changed during copy" ) );
+    mixin( CHECK_MESSAGE(  p.getAffineX() == q.getAffineX(), "affine_x changed during copy" ) );
+    mixin( CHECK_MESSAGE(  p.getAffineY() == q.getAffineY(), "affine_y changed during copy" ) );
     return fails;
 }
 
-size_t test_point_mult ()
+size_t testPointMult ()
 {
     size_t fails = 0;
     
-    EC_Group secp160r1 = EC_Group(OIDS.lookup("secp160r1"));
+    ECGroup secp160r1 = ECGroup(OIDS.lookup("secp160r1"));
     
-    const CurveGFp curve = secp160r1.get_curve();
+    const CurveGFp curve = secp160r1.getCurve()();
     
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_G_secp_comp = hex_decode(G_secp_comp);
+    Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
     PointGFp p_G = OS2ECP(sv_G_secp_comp, curve);
     
     BigInt d_U = BigInt("0xaa374ffc3ce144e6b073307972cb6d57b2a4e982");
@@ -193,7 +193,7 @@ size_t test_point_mult ()
     return fails;
 }
 
-size_t test_point_negative()
+size_t testPointNegative()
 {
     size_t fails = 0;
     
@@ -202,10 +202,10 @@ size_t test_point_negative()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
@@ -224,12 +224,12 @@ size_t test_point_negative()
     return fails;
 }
 
-size_t test_zeropoint()
+size_t testZeropoint()
 {
     size_t fails = 0;
     
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt("0xffffffffffffffffffffffffffffffff7fffffff");
     BigInt bi_a_secp = BigInt("0xffffffffffffffffffffffffffffffff7ffffffc");
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
@@ -239,15 +239,15 @@ size_t test_zeropoint()
                            BigInt("16984103820118642236896513183038186009872590470"),
                            BigInt("1373093393927139016463695321221277758035357890939"));
     
-    if (!p1.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
+    if (!p1.onTheCurve())
+        throw new InternalError("Point not on the curve");
     p1 -= p1;
     
-    mixin( CHECK_MESSAGE( p1.is_zero(), "p - q with q = p is not zero!" ) );
+    mixin( CHECK_MESSAGE( p1.isZero(), "p - q with q = p is not zero!" ) );
     return fails;
 }
 
-size_t test_zeropoint_enc_dec()
+size_t testZeropointEncDec()
 {
     size_t fails = 0;
     
@@ -257,7 +257,7 @@ size_t test_zeropoint_enc_dec()
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     
     PointGFp p = PointGFp(curve);
-    mixin( CHECK_MESSAGE( p.is_zero(), "by constructor created zeropoint is no zeropoint!" ) );
+    mixin( CHECK_MESSAGE( p.isZero(), "by constructor created zeropoint is no zeropoint!" ) );
     
     
     Vector!ubyte sv_p = unlock(EC2OSP(p, PointGFp.UNCOMPRESSED));
@@ -274,12 +274,12 @@ size_t test_zeropoint_enc_dec()
     return fails;
 }
 
-size_t test_calc_with_zeropoint()
+size_t testCalcWithZeropoint()
 {
     size_t fails = 0;
     
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt("0xffffffffffffffffffffffffffffffff7fffffff");
     BigInt bi_a_secp = BigInt("0xffffffffffffffffffffffffffffffff7ffffffc");
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
@@ -289,12 +289,12 @@ size_t test_calc_with_zeropoint()
                           BigInt("16984103820118642236896513183038186009872590470"),
                           BigInt("1373093393927139016463695321221277758035357890939"));
     
-    if (!p.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
-    mixin( CHECK_MESSAGE( !p.is_zero(), "created is zeropoint, shouldn't be!" ) );
+    if (!p.onTheCurve())
+        throw new InternalError("Point not on the curve");
+    mixin( CHECK_MESSAGE( !p.isZero(), "created is zeropoint, shouldn't be!" ) );
     
     PointGFp zero = PointGFp(curve);
-    mixin( CHECK_MESSAGE( zero.is_zero(), "by constructor created zeropoint is no zeropoint!" ) );
+    mixin( CHECK_MESSAGE( zero.isZero(), "by constructor created zeropoint is no zeropoint!" ) );
     
     PointGFp res = p + zero;
     mixin( CHECK_MESSAGE( res == p, "point + zeropoint is not equal the point" ) );
@@ -303,11 +303,11 @@ size_t test_calc_with_zeropoint()
     mixin( CHECK_MESSAGE( res == p, "point - zeropoint is not equal the point" ) );
     
     res = zero * 32432243;
-    mixin( CHECK_MESSAGE( res.is_zero(), "zeropoint * skalar is not a zero-point!" ) );
+    mixin( CHECK_MESSAGE( res.isZero(), "zeropoint * skalar is not a zero-point!" ) );
     return fails;
 }
 
-size_t test_add_point()
+size_t testAddPoint()
 {
     size_t fails = 0;
     
@@ -316,10 +316,10 @@ size_t test_add_point()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
@@ -339,7 +339,7 @@ size_t test_add_point()
     return fails;
 }
 
-size_t test_sub_point()
+size_t testSubPoint()
 {
     size_t fails = 0;
     
@@ -353,10 +353,10 @@ size_t test_sub_point()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
@@ -376,7 +376,7 @@ size_t test_sub_point()
     return fails;
 }
 
-size_t test_mult_point()
+size_t testMultPoint()
 {
     size_t fails = 0;
     
@@ -389,10 +389,10 @@ size_t test_mult_point()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
@@ -402,7 +402,7 @@ size_t test_mult_point()
     PointGFp p0 = p_G;
     PointGFp p1 = p_G *= 2;
     
-    p1 *= p0.get_affine_x();
+    p1 *= p0.getAffineX();
     
     PointGFp expected = PointGFp(secp160r1, exp_mult_x, exp_mult_y);
     
@@ -410,7 +410,7 @@ size_t test_mult_point()
     return fails;
 }
 
-size_t test_basic_operations()
+size_t testBasicOperations()
 {
     size_t fails = 0;
     
@@ -419,10 +419,10 @@ size_t test_basic_operations()
     string a_secp = "ffffffffffffffffffffffffffffffff7ffffffc";
     string b_secp = "1c97befc54bd7a8b65acf89f81d4d4adc565fa45";
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
@@ -471,7 +471,7 @@ size_t test_basic_operations()
     return fails;
 }
 
-size_t test_enc_dec_compressed_160()
+size_t testEncDecCompressed160()
 {
     size_t fails = 0;
     
@@ -482,10 +482,10 @@ size_t test_enc_dec_compressed_160()
     string G_secp_comp = "024A96B5688EF573284664698968C38BB913CBFC82";
     string G_order_secp_comp = "0100000000000000000001F4C8F927AED3CA752257";
     
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
@@ -500,7 +500,7 @@ size_t test_enc_dec_compressed_160()
     return fails;
 }
 
-size_t test_enc_dec_compressed_256()
+size_t testEncDecCompressed256()
 {
     size_t fails = 0;
     
@@ -511,10 +511,10 @@ size_t test_enc_dec_compressed_256()
     string G_secp_comp = "036B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296";
     string G_order_secp_comp = "ffffffff00000000ffffffffffffffffBCE6FAADA7179E84F3B9CAC2FC632551";
     
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_comp = hex_decode( G_secp_comp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G_secp_comp );
     
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
@@ -530,7 +530,7 @@ size_t test_enc_dec_compressed_256()
 }
 
 
-size_t test_enc_dec_uncompressed_112()
+size_t testEncDecUncompressed112()
 {
     size_t fails = 0;
     
@@ -542,10 +542,10 @@ size_t test_enc_dec_uncompressed_112()
     string G_secp_uncomp = "044BA30AB5E892B4E1649DD0928643ADCD46F5882E3747DEF36E956E97";
     string G_order_secp_uncomp = "36DF0AAFD8B8D7597CA10520D04B";
     
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_uncomp = hex_decode( G_secp_uncomp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_uncomp = hexDecode( G_secp_uncomp );
     
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
@@ -560,7 +560,7 @@ size_t test_enc_dec_uncompressed_112()
     return fails;
 }
 
-size_t test_enc_dec_uncompressed_521()
+size_t testEncDecUncompressed521()
 {
     size_t fails = 0;
     
@@ -571,10 +571,10 @@ size_t test_enc_dec_uncompressed_521()
     string G_secp_uncomp = "0400C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2ffA8DE3348B3C1856A429BF97E7E31C2E5BD66011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650";
     string G_order_secp_uncomp = "01ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409";
     
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_uncomp = hex_decode( G_secp_uncomp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_uncomp = hexDecode( G_secp_uncomp );
     
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
@@ -585,14 +585,14 @@ size_t test_enc_dec_uncompressed_521()
     PointGFp p_G = OS2ECP( sv_G_secp_uncomp, secp160r1 );
     
     Vector!ubyte sv_result = unlock(EC2OSP(p_G, PointGFp.UNCOMPRESSED));
-    string result = hex_encode(&sv_result[0], sv_result.length);
-    string exp_result = hex_encode(&sv_G_secp_uncomp[0], sv_G_secp_uncomp.length);
+    string result = hexEncode(&sv_result[0], sv_result.length);
+    string exp_result = hexEncode(&sv_G_secp_uncomp[0], sv_G_secp_uncomp.length);
     
     mixin( CHECK_MESSAGE(  sv_result == sv_G_secp_uncomp, "\ncalc. result = " ~ result ~ "\nexp. result = " ~ exp_result " ~\n" ) );
     return fails;
 }
 
-size_t test_enc_dec_uncompressed_521_prime_too_large()
+size_t testEncDecUncompressed521PrimeTooLarge()
 {
     size_t fails = 0;
     
@@ -603,10 +603,10 @@ size_t test_enc_dec_uncompressed_521_prime_too_large()
     string G_secp_uncomp = "0400C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2ffA8DE3348B3C1856A429BF97E7E31C2E5BD66011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650";
     string G_order_secp_uncomp = "01ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409";
     
-    Vector!ubyte sv_p_secp = hex_decode( p_secp );
-    Vector!ubyte sv_a_secp = hex_decode( a_secp );
-    Vector!ubyte sv_b_secp = hex_decode( b_secp );
-    Vector!ubyte sv_G_secp_uncomp = hex_decode( G_secp_uncomp );
+    Vector!ubyte sv_p_secp = hexDecode( p_secp );
+    Vector!ubyte sv_a_secp = hexDecode( a_secp );
+    Vector!ubyte sv_b_secp = hexDecode( b_secp );
+    Vector!ubyte sv_G_secp_uncomp = hexDecode( G_secp_uncomp );
     
     BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
@@ -618,8 +618,8 @@ size_t test_enc_dec_uncompressed_521_prime_too_large()
     try
     {
         p_G = Unique!PointGFp(new PointGFp(OS2ECP(sv_G_secp_uncomp, secp521r1)));
-        if (!p_G.on_the_curve())
-            throw new Internal_Error("Point not on the curve");
+        if (!p_G.onTheCurve())
+            throw new InternalError("Point not on the curve");
     }
     catch (Exception e)
     {
@@ -630,19 +630,19 @@ size_t test_enc_dec_uncompressed_521_prime_too_large()
     return fails;
 }
 
-size_t test_gfp_store_restore()
+size_t testGfpStoreRestore()
 {
     size_t fails = 0;
     
     // generate point
-    //EC_Group dom_pars = global_config().get_ec_dompar("1.3.132.0.8");
-    //EC_Group dom_pars = EC_Group("1.3.132.0.8");
-    EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
+    //ECGroup dom_pars = global_config().get_ec_dompar("1.3.132.0.8");
+    //ECGroup dom_pars = ECGroup("1.3.132.0.8");
+    ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     PointGFp p = dom_pars.get_base_point();
     
     //store point (to string)
     Vector!ubyte sv_mes = unlock(EC2OSP(p, PointGFp.COMPRESSED));
-    PointGFp new_p = OS2ECP(sv_mes, dom_pars.get_curve());
+    PointGFp new_p = OS2ECP(sv_mes, dom_pars.getCurve()());
     
     mixin( CHECK_MESSAGE(  p == new_p, "original and restored point are different!" ) );
     return fails;
@@ -650,13 +650,13 @@ size_t test_gfp_store_restore()
 
 
 // maybe move this test
-size_t test_cdc_curve_33()
+size_t testCdcCurve33()
 {
     size_t fails = 0;
     
     string G_secp_uncomp = "04081523d03d4f12cd02879dea4bf6a4f3a7df26ed888f10c5b2235a1274c386a2f218300dee6ed217841164533bcdc903f07a096f9fbf4ee95bac098a111f296f5830fe5c35b3e344d5df3a2256985f64fbe6d0edcc4c61d18bef681dd399df3d0194c5a4315e012e0245ecea56365baa9e8be1f7";
     
-    Vector!ubyte sv_G_uncomp = hex_decode( G_secp_uncomp );
+    Vector!ubyte sv_G_uncomp = hexDecode( G_secp_uncomp );
     
     BigInt bi_p_secp = BigInt("2117607112719756483104013348936480976596328609518055062007450442679169492999007105354629105748524349829824407773719892437896937279095106809");
     BigInt bi_a_secp = BigInt("0xa377dede6b523333d36c78e9b0eaa3bf48ce93041f6d4fc34014d08f6833807498deedd4290101c5866e8dfb589485d13357b9e78c2d7fbe9fe");
@@ -667,8 +667,8 @@ size_t test_cdc_curve_33()
     bool exc = false;
     try
     {
-        if (!p_G.on_the_curve())
-            throw new Internal_Error("Point not on the curve");
+        if (!p_G.onTheCurve())
+            throw new InternalError("Point not on the curve");
     }
     catch (Exception)
     {
@@ -678,14 +678,14 @@ size_t test_cdc_curve_33()
     return fails;
 }
 
-size_t test_more_zeropoint()
+size_t testMoreZeropoint()
 {
     size_t fails = 0;
     
     // by Falko
     
     string G = "024a96b5688ef573284664698968c38bb913cbfc82";
-    Vector!ubyte sv_G_secp_comp = hex_decode( G );
+    Vector!ubyte sv_G_secp_comp = hexDecode( G );
     BigInt bi_p = BigInt("0xffffffffffffffffffffffffffffffff7fffffff");
     BigInt bi_a = BigInt("0xffffffffffffffffffffffffffffffff7ffffffc");
     BigInt bi_b = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
@@ -695,55 +695,55 @@ size_t test_more_zeropoint()
                            BigInt("16984103820118642236896513183038186009872590470"),
                            BigInt("1373093393927139016463695321221277758035357890939"));
     
-    if (!p1.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
+    if (!p1.onTheCurve())
+        throw new InternalError("Point not on the curve");
     PointGFp minus_p1 = -p1;
-    if (!minus_p1.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
+    if (!minus_p1.onTheCurve())
+        throw new InternalError("Point not on the curve");
     PointGFp shouldBeZero = p1 + minus_p1;
-    if (!shouldBeZero.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
+    if (!shouldBeZero.onTheCurve())
+        throw new InternalError("Point not on the curve");
     
     BigInt y1 = p1.get_affine_y();
-    y1 = curve.get_p() - y1;
+    y1 = curve.getP() - y1;
     
-    CHECK_MESSAGE(p1.get_affine_x() == minus_p1.get_affine_x(),
+    CHECK_MESSAGE(p1.getAffineX() == minus_p1.getAffineX(),
                   "problem with minus_p1 : x");
-    CHECK_MESSAGE(minus_p1.get_affine_y() == y1,
+    CHECK_MESSAGE(minus_p1.getAffineY() == y1,
                   "problem with minus_p1 : y");
     
     PointGFp zero = PointGFp(curve);
-    if (!zero.on_the_curve())
-        throw new Internal_Error("Point not on the curve");
+    if (!zero.onTheCurve())
+        throw new InternalError("Point not on the curve");
     mixin( CHECK_MESSAGE( p1 + zero == p1, "addition of zero modified point" ) );
     
-    mixin( CHECK_MESSAGE( shouldBeZero.is_zero(), "p - q with q = p is not zero!" ) );
+    mixin( CHECK_MESSAGE( shouldBeZero.isZero(), "p - q with q = p is not zero!" ) );
     return fails;
 }
 
-size_t test_mult_by_order()
+size_t testMultByOrder()
 {
     size_t fails = 0;
     
     // generate point
-    EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
+    ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     PointGFp p = dom_pars.get_base_point();
     PointGFp shouldBeZero = p * dom_pars.get_order();
     
-    mixin( CHECK_MESSAGE( shouldBeZero.is_zero(), "G * order != O" ) );
+    mixin( CHECK_MESSAGE( shouldBeZero.isZero(), "G * order != O" ) );
     return fails;
 }
 
-size_t test_point_swap()
+size_t testPointSwap()
 {
     size_t fails = 0;
     
-    EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
+    ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     
     AutoSeeded_RNG rng;
     
-    PointGFp a = PointGFp(create_random_point(rng, dom_pars.get_curve()));
-    PointGFp b = PointGFp(create_random_point(rng, dom_pars.get_curve()));
+    PointGFp a = PointGFp(create_random_point(rng, dom_pars.getCurve()()));
+    PointGFp b = PointGFp(create_random_point(rng, dom_pars.getCurve()()));
     b *= BigInt(20);
     
     PointGFp c = PointGFp(a);
@@ -759,16 +759,16 @@ size_t test_point_swap()
 * This test verifies that the side channel attack resistant multiplication function
 * yields the same result as the normal (insecure) multiplication via operator*=
 */
-size_t test_mult_sec_mass()
+size_t testMultSecMass()
 {
     size_t fails = 0;
     
     AutoSeeded_RNG rng;
     
-    EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
+    ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     for(int i = 0; i<50; i++)
     {
-        PointGFp a = PointGFp(create_random_point(rng, dom_pars.get_curve()));
+        PointGFp a = PointGFp(create_random_point(rng, dom_pars.getCurve()()));
         BigInt scal = BigInt(BigInt(rng, 40));
         PointGFp b = a * scal;
         PointGFp c = PointGFp(a);
@@ -779,12 +779,12 @@ size_t test_mult_sec_mass()
     return fails;
 }
 
-size_t test_curve_cp_ctor()
+size_t testCurveCpCtor()
 {
     try
     {
-        EC_Group dom_pars = EC_Group(OID("1.3.132.0.8"));
-        CurveGFp curve = CurveGFp(dom_pars.get_curve());
+        ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
+        CurveGFp curve = CurveGFp(dom_pars.getCurve()());
     }
     catch (Throwable)
     {
@@ -799,31 +799,31 @@ unittest
 {
     size_t fails = 0;
     
-    fails += test_point_turn_on_sp_red_mul();
-    fails += test_coordinates();
-    fails += test_point_transformation ();
-    fails += test_point_mult ();
-    fails += test_point_negative();
-    fails += test_zeropoint();
-    fails += test_zeropoint_enc_dec();
-    fails += test_calc_with_zeropoint();
-    fails += test_add_point();
-    fails += test_sub_point();
-    fails += test_mult_point();
-    fails += test_basic_operations();
-    fails += test_enc_dec_compressed_160();
-    fails += test_enc_dec_compressed_256();
-    fails += test_enc_dec_uncompressed_112();
-    fails += test_enc_dec_uncompressed_521();
-    fails += test_enc_dec_uncompressed_521_prime_too_large();
-    fails += test_gfp_store_restore();
-    fails += test_cdc_curve_33();
-    fails += test_more_zeropoint();
-    fails += test_mult_by_order();
-    fails += test_point_swap();
-    fails += test_mult_sec_mass();
-    fails += test_curve_cp_ctor();
+    fails += testPointTurnOnSpRedMul();
+    fails += testCoordinates();
+    fails += testPointTransformation ();
+    fails += testPointMult ();
+    fails += testPointNegative();
+    fails += testZeropoint();
+    fails += testZeropointEncDec();
+    fails += testCalcWithZeropoint();
+    fails += testAddPoint();
+    fails += testSubPoint();
+    fails += testMultPoint();
+    fails += testBasicOperations();
+    fails += testEncDecCompressed160();
+    fails += testEncDecCompressed256();
+    fails += testEncDecUncompressed112();
+    fails += testEncDecUncompressed521();
+    fails += testEncDecUncompressed521PrimeTooLarge();
+    fails += testGfpStoreRestore();
+    fails += testCdcCurve33();
+    fails += testMoreZeropoint();
+    fails += testMultByOrder();
+    fails += testPointSwap();
+    fails += testMultSecMass();
+    fails += testCurveCpCtor();
     
-    test_report("ECC", 61, fails);
+    testReport("ECC", 61, fails);
 
 }

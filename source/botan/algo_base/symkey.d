@@ -27,9 +27,9 @@ public:
     @property size_t length() const { return m_bits.length; }
     
     /**
-    * @return this object as a Secure_Vector!ubyte
+    * @return this object as a SecureVector!ubyte
     */
-    Secure_Vector!ubyte bits_of() const { return m_bits; }
+    SecureVector!ubyte bitsOf() const { return m_bits; }
     
     /**
     * @return start of this string
@@ -46,7 +46,7 @@ public:
     */
     string toString() const
     {
-        return hex_encode(m_bits.ptr, m_bits.length);
+        return hexEncode(m_bits.ptr, m_bits.length);
     }
         
     /**
@@ -65,7 +65,7 @@ public:
     /**
         * Force to have odd parity
         */
-    void set_odd_parity()
+    void setOddParity()
     {
         __gshared immutable ubyte[256] ODD_PARITY = [
                 0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x07, 0x07, 0x08, 0x08, 0x0B, 0x0B,
@@ -102,7 +102,7 @@ public:
     this(in string hex_string)
     {
         m_bits.resize(1 + hex_string.length / 2);
-        m_bits.resize(hex_decode(m_bits.ptr, hex_string));
+        m_bits.resize(hexDecode(m_bits.ptr, hex_string));
     }
 
     /**
@@ -112,7 +112,7 @@ public:
     */
     this(RandomNumberGenerator rng, size_t length)
     {
-        m_bits = rng.random_vec(length);
+        m_bits = rng.randomVec(length);
     }
     
     /**
@@ -129,13 +129,13 @@ public:
     * Create a new OctetString
     * @param input = a bytestring
     */
-    this(in Secure_Vector!ubyte input) { bits = input; }
+    this(in SecureVector!ubyte input) { bits = input; }
     
     /**
     * Create a new OctetString
     * @param input = a bytestring
     */
-    this(in Vector!ubyte input) {  bits = Secure_Vector!ubyte(input.ptr[0 .. input.length]); }
+    this(in Vector!ubyte input) {  bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**
@@ -146,7 +146,7 @@ public:
     */
     bool opEquals(in OctetString other)
     {
-        return (bits_of() == other.bits_of());
+        return (bitsOf() == other.bitsOf());
     }
 
     /**
@@ -169,9 +169,9 @@ public:
     OctetString opBinary(string op)(in OctetString other)
         if (op == "~") 
     {
-        Secure_Vector!ubyte output;
-        output ~= bits_of();
-        output ~= other.bits_of();
+        SecureVector!ubyte output;
+        output ~= bitsOf();
+        output ~= other.bitsOf();
         return OctetString(output);
     }
     
@@ -184,15 +184,15 @@ public:
     OctetString opBinary(string op)(in OctetString other)
         if (op == "^") 
     {
-        Secure_Vector!ubyte ret = Secure_Vector!ubyte(max(length(), other.length));
+        SecureVector!ubyte ret = SecureVector!ubyte(max(length(), other.length));
         
-        copy_mem(ret.ptr, k1.ptr, k1.length);
+        copyMem(ret.ptr, k1.ptr, k1.length);
         xor_buf(ret.ptr, k2.ptr, k2.length);
         return OctetString(ret);
     }
 
 private:
-    Secure_Vector!ubyte m_bits;
+    SecureVector!ubyte m_bits;
 }
 
 /**

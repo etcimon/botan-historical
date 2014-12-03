@@ -16,7 +16,7 @@ import std.exception;
 * Filter mixin that breaks input into blocks, useful for
 * cipher modes
 */
-class Buffered_Filter
+class BufferedFilter
 {
 public:
     /**
@@ -34,7 +34,7 @@ public:
         {
             size_t to_copy = std.algorithm.min(m_buffer.length - m_buffer_pos, input_size);
             
-            copy_mem(&m_buffer[m_buffer_pos], input, to_copy);
+            copyMem(&m_buffer[m_buffer_pos], input, to_copy);
             m_buffer_pos += to_copy;
             
             input += to_copy;
@@ -48,7 +48,7 @@ public:
             
             m_buffer_pos -= total_to_consume;
             
-            copy_mem(m_buffer.ptr, m_buffer.ptr + total_to_consume, buffer_pos);
+            copyMem(m_buffer.ptr, m_buffer.ptr + total_to_consume, buffer_pos);
         }
         
         if (input_size >= m_final_minimum)
@@ -65,7 +65,7 @@ public:
             }
         }
         
-        copy_mem(&m_buffer[buffer_pos], input, input_size);
+        copyMem(&m_buffer[buffer_pos], input, input_size);
         m_buffer_pos += input_size;
     }
 
@@ -79,10 +79,10 @@ public:
     * Will throw new an exception if less than final_minimum bytes were
     * written into the filter.
     */
-    void end_msg()
+    void endMsg()
     {
         if (m_buffer_pos < m_final_minimum)
-            throw new Exception("Buffered filter end_msg without enough input");
+            throw new Exception("Buffered filter endMsg without enough input");
         
         size_t spare_blocks = (m_buffer_pos - m_final_minimum) / m_main_block_mod;
         
@@ -114,10 +114,10 @@ public:
         m_final_minimum = final_minimum;
         
         if (m_main_block_mod == 0)
-            throw new Invalid_Argument("main_block_mod == 0");
+            throw new InvalidArgument("main_block_mod == 0");
         
         if (m_final_minimum > m_main_block_mod)
-            throw new Invalid_Argument("final_minimum > main_block_mod");
+            throw new InvalidArgument("final_minimum > main_block_mod");
         
         m_buffer.resize(2 * m_main_block_mod);
         m_buffer_pos = 0;
@@ -130,7 +130,7 @@ protected:
     * @param length = the size of input, guaranteed to be a multiple
     *          of block_size
     */
-    abstract void buffered_block(in ubyte* input, size_t length);
+    abstract void bufferedBlock(in ubyte* input, size_t length);
 
     /**
     * The final block, implemented by subclasses
@@ -138,25 +138,25 @@ protected:
     * @param length = the size of input, guaranteed to be at least
     *          final_minimum bytes
     */
-    abstract void buffered_final(in ubyte* input, size_t length);
+    abstract void bufferedFinal(in ubyte* input, size_t length);
 
     /**
     * @return block size of inputs
     */
-    final size_t buffered_block_size() const { return m_main_block_mod; }
+    final size_t bufferedBlockSize() const { return m_main_block_mod; }
 
     /**
     * @return current position in the buffer
     */
-    final size_t current_position() const { return m_buffer_pos; }
+    final size_t currentPosition() const { return m_buffer_pos; }
 
     /**
     * Reset the buffer position
     */
-    final void buffer_reset() { m_buffer_pos = 0; }
+    final void bufferReset() { m_buffer_pos = 0; }
 private:
     size_t m_main_block_mod, m_final_minimum;
 
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     size_t m_buffer_pos;
 }

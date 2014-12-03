@@ -32,28 +32,28 @@ struct CryptoBox {
     {
         Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
         
-        const Secure_Vector!ubyte cipher_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
+        const SecureVector!ubyte cipher_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
         
-        const Secure_Vector!ubyte mac_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
+        const SecureVector!ubyte mac_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
         
-        SymmetricKey cipher_key = kdf.derive_key(CIPHER_KEY_LENGTH, master_key.bits_of(), cipher_key_salt);
+        SymmetricKey cipher_key = kdf.deriveKey(CIPHER_KEY_LENGTH, master_key.bitsOf(), cipher_key_salt);
         
-        SymmetricKey mac_key = kdf.derive_key(MAC_KEY_LENGTH, master_key.bits_of(), mac_key_salt);
+        SymmetricKey mac_key = kdf.deriveKey(MAC_KEY_LENGTH, master_key.bitsOf(), mac_key_salt);
         
         InitializationVector cipher_iv = InitializationVector(rng, 16);
         
         Unique!MessageAuthenticationCode mac = get_mac(CRYPTOBOX_MAC);
-        mac.set_key(mac_key);
+        mac.setKey(mac_key);
         
-        Pipe pipe = Pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
-        pipe.process_msg(input, input_len);
-        Secure_Vector!ubyte ctext = pipe.read_all(0);
+        Pipe pipe = Pipe(getCipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
+        pipe.processMsg(input, input_len);
+        SecureVector!ubyte ctext = pipe.read_all(0);
         
-        Secure_Vector!ubyte output = Secure_Vector!ubyte(MAGIC_LENGTH);
-        store_bigEndian(CRYPTOBOX_MAGIC, output.ptr);
+        SecureVector!ubyte output = SecureVector!ubyte(MAGIC_LENGTH);
+        storeBigEndian(CRYPTOBOX_MAGIC, output.ptr);
         output ~= cipher_key_salt;
         output ~= mac_key_salt;
-        output ~= cipher_iv.bits_of();
+        output ~= cipher_iv.bitsOf();
         output ~= ctext;
 
         mac.update(output);
@@ -69,7 +69,7 @@ struct CryptoBox {
     * @param key = the key used to encrypt the message
     * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
     */
-    static Secure_Vector!ubyte decrypt(in ubyte* input, size_t input_len, in SymmetricKey master_key)
+    static SecureVector!ubyte decrypt(in ubyte* input, size_t input_len, in SymmetricKey master_key)
     {
         __gshared immutable size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
         
@@ -77,10 +77,10 @@ struct CryptoBox {
                                                          MIN_CTEXT_SIZE + MAC_OUTPUT_LENGTH;
         
         if (input_len < MIN_POSSIBLE_LENGTH)
-            throw new Decoding_Error("Encrypted input too short to be valid");
+            throw new DecodingError("Encrypted input too short to be valid");
         
-        if (load_bigEndian!uint(input, 0) != CRYPTOBOX_MAGIC)
-            throw new Decoding_Error("Unknown header value in cryptobox");
+        if (loadBigEndian!uint(input, 0) != CRYPTOBOX_MAGIC)
+            throw new DecodingError("Unknown header value in cryptobox");
         
         Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
         
@@ -88,30 +88,30 @@ struct CryptoBox {
         
         const ubyte* mac_key_salt = &input[MAGIC_LENGTH + KEY_KDF_SALT_LENGTH];
         
-        SymmetricKey mac_key = kdf.derive_key(MAC_KEY_LENGTH,
-                                              master_key.bits_of(),
+        SymmetricKey mac_key = kdf.deriveKey(MAC_KEY_LENGTH,
+                                              master_key.bitsOf(),
                                               mac_key_salt,
                                               KEY_KDF_SALT_LENGTH);
         
         Unique!MessageAuthenticationCode mac = get_mac(CRYPTOBOX_MAC);
-        mac.set_key(mac_key);
+        mac.setKey(mac_key);
         
         mac.update(input.ptr, input_len - MAC_OUTPUT_LENGTH);
-        Secure_Vector!ubyte computed_mac = mac.finished();
+        SecureVector!ubyte computed_mac = mac.finished();
         
         if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], computed_mac.ptr, computed_mac.length))
-            throw new Decoding_Error("MAC verification failed");
+            throw new DecodingError("MAC verification failed");
         
-        SymmetricKey cipher_key = kdf.derive_key(CIPHER_KEY_LENGTH, master_key.bits_of(), cipher_key_salt, KEY_KDF_SALT_LENGTH);
+        SymmetricKey cipher_key = kdf.deriveKey(CIPHER_KEY_LENGTH, master_key.bitsOf(), cipher_key_salt, KEY_KDF_SALT_LENGTH);
         
         InitializationVector cipher_iv = InitializationVector(&input[MAGIC_LENGTH+2*KEY_KDF_SALT_LENGTH], CIPHER_IV_LENGTH);
         
         const size_t CTEXT_OFFSET = MAGIC_LENGTH + 2 * KEY_KDF_SALT_LENGTH + CIPHER_IV_LENGTH;
         
-        Pipe pipe = Pipe(get_cipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, DECRYPTION));
-        pipe.process_msg(&input[CTEXT_OFFSET],
+        Pipe pipe = Pipe(getCipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, DECRYPTION));
+        pipe.processMsg(&input[CTEXT_OFFSET],
         input_len - (MAC_OUTPUT_LENGTH + CTEXT_OFFSET));
-        return pipe.read_all();
+        return pipe.readAll();
     }
 
 }

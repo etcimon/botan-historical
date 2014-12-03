@@ -16,23 +16,23 @@ import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * MD5 in x86 assembly
 */
-final class MD5_X86_32 : MD5
+final class MD5X8632 : MD5
 {
 public:
-    override HashFunction clone() const { return new MD5_X86_32; }
+    override HashFunction clone() const { return new MD5X8632; }
 private:
-    override void compress_n(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
             botan_md5_x86_32_compress(m_digest.ptr, input, m_M.ptr);
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
 }
 
-void botan_md5_x86_32_compress(uint* digest, in ubyte* input, uint* M) pure
+void botanMd5X8632Compress(uint* digest, in ubyte* input, uint* M) pure
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 
@@ -159,6 +159,7 @@ string FF(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) {
             ADD(A, T2)     ~
             ROTL_IMM(A, S) ~
             ADD(A, B);
+}
 
 string GG(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
 {
@@ -171,6 +172,7 @@ string GG(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
             ADD(A, T2)     ~
             ROTL_IMM(A, S) ~
             ADD(A, B);
+}
 
 string HH(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
 {
@@ -182,6 +184,7 @@ string HH(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC)
             ADD(A, T2)     ~
             ROTL_IMM(A, S) ~
             ADD(A, B);
+}
 
 string II(string A, string B, string C, string D, ubyte N, ubyte S, int MAGIC) 
 {

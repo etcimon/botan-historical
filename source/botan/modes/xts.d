@@ -18,7 +18,7 @@ import botan.utils.rounding;
 /**
 * IEEE P1619 XTS Mode
 */
-class XTS_Mode : Cipher_Mode
+class XTSMode : Cipher_Mode
 {
 public:
     final override @property string name() const
@@ -26,40 +26,40 @@ public:
         return cipher().name ~ "/XTS";
     }
 
-    final override Secure_Vector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
     {
-        if (!valid_nonce_length(nonce_len))
-            throw new Invalid_IV_Length(name, nonce_len);
+        if (!validNonceLength(nonce_len))
+            throw new InvalidIVLength(name, nonce_len);
         
-        copy_mem(m_tweak.ptr, nonce, nonce_len);
+        copyMem(m_tweak.ptr, nonce, nonce_len);
         m_tweak_cipher.encrypt(m_tweak.ptr);
         
         update_tweak(0);
         
-        return Secure_Vector!ubyte();
+        return SecureVector!ubyte();
     }
 
-    final override size_t update_granularity() const
+    final override size_t updateGranularity() const
     {
-        return cipher().parallel_bytes();
+        return cipher().parallelBytes();
     }
 
-    final override size_t minimum_final_size() const
+    final override size_t minimumFinalSize() const
     {
         return cipher().block_size + 1;
     }
 
-    final override Key_Length_Specification key_spec() const
+    final override KeyLengthSpecification keySpec() const
     {
-        return cipher().key_spec().multiple(2);
+        return cipher().keySpec().multiple(2);
     }
 
-    final override size_t default_nonce_length() const
+    final override size_t defaultNonceLength() const
     {
         return cipher().block_size;
     }
 
-    final override bool valid_nonce_length(size_t n) const
+    final override bool validNonceLength(size_t n) const
     {
         return cipher().block_size == n;
     }
@@ -75,49 +75,49 @@ protected:
     {
         m_cipher = cipher;
         if (m_cipher.block_size != 8 && m_cipher.block_size != 16)
-            throw new Invalid_Argument("Bad cipher for XTS: " ~ cipher.name);
+            throw new InvalidArgument("Bad cipher for XTS: " ~ cipher.name);
         
         m_tweak_cipher = m_cipher.clone();
-        m_tweak.resize(update_granularity());
+        m_tweak.resize(updateGranularity());
     }
 
     final ubyte* tweak() const { return m_tweak.ptr; }
 
     final BlockCipher cipher() const { return *m_cipher; }
 
-    final void update_tweak(size_t which)
+    final void updateTweak(size_t which)
     {
         const size_t BS = m_tweak_cipher.block_size;
         
         if (which > 0)
             poly_double(m_tweak.ptr, &m_tweak[(which-1)*BS], BS);
         
-        const size_t blocks_in_tweak = update_granularity() / BS;
+        const size_t blocks_in_tweak = updateGranularity() / BS;
         
         for (size_t i = 1; i < blocks_in_tweak; ++i)
             poly_double(&m_tweak[i*BS], &m_tweak[(i-1)*BS], BS);
     }
 
 private:
-    final override void key_schedule(in ubyte* key, size_t length)
+    final override void keySchedule(in ubyte* key, size_t length)
     {
         const size_t key_half = length / 2;
         
-        if (length % 2 == 1 || !m_cipher.valid_keylength(key_half))
-            throw new Invalid_Key_Length(name, length);
+        if (length % 2 == 1 || !m_cipher.validKeylength(key_half))
+            throw new InvalidKeyLength(name, length);
         
-        m_cipher.set_key(key.ptr, key_half);
-        m_tweak_cipher.set_key(&key[key_half], key_half);
+        m_cipher.setKey(key.ptr, key_half);
+        m_tweak_cipher.setKey(&key[key_half], key_half);
     }
 
     Unique!BlockCipher m_cipher, m_tweak_cipher;
-    Secure_Vector!ubyte m_tweak;
+    SecureVector!ubyte m_tweak;
 }
 
 /**
 * IEEE P1619 XTS Encryption
 */
-final class XTS_Encryption : XTS_Mode
+final class XTSEncryption : XTS_Mode
 {
 public:
     this(BlockCipher cipher) 
@@ -125,7 +125,7 @@ public:
         super(cipher);
     }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -136,7 +136,7 @@ public:
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
         
-        const size_t blocks_in_tweak = update_granularity() / BS;
+        const size_t blocks_in_tweak = updateGranularity() / BS;
         
         while (blocks)
         {
@@ -144,7 +144,7 @@ public:
             const size_t to_proc_bytes = to_proc * BS;
             
             xor_buf(buf, tweak(), to_proc_bytes);
-            cipher().encrypt_n(buf, buf, to_proc);
+            cipher().encryptN(buf, buf, to_proc);
             xor_buf(buf, tweak(), to_proc_bytes);
             
             buf += to_proc * BS;
@@ -154,13 +154,13 @@ public:
         }
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        assert(sz >= minimum_final_size(), "Have sufficient final input");
+        assert(sz >= minimumFinalSize(), "Have sufficient final input");
         
         const size_t BS = cipher().block_size;
         
@@ -175,7 +175,7 @@ public:
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
-            Secure_Vector!ubyte last = Secure_Vector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
+            SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
@@ -198,7 +198,7 @@ public:
         }
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         return round_up(input_length, cipher().block_size);
     }
@@ -207,7 +207,7 @@ public:
 /**
 * IEEE P1619 XTS Decryption
 */
-final class XTS_Decryption : XTS_Mode
+final class XTSDecryption : XTS_Mode
 {
 public:
     this(BlockCipher cipher)
@@ -215,7 +215,7 @@ public:
         super(cipher);
     }
 
-    override void update(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -226,7 +226,7 @@ public:
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
         
-        const size_t blocks_in_tweak = update_granularity() / BS;
+        const size_t blocks_in_tweak = updateGranularity() / BS;
         
         while (blocks)
         {
@@ -234,7 +234,7 @@ public:
             const size_t to_proc_bytes = to_proc * BS;
             
             xor_buf(buf, tweak(), to_proc_bytes);
-            cipher().decrypt_n(buf, buf, to_proc);
+            cipher().decryptN(buf, buf, to_proc);
             xor_buf(buf, tweak(), to_proc_bytes);
             
             buf += to_proc * BS;
@@ -244,13 +244,13 @@ public:
         }
     }
 
-    override void finish(Secure_Vector!ubyte buffer, size_t offset = 0)
+    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        assert(sz >= minimum_final_size(), "Have sufficient final input");
+        assert(sz >= minimumFinalSize(), "Have sufficient final input");
         
         const size_t BS = cipher().block_size;
         
@@ -265,7 +265,7 @@ public:
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
-            Secure_Vector!ubyte last = Secure_Vector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
+            SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
@@ -288,7 +288,7 @@ public:
         }
     }
 
-    override size_t output_length(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         // might be less
         return input_length;
@@ -298,10 +298,10 @@ public:
 
 private:
 
-void poly_double_128(ubyte* output, in ubyte* input) pure
+void polyDouble128(ubyte* output, in ubyte* input) pure
 {
-    ulong X0 = load_littleEndian!ulong(input, 0);
-    ulong X1 = load_littleEndian!ulong(input, 1);
+    ulong X0 = loadLittleEndian!ulong(input, 0);
+    ulong X1 = loadLittleEndian!ulong(input, 1);
     
     const bool carry = (X1 >> 63);
     
@@ -311,20 +311,20 @@ void poly_double_128(ubyte* output, in ubyte* input) pure
     if (carry)
         X0 ^= 0x87;
     
-    store_littleEndian(output, X0, X1);
+    storeLittleEndian(output, X0, X1);
 }
 
-void poly_double_64(ubyte* output, in ubyte* input) pure
+void polyDouble64(ubyte* output, in ubyte* input) pure
 {
-    ulong X = load_littleEndian!ulong(input, 0);
+    ulong X = loadLittleEndian!ulong(input, 0);
     const bool carry = (X >> 63);
     X <<= 1;
     if (carry)
         X ^= 0x1B;
-    store_littleEndian(X, output);
+    storeLittleEndian(X, output);
 }
 
-void poly_double(ubyte* output, in ubyte* input) pure
+void polyDouble(ubyte* output, in ubyte* input) pure
 {
     if (size == 8)
         poly_double_64(output, input);

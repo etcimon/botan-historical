@@ -14,34 +14,34 @@ import botan.block.block_cipher;
 /**
 * Block Cipher Cascade
 */
-final class Cascade_Cipher : BlockCipher
+final class CascadeCipher : BlockCipher
 {
 public:
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks,
+    void encryptN(ubyte* input, ubyte* output, size_t blocks,
                    size_t blocks) const
     {
         size_t c1_blocks = blocks * (this.block_size / m_cipher1.block_size);
         size_t c2_blocks = blocks * (this.block_size / m_cipher2.block_size);
         
-        m_cipher1.encrypt_n(input, output, c1_blocks);
-        m_cipher2.encrypt_n(output, output, c2_blocks);
+        m_cipher1.encryptN(input, output, c1_blocks);
+        m_cipher2.encryptN(output, output, c2_blocks);
     }
 
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks,
+    void decryptN(ubyte* input, ubyte* output, size_t blocks,
                    size_t blocks) const
     {
         size_t c1_blocks = blocks * (this.block_size / m_cipher1.block_size);
         size_t c2_blocks = blocks * (this.block_size / m_cipher2.block_size);
         
-        m_cipher2.decrypt_n(input, output, c2_blocks);
-        m_cipher1.decrypt_n(output, output, c1_blocks);
+        m_cipher2.decryptN(input, output, c2_blocks);
+        m_cipher1.decryptN(output, output, c1_blocks);
     }
 
-    @property size_t block_size() const { return m_block; }
+    @property size_t blockSize() const { return m_block; }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(m_cipher1.maximum_keylength() + m_cipher2.maximum_keylength());
+        return Key_Length_Specification(m_cipher1.maximumKeylength() + m_cipher2.maximumKeylength());
     }
 
     void clear()
@@ -58,7 +58,7 @@ public:
 
     BlockCipher clone() const
     {
-        return new Cascade_Cipher(m_cipher1.clone(),
+        return new CascadeCipher(m_cipher1.clone(),
                                   m_cipher2.clone());
     }
 
@@ -73,15 +73,15 @@ public:
         m_block = block_size_for_cascade(c1.block_size, c2.block_size);
         
         if (this.block_size % c1.block_size || this.block_size % c2.block_size)
-            throw new Internal_Error("Failure in " ~ name() ~ " constructor");
+            throw new InternalError("Failure in " ~ name() ~ " constructor");
     }
-private:
-    void key_schedule(in ubyte* key, size_t)
+protected:
+    void keySchedule(in ubyte* key, size_t)
     {
         const ubyte* key2 = key + m_cipher1.maximum_keylength();
         
-        m_cipher1.set_key(key , m_cipher1.maximum_keylength());
-        m_cipher2.set_key(key2, m_cipher2.maximum_keylength());
+        m_cipher1.setKey(key , m_cipher1.maximumKeylength());
+        m_cipher2.setKey(key2, m_cipher2.maximumKeylength());
     }
 
     size_t m_block;

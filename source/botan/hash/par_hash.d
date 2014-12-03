@@ -36,7 +36,7 @@ public:
         Vector!string names;
         
         foreach (hash; m_hashes)
-            names.push_back(hash.name);
+            names.pushBack(hash.name);
         
         return "Parallel(" ~ string_join(names, ',') ~ ")";
     }
@@ -49,7 +49,7 @@ public:
         Vector!HashFunction hash_copies;
         
         foreach (hash; m_hashes)
-            hash_copies.push_back(hash.clone());
+            hash_copies.pushBack(hash.clone());
         
         return new Parallel(hash_copies);
     }
@@ -57,7 +57,7 @@ public:
     /*
     * Return output size
     */
-    @property size_t output_length() const
+    @property size_t outputLength() const
     {
         size_t sum = 0;
         
@@ -87,7 +87,7 @@ private:
     /*
     * Update the hash
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         foreach (hash; m_hashes)
             hash.update(input, length);
@@ -96,7 +96,7 @@ private:
     /*
     * Finalize the hash
     */
-    void final_result(ubyte* output)
+    void finalResult(ubyte* output)
     {
         uint offset = 0;
         

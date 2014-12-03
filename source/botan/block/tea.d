@@ -14,18 +14,18 @@ import botan.utils.loadstor;
 /**
 * TEA
 */
-final class TEA : Block_Cipher_Fixed_Params!(8, 16)
+final class TEA : BlockCipherFixedParams!(8, 16)
 {
 public:
     /*
     * TEA Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             uint S = 0;
             foreach (size_t j; 0 .. 32)
@@ -35,7 +35,7 @@ public:
                 R += ((L << 4) + m_K[2]) ^ (L + S) ^ ((L >> 5) + m_K[3]);
             }
             
-            store_bigEndian(output, L, R);
+            storeBigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -44,12 +44,12 @@ public:
     /*
     * TEA Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             uint S = 0xC6EF3720;
             foreach (size_t j; 0 .. 32)
@@ -59,7 +59,7 @@ public:
                 S -= 0x9E3779B9;
             }
             
-            store_bigEndian(output, L, R);
+            storeBigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -73,15 +73,16 @@ public:
 
     override @property string name() const { return "TEA"; }
     BlockCipher clone() const { return new TEA; }
-private:
+
+protected:
     /*
     * TEA Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_K.resize(4);
         foreach (size_t i; 0 .. 4)
-            m_K[i] = load_bigEndian!uint(key, i);
+            m_K[i] = loadBigEndian!uint(key, i);
     }
-    Secure_Vector!uint m_K;
+    SecureVector!uint m_K;
 }

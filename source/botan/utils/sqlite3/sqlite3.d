@@ -36,17 +36,17 @@ public:
         m_db = null;
     }
 
-    size_t row_count(in string table_name)
+    size_t rowCount(in string table_name)
     {
         sqlite3_statement stmt = sqlite3_statement(this, "select count(*) from " ~ table_name);
         
         if (stmt.step())
-            return stmt.get_size_t(0);
+            return stmt.getSizeT(0);
         else
             throw new Exception("Querying size of table " ~ table_name ~ " failed");
     }
 
-    void create_table(in string table_schema)
+    void createTable(in string table_schema)
     {
         char* errmsg = null;
         int rc = sqlite3_exec(m_db, table_schema.toStringz, null, null, &errmsg);
@@ -102,7 +102,7 @@ public:
             throw new Exception("sqlite3_bind_text failed, code " ~ to!string(rc));
     }
 
-    Pair!(const ubyte*, size_t) get_blob(int column)
+    Pair!(const ubyte*, size_t) getBlob(int column)
     {
         assert(sqlite3_column_type(m_stmt, 0) == SQLITE_BLOB,
                      "Return value is a blob");
@@ -116,7 +116,7 @@ public:
                     cast(size_t)(session_blob_size));
     }
 
-    size_t get_size_t(int column)
+    size_t getSizeT(int column)
     {
         assert(sqlite3_column_type(m_stmt, column) == SQLITE_INTEGER,
                      "Return count is an integer");

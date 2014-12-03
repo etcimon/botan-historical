@@ -29,7 +29,7 @@ import std.algorithm;
 /**
 * Stream Cipher Filter
 */
-final class StreamCipher_Filter : Keyed_Filter
+final class StreamCipherFilter : KeyedFilter
 {
 public:
 
@@ -52,16 +52,16 @@ public:
         }
     }
 
-    bool valid_iv_length(size_t iv_len) const
-    { return m_cipher.valid_iv_length(iv_len); }
+    bool validIvLength(size_t iv_len) const
+    { return m_cipher.validIvLength(iv_len); }
 
     /**
     * Set the initialization vector for this filter.
     * @param iv = the initialization vector to set
     */
-    void set_iv(in InitializationVector iv)
+    void setIv(in InitializationVector iv)
     {
-        m_cipher.set_iv(iv.ptr, iv.length);
+        m_cipher.setIv(iv.ptr, iv.length);
     }
 
 
@@ -69,9 +69,9 @@ public:
     * Set the key of this filter.
     * @param key = the key to set
     */
-    void set_key(in SymmetricKey key) { m_cipher.set_key(key); }
+    void setKey(in SymmetricKey key) { m_cipher.setKey(key); }
 
-    override Key_Length_Specification key_spec() const { return m_cipher.key_spec(); }
+    override KeyLengthSpecification keySpec() const { return m_cipher.keySpec(); }
 
     /**
     * Construct a stream cipher filter.
@@ -93,7 +93,7 @@ public:
     {
         m_buffer = DEFAULT_BUFFERSIZE;
         m_cipher = stream_cipher;
-        m_cipher.set_key(key);
+        m_cipher.setKey(key);
     }
 
     /**
@@ -104,8 +104,8 @@ public:
         
     {
         m_buffer = DEFAULT_BUFFERSIZE;
-        Algorithm_Factory af = global_state().algorithm_factory();
-        m_cipher = af.make_stream_cipher(sc_name);
+        AlgorithmFactory af = globalState().algorithmFactory();
+        m_cipher = af.makeStreamCipher(sc_name);
     }
 
     /**
@@ -116,21 +116,21 @@ public:
     this(in string sc_name, in SymmetricKey key)
     {
         m_buffer = DEFAULT_BUFFERSIZE;
-        Algorithm_Factory af = global_state().algorithm_factory();
-        m_cipher = af.make_stream_cipher(sc_name);
-        m_cipher.set_key(key);
+        AlgorithmFactory af = globalState().algorithmFactory();
+        m_cipher = af.makeStreamCipher(sc_name);
+        m_cipher.setKey(key);
     }
 
     ~this() { delete m_cipher; }
 private:
-    Secure_Vector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
     StreamCipher m_cipher;
 }
 
 /**
 * Hash Filter.
 */
-final class Hash_Filter : Filter
+final class HashFilter : Filter
 {
 public:
     void write(in ubyte* input, size_t len) { m_hash.update(input, len); }
@@ -138,9 +138,9 @@ public:
     /*
     * Complete a calculation by a Hash_Filter
     */
-    void end_msg()
+    void endMsg()
     {
-        Secure_Vector!ubyte output = m_hash.finished();
+        SecureVector!ubyte output = m_hash.finished();
         if (m_OUTPUT_LENGTH)
             send(output, std.algorithm.min(m_OUTPUT_LENGTH, output.length));
         else
@@ -174,8 +174,8 @@ public:
     this(in string algo_spec, size_t len = 0)
     {
         m_OUTPUT_LENGTH = len;
-        Algorithm_Factory af = global_state().algorithm_factory();
-        m_hash = af.make_hash_function(algo_spec);
+        AlgorithmFactory af = globalState().algorithmFactory();
+        m_hash = af.makeHashFunction(algo_spec);
     }
 
     ~this() { delete m_hash; }
@@ -187,17 +187,17 @@ private:
 /**
 * MessageAuthenticationCode Filter.
 */
-final class MAC_Filter : Keyed_Filter
+final class MACFilter : KeyedFilter
 {
 public:
     void write(in ubyte* input, size_t len) { m_mac.update(input, len); }
 
     /*
-    * Complete a calculation by a MAC_Filter
+    * Complete a calculation by a MACFilter
     */
-    void end_msg()
+    void endMsg()
     {
-        Secure_Vector!ubyte output = m_mac.finished();
+        SecureVector!ubyte output = m_mac.finished();
         if (m_OUTPUT_LENGTH)
             send(output, std.algorithm.min(m_OUTPUT_LENGTH, output.length));
         else
@@ -210,9 +210,9 @@ public:
     * Set the key of this filter.
     * @param key = the key to set
     */
-    void set_key(in SymmetricKey key) { m_mac.set_key(key); }
+    void setKey(in SymmetricKey key) { m_mac.setKey(key); }
 
-    override Key_Length_Specification key_spec() const { return m_mac.key_spec(); }
+    override KeyLengthSpecification keySpec() const { return m_mac.keySpec(); }
 
     /**
     * Construct a MAC filter. The MAC key will be left empty.
@@ -241,7 +241,7 @@ public:
     {
         m_OUTPUT_LENGTH = out_len;
         m_mac = mac_obj;
-        m_mac.set_key(key);
+        m_mac.setKey(key);
     }
 
     /**
@@ -255,8 +255,8 @@ public:
     this(in string mac_name, size_t len = 0)
     {
         m_OUTPUT_LENGTH = len;
-        Algorithm_Factory af = global_state().algorithm_factory();
-        m_mac = af.make_mac(mac_name);
+        AlgorithmFactory af = globalState().algorithmFactory();
+        m_mac = af.makeMac(mac_name);
     }
 
     /**
@@ -271,9 +271,9 @@ public:
     this(in string mac_name, in SymmetricKey key, size_t len = 0)
     {
         m_OUTPUT_LENGTH = len;
-        Algorithm_Factory af = global_state().algorithm_factory();
-        m_mac = af.make_mac(mac_name);
-        m_mac.set_key(key);
+        AlgorithmFactory af = globalState().algorithmFactory();
+        m_mac = af.makeMac(mac_name);
+        m_mac.setKey(key);
     }
 
     ~this() { delete m_mac; }

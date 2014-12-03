@@ -15,7 +15,7 @@ import botan.block.block_cipher;
 /**
 * IDEA in SSE2
 */
-final class IDEA_SSE2 : IDEA
+final class IDEASSE2 : IDEA
 {
 public:
     override @property size_t parallelism() const { return 8; }
@@ -23,9 +23,9 @@ public:
     /*
     * IDEA Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        const ushort* KS = super.get_EK().ptr;
+        const ushort* KS = super.getEK().ptr;
         
         while (blocks >= 8)
         {
@@ -36,15 +36,15 @@ public:
         }
         
         if (blocks)
-            super.encrypt_n(input, output, blocks);
+            super.encryptN(input, output, blocks);
     }
 
     /*
     * IDEA Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        const ushort* KS = this.get_DK().ptr;
+        const ushort* KS = this.getDK().ptr;
         
         while (blocks >= 8)
         {
@@ -55,15 +55,15 @@ public:
         }
         
         if (blocks)
-            super.decrypt_n(input, output, blocks);
+            super.decryptN(input, output, blocks);
     }
 
-    BlockCipher clone() const { return new IDEA_SSE2; }
+    BlockCipher clone() const { return new IDEASSE2; }
 }
 
 package:
 
-__m128i mul(__m128i X, ushort K_16) pure
+m128i mul(m128i X, ushort K_16) pure
 {
     const(__m128i) zeros = _mm_set1_epi16!(0)();
     const(__m128i) ones = _mm_set1_epi16!(1)();
@@ -110,7 +110,7 @@ __m128i mul(__m128i X, ushort K_16) pure
 * that extra unpack could easily save 3-4 cycles per block, and would
 * also help a lot with register pressure on 32-bit x86
 */
-void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3) pure
+void transpose_in(ref m128i B0, ref m128i B1, ref m128i B2, ref m128i B3) pure
 {
     __m128i T0 = _mm_unpackhi_epi32(B0, B1);
     __m128i T1 = _mm_unpacklo_epi32(B0, B1);
@@ -146,7 +146,7 @@ void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3
 /*
 * 4x8 matrix transpose (reverse)
 */
-void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3) pure
+void transpose_out(ref m128i B0, ref m128i B1, ref m128i B2, ref m128i B3) pure
 {
     __m128i T0 = _mm_unpacklo_epi64(B0, B1);
     __m128i T1 = _mm_unpacklo_epi64(B2, B3);
@@ -177,7 +177,7 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 /*
 * IDEA encryption/decryption in SSE2
 */
-void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
+void idea_op8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
 {
     const(__m128i)* in_mm = cast(const(__m128i)*)(input.ptr);
     

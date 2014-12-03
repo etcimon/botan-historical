@@ -20,7 +20,7 @@ import botan.utils.containers.hashmap;
 A class encapsulating a SCAN name (similar to JCE conventions)
 http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 */
-struct SCAN_Name
+struct SCANName
 {
 public:
     /**
@@ -38,7 +38,7 @@ public:
         
         string decoding_error = "Bad SCAN name '" ~ algo_spec ~ "': ";
         
-        algo_spec = deref_alias(algo_spec);
+        algo_spec = derefAlias(algo_spec);
         
         foreach (immutable(char) c; algo_spec)
         {
@@ -50,7 +50,7 @@ public:
                 else if (c == ')')
                 {
                     if (level == 0)
-                        throw new Decoding_Error(decoding_error ~ "Mismatched parens");
+                        throw new DecodingError(decoding_error ~ "Mismatched parens");
                     --level;
                 }
                 
@@ -59,7 +59,7 @@ public:
                 else
                 {
                     if (accum.second.length > 0)
-                        names.push_back(deref_aliases(Pair(accum.first, accum.second.data)));
+                        names.pushBack(derefAliases(Pair(accum.first, accum.second.data)));
                     Appender!string str;
                     str.reserve(8);
                     accum = Pair(level, str);
@@ -70,13 +70,13 @@ public:
         }
         
         if (accum.second.length > 0)
-            names.push_back(deref_aliases(Pair(accum.first, accum.second.data)));
+            names.pushBack(derefAliases(Pair(accum.first, accum.second.data)));
         
         if (level != 0)
-            throw new Decoding_Error(decoding_error ~ "Missing close paren");
+            throw new DecodingError(decoding_error ~ "Missing close paren");
         
         if (names.length == 0)
-            throw new Decoding_Error(decoding_error ~ "Empty name");
+            throw new DecodingError(decoding_error ~ "Empty name");
         
         m_alg_name = names[0].second;
         
@@ -86,11 +86,11 @@ public:
         {
             if (name.first == 0)
             {
-                m_mode_info.push_back(make_arg(names, i));
+                m_mode_info.pushBack(makeArg(names, i));
                 in_modes = true;
             }
             else if (name.first == 1 && !in_modes)
-                m_args.push_back(make_arg(names, i));
+                m_args.pushBack(makeArg(names, i));
         }
     }
     
@@ -102,24 +102,24 @@ public:
     /**
     * @return algorithm name
     */
-    @property string algo_name() const { return m_alg_name; }
+    @property string algoName() const { return m_alg_name; }
     
     /**
     * @return algorithm name plus any arguments
     */
-    string algo_name_and_args() const
+    string algoNameAndArgs() const
     {
         Appender!string output;
         
         output = algo_name;
         
-        if (arg_count())
+        if (argCount())
         {
             output ~= '(';
-            foreach (size_t i; 0 .. arg_count())
+            foreach (size_t i; 0 .. argCount())
             {
                 output ~= arg(i);
-                if (i != arg_count() - 1)
+                if (i != argCount() - 1)
                     output ~= ',';
             }
             output ~= ')';
@@ -132,15 +132,15 @@ public:
     /**
     * @return number of arguments
     */
-    size_t arg_count() const { return m_args.length; }
+    size_t argCount() const { return m_args.length; }
     
     /**
     * @param lower = is the lower bound
     * @param upper = is the upper bound
     * @return if the number of arguments is between lower and upper
     */
-    bool arg_count_between(size_t lower, size_t upper) const
-    { return ((arg_count() >= lower) && (arg_count() <= upper)); }
+    bool argCountBetween(size_t lower, size_t upper) const
+    { return ((argCount() >= lower) && (argCount() <= upper)); }
     
     /**
     * @param i = which argument
@@ -148,8 +148,8 @@ public:
     */
     string arg(size_t i) const
     {
-        if (i >= arg_count())
-            throw new Range_Error("SCAN_Name::argument - i out of range");
+        if (i >= argCount())
+            throw new RangeError("SCANName.argument - i out of range");
         return m_args[i];
     }
     
@@ -160,7 +160,7 @@ public:
     */
     string arg(size_t i, in string def_value) const
     {
-        if (i >= arg_count())
+        if (i >= argCount())
             return def_value;
         return m_args[i];
     }
@@ -170,9 +170,9 @@ public:
     * @param def_value = the default value
     * @return ith argument as an integer, or the default value
     */
-    size_t arg_as_integer(size_t i, size_t def_value) const
+    size_t argAsInteger(size_t i, size_t def_value) const
     {
-        if (i >= arg_count())
+        if (i >= argCount())
             return def_value;
         return to!uint(m_args[i]);
     }
@@ -180,16 +180,16 @@ public:
     /**
     * @return cipher mode (if any)
     */
-    string cipher_mode() const
+    string cipherMode() const
     { return (m_mode_info.length >= 1) ? m_mode_info[0] : ""; }
     
     /**
     * @return cipher mode padding (if any)
     */
-    string cipher_mode_pad() const
+    string cipherModePad() const
     { return (m_mode_info.length >= 2) ? m_mode_info[1] : ""; }
     
-    static void add_alias(in string _alias, in string basename)
+    static void addAlias(in string _alias, in string basename)
     {
         
         if (s_alias_map.get(_alias, null) is null)
@@ -197,42 +197,42 @@ public:
     }
 
     
-    static string deref_aliases(in Pair!(size_t, string) input)
+    static string derefAliases(in Pair!(size_t, string) input)
     {
         return Pair(input.first, s_alias_map.get(input.second));
     }
 
-    static void set_default_aliases()
+    static void setDefaultAliases()
     {
         // common variations worth supporting
-        add_alias("EME-PKCS1-v1_5",    "PKCS1v15");
-        add_alias("3DES",            "TripleDES");
-        add_alias("DES-EDE",        "TripleDES");
-        add_alias("CAST5",            "CAST-128");
-        add_alias("SHA1",            "SHA-160");
-        add_alias("SHA-1",            "SHA-160");
-        add_alias("MARK-4",            "RC4(256)");
-        add_alias("ARC4",              "RC4");
-        add_alias("OMAC",              "CMAC");
+        addAlias("EME-PKCS1-v1_5",    "PKCS1v15");
+        addAlias("3DES",            "TripleDES");
+        addAlias("DES-EDE",        "TripleDES");
+        addAlias("CAST5",            "CAST-128");
+        addAlias("SHA1",            "SHA-160");
+        addAlias("SHA-1",            "SHA-160");
+        addAlias("MARK-4",            "RC4(256)");
+        addAlias("ARC4",              "RC4");
+        addAlias("OMAC",              "CMAC");
             
-        add_alias("EMSA-PSS",        "PSSR");
-        add_alias("PSS-MGF1",        "PSSR");
-        add_alias("EME-OAEP",        "OAEP");
+        addAlias("EMSA-PSS",        "PSSR");
+        addAlias("PSS-MGF1",        "PSSR");
+        addAlias("EME-OAEP",        "OAEP");
             
-        add_alias("EMSA2",            "EMSA_X931");
-        add_alias("EMSA3",            "EMSA_PKCS1");
-        add_alias("EMSA-PKCS1-v1_5","EMSA_PKCS1");
+        addAlias("EMSA2",            "EMSA_X931");
+        addAlias("EMSA3",            "EMSA_PKCS1");
+        addAlias("EMSA-PKCS1-v1_5","EMSA_PKCS1");
             
             // should be renamed in sources
-        add_alias("X9.31",            "EMSA2");
+        addAlias("X9.31",            "EMSA2");
             
             // kept for compatability with old library versions
-        add_alias("EMSA4",            "PSSR");
-        add_alias("EME1",            "OAEP");
+        addAlias("EMSA4",            "PSSR");
+        addAlias("EME1",            "OAEP");
             
             // probably can be removed
-        add_alias("GOST",            "GOST-28147-89");
-        add_alias("GOST-34.11",        "GOST-R-34.11-94");
+        addAlias("GOST",            "GOST-28147-89");
+        addAlias("GOST-34.11",        "GOST-R-34.11-94");
     }
     
 
@@ -245,7 +245,7 @@ private:
     Vector!string m_mode_info;
 }
 
-string make_arg(in Vector!(Pair!(size_t, string)) names, size_t start)
+string makeArg(in Vector!(Pair!(size_t, string)) names, size_t start)
 {
     Appender!string output;
     output ~= name[start].second;
@@ -285,7 +285,7 @@ string make_arg(in Vector!(Pair!(size_t, string)) names, size_t start)
 }
 
 
-string make_arg(
+string makeArg(
     const Vector!(Pair!(size_t, string)) names, size_t start)
 {
     Appender!string output;

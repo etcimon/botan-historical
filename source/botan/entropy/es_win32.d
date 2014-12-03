@@ -16,7 +16,7 @@ import core.sys.windows.windows;
 /**
 * Win32 Entropy Source
 */
-final class Win32_EntropySource : EntropySource
+final class Win32EntropySource : EntropySource
 {
 public:
     @property string name() const { return "Win32 Statistics"; }
@@ -24,7 +24,7 @@ public:
     /**
     * Win32 poll using stats functions including Tooltip32
     */
-    void poll(ref Entropy_Accumulator accum)
+    void poll(ref EntropyAccumulator accum)
     {
         /*
         First query a bunch of basic statistical stuff, though
@@ -69,7 +69,7 @@ public:
         TOOLHELP32_ITER!(THREADENTRY32, Thread32First, Thread32Next)(accum);
         
         
-        if (!accum.polling_goal_achieved())
+        if (!accum.pollingGoalAchieved())
         {
             size_t heap_lists_found = 0;
             HEAPLIST32 heap_list;
@@ -101,7 +101,7 @@ public:
                         } while (Heap32Next(&heap_entry));
                     }
                     
-                    if (accum.polling_goal_achieved())
+                    if (accum.pollingGoalAchieved())
                         break;
                     
                 } while (Heap32ListNext(snapshot, &heap_list));
@@ -114,11 +114,11 @@ public:
 
 
 
-void TOOLHELP32_ITER(alias DATA_TYPE, alias FUNC_FIRST, alias FUNC_NEXT)(ref Entropy_Accumulator accum) {
-    if (!accum.polling_goal_achieved())
+void tOOLHELP32ITER(alias DATA_TYPE, alias FUNC_FIRST, alias FUNC_NEXT)(ref EntropyAccumulator accum) {
+    if (!accum.pollingGoalAchieved())
     {
         DATA_TYPE info;
-        info.dwSize = (DATA_TYPE).sizeof;
+        info.dwSize = (DATATYPE).sizeof;
         if (FUNC_FIRST(snapshot, &info))
         {
             do
@@ -248,20 +248,20 @@ struct MODULEENTRY32 {
 alias PMODULEENTRY32 = MODULEENTRY32*;
 alias LPMODULEENTRY32 = MODULEENTRY32*;
 
-BOOL Heap32First(LPHEAPENTRY32,DWORD,DWORD);
-BOOL Heap32ListFirst(HANDLE,LPHEAPLIST32);
-BOOL Heap32ListNext(HANDLE,LPHEAPLIST32);
-BOOL Heap32Next(LPHEAPENTRY32);
-BOOL Thread32First(HANDLE,LPTHREADENTRY32);
-BOOL Thread32Next(HANDLE,LPTHREADENTRY32);
-BOOL Toolhelp32ReadProcessMemory(DWORD,LPCVOID,LPVOID,DWORD,LPDWORD);
-HANDLE CreateToolhelp32Snapshot(DWORD,DWORD);
-BOOL Module32FirstW(HANDLE,LPMODULEENTRY32W);
-BOOL Module32NextW(HANDLE,LPMODULEENTRY32W);
-BOOL Process32FirstW(HANDLE,LPPROCESSENTRY32W);
-BOOL Process32NextW(HANDLE,LPPROCESSENTRY32W);
+BOOL heap32First(LPHEAPENTRY32,DWORD,DWORD);
+BOOL heap32ListFirst(HANDLE,LPHEAPLIST32);
+BOOL heap32ListNext(HANDLE,LPHEAPLIST32);
+BOOL heap32Next(LPHEAPENTRY32);
+BOOL thread32First(HANDLE,LPTHREADENTRY32);
+BOOL thread32Next(HANDLE,LPTHREADENTRY32);
+BOOL toolhelp32ReadProcessMemory(DWORD,LPCVOID,LPVOID,DWORD,LPDWORD);
+HANDLE createToolhelp32Snapshot(DWORD,DWORD);
+BOOL module32FirstW(HANDLE,LPMODULEENTRY32W);
+BOOL module32NextW(HANDLE,LPMODULEENTRY32W);
+BOOL process32FirstW(HANDLE,LPPROCESSENTRY32W);
+BOOL process32NextW(HANDLE,LPPROCESSENTRY32W);
 
-BOOL Module32First(HANDLE,LPMODULEENTRY32);
-BOOL Module32Next(HANDLE,LPMODULEENTRY32);
-BOOL Process32First(HANDLE,LPPROCESSENTRY32);
-BOOL Process32Next(HANDLE,LPPROCESSENTRY32);
+BOOL module32First(HANDLE,LPMODULEENTRY32);
+BOOL module32Next(HANDLE,LPMODULEENTRY32);
+BOOL process32First(HANDLE,LPPROCESSENTRY32);
+BOOL process32Next(HANDLE,LPPROCESSENTRY32);

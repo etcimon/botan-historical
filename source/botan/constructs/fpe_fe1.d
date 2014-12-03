@@ -30,7 +30,7 @@ struct FPE {
     * @param key = a random key
     * @param tweak = will modify the ciphertext (think of as an IV)
     */
-    static BigInt fe1_encrypt(in BigInt n, in BigInt X0,
+    static BigInt fe1Encrypt(in BigInt n, in BigInt X0,
                               in SymmetricKey key,
                               in Vector!ubyte tweak)
     {
@@ -63,7 +63,7 @@ struct FPE {
     * @param key = is the key used for encryption
     * @param tweak = the same tweak used for encryption
     */
-    static BigInt fe1_decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
+    static BigInt fe1Decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
     {
         auto F = scoped!FPE_Encryptor(key, n, tweak);
         
@@ -107,7 +107,7 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
     a = 1;
     b = 1;
     
-    size_t n_low_zero = low_zero_bits(n);
+    size_t n_low_zero = lowZeroBits(n);
     
     a <<= (n_low_zero / 2);
     b <<= n_low_zero - (n_low_zero / 2);
@@ -143,30 +143,30 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 size_t rounds(in BigInt a, in BigInt b)
 {
     if (a < b)
-        throw new Logic_Error("FPE rounds: a < b");
+        throw new LogicError("FPE rounds: a < b");
     return 3;
 }
 
 /*
 * A simple round function based on HMAC(SHA-256)
 */
-final class FPE_Encryptor
+final class FPEEncryptor
 {
 public:
     this(in SymmetricKey key, in BigInt n, in Vector!ubyte tweak)
     {
-        m_mac = new HMAC(new SHA_256);
-        m_mac.set_key(key);
+        m_mac = new HMAC(new SHA256);
+        m_mac.setKey(key);
         
         Vector!ubyte n_bin = BigInt.encode(n);
         
         if (n_bin.length > MAX_N_BYTES)
             throw new Exception("N is too large for FPE encryption");
         
-        m_mac.update_bigEndian(cast(uint)(n_bin.length));
+        m_mac.updateBigEndian(cast(uint)(n_bin.length));
         m_mac.update(n_binput.ptr, n_bin.length);
         
-        m_mac.update_bigEndian(cast(uint)(tweak.length));
+        m_mac.updateBigEndian(cast(uint)(tweak.length));
         m_mac.update(tweak.ptr, tweak.length);
         
         m_mac_n_t = unlock(m_mac.finished());
@@ -175,15 +175,15 @@ public:
     
     BigInt opCall(size_t round_no, in BigInt R)
     {
-        Secure_Vector!ubyte r_bin = BigInt.encode_locked(R);
+        SecureVector!ubyte r_bin = BigInt.encode_locked(R);
 
         m_mac.update(m_mac_n_t);
-        m_mac.update_bigEndian(cast(uint)(round_no));
+        m_mac.updateBigEndian(cast(uint)(round_no));
         
-        m_mac.update_bigEndian(cast(uint)(r_bin.length));
+        m_mac.updateBigEndian(cast(uint)(r_bin.length));
         m_mac.update(r_binput.ptr, r_bin.length);
         
-        Secure_Vector!ubyte X = m_mac.finished();
+        SecureVector!ubyte X = m_mac.finished();
         return BigInt(X.ptr, X.length);
     }
     

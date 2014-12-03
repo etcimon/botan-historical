@@ -38,16 +38,16 @@ public:
     abstract void write(in ubyte* input, size_t length);
 
     /**
-    * Start a new message. Must be closed by end_msg() before another
+    * Start a new message. Must be closed by endMsg() before another
     * message can be started.
     */
-    abstract void start_msg() {}
+    abstract void startMsg() {}
 
     /**
     * Notify that the current message is finished; flush buffers and
     * do end-of-message processing (if any).
     */
-    abstract void end_msg() {}
+    abstract void endMsg() {}
 
     /**
     * Check whether this filter is an attachable filter.
@@ -91,7 +91,7 @@ protected:
     /**
     * @param input = some input for the filter
     */
-    void send(in Secure_Vector!ubyte input) { send(input.ptr, input.length); }
+    void send(in SecureVector!ubyte input) { send(input.ptr, input.length); }
 
     /**
     * @param input = some input for the filter
@@ -102,7 +102,7 @@ protected:
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-    void send(in Secure_Vector!ubyte input)
+    void send(in SecureVector!ubyte input)
     {
         send(input.ptr, length);
     }
@@ -132,44 +132,44 @@ private:
     * Start a new message in this and all following filters. Only for
     * internal use, not intended for use in client applications.
     */
-    void new_msg()
+    void newMsg()
     {
-        start_msg();
+        startMsg();
         foreach (size_t j; 0 .. total_ports())
             if (m_next[j])
-                m_next[j].new_msg();
+                m_next[j].newMsg();
     }
 
     /**
     * End a new message in this and all following filters. Only for
     * internal use, not intended for use in client applications.
     */
-    void finish_msg()
+    void finishMsg()
     {
-        end_msg();
+        endMsg();
         foreach (size_t j; 0 .. total_ports())
             if (m_next[j])
-                m_next[j].finish_msg();
+                m_next[j].finishMsg();
     }
 
     /*
     * Return the total number of ports
     */
-    size_t total_ports() const
+    size_t totalPorts() const
     {
         return m_next.length;
     }
 
-    size_t current_port() const { return m_port_num; }
+    size_t currentPort() const { return m_port_num; }
 
     /**
     * Set the active port
     * @param new_port = the new value
     */
-    void set_port(size_t new_port)
+    void setPort(size_t new_port)
     {
         if (new_port >= total_ports())
-            throw new Invalid_Argument("Filter: Invalid port number");
+            throw new InvalidArgument("Filter: Invalid port number");
         m_port_num = new_port;
     }
 
@@ -184,9 +184,9 @@ private:
         if (new_filter)
         {
             Filter last = this;
-            while (last.get_next())
-                last = last.get_next();
-            last.m_next[last.current_port()] = new_filter;
+            while (last.getNext())
+                last = last.getNext();
+            last.m_next[last.currentPort()] = new_filter;
         }
     }
 
@@ -194,7 +194,7 @@ private:
     * @param filters = the filters to set
     * @param count = number of items in filters
     */
-    void set_next(Filter* filters, size_t size)
+    void setNext(Filter* filters, size_t size)
     {
         m_next.clear();
         
@@ -212,14 +212,14 @@ private:
     /*
     * Return the next Filter in the logical chain
     */
-    Filter get_next() const
+    Filter getNext() const
     {
         if (m_port_num < m_next.length)
             return m_next[m_port_num];
         return null;
     }
 
-    Secure_Vector!ubyte m_write_queue;
+    SecureVector!ubyte m_write_queue;
     Vector!Filter m_next;
     size_t m_port_num, m_filter_owns;
 
@@ -230,17 +230,17 @@ private:
 /**
 * This is the abstract Fanout_Filter base class.
 **/
-class Fanout_Filter : Filter
+class FanoutFilter : Filter
 {
 protected:
     /**
     * Increment the number of filters past us that we own
     */
-    void incr_owns() { ++m_filter_owns; }
+    void incrOwns() { ++m_filter_owns; }
 
-    void set_port(size_t n) { set_port(n); }
+    void setPort(size_t n) { set_port(n); }
 
-    void set_next(Filter f, size_t n) { set_next(f, n); }
+    void setNext(Filter f, size_t n) { set_next(f, n); }
 
     void attach(Filter f) { attach(f); }
 
@@ -257,4 +257,4 @@ protected:
 * about white spaces.
 */
 typedef ubyte Decoder_Checking;
-enum : Decoder_Checking { NONE, IGNORE_WS, FULL_CHECK }
+enum : DecoderChecking { NONE, IGNORE_WS, FULL_CHECK }

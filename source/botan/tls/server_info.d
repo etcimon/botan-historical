@@ -14,7 +14,7 @@ import botan.utils.types;
 /**
 * Represents information known about a TLS server.
 */
-struct TLS_Server_Information
+struct TLSServerInformation
 {
 public:
     /**
@@ -52,7 +52,7 @@ public:
 
     @property bool empty() const { return m_hostname.empty; }
 
-    bool opEquals(in TLS_Server_Information b)
+    bool opEquals(in TLSServerInformation b)
     {
         return (hostname() == b.hostname()) &&
                 (service() == b.service()) &&
@@ -60,12 +60,12 @@ public:
         
     }
 
-    bool opCmp(string op)(in TLS_Server_Information b)
+    bool opCmp(string op)(in TLSServerInformation b)
     {
         return !(this == b);
     }
 
-    bool opCmp(string op)(in TLS_Server_Information b)
+    bool opCmp(string op)(in TLSServerInformation b)
         if (op == "<")
     {
         if (a.hostname() != b.hostname())

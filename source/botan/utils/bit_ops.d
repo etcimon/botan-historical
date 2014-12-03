@@ -12,7 +12,7 @@ import botan.utils.types;
 * @param arg = an integer value
 * @return true iff arg is 2^n for some n > 0
 */
-bool is_power_of_2(T)(T arg)
+bool isPowerOf2(T)(T arg)
 {
     return ((arg != 0 && arg != 1) && ((arg & (arg-1)) == 0));
 }
@@ -23,7 +23,7 @@ bool is_power_of_2(T)(T arg)
 * @param n = an integer value
 * @return index of the highest set bit in n
 */
-size_t high_bit(T)(T n)
+size_t highBit(T)(T n)
 {
     for (size_t i = 8*T.sizeof; i > 0; --i)
         if ((n >> (i - 1)) & 0x01)
@@ -37,7 +37,7 @@ size_t high_bit(T)(T n)
 * @param n = an integer value
 * @return index of the lowest set bit in n
 */
-size_t low_bit(T)(T n)
+size_t lowBit(T)(T n)
 {
     for (size_t i = 0; i != 8*T.sizeof; ++i)
         if ((n >> i) & 0x01)
@@ -50,7 +50,7 @@ size_t low_bit(T)(T n)
 * @param n = an integer value
 * @return number of significant bytes in n
 */
-size_t significant_bytes(T)(T n)
+size_t significantBytes(T)(T n)
 {
     for (size_t i = 0; i != T.sizeof; ++i)
         if (get_byte(i, n))
@@ -63,7 +63,7 @@ size_t significant_bytes(T)(T n)
 * @param n = an integer value
 * @return number of bits in n set to 1
 */
-size_t hamming_weight(T)(T n)
+size_t hammingWeight(T)(T n)
 {
     __gshared immutable ubyte[] NIBBLE_WEIGHTS = [
         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 ];

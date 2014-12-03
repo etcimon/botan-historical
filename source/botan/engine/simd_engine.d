@@ -24,57 +24,57 @@ static if (BOTAN_HAS_SHA1_SSE2)         import botan.hash.sha1_sse2;
 /**
 * Engine for implementations that use some kind of SIMD
 */
-final class SIMD_Engine : Engine
+final class SIMDEngine : Engine
 {
 public:
-    string provider_name() const { return "simd"; }
+    string providerName() const { return "simd"; }
 
-    BlockCipher find_block_cipher(in SCAN_Name request,
-                                  Algorithm_Factory) const
+    BlockCipher findBlockCipher(in SCANName request,
+                                  AlgorithmFactory) const
     {
         static if (BOTAN_HAS_AES_SSSE3) {
-            if (request.algo_name == "AES-128" && CPUID.has_ssse3())
-                return new AES_128_SSSE3;
-            if (request.algo_name == "AES-192" && CPUID.has_ssse3())
-                return new AES_192_SSSE3;
-            if (request.algo_name == "AES-256" && CPUID.has_ssse3())
-                return new AES_256_SSSE3;
+            if (request.algo_name == "AES-128" && CPUID.hasSsse3())
+                return new AES128SSSE3;
+            if (request.algo_name == "AES-192" && CPUID.hasSsse3())
+                return new AES192SSSE3;
+            if (request.algo_name == "AES-256" && CPUID.hasSsse3())
+                return new AES256SSSE3;
         }
         
         static if (BOTAN_HAS_IDEA_SSE2) {
-            if (request.algo_name == "IDEA" && CPUID.has_sse2())
-                return new IDEA_SSE2;
+            if (request.algo_name == "IDEA" && CPUID.hasSse2())
+                return new IDEASSE2;
         }
         
         static if (BOTAN_HAS_NOEKEON_SIMD) {
-            if (request.algo_name == "Noekeon" && SIMD_32.enabled())
-                return new Noekeon_SIMD;
+            if (request.algo_name == "Noekeon" && SIMD32.enabled())
+                return new NoekeonSIMD;
         }
         
         static if (BOTAN_HAS_THREEFISH_512_AVX2) {
-            if (request.algo_name == "Threefish-512" && CPUID.has_avx2())
-                return new Threefish_512_AVX2;
+            if (request.algo_name == "Threefish-512" && CPUID.hasAvx2())
+                return new Threefish512AVX2;
         }
         
         static if (BOTAN_HAS_SERPENT_SIMD) {
-            if (request.algo_name == "Serpent" && SIMD_32.enabled())
-                return new Serpent_SIMD;
+            if (request.algo_name == "Serpent" && SIMD32.enabled())
+                return new SerpentSIMD;
         }
         
         static if (BOTAN_HAS_XTEA_SIMD) {
-            if (request.algo_name == "XTEA" && SIMD_32.enabled())
-                return new XTEA_SIMD;
+            if (request.algo_name == "XTEA" && SIMD32.enabled())
+                return new XTEASIMD;
         }
         
         return null;
     }
 
-    HashFunction find_hash(in SCAN_Name request,
-                           Algorithm_Factory) const
+    HashFunction findHash(in SCANName request,
+                           AlgorithmFactory) const
     {
         static if (BOTAN_HAS_SHA1_SSE2) {
-            if (request.algo_name == "SHA-160" && CPUID.has_sse2())
-                return new SHA_160_SSE2;
+            if (request.algo_name == "SHA-160" && CPUID.hasSse2())
+                return new SHA160SSE2;
         }
 
         return null;

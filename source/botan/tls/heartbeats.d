@@ -19,11 +19,11 @@ import botan.utils.types;
 /**
 * TLS Heartbeat message
 */
-struct Heartbeat_Message
+struct HeartbeatMessage
 {
 public:
     typedef ubyte Message_Type;
-    enum Message_Type { REQUEST = 1, RESPONSE = 2 }
+    enum MessageType { REQUEST = 1, RESPONSE = 2 }
 
     Vector!ubyte contents() const
     {
@@ -31,7 +31,7 @@ public:
         send_buf[0] = m_type;
         send_buf[1] = get_byte!ushort(0, m_payload.length);
         send_buf[2] = get_byte!ushort(1, m_payload.length);
-        copy_mem(&send_buf[3], m_payload.ptr, m_payload.length);
+        copyMem(&send_buf[3], m_payload.ptr, m_payload.length);
         // leave padding as all zeros
         
         return send_buf;
@@ -39,26 +39,26 @@ public:
 
     Vector!ubyte payload() const { return m_payload; }
 
-    bool is_request() const { return m_type == REQUEST; }
+    bool isRequest() const { return m_type == REQUEST; }
 
     this(in Vector!ubyte buf)
     {
-        TLS_Data_Reader reader = TLS_Data_Reader("Heartbeat", buf);
+        TLSDataReader reader = TLSDataReader("Heartbeat", buf);
         
         const ubyte type = reader.get_byte();
         
         if (type != 1 && type != 2)
-            throw new TLS_Exception(TLS_Alert.ILLEGAL_PARAMETER,
+            throw new TLSException(TLSAlert.ILLEGAL_PARAMETER,
                                     "Unknown heartbeat message type");
         
-        m_type = cast(Message_Type)(type);
+        m_type = cast(MessageType)(type);
         
-        m_payload = reader.get_range!ubyte(2, 0, 16*1024);
+        m_payload = reader.getRange!ubyte(2, 0, 16*1024);
         
         // padding follows and is ignored
     }
 
-    this(Message_Type type,
+    this(MessageType type,
          in ubyte* payload,
          size_t payload_len) 
     {

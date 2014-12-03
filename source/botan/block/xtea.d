@@ -15,13 +15,13 @@ import botan.utils.loadstor;
 /**
 * XTEA
 */
-class XTEA : Block_Cipher_Fixed_Params!(8, 16)
+class XTEA : BlockCipherFixedParams!(8, 16)
 {
 public:
     /*
     * XTEA Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         while (blocks >= 4)
         {
@@ -33,8 +33,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             foreach (size_t j; 0 .. 32)
             {
@@ -42,7 +42,7 @@ public:
                 R += (((L << 4) ^ (L >> 5)) + L) ^ m_EK[2*j+1];
             }
             
-            store_bigEndian(output, L, R);
+            storeBigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -52,7 +52,7 @@ public:
     /*
     * XTEA Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         while (blocks >= 4)
         {
@@ -64,8 +64,8 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            uint L = load_bigEndian!uint(input, 0);
-            uint R = load_bigEndian!uint(input, 1);
+            uint L = loadBigEndian!uint(input, 0);
+            uint R = loadBigEndian!uint(input, 1);
             
             foreach (size_t j; 0 .. 32)
             {
@@ -73,7 +73,7 @@ public:
                 L -= (((R << 4) ^ (R >> 5)) + R) ^ m_EK[62 - 2*j];
             }
             
-            store_bigEndian(output, L, R);
+            storeBigEndian(output, L, R);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -91,19 +91,19 @@ protected:
     /**
     * @return const reference to the key schedule
     */
-    Secure_Vector!uint get_EK() const { return m_EK; }
+    SecureVector!uint getEK() const { return m_EK; }
 
-private:
+protected:
     /*
     * XTEA Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_EK.resize(64);
         
-        Secure_Vector!uint UK = Secure_Vector!uint(4);
+        SecureVector!uint UK = SecureVector!uint(4);
         foreach (size_t i; 0 .. 4)
-            UK[i] = load_bigEndian!uint(key, i);
+            UK[i] = loadBigEndian!uint(key, i);
         
         uint D = 0;
         foreach (size_t i; iota(0, 64, 2))
@@ -114,7 +114,7 @@ private:
         }
     }
 
-    Secure_Vector!uint m_EK;
+    SecureVector!uint m_EK;
 }
 
 package:
@@ -123,7 +123,7 @@ pure:
 void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
     uint L0, R0, L1, R1, L2, R2, L3, R3;
-    load_bigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
+    loadBigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
     
     foreach (size_t i; 0 .. 32)
     {
@@ -138,13 +138,13 @@ void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
         R3 += (((L3 << 4) ^ (L3 >> 5)) + L3) ^ EK[2*i+1];
     }
     
-    store_bigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
+    storeBigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
 void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
     uint L0, R0, L1, R1, L2, R2, L3, R3;
-    load_bigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
+    loadBigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
     
     foreach (size_t i; 0 .. 32)
     {
@@ -159,5 +159,5 @@ void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
         L3 -= (((R3 << 4) ^ (R3 >> 5)) + R3) ^ EK[62 - 2*i];
     }
     
-    store_bigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
+    storeBigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
 }

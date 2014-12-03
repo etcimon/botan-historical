@@ -14,36 +14,36 @@ import botan.utils.types;
 import std.exception;
 
 
-class Connection_Sequence_Numbers
+class ConnectionSequenceNumbers
 {
 public:
-    abstract void new_read_cipher_state();
-    abstract void new_write_cipher_state();
+    abstract void newReadCipherState();
+    abstract void newWriteCipherState();
 
-    abstract ushort current_read_epoch() const;
-    abstract ushort current_write_epoch() const;
+    abstract ushort currentReadEpoch() const;
+    abstract ushort currentWriteEpoch() const;
 
-    abstract ulong next_write_sequence();
-    abstract ulong next_read_sequence();
+    abstract ulong nextWriteSequence();
+    abstract ulong nextReadSequence();
 
-    abstract bool already_seen(ulong seq) const;
-    abstract void read_accept(ulong seq);
+    abstract bool alreadySeen(ulong seq) const;
+    abstract void readAccept(ulong seq);
 }
 
-final class Stream_Sequence_Numbers : Connection_Sequence_Numbers
+final class StreamSequenceNumbers : Connection_Sequence_Numbers
 {
 public:
-    override void new_read_cipher_state() { m_read_seq_no = 0; m_read_epoch += 1; }
-    override void new_write_cipher_state() { m_write_seq_no = 0; m_write_epoch += 1; }
+    override void newReadCipherState() { m_read_seq_no = 0; m_read_epoch += 1; }
+    override void newWriteCipherState() { m_write_seq_no = 0; m_write_epoch += 1; }
 
-    override ushort current_read_epoch() const { return m_read_epoch; }
-    override ushort current_write_epoch() const { return m_write_epoch; }
+    override ushort currentReadEpoch() const { return m_read_epoch; }
+    override ushort currentWriteEpoch() const { return m_write_epoch; }
 
-    override ulong next_write_sequence() { return m_write_seq_no++; }
-    override ulong next_read_sequence() { return m_read_seq_no; }
+    override ulong nextWriteSequence() { return m_write_seq_no++; }
+    override ulong nextReadSequence() { return m_read_seq_no; }
 
-    override bool already_seen(ulong) const { return false; }
-    override void read_accept(ulong) { m_read_seq_no++; }
+    override bool alreadySeen(ulong) const { return false; }
+    override void readAccept(ulong) { m_read_seq_no++; }
 private:
     ulong m_write_seq_no = 0;
     ulong m_read_seq_no = 0;
@@ -51,28 +51,28 @@ private:
     ushort m_write_epoch = 0;
 }
 
-final class Datagram_Sequence_Numbers : Connection_Sequence_Numbers
+final class DatagramSequenceNumbers : Connection_Sequence_Numbers
 {
 public:
-    override void new_read_cipher_state() { m_read_epoch += 1; }
+    override void newReadCipherState() { m_read_epoch += 1; }
 
-    override void new_write_cipher_state()
+    override void newWriteCipherState()
     {
         // increment epoch
         m_write_seq_no = ((m_write_seq_no >> 48) + 1) << 48;
     }
 
-    override ushort current_read_epoch() const { return m_read_epoch; }
-    override ushort current_write_epoch() const { return (m_write_seq_no >> 48); }
+    override ushort currentReadEpoch() const { return m_read_epoch; }
+    override ushort currentWriteEpoch() const { return (m_write_seq_no >> 48); }
 
-    override ulong next_write_sequence() { return m_write_seq_no++; }
+    override ulong nextWriteSequence() { return m_write_seq_no++; }
 
-    override ulong next_read_sequence()
+    override ulong nextReadSequence()
     {
         throw new Exception("DTLS uses explicit sequence numbers");
     }
 
-    override bool already_seen(ulong sequence) const
+    override bool alreadySeen(ulong sequence) const
     {
         const size_t window_size = (m_window_bits).sizeof * 8;
 
@@ -87,7 +87,7 @@ public:
         return (((m_window_bits >> offset) & 1) == 1);
     }
 
-    override void read_accept(ulong sequence)
+    override void readAccept(ulong sequence)
     {
         const size_t window_size = (m_window_bits).sizeof * 8;
 

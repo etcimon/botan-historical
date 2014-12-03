@@ -29,7 +29,7 @@ public:
         return "CMAC(" ~ m_cipher.name ~ ")";
     }
 
-    @property size_t output_length() const { return m_cipher.block_size; }
+    @property size_t outputLength() const { return m_cipher.block_size; }
     /*
     * Return a clone of this object
     */
@@ -51,9 +51,9 @@ public:
         m_position = 0;
     }
 
-    Key_Length_Specification key_spec() const
+    KeyLengthSpecification keySpec() const
     {
-        return m_cipher.key_spec();
+        return m_cipher.keySpec();
     }
 
     /**
@@ -61,11 +61,11 @@ public:
     * @param input = the input
     * @param polynomial = the ubyte value of the polynomial
     */
-    Secure_Vector!ubyte poly_double(in Secure_Vector!ubyte input)
+    SecureVector!ubyte polyDouble(in SecureVector!ubyte input)
     {
         const bool top_carry = (input[0] & 0x80);
         
-        Secure_Vector!ubyte output = input;
+        SecureVector!ubyte output = input;
         
         ubyte carry = 0;
         for (size_t i = output.length; i != 0; --i)
@@ -108,7 +108,7 @@ public:
         if (m_cipher.block_size !=  8 && m_cipher.block_size != 16 &&
             m_cipher.block_size != 32 && m_cipher.block_size != 64)
         {
-            throw new Invalid_Argument("CMAC cannot use the " ~
+            throw new InvalidArgument("CMAC cannot use the " ~
                                        to!string(m_cipher.block_size * 8) ~
                                        " bit cipher " ~ m_cipher.name);
         }
@@ -124,7 +124,7 @@ private:
     /*
     * Update an CMAC Calculation
     */
-    void add_data(in ubyte* input, size_t length)
+    void addData(in ubyte* input, size_t length)
     {
         buffer_insert(m_buffer, m_position, input, length);
         if (m_position + length > output_length())
@@ -140,7 +140,7 @@ private:
                 input += output_length();
                 length -= output_length();
             }
-            copy_mem(m_buffer.ptr, input, length);
+            copyMem(m_buffer.ptr, input, length);
             m_position = 0;
         }
         m_position += length;
@@ -149,7 +149,7 @@ private:
     /*
     * Finalize an CMAC Calculation
     */
-    void final_result(ubyte* mac)
+    void finalResult(ubyte* mac)
     {
         xor_buf(m_state, m_buffer, m_position);
         
@@ -176,10 +176,10 @@ private:
     /*
     * CMAC Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t length)
+    void keySchedule(in ubyte* key, size_t length)
     {
         clear();
-        m_cipher.set_key(key, length);
+        m_cipher.setKey(key, length);
         m_cipher.encrypt(m_B);
         m_B = poly_double(m_B);
         m_P = poly_double(m_B);
@@ -187,6 +187,6 @@ private:
 
 
     Unique!BlockCipher m_cipher;
-    Secure_Vector!ubyte m_buffer, m_state, m_B, m_P;
+    SecureVector!ubyte m_buffer, m_state, m_B, m_P;
     size_t m_position;
 }

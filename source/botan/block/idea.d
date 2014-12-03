@@ -16,13 +16,13 @@ import botan.utils.types;
 /**
 * IDEA
 */
-class IDEA : Block_Cipher_Fixed_Params!(8, 16)
+class IDEA : BlockCipherFixedParams!(8, 16)
 {
 public:
     /*
     * IDEA Encryption
     */
-    void encrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         idea_op(input, output, blocks, m_EK.ptr);
     }
@@ -30,7 +30,7 @@ public:
     /*
     * IDEA Decryption
     */
-    void decrypt_n(ubyte* input, ubyte* output, size_t blocks) const
+    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         idea_op(input, output, blocks, m_DK.ptr);
     }
@@ -47,24 +47,23 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    Secure_Vector!ushort get_EK() const { return m_EK; }
+    SecureVector!ushort getEK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    Secure_Vector!ushort get_DK() const { return m_DK; }
+    SecureVector!ushort getDK() const { return m_DK; }
 
-private:
     /*
     * IDEA Key Schedule
     */
-    void key_schedule(in ubyte* key, size_t)
+    void keySchedule(in ubyte* key, size_t)
     {
         m_EK.resize(52);
         m_DK.resize(52);
         
         foreach (size_t i; 0 .. 8)
-            m_EK[i] = load_bigEndian!ushort(key, i);
+            m_EK[i] = loadBigEndian!ushort(key, i);
         
         for (size_t i = 1, j = 8, offset = 0; j != 52; i %= 8, ++i, ++j)
         {
@@ -96,7 +95,7 @@ private:
         m_DK[0] = mul_inv(m_EK[48]);
     }
 
-    Secure_Vector!ushort m_EK, m_DK;
+    SecureVector!ushort m_EK, m_DK;
 }
 
 package:
@@ -153,10 +152,10 @@ void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
     
     foreach (size_t i; 0 .. blocks)
     {
-        ushort X1 = load_bigEndian!ushort(input, 0);
-        ushort X2 = load_bigEndian!ushort(input, 1);
-        ushort X3 = load_bigEndian!ushort(input, 2);
-        ushort X4 = load_bigEndian!ushort(input, 3);
+        ushort X1 = loadBigEndian!ushort(input, 0);
+        ushort X2 = loadBigEndian!ushort(input, 1);
+        ushort X3 = loadBigEndian!ushort(input, 2);
+        ushort X4 = loadBigEndian!ushort(input, 3);
         
         foreach (size_t j; 0 .. 8)
         {
@@ -183,7 +182,7 @@ void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
         X3 += K[49];
         X4  = mul(X4, K[51]);
         
-        store_bigEndian(output, X1, X3, X2, X4);
+        storeBigEndian(output, X1, X3, X2, X4);
         
         input += BLOCK_SIZE;
         output += BLOCK_SIZE;

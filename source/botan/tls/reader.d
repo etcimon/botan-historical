@@ -18,7 +18,7 @@ import std.exception;
 /**
 * Helper class for decoding TLS protocol messages
 */
-struct TLS_Data_Reader
+struct TLSDataReader
 {
 public:
     this(string type, in Vector!ubyte buf_input) 
@@ -28,23 +28,23 @@ public:
         m_offset = 0;
     }
 
-    void assert_done() const
+    void assertDone() const
     {
         if (has_remaining())
             throw new decode_error("Extra bytes at end of message");
     }
 
-    size_t remaining_bytes() const
+    size_t remainingBytes() const
     {
         return m_buf.length - m_offset;
     }
 
-    bool has_remaining() const
+    bool hasRemaining() const
     {
         return (remaining_bytes() > 0);
     }
 
-    void discard_next(size_t bytes)
+    void discardNext(size_t bytes)
     {
         assert_at_least(bytes);
         m_offset += bytes;
@@ -76,21 +76,21 @@ public:
     }
 
     
-    Container get_elem(T, Container)(size_t num_elems)
+    Container getElem(T, Container)(size_t num_elems)
     {
         assert_at_least(num_elems * T.sizeof);
 
         Container result(num_elems);
 
         foreach (size_t i; 0 .. num_elems)
-            result[i] = load_bigEndian!T(&m_buf[m_offset], i);
+            result[i] = loadBigEndian!T(&m_buf[m_offset], i);
 
         m_offset += num_elems * T.sizeof;
 
         return result;
     }
 
-    Vector!T get_range(T)(size_t len_bytes,
+    Vector!T getRange(T)(size_t len_bytes,
                             size_t min_elems,
                             size_t max_elems)
     {
@@ -99,7 +99,7 @@ public:
         return get_elem!(T, Vector!T)(num_elems);
     }
 
-    Vector!T get_range_vector(T)(size_t len_bytes,
+    Vector!T getRangeVector(T)(size_t len_bytes,
                                  size_t min_elems,
                                  size_t max_elems)
     {
@@ -108,22 +108,22 @@ public:
         return get_elem!(T, Vector!T)(num_elems);
     }
 
-    string get_string(size_t len_bytes,
+    string getString(size_t len_bytes,
                       size_t min_bytes,
                       size_t max_bytes)
     {
-        Vector!ubyte v = get_range_vector!ubyte(len_bytes, min_bytes, max_bytes);
+        Vector!ubyte v = getRangeVector!ubyte(len_bytes, min_bytes, max_bytes);
 
         return string(cast(char*)(v.ptr), v.length);
     }
 
-    Vector!T get_fixed(T)(size_t size)
+    Vector!T getFixed(T)(size_t size)
     {
         return get_elem!(T, Vector!T)(size);
     }
 
 private:
-    size_t get_length_field(size_t len_bytes)
+    size_t getLengthField(size_t len_bytes)
     {
         assert_at_least(len_bytes);
 
@@ -135,7 +135,7 @@ private:
         throw new decode_error("Bad length size");
     }
 
-    size_t get_num_elems(size_t len_bytes,
+    size_t getNumElems(size_t len_bytes,
                             size_t T_size,
                             size_t min_elems,
                             size_t max_elems)
@@ -153,7 +153,7 @@ private:
         return num_elems;
     }
 
-    void assert_at_least(size_t n) const
+    void assertAtLeast(size_t n) const
     {
         if (m_buf.length - m_offset < n)
             throw new decode_error("Expected " ~ to!string(n) ~
@@ -162,9 +162,9 @@ private:
                                      " left");
     }
 
-    Decoding_Error decode_error(in string why) const
+    DecodingError decodeError(in string why) const
     {
-        return new Decoding_Error("Invalid " ~ string(m_typename) ~ ": " ~ why);
+        return new DecodingError("Invalid " ~ string(m_typename) ~ ": " ~ why);
     }
 
     string m_typename;
@@ -175,33 +175,33 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void append_tls_length_value(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
+void appendTLSLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
                                        size_t vals_size, size_t tag_size)
 {
     const size_t T_size = T.sizeof;
     const size_t val_bytes = T_size * vals_size;
 
     if (tag_size != 1 && tag_size != 2)
-        throw new Invalid_Argument("append_tls_length_value: invalid tag size");
+        throw new InvalidArgument("appendTLSLengthValue: invalid tag size");
 
     if ((tag_size == 1 && val_bytes > 255) ||
         (tag_size == 2 && val_bytes > 65535))
-        throw new Invalid_Argument("append_tls_length_value: value too large");
+        throw new InvalidArgument("appendTLSLengthValue: value too large");
 
     foreach (size_t i; 0 .. tag_size)
-        buf.push_back(get_byte((val_bytes).sizeof-tag_size+i, val_bytes));
+        buf.pushBack(get_byte((val_bytes).sizeof-tag_size+i, val_bytes));
 
     foreach (size_t i; 0 .. vals_size)
         foreach (size_t j; 0 .. T_size)
-            buf.push_back(get_byte(j, vals[i]));
+            buf.pushBack(get_byte(j, vals[i]));
 }
 
-void append_tls_length_value(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
+void appendTLSLengthValue(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
 {
-    append_tls_length_value(buf, vals.ptr, vals.length, tag_size);
+    appendTLSLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void append_tls_length_value(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
+void appendTLSLengthValue(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
 {
-    append_tls_length_value(buf, cast(const ubyte*)(str.ptr), str.length, tag_size);
+    appendTLSLengthValue(buf, cast(const ubyte*)(str.ptr), str.length, tag_size);
 }

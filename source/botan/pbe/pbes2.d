@@ -29,13 +29,13 @@ import std.algorithm;
 /**
 * PKCS #5 v2.0 PBE
 */
-final class PBE_PKCS5v20 : PBE
+final class PBEPKCS5v20 : PBE
 {
 public:
     /*
     * Return an OID for PBES2
     */
-    OID get_oid() const
+    OID getOid() const
     {
         return OIDS.lookup("PBE-PKCS5v20");
     }
@@ -43,29 +43,29 @@ public:
     /*
     * Encode PKCS#5 PBES2 parameters
     */
-    Vector!ubyte encode_params() const
+    Vector!ubyte encodeParams() const
     {
-        return DER_Encoder()
-                   .start_cons(ASN1_Tag.SEQUENCE)
-                .encode(Algorithm_Identifier("PKCS5.PBKDF2",
-                        DER_Encoder()
-                               .start_cons(ASN1_Tag.SEQUENCE)
-                               .encode(salt, ASN1_Tag.OCTET_STRING)
+        return DEREncoder()
+                   .startCons(ASN1Tag.SEQUENCE)
+                .encode(AlgorithmIdentifier("PKCS5.PBKDF2",
+                        DEREncoder()
+                               .startCons(ASN1Tag.SEQUENCE)
+                               .encode(salt, ASN1Tag.OCTET_STRING)
                                .encode(m_iterations)
                              .encode(m_key_length)
-                               .encode_if ( m_prf.name != "HMAC(SHA-160)",
-                                            Algorithm_Identifier(m_prf.name,
-                                                                   Algorithm_Identifier.USE_NULL_PARAM))
-                              .end_cons()
-                               .get_contents_unlocked()
+                               .encodeIf ( m_prf.name != "HMAC(SHA-160)",
+                                            AlgorithmIdentifier(m_prf.name,
+                                                                   AlgorithmIdentifier.USE_NULL_PARAM))
+                              .endCons()
+                               .getContentsUnlocked()
                          )
                  )
                 .encode(
-                    Algorithm_Identifier(block_cipher.name ~ "/CBC",
-                                         DER_Encoder().encode(m_iv, ASN1_Tag.OCTET_STRING).get_contents_unlocked())
+                    AlgorithmIdentifier(block_cipher.name ~ "/CBC",
+                                         DEREncoder().encode(m_iv, ASN1Tag.OCTET_STRING).getContentsUnlocked())
                  )
-                .end_cons()
-                .get_contents_unlocked();
+                .endCons()
+                .getContentsUnlocked();
     }
 
     @property string name() const
@@ -85,22 +85,22 @@ public:
     /*
     * Start encrypting with PBES2
     */
-    void start_msg()
+    void startMsg()
     {
-        m_pipe.append(get_cipher(m_block_cipher.name ~ "/CBC/PKCS7",
+        m_pipe.append(getCipher(m_block_cipher.name ~ "/CBC/PKCS7",
                                m_key, m_iv, m_direction));
         
-        m_pipe.start_msg();
-        if (m_pipe.message_count() > 1)
-            m_pipe.set_default_msg(m_pipe.default_msg() + 1);
+        m_pipe.startMsg();
+        if (m_pipe.messageCount() > 1)
+            m_pipe.setDefaultMsg(m_pipe.defaultMsg() + 1);
     }
 
     /*
     * Finish encrypting with PBES2
     */
-    void end_msg()
+    void endMsg()
     {
-        m_pipe.end_msg();
+        m_pipe.endMsg();
         flush_pipe(false);
         m_pipe.clear();
     }
@@ -115,57 +115,57 @@ public:
         m_direction = DECRYPTION;
         m_block_cipher = null;
         m_prf = null;
-        Algorithm_Identifier kdf_algo, enc_algo;
+        AlgorithmIdentifier kdf_algo, enc_algo;
         
-        BER_Decoder(params)
-                .start_cons(ASN1_Tag.SEQUENCE)
+        BERDecoder(params)
+                .startCons(ASN1Tag.SEQUENCE)
                 .decode(kdf_algo)
                 .decode(enc_algo)
-                .verify_end()
-                .end_cons();
+                .verifyEnd()
+                .endCons();
         
-        Algorithm_Identifier prf_algo;
+        AlgorithmIdentifier prf_algo;
         
         if (kdf_algo.oid != OIDS.lookup("PKCS5.PBKDF2"))
-            throw new Decoding_Error("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~ kdf_algo.oid.toString());
+            throw new DecodingError("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~ kdf_algo.oid.toString());
         
-        BER_Decoder(kdf_algo.parameters)
-                .start_cons(ASN1_Tag.SEQUENCE)
-                .decode(m_salt, ASN1_Tag.OCTET_STRING)
+        BERDecoder(kdf_algo.parameters)
+                .startCons(ASN1Tag.SEQUENCE)
+                .decode(m_salt, ASN1Tag.OCTET_STRING)
                 .decode(m_iterations)
-                .decode_optional(m_key_length, INTEGER, ASN1_Tag.UNIVERSAL)
-                .decode_optional(prf_algo, ASN1_Tag.SEQUENCE, ASN1_Tag.CONSTRUCTED,
-                                 Algorithm_Identifier("HMAC(SHA-160)",
-                                 Algorithm_Identifier.USE_NULL_PARAM))
-                .verify_end()
-                .end_cons();
+                .decodeOptional(m_key_length, INTEGER, ASN1Tag.UNIVERSAL)
+                .decodeOptional(prf_algo, ASN1Tag.SEQUENCE, ASN1Tag.CONSTRUCTED,
+                                 AlgorithmIdentifier("HMAC(SHA-160)",
+                                 AlgorithmIdentifier.USE_NULL_PARAM))
+                .verifyEnd()
+                .endCons();
         
-        Algorithm_Factory af = global_state().algorithm_factory();
+        AlgorithmFactory af = globalState().algorithmFactory();
         
         string cipher = OIDS.lookup(enc_algo.oid);
         Vector!string cipher_spec = splitter(cipher, '/');
         if (cipher_spec.length != 2)
-            throw new Decoding_Error("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
+            throw new DecodingError("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
         
         if (cipher_spec[1] != "CBC")
-            throw new Decoding_Error("PBE-PKCS5 v2.0: Don't know param format for " ~ cipher);
+            throw new DecodingError("PBE-PKCS5 v2.0: Don't know param format for " ~ cipher);
         
-        BER_Decoder(enc_algo.parameters).decode(m_iv, ASN1_Tag.OCTET_STRING).verify_end();
+        BERDecoder(enc_algo.parameters).decode(m_iv, ASN1Tag.OCTET_STRING).verifyEnd();
         
-        m_block_cipher = af.make_block_cipher(cipher_spec[0]);
-        m_prf = af.make_mac(OIDS.lookup(prf_algo.oid));
+        m_block_cipher = af.makeBlockCipher(cipher_spec[0]);
+        m_prf = af.makeMac(OIDS.lookup(prf_algo.oid));
         
         if (m_key_length == 0)
-            m_key_length = m_block_cipher.maximum_keylength();
+            m_key_length = m_block_cipher.maximumKeylength();
         
         if (m_salt.length < 8)
-            throw new Decoding_Error("PBE-PKCS5 v2.0: Encoded salt is too small");
+            throw new DecodingError("PBE-PKCS5 v2.0: Encoded salt is too small");
         
         PKCS5_PBKDF2 pbkdf(m_prf.clone());
         
-        m_key = pbkdf.derive_key(m_key_length, passphrase,
+        m_key = pbkdf.deriveKey(m_key_length, passphrase,
                                     m_salt.ptr, m_salt.length,
-                                 m_iterations).bits_of();
+                                 m_iterations).bitsOf();
     }
 
     /**
@@ -184,27 +184,27 @@ public:
         m_direction = ENCRYPTION;
         m_block_cipher = cipher;
         m_prf = mac;
-        m_salt = rng.random_vec(12);
-        m_iv = rng.random_vec(m_block_cipher.block_size);
+        m_salt = rng.randomVec(12);
+        m_iv = rng.randomVec(m_block_cipher.block_size);
         m_iterations = 0;
-        m_key_length = m_block_cipher.maximum_keylength();
+        m_key_length = m_block_cipher.maximumKeylength();
         PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());
         
-        m_key = pbkdf.derive_key(m_key_length, passphrase,
+        m_key = pbkdf.deriveKey(m_key_length, passphrase,
                                    m_salt.ptr, m_salt.length,
-                                 msec, m_iterations).bits_of();
+                                 msec, m_iterations).bitsOf();
     }
 
 private:
     /*
     * Flush the pipe
     */
-    void flush_pipe(bool safe_to_skip)
+    void flushPipe(bool safe_to_skip)
     {
         if (safe_to_skip && m_pipe.remaining() < 64)
             return;
         
-        Secure_Vector!ubyte buffer = Secure_Vector!ubyte(DEFAULT_BUFFERSIZE);
+        SecureVector!ubyte buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         while (m_pipe.remaining())
         {
             const size_t got = m_pipe.read(buffer.ptr, buffer.length);
@@ -215,7 +215,7 @@ private:
     Cipher_Dir m_direction;
     Unique!BlockCipher m_block_cipher;
     Unique!MessageAuthenticationCode m_prf;
-    Secure_Vector!ubyte m_salt, m_key, m_iv;
+    SecureVector!ubyte m_salt, m_key, m_iv;
     size_t m_iterations, m_key_length;
     Pipe m_pipe;
 }

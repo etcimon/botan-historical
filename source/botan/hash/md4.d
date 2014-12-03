@@ -16,11 +16,11 @@ import botan.utils.rotate;
 /**
 * MD4
 */
-class MD4 : MDx_HashFunction
+class MD4 : MDxHashFunction
 {
 public:
     @property string name() const { return "MD4"; }
-    @property size_t output_length() const { return 16; }
+    @property size_t outputLength() const { return 16; }
     HashFunction clone() const { return new MD4; }
 
     /*
@@ -47,13 +47,13 @@ protected:
     /*
     * MD4 Compression Function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compressN(in ubyte* input, size_t blocks)
     {
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2], D = m_digest[3];
         
         foreach (size_t i; 0 .. blocks)
         {
-            load_littleEndian(m_M.ptr, input, m_M.length);
+            loadLittleEndian(m_M.ptr, input, m_M.length);
             
             FF(A,B,C,D,m_M[ 0], 3);    FF(D,A,B,C,m_M[ 1], 7);
             FF(C,D,A,B,m_M[ 2],11);    FF(B,C,D,A,m_M[ 3],19);
@@ -87,28 +87,28 @@ protected:
             C = (m_digest[2] += C);
             D = (m_digest[3] += D);
             
-            input += hash_block_size;
+            input += hashBlockSize;
         }
     }
 
     /*
     * Copy out the digest
     */
-    void copy_out(ubyte* output)
+    void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length; i += 4)
-            store_littleEndian(m_digest[i/4], output + i);
+            storeLittleEndian(m_digest[i/4], output + i);
     }
 
     /**
     * The message buffer, exposed for use by subclasses (x86 asm)
     */
-    Secure_Vector!uint m_M;
+    SecureVector!uint m_M;
 
     /**
     * The digest value, exposed for use by subclasses (x86 asm)
     */
-    Secure_Vector!uint m_digest;
+    SecureVector!uint m_digest;
 }
 
 private:
@@ -119,7 +119,7 @@ private:
 void FF(ref uint A, uint B, uint C, uint D, uint M, ubyte S)
 {
     A += (D ^ (B & (C ^ D))) + M;
-    A  = rotate_left(A, S);
+    A  = rotateLeft(A, S);
 }
 
 /*
@@ -128,7 +128,7 @@ void FF(ref uint A, uint B, uint C, uint D, uint M, ubyte S)
 void GG(ref uint A, uint B, uint C, uint D, uint M, ubyte S)
 {
     A += ((B & C) | (D & (B | C))) + M + 0x5A827999;
-    A  = rotate_left(A, S);
+    A  = rotateLeft(A, S);
 }
 
 /*
@@ -137,5 +137,5 @@ void GG(ref uint A, uint B, uint C, uint D, uint M, ubyte S)
 void HH(ref uint A, uint B, uint C, uint D, uint M, ubyte S)
 {
     A += (B ^ C ^ D) + M + 0x6ED9EBA1;
-    A  = rotate_left(A, S);
+    A  = rotateLeft(A, S);
 }

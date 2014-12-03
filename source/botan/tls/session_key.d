@@ -1,5 +1,5 @@
 /*
-* TLS TLS_Session Key
+* TLS TLSSession Key
 * (C) 2004-2006,2011 Jack Lloyd
 *
 * Released under the terms of the botan license.
@@ -15,28 +15,28 @@ import botan.tls.handshake_state;
 import botan.tls.messages;
 
 /**
-* TLS TLS_Session Keys
+* TLS TLSSession Keys
 */
-struct TLS_Session_Keys
+struct TLSSessionKeys
 {
 public:
-    SymmetricKey client_cipher_key() const { return m_c_cipher; }
-    SymmetricKey server_cipher_key() const { return s_cipher; }
+    SymmetricKey clientCipherKey() const { return m_c_cipher; }
+    SymmetricKey serverCipherKey() const { return s_cipher; }
 
-    SymmetricKey client_mac_key() const { return m_c_mac; }
-    SymmetricKey server_mac_key() const { return m_s_mac; }
+    SymmetricKey clientMacKey() const { return m_c_mac; }
+    SymmetricKey serverMacKey() const { return m_s_mac; }
 
-    InitializationVector client_iv() const { return m_c_iv; }
-    InitializationVector server_iv() const { return m_s_iv; }
+    InitializationVector clientIv() const { return m_c_iv; }
+    InitializationVector serverIv() const { return m_s_iv; }
 
-    Secure_Vector!ubyte master_secret() const { return m_master_sec; }
+    SecureVector!ubyte masterSecret() const { return m_master_sec; }
 
     @disable this();
 
     /**
-    * TLS_Session_Keys Constructor
+    * TLSSessionKeys Constructor
     */
-    this(in Handshake_State state, in Secure_Vector!ubyte pre_master_secret, bool resuming)
+    this(in HandshakeState state, in SecureVector!ubyte pre_master_secret, bool resuming)
     {
         const size_t cipher_keylen = state.ciphersuite().cipher_keylen();
         const size_t mac_keylen = state.ciphersuite().mac_keylen();
@@ -50,7 +50,7 @@ public:
         __gshared immutable immutable(ubyte)[] KEY_GEN_MAGIC = [
             0x6B, 0x65, 0x79, 0x20, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E ];
         
-        Unique!KDF prf = state.protocol_specific_prf();
+        Unique!KDF prf = state.protocolSpecificPrf();
         
         if (resuming)
         {
@@ -58,24 +58,24 @@ public:
         }
         else
         {
-            Secure_Vector!ubyte salt;
+            SecureVector!ubyte salt;
             
-            if (state._version() != TLS_Protocol_Version.SSL_V3)
+            if (state.Version() != TLSProtocolVersion.SSL_V3)
                 salt ~= MASTER_SECRET_MAGIC;
             
-            salt ~= state.client_hello().random();
-            salt ~= state.server_hello().random();
+            salt ~= state.clientHello().random();
+            salt ~= state.serverHello().random();
             
-            m_master_sec = prf.derive_key(48, pre_master_secret, salt);
+            m_master_sec = prf.deriveKey(48, pre_master_secret, salt);
         }
         
-        Secure_Vector!ubyte salt;
-        if (state._version() != TLS_Protocol_Version.SSL_V3)
+        SecureVector!ubyte salt;
+        if (state.Version() != TLSProtocolVersion.SSL_V3)
             salt ~= KEY_GEN_MAGIC;
-        salt ~= state.server_hello().random();
-        salt ~= state.client_hello().random();
+        salt ~= state.serverHello().random();
+        salt ~= state.clientHello().random();
         
-        SymmetricKey keyblock = prf.derive_key(prf_gen, m_master_sec, salt);
+        SymmetricKey keyblock = prf.deriveKey(prf_gen, m_master_sec, salt);
         
         const ubyte* key_data = keyblock.ptr;
         
@@ -98,7 +98,7 @@ public:
     }
 
 private:
-    Secure_Vector!ubyte m_master_sec;
+    SecureVector!ubyte m_master_sec;
     SymmetricKey m_c_cipher, m_s_cipher, m_c_mac, m_s_mac;
     InitializationVector m_c_iv, m_s_iv;
 }

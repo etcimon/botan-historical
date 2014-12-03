@@ -10,7 +10,7 @@ import botan.utils.types;
 /**
 * Represents the length requirements on an algorithm key
 */
-struct Key_Length_Specification
+struct KeyLengthSpecification
 {
 public:
     /**
@@ -43,7 +43,7 @@ public:
     * @param length = is a key length in bytes
     * @return true iff this length is a valid length for this algo
     */
-    bool valid_keylength(size_t length) const
+    bool validKeylength(size_t length) const
     {
         return ((length >= m_min_keylen) &&
                   (length <= m_max_keylen) &&
@@ -53,7 +53,7 @@ public:
     /**
     * @return minimum key length in bytes
     */
-    size_t minimum_keylength() const
+    size_t minimumKeylength() const
     {
         return m_min_keylen;
     }
@@ -61,7 +61,7 @@ public:
     /**
     * @return maximum key length in bytes
     */
-    size_t maximum_keylength() const
+    size_t maximumKeylength() const
     {
         return m_max_keylen;
     }
@@ -69,12 +69,12 @@ public:
     /**
     * @return key length multiple in bytes
     */
-    size_t keylength_multiple() const
+    size_t keylengthMultiple() const
     {
         return m_keylen_mod;
     }
 
-    Key_Length_Specification multiple(size_t n) const
+    KeyLengthSpecification multiple(size_t n) const
     {
         return Key_Length_Specification(n * m_min_keylen,
                                         n * m_max_keylen,
