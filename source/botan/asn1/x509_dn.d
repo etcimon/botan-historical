@@ -40,13 +40,13 @@ public:
             der.rawBytes(m_dn_bits);
         else
         {
-            do_ava(der, dn_info, ASN1Tag.PRINTABLE_STRING, "X520.Country");
-            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.State");
-            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.Locality");
-            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.Organization");
-            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.OrganizationalUnit");
-            do_ava(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.CommonName");
-            do_ava(der, dn_info, ASN1Tag.PRINTABLE_STRING, "X520.SerialNumber");
+            doAva(der, dn_info, ASN1Tag.PRINTABLE_STRING, "X520.Country");
+            doAva(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.State");
+            doAva(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.Locality");
+            doAva(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.Organization");
+            doAva(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.OrganizationalUnit");
+            doAva(der, dn_info, ASN1Tag.DIRECTORY_STRING, "X520.CommonName");
+            doAva(der, dn_info, ASN1Tag.PRINTABLE_STRING, "X520.SerialNumber");
         }
         
         der.endCons();
@@ -80,7 +80,7 @@ public:
                         .verifyEnd()
                         .endCons();
                 
-                add_attribute(oid, str.value());
+                addAttribute(oid, str.value());
             }
         }
         
@@ -103,9 +103,9 @@ public:
     */
     Vector!string getAttribute(in string attr) const
     {
-        const OID oid = OIDS.lookup(deref_info_field(attr));
+        const OID oid = OIDS.lookup(derefInfoField(attr));
         
-        auto range = m_dn_info.equal_range(oid);
+        auto range = m_dn_info.equalRange(oid);
         
         Vector!string values;
         for (auto i = range.first; i != range.second; ++i)
@@ -132,7 +132,7 @@ public:
                        in string str)
     {
         OID oid = OIDS.lookup(type);
-        add_attribute(oid, str);
+        addAttribute(oid, str);
     }
 
     /*
@@ -193,7 +193,7 @@ public:
     this(in MultiMap!(OID, string) args)
     {
         foreach (oid, val; args)
-            add_attribute(oid, val);
+            addAttribute(oid, val);
     }
     
     /*
@@ -202,7 +202,7 @@ public:
     this(in MultiMap!(string, string) args)
     {
         foreach (key, val; args)
-            add_attribute(OIDS.lookup(key), val);
+            addAttribute(OIDS.lookup(key), val);
     }
 
     /*
@@ -237,7 +237,7 @@ public:
             if (p1 == attr1.end())        return false;
             if (p2 == attr2.end())        return false;
             if (p1.first != p2.first) return false;
-            if (!x500_name_cmp(p1.second, p2.second))
+            if (!x500NameCmp(p1.second, p2.second))
                 return false;
             ++p1;
             ++p2;
@@ -282,7 +282,7 @@ public:
 
         foreach(key, val; contents)
         {
-            output ~= to_short_form(key) ~ "=" ~ val ~ ' ';
+            output ~= toShortForm(key) ~ "=" ~ val ~ ' ';
         }
         return output.data;
     }

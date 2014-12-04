@@ -62,7 +62,7 @@ public:
     */
     X509DN subjectDn() const
     {
-        return create_dn(m_info);
+        return createDn(m_info);
     }
 
     /**
@@ -71,7 +71,7 @@ public:
     */
     AlternativeName subjectAltName() const
     {
-        return create_alt_name(m_info);
+        return createAltName(m_info);
     }
 
     /**
@@ -181,7 +181,7 @@ private:
                                   public_key.type_tag, public_key.class_tag);
         
         m_info.add("X509.Certificate.public_key", 
-                   PEM.encode(put_in_sequence(unlock(public_key.value)), "PUBLIC KEY"));
+                   PEM.encode(putInSequence(unlock(public_key.value)), "PUBLIC KEY"));
         
         BERObject attr_bits = cert_req_info.getNextObject();
         
@@ -193,7 +193,7 @@ private:
             {
                 Attribute attr;
                 attributes.decode(attr);
-                handle_attribute(attr);
+                handleAttribute(attr);
             }
             attributes.verifyEnd();
         }

@@ -193,7 +193,7 @@ private:
 
 private:
     
-void interleaveEpi64(ref m256i X0, ref m256i X1) pure
+void interleave_epi64(ref m256i X0, ref m256i X1) pure
 {
     // interleave X0 and X1 qwords
     // (X0,X1,X2,X3),(X4,X5,X6,X7) . (X0,X2,X4,X6),(X1,X3,X5,X7)
@@ -205,7 +205,7 @@ void interleaveEpi64(ref m256i X0, ref m256i X1) pure
     X1 = _mm256_permute4x64_epi64(T1, _MM_SHUFFLE(3,1,2,0));
 }
 
-void deinterleaveEpi64(ref m256i X0, ref m256i X1) pure
+void deinterleave_epi64(ref m256i X0, ref m256i X1) pure
 {
     const __m256i T0 = _mm256_permute4x64_epi64(X0, _MM_SHUFFLE(3,1,2,0));
     const __m256i T1 = _mm256_permute4x64_epi64(X1, _MM_SHUFFLE(3,1,2,0));

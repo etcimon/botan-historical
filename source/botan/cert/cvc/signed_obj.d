@@ -74,7 +74,7 @@ public:
             string padding = sig_info[1];
             Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
-            Vector!ubyte to_sign = tbs_data();
+            Vector!ubyte to_sign = tbsData();
             
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
             return verifier.verifyMessage(to_sign, sig);

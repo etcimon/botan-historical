@@ -127,6 +127,6 @@ private:
     }
 
     size_t delegate(ref ubyte[]) m_read_fn;
-    TLS_Client m_channel;
+    TLSClient m_channel;
     Secure_Deque!ubyte m_plaintext;
 }

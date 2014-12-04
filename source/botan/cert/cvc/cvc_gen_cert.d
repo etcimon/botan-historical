@@ -58,15 +58,15 @@ public:
     */
     final void encode(Pipe output, X509Encoding encoding) const
     {
-        Vector!ubyte concat_sig = EAC11obj!Derived.m_sig.get_concatenation();
+        Vector!ubyte concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
         Vector!ubyte der = DEREncoder()
-                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
-                .startCons(ASN1Tag(78), ASN1Tag.APPLICATION)
-                .rawBytes(EAC11obj!Derived.tbs_bits)
-                .endCons()
-                .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
-                .endCons()
-                .getContentsUnlocked();
+                            .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                            .startCons(ASN1Tag(78), ASN1Tag.APPLICATION)
+                            .rawBytes(EAC11obj!Derived.tbs_bits)
+                            .endCons()
+                            .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                            .endCons()
+                            .getContentsUnlocked();
         
         if (encoding == PEM)
             throw new InvalidArgument("EAC11GenCVC::encode() cannot PEM encode an EAC object");

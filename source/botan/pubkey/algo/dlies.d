@@ -194,7 +194,7 @@ size_t dliesKat(string p,
     
     const string opt_str = "KDF2(SHA-1)/HMAC(SHA-1)/16";
     
-    Vector!string options = split_on(opt_str, '/');
+    Vector!string options = splitOn(opt_str, '/');
     
     if (options.length != 3)
         throw new Exception("DLIES needs three options: " ~ opt_str);

@@ -124,7 +124,7 @@ public:
         
         try
         {
-            Vector!ubyte ber = unlock(PEM.decode_check_label(pem_or_oid, "EC PARAMETERS"));
+            Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem_or_oid, "EC PARAMETERS"));
             
             this(ber);
         }

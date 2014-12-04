@@ -213,7 +213,7 @@ public:
 
         try
         {
-            m_id = parse_asn1_oid(oid_str);
+            m_id = parseAsn1Oid(oid_str);
         }
         catch (Throwable)
         {

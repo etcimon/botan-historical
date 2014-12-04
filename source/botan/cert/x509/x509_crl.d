@@ -92,7 +92,7 @@ public:
     */
     X509DN issuerDn() const
     {
-        return create_dn(m_info);
+        return createDn(m_info);
     }
 
 

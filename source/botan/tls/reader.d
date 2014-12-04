@@ -30,8 +30,8 @@ public:
 
     void assertDone() const
     {
-        if (has_remaining())
-            throw new decode_error("Extra bytes at end of message");
+        if (hasRemaining())
+            throw decodeError("Extra bytes at end of message");
     }
 
     size_t remainingBytes() const
@@ -41,18 +41,18 @@ public:
 
     bool hasRemaining() const
     {
-        return (remaining_bytes() > 0);
+        return (remainingBytes() > 0);
     }
 
     void discardNext(size_t bytes)
     {
-        assert_at_least(bytes);
+        assertAtLeast(bytes);
         m_offset += bytes;
     }
 
     ushort get_uint()
     {
-        assert_at_least(4);
+        assertAtLeast(4);
         ushort result = make_uint(m_buf[m_offset  ], m_buf[m_offset+1],
                                              m_buf[m_offset+2], m_buf[m_offset+3]);
         m_offset += 4;
@@ -61,7 +61,7 @@ public:
 
     ushort get_ushort()
     {
-        assert_at_least(2);
+        assertAtLeast(2);
         ushort result = make_ushort(m_buf[m_offset], m_buf[m_offset+1]);
         m_offset += 2;
         return result;
@@ -69,7 +69,7 @@ public:
 
     ubyte get_byte()
     {
-        assert_at_least(1);
+        assertAtLeast(1);
         ubyte result = m_buf[m_offset];
         m_offset += 1;
         return result;
@@ -78,7 +78,7 @@ public:
     
     Container getElem(T, Container)(size_t num_elems)
     {
-        assert_at_least(num_elems * T.sizeof);
+        assertAtLeast(num_elems * T.sizeof);
 
         Container result(num_elems);
 
@@ -94,7 +94,7 @@ public:
                             size_t min_elems,
                             size_t max_elems)
     {
-        const size_t num_elems = get_num_elems(len_bytes, T.sizeof, min_elems, max_elems);
+        const size_t num_elems = getNumElems(len_bytes, T.sizeof, min_elems, max_elems);
 
         return get_elem!(T, Vector!T)(num_elems);
     }
@@ -103,7 +103,7 @@ public:
                                  size_t min_elems,
                                  size_t max_elems)
     {
-        const size_t num_elems = get_num_elems(len_bytes, T.sizeof, min_elems, max_elems);
+        const size_t num_elems = getNumElems(len_bytes, T.sizeof, min_elems, max_elems);
 
         return get_elem!(T, Vector!T)(num_elems);
     }
@@ -125,14 +125,14 @@ public:
 private:
     size_t getLengthField(size_t len_bytes)
     {
-        assert_at_least(len_bytes);
+        assertAtLeast(len_bytes);
 
         if (len_bytes == 1)
             return get_byte();
         else if (len_bytes == 2)
             return get_ushort();
 
-        throw new decode_error("Bad length size");
+        throw decodeError("Bad length size");
     }
 
     size_t getNumElems(size_t len_bytes,
@@ -140,15 +140,15 @@ private:
                             size_t min_elems,
                             size_t max_elems)
     {
-        const size_t byte_length = get_length_field(len_bytes);
+        const size_t byte_length = getLengthField(len_bytes);
 
         if (byte_length % T_size != 0)
-            throw new decode_error("Size isn't multiple of T");
+            throw decodeError("Size isn't multiple of T");
 
         const size_t num_elems = byte_length / T_size;
 
         if (num_elems < min_elems || num_elems > max_elems)
-            throw new decode_error("Length field outside parameters");
+            throw decodeError("Length field outside parameters");
 
         return num_elems;
     }
@@ -156,7 +156,7 @@ private:
     void assertAtLeast(size_t n) const
     {
         if (m_buf.length - m_offset < n)
-            throw new decode_error("Expected " ~ to!string(n) ~
+            throw decodeError("Expected " ~ to!string(n) ~
                                      " bytes remaining, only " ~
                                      to!string(m_buf.length-m_offset) ~
                                      " left");
@@ -175,18 +175,18 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void appendTLSLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
+void appendTlsLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
                                        size_t vals_size, size_t tag_size)
 {
     const size_t T_size = T.sizeof;
     const size_t val_bytes = T_size * vals_size;
 
     if (tag_size != 1 && tag_size != 2)
-        throw new InvalidArgument("appendTLSLengthValue: invalid tag size");
+        throw new InvalidArgument("appendTlsLengthValue: invalid tag size");
 
     if ((tag_size == 1 && val_bytes > 255) ||
         (tag_size == 2 && val_bytes > 65535))
-        throw new InvalidArgument("appendTLSLengthValue: value too large");
+        throw new InvalidArgument("appendTlsLengthValue: value too large");
 
     foreach (size_t i; 0 .. tag_size)
         buf.pushBack(get_byte((val_bytes).sizeof-tag_size+i, val_bytes));
@@ -196,12 +196,12 @@ void appendTLSLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals,
             buf.pushBack(get_byte(j, vals[i]));
 }
 
-void appendTLSLengthValue(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
+void appendTlsLengthValue(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
 {
-    appendTLSLengthValue(buf, vals.ptr, vals.length, tag_size);
+    appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTLSLengthValue(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
+void appendTlsLengthValue(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
 {
-    appendTLSLengthValue(buf, cast(const ubyte*)(str.ptr), str.length, tag_size);
+    appendTlsLengthValue(buf, cast(const ubyte*)(str.ptr), str.length, tag_size);
 }

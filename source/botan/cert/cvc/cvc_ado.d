@@ -100,7 +100,7 @@ public:
         if (encoding == PEM)
             throw new InvalidArgument("encode() cannot PEM encode an EAC object");
         
-        auto concat_sig = m_sig.get_concatenation();
+        auto concat_sig = m_sig.getConcatenation();
         
         output.write(DEREncoder()
                      .startCons(ASN1Tag(7), ASN1Tag.APPLICATION)
@@ -112,8 +112,8 @@ public:
 
     bool opEquals(in EAC11ADO rhs) const
     {
-        return (get_concat_sig() == rhs.getConcatSig()
-                && tbs_data() == rhs.tbsData()
+        return (getConcatSig() == rhs.getConcatSig()
+                && tbsData() == rhs.tbsData()
                 && getCar() ==  rhs.getCar());
     }
 
@@ -142,17 +142,17 @@ private:
     {
         Vector!ubyte inner_cert;
         BERDecoder(m_tbs_bits)
-                .startCons(ASN1Tag(33))
-                .rawBytes(inner_cert)
-                .endCons()
-                .decode(m_car)
-                .verifyEnd();
+                    .startCons(ASN1Tag(33))
+                    .rawBytes(inner_cert)
+                    .endCons()
+                    .decode(m_car)
+                    .verifyEnd();
         
         Vector!ubyte req_bits = DEREncoder()
-                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
-                .rawBytes(inner_cert)
-                .endCons()
-                .getContentsUnlocked();
+                                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                                .rawBytes(inner_cert)
+                                .endCons()
+                                .getContentsUnlocked();
         
         auto req_source = scoped!DataSourceMemory(req_bits);
         m_req = EAC11Req(req_source);

@@ -205,7 +205,7 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
     
     auto kas = scoped!PKKeyAgreement(mykey, kdf);
     
-    return validate_kas(kas, "DH/" ~ kdf, otherkey.publicValue(), key, keylen);
+    return validateKas(kas, "DH/" ~ kdf, otherkey.publicValue(), key, keylen);
 }
 
 unittest

@@ -160,10 +160,10 @@ public:
     */
     string chooseCurve(in Vector!string curve_names) const
     {
-        const Vector!string our_curves = allowed_ecc_curves();
+        const Vector!string our_curves = allowedEccCurves();
 
         for (size_t i = 0; i != our_curves.length; ++i)
-            if (value_exists(curve_names, our_curves[i]))
+            if (valueExists(curve_names, our_curves[i]))
                 return our_curves[i];
         
         return ""; // no shared curve
@@ -262,18 +262,18 @@ public:
     Vector!ushort ciphersuiteList(TLSProtocolVersion _version,
                                        bool have_srp) const
     {
-        const Vector!string ciphers = allowed_ciphers();
-        const Vector!string macs = allowed_macs();
-        const Vector!string kex = allowed_key_exchange_methods();
+        const Vector!string ciphers = allowedCiphers();
+        const Vector!string macs = allowedMacs();
+        const Vector!string kex = allowedKeyExchangeMethods();
         const Vector!string sigs = allowedSignatureMethods();
         
-        Ciphersuite_Preference_Ordering order = Ciphersuite_Preference_Ordering(ciphers, macs, kex, sigs);
+        CiphersuitePreferenceOrdering order = CiphersuitePreferenceOrdering(ciphers, macs, kex, sigs);
         
         Appender!(TLSCiphersuite[]) ciphersuites;
         
         foreach (suite; TLSCiphersuite.allKnownCiphersuites())
         {
-            if (!acceptable_ciphersuite(suite))
+            if (!acceptableCiphersuite(suite))
                 continue;
             
             if (!have_srp && suite.kexAlgo() == "SRP_SHA")
@@ -285,16 +285,16 @@ public:
             if (!_version.supportsAeadModes() && suite.macAlgo() == "AEAD")
                 continue;
             
-            if (!value_exists(kex, suite.kexAlgo()))
+            if (!valueExists(kex, suite.kexAlgo()))
                 continue; // unsupported key exchange
             
-            if (!value_exists(ciphers, suite.cipherAlgo()))
+            if (!valueExists(ciphers, suite.cipherAlgo()))
                 continue; // unsupported cipher
             
-            if (!value_exists(macs, suite.macAlgo()))
+            if (!valueExists(macs, suite.macAlgo()))
                 continue; // unsupported MAC algo
             
-            if (!value_exists(sigs, suite.sigAlgo()))
+            if (!valueExists(sigs, suite.sigAlgo()))
             {
                 // allow if it's an empty sig algo and we want to use PSK
                 if (suite.sigAlgo() != "" || !suite.pskCiphersuite())

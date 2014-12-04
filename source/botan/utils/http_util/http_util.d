@@ -54,14 +54,14 @@ public:
 
     void throwUnlessOk()
     {
-        if (status_code() != 200)
+        if (statusCode() != 200)
             throw new Exception("HTTP error: " ~ status_message());
     }
 
     string toString()
     {
         Appender!string output;
-        output ~= "HTTP " ~ status_code() ~ " " ~ status_message() ~ "";
+        output ~= "HTTP " ~ statusCode() ~ " " ~ status_message() ~ "";
         foreach (k, v; headers())
             output ~= "Header '" ~ k ~ "' = '" ~ v ~ "'";
         output ~= "Body " ~ to!string(resp.Body().length) ~ " bytes:";
@@ -124,7 +124,7 @@ HTTPResponse httpSync(in string verb,
     outbuf ~= "Connection: close\r\r";
     outbuf ~= cast(string) _body[];
     
-    auto reply = http_transact(hostname, outbuf.data);
+    auto reply = httpTransact(hostname, outbuf.data);
 
     if (reply.length == 0)
         throw new Exception("No response");
@@ -221,16 +221,16 @@ string urlEncode(in string input)
     return output.data;
 }
 
-HTTPResponse gETSync(in string url, size_t allowable_redirects = 1)
+HTTPResponse GET_sync(in string url, size_t allowable_redirects = 1)
 {
-    return http_sync("GET", url, "", Vector!ubyte(), allowable_redirects);
+    return httpSync("GET", url, "", Vector!ubyte(), allowable_redirects);
 }
 
-HTTPResponse pOSTSync(in string url, in string content_type,
+HTTPResponse POST_sync(in string url, in string content_type,
                       in Vector!ubyte _body,
                       size_t allowable_redirects = 1)
 {
-    return http_sync("POST", url, content_type, _body, allowable_redirects);
+    return httpSync("POST", url, content_type, _body, allowable_redirects);
 }
 
 

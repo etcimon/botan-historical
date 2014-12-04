@@ -149,7 +149,7 @@ EAC11ADO createAdoReq(in PrivateKey key,
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
     
-    string padding_and_hash = padding_and_hash_from_oid(req.signatureAlgorithm().oid);
+    string padding_and_hash = paddingAndHashFromOid(req.signatureAlgorithm().oid);
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
     Vector!ubyte tbs_bits = req.BER_encode();
     tbs_bits ~= DEREncoder().encode(car).getContentsUnlocked();
@@ -220,7 +220,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
         throw new InvalidArgument("linkCvca(): unsupported key type");
     
     ASN1Ced ced = ASN1Ced(Clock.currTime());
-    ASN1Cex cex = ASN1Cex(signee.get_cex());
+    ASN1Cex cex = ASN1Cex(signee.getCex());
     if (*cast(EACTime*)(&ced) > *cast(EACTime*)(&cex))
     {
         Appender!string detail = "linkCvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
@@ -234,7 +234,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
         throw new InvalidArgument("linkCvca(): signature algorithms of signer and signee don't match");
     }
     AlgorithmIdentifier sig_algo = signer.signatureAlgorithm();
-    string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
+    string padding_and_hash = paddingAndHashFromOid(sig_algo.oid);
     PKSigner pk_signer = PKSigner(priv_key, padding_and_hash);
     Unique!PublicKey pk = signee.subjectPublicKey();
     ECDSAPublicKey subj_pk = cast(ECDSAPublicKey)(*pk);
@@ -314,7 +314,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     
     chr_str ~= seqnr_string;
     ASN1Chr chr = ASN1Chr(chr_str);
-    string padding_and_hash = padding_and_hash_from_oid(signee.signatureAlgorithm().oid);
+    string padding_and_hash = paddingAndHashFromOid(signee.signatureAlgorithm().oid);
     PKSigner pk_signer = PKSigner(priv_key, padding_and_hash);
     Unique!PublicKey pk = signee.subjectPublicKey();
     ECDSAPublicKey  subj_pk = cast(ECDSAPublicKey) pk;
@@ -322,7 +322,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     
     // for the case that the domain parameters are not set...
     // (we use those from the signer because they must fit)
-    //subj_pk.set_domain_parameters(priv_key.domain_parameters());
+    //subj_pk.setDomainParameters(priv_key.domain_parameters());
     
     subj_pk.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     

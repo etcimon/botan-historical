@@ -136,7 +136,7 @@ public:
     */
     void add(in string key, in string val)
     {
-        multimap_insert(m_contents, key, val);
+        m_contents.insert(key, val);
     }
     
     /*

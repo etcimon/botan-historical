@@ -742,8 +742,8 @@ size_t testPointSwap()
     
     AutoSeededRNG rng;
     
-    PointGFp a = PointGFp(create_random_point(rng, dom_pars.getCurve()));
-    PointGFp b = PointGFp(create_random_point(rng, dom_pars.getCurve()));
+    PointGFp a = PointGFp(createRandomPoint(rng, dom_pars.getCurve()));
+    PointGFp b = PointGFp(createRandomPoint(rng, dom_pars.getCurve()));
     b *= BigInt(20);
     
     PointGFp c = PointGFp(a);
@@ -768,7 +768,7 @@ size_t testMultSecMass()
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     for(int i = 0; i<50; i++)
     {
-        PointGFp a = PointGFp(create_random_point(rng, dom_pars.getCurve()));
+        PointGFp a = PointGFp(createRandomPoint(rng, dom_pars.getCurve()));
         BigInt scal = BigInt(BigInt(rng, 40));
         PointGFp b = a * scal;
         PointGFp c = PointGFp(a);

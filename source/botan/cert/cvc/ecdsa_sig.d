@@ -58,8 +58,8 @@ public:
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
-                .encode(get_r())
-                .encode(get_s())
+                .encode(getR())
+                .encode(getS())
                 .endCons()
                 .getContentsUnlocked();
     }
@@ -67,7 +67,7 @@ public:
 
     bool opEquals(in ECDSASignature other) const
     {
-        return (get_r() == other.getR() && get_s() == other.getS());
+        return (getR() == other.getR() && getS() == other.getS());
     }
 
     bool opCmp(string op)(in ECDSASignature rhs)

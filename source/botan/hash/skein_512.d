@@ -44,7 +44,7 @@ public:
         if (m_output_bits == 0 || m_output_bits % 8 != 0 || m_output_bits > 512)
             throw new InvalidArgument("Bad output bits size for Skein-512");
         
-        initial_block();
+        initialBlock();
     }
 
     override @property size_t hashBlockSize() const { return 64; }
@@ -68,7 +68,7 @@ public:
         zeroise(m_buffer);
         m_buf_pos = 0;
         
-        initial_block();
+        initialBlock();
     }
 
 private:
@@ -132,7 +132,7 @@ private:
             output[i] = get_byte(7-i%8, m_threefish.m_K[i/8]);
         
         m_buf_pos = 0;
-        initial_block();
+        initialBlock();
     }
 
     void ubi_512(in ubyte* msg, size_t msg_len)

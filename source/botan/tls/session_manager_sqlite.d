@@ -68,7 +68,7 @@ public:
             ~ "passphrase_check INTEGER "
             ~ ")");
         
-        const size_t salts = m_db.row_count("tls_sessions_metadata");
+        const size_t salts = m_db.rowCount("tls_sessions_metadata");
         
         if (salts == 1)
         {
@@ -212,7 +212,7 @@ private:
         
         remove_expired.spin();
         
-        const size_t sessions = m_db.row_count("tls_sessions");
+        const size_t sessions = m_db.rowCount("tls_sessions");
         
         if (sessions > m_max_sessions)
         {

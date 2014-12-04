@@ -47,7 +47,7 @@ public:
     PublicKey subjectPublicKey() const
     {
         return x509_key.loadKey(
-            put_in_sequence(subjectPublicKeyBits()));
+            putInSequence(subjectPublicKeyBits()));
     }
 
     /**
@@ -65,7 +65,7 @@ public:
     */
     X509DN issuerDn() const
     {
-        return create_dn(m_issuer);
+        return createDn(m_issuer);
     }
 
     /**
@@ -74,7 +74,7 @@ public:
     */
     X509DN subjectDn() const
     {
-        return create_dn(m_subject);
+        return createDn(m_subject);
     }
 
     /**
@@ -192,7 +192,7 @@ public:
         if (!m_subject.get1Uint("X509v3.BasicConstraints.is_ca"))
             return false;
         
-        return allowed_usage(KEY_CERT_SIGN);
+        return allowedUsage(KEY_CERT_SIGN);
     }
 
 
@@ -246,7 +246,7 @@ public:
     */
     Vector!string exConstraints() const
     {
-        return lookup_oids(m_subject.get("X509v3.ExtendedKeyUsage"));
+        return lookupOids(m_subject.get("X509v3.ExtendedKeyUsage"));
     }
 
     /**
@@ -256,7 +256,7 @@ public:
     */
     Vector!string policies() const
     {
-        return lookup_oids(m_subject.get("X509v3.CertificatePolicies"));
+        return lookupOids(m_subject.get("X509v3.CertificatePolicies"));
     }
 
     /**
@@ -298,7 +298,7 @@ public:
         
         foreach (const dn_field; dn_fields)
         {
-            const Vector!string vals = subject_info(dn_field);
+            const Vector!string vals = subjectInfo(dn_field);
             
             if (vals.empty)
                 continue;
@@ -311,7 +311,7 @@ public:
         
         foreach (const dn_field; dn_fields)
         {
-            const Vector!string vals = issuer_info(dn_field);
+            const Vector!string vals = issuerInfo(dn_field);
             
             if (vals.empty)
                 continue;
@@ -322,7 +322,7 @@ public:
             output ~= "";
         }
         
-        output ~= "Version: " ~ x509_version();
+        output ~= "Version: " ~ x509Version();
         
         output ~= "Not valid before: " ~ startTime();
         output ~= "Not valid after: " ~ endTime();
@@ -419,10 +419,10 @@ public:
         if (name == "")
             return false;
         
-        if (cert_subject_dns_match(name, subject_info("DNS")))
+        if (certSubjectDnsMatch(name, subjectInfo("DNS")))
             return true;
         
-        if (cert_subject_dns_match(name, subject_info("Name")))
+        if (certSubjectDnsMatch(name, subjectInfo("Name")))
             return true;
         
         return false;
@@ -539,8 +539,8 @@ private:
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         
-        m_subject.add("X509.Certificate.dn_bits", put_in_sequence(dn_subject.getBits()));
-        m_issuer.add("X509.Certificate.dn_bits", put_in_sequence(dn_issuer.getBits()));
+        m_subject.add("X509.Certificate.dn_bits", putInSequence(dn_subject.getBits()));
+        m_issuer.add("X509.Certificate.dn_bits", putInSequence(dn_issuer.getBits()));
         
         BERObject public_key = tbs_cert.getNextObject();
         if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
@@ -589,7 +589,7 @@ private:
         if (is_CA_cert() &&
             !m_subject.hasValue("X509v3.BasicConstraints.path_constraint"))
         {
-            const size_t limit = (x509_version() < 3) ? NO_CERT_PATH_LIMIT : 0;
+            const size_t limit = (x509Version() < 3) ? NO_CERT_PATH_LIMIT : 0;
             
             m_subject.add("X509v3.BasicConstraints.path_constraint", limit);
         }
@@ -611,7 +611,7 @@ private:
 */
 X509DN createDn(in DataStore info)
 {
-    auto names = info.search_for((in string key, in string)
+    auto names = info.searchFor((in string key, in string)
     {
         return (key.canFind("X520."));
     });
@@ -630,7 +630,7 @@ X509DN createDn(in DataStore info)
 */
 AlternativeName createAltName(in DataStore info)
 {
-    auto names = info.search_for((in string key, in string)
+    auto names = info.searchFor((in string key, in string)
                                  { return (key == "RFC822" || key == "DNS" || key == "URI" || key == "IP"); });
     
     AlternativeName alt_name;

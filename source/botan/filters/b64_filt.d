@@ -91,7 +91,7 @@ private:
             size_t produced = base64Encode(cast(char*)(m_output.ptr), input,
                                             proc, consumed, final_inputs);
             
-            do_output(m_output.ptr, produced);
+            doOutput(m_output.ptr, produced);
             
             // FIXME: s/proc/consumed/?
             input += proc;

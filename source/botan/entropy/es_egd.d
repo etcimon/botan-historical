@@ -104,7 +104,7 @@ private:
             
             if (m_fd < 0)
             {
-                m_fd = open_socket(m_socket_path);
+                m_fd = openSocket(m_socket_path);
                 if (m_fd < 0)
                     return 0;
             }

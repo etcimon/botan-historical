@@ -35,12 +35,12 @@ protected:
         
         while (length >= PROCESS_AMOUNT)
         {
-            adler32_update(input, PROCESS_AMOUNT, m_S1, m_S2);
+            adler32Update(input, PROCESS_AMOUNT, m_S1, m_S2);
             input += PROCESS_AMOUNT;
             length -= PROCESS_AMOUNT;
         }
         
-        adler32_update(input, length, m_S1, m_S2);
+        adler32Update(input, length, m_S1, m_S2);
     }
 
     /*

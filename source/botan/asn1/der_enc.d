@@ -442,7 +442,7 @@ SecureVector!ubyte encodeLength(size_t length)
         encoded_length.pushBack(cast(ubyte)(length));
     else
     {
-        const size_t top_byte = significant_bytes(length);
+        const size_t top_byte = significantBytes(length);
         
         encoded_length.pushBack(cast(ubyte)(0x80 | top_byte));
         

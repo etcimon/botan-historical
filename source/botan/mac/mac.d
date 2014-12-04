@@ -57,7 +57,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    const auto providers = af.providers_of(algo);
+    const auto providers = af.providersOf(algo);
     size_t fails = 0;
 
     atomicOp!"+="(total_tests, 1);

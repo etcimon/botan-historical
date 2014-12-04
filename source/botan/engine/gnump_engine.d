@@ -99,7 +99,7 @@ public:
         return null;
     }
 
-    Verification get_verify_op(in PublicKey key, RandomNumberGenerator) const
+    Verification getVerifyOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
             if (const RSAPublicKey s = cast(const RSAPublicKey)(key))

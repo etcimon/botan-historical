@@ -61,7 +61,7 @@ public:
 
     /**
     * Unload the DLL
-    * @warning Any pointers returned by resolve()/resolve_symbol()
+    * @warning Any pointers returned by resolve()/resolveSymbol()
     * should not be used after this destructor runs.
     */
     ~this()
@@ -98,7 +98,7 @@ public:
     */
     T resolve(T)(in string symbol)
     {
-        return cast(T)(resolve_symbol(symbol));
+        return cast(T)(resolveSymbol(symbol));
     }
 
 private:

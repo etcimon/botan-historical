@@ -58,24 +58,24 @@ public:
     *          trusted root CA certificate.
     */
     abstract void verifyCertificateChain(in string type,
-                                           in string purported_hostname,
-                                           in Vector!X509Certificate cert_chainput)
+                                         in string purported_hostname,
+                                         in Vector!X509Certificate cert_chainput)
     {
         if (cert_chain.empty)
             throw new InvalidArgument("Certificate chain was empty");
         
-        auto trusted_CAs = trusted_certificate_authorities(type, purported_hostname);
+        auto trusted_CAs = trustedCertificateAuthorities(type, purported_hostname);
         
         Path_Validation_Restrictions restrictions;
         
         auto result = x509PathValidate(cert_chain,
-                                         restrictions,
-                                         trusted_CAs);
+                                       restrictions,
+                                       trusted_CAs);
         
         if (!result.successfulValidation())
             throw new Exception("Certificate validation failure: " ~ result.resultString());
         
-        if (!cert_in_some_store(trusted_CAs, result.trustRoot()))
+        if (!certInSomeStore(trusted_CAs, result.trustRoot()))
             throw new Exception("Certificate chain roots in unknown/untrusted CA");
         
         if (purported_hostname != "" && !cert_chainput[0].matchesDnsName(purported_hostname))

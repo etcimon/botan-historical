@@ -34,7 +34,7 @@ public:
         while (length)
         {
             if (m_R_pos == m_R.length)
-                update_buffer();
+                updateBuffer();
             
             const size_t copied = std.algorithm.min(length, m_R.length - m_R_pos);
             
@@ -107,7 +107,7 @@ private:
                 m_V.resize(BLOCK_SIZE);
             m_prng.randomize(m_V.ptr, m_V.length);
             
-            update_buffer();
+            updateBuffer();
         }
     }
 

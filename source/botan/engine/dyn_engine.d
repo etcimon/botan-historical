@@ -26,14 +26,14 @@ public:
         
         try
         {
-            module_version_func get_version = m_lib.resolve!module_version_func("module_version");
+            ModuleVersionFunc get_version = m_lib.resolve!ModuleVersionFunc("module_version");
             
             const uint mod_version = get_version();
             
             if (mod_version != 20101003)
                 throw new Exception("Incompatible version in " ~ library_path ~ " of " ~ to!string(mod_version));
             
-            creator_func creator = m_lib.resolve!creator_func("create_engine");
+            CreatorFunc creator = m_lib.resolve!CreatorFunc("create_engine");
             
             m_engine = creator();
 
@@ -122,11 +122,11 @@ public:
     }
 
 private:
-    Dynamically_Loaded_Library m_lib;
+    DynamicallyLoadedLibrary m_lib;
     Engine m_engine;
 }
 
 private nothrow @nogc extern(C):
 
-typedef Engine function() creator_func;
-typedef uint function() module_version_func;
+typedef Engine function() CreatorFunc;
+typedef uint function() ModuleVersionFunc;

@@ -38,9 +38,9 @@ public:
     */
     this(in HandshakeState state, in SecureVector!ubyte pre_master_secret, bool resuming)
     {
-        const size_t cipher_keylen = state.ciphersuite().cipher_keylen();
-        const size_t mac_keylen = state.ciphersuite().mac_keylen();
-        const size_t cipher_ivlen = state.ciphersuite().cipher_ivlen();
+        const size_t cipher_keylen = state.ciphersuite().cipherKeylen();
+        const size_t mac_keylen = state.ciphersuite().macKeylen();
+        const size_t cipher_ivlen = state.ciphersuite().cipherIvlen();
         
         const size_t prf_gen = 2 * (mac_keylen + cipher_keylen + cipher_ivlen);
         

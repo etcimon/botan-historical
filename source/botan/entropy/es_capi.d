@@ -32,9 +32,9 @@ public:
         
         foreach (prov_type; m_prov_types[])
         {
-            CSP_Handle csp = CSP_Handle(prov_type);
+            CSPHandle csp = CSPHandle(prov_type);
             
-            size_t got = csp.gen_random(io_buffer.ptr, io_buffer.length);
+            size_t got = csp.genRandom(io_buffer.ptr, io_buffer.length);
             
             if (got)
             {
@@ -57,7 +57,7 @@ public:
             if (capi_prov == "RSA_FULL")  m_prov_types.pushBack(PROV_RSA_FULL);
             if (capi_prov == "INTEL_SEC") m_prov_types.pushBack(PROV_INTEL_SEC);
             if (capi_prov == "FORTEZZA")  m_prov_types.pushBack(PROV_FORTEZZA);
-            if (capi_prov == "RNG")         m_prov_types.pushBack(PROV_RNG);
+            if (capi_prov == "RNG")       m_prov_types.pushBack(PROV_RNG);
         }
         
         if (m_prov_types.length == 0)
@@ -83,13 +83,13 @@ public:
     
     ~this()
     {
-        if (is_valid())
+        if (isValid())
             CryptReleaseContext(m_handle, 0);
     }
     
     size_t genRandom(ubyte* output) const
     {
-        if (is_valid() && CryptGenRandom(m_handle, cast(DWORD)(output.length), output))
+        if (isValid() && CryptGenRandom(m_handle, cast(DWORD)(output.length), output))
             return output.length;
         return 0;
     }

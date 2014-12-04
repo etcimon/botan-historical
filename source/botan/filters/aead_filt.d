@@ -32,6 +32,6 @@ public:
     */
     void setAssociatedData(in ubyte* ad, size_t ad_len)
     {
-        (cast(AEADMode)(get_transform())).setAssociatedData(ad, ad_len);
+        (cast(AEADMode)(getTransform())).setAssociatedData(ad, ad_len);
     }
 }

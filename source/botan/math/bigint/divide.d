@@ -26,7 +26,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
         throw new BigInt.DivideByZero();
     
     BigInt y = y_arg;
-    const size_t y_words = y.sig_words();
+    const size_t y_words = y.sigWords();
     
     r = x;
     q = 0;
@@ -44,19 +44,19 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
     else if (compare > 0)
     {
         size_t shifts = 0;
-        word y_top = y.wordAt(y.sig_words()-1);
+        word y_top = y.wordAt(y.sigWords()-1);
         while (y_top < MP_WORD_TOP_BIT) { y_top <<= 1; ++shifts; }
         y <<= shifts;
         r <<= shifts;
         
-        const size_t n = r.sig_words() - 1, t = y_words - 1;
+        const size_t n = r.sigWords() - 1, t = y_words - 1;
         
         if (n < t)
             throw new InternalError("BigInt division word sizes");
         
         q.growTo(n - t + 1);
         
-        word* q_words = q.mutable_data();
+        word* q_words = q.mutableData();
         
         if (n <= t)
         {

@@ -92,7 +92,7 @@ public:
             
             response_bytes.decodeAndCheck(OID("1.3.6.1.5.5.7.48.1.1"), "Unknown response type in OCSP response");
             
-            BERDecoder basicresponse = BERDecoder(response_bytes.get_next_octet_string()).startCons(ASN1Tag.SEQUENCE);
+            BERDecoder basicresponse = BERDecoder(response_bytes.getNextOctetString()).startCons(ASN1Tag.SEQUENCE);
             
             Vector!ubyte tbs_bits;
             AlgorithmIdentifier sig_algo;
@@ -142,7 +142,7 @@ public:
         {
             if (response.certid().isIdFor(issuer, subject))
             {
-                X509Time current_time(Clock.currTime());
+                X509Time current_time = X509Time(Clock.currTime());
                 
                 if (response.certStatus() == 1)
                     return Certificate_Status_Code.CERT_IS_REVOKED;
@@ -209,7 +209,7 @@ void checkSignature(in Vector!ubyte tbs_response,
     Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
     
     PKVerifier verifier = PKVerifier(*pub_key, padding, format);
-    if (!verifier.verifyMessage(put_in_sequence(tbs_response), signature))
+    if (!verifier.verifyMessage(putInSequence(tbs_response), signature))
         throw new Exception("Signature on OCSP response does not verify");
 }
 
@@ -240,7 +240,7 @@ void checkSignature(in Vector!ubyte tbs_response,
     if (!trusted_roots.certificateKnown(result.trustRoot())) // not needed anymore?
         throw new Exception("Certificate chain roots in unknown/untrusted CA");
     
-    const Vector!X509Certificate cert_path = result.cert_path();
+    const Vector!X509Certificate cert_path = result.certPath();
     
     checkSignature(tbs_response, sig_algo, signature, cert_path[0]);
 }
@@ -255,15 +255,15 @@ OCSPResponse onlineCheck(in X509Certificate issuer,
     if (responder_url == "")
         throw new Exception("No OCSP responder specified");
     
-    OCSP_Request req = OCSP_Request(issuer, subject);
+    OCSPRequest req = OCSPRequest(issuer, subject);
     
-    HTTP_Response res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
+    HTTPResponse res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
     
     res.throwUnlessOk();
     
     // Check the MIME type?
     
-    OCSP_Response response = OCSP_Response(trusted_roots, res._body());
+    OCSPResponse response = OCSPResponse(trusted_roots, res._body());
     
     return response;
 }

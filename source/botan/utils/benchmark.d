@@ -60,9 +60,9 @@ HashMap!(string, double)
             const SymmetricKey key = SymmetricKey(rng, bc.maximumKeylength());
             
             HashMap!(string, double) ret;
-            ret["key schedule"] = time_op(runtime / 8, { bc.setKey(key); });
-            ret["encrypt"] = mb_mult * time_op(runtime / 2, { bc.encrypt(buffer); });
-            ret["decrypt"] = mb_mult * time_op(runtime / 2, { bc.decrypt(buffer); });
+            ret["key schedule"] = timeOp(runtime / 8, { bc.setKey(key); });
+            ret["encrypt"] = mb_mult * timeOp(runtime / 2, { bc.encrypt(buffer); });
+            ret["decrypt"] = mb_mult * timeOp(runtime / 2, { bc.decrypt(buffer); });
             return ret;
         }
     }
@@ -73,8 +73,8 @@ HashMap!(string, double)
             
             const SymmetricKey key = SymmetricKey(rng, sc.maximumKeylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] = time_op(runtime / 8, [&]() { sc.setKey(key); });
-            ret[""] = mb_mult * time_op(runtime, [&]() { sc.encipher(buffer); });
+            ret["key schedule"] = timeOp(runtime / 8, [&]() { sc.setKey(key); });
+            ret[""] = mb_mult * timeOp(runtime, [&]() { sc.encipher(buffer); });
             return ret;
         }
     }
@@ -83,7 +83,7 @@ HashMap!(string, double)
         if (proto) {
             Unique!HashFunction h = proto.clone();
             HashMap!(string, double) ret;
-            ret[""] = mb_mult * time_op(runtime, { h.update(buffer); });
+            ret[""] = mb_mult * timeOp(runtime, { h.update(buffer); });
             return ret;
         }
     }
@@ -95,8 +95,8 @@ HashMap!(string, double)
             
             const SymmetricKey key = SymmetricKey(rng, mac.maximumKeylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] =time_op(runtime / 8, { mac.setKey(key); });
-            ret[""] = mb_mult * time_op(runtime, { mac.update(buffer); });
+            ret["key schedule"] =timeOp(runtime / 8, { mac.setKey(key); });
+            ret[""] = mb_mult * timeOp(runtime, { mac.update(buffer); });
             return ret;
         }
     }
@@ -108,9 +108,9 @@ HashMap!(string, double)
         {
             const SymmetricKey key = SymmetricKey(rng, enc.keySpec().maximumKeylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] = time_op(runtime / 4, { enc.setKey(key); dec.setKey(key); }) / 2;
-            ret["encrypt"] = mb_mult * time_op(runtime / 2, { enc.update(buffer, 0); buffer.resize(buf_size*1024); });
-            ret["decrypt"] = mb_mult * time_op(runtime / 2, { dec.update(buffer, 0); buffer.resize(buf_size*1024); });
+            ret["key schedule"] = timeOp(runtime / 4, { enc.setKey(key); dec.setKey(key); }) / 2;
+            ret["encrypt"] = mb_mult * timeOp(runtime / 2, { enc.update(buffer, 0); buffer.resize(buf_size*1024); });
+            ret["decrypt"] = mb_mult * timeOp(runtime / 2, { dec.update(buffer, 0); buffer.resize(buf_size*1024); });
             return ret;
         }
     }
@@ -135,7 +135,7 @@ HashMap!(string, double)
                         Duration milliseconds,
                         size_t buf_size)
 {
-    const Vector!string providers = af.providers_of(name);
+    const Vector!string providers = af.providersOf(name);
     
     HashMap!(string, double) all_results; // provider . ops/sec
     
@@ -145,8 +145,8 @@ HashMap!(string, double)
         
         foreach (provider; providers)
         {
-            auto results = time_algorithm_ops(name, af, provider, rng, ns_per_provider, buf_size);
-            all_results[provider] = find_first_in(results, { "", "update", "encrypt" });
+            auto results = timeAlgorithmOps(name, af, provider, rng, ns_per_provider, buf_size);
+            all_results[provider] = findFirstIn(results, { "", "update", "encrypt" });
         }
     }
     

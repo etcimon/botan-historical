@@ -85,7 +85,7 @@ Vector!string parseAlgorithmName(in string scan_name)
 */
 Vector!string splitter(in string str, char delim)
 {
-    return split_on_pred(str, (char c) { return c == delim; });
+    return splitOnPred(str, (char c) { return c == delim; });
 }
 
 /**
@@ -259,7 +259,7 @@ bool x500NameCmp(in string name1, in string name2)
                 return true;
         }
         
-        if (!caseless_cmp(*p1, *p2))
+        if (!caselessCmp(*p1, *p2))
             return false;
         ++p1;
         ++p2;

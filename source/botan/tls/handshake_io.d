@@ -161,7 +161,7 @@ public:
     override Vector!ubyte send(in HandshakeMessage msg)
     {
         const Vector!ubyte msg_bits = msg.serialize();
-        const ushort epoch = m_seqs.current_write_epoch();
+        const ushort epoch = m_seqs.currentWriteEpoch();
         const HandshakeType msg_type = msg.type();
         
         Tuple!(ushort, ubyte, Vector!ubyte) msg_info = Tuple!(ushort, ubyte, Vector!ubyte)(epoch, msg_type, msg_bits);
@@ -172,7 +172,7 @@ public:
             return Vector!ubyte(); // not included in handshake hashes
         }
         
-        const Vector!ubyte no_fragment = format_w_seq(msg_bits, msg_type, m_out_message_seq);
+        const Vector!ubyte no_fragment = formatWSeq(msg_bits, msg_type, m_out_message_seq);
         
         if (no_fragment.length + DTLS_HEADER_SIZE <= m_mtu)
             m_send_hs(epoch, HANDSHAKE, no_fragment);
@@ -211,7 +211,7 @@ public:
 
     override Vector!ubyte format(in Vector!ubyte msg, HandshakeType type) const
     {
-        return format_w_seq(msg, type, m_in_message_seq - 1);
+        return formatWSeq(msg, type, m_in_message_seq - 1);
     }
 
     override void addRecord(in Vector!ubyte record,

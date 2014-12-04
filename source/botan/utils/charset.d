@@ -119,11 +119,11 @@ string transcode(in string str, CharacterSet to, CharacterSet from)
         return str;
     
     if (from == LATIN1_CHARSET && to == UTF8_CHARSET)
-        return latin1_to_utf8(str);
+        return latin1ToUtf8(str);
     if (from == UTF8_CHARSET && to == LATIN1_CHARSET)
-        return utf8_to_latin1(str);
+        return utf8ToLatin1(str);
     if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
-        return ucs2_to_latin1(str);
+        return ucs2ToLatin1(str);
     
     throw new InvalidArgument("Unknown transcoding operation from " ~ to!string(from) ~ " to " ~ to!string(to));
 }

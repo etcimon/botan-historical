@@ -53,7 +53,7 @@ public:
         else
         {
             Unique!PublicKey key = req.subjectPublicKey();
-            constraints = find_constraints(*key, req.constraints());
+            constraints = findConstraints(*key, req.constraints());
         }
 
         X509Extensions extensions;
@@ -112,7 +112,7 @@ public:
                         Duration next_update = 0.seconds) const
     {
 
-        Vector!CRLEntry revoked = crl.get_revoked();
+        Vector!CRLEntry revoked = crl.getRevoked();
         new_revoked = revoked.dup;
         
         return makeCRL(revoked, crl.crlNumber() + 1, next_update, rng);
@@ -273,7 +273,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
     
     const string algo_name = key.algo_name;
     
-    const HashFunction proto_hash = retrieve_hash(hash_fn);
+    const HashFunction proto_hash = retrieveHash(hash_fn);
     if (!proto_hash)
         throw new AlgorithmNotFound(hash_fn);
     

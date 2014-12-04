@@ -122,7 +122,7 @@ private:
         if (!force_full_renegotiation && !m_info.empty)
         {
             TLSSession session_info;
-            if (session_manager().loadFromServerInfo(m_info, session_info))
+            if (sessionManager().loadFromServerInfo(m_info, session_info))
             {
                 if (srp_identifier == "" || session_info.srpIdentifier() == srp_identifier)
                 {
@@ -209,14 +209,14 @@ private:
             if (!state.clientHello().offeredSuite(state.serverHello().ciphersuite()))
             {
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
-                                        "TLS_Server replied with ciphersuite we didn't send");
+                                        "TLSServer replied with ciphersuite we didn't send");
             }
             
-            if (!value_exists(state.clientHello().compressionMethods(),
+            if (!valueExists(state.clientHello().compressionMethods(),
                               state.serverHello().compressionMethod()))
             {
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
-                                        "TLS_Server replied with compression method we didn't send");
+                                        "TLSServer replied with compression method we didn't send");
             }
             
             auto client_extn = state.clientHello().extensionTypes();
@@ -228,7 +228,7 @@ private:
             if (!diff.empty)
             {
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
-                                        "TLS_Server sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
+                                        "TLSServer sent extension(s) " ~ diff.array.to!(string[]) ~ " but we did not request it");
             }
             
             state.setVersion(state.serverHello().Version());
@@ -247,7 +247,7 @@ private:
                 * session, and the server must resume with the same version.
                 */
                 if (state.serverHello().Version() != state.clientHello().Version())
-                    throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server resumed session but with wrong version");
+                    throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSServer resumed session but with wrong version");
                 
                 state.computeSessionKeys(state.resume_master_secret);
                 
@@ -263,17 +263,17 @@ private:
                 if (state.clientHello().Version().isDatagramProtocol() !=
                     state.serverHello().Version().isDatagramProtocol())
                 {
-                    throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLS_Server replied with different protocol type than we offered");
+                    throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLSServer replied with different protocol type than we offered");
                 }
                 
                 if (state.Version() > state.clientHello().Version())
                 {
-                    throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server replied with later version than in hello");
+                    throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSServer replied with later version than in hello");
                 }
                 
                 if (!m_policy.acceptableProtocolVersion(state.Version()))
                 {
-                    throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLS_Server version is unacceptable by policy");
+                    throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLSServer version is unacceptable by policy");
                 }
                 
                 if (state.ciphersuite().sigAlgo() != "")
@@ -318,10 +318,10 @@ private:
             
             state.serverCerts(new Certificate(contents));
             
-            const Vector!X509Certificate server_certs = state.server_certs().certChain();
+            const Vector!X509Certificate server_certs = state.serverCerts().certChain();
             
             if (server_certs.empty)
-                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Client: No certificates sent by server");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSClient: No certificates sent by server");
             
             try
             {
@@ -389,18 +389,18 @@ private:
             
             if (state.receivedHandshakeMsg(CERTIFICATE_REQUEST) && !state.clientCerts().empty)
             {
-                PrivateKey priv_key =    m_creds.private_key_for(state.client_certs().certChain()[0], "tls-client",    m_info.hostname());
+                PrivateKey priv_key = m_creds.privateKeyFor(state.clientCerts().certChain()[0], "tls-client", m_info.hostname());
                 
                 state.clientVerify(new CertificateVerify(state.handshakeIo(),
-                                                           state,
-                                                           m_policy,
-                                                           rng(),
-                                                           priv_key));
+                                                         state,
+                                                         m_policy,
+                                                         rng(),
+                                                         priv_key));
             }
             
             state.handshakeIo().send(scoped!ChangeCipherSpec());
             
-            change_cipher_spec_writer(CLIENT);
+            changeCipherSpecWriter(CLIENT);
             
             if (state.serverHello().nextProtocolNotification())
             {
@@ -426,7 +426,7 @@ private:
         {
             state.setExpectedNext(FINISHED);
             
-            change_cipher_spec_reader(CLIENT);
+            changeCipherSpecReader(CLIENT);
         }
         else if (type == FINISHED)
         {
@@ -441,7 +441,7 @@ private:
             {
                 state.handshakeIo().send(scoped!ChangeCipherSpec());
                 
-                change_cipher_spec_writer(CLIENT);
+                changeCipherSpecWriter(CLIENT);
                 
                 if (state.serverHello().nextProtocolNotification())
                 {
@@ -477,12 +477,12 @@ private:
             if (!session_id.empty)
             {
                 if (should_save)
-                    session_manager().save(session_info);
+                    sessionManager().save(session_info);
                 else
-                    session_manager().removeEntry(session_info.sessionId());
+                    sessionManager().removeEntry(session_info.sessionId());
             }
             
-            activate_session();
+            activateSession();
         }
         else
             throw new TLSUnexpectedMessage("Unknown handshake message received");
@@ -510,7 +510,7 @@ public:
     
     PublicKey getServerPublicKey() const
     {
-        assert(server_public_key, "TLS_Server sent us a certificate");
+        assert(server_public_key, "TLSServer sent us a certificate");
         return *server_public_key;
     }
     

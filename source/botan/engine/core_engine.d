@@ -694,10 +694,10 @@ KeyedFilter getCipherMode(const BlockCipher block_cipher,
         {
             if (direction == ENCRYPTION)
                 return new TransformationFilter(
-                    new ECBEncryption(block_cipher.clone(), get_bc_pad(padding, "NoPadding")));
+                    new ECBEncryption(block_cipher.clone(), getBcPad(padding, "NoPadding")));
             else
                 return new TransformationFilter(
-                    new ECBDecryption(block_cipher.clone(), get_bc_pad(padding, "NoPadding")));
+                    new ECBDecryption(block_cipher.clone(), getBcPad(padding, "NoPadding")));
         }
     }
     
@@ -714,10 +714,10 @@ KeyedFilter getCipherMode(const BlockCipher block_cipher,
                 
                 if (direction == ENCRYPTION)
                     return new TransformationFilter(
-                        new CBCEncryption(block_cipher.clone(), get_bc_pad(padding, "PKCS7")));
+                        new CBCEncryption(block_cipher.clone(), getBcPad(padding, "PKCS7")));
                 else
                     return new TransformationFilter(
-                        new CBCDecryption(block_cipher.clone(), get_bc_pad(padding, "PKCS7")));
+                        new CBCDecryption(block_cipher.clone(), getBcPad(padding, "PKCS7")));
         } else {
                 return null;
         }

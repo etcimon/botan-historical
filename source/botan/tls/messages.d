@@ -128,7 +128,7 @@ private:
 }
 
 /**
-* TLS_Client Hello Message
+* TLSClient Hello Message
 */
 final class ClientHello : HandshakeMessage
 {
@@ -244,7 +244,7 @@ public:
     { return m_extensions.extensionTypes(); }
 
     /*
-    * Create a new TLS_Client Hello message
+    * Create a new TLSClient Hello message
     */
     this(HandshakeIO io,
          HandshakeHash hash,
@@ -281,7 +281,7 @@ public:
 
 
     /*
-    * Create a new TLS_Client Hello message (session resumption case)
+    * Create a new TLSClient Hello message (session resumption case)
     */
     this(HandshakeIO io,
          HandshakeHash hash,
@@ -296,10 +296,10 @@ public:
         m_random = makeHelloRandom(rng);
         m_suites = policy.ciphersuiteList(m_version, (session.srpIdentifier() != ""));
         m_comp_methods = policy.compression();
-        if (!value_exists(m_suites, session.ciphersuiteCode()))
+        if (!valueExists(m_suites, session.ciphersuiteCode()))
             m_suites.pushBack(session.ciphersuiteCode());
         
-        if (!value_exists(m_comp_methods, session.compressionMethod()))
+        if (!valueExists(m_comp_methods, session.compressionMethod()))
             m_comp_methods.pushBack(session.compressionMethod());
         
         m_extensions.add(new RenegotiationExtension(reneg_info));
@@ -337,7 +337,7 @@ public:
 
 private:
     /*
-    * Serialize a TLS_Client Hello message
+    * Serialize a TLSClient Hello message
     */
     override Vector!ubyte serialize() const
     {
@@ -347,13 +347,13 @@ private:
         buf.pushBack(m_version.minorVersion());
         buf ~= m_random;
         
-        appendTLSLengthValue(buf, m_session_id, 1);
+        appendTlsLengthValue(buf, m_session_id, 1);
         
         if (m_version.isDatagramProtocol())
-            appendTLSLengthValue(buf, m_hello_cookie, 1);
+            appendTlsLengthValue(buf, m_hello_cookie, 1);
         
-        appendTLSLengthValue(buf, m_suites, 2);
-        appendTLSLengthValue(buf, m_comp_methods, 1);
+        appendTlsLengthValue(buf, m_suites, 2);
+        appendTlsLengthValue(buf, m_comp_methods, 1);
         
         /*
         * May not want to send extensions at all in some cases. If so,
@@ -367,7 +367,7 @@ private:
     }
 
     /*
-    * Deserialize a TLS_Client Hello message
+    * Deserialize a TLSClient Hello message
     */
     void deserialize(in Vector!ubyte buf)
     {
@@ -397,13 +397,13 @@ private:
         
         m_extensions.deserialize(reader);
         
-        if (offered_suite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
+        if (offeredSuite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
         {
             if (RenegotiationExtension reneg = m_extensions.get!RenegotiationExtension())
             {
                 if (!reneg.renegotiationInfo().empty)
                     throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
-                                            "TLS_Client send renegotiation SCSV and non-empty extension");
+                                            "TLSClient send renegotiation SCSV and non-empty extension");
             }
             else
             {
@@ -446,7 +446,7 @@ private:
         m_random.resize(challenge_len);
         copyMem(m_random.ptr, &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
         
-        if (offered_suite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
+        if (offeredSuite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))
             m_extensions.add(new RenegotiationExtension());
     }
 
@@ -461,7 +461,7 @@ private:
 }
 
 /**
-* TLS_Server Hello Message
+* TLSServer Hello Message
 */
 final class ServerHello : HandshakeMessage
 {
@@ -530,7 +530,7 @@ public:
     { return m_extensions.extensionTypes(); }
 
     /*
-    * Create a new TLS_Server Hello message
+    * Create a new TLSServer Hello message
     */
     this(HandshakeIO io,
          HandshakeHash hash,
@@ -577,7 +577,7 @@ public:
     }
 
     /*
-    * Deserialize a TLS_Server Hello message
+    * Deserialize a TLSServer Hello message
     */
     this(in Vector!ubyte buf)
     {
@@ -603,7 +603,7 @@ public:
     }
 private:
     /*
-    * Serialize a TLS_Server Hello message
+    * Serialize a TLSServer Hello message
     */
     override Vector!ubyte serialize() const
     {
@@ -613,7 +613,7 @@ private:
         buf.pushBack(m_version.minorVersion());
         buf += m_random;
         
-        appendTLSLengthValue(buf, m_session_id, 1);
+        appendTlsLengthValue(buf, m_session_id, 1);
         
         buf.pushBack(get_byte(0, m_ciphersuite));
         buf.pushBack(get_byte(1, m_ciphersuite));
@@ -634,7 +634,7 @@ private:
 }
 
 /**
-* TLS_Client Key Exchange Message
+* TLSClient Key Exchange Message
 */
 final class ClientKeyExchange : HandshakeMessage
 {
@@ -645,7 +645,7 @@ public:
     { return m_pre_master; }
 
     /*
-    * Read a TLS_Client Key Exchange message
+    * Read a TLSClient Key Exchange message
     */
     this(in Vector!ubyte contents,
          const HandshakeState state,
@@ -737,8 +737,8 @@ public:
             if (kex_algo == "PSK")
             {
                 Vector!ubyte zeros = Vector!ubyte(psk.length);
-                appendTLSLengthValue(m_pre_master, zeros, 2);
-                appendTLSLengthValue(m_pre_master, psk.bitsOf(), 2);
+                appendTlsLengthValue(m_pre_master, zeros, 2);
+                appendTlsLengthValue(m_pre_master, psk.bitsOf(), 2);
             }
             else if (kex_algo == "SRP_SHA")
             {
@@ -775,8 +775,8 @@ public:
                     
                     if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
                     {
-                        appendTLSLengthValue(m_pre_master, shared_secret, 2);
-                        appendTLSLengthValue(m_pre_master, psk.bitsOf(), 2);
+                        appendTlsLengthValue(m_pre_master, shared_secret, 2);
+                        appendTlsLengthValue(m_pre_master, psk.bitsOf(), 2);
                     }
                     else
                         m_pre_master = shared_secret;
@@ -798,7 +798,7 @@ public:
     }
 
     /*
-    * Create a new TLS_Client Key Exchange message
+    * Create a new TLSClient Key Exchange message
     */
     this(HandshakeIO io,
          HandshakeState state,
@@ -826,14 +826,14 @@ public:
                                                            hostname,
                                                            identity_hint);
             
-            appendTLSLengthValue(m_key_material, psk_identity, 2);
+            appendTlsLengthValue(m_key_material, psk_identity, 2);
             
             SymmetricKey psk = creds.psk("tls-client", hostname, psk_identity);
             
             Vector!ubyte zeros = Vector!ubyte(psk.length);
             
-            appendTLSLengthValue(m_pre_master, zeros, 2);
-            appendTLSLengthValue(m_pre_master, psk.bitsOf(), 2);
+            appendTlsLengthValue(m_pre_master, zeros, 2);
+            appendTlsLengthValue(m_pre_master, psk.bitsOf(), 2);
         }
         else if (state.serverKex())
         {
@@ -851,7 +851,7 @@ public:
                                                                hostname,
                                                                identity_hint);
                 
-                appendTLSLengthValue(m_key_material, psk_identity, 2);
+                appendTlsLengthValue(m_key_material, psk_identity, 2);
                 
                 psk = creds.psk("tls-client", hostname, psk_identity);
             }
@@ -867,7 +867,7 @@ public:
                 
                 if (p.bits() < policy.minimumDhGroupSize())
                     throw new TLSException(TLSAlert.INSUFFICIENT_SECURITY,
-                                            "TLS_Server sent DH group of " ~
+                                            "TLSServer sent DH group of " ~
                                             to!string(p.bits()) ~
                                             " bits, policy requires at least " ~
                                             to!string(policy.minimumDhGroupSize()));
@@ -880,7 +880,7 @@ public:
                 */
                 if (Y <= 1 || Y >= p - 1)
                     throw new TLSException(TLSAlert.INSUFFICIENT_SECURITY,
-                                            "TLS_Server sent bad DH key for DHE exchange");
+                                            "TLSServer sent bad DH key for DHE exchange");
                 
                 DLGroup group = DLGroup(p, g);
                 
@@ -899,25 +899,25 @@ public:
                     m_pre_master = dh_secret;
                 else
                 {
-                    appendTLSLengthValue(m_pre_master, dh_secret, 2);
-                    appendTLSLengthValue(m_pre_master, psk.bitsOf(), 2);
+                    appendTlsLengthValue(m_pre_master, dh_secret, 2);
+                    appendTlsLengthValue(m_pre_master, psk.bitsOf(), 2);
                 }
                 
-                appendTLSLengthValue(m_key_material, priv_key.publicValue(), 2);
+                appendTlsLengthValue(m_key_material, priv_key.publicValue(), 2);
             }
             else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
             {
                 const ubyte curve_type = reader.get_byte();
                 
                 if (curve_type != 3)
-                    throw new DecodingError("TLS_Server sent non-named ECC curve");
+                    throw new DecodingError("TLSServer sent non-named ECC curve");
                 
                 const ushort curve_id = reader.get_ushort();
                 
                 const string name = SupportedEllipticCurves.curveIdToName(curve_id);
                 
                 if (name == "")
-                    throw new DecodingError("TLS_Server sent unknown named curve " ~ to!string(curve_id));
+                    throw new DecodingError("TLSServer sent unknown named curve " ~ to!string(curve_id));
                 
                 ECGroup group = ECGroup(name);
                 
@@ -936,11 +936,11 @@ public:
                     m_pre_master = ecdh_secret;
                 else
                 {
-                    appendTLSLengthValue(m_pre_master, ecdh_secret, 2);
-                    appendTLSLengthValue(m_pre_master, psk.bitsOf(), 2);
+                    appendTlsLengthValue(m_pre_master, ecdh_secret, 2);
+                    appendTlsLengthValue(m_pre_master, psk.bitsOf(), 2);
                 }
                 
-                appendTLSLengthValue(m_key_material, priv_key.publicValue(), 1);
+                appendTlsLengthValue(m_key_material, priv_key.publicValue(), 1);
             }
             else if (kex_algo == "SRP_SHA")
             {
@@ -953,17 +953,17 @@ public:
                 
                 const string srp_identifier = creds.srpIdentifier("tls-client", hostname);
                 
-                const string srp_password =    creds.srpPassword("tls-client", hostname, srp_identifier);
+                const string srp_password = creds.srpPassword("tls-client", hostname, srp_identifier);
                 
-                Pair!(BigInt, SymmetricKey) srp_vals = srp6_client_agree(srp_identifier,
-                                                                          srp_password,
-                                                                          srp_group,
-                                                                          "SHA-1",
-                                                                          salt,
-                                                                          B,
-                                                                          rng);
+                Pair!(BigInt, SymmetricKey) srp_vals = srp6ClientAgree(srp_identifier,
+                                                                       srp_password,
+                                                                       srp_group,
+                                                                       "SHA-1",
+                                                                       salt,
+                                                                       B,
+                                                                       rng);
                 
-                appendTLSLengthValue(m_key_material, BigInt.encode(srp_vals.first), 2);
+                appendTlsLengthValue(m_key_material, BigInt.encode(srp_vals.first), 2);
                 m_pre_master = srp_vals.second.bitsOf();
             }
             else
@@ -999,7 +999,7 @@ public:
                 if (state.Version() == TLSProtocolVersion.SSL_V3)
                     m_key_material = encrypted_key; // no length field
                 else
-                    appendTLSLengthValue(m_key_material, encrypted_key, 2);
+                    appendTlsLengthValue(m_key_material, encrypted_key, 2);
             }
             else
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
@@ -1208,9 +1208,9 @@ private:
         Vector!ubyte cert_types;
         
         for (size_t i = 0; i != m_cert_key_types.length; ++i)
-            cert_types.pushBack(cert_type_name_to_code(m_cert_key_types[i]));
+            cert_types.pushBack(certTypeNameToCode(m_cert_key_types[i]));
         
-        appendTLSLengthValue(buf, cert_types, 1);
+        appendTlsLengthValue(buf, cert_types, 1);
         
         if (!m_supported_algos.empty)
             buf += SignatureAlgorithms(m_supported_algos).serialize();
@@ -1222,10 +1222,10 @@ private:
             DEREncoder encoder = DEREncoder();
             encoder.encode(m_names[i]);
             
-            appendTLSLengthValue(encoded_names, encoder.getContents(), 2);
+            appendTlsLengthValue(encoded_names, encoder.getContents(), 2);
         }
         
-        appendTLSLengthValue(buf, encoded_names, 2);
+        appendTlsLengthValue(buf, encoded_names, 2);
         
         return buf;
     }
@@ -1427,7 +1427,7 @@ private:
 }
 
 /**
-* TLS_Server Key Exchange Message
+* TLSServer Key Exchange Message
 */
 final class ServerKeyExchange : HandshakeMessage
 {
@@ -1437,7 +1437,7 @@ public:
     Vector!ubyte params() const { return m_params; }
 
     /**
-    * Verify a TLS_Server Key Exchange message
+    * Verify a TLSServer Key Exchange message
     */
     bool verify(in PublicKey server_key,
                 const HandshakeState state) const
@@ -1467,7 +1467,7 @@ public:
     }
 
     /**
-    * Deserialize a TLS_Server Key Exchange message
+    * Deserialize a TLSServer Key Exchange message
     */
     this(in Vector!ubyte buf,
          in string kex_algo,
@@ -1490,7 +1490,7 @@ public:
         if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
         {
             const string identity_hint = reader.getString(2, 0, 65535);
-            appendTLSLengthValue(m_params, identity_hint, 2);
+            appendTlsLengthValue(m_params, identity_hint, 2);
         }
         
         if (kex_algo == "DH" || kex_algo == "DHE_PSK")
@@ -1500,7 +1500,7 @@ public:
             foreach (size_t i; 0 .. 3)
             {
                 BigInt v = BigInt.decode(reader.getRange!ubyte(2, 1, 65535));
-                appendTLSLengthValue(m_params, BigInt.encode(v), 2);
+                appendTlsLengthValue(m_params, BigInt.encode(v), 2);
             }
         }
         else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
@@ -1508,7 +1508,7 @@ public:
             const ubyte curve_type = reader.get_byte();
             
             if (curve_type != 3)
-                throw new DecodingError("ServerKeyExchange: TLS_Server sent non-named ECC curve");
+                throw new DecodingError("ServerKeyExchange: TLSServer sent non-named ECC curve");
             
             const ushort curve_id = reader.get_ushort();
             
@@ -1517,13 +1517,13 @@ public:
             Vector!ubyte ecdh_key = reader.getRange!ubyte(1, 1, 255);
             
             if (name == "")
-                throw new DecodingError("ServerKeyExchange: TLS_Server sent unknown named curve " ~
+                throw new DecodingError("ServerKeyExchange: TLSServer sent unknown named curve " ~
                                          to!string(curve_id));
             
             m_params.pushBack(curve_type);
             m_params.pushBack(get_byte(0, curve_id));
             m_params.pushBack(get_byte(1, curve_id));
-            appendTLSLengthValue(m_params, ecdh_key, 1);
+            appendTlsLengthValue(m_params, ecdh_key, 1);
         }
         else if (kex_algo == "SRP_SHA")
         {
@@ -1534,10 +1534,10 @@ public:
             Vector!ubyte salt = reader.getRange!ubyte(1, 1, 255);
             const BigInt B = BigInt.decode(reader.getRange!ubyte(2, 1, 65535));
             
-            appendTLSLengthValue(m_params, BigInt.encode(N), 2);
-            appendTLSLengthValue(m_params, BigInt.encode(g), 2);
-            appendTLSLengthValue(m_params, salt, 1);
-            appendTLSLengthValue(m_params, BigInt.encode(B), 2);
+            appendTlsLengthValue(m_params, BigInt.encode(N), 2);
+            appendTlsLengthValue(m_params, BigInt.encode(g), 2);
+            appendTlsLengthValue(m_params, salt, 1);
+            appendTlsLengthValue(m_params, BigInt.encode(B), 2);
         }
         else if (kex_algo != "PSK")
                 throw new DecodingError("ServerKeyExchange: Unsupported kex type " ~ kex_algo);
@@ -1557,7 +1557,7 @@ public:
     }
 
     /**
-    * Create a new TLS_Server Key Exchange message
+    * Create a new TLSServer Key Exchange message
     */
     this(HandshakeIO io,
          HandshakeState state,
@@ -1571,18 +1571,18 @@ public:
         
         if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
         {
-            string identity_hint = creds.psk_identity_hint("tls-server", hostname);
+            string identity_hint = creds.pskIdentityHint("tls-server", hostname);
             
-            appendTLSLengthValue(m_params, identity_hint, 2);
+            appendTlsLengthValue(m_params, identity_hint, 2);
         }
         
         if (kex_algo == "DH" || kex_algo == "DHE_PSK")
         {
-            Unique!DHPrivateKey dh = new DHPrivateKey(rng, policy.dh_group());
+            Unique!DHPrivateKey dh = new DHPrivateKey(rng, policy.dhGroup());
 
-            appendTLSLengthValue(m_params, BigInt.encode(dh.getDomain().getP()), 2);
-            appendTLSLengthValue(m_params, BigInt.encode(dh.getDomain().getG()), 2);
-            appendTLSLengthValue(m_params, dh.publicValue(), 2);
+            appendTlsLengthValue(m_params, BigInt.encode(dh.getDomain().getP()), 2);
+            appendTlsLengthValue(m_params, BigInt.encode(dh.getDomain().getG()), 2);
+            appendTlsLengthValue(m_params, dh.publicValue(), 2);
             m_kex_key = dh.release();
         }
         else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
@@ -1590,7 +1590,7 @@ public:
             const Vector!string curves = state.clientHello().supportedEccCurves();
             
             if (curves.empty)
-                throw new InternalError("TLS_Client sent no ECC extension but we negotiated ECDH");
+                throw new InternalError("TLSClient sent no ECC extension but we negotiated ECDH");
             
             const string curve_name = policy.chooseCurve(curves);
             
@@ -1613,7 +1613,7 @@ public:
             m_params.pushBack(get_byte(0, named_curve_id));
             m_params.pushBack(get_byte(1, named_curve_id));
             
-            appendTLSLengthValue(m_params, ecdh.publicValue(), 1);
+            appendTlsLengthValue(m_params, ecdh.publicValue(), 1);
             
             m_kex_key = ecdh.release();
         }
@@ -1639,10 +1639,10 @@ public:
             
             DLGroup group = DLGroup(group_id);
 
-            appendTLSLengthValue(m_params, BigInt.encode(group.getP()), 2);
-            appendTLSLengthValue(m_params, BigInt.encode(group.getG()), 2);
-            appendTLSLengthValue(m_params, salt, 1);
-            appendTLSLengthValue(m_params, BigInt.encode(B), 2);
+            appendTlsLengthValue(m_params, BigInt.encode(group.getP()), 2);
+            appendTlsLengthValue(m_params, BigInt.encode(group.getG()), 2);
+            appendTlsLengthValue(m_params, salt, 1);
+            appendTlsLengthValue(m_params, BigInt.encode(B), 2);
         }
         else if (kex_algo != "PSK")
             throw new InternalError("ServerKeyExchange: Unknown kex type " ~ kex_algo);
@@ -1668,7 +1668,7 @@ public:
     ~this() {}
 private:
     /**
-    * Serialize a TLS_Server Key Exchange message
+    * Serialize a TLSServer Key Exchange message
     */
     override Vector!ubyte serialize() const
     {
@@ -1683,7 +1683,7 @@ private:
                 buf.pushBack(SignatureAlgorithms.sigAlgoCode(m_sig_algo));
             }
             
-            appendTLSLengthValue(buf, m_signature, 2);
+            appendTlsLengthValue(buf, m_signature, 2);
         }
         
         return buf;
@@ -1700,7 +1700,7 @@ private:
 }
 
 /**
-* TLS_Server Hello Done Message
+* TLSServer Hello Done Message
 */
 final class ServerHelloDone : HandshakeMessage
 {
@@ -1708,7 +1708,7 @@ public:
     override HandshakeType type() const { return SERVER_HELLO_DONE; }
 
     /*
-    * Create a new TLS_Server Hello Done message
+    * Create a new TLSServer Hello Done message
     */
     this(HandshakeIO io, HandshakeHash hash)
     {
@@ -1716,7 +1716,7 @@ public:
     }
 
     /*
-    * Deserialize a TLS_Server Hello Done message
+    * Deserialize a TLSServer Hello Done message
     */
     this(in Vector!ubyte buf)
     {
@@ -1725,7 +1725,7 @@ public:
     }
 private:
     /*
-    * Serialize a TLS_Server Hello Done message
+    * Serialize a TLSServer Hello Done message
     */
     override Vector!ubyte serialize() const
     {
@@ -1766,7 +1766,7 @@ private:
     {
         Vector!ubyte buf;
         
-        appendTLSLengthValue(buf,
+        appendTlsLengthValue(buf,
                                 cast(const ubyte*)(m_protocol.ptr),
                                 m_protocol.length,
                                 1);
@@ -1826,7 +1826,7 @@ private:
     {
         Vector!ubyte buf = Vector!ubyte(4);
         storeBigEndian(m_ticket_lifetime_hint.seconds, buf.ptr);
-        appendTLSLengthValue(buf, m_ticket, 2);
+        appendTlsLengthValue(buf, m_ticket, 2);
         return buf;
     }
 
@@ -1894,7 +1894,7 @@ SecureVector!ubyte stripLeadingZeros(in SecureVector!ubyte input)
 
 
 /*
-* Compute the verify_data
+* Compute the verifyData
 */
 Vector!ubyte finishedComputeVerify(in HandshakeState state,
                                      ConnectionSide side)

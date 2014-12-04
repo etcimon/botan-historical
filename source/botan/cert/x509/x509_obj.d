@@ -37,11 +37,11 @@ public:
     */
     final Vector!ubyte tbsData() const
     {
-        return put_in_sequence(m_tbs_bits);
+        return putInSequence(m_tbs_bits);
     }
 
     /**
-    * @return signature on tbs_data()
+    * @return signature on tbsData()
     */
     final Vector!ubyte signature() const
     {
@@ -116,7 +116,7 @@ public:
             Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
-            return verifier.verifyMessage(tbs_data(), signature());
+            return verifier.verifyMessage(tbsData(), signature());
         }
         catch(Exception e)
         {

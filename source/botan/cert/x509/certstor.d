@@ -35,10 +35,10 @@ public:
 
     bool certificateKnown(in X509Certificate cert) const
     {
-        return find_cert(cert.subjectDn(), cert.subjectKeyId());
+        return findCert(cert.subjectDn(), cert.subjectKeyId());
     }
 
-    // remove this (used by TLS_Server)
+    // remove this (used by TLSServer)
     abstract Vector!X509DN allSubjects() const;
 }
 
@@ -85,7 +85,7 @@ public:
 
     X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
     {
-        return cert_search(subject_dn, key_id, m_certs);
+        return certSearch(subject_dn, key_id, m_certs);
     }
 
     void addCrl(in X509CRL crl)
@@ -153,7 +153,7 @@ public:
 
     X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
     {
-        return cert_search(subject_dn, key_id, m_certs);
+        return certSearch(subject_dn, key_id, m_certs);
     }
 private:
     const Vector!X509Certificate m_certs;

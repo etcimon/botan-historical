@@ -43,7 +43,7 @@ protected:
     {
         try
         {
-            decode_info(input, m_tbs_bits, m_sig);
+            decodeInfo(input, m_tbs_bits, m_sig);
         }
         catch(DecodingError)
         {

@@ -31,7 +31,7 @@ public:
             return;
 
         version(PPC)    
-            if (altivec_check_sysctl() || altivec_check_pvr_emul())
+            if (altivecCheckSysctl() || altivecCheckPvrEmul())
                 m_altivec_capable = true;
 
 
@@ -199,7 +199,7 @@ private:
         CPUID_SHA_BIT = 64+29,
     }
 
-    static bool x86ProcessorFlagsHas(ulong bit)
+    static bool x86_processor_flags_has(ulong bit)
     {
         return ((m_x86_processor_flags[bit/64] >> (bit % 64)) & 1);
     }

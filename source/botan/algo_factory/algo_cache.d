@@ -70,7 +70,7 @@ public:
 
         foreach (provider, instance; algo) 
         {            
-            const ubyte prov_weight = static_provider_weight(provider);
+            const ubyte prov_weight = staticProviderWeight(provider);
             
             if (prototype == null || prov_weight > prototype_prov_weight)
             {
@@ -161,7 +161,7 @@ public:
         m_algorithms.clear();
     }
 
-    ~this() { clear_cache(); }
+    ~this() { clearCache(); }
 private:
 
     /*

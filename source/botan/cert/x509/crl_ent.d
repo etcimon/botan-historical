@@ -138,9 +138,9 @@ public:
     {
         if (serialNumber() != a2.serialNumber())
             return false;
-        if (expire_time() != a2.expireTime())
+        if (expireTime() != a2.expireTime())
             return false;
-        if (reason_code() != a2.reasonCode())
+        if (reasonCode() != a2.reasonCode())
             return false;
         return true;
     }

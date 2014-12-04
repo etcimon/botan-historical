@@ -207,7 +207,7 @@ public:
             
             if (relative_size < 0)
             {
-                SecureVector!word z(reg_size - 1);
+                SecureVector!word z = SecureVector!word(reg_size - 1);
                 bigint_sub3(z.ptr, y.data(), reg_size - 1, data(), x_sw);
                 std.algorithm.swap(m_reg, z);
                 setSign(y.sign());

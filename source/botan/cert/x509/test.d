@@ -170,18 +170,18 @@ unittest
     size_t skipped = 0;
     size_t ran = 0;
     
-    auto expected_results = get_expected();
+    auto expected_results = getExpected();
     
     try {
         
-        const Vector!string test_dirs = dir_listing(root_test_dir);
+        const Vector!string test_dirs = dirListing(root_test_dir);
         
         for(size_t i = 0; i != test_dirs.length; i++)
         {
             const size_t test_no = i+1;
             
             const string test_dir = test_dirs[i];
-            const Vector!string all_files = dir_listing(test_dir);
+            const Vector!string all_files = dirListing(test_dir);
             
             Vector!string certs, crls;
             string root_cert, to_verify;
@@ -231,8 +231,8 @@ unittest
             Certificate_Status_Code result = validation_result.result();
             if (result != expected)
                 writeln("NIST X.509 test #" ~ test_no ~ " : ");
-            const string result_str = Path_Validation_Result.status_string(result);
-            const string exp_str = Path_Validation_Result.status_string(expected);
+            const string result_str = Path_Validation_Result.statusString(result);
+            const string exp_str = Path_Validation_Result.statusString(expected);
             if (expected == Certificate_Status_Code.VERIFIED) {
                 writeln("unexpected failure: " ~ result_str);
                 unexp_failure++;

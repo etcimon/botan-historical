@@ -122,8 +122,8 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
     
     auto print_alert = (TLSAlert alert, in ubyte[])
     {
-        if (alert.is_valid())
-            writeln("TLS_Server recvd alert " ~ alert.type_string());
+        if (alert.isValid())
+            writeln("TLSServer recvd alert " ~ alert.typeString());
     };
     
     auto save_server_data = (in ubyte[] buf) {
@@ -134,7 +134,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         s2c_data.insert(buf);
     };
     
-    auto server = scoped!TLS_Server((in ubyte[] buf) { s2c_q.insert(buf); },
+    auto server = scoped!TLSServer((in ubyte[] buf) { s2c_q.insert(buf); },
                                 save_server_data,
                                 print_alert,
                                 handshake_complete,
@@ -152,7 +152,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         return "test/3";
     };
     
-    auto client = scoped!TLS_Client((in ubyte[] buf) { c2s_q.insert(buf); },
+    auto client = scoped!TLSClient((in ubyte[] buf) { c2s_q.insert(buf); },
                                     save_client_data,
                                     print_alert,
                                     handshake_complete,
@@ -189,7 +189,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         }
         catch(Exception e)
         {
-            writeln("TLS_Server error - " ~ e.msg);
+            writeln("TLSServer error - " ~ e.msg);
             break;
         }
         
@@ -202,7 +202,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         }
         catch(Exception e)
         {
-            writeln("TLS_Client error - " ~ e.msg);
+            writeln("TLSClient error - " ~ e.msg);
             break;
         }
         
@@ -243,12 +243,12 @@ unittest
     
     Test_Policy default_policy;
     AutoSeededRNG rng;
-    TLSCredentialsManager basic_creds = create_creds(rng);
+    TLSCredentialsManager basic_creds = createCreds(rng);
     
-    errors += basic_test_handshake(rng, TLSProtocolVersion.SSL_V3, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, TLSProtocolVersion.TLS_V10, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, TLSProtocolVersion.TLS_V11, basic_creds, default_policy);
-    errors += basic_test_handshake(rng, TLSProtocolVersion.TLS_V12, basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion.SSL_V3, basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion.TLS_V10, basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion.TLS_V11, basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion.TLS_V12, basic_creds, default_policy);
     
     testReport("TLS", 4, errors);
 

@@ -298,9 +298,9 @@ private:
     Vector!ubyte encodedEacTime() const
     {
         Vector!ubyte result = Vector!ubyte(6);
-        result ~= enc_two_digit_arr(year);
-        result ~= enc_two_digit_arr(month);
-        result ~= enc_two_digit_arr(day);
+        result ~= encTwoDigitArr(year);
+        result ~= encTwoDigitArr(month);
+        result ~= encTwoDigitArr(day);
         return result;
     }
 
@@ -544,7 +544,7 @@ public:
 
 Vector!ubyte encTwoDigit(uint input)
 {
-    ubyte[2] res = enc_two_digit_arr(input);
+    ubyte[2] res = encTwoDigitArr(input);
     return Vector!ubyte(res.ptr[0 .. 2]);
 }
 
@@ -556,7 +556,7 @@ ubyte[2] encTwoDigitArr(uint input)
         result[0] = 0x00;
     else
     {
-        uint y_first_pos = round_down!uint(input, 10) / 10;
+        uint y_first_pos = roundDown!uint(input, 10) / 10;
         result[0] = cast(ubyte) y_first_pos;
     }
     

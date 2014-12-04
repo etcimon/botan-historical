@@ -92,8 +92,8 @@ public:
                     
                     const ASN1Tag value_type = value.type_tag;
                     
-                    if (is_string_type(value_type) && value.class_tag == ASN1Tag.UNIVERSAL)
-                        add_othername(oid, value.toString(), value_type);
+                    if (isStringType(value_type) && value.class_tag == ASN1Tag.UNIVERSAL)
+                        addOthername(oid, value.toString(), value_type);
                 }
             }
             else if (tag == 1 || tag == 2 || tag == 6)
@@ -102,16 +102,16 @@ public:
                                                LATIN1_CHARSET,
                                                LOCAL_CHARSET);
                 
-                if (tag == 1) add_attribute("RFC822", value);
-                if (tag == 2) add_attribute("DNS", value);
-                if (tag == 6) add_attribute("URI", value);
+                if (tag == 1) addAttribute("RFC822", value);
+                if (tag == 2) addAttribute("DNS", value);
+                if (tag == 6) addAttribute("URI", value);
             }
             else if (tag == 7)
             {
                 if (obj.value.length == 4)
                 {
                     const uint ip = loadBigEndian!uint(obj.value.ptr, 0);
-                    add_attribute("IP", ipv4_to_string(ip));
+                    addAttribute("IP", ipv4ToString(ip));
                 }
             }
 
@@ -197,10 +197,10 @@ public:
          in string dns = "",
          in string ip = "")
     {
-        add_attribute("RFC822", email_addr);
-        add_attribute("DNS", dns);
-        add_attribute("URI", uri);
-        add_attribute("IP", ip);
+        addAttribute("RFC822", email_addr);
+        addAttribute("DNS", dns);
+        addAttribute("URI", uri);
+        addAttribute("IP", ip);
     }
 
 private:

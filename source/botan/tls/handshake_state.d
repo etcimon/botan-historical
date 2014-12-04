@@ -50,7 +50,7 @@ public:
     */
     bool receivedHandshakeMsg(HandshakeType handshake_msg) const
     {
-        const uint mask = bitmask_for_handshake_type(handshake_msg);
+        const uint mask = bitmaskForHandshakeType(handshake_msg);
         
         return (m_hand_received_mask & mask);
     }
@@ -61,7 +61,7 @@ public:
     */
     void confirmTransitionTo(HandshakeType handshake_msg)
     {
-        const uint mask = bitmask_for_handshake_type(handshake_msg);
+        const uint mask = bitmaskForHandshakeType(handshake_msg);
         
         m_hand_received_mask |= mask;
         
@@ -86,12 +86,12 @@ public:
     */
     void setExpectedNext(HandshakeType handshake_msg)
     {
-        m_hand_expecting_mask |= bitmask_for_handshake_type(handshake_msg);
+        m_hand_expecting_mask |= bitmaskForHandshakeType(handshake_msg);
     }
 
     Pair!(HandshakeType, Vector!ubyte) getNextHandshakeMsg()
     {
-        const bool expecting_ccs = (bitmask_for_handshake_type(HANDSHAKE_CCS) & m_hand_expecting_mask);
+        const bool expecting_ccs = (bitmaskForHandshakeType(HANDSHAKE_CCS) & m_hand_expecting_mask);
         
         return m_handshake_io.getNextRecord(expecting_ccs);
     }
@@ -173,7 +173,7 @@ public:
     {
         const string sig_algo = key.algo_name;
         
-        const string hash_algo = choose_hash(sig_algo,
+        const string hash_algo = chooseHash(sig_algo,
                                              this.Version(),
                                              policy,
                                              for_client_auth,
@@ -247,7 +247,7 @@ public:
         
         m_client_hello.updateHelloCookie(hello_verify);
         hash().clear();
-        hash().update(handshake_io().send(*m_client_hello));
+        hash().update(handshakeIo().send(*m_client_hello));
         noteMessage(*m_client_hello);
     }
 
@@ -376,7 +376,7 @@ public:
 
     void computeSessionKeys()
     {
-        m_session_keys = TLSSessionKeys(this, client_kex().preMasterSecret(), false);
+        m_session_keys = TLSSessionKeys(this, clientKex().preMasterSecret(), false);
     }
 
     void computeSessionKeys(in SecureVector!ubyte resume_master_secret)

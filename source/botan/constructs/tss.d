@@ -23,7 +23,7 @@ import botan.utils.exceptn;
 /**
 * A split secret, using the format from draft-mcgrew-tss-03
 */
-struct RTSSShare
+struct RTSS
 {
 public:
     /**
@@ -34,7 +34,7 @@ public:
     * @param identifier = the 16 ubyte share identifier
     * @param rng = the random number generator to use
     */
-    static Vector!RTSS_Share split(ubyte M, ubyte N,
+    static Vector!RTSS split(ubyte M, ubyte N,
                                    in ubyte* S, ushort S_len,
                                    in ubyte[16] identifier,
                                    RandomNumberGenerator rng)
@@ -44,13 +44,13 @@ public:
         
         SHA_256 hash; // always use SHA-256 when generating shares
         
-        Vector!RTSS_Share shares = Vector!RTSS_Share(N);
+        Vector!RTSS shares = Vector!RTSS(N);
         
         // Create RTSS header in each share
         foreach (ubyte i; 0 .. N)
         {
             shares[i].m_contents ~= identifier.ptr[0 .. 16];
-            shares[i].m_contents ~= rtss_hash_id(hash.name);
+            shares[i].m_contents ~= rtssHashId(hash.name);
             shares[i].m_contents ~= M;
             shares[i].m_contents ~= get_byte(0, S_len);
             shares[i].m_contents ~= get_byte(1, S_len);
@@ -94,7 +94,7 @@ public:
     * @param shares = the list of shares
     */
 
-    static SecureVector!ubyte reconstruct(in Vector!RTSS_Share shares)
+    static SecureVector!ubyte reconstruct(in Vector!RTSS shares)
     {
         __gshared immutable size_t RTSS_HEADER_SIZE = 20;
         
@@ -118,7 +118,7 @@ public:
         
         ubyte hash_id = shares[0].m_contents[16];
 
-        Unique!HashFunction hash = get_rtss_hash_by_id(hash_id);
+        Unique!HashFunction hash = getRtssHashById(hash_id);
         
         if (shares[0].length != secret_len + hash.output_length + RTSS_HEADER_SIZE + 1)
             throw new DecodingError("Bad RTSS length field in header");
@@ -141,8 +141,8 @@ public:
                     if (k == l)
                         continue;
                     
-                    ubyte share_k = shares[k].share_id();
-                    ubyte share_l = shares[l].share_id();
+                    ubyte share_k = shares[k].shareId();
+                    ubyte share_l = shares[l].shareId();
                     
                     if (share_k == share_l)
                         throw new DecodingError("Duplicate shares found in RTSS recovery");
@@ -194,7 +194,7 @@ public:
     ubyte shareId() const
     {
         if (!initialized())
-            throw new InvalidState("share_id not initialized");
+            throw new InvalidState("shareId not initialized");
         
         return m_contents[20];
     }
@@ -273,7 +273,7 @@ __gshared immutable ubyte[] RTSS_LOG = [
     0xED, 0xDE, 0xC5, 0x31, 0xFE, 0x18, 0x0D, 0x63, 0x8C, 0x80, 0xC0,
     0xF7, 0x70, 0x07 ];
 
-ubyte gfpMul(ubyte x, ubyte y)
+ubyte gfp_mul(ubyte x, ubyte y)
 {
     if (x == 0 || y == 0)
         return 0;
@@ -317,9 +317,9 @@ unittest
     
     const SecureVector!ubyte S = hexDecodeLocked("7465737400");
     
-    Vector!RTSS_Share shares = RTSS_Share.split(2, 4, &S[0], S.length, id, rng);
+    Vector!RTSS shares = RTSS.split(2, 4, &S[0], S.length, id, rng);
     
-    auto back = RTSS_Share.reconstruct(shares);
+    auto back = RTSS.reconstruct(shares);
     
     if (S != back)
     {
@@ -329,7 +329,7 @@ unittest
     
     shares.resize(shares.length-1);
     
-    back = RTSS_Share.reconstruct(shares);
+    back = RTSS.reconstruct(shares);
     
     if (S != back)
     {

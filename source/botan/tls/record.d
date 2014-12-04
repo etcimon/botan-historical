@@ -226,9 +226,9 @@ void writeRecord(ref SecureVector!ubyte output,
     
     if (Unique!AEADMode aead = cipherstate.aead())
     {
-        const size_t ctext_size = aead.output_length(msg_length);
+        const size_t ctext_size = aead.outputLength(msg_length);
         
-        auto nonce = cipherstate.aead_nonce(msg_sequence);
+        auto nonce = cipherstate.aeadNonce(msg_sequence);
         const size_t implicit_nonce_bytes = 4; // FIXME, take from ciphersuite
         const size_t explicit_nonce_bytes = 8;
         
@@ -348,7 +348,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
     consumed = 0;
     if (readbuf.length < TLS_HEADER_SIZE) // header incomplete?
     {
-        if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, TLS_HEADER_SIZE))
+        if (size_t needed = fillBufferTo(readbuf, input, input_sz, consumed, TLS_HEADER_SIZE))
             return needed;
             
             assert(readbuf.length == TLS_HEADER_SIZE,
@@ -359,13 +359,13 @@ size_t readRecord(SecureVector!ubyte readbuf,
     if (!sequence_numbers && (readbuf[0] & 0x80) && (readbuf[2] == 1))
     {
         if (readbuf[3] == 0 && readbuf[4] == 2)
-            throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLS_Client claims to only support SSLv2, rejecting");
+            throw new TLSException(TLSAlert.PROTOCOL_VERSION, "TLSClient claims to only support SSLv2, rejecting");
         
         if (readbuf[3] >= 3) // SSLv2 mapped TLS hello, then?
         {
             const size_t record_len = make_ushort(readbuf[0], readbuf[1]) & 0x7FFF;
             
-            if (size_t needed = fill_buffer_to(readbuf,
+            if (size_t needed = fillBufferTo(readbuf,
                                                input, input_sz, consumed,
                                                record_len + 2))
                 return needed;
@@ -392,11 +392,11 @@ size_t readRecord(SecureVector!ubyte readbuf,
 
     record_version = TLSProtocolVersion(readbuf[1], readbuf[2]);
     
-    const bool is_dtls = record_version.is_datagram_protocol();
+    const bool is_dtls = record_version.isDatagramProtocol();
     
     if (is_dtls && readbuf.length < DTLS_HEADER_SIZE)
     {
-        if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, DTLS_HEADER_SIZE))
+        if (size_t needed = fillBufferTo(readbuf, input, input_sz, consumed, DTLS_HEADER_SIZE))
             return needed;
         
         assert(readbuf.length == DTLS_HEADER_SIZE,
@@ -411,7 +411,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
     if (record_len > MAX_CIPHERTEXT_SIZE)
         throw new TLSException(TLSAlert.RECORD_OVERFLOW, "Got message that exceeds maximum size");
     
-    if (size_t needed = fill_buffer_to(readbuf, input, input_sz, consumed, header_size + record_len))
+    if (size_t needed = fillBufferTo(readbuf, input, input_sz, consumed, header_size + record_len))
         return needed; // wrong for DTLS?
     
     assert(cast(size_t)(header_size) + record_len == readbuf.length, "Have the full record");
@@ -456,13 +456,13 @@ size_t readRecord(SecureVector!ubyte readbuf,
     
     assert(cipherstate, "Have cipherstate for this epoch");
     
-    decrypt_record(record,
-                   record_contents,
-                   record_len,
-                   record_sequence,
-                   record_version,
-                   record_type,
-                   cipherstate);
+    decryptRecord(record,
+                  record_contents,
+                  record_len,
+                  record_sequence,
+                  record_version,
+                  record_type,
+                  cipherstate);
     
     if (sequence_numbers)
         sequence_numbers.readAccept(record_sequence);
@@ -581,14 +581,14 @@ void decryptRecord(SecureVector!ubyte output,
 {
     if (Unique!AEADMode aead = cipherstate.aead())
     {
-        auto nonce = cipherstate.aead_nonce(record_contents);
+        auto nonce = cipherstate.aeadNonce(record_contents);
         __gshared immutable size_t nonce_length = 8; // fixme, take from ciphersuite
         
         assert(record_len > nonce_length, "Have data past the nonce");
         const ubyte* msg = &record_contents[nonce_length];
         const size_t msg_length = record_len - nonce_length;
         
-        const size_t ptext_size = aead.output_length(msg_length);
+        const size_t ptext_size = aead.outputLength(msg_length);
         
         aead.setAssociatedDataVec(cipherstate.formatAd(record_sequence, record_type, record_version, ptext_size));
         
@@ -614,9 +614,9 @@ void decryptRecord(SecureVector!ubyte output,
         }
         else if (Unique!BlockCipher bc = cipherstate.blockCipher())
         {
-            cbc_decrypt_record(record_contents, record_len, cipherstate, bc);
+            cbcDecryptRecord(record_contents, record_len, cipherstate, bc);
             
-            pad_size = tls_padding_check(cipherstate.cipherPaddingSingleByte(),
+            pad_size = tlsPaddingCheck(cipherstate.cipherPaddingSingleByte(),
                                          cipherstate.blockSize(),
                                          record_contents, record_len);
             

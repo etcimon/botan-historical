@@ -425,23 +425,23 @@ unittest {
     }
     void* ptr = .malloc(0x40);
     ptr += Allocator.alignment - (cast(size_t)ptr & Allocator.alignmentMask);
-    test_align(ptr++, 0x10);
-    test_align(ptr++, 0x0F);
-    test_align(ptr++, 0x0E);
-    test_align(ptr++, 0x0D);
-    test_align(ptr++, 0x0C);
-    test_align(ptr++, 0x0B);
-    test_align(ptr++, 0x0A);
-    test_align(ptr++, 0x09);
-    test_align(ptr++, 0x08);
-    test_align(ptr++, 0x07);
-    test_align(ptr++, 0x06);
-    test_align(ptr++, 0x05);
-    test_align(ptr++, 0x04);
-    test_align(ptr++, 0x03);
-    test_align(ptr++, 0x02);
-    test_align(ptr++, 0x01);
-    test_align(ptr++, 0x10);
+    testAlign(ptr++, 0x10);
+    testAlign(ptr++, 0x0F);
+    testAlign(ptr++, 0x0E);
+    testAlign(ptr++, 0x0D);
+    testAlign(ptr++, 0x0C);
+    testAlign(ptr++, 0x0B);
+    testAlign(ptr++, 0x0A);
+    testAlign(ptr++, 0x09);
+    testAlign(ptr++, 0x08);
+    testAlign(ptr++, 0x07);
+    testAlign(ptr++, 0x06);
+    testAlign(ptr++, 0x05);
+    testAlign(ptr++, 0x04);
+    testAlign(ptr++, 0x03);
+    testAlign(ptr++, 0x02);
+    testAlign(ptr++, 0x01);
+    testAlign(ptr++, 0x10);
 }
 
 private size_t alignedSize(size_t sz)

@@ -75,7 +75,7 @@ class ServerNameIndicator : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SERVER_NAME_INDICATION; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     this(in string host_name) 
     {
@@ -146,7 +146,7 @@ class SRPIdentifier : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SRP_IDENTIFIER; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     this(in string identifier) 
     {
@@ -172,7 +172,7 @@ public:
 
         const ubyte* srp_bytes = cast(const ubyte*) m_srp_identifier.ptr;
         
-        appendTLSLengthValue(buf, srp_bytes, m_srp_identifier.length, 1);
+        appendTlsLengthValue(buf, srp_bytes, m_srp_identifier.length, 1);
         
         return buf;
     }
@@ -190,7 +190,7 @@ class RenegotiationExtension : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SAFE_RENEGOTIATION; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     this() {}
 
@@ -212,7 +212,7 @@ public:
     Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
-        appendTLSLengthValue(buf, m_reneg_data, 1);
+        appendTlsLengthValue(buf, m_reneg_data, 1);
         return buf;
     }
 
@@ -230,7 +230,7 @@ class MaximumFragmentLength : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_MAX_FRAGMENT_LENGTH; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     @property bool empty() const { return false; }
 
@@ -291,7 +291,7 @@ class NextProtocolNotification : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_NEXT_PROTOCOL; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     Vector!string protocols() const { return m_protocols; }
 
@@ -337,7 +337,7 @@ public:
             const string p = m_protocols[i];
             
             if (p != "")
-                appendTLSLengthValue(buf, cast(const ubyte*) p.ptr, p.length, 1);
+                appendTlsLengthValue(buf, cast(const ubyte*) p.ptr, p.length, 1);
         }
         
         return buf;
@@ -356,7 +356,7 @@ class SessionTicket : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SESSION_TICKET; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     /**
     * @return contents of the session ticket
@@ -399,7 +399,7 @@ class SupportedEllipticCurves : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_USABLE_ELLIPTIC_CURVES; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     static string curveIdToName(ushort id)
     {
@@ -531,7 +531,7 @@ class SignatureAlgorithms : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SIGNATURE_ALGORITHMS; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     static string hashAlgoName(ubyte code)
     {
@@ -621,8 +621,8 @@ public:
         {
             try
             {
-                const ubyte hash_code = hash_algo_code(m_supported_algos[i].first);
-                const ubyte sig_code = sig_algo_code(m_supported_algos[i].second);
+                const ubyte hash_code = hashAlgoCode(m_supported_algos[i].first);
+                const ubyte sig_code = sigAlgoCode(m_supported_algos[i].second);
                 
                 buf.pushBack(hash_code);
                 buf.pushBack(sig_code);
@@ -686,7 +686,7 @@ class HeartbeatSupportIndicator : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_HEARTBEAT_SUPPORT; }
 
-    HandshakeExtensionType type() const { return static_type(); }
+    HandshakeExtensionType type() const { return staticType(); }
 
     bool peerAllowedToSend() const { return m_peer_allowed_to_send; }
 
@@ -738,7 +738,7 @@ public:
 
     T get(T)() const
     {
-        HandshakeExtensionType type = T.static_type();
+        HandshakeExtensionType type = T.staticType();
 
         return extensions.get(type, null);
     }
@@ -799,7 +799,7 @@ public:
                 const ushort extension_code = reader.get_ushort();
                 const ushort extension_size = reader.get_ushort();
                 
-                Extension extn = make_extension(reader, extension_code, extension_size);
+                Extension extn = makeExtension(reader, extension_code, extension_size);
                 
                 if (extn)
                     this.add(extn);

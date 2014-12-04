@@ -58,7 +58,7 @@ public:
     static const message_id LAST_MESSAGE = cast(message_id)(-2);
 
     /**
-    * A meta-id for the default message (set with set_default_msg)
+    * A meta-id for the default message (set with set_defaultMsg)
     */
     static const message_id DEFAULT_MESSAGE = cast(message_id)(-1);
 
@@ -156,7 +156,7 @@ public:
     */
     void processMsg(in SecureVector!ubyte input)
     {
-        process_msg(input.ptr, input.length);
+        processMsg(input.ptr, input.length);
     }
 
     /**
@@ -165,7 +165,7 @@ public:
     */
     void processMsg(in Vector!ubyte input)
     {
-        process_msg(input.ptr, input.length);
+        processMsg(input.ptr, input.length);
     }
 
     /**
@@ -174,7 +174,7 @@ public:
     */
     void processMsg(in string input)
     {
-        process_msg(cast(const ubyte*)(input.data()), input.length);
+        processMsg(cast(const ubyte*)(input.data()), input.length);
     }
 
     /**
@@ -196,7 +196,7 @@ public:
     */
     size_t remaining(message_id msg = DEFAULT_MESSAGE) const
     {
-        return m_outputs.remaining(get_message_no("remaining", msg));
+        return m_outputs.remaining(getMessageNo("remaining", msg));
     }
 
     /**
@@ -224,7 +224,7 @@ public:
     */
     size_t read(ubyte* output, size_t length, message_id msg)
     {
-        return m_outputs.read(output, length, get_message_no("read", msg));
+        return m_outputs.read(output, length, getMessageNo("read", msg));
     }
 
     /**
@@ -237,7 +237,7 @@ public:
     */
     size_t read(ref ubyte[] output, message_id msg = DEFAULT_MESSAGE)
     {
-        return m_outputs.read(output.ptr, output.length, get_message_no("read", msg));
+        return m_outputs.read(output.ptr, output.length, getMessageNo("read", msg));
     }
 
     /**
@@ -261,7 +261,7 @@ public:
     */
     SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
     {
-        msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
+        msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
         SecureVector!ubyte buffer = SecureVector!ubyte(remaining(msg));
         size_t got = read(buffer.ptr, buffer.length, msg);
         buffer.resize(got);
@@ -276,7 +276,7 @@ public:
     */
     string toString(message_id msg = DEFAULT_MESSAGE)
     {
-        msg = ((msg != DEFAULT_MESSAGE) ? msg : default_msg());
+        msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
         SecureVector!ubyte buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         Appender!string str;
         str.reserve(remaining(msg));
@@ -302,7 +302,7 @@ public:
     */
     size_t peek(ubyte* output, size_t length, size_t offset, message_id msg = DEFAULT_MESSAGE) const
     {
-        return m_outputs.peek(output, length, offset, get_message_no("peek", msg));
+        return m_outputs.peek(output, length, offset, getMessageNo("peek", msg));
     }
 
     /** Read from the specified message but do not modify the
@@ -366,7 +366,7 @@ public:
         size_t discarded = 0;
         ubyte dummy;
         foreach (size_t j; 0 .. n)
-            discarded += read_byte(dummy);
+            discarded += readByte(dummy);
         return discarded;
     }
 
@@ -398,8 +398,8 @@ public:
     */
     void setDefaultMsg(message_id msg)
     {
-        if (msg >= message_count())
-            throw new InvalidArgument("Pipe::set_default_msg: msg number is too high");
+        if (msg >= messageCount())
+            throw new InvalidArgument("Pipe::setDefaultMsg: msg number is too high");
         m_default_read = msg;
     }
 
@@ -432,7 +432,7 @@ public:
             throw new InvalidState("Pipe::startMsg: Message was already started");
         if (m_pipe_to == null)
             m_pipe_to = new NullFilter;
-        find_endpoints(m_pipe_to);
+        findEndpoints(m_pipe_to);
         m_pipe_to.newMsg();
         m_inside_msg = true;
     }
@@ -445,7 +445,7 @@ public:
         if (!m_inside_msg)
             throw new InvalidState("Pipe::endMsg: Message was already ended");
         m_pipe_to.finishMsg();
-        clear_endpoints(m_pipe_to);
+        clearEndpoints(m_pipe_to);
         if (cast(NullFilter)(m_pipe_to))
         {
             delete m_pipe_to;
@@ -598,7 +598,7 @@ private:
     {
         for (size_t j = 0; j != f.totalPorts(); ++j)
             if (f.next[j] && !cast(SecureQueue)(f.next[j]))
-                find_endpoints(f.next[j]);
+                findEndpoints(f.next[j]);
             else
         {
             SecureQueue q = new SecureQueue;
@@ -617,7 +617,7 @@ private:
         {
             if (f.next[j] && cast(SecureQueue)(f.next[j]))
                 f.next[j] = null;
-            clear_endpoints(f.next[j]);
+            clearEndpoints(f.next[j]);
         }
     }
 
@@ -628,11 +628,11 @@ private:
                               message_id msg) const
     {
         if (msg == DEFAULT_MESSAGE)
-            msg = default_msg();
+            msg = defaultMsg();
         else if (msg == LAST_MESSAGE)
-            msg = message_count() - 1;
+            msg = messageCount() - 1;
         
-        if (msg >= message_count())
+        if (msg >= messageCount())
             throw new InvalidMessageNumber(func_name, msg);
         
         return msg;

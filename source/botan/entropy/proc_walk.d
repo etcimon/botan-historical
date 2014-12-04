@@ -134,7 +134,7 @@ public:
         
         foreach (size_t i; 0 .. MAX_FILES_READ_PER_POLL)
         {
-            int fd = m_dir.next_fd();
+            int fd = m_dir.nextFd();
             
             // If we've exhaused this walk of the directory, halt the poll
             if (fd == -1)

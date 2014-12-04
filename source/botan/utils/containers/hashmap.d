@@ -200,7 +200,7 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
         m_resizing = true;
         scope(exit) m_resizing = false;
         
-        if (!m_allocator) m_allocator = vulnerable_allocator();
+        if (!m_allocator) m_allocator = getAllocator!VulnerableAllocator();
         if (!m_hasher) {
             static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHash() : 0;

@@ -40,7 +40,7 @@ public:
         {
             const size_t produce = std.algorithm.min(key_len, md5.output_length);
             
-            output = output + next_hash(counter++, produce, md5, sha1,
+            output = output + nextHash(counter++, produce, md5, sha1,
                                         secret, secret_len, seed, seed_len);
             
             key_len -= produce;

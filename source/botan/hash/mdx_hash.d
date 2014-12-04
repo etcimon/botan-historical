@@ -80,7 +80,7 @@ protected:
             zeroise(m_buffer);
         }
         
-        write_count(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
+        writeCount(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
         
         compressN(m_buffer.ptr, 1);
         copyOut(output);
@@ -116,7 +116,7 @@ protected:
     final void writeCount(ubyte* output)
     {
         if (m_COUNT_SIZE < 8)
-            throw new InvalidState("MDxHashFunction::write_count: COUNT_SIZE < 8");
+            throw new InvalidState("MDxHashFunction.writeCount: COUNT_SIZE < 8");
         if (m_COUNT_SIZE >= outputLength() || m_COUNT_SIZE >= hashBlockSize)
             throw new InvalidArgument("MDxHashFunction: COUNT_SIZE is too big");
         

@@ -34,7 +34,7 @@ SecureVector!ubyte rfc3394Keywrap(in SecureVector!ubyte key,
     if (key.length % 8 != 0)
         throw new InvalidArgument("Bad input key size for NIST key wrap");
     
-    Unique!BlockCipher aes = make_aes(kek.length, af);
+    Unique!BlockCipher aes = makeAes(kek.length, af);
     aes.setKey(kek);
     
     const size_t n = key.length / 8;
@@ -85,7 +85,7 @@ SecureVector!ubyte rfc3394Keyunwrap(in SecureVector!ubyte key,
     if (key.length < 16 || key.length % 8 != 0)
         throw new InvalidArgument("Bad input key size for NIST key unwrap");
     
-    Unique!BlockCipher aes = make_aes(kek.length, af);
+    Unique!BlockCipher aes = makeAes(kek.length, af);
     aes.setKey(kek);
     
     const size_t n = (key.length - 8) / 8;
@@ -158,7 +158,7 @@ size_t keywrapTest(const char* key_str,
         
         AlgorithmFactory af = globalState().algorithmFactory();
         
-        SecureVector!ubyte enc = rfc3394_keywrap(key.bitsOf(), kek, af);
+        SecureVector!ubyte enc = rfc3394Keywrap(key.bitsOf(), kek, af);
         
         if (enc != expected.bitsOf())
         {
@@ -167,7 +167,7 @@ size_t keywrapTest(const char* key_str,
             fail++;
         }
         
-        SecureVector!ubyte dec = rfc3394_keyunwrap(expected.bitsOf(), kek, af);
+        SecureVector!ubyte dec = rfc3394Keyunwrap(expected.bitsOf(), kek, af);
         
         if (dec != key.bitsOf())
         {
@@ -188,27 +188,27 @@ size_t testKeywrap()
 {
     size_t fails = 0;
     
-    fails += keywrap_test("00112233445566778899AABBCCDDEEFF",
+    fails += keywrapTest("00112233445566778899AABBCCDDEEFF",
                           "1FA68B0A8112B447AEF34BD8FB5A7B829D3E862371D2CFE5",
                           "000102030405060708090A0B0C0D0E0F");
     
-    fails += keywrap_test("00112233445566778899AABBCCDDEEFF",
+    fails += keywrapTest("00112233445566778899AABBCCDDEEFF",
                           "96778B25AE6CA435F92B5B97C050AED2468AB8A17AD84E5D",
                           "000102030405060708090A0B0C0D0E0F1011121314151617");
     
-    fails += keywrap_test("00112233445566778899AABBCCDDEEFF",
+    fails += keywrapTest("00112233445566778899AABBCCDDEEFF",
                           "64E8C3F9CE0F5BA263E9777905818A2A93C8191E7D6E8AE7",
                           "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F");
     
-    fails += keywrap_test("00112233445566778899AABBCCDDEEFF0001020304050607",
+    fails += keywrapTest("00112233445566778899AABBCCDDEEFF0001020304050607",
                           "031D33264E15D33268F24EC260743EDCE1C6C7DDEE725A936BA814915C6762D2",
                           "000102030405060708090A0B0C0D0E0F1011121314151617");
     
-    fails += keywrap_test("00112233445566778899AABBCCDDEEFF0001020304050607",
+    fails += keywrapTest("00112233445566778899AABBCCDDEEFF0001020304050607",
                           "A8F9BC1612C68B3FF6E6F4FBE30E71E4769C8B80A32CB8958CD5D17D6B254DA1",
                           "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F");
     
-    fails += keywrap_test("00112233445566778899AABBCCDDEEFF000102030405060708090A0B0C0D0E0F",
+    fails += keywrapTest("00112233445566778899AABBCCDDEEFF000102030405060708090A0B0C0D0E0F",
                           "28C9F404C4B810F4CBCCB35CFB87F8263F5786E2D80ED326CBC7F0E71A99F43BFB988B9B7A02DD21",
                           "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F");
     

@@ -118,7 +118,7 @@ private:
         if (msg < m_offset)
             return null;
         
-        assert(msg < message_count(), "Message number is in range");
+        assert(msg < messageCount(), "Message number is in range");
         
         return m_buffers[msg - m_offset];
     }

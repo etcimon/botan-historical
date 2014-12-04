@@ -27,7 +27,7 @@ final class TLSServer : TLS_Channel
 {
 public:
     /**
-    * TLS_Server initialization
+    * TLSServer initialization
     */
     this(void delegate(ref ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
@@ -68,7 +68,7 @@ private:
     {
         (cast(ServerHandshakeState)state).allow_session_resumption = !force_full_renegotiation;
         
-        auto hello_req = scoped!HelloRequest(state.handshake_io());
+        auto hello_req = scoped!HelloRequest(state.handshakeIo());
     }
 
     /*
@@ -138,7 +138,7 @@ private:
                 if (active_state.Version() > client_version)
                 {
                     throw new TLSException(TLSAlert.PROTOCOL_VERSION,
-                                            "TLS_Client negotiated " ~
+                                            "TLSClient negotiated " ~
                                             active_state.Version().toString() ~
                                             " then renegotiated with " ~
                                             client_version.toString());
@@ -158,12 +158,12 @@ private:
             if (!m_policy.acceptableProtocolVersion(negotiated_version))
             {
                 throw new TLSException(TLSAlert.PROTOCOL_VERSION,
-                                        "TLS_Client version is unacceptable by policy");
+                                        "TLSClient version is unacceptable by policy");
             }
             
             if (!initial_handshake && state.clientHello().nextProtocolNotification())
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
-                                        "TLS_Client included NPN extension for renegotiation");
+                                        "TLSClient included NPN extension for renegotiation");
             
             secureRenegotiationCheck(state.clientHello());
             
@@ -171,11 +171,11 @@ private:
 
             TLSSession session_info;
             const bool resuming = state.allow_session_resumption &&
-                                    check_for_resume(session_info,
-                                                     session_manager(),
+                                    checkForResume(session_info,
+                                                     sessionManager(),
                                                      m_creds,
                                                      state.clientHello(),
-                                                     TickDuration.from!"seconds"(m_policy.session_ticket_lifetime()).to!Duration);
+                                                     TickDuration.from!"seconds"(m_policy.sessionTicketLifetime()).to!Duration);
             
             bool have_session_ticket_key = false;
             
@@ -189,7 +189,7 @@ private:
             {
                 // resume session
                 
-                const bool offer_new_session_ticket = (state.clientHello().supports_session_ticket() &&
+                const bool offer_new_session_ticket = (state.clientHello().supportsSessionTicket() &&
                                                         state.clientHello().sessionTicket().empty &&
                                                         have_session_ticket_key);
                 
@@ -215,7 +215,7 @@ private:
                 
                 if (!saveSession(session_info))
                 {
-                    session_manager().removeEntry(session_info.sessionId());
+                    sessionManager().removeEntry(session_info.sessionId());
                     
                     if (state.serverHello().supportsSessionTicket()) // send an empty ticket
                     {
@@ -244,7 +244,7 @@ private:
                 
                 state.handshakeIo().send(scoped!ChangeCipherSpec());
                 
-                change_cipher_spec_writer(SERVER);
+                changeCipherSpecWriter(SERVER);
                 
                 state.serverFinished(new Finished(state.handshakeIo(), state, SERVER));
                 
@@ -278,12 +278,12 @@ private:
                                         m_policy,
                                         makeHelloRandom(rng()), // new session ID
                                         state.Version(),
-                                        choose_ciphersuite(m_policy,
+                                        chooseCiphersuite(m_policy,
                                                               state.Version(),
                                                                m_creds,
                                                                cert_chains,
                                                               state.clientHello()),
-                                        choose_compression(m_policy, state.clientHello().compressionMethods()),
+                                        chooseCompression(m_policy, state.clientHello().compressionMethods()),
                                         state.clientHello().fragmentSize(),
                                         state.clientHello().secureRenegotiation(),
                                         secureRenegotiationDataForServerHello(),
@@ -341,13 +341,13 @@ private:
                         );
                 }
                 
-                auto trusted_CAs = m_creds.trusted_certificate_authorities("tls-server", sniHostname);
+                auto trusted_CAs = m_creds.trustedCertificateAuthorities("tls-server", sniHostname);
                 
                 Vector!X509DN client_auth_CAs;
                 
                 foreach (store; trusted_CAs)
                 {
-                    auto subjects = store.all_subjects();
+                    auto subjects = store.allSubjects();
                     client_auth_CAs.insert(client_auth_CAs.end(),
                                            subjects.ptr,
                                            subjects.end());
@@ -399,9 +399,9 @@ private:
         {
             state.clientVerify(new CertificateVerify(contents, state.Version()));
             
-            const Vector!X509Certificate client_certs = state.client_certs().certChain();
+            const Vector!X509Certificate client_certs = state.clientCerts().certChain();
             
-            const bool sig_valid = state.client_verify().verify(client_certs[0], state);
+            const bool sig_valid = state.clientVerify().verify(client_certs[0], state);
             
             state.hash().update(state.handshakeIo().format(contents, type));
             
@@ -411,7 +411,7 @@ private:
             * unable to correctly verify a signature, ..."
             */
             if (!sig_valid)
-                throw new TLSException(TLSAlert.DECRYPT_ERROR, "TLS_Client cert verify failed");
+                throw new TLSException(TLSAlert.DECRYPT_ERROR, "TLSClient cert verify failed");
             
             try
             {
@@ -431,7 +431,7 @@ private:
             else
                 state.setExpectedNext(FINISHED);
             
-            change_cipher_spec_reader(SERVER);
+            changeCipherSpecReader(SERVER);
         }
         else if (type == NEXT_PROTOCOL)
         {
@@ -489,7 +489,7 @@ private:
                         catch (Throwable) {}
                     }
                     else
-                        session_manager().save(session_info);
+                        sessionManager().save(session_info);
                 }
                 
                 if (!state.newSessionTicket() &&
@@ -502,13 +502,13 @@ private:
                 
                 state.handshakeIo().send(scoped!ChangeCipherSpec());
                 
-                change_cipher_spec_writer(SERVER);
+                changeCipherSpecWriter(SERVER);
                 
                 state.serverFinished(
                     new Finished(state.handshakeIo(), state, SERVER)
                 );
             }
-            activate_session();
+            activateSession();
         }
         else
             throw new TLSUnexpectedMessage("Unknown handshake message received");
@@ -571,12 +571,12 @@ bool checkForResume(TLSSession session_info,
         return false;
     
     // client didn't send original ciphersuite
-    if (!value_exists(clientHello.ciphersuites(),
+    if (!valueExists(clientHello.ciphersuites(),
                       session_info.ciphersuiteCode()))
         return false;
     
     // client didn't send original compression method
-    if (!value_exists(clientHello.compressionMethods(),
+    if (!valueExists(clientHello.compressionMethods(),
                       session_info.compressionMethod()))
         return false;
     
@@ -601,14 +601,14 @@ bool checkForResume(TLSSession session_info,
 * Choose which ciphersuite to use
 */
 ushort chooseCiphersuite(in TLSPolicy policy,
-                          TLSProtocolVersion _version,
-                          TLSCredentialsManager creds,
-                          in HashMap!(string, Vector!X509Certificate) cert_chains,
-                          in ClientHello client_hello)
+                         TLSProtocolVersion _version,
+                         TLSCredentialsManager creds,
+                         in HashMap!(string, Vector!X509Certificate) cert_chains,
+                         in ClientHello client_hello)
 {
-    const bool our_choice = policy.server_uses_own_ciphersuite_preferences();
+    const bool our_choice = policy.serverUsesOwnCiphersuitePreferences();
     
-    const bool have_srp = creds.attempt_srp("tls-server", client_hello.sniHostname());
+    const bool have_srp = creds.attemptSrp("tls-server", client_hello.sniHostname());
     
     const Vector!ushort client_suites = client_hello.ciphersuites();
     
@@ -627,7 +627,7 @@ ushort chooseCiphersuite(in TLSPolicy policy,
     
     foreach (suite_id; pref_list)
     {
-        if (!value_exists(other_list, suite_id))
+        if (!valueExists(other_list, suite_id))
             continue;
         
         TLSCiphersuite suite = TLSCiphersuite.byId(suite_id);
@@ -648,7 +648,7 @@ ushort chooseCiphersuite(in TLSPolicy policy,
         */
         if (suite.kexAlgo() == "SRP_SHA" && client_hello.srpIdentifier() == "")
             throw new TLSException(TLSAlert.UNKNOWN_PSK_IDENTITY,
-                                    "TLS_Client wanted SRP but did not send username");
+                                    "TLSClient wanted SRP but did not send username");
         
         return suite_id;
     }

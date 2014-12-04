@@ -157,7 +157,7 @@ public:
     */
     string resultString() const
     {
-        return status_string(result());
+        return statusString(result());
     }
 
 
@@ -267,14 +267,14 @@ PathValidationResult
     // iterate until we reach a root or cannot find the issuer
     while (!cert_path.back().isSelfSigned())
     {
-        const X509Certificate cert = find_issuing_cert(cert_path.back(), extra, certstores);
+        const X509Certificate cert = findIssuingCert(cert_path.back(), extra, certstores);
         if (!cert)
             return Path_Validation_Result(Certificate_Status_Code.CERT_ISSUER_NOT_FOUND);
         
         cert_path.pushBack(*cert);
     }
     
-    return Path_Validation_Result(check_chain(cert_path, restrictions, certstores),
+    return Path_Validation_Result(checkChain(cert_path, restrictions, certstores),
                                   std.algorithm.move(cert_path));
 }
 
@@ -400,9 +400,9 @@ Vector!( RedBlackTree!Certificate_Status_Code )
         
         if (i == 0 || restrictions.ocspAllIntermediates()) {
             version(Have_vibe_d)
-                ocsp_responses.pushBack(runTask(&online_check, issuer, subject, trusted));
+                ocsp_responses.pushBack(runTask(&onlineCheck, issuer, subject, trusted));
             else
-                ocsp_responses.pushBack(spawn(&online_check, issuer, subject, trusted));
+                ocsp_responses.pushBack(spawn(&onlineCheck, issuer, subject, trusted));
 
         }
         // Check all certs for valid time range
@@ -449,13 +449,13 @@ Vector!( RedBlackTree!Certificate_Status_Code )
         {
             try
             {
-                OCSP_Response ocsp = ocsp_responses[i].receiveOnly!(OCSP_Response)();
+                OCSPResponse ocsp = ocsp_responses[i].receiveOnly!(OCSPResponse)();
                 
-                auto ocsp_status = ocsp.status_for(ca, subject);
+                auto ocsp_status = ocsp.statusFor(ca, subject);
                 
                 status.insert(ocsp_status);
                 
-                //std::cout << "OCSP status: " << status_string(ocsp_status) << "\n";
+                //std::cout << "OCSP status: " << statusString(ocsp_status) << "\n";
                 
                 // Either way we have a definitive answer, no need to check CRLs
                 if (ocsp_status == Certificate_Status_Code.CERT_IS_REVOKED)
@@ -469,7 +469,7 @@ Vector!( RedBlackTree!Certificate_Status_Code )
             }
         }
         
-        const X509CRL crl_p = find_crls_for(subject, certstores);
+        const X509CRL crl_p = findCrlsFor(subject, certstores);
         
         if (!crl_p)
         {

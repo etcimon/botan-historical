@@ -48,7 +48,7 @@ public:
     */
     void addEngine(Engine engine)
     {
-        clear_caches();
+        clearCaches();
         m_engines.pushBack(engine);
     }
     

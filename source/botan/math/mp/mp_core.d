@@ -255,7 +255,7 @@ void bigint_shl1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
     if (word_shift)
     {
         copy_mem(x + word_shift, x, x_size);
-        clear_mem(x, word_shift);
+        clearMem(x, word_shift);
     }
     
     if (bit_shift)
@@ -277,14 +277,14 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 {
     if (x_size < word_shift)
     {
-        clear_mem(x, x_size);
+        clearMem(x, x_size);
         return;
     }
     
     if (word_shift)
     {
         copy_mem(x, x + word_shift, x_size - word_shift);
-        clear_mem(x + x_size - word_shift, word_shift);
+        clearMem(x + x_size - word_shift, word_shift);
     }
     
     if (bit_shift)
@@ -373,7 +373,7 @@ void bigint_simple_mul(word* z, in word* x, size_t x_size, in word* y, size_t y_
 {
     const size_t x_size_8 = x_size - (x_size % 8);
     
-    clear_mem(z, x_size + y_size);
+    clearMem(z, x_size + y_size);
     
     foreach (size_t i; 0 .. y_size)
     {
@@ -406,7 +406,7 @@ void bigint_simple_sqr(word* z, in word* x, size_t x_size)
 {
     const size_t x_size_8 = x_size - (x_size % 8);
     
-    clear_mem(z, 2*x_size);
+    clearMem(z, 2*x_size);
     
     foreach (size_t i; 0 .. x_size)
     {
@@ -519,7 +519,7 @@ void bigint_monty_redc(word* z, in word* p, size_t p_size, word p_dash, word* ws
     copy_mem(ws + p_size + 1, z + p_size, p_size + 1);
     
     copy_mem(z, ws + borrow*(p_size+1), p_size + 1);
-    clear_mem(z + p_size + 1, z_size - p_size - 1);
+    clearMem(z + p_size + 1, z_size - p_size - 1);
 }
 
 
@@ -1788,7 +1788,7 @@ void karatsuba_mul(word* z, in word* x, in word* y, size_t N, word* workspace)
     const int cmp0 = bigint_cmp(x0, N2, x1, N2);
     const int cmp1 = bigint_cmp(y1, N2, y0, N2);
     
-    clear_mem(workspace, 2*N);
+    clearMem(workspace, 2*N);
     
     //if (cmp0 && cmp1)
     {
@@ -1846,7 +1846,7 @@ void karatsuba_sqr(word* z, in word* x, size_t N, word* workspace)
     
     const int cmp = bigint_cmp(x0, N2, x1, N2);
     
-    clear_mem(workspace, 2*N);
+    clearMem(workspace, 2*N);
     
     //if (cmp)
     {

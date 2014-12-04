@@ -59,7 +59,7 @@ public:
                 
                 size_t consumed = 0;
                 
-                const size_t needed = read_record(m_readbuf,
+                const size_t needed = readRecord(m_readbuf,
                                                   input,
                                                   input_size,
                                                   consumed,
@@ -67,7 +67,7 @@ public:
                                                   &record_sequence,
                                                   &record_version,
                                                   &record_type,
-                                                  sequence_numbers(),
+                                                  sequenceNumbers(),
                                                   get_cipherstate);
                 
                 assert(consumed <= input_size, "Record reader consumed sane amount");
@@ -89,7 +89,7 @@ public:
                     {
                         createHandshakeState(record_version);
                         if (record_version.isDatagramProtocol())
-                            sequence_numbers().readAccept(record_sequence);
+                            sequenceNumbers().readAccept(record_sequence);
                     }
                     
                     m_pending_state.handshakeIo().addRecord(unlock(record),
@@ -99,22 +99,22 @@ public:
                     while (true)
                     {
                         if (HandshakeState pending = *m_pending_state) {
-                            auto msg = pending.get_next_handshake_msg();
+                            auto msg = pending.getNextHandshakeMsg();
                             
                             if (msg.first == HANDSHAKE_NONE) // no full handshake yet
                                 break;
                             
-                            process_handshake_msg(activeState(), *pending,
+                            processHandshakeMsg(activeState(), *pending,
                                                   msg.first, msg.second);
                         } else break;
                     }
                 }
-                else if (record_type == HEARTBEAT && peer_supports_heartbeats())
+                else if (record_type == HEARTBEAT && peerSupportsHeartbeats())
                 {
                     if (!activeState())
                         throw new TLSUnexpectedMessage("Heartbeat sent before handshake done");
                     
-                    Heartbeat_Message heartbeat = Heartbeat_Message(unlock(record));
+                    HeartbeatMessage heartbeat = HeartbeatMessage(unlock(record));
                     
                     const Vector!ubyte payload = heartbeat.payload();
                     
@@ -122,7 +122,7 @@ public:
                     {
                         if (!pendingState())
                         {
-                            Heartbeat_Message response = Heartbeat_Message(Heartbeat_Message.RESPONSE,
+                            HeartbeatMessage response = HeartbeatMessage(HeartbeatMessage.RESPONSE,
                                                        payload.ptr, payload.length);
                             
                             sendRecord(HEARTBEAT, response.contents());
@@ -166,7 +166,7 @@ public:
                             
                 if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY || alert_msg.isFatal())
                 {
-                    reset_state();
+                    resetState();
                     return 0;
                 }
             }
@@ -216,7 +216,7 @@ public:
         if (!isActive())
             throw new Exception("Data cannot be sent on inactive TLS connection");
         
-        sendRecordArray(sequence_numbers().currentWriteEpoch(), APPLICATION_DATA, buf, buf_size);
+        sendRecordArray(sequenceNumbers().currentWriteEpoch(), APPLICATION_DATA, buf, buf_size);
     }
 
     /**
@@ -261,7 +261,7 @@ public:
                 m_session_manager.removeEntry(active.serverHello().sessionId());
         
         if (alert.type() == TLSAlert.CLOSE_NOTIFY || alert.isFatal())
-            reset_state();
+            resetState();
     }
 
     /**
@@ -315,7 +315,7 @@ public:
             return;
         
         if (HandshakeState active = activeState())
-            initiate_handshake(createHandshakeState(active.Version()),
+            initiateHandshake(createHandshakeState(active.Version()),
                                force_full_renegotiation);
         else
             throw new Exception("Cannot renegotiate on inactive connection");
@@ -354,11 +354,10 @@ public:
     */
     void heartbeat(in ubyte* payload, size_t payload_size)
     {
-        if (heartbeat_sending_allowed())
+        if (heartbeatSendingAllowed())
         {
-            Heartbeat_Message heartbeat = Heartbeat_Message(Heartbeat_Message.REQUEST,
-                                        payload, payload_size);
-            
+            HeartbeatMessage heartbeat = HeartbeatMessage(HeartbeatMessage.REQUEST, payload, payload_size);
+
             sendRecord(HEARTBEAT, heartbeat.contents());
         }
     }
@@ -481,11 +480,11 @@ protected:
         
         Unique!HandshakeIO io;
         if (_version.isDatagramProtocol())
-            io = new DatagramHandshakeIO(sequence_numbers(), &sendRecordUnderEpoch);
+            io = new DatagramHandshakeIO(sequenceNumbers(), &sendRecordUnderEpoch);
         else
             io = new StreamHandshakeIO(&sendRecord);
         
-        m_pending_state = new_handshake_state(*io);
+        m_pending_state = newHandshakeState(*io);
         
         if (auto active = activeState())
             m_pending_state.setVersion(active.Version());
@@ -505,7 +504,7 @@ protected:
         else
         {
             // TLS is easy just remove all but the current state
-            auto current_epoch = sequence_numbers().current_write_epoch();
+            auto current_epoch = sequenceNumbers().currentWriteEpoch();
 
             foreach (k, v; m_write_cipher_states) {
                 if (k != current_epoch)
@@ -527,9 +526,9 @@ protected:
         if (pending.serverHello().compressionMethod() != NO_COMPRESSION)
             throw new InternalError("Negotiated unknown compression algorithm");
         
-        sequence_numbers().newReadCipherState();
+        sequenceNumbers().newReadCipherState();
         
-        const ushort epoch = sequence_numbers().current_read_epoch();
+        const ushort epoch = sequenceNumbers().currentReadEpoch();
         
         assert(m_read_cipher_states.count(epoch) == 0, "No read cipher state currently set for next epoch");
         
@@ -552,9 +551,9 @@ protected:
         if (pending.serverHello().compressionMethod() != NO_COMPRESSION)
             throw new InternalError("Negotiated unknown compression algorithm");
         
-        sequence_numbers().newWriteCipherState();
+        sequenceNumbers().newWriteCipherState();
         
-        const ushort epoch = sequence_numbers().current_write_epoch();
+        const ushort epoch = sequenceNumbers().currentWriteEpoch();
         
         assert(m_write_cipher_states.count(epoch) == 0, "No write cipher state currently set for next epoch");
         
@@ -577,15 +576,15 @@ protected:
             const bool active_sr = active.clientHello().secureRenegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Client changed its mind about secure renegotiation");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSClient changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
         {
-            const Vector!ubyte data = client_hello.renegotiation_info();
+            const Vector!ubyte data = client_hello.renegotiationInfo();
             
             if (data != secureRenegotiationDataForClientHello())
-                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Client sent bad values for secure renegotiation");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSClient sent bad values for secure renegotiation");
         }
     }
 
@@ -598,15 +597,15 @@ protected:
             const bool active_sr = active.clientHello().secureRenegotiation();
             
             if (active_sr != secure_renegotiation)
-                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server changed its mind about secure renegotiation");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSServer changed its mind about secure renegotiation");
         }
         
         if (secure_renegotiation)
         {
-            const Vector!ubyte data = server_hello.renegotiation_info();
+            const Vector!ubyte data = server_hello.renegotiationInfo();
             
             if (data != secureRenegotiationDataForServerHello())
-                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLS_Server sent bad values for secure renegotiation");
+                throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSServer sent bad values for secure renegotiation");
         }
     }
 
@@ -621,7 +620,7 @@ protected:
     {
         if (auto active = activeState())
         {
-            Vector!ubyte buf = active.client_finished().verify_data();
+            Vector!ubyte buf = active.clientFinished().verifyData();
             buf ~= active.serverFinished().verifyData();
             return buf;
         }
@@ -667,7 +666,7 @@ private:
 
     void sendRecord(ubyte record_type, in Vector!ubyte record)
     {
-        sendRecordArray(sequence_numbers().currentWriteEpoch(),
+        sendRecordArray(sequenceNumbers().currentWriteEpoch(),
                           record_type, record.ptr, record.length);
     }
 
@@ -694,11 +693,11 @@ private:
         * See http://www.openssl.org/~bodo/tls-cbc.txt for background.
         */
         
-        auto cipher_state = write_cipher_state_epoch(epoch);
+        auto cipher_state = writeCipherStateEpoch(epoch);
         
         if (type == APPLICATION_DATA && cipher_state.cbcWithoutExplicitIv())
         {
-            write_record(cipher_state, type, input.ptr, 1);
+            writeRecord(cipher_state, type, input.ptr, 1);
             input += 1;
             length -= 1;
         }
@@ -708,7 +707,7 @@ private:
         while (length)
         {
             const size_t sending = std.algorithm.min(length, max_fragment_size);
-            write_record(cipher_state, type, input.ptr, sending);
+            writeRecord(cipher_state, type, input.ptr, sending);
             
             input += sending;
             length -= sending;
@@ -724,12 +723,12 @@ private:
         TLSProtocolVersion record_version =
             (m_pending_state) ? (m_pending_state.Version()) : (m_active_state.Version());
         
-        write_record(m_writebuf,
+        writeRecord(m_writebuf,
                      record_type,
                      input,
                      length,
                      record_version,
-                     sequence_numbers().nextWriteSequence(),
+                     sequenceNumbers().nextWriteSequence(),
                      cipher_state,
                      m_rng);
         

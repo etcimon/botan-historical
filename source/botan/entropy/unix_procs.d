@@ -42,7 +42,7 @@ public:
         
         if (m_sources.empty)
         {
-            auto sources = get_default_sources();
+            auto sources = getDefaultSources();
             
             foreach (src; sources)
             {
@@ -86,7 +86,7 @@ public:
             if (fds.empty)
                 break;
             
-            const int max_fd = *std.algorithm.max_element(fds.ptr, fds.end());
+            const int max_fd = *std.algorithm.max(fds[]);
             
             timeval timeout;
             timeout.tv_sec = (MS_WAIT_TIME / 1000);
@@ -105,7 +105,7 @@ public:
                     if (got > 0)
                         accum.add(io_buffer.ptr, got, ENTROPY_ESTIMATE);
                     else
-                        proc.spawn(next_source());
+                        proc.spawn(nextSource());
                 }
             }
         }
@@ -311,7 +311,7 @@ public:
 
 private:
 
-string findFullPathIfExists(in Vector!string trusted_path, in string proc)
+string find_full_path_if_exists(in Vector!string trusted_path, in string proc)
 {
     foreach (dir; trusted_path)
     {
@@ -323,7 +323,7 @@ string findFullPathIfExists(in Vector!string trusted_path, in string proc)
     return "";
 }
 
-size_t concurrentProcesses(size_t user_request)
+size_t concurrent_processes(size_t user_request)
 {
     __gshared immutable size_t DEFAULT_CONCURRENT = 2;
     __gshared immutable size_t MAX_CONCURRENT = 8;
@@ -339,7 +339,7 @@ size_t concurrentProcesses(size_t user_request)
     return DEFAULT_CONCURRENT;
 }
 
-void doExec(in string[] args)
+void do_exec(in string[] args)
 {
     // cleaner way to do this?
     string arg0 = (args.length > 0) ? args[0].toStringz : null;

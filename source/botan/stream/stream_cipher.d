@@ -93,7 +93,7 @@ size_t streamTest(string algo,
     
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    const auto providers = af.providers_of(algo);
+    const auto providers = af.providersOf(algo);
     size_t fails = 0;
     
     if (providers.empty)

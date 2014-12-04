@@ -163,7 +163,7 @@ HashMap!(string, string)
 {
     const string algo = algo_name.algoNameAndArgs();
     
-    Vector!string providers = af.providers_of(algo);
+    Vector!string providers = af.providersOf(algo);
     HashMap!(string, string) all_results;
     
     if (providers.empty) // no providers, nothing to do

@@ -21,7 +21,7 @@ class BufferedFilter
 public:
     /**
     * Write bytes into the buffered filter, which will them emit them
-    * in calls to buffered_block in the subclass
+    * in calls to bufferedBlock in the subclass
     * @param input = the input bytes
     * @param input_size = of input in bytes
     */
@@ -40,11 +40,11 @@ public:
             input += to_copy;
             input_size -= to_copy;
             
-            size_t total_to_consume = round_down(std.algorithm.min(m_buffer_pos,
+            size_t total_to_consume = roundDown(std.algorithm.min(m_buffer_pos,
                                                  m_buffer_pos + input_size - m_final_minimum),
                                                  m_main_block_mod);
             
-            buffered_block(m_buffer.ptr, total_to_consume);
+            bufferedBlock(m_buffer.ptr, total_to_consume);
             
             m_buffer_pos -= total_to_consume;
             
@@ -58,7 +58,7 @@ public:
             
             if (to_copy)
             {
-                buffered_block(input, to_copy);
+                bufferedBlock(input, to_copy);
                 
                 input += to_copy;
                 input_size -= to_copy;
@@ -75,7 +75,7 @@ public:
     }
 
     /**
-    * Finish a message, emitting to buffered_block and buffered_final
+    * Finish a message, emitting to bufferedBlock and bufferedFinal
     * Will throw new an exception if less than final_minimum bytes were
     * written into the filter.
     */
@@ -89,12 +89,12 @@ public:
         if (spare_blocks)
         {
             size_t spare_bytes = m_main_block_mod * spare_blocks;
-            buffered_block(m_buffer.ptr, spare_bytes);
-            buffered_final(&m_buffer[spare_bytes], m_buffer_pos - spare_bytes);
+            bufferedBlock(m_buffer.ptr, spare_bytes);
+            bufferedFinal(&m_buffer[spare_bytes], m_buffer_pos - spare_bytes);
         }
         else
         {
-            buffered_final(m_buffer.ptr, m_buffer_pos);
+            bufferedFinal(m_buffer.ptr, m_buffer_pos);
         }
         
         m_buffer_pos = 0;
@@ -102,9 +102,9 @@ public:
 
     /**
     * Initialize a BufferedFilter
-    * @param block_size = the function buffered_block will be called
+    * @param block_size = the function bufferedBlock will be called
     *          with inputs which are a multiple of this size
-    * @param final_minimum = the function buffered_final will be called
+    * @param final_minimum = the function bufferedFinal will be called
     *          with at least this many bytes.
     */
     this(size_t block_size, size_t final_minimum)

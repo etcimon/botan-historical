@@ -23,10 +23,10 @@ struct TLSProtocolVersion
 public:
     typedef ushort Version_Code;
     enum : VersionCode {
-        SSL_V3                = 0x0300,
-        TLS_V10                = 0x0301,
-        TLS_V11                = 0x0302,
-        TLS_V12                = 0x0303,
+        SSL_V3              = 0x0300,
+        TLS_V10             = 0x0301,
+        TLS_V11             = 0x0302,
+        TLS_V12             = 0x0303,
 
         DTLS_V10            = 0xFEFF,
         DTLS_V12            = 0xFEFD
@@ -92,8 +92,8 @@ public:
     */
     string toString() const
     {
-        const ubyte maj = major_version();
-        const ubyte min = minor_version();
+        const ubyte maj = majorVersion();
+        const ubyte min = minorVersion();
         
         if (maj == 3 && min == 0)
             return "SSL v3";
@@ -115,10 +115,10 @@ public:
     */
     TLSProtocolVersion bestKnownMatch() const
     {
-        if (known_version())
+        if (knownVersion())
             return this; // known version is its own best match
         
-        if (is_datagram_protocol())
+        if (isDatagramProtocol())
             return TLSProtocolVersion.DTLS_V12;
         else
             return TLSProtocolVersion.TLS_V12;
@@ -129,7 +129,7 @@ public:
     */
     bool isDatagramProtocol() const
     {
-        return major_version() == 254;
+        return majorVersion() == 254;
     }
 
     /**

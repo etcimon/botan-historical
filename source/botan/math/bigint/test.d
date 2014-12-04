@@ -16,7 +16,7 @@ void stripComments(string line)
 /* Strip comments, whitespace, etc */
 void strip(string line)
 {
-    strip_comments(line);
+    stripComments(line);
     
     /*    while(line.canFind(' '))
         line = line[0 .. line.indexOf(' ')];

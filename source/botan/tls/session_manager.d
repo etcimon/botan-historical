@@ -122,7 +122,7 @@ public:
         in Vector!ubyte session_id, TLSSession session)
     {
         
-        return load_from_session_str(hexEncode(session_id), session);
+        return loadFromSessionStr(hexEncode(session_id), session);
     }
 
     override bool loadFromServerInfo(
@@ -134,7 +134,7 @@ public:
         if (i == m_info_sessions.end())
             return false;
         
-        if (load_from_session_str(i.second, session))
+        if (loadFromSessionStr(i.second, session))
             return true;
         
         /*
@@ -200,7 +200,7 @@ private:
         // if session has expired, remove it
         const auto now = Clock.currTime();
         
-        if (session.startTime() + session_lifetime() < now)
+        if (session.startTime() + sessionLifetime() < now)
         {
             m_sessions.erase(i);
             return false;

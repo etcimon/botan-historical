@@ -491,7 +491,7 @@ public:
     */
     static TLSCiphersuite byName(in string name)
     {
-        foreach (suite; all_known_ciphersuites())
+        foreach (suite; allKnownCiphersuites())
         {
             if (suite.toString() == name)
                 return suite;
@@ -507,7 +507,7 @@ public:
     */
     static Vector!TLSCiphersuite allKnownCiphersuites() const
     {
-        static Vector!TLSCiphersuite all_ciphersuites = Vector!CipherSuite(gather_known_ciphersuites());
+        static Vector!TLSCiphersuite all_ciphersuites = Vector!CipherSuite(gatherKnownCiphersuites());
         return all_ciphersuites;
     }
 
@@ -551,9 +551,9 @@ public:
             if (cipherAlgo() == "3DES")
                 output ~= "3DES_EDE";
             else if (cipherAlgo().find("Camellia") == -1)
-                output ~= "CAMELLIA_" ~ to!string(8*cipher_keylen());
+                output ~= "CAMELLIA_" ~ to!string(8*cipherKeylen());
             else
-                output ~= replace_chars(cipherAlgo(), ['-', '/'], '_');
+                output ~= replaceChars(cipherAlgo(), ['-', '/'], '_');
             
             if (cipherAlgo().find("/") != -1)
                 output ~= "_"; // some explicit mode already included
@@ -564,9 +564,9 @@ public:
         if (macAlgo() == "SHA-1")
             output ~= "SHA";
         else if (macAlgo() == "AEAD")
-            output ~= erase_chars(prfAlgo(), ['-']);
+            output ~= eraseChars(prfAlgo(), ['-']);
         else
-            output ~= erase_chars(macAlgo(), ['-']);
+            output ~= eraseChars(macAlgo(), ['-']);
         
         return output.data;
     }

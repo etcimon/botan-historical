@@ -67,7 +67,7 @@ public:
         if (!strong)
             return true;
         
-        return encryption_consistency_check(rng, this, "EME1(SHA-1)");
+        return encryptionConsistencyCheck(rng, this, "EME1(SHA-1)");
     }
 
     /*

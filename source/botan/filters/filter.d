@@ -67,7 +67,7 @@ protected:
             return;
         
         bool nothing_attached = true;
-        foreach (size_t j; 0 .. total_ports())
+        foreach (size_t j; 0 .. totalPorts())
             if (m_next[j])
         {
             if (m_write_queue.length)
@@ -135,7 +135,7 @@ private:
     void newMsg()
     {
         startMsg();
-        foreach (size_t j; 0 .. total_ports())
+        foreach (size_t j; 0 .. totalPorts())
             if (m_next[j])
                 m_next[j].newMsg();
     }
@@ -147,7 +147,7 @@ private:
     void finishMsg()
     {
         endMsg();
-        foreach (size_t j; 0 .. total_ports())
+        foreach (size_t j; 0 .. totalPorts())
             if (m_next[j])
                 m_next[j].finishMsg();
     }
@@ -168,7 +168,7 @@ private:
     */
     void setPort(size_t new_port)
     {
-        if (new_port >= total_ports())
+        if (new_port >= totalPorts())
             throw new InvalidArgument("Filter: Invalid port number");
         m_port_num = new_port;
     }
@@ -238,16 +238,12 @@ protected:
     */
     void incrOwns() { ++m_filter_owns; }
 
-    void setPort(size_t n) { set_port(n); }
+    void setPort(size_t n) { setPort(n); }
 
     void setNext(Filter f, size_t n) { setNext(f, n); }
 
     void attach(Filter f) { attach(f); }
 
-/*private:
-    using write_queue;
-    using total_ports;
-    using next;*/
 }
 
 /**

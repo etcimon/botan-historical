@@ -47,10 +47,10 @@ public:
     this(Filter f1 = null, Filter f2 = null,
             Filter f3 = null, Filter f4 = null)
     {
-        if (f1) { attach(f1); incr_owns(); }
-        if (f2) { attach(f2); incr_owns(); }
-        if (f3) { attach(f3); incr_owns(); }
-        if (f4) { attach(f4); incr_owns(); }
+        if (f1) { attach(f1); incrOwns(); }
+        if (f2) { attach(f2); incrOwns(); }
+        if (f3) { attach(f3); incrOwns(); }
+        if (f4) { attach(f4); incrOwns(); }
     }
 
     /**
@@ -63,7 +63,7 @@ public:
             if (filter_arr[j])
             {
                 attach(filter_arr[j]);
-                incr_owns();
+                incrOwns();
             }
         }
     }
@@ -178,11 +178,11 @@ protected:
     void send(in ubyte* input, size_t length)
     {
         if (m_write_queue.length)
-            thread_delegate_work(m_write_queue.ptr, m_write_queue.length);
-        thread_delegate_work(input, length);
+            threadDelegateWork(m_write_queue.ptr, m_write_queue.length);
+        threadDelegateWork(input, length);
         
         bool nothing_attached = true;
-        foreach (size_t j; 0 .. total_ports())
+        foreach (size_t j; 0 .. totalPorts())
             if (next[j])
                 nothing_attached = false;
         
@@ -200,10 +200,10 @@ private:
         m_thread_data.m_input_length = length;
         
         //Let the workers start processing.
-        m_thread_data.m_input_ready_semaphore.release(total_ports());
+        m_thread_data.m_input_ready_semaphore.release(totalPorts());
         
         //Wait for all the filters to finish processing.
-        foreach (size_t i; 0 .. total_ports())
+        foreach (size_t i; 0 .. totalPorts())
             m_thread_data.m_input_complete_semaphore.acquire();
         
         //Reset the thread data

@@ -38,16 +38,16 @@ BigInt mulAdd(in BigInt a, in BigInt b, in BigInt c)
     if (a.sign() != b.sign())
         sign = BigInt.Negative;
     
-    const size_t a_sw = a.sig_words();
-    const size_t b_sw = b.sig_words();
-    const size_t c_sw = c.sig_words();
+    const size_t a_sw = a.sigWords();
+    const size_t b_sw = b.sigWords();
+    const size_t c_sw = c.sigWords();
     
     BigInt r = BigInt(sign, std.algorithm.max(a.length + b.length, c_sw) + 1);
     SecureVector!word workspace = SecureVector!word(r.length);
     
     bigint_mul(r.mutableData(), r.length, workspace.ptr, a.data(), a.length, a_sw, b.data(), b.length, b_sw);
     
-    const size_t r_size = std.algorithm.max(r.sig_words(), c_sw);
+    const size_t r_size = std.algorithm.max(r.sigWords(), c_sw);
     bigint_add2(r.mutableData(), r_size, c.data(), c_sw);
     return r;
 }
@@ -126,7 +126,7 @@ BigInt lcm(in BigInt a, in BigInt b)
 */
 BigInt square(in BigInt x)
 {
-    const size_t x_sw = x.sig_words();
+    const size_t x_sw = x.sigWords();
     
     BigInt z = BigInt(BigInt.Positive, roundUp!size_t(2*x_sw, 16));
     SecureVector!word workspace = SecureVector!word(z.length);

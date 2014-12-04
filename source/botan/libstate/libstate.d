@@ -104,7 +104,7 @@ public:
 
         synchronized(m_entropy_src_mutex)
             if (!m_sources)
-                m_sources = entropy_sources();
+                m_sources = entropySources();
 
         static if (BOTAN_HAS_SELFTESTS)
             confirmStartupSelfTests(algorithmFactory());

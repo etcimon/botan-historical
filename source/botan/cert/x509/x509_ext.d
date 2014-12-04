@@ -35,7 +35,7 @@ public:
     */
     final OID oidOf() const
     {
-        return OIDS.lookup(oid_name());
+        return OIDS.lookup(oidName());
     }
 
     /**
@@ -51,7 +51,7 @@ public:
     * @param issuer = the issuer info
     */
     abstract void contentsTo(ref DataStore subject,
-                              ref DataStore issuer) const;
+                             ref DataStore issuer) const;
 
     /*
     * @return specific OID name
@@ -81,15 +81,15 @@ public:
             const CertificateExtension ext = extension.first;
             const bool is_critical = extension.second;
             
-            const bool should_encode = ext.should_encode();
+            const bool should_encode = ext.shouldEncode();
             
             if (should_encode)
             {
                 to_object.startCons(ASN1Tag.SEQUENCE)
                            .encode(ext.oidOf())
-                        .encodeOptional(is_critical, false)
-                        .encode(ext.encodeInner(), ASN1Tag.OCTET_STRING)
-                        .endCons();
+                           .encodeOptional(is_critical, false)
+                           .encode(ext.encodeInner(), ASN1Tag.OCTET_STRING)
+                           .endCons();
             }
         }
     }
@@ -115,7 +115,7 @@ public:
                     .verifyEnd()
                     .endCons();
             
-            CertificateExtension ext = get_extension(oid);
+            CertificateExtension ext = getExtension(oid);
             
             if (!ext && critical && m_throw_on_unknown_critical)
                 throw new DecodingError("Encountered unknown X.509 extension marked "
@@ -184,7 +184,7 @@ private:
     CertificateExtension getExtension(in OID oid)
     {
         string x509EXTENSION(string NAME, alias T)() {
-            return `if (OIDS.name_of(oid, "` ~ NAME ~ `")) return new ` ~ __traits(T, identifier).stringof ~ `();`;
+            return `if (OIDS.nameOf(oid, "` ~ NAME ~ `")) return new ` ~ __traits(T, identifier).stringof ~ `();`;
         }
         
         mixin( X509_EXTENSION!("X509v3.KeyUsage", KeyUsage)() );
@@ -308,7 +308,7 @@ private:
         if (m_constraints == KeyConstraints.NO_CONSTRAINTS)
             throw new EncodingError("Cannot encode zero usage constraints");
         
-        const size_t unused_bits = low_bit(m_constraints) - 1;
+        const size_t unused_bits = lowBit(m_constraints) - 1;
         
         Vector!ubyte der;
         der.pushBack(ASN1Tag.BIT_STRING);

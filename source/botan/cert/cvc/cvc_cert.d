@@ -63,8 +63,8 @@ public:
 
     bool opEquals(in EAC11CVC rhs) const
     {
-        return (tbs_data() == rhs.tbsData()
-                && get_concat_sig() == rhs.getConcatSig());
+        return (tbsData() == rhs.tbsData()
+                && getConcatSig() == rhs.getConcatSig());
     }
 
     /*

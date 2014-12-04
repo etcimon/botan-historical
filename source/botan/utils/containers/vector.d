@@ -565,7 +565,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         if (op == "~")
     {
         static if (is (Stuff == typeof(this))) {
-            push_bash(cast(T[]) stuff[]);
+            pushBack(cast(T[]) stuff[]);
         }
         else
         {

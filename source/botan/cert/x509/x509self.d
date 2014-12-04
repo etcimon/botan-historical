@@ -250,13 +250,13 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
     Unique!PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
-    load_info(opts, subject_dn, subject_alt);
+    loadInfo(opts, subject_dn, subject_alt);
     
     KeyConstraints constraints;
     if (opts.is_CA)
         constraints = KeyConstraints(KEY_CERT_SIGN | CRL_SIGN);
     else
-        constraints = find_constraints(key, opts.constraints);
+        constraints = findConstraints(key, opts.constraints);
     
     X509Extensions extensions;
     
@@ -297,7 +297,7 @@ PKCS10Request createCertReq(in X509CertOptions opts,
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
     PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
-    load_info(opts, subject_dn, subject_alt);
+    loadInfo(opts, subject_dn, subject_alt);
     
     __gshared immutable size_t PKCS10_VERSION = 0;
     
@@ -306,7 +306,7 @@ PKCS10Request createCertReq(in X509CertOptions opts,
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
     extensions.add(new KeyUsage(opts.is_CA ? 
                                           KeyConstraints(KEY_CERT_SIGN | CRL_SIGN) : 
-                                          find_constraints(key, opts.constraints)));
+                                          findConstraints(key, opts.constraints)));
     extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
     extensions.add(new SubjectAlternativeName(subject_alt));
     

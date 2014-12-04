@@ -88,7 +88,7 @@ public:
     this(in string str)
     {
         m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
-        m_tag = choose_encoding(m_iso_8859_str, "latin1");
+        m_tag = chooseEncoding(m_iso_8859_str, "latin1");
     }
 
 
@@ -98,7 +98,7 @@ private:
         m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
         
         if (m_tag == ASN1Tag.DIRECTORY_STRING)
-            m_tag = choose_encoding(m_iso_8859_str, "latin1");
+            m_tag = chooseEncoding(m_iso_8859_str, "latin1");
         
         if (m_tag != ASN1Tag.NUMERIC_STRING &&
             m_tag != ASN1Tag.PRINTABLE_STRING &&
@@ -151,7 +151,7 @@ ASN1Tag chooseEncoding(in string str,
         {
             if (type == "utf8")    return ASN1Tag.UTF8_STRING;
             if (type == "latin1") return ASN1Tag.T61_STRING;
-            throw new InvalidArgument("choose_encoding: Bad string type " ~ type);
+            throw new InvalidArgument("chooseEncoding: Bad string type " ~ type);
         }
     }
     return ASN1Tag.PRINTABLE_STRING;

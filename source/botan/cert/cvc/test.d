@@ -162,10 +162,10 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     }
     mixin( CHECK(` exc `) );
     // set them and try again
-    //cert_in -> set_domain_parameters(dom_pars);
+    //cert_in -> setDomainParameters(dom_pars);
     Unique!PublicKey p_pk2 = cert_in.subjectPublicKey();
     ECDSAPublicKey p_ecdsa_pk2 = cast(ECDSAPublicKey)(*p_pk2);
-    //p_ecdsa_pk2 -> set_domain_parameters(dom_pars);
+    //p_ecdsa_pk2 -> setDomainParameters(dom_pars);
     mixin( CHECK(` p_ecdsa_pk2.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = cert_in.checkSignature(*p_pk2);
     mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned cvc certificate" ) );
@@ -192,10 +192,10 @@ void testEncGenReq(RandomNumberGenerator rng)
     
     // read and check signature...
     EAC11Req req_in = EAC11Req("test_data/ecc/my_cv_req.ber");
-    //req_in.set_domain_parameters(dom_pars);
+    //req_in.setDomainParameters(dom_pars);
     Unique!PublicKey p_pk = req_in.subjectPublicKey();
     ECDSAPublicKey p_ecdsa_pk = cast(ECDSAPublicKey)(*p_pk);
-    //p_ecdsa_pk.set_domain_parameters(dom_pars);
+    //p_ecdsa_pk.setDomainParameters(dom_pars);
     mixin( CHECK(` p_ecdsa_pk.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = req_in.checkSignature(*p_pk);
     mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned (created by myself) cvc request" ) );
@@ -205,10 +205,10 @@ void testCvcReqExt(RandomNumberGenerator)
 {
     EAC11Req req_in = EAC11Req("test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
-    //req_in.set_domain_parameters(dom_pars);
+    //req_in.setDomainParameters(dom_pars);
     Unique!PublicKey p_pk = req_in.subjectPublicKey();
     ECDSAPublicKey p_ecdsa_pk = cast(ECDSAPublicKey)(*p_pk);
-    //p_ecdsa_pk.set_domain_parameters(dom_pars);
+    //p_ecdsa_pk.setDomainParameters(dom_pars);
     mixin( CHECK(` p_ecdsa_pk.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = req_in.checkSignature(*p_pk);
     mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned (external testdata) cvc request" ) );
@@ -219,7 +219,7 @@ void testCvcAdoExt(RandomNumberGenerator)
     EAC11ADO req_in = EAC11ADO("test_data/ecc/ado.cvcreq");
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     //cout " ~car = " ~ req_in.getCar().value());
-    //req_in.set_domain_parameters(dom_pars);
+    //req_in.setDomainParameters(dom_pars);
 }
 
 void testCvcAdoCreation(RandomNumberGenerator rng)
@@ -340,15 +340,15 @@ void testEacTime(RandomNumberGenerator)
     
     my_cex.addMonths(4);
     mixin( CHECK(` my_cex.getYear() == 2008 `) );
-    mixin( CHECK(` my_cex.get_month() == 12 `) );
+    mixin( CHECK(` my_cex.getMonth() == 12 `) );
     
     my_cex.addMonths(4);
     mixin( CHECK(` my_cex.getYear() == 2009 `) );
-    mixin( CHECK(` my_cex.get_month() == 4 `) );
+    mixin( CHECK(` my_cex.getMonth() == 4 `) );
     
     my_cex.addMonths(41);
     mixin( CHECK(` my_cex.getYear() == 2012 `) );
-    mixin( CHECK(` my_cex.get_month() == 9 `) );
+    mixin( CHECK(` my_cex.getMonth() == 9 `) );
     
     
     
@@ -505,7 +505,7 @@ void testCvcChain(RandomNumberGenerator rng)
     Unique!PublicKey ap_pk = dvca_cert1.subjectPublicKey();
     ECDSAPublicKey cert_pk = cast(ECDSAPublicKey)(*ap_pk);
     
-    //cert_pk.set_domain_parameters(dom_pars);
+    //cert_pk.setDomainParameters(dom_pars);
     //writeln("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_publicPoint(), ec::PointGFp.COMPRESSED).length);
     EAC11CVC dvca_cert1_reread = EAC11CVC("test_data/ecc/cvc_chain_cvca.cer");
     mixin( CHECK(` dvca_ado2.checkSignature(cert_pk) `) );
@@ -514,7 +514,7 @@ void testCvcChain(RandomNumberGenerator rng)
     
     EAC11Req dvca_req2b = dvca_ado2.getRequest();
     helperWriteFile(dvca_req2b, "test_data/ecc/cvc_chain_dvca_req2b.cer");
-    mixin( CHECK(` helper_files_equal("test_data/ecc/cvc_chain_dvca_req2b.cer", "test_data/ecc/cvc_chain_dvca_req2.cer") `) );
+    mixin( CHECK(` helperFilesEqual("test_data/ecc/cvc_chain_dvca_req2b.cer", "test_data/ecc/cvc_chain_dvca_req2.cer") `) );
     EAC11CVC dvca_cert2 = cvc_self.signRequest(cvca_cert, cvca_privk, dvca_req2b, 2, 5, true, 3, 1, rng);
     mixin( CHECK(` dvca_cert2.getCar().iso8859() == "DECVCA00001" `) );
     CHECK_MESSAGE(dvca_cert2.getChr().iso8859() == "DEDVCAEPASS00002", "chr = " ~ dvca_cert2.getChr().iso8859());
@@ -525,7 +525,7 @@ void testCvcChain(RandomNumberGenerator rng)
     helperWriteFile(is_req, "test_data/ecc/cvc_chain_is_req.cer");
     
     // sign the IS request
-    //dvca_cert1.set_domain_parameters(dom_pars);
+    //dvca_cert1.setDomainParameters(dom_pars);
     EAC11CVC is_cert1 = cvc_self.signRequest(dvca_cert1, dvca_priv_key, is_req, 1, 5, true, 3, 1, rng);
     mixin( CHECK_MESSAGE( is_cert1.getCar().iso8859() == "DEDVCAEPASS00001", "car = " ~ is_cert1.getCar().iso8859() ) );
     mixin( CHECK(` is_cert1.getChr().iso8859() == "DEIS00001" `) );

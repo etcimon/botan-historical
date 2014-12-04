@@ -106,7 +106,7 @@ private:
     /*
     * Increment the counter and update the buffer
     */
-    void incrementCounter()
+    void increment_counter()
     {
         const size_t bs = m_cipher.blockSize();
         
