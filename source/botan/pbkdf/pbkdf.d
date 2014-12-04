@@ -44,7 +44,7 @@ public:
         if (iterations == 0)
             throw new InvalidArgument(name ~ ": Invalid iteration count");
         
-        auto derived = key_derivation(output_len, passphrase,
+        auto derived = keyDerivation(output_len, passphrase,
                                       salt, salt_len, iterations,
                                       Duration(0));
         
@@ -84,7 +84,7 @@ public:
                            Duration loop_for,
                            ref size_t iterations) const
     {
-        auto derived = key_derivation(output_len, passphrase, salt, salt_len, 0, loop_for);
+        auto derived = keyDerivation(output_len, passphrase, salt, salt_len, 0, loop_for);
         
         iterations = derived.first;
         
@@ -137,7 +137,7 @@ unittest {
     auto test = (string input) {
         return runTests(input, "PBKDF", "Output", true,
                          (string[string] vec) {
-                            Unique!PBKDF pbkdf = get_pbkdf(vec["PBKDF"]);
+                            Unique!PBKDF pbkdf = getPbkdf(vec["PBKDF"]);
                             
                             const size_t iterations = to!size_t(vec["Iterations"]);
                             const size_t outlen = to!size_t(vec["OutputLen"]);

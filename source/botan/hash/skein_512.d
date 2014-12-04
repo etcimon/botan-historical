@@ -90,7 +90,7 @@ private:
         
         if (m_buf_pos)
         {
-            buffer_insert(m_buffer, m_buf_pos, input, length);
+            bufferInsert(m_buffer, m_buf_pos, input, length);
             if (m_buf_pos + length > 64)
             {
                 ubi_512(m_buffer.ptr, m_buffer.length);
@@ -108,7 +108,7 @@ private:
         
         length -= full_blocks * 64;
         
-        buffer_insert(m_buffer, m_buf_pos, input + full_blocks * 64, length);
+        bufferInsert(m_buffer, m_buf_pos, input + full_blocks * 64, length);
         m_buf_pos += length;
     }
 

@@ -46,7 +46,7 @@ private:
     */
     void addData(in ubyte* input, size_t length)
     {
-        buffer_insert(m_buffer, m_position, input, length);
+        bufferInsert(m_buffer, m_position, input, length);
         
         if (m_position + length >= hashBlockSize)
         {
@@ -93,7 +93,7 @@ private:
             0x31, 0x44, 0x50, 0xB4, 0x8F, 0xED, 0x1F, 0x1A, 0xDB, 0x99, 0x8D, 0x33,
             0x9F, 0x11, 0x83, 0x14 ];
         
-        buffer_insert(m_X, 16, input, hashBlockSize);
+        bufferInsert(m_X, 16, input, hashBlockSize);
         xorBuf(&m_X[32], m_X.ptr, &m_X[16], hashBlockSize);
         ubyte T = 0;
         

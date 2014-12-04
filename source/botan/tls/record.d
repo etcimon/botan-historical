@@ -64,7 +64,7 @@ public:
         const string cipher_algo = suite.cipherAlgo();
         const string mac_algo = suite.macAlgo();
         
-        if (AEADMode aead = get_aead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
+        if (AEADMode aead = getAead(cipher_algo, our_side ? ENCRYPTION : DECRYPTION))
         {
             m_aead = aead;
             m_aead.setKey(cipher_key + mac_key);
@@ -266,7 +266,7 @@ void writeRecord(ref SecureVector!ubyte output,
     const size_t iv_size = cipherstate.ivSize();
     const size_t mac_size = cipherstate.macSize();
     
-    const size_t buf_size = round_up(iv_size + msg_length + mac_size + (block_size ? 1 : 0), block_size);
+    const size_t buf_size = roundUp(iv_size + msg_length + mac_size + (block_size ? 1 : 0), block_size);
     
     if (buf_size > MAX_CIPHERTEXT_SIZE)
         throw new InternalError("Output record is larger than allowed by protocol");
@@ -647,7 +647,7 @@ void decryptRecord(SecureVector!ubyte output,
         
         const size_t mac_offset = record_len - (mac_size + pad_size);
         
-        const bool mac_bad = !same_mem(&record_contents[mac_offset], mac_buf.ptr, mac_size);
+        const bool mac_bad = !sameMem(&record_contents[mac_offset], mac_buf.ptr, mac_size);
         
         if (mac_bad || padding_bad)
             throw new TLSException(TLSAlert.BAD_RECORD_MAC, "Message authentication failure");

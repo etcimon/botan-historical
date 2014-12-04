@@ -26,7 +26,7 @@ string generateBcrypt(in string password,
                        RandomNumberGenerator rng,
                        ushort work_factor = 10)
 {
-    return make_bcrypt(password, unlock(rng.randomVec(16)), work_factor);
+    return makeBcrypt(password, unlock(rng.randomVec(16)), work_factor);
 }
 
 /**
@@ -45,9 +45,9 @@ bool checkBcrypt(in string password, in string hash)
     
     const ushort workfactor = to!uint(hash[4 .. 7]);
     
-    Vector!ubyte salt = bcrypt_base64_decode(hash[7 .. 30]);
+    Vector!ubyte salt = bcryptBase64Decode(hash[7 .. 30]);
     
-    const string compare = make_bcrypt(password, salt, workfactor);
+    const string compare = makeBcrypt(password, salt, workfactor);
     
     return (hash == compare);
 }
@@ -147,13 +147,13 @@ string makeBcrypt(in string pass,
     foreach (size_t i; 0 .. 64)
         blowfish.encryptN(ctext.ptr, ctext.ptr, 3);
     
-    string salt_b64 = bcrypt_base64_encode(salt.ptr, salt.length);
+    string salt_b64 = bcryptBase64Encode(salt.ptr, salt.length);
     
     string work_factor_str = to!string(work_factor);
     if (work_factor_str.length == 1)
         work_factor_str = "0" ~ work_factor_str;
     
-    return "$2a$" ~ work_factor_str ~ "$" ~ salt_b64[0 .. 22] ~ bcrypt_base64_encode(ctext.ptr, ctext.length - 1);
+    return "$2a$" ~ work_factor_str ~ "$" ~ salt_b64[0 .. 22] ~ bcryptBase64Encode(ctext.ptr, ctext.length - 1);
 }
 
 

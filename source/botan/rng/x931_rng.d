@@ -23,11 +23,11 @@ final class ANSIX931RNG : RandomNumberGenerator
 public:
     void randomize(ubyte* output, size_t length)
     {
-        if (!is_seeded())
+        if (!isSeeded())
         {
             reseed(BOTAN_RNG_RESEED_POLL_BITS);
             
-            if (!is_seeded())
+            if (!isSeeded())
                 throw new PRNGUnseeded(name);
         }
         
@@ -118,7 +118,7 @@ private:
     {
         const size_t BLOCK_SIZE = m_cipher.blockSize();
         
-        SecureVector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
+        SecureVector!ubyte DT = m_prng.randomVec(BLOCK_SIZE);
         m_cipher.encrypt(DT);
         
         xorBuf(m_R.ptr, m_V.ptr, DT.ptr, BLOCK_SIZE);

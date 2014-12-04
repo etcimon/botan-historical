@@ -124,18 +124,18 @@ public:
         
         const size_t BS = cipher().blockSize();
         
-        SecureVector!ubyte state = shift_register();
+        SecureVector!ubyte state = shiftRegister();
         const size_t shift = feedback();
         
         while (sz)
         {
             const size_t took = std.algorithm.min(shift, sz);
-            xorBuf(buf.ptr, &keystream_buf()[0], took);
+            xorBuf(buf.ptr, &keystreamBuf()[0], took);
             
             // Assumes feedback-sized block except for last input
             copyMem(state.ptr, &state[shift], BS - shift);
             copyMem(&state[BS-shift], buf.ptr, took);
-            cipher().encrypt(state, keystream_buf());
+            cipher().encrypt(state, keystreamBuf());
             
             buf += took;
             sz -= took;
@@ -168,7 +168,7 @@ public:
         
         const size_t BS = cipher().blockSize();
         
-        SecureVector!ubyte state = shift_register();
+        SecureVector!ubyte state = shiftRegister();
         const size_t shift = feedback();
         
         while (sz)
@@ -180,10 +180,10 @@ public:
             copyMem(&state[BS-shift], buf.ptr, took);
             
             // then decrypt
-            xorBuf(buf.ptr, &keystream_buf()[0], took);
+            xorBuf(buf.ptr, &keystreamBuf()[0], took);
             
             // then update keystream
-            cipher().encrypt(state, keystream_buf());
+            cipher().encrypt(state, keystreamBuf());
             
             buf += took;
             sz -= took;

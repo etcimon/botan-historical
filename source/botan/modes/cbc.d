@@ -126,7 +126,7 @@ public:
         assert(sz % BS == 0, "CBC input is full blocks");
         const size_t blocks = sz / BS;
         
-        const ubyte* prev_block = state_ptr();
+        const ubyte* prev_block = statePtr();
         
         if (blocks)
         {
@@ -160,7 +160,7 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        return round_up(input_length, cipher().blockSize());
+        return roundUp(input_length, cipher().blockSize());
     }
 
     override size_t minimumFinalSize() const
@@ -214,7 +214,7 @@ public:
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
-            xorBuf(last.ptr, state_ptr(), BS);
+            xorBuf(last.ptr, statePtr(), BS);
             cipher().encrypt(last.ptr);
             
             foreach (size_t i; 0 .. (final_bytes - BS))
@@ -270,9 +270,9 @@ public:
             
             cipher().decryptN(buf, m_tempbuf.ptr, to_proc / BS);
             
-            xorBuf(m_tempbuf.ptr, state_ptr(), BS);
+            xorBuf(m_tempbuf.ptr, statePtr(), BS);
             xorBuf(&m_tempbuf[BS], buf, to_proc - BS);
-            copyMem(state_ptr(), buf + (to_proc - BS), BS);
+            copyMem(statePtr(), buf + (to_proc - BS), BS);
             
             copyMem(buf, m_tempbuf.ptr, to_proc);
             
@@ -359,7 +359,7 @@ public:
                 std.algorithm.swap(last[i], last[i + BS]);
             
             cipher().decrypt(last.ptr);
-            xorBuf(last.ptr, state_ptr(), BS);
+            xorBuf(last.ptr, statePtr(), BS);
             
             buffer += last;
         }

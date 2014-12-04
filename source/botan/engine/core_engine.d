@@ -739,7 +739,7 @@ KeyedFilter getCipherMode(const BlockCipher block_cipher,
         mode.find("OCB") != -1 ||
         mode.find("CCM") != -1)
     {
-        Vector!string algo_info = parse_algorithm_name(mode);
+        Vector!string algo_info = parseAlgorithmName(mode);
         const string mode_name = algo_info[0];
         
         size_t bits = 8 * block_cipher.blockSize();

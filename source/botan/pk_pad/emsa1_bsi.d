@@ -35,13 +35,13 @@ private:
                                  size_t output_bits,
                                  RandomNumberGenerator)
     {
-        if (msg.length != hash_output_length())
-            throw new EncodingError("EMSA1_BSI::encoding_of: Invalid size for input");
+        if (msg.length != hashOutputLength())
+            throw new EncodingError("EMSA1_BSI::encodingOf: Invalid size for input");
         
         if (8*msg.length <= output_bits)
             return msg;
         
-        throw new EncodingError("EMSA1_BSI::encoding_of: max key input size exceeded");
+        throw new EncodingError("EMSA1_BSI::encodingOf: max key input size exceeded");
     }
 }
 

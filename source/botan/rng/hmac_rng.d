@@ -33,10 +33,10 @@ public:
     */
     void randomize(ubyte* output, size_t length)
     {
-        if (!is_seeded())
+        if (!isSeeded())
         {
             reseed(256);
-            if (!is_seeded())
+            if (!isSeeded())
                 throw new PRNGUnseeded(name);
         }
         
@@ -47,7 +47,7 @@ public:
         */
         while (length)
         {
-            hmac_prf(*m_prf, m_K, m_counter, "rng");
+            hmacPrf(*m_prf, m_K, m_counter, "rng");
             
             const size_t copied = std.algorithm.min(length, max_per_prf_iter);
             
@@ -124,10 +124,10 @@ public:
         * output using the CTXinfo "reseed". Provide these values as input
         * to the extractor function.
         */
-        hmac_prf(*m_prf, m_K, m_counter, "rng");
+        hmacPrf(*m_prf, m_K, m_counter, "rng");
         m_extractor.update(m_K); // K is the CTXinfo=rng PRF output
         
-        hmac_prf(*m_prf, m_K, m_counter, "reseed");
+        hmacPrf(*m_prf, m_K, m_counter, "reseed");
         m_extractor.update(m_K); // K is the CTXinfo=reseed PRF output
         
         /* Now derive the new PRK using everything that has been fed into
@@ -135,7 +135,7 @@ public:
         m_prf.setKey(m_extractor.finished());
         
         // Now generate a new PRF output to use as the XTS extractor salt
-        hmac_prf(*m_prf, m_K, m_counter, "xts");
+        hmacPrf(*m_prf, m_K, m_counter, "xts");
         m_extractor.setKey(m_K);
         
         // Reset state

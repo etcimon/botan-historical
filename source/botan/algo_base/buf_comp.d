@@ -26,14 +26,14 @@ public:
     * Add new input to process.
     * @param input = the input to process as a ubyte array
     */
-    final void update(in ubyte[] input) { add_data(input.ptr, input.length); }
+    final void update(in ubyte[] input) { addData(input.ptr, input.length); }
 
     /**
     * Add new input to process.
     * @param input = the input to process as a ubyte array
     * @param length = of param in in bytes
     */
-    final void update(in ubyte* input, size_t length) { add_data(input, length); }
+    final void update(in ubyte* input, size_t length) { addData(input, length); }
 
     /**
     * Add new input to process.
@@ -41,7 +41,7 @@ public:
     */
     final void update(in SecureVector!ubyte input)
     {
-        add_data(input.ptr, input.length);
+        addData(input.ptr, input.length);
     }
 
     /**
@@ -50,7 +50,7 @@ public:
     */
     final void update(in Vector!ubyte input)
     {
-        add_data(input.ptr, input.length);
+        addData(input.ptr, input.length);
     }
 
     /**
@@ -62,7 +62,7 @@ public:
         foreach (size_t i; 0 .. T.sizeof)
         {
             ubyte b = get_byte(i, input);
-            add_data(&b, 1);
+            addData(&b, 1);
         }
     }
 
@@ -74,32 +74,32 @@ public:
     */
     final void update(in string str)
     {
-        add_data(&str, str.length);
+        addData(&str, str.length);
     }
 
     /**
     * Process a single ubyte.
     * @param input = the ubyte to process
     */
-    final void update(ubyte input) { add_data(&input, 1); }
+    final void update(ubyte input) { addData(&input, 1); }
 
     /**
     * Complete the computation and retrieve the
     * final result.
     * @param output = The ubyte array to be filled with the result.
-    * Must be of length output_length()
+    * Must be of length outputLength()
     */
     final void flushInto(ref ubyte[] output) 
     in { output.length == output_length; }
-    body { final_result(output.ptr); }
+    body { finalResult(output.ptr); }
 
     /**
     * Complete the computation and retrieve the
     * final result.
     * @param output = The ubyte array to be filled with the result.
-    * Must be of length output_length()
+    * Must be of length outputLength()
     */
-    final void flushInto(ubyte* output) { final_result(output); }
+    final void flushInto(ubyte* output) { finalResult(output); }
 
     /**
     * Complete the computation and retrieve the
@@ -108,8 +108,8 @@ public:
     */
     final SecureVector!ubyte finished()
     {
-        SecureVector!ubyte output = SecureVector!ubyte(output_length());
-        final_result(output.ptr);
+        SecureVector!ubyte output = SecureVector!ubyte(outputLength());
+        finalResult(output.ptr);
         return output;
     }
 
@@ -122,7 +122,7 @@ public:
     */
     final SecureVector!ubyte process(in ubyte[] input)
     {
-        add_data(input);
+        addData(input);
         return finished();
     }
 
@@ -135,7 +135,7 @@ public:
     */
     final SecureVector!ubyte process(in ubyte* input, size_t length)
     {
-        add_data(input, length);
+        addData(input, length);
         return finished();
     }
 
@@ -147,7 +147,7 @@ public:
     */
     final SecureVector!ubyte process(in SecureVector!ubyte input)
     {
-        add_data(input[]);
+        addData(input[]);
         return finished();
     }
 
@@ -159,7 +159,7 @@ public:
     */
     final SecureVector!ubyte process(in Vector!ubyte input)
     {
-        add_data(input[]);
+        addData(input[]);
         return finished();
     }
 
@@ -176,7 +176,7 @@ public:
     }
 
     ~this() {}
-private:
+protected:
     /**
     * Add more data to the computation
     * @param input = is an input buffer
@@ -186,7 +186,7 @@ private:
 
     /**
     * Write the final output to out
-    * @param output = is an output buffer of output_length()
+    * @param output = is an output buffer of outputLength()
     */
     abstract void finalResult(ubyte* output);
 }

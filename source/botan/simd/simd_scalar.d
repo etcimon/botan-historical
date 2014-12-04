@@ -180,7 +180,7 @@ public:
     ref SIMD_Scalar!(T, N) bswap() const
     {
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] = reverse_bytes(m_v[i]);
+            m_v[i] = reverseBytes(m_v[i]);
         return this;
     }
 

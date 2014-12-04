@@ -39,7 +39,7 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
     try
     {
         DataSourceMemory input_pub = scoped!DataSourceMemory(pub_pem);
-        PublicKey restored_pub = x509_key.load_key(input_pub);
+        PublicKey restored_pub = x509_key.loadKey(input_pub);
         
         if (!restored_pub)
         {
@@ -64,7 +64,7 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
     try
     {
         auto input_priv = scoped!DataSourceMemory(priv_pem);
-        Unique!PrivateKey restored_priv = pkcs8.load_key(input_priv, rng);
+        Unique!PrivateKey restored_priv = pkcs8.loadKey(input_priv, rng);
         
         if (!restored_priv)
         {
@@ -123,7 +123,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     if (ctext != expected)
     {
         writeln("FAILED (encrypt): " ~ algo);
-        dump_data(ctext, expected);
+        dumpData(ctext, expected);
         ++fails;
     }
     
@@ -132,7 +132,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     if (decrypted != message)
     {
         writeln("FAILED (decrypt): " ~ algo);
-        dump_data(decrypted, message);
+        dumpData(decrypted, message);
         ++fails;
     }
     
@@ -144,7 +144,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
         {
             Vector!ubyte bad_ctext = ctext;
             
-            bad_ctext[i] ^= nonzero_byte(rng);
+            bad_ctext[i] ^= nonzeroByte(rng);
             
             assert(bad_ctext != ctext, "Made them different");
             
@@ -179,31 +179,31 @@ size_t validateSignature(PKVerifier v, PKSigner s, string algo,
 {
     Vector!ubyte message = hexDecode(input);
     Vector!ubyte expected = hexDecode(exp);
-    Vector!ubyte sig = s.sign_message(message, signer_rng);
+    Vector!ubyte sig = s.signMessage(message, signer_rng);
     
     size_t fails = 0;
     
     if (sig != expected)
     {
         writeln("FAILED (sign): " ~ algo);
-        dump_data(sig, expected);
+        dumpData(sig, expected);
         ++fails;
     }
     
-    mixin( PKTEST(` v.verify_message(message, sig) `, "Correct signature is valid") );
+    mixin( PKTEST(` v.verifyMessage(message, sig) `, "Correct signature is valid") );
     
-    zero_mem(&sig[0], sig.length);
+    zeroMem(&sig[0], sig.length);
     
-    mixin( PKTEST(` !v.verify_message(message, sig) `, "All-zero signature is invalid") );
+    mixin( PKTEST(` !v.verifyMessage(message, sig) `, "All-zero signature is invalid") );
     
     for(size_t i = 0; i != 3; ++i)
     {
         auto bad_sig = sig;
         
-        const size_t idx = (test_rng.next_byte() * 256 + test_rng.next_byte()) % sig.length;
-        bad_sig[idx] ^= nonzero_byte(test_rng);
+        const size_t idx = (test_rng.nextByte() * 256 + test_rng.nextByte()) % sig.length;
+        bad_sig[idx] ^= nonzeroByte(test_rng);
         
-        mixin( PKTEST(` !v.verify_message(message, bad_sig) `, "Incorrect signature is invalid") );
+        mixin( PKTEST(` !v.verifyMessage(message, bad_sig) `, "Incorrect signature is invalid") );
     }
     
     return fails;
@@ -233,7 +233,7 @@ size_t validateKas(PKKeyAgreement kas, string algo,
     if (got != expected)
     {
         writeln("FAILED: " ~ algo);
-        dump_data(got, expected);
+        dumpData(got, expected);
         ++fails;
     }
     

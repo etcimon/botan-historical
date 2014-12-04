@@ -72,7 +72,7 @@ public:
             if (slot.length == n && (slot.ptr % alignment) == 0)
             {
                 m_freelist.removeKey(slot);
-                clear_mem(slot.ptr, slot.length);
+                clearMem(slot.ptr, slot.length);
                 
                 assert((slot.ptr - m_pool) % alignment == 0, "Returning correctly aligned pointer");
                 
@@ -102,7 +102,7 @@ public:
                 m_freelist.removeKey(best_fit);
             }
 
-            clear_mem(best_fit.ptr + alignment_padding, n);
+            clearMem(best_fit.ptr + alignment_padding, n);
             
             assert((cast(size_t)(m_pool) + offset + alignment_padding) % alignment == 0, "Returning correctly aligned pointer");
             
@@ -175,7 +175,7 @@ private:
                 throw new Exception("Failed to mmap locking_allocator pool");
             }
             
-            clear_mem(m_pool_ptr, m_poolsize);
+            clearMem(m_pool_ptr, m_poolsize);
             
             if (mlock(m_pool_ptr, m_poolsize) != 0)
             {
@@ -196,7 +196,7 @@ private:
     {
         if (m_pool)
         {
-            clear_mem(m_pool_ptr, m_poolsize);
+            clearMem(m_pool_ptr, m_poolsize);
             munlock(m_pool_ptr, m_poolsize);
             munmap(m_pool_ptr, m_poolsize);
             m_pool = null;

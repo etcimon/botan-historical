@@ -142,7 +142,7 @@ public:
         m_d2 = m_d % (m_q - 1);
         m_c = inverseMod(m_q, m_p);
 
-        load_check(rng);
+        loadCheck(rng);
 
     }
 

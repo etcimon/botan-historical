@@ -223,7 +223,7 @@ public:
         
         const ubyte* included_tag = &buffer[remaining];
         
-        if (!same_mem(mac.ptr, included_tag, tagSize()))
+        if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("GCM tag check failed");
         
         buffer.resize(offset + remaining);

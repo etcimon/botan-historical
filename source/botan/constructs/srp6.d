@@ -31,15 +31,15 @@ import botan.utils.types;
 */
 Pair!(BigInt, SymmetricKey)
     srp6ClientAgree(in string identifier,
-                      in string password,
-                      in string group_id,
-                      in string hash_id,
-                      in Vector!ubyte salt,
-                      in BigInt B,
-                      RandomNumberGenerator rng)
+                    in string password,
+                    in string group_id,
+                    in string hash_id,
+                    in Vector!ubyte salt,
+                    in BigInt B,
+                    RandomNumberGenerator rng)
 {
     DLGroup group = DLGroup(group_id);
-    const BigInt g = group.get_g();
+    const BigInt g = group.getG();
     const BigInt p = group.getP();
     
     const size_t p_bytes = group.getP().bytes();
@@ -47,15 +47,15 @@ Pair!(BigInt, SymmetricKey)
     if (B <= 0 || B >= p)
         throw new Exception("Invalid SRP parameter from server");
     
-    BigInt k = hash_seq(hash_id, p_bytes, p, g);
+    BigInt k = hashSeq(hash_id, p_bytes, p, g);
     
     BigInt a = BigInt(rng, 256);
     
     BigInt A = powerMod(g, a, p);
     
-    BigInt u = hash_seq(hash_id, p_bytes, A, B);
+    BigInt u = hashSeq(hash_id, p_bytes, A, B);
     
-    const BigInt x = compute_x(hash_id, identifier, password, salt);
+    const BigInt x = computeX(hash_id, identifier, password, salt);
     
     BigInt S = powerMod((B - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
     
@@ -79,7 +79,7 @@ BigInt generateSrp6Verifier(in string identifier,
                               in string group_id,
                               in string hash_id)
 {
-    const BigInt x = compute_x(hash_id, identifier, password, salt);
+    const BigInt x = computeX(hash_id, identifier, password, salt);
     
     DLGroup group = DLGroup(group_id);
     return powerMod(group.getG(), x, group.getP());
@@ -136,12 +136,12 @@ public:
                  RandomNumberGenerator rng)
     {
         DLGroup group = DLGroup(group_id);
-        const BigInt g = group.get_g();
+        const BigInt g = group.getG();
         const BigInt p = group.getP();
         
         m_p_bytes = p.bytes();
         
-        BigInt k = hash_seq(hash_id, p_bytes, p, g);
+        BigInt k = hashSeq(hash_id, p_bytes, p, g);
         
         BigInt b = BigInt(rng, 256);
         
@@ -165,7 +165,7 @@ public:
         if (A <= 0 || A >= p)
             throw new Exception("Invalid SRP parameter from client");
         
-        BigInt u = hash_seq(m_hash_id, m_p_bytes, A, m_B);
+        BigInt u = hashSeq(m_hash_id, m_p_bytes, A, m_B);
         
         BigInt S = powerMod(A * powerMod(m_v, u, m_p), m_b, m_p);
         

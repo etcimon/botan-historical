@@ -82,7 +82,7 @@ Vector!ubyte BER_encode(in PrivateKey key,
 {
     const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
     
-    Unique!PBE pbe = get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
+    Unique!PBE pbe = getPbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
     
     AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.getOid(), pbe.encodeParams());
     
@@ -125,7 +125,7 @@ string PEM_encode(in PrivateKey key,
 * Load a key from a data source.
 * @param source = the data source providing the encoded key
 * @param rng = the rng to use
-* @param get_passphrase = a function that returns passphrases
+* @param getPassphrase = a function that returns passphrases
 * @return loaded private key object
 */
 PrivateKey loadKey(DataSource source,
@@ -140,7 +140,7 @@ PrivateKey loadKey(DataSource source,
         throw new PKCS8Exception("Unknown algorithm OID: " ~
                                   alg_id.oid.toString());
     
-    return make_private_key(alg_id, pkcs8_key, rng);
+    return makePrivateKey(alg_id, pkcs8_key, rng);
 }
 
 /** Load a key from a data source.
@@ -154,14 +154,14 @@ PrivateKey loadKey(DataSource source,
                      RandomNumberGenerator rng,
                      in string pass = "")
 {
-    return load_key(source, rng, Single_Shot_Passphrase(pass));
+    return loadKey(source, rng, Single_Shot_Passphrase(pass));
 }
 
 /**
 * Load a key from a file.
 * @param filename = the path to the file containing the encoded key
 * @param rng = the rng to use
-* @param get_passphrase = a function that returns passphrases
+* @param getPassphrase = a function that returns passphrases
 * @return loaded private key object
 */
 PrivateKey loadKey(in string filename,
@@ -169,7 +169,7 @@ PrivateKey loadKey(in string filename,
                      SingleShotPassphrase get_pass)
 {
     auto source = scoped!DataSourceStream(filename, true);
-    return load_key(source, rng, get_pass);
+    return loadKey(source, rng, get_pass);
 }
 
 /** Load a key from a file.
@@ -183,7 +183,7 @@ PrivateKey loadKey(in string filename,
                      RandomNumberGenerator rng,
                      in string pass = "")
 {
-    return load_key(filename, rng, Single_Shot_Passphrase(pass));
+    return loadKey(filename, rng, Single_Shot_Passphrase(pass));
 }
 
 
@@ -194,17 +194,17 @@ PrivateKey loadKey(in string filename,
 * @return new copy of the key
 */
 PrivateKey copyKey(in PrivateKey key,
-                     RandomNumberGenerator rng)
+                   RandomNumberGenerator rng)
 {
     auto source = scoped!DataSourceMemory(PEM_encode(key));
-    return load_key(source, rng);
+    return loadKey(source, rng);
 }
 
 /*
 * Get info from an EncryptedPrivateKeyInfo
 */
-SecureVector!ubyte pKCS8Extract(DataSource source,
-                               AlgorithmIdentifier pbe_alg_id)
+SecureVector!ubyte PKCS8_extract(DataSource source,
+                                 AlgorithmIdentifier pbe_alg_id)
 {
     SecureVector!ubyte key_data;
     
@@ -220,14 +220,14 @@ SecureVector!ubyte pKCS8Extract(DataSource source,
 /*
 * PEM decode and/or decrypt a private key
 */
-SecureVector!ubyte pKCS8Decode(DataSource source,    SingleShotPassphrase get_passphrase,    AlgorithmIdentifier pk_alg_id)
+SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassphrase, AlgorithmIdentifier pk_alg_id)
 {
     AlgorithmIdentifier pbe_alg_id;
     SecureVector!ubyte key_data, key;
     bool is_encrypted = true;
     
     try {
-        if (maybe_BER(source) && !PEM.matches(source))
+        if (maybeBER(source) && !PEM.matches(source))
             key_data = PKCS8_extract(source, pbe_alg_id);
         else
         {
@@ -266,12 +266,12 @@ SecureVector!ubyte pKCS8Decode(DataSource source,    SingleShotPassphrase get_pa
             
             if (is_encrypted)
             {
-                Pair!(bool, string) pass = get_passphrase();
+                Pair!(bool, string) pass = getPassphrase();
                 
                 if (pass.first == false)
                     break;
                 
-                Pipe decryptor = Pipe(get_pbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
+                Pipe decryptor = Pipe(getPbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
                 
                 decryptor.processMsg(key_data);
                 key = decryptor.readAll();

@@ -91,7 +91,7 @@ TLSCredentialsManager createCreds(RandomNumberGenerator rng)
     server_opts.common_name = "localhost";
     server_opts.country = "US";
     
-    PKCS10Request req = x509self.create_cert_req(server_opts, server_key, "SHA-256", rng);
+    PKCS10Request req = x509self.createCertReq(server_opts, server_key, "SHA-256", rng);
     
     X509_CA ca = X509_CA(ca_cert, ca_key, "SHA-256");
     

@@ -79,7 +79,7 @@ public:
     void write(in ubyte* input, size_t length)
     {
         m_pipe.write(input, length);
-        flush_pipe(true);
+        flushPipe(true);
     }
 
     /*
@@ -101,7 +101,7 @@ public:
     void endMsg()
     {
         m_pipe.endMsg();
-        flush_pipe(false);
+        flushPipe(false);
         m_pipe.clear();
     }
 

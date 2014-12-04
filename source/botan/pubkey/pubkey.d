@@ -119,7 +119,7 @@ private:
 }
 
 /**
-* Public Key Signer. Use the sign_message() functions for small
+* Public Key Signer. Use the signMessage() functions for small
 * messages. Use multiple calls update() to process large messages and
 * generate the signature by finally calling signature().
 */
@@ -146,10 +146,10 @@ public:
     * @return signature
     */
     Vector!ubyte signMessage(in Vector!ubyte input, RandomNumberGenerator rng)
-    { return sign_message(input.ptr, input.length, rng); }
+    { return signMessage(input.ptr, input.length, rng); }
 
     Vector!ubyte signMessage(in SecureVector!ubyte input, RandomNumberGenerator rng)
-    { return sign_message(input.ptr, input.length, rng); }
+    { return signMessage(input.ptr, input.length, rng); }
 
     /**
     * Add a message part (single ubyte).
@@ -181,11 +181,11 @@ public:
     */
     Vector!ubyte signature(RandomNumberGenerator rng)
     {
-        Vector!ubyte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(), m_op.maxInputBits(), rng));
+        Vector!ubyte encoded = unlock(m_emsa.encodingOf(m_emsa.rawData(), m_op.maxInputBits(), rng));
         
         Vector!ubyte plain_sig = unlock(m_op.sign(encoded.ptr, encoded.length, rng));
         
-        assert(self_test_signature(encoded, plain_sig), "Signature was consistent");
+        assert(selfTestSignature(encoded, plain_sig), "Signature was consistent");
         
         if (m_op.messageParts() == 1 || m_sig_format == IEEE_1363)
             return plain_sig;
@@ -231,7 +231,7 @@ public:
     {
         AlgorithmFactory af = globalState().algorithmFactory();
 
-        RandomNumberGenerator rng = globalState().global_rng();
+        RandomNumberGenerator rng = globalState().globalRng();
         
         m_op = null;
         m_verify_op = null;
@@ -251,7 +251,7 @@ public:
         if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
             throw new LookupError("Signing with " ~ key.algo_name ~ " not supported");
         
-        m_emsa = get_emsa(emsa_name);
+        m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
     }
 private:
@@ -265,7 +265,7 @@ private:
         
         if (m_verify_op.withRecovery())
         {
-            Vector!ubyte recovered = unlock(m_verify_op.verify_mr(sig.ptr, sig.length));
+            Vector!ubyte recovered = unlock(m_verify_op.verifyMr(sig.ptr, sig.length));
             
             if (msg.length > recovered.length)
             {
@@ -275,7 +275,7 @@ private:
                     if (msg[i] != 0)
                         return false;
                 
-                return same_mem(&msg[extra_0s], recovered.ptr, recovered.length);
+                return sameMem(&msg[extra_0s], recovered.ptr, recovered.length);
             }
             
             return (recovered == msg);
@@ -291,7 +291,7 @@ private:
 }
 
 /**
-* Public Key Verifier. Use the verify_message() functions for small
+* Public Key Verifier. Use the verifyMessage() functions for small
 * messages. Use multiple calls update() to process large messages and
 * verify the signature by finally calling checkSignature().
 */
@@ -322,7 +322,7 @@ public:
     bool verifyMessage(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg, 
                                        in Vector!( ubyte, Alloc2 ) sig)
     {
-        return verify_message(msg.ptr, msg.length, sig.ptr, sig.length);
+        return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
     }
 
     /**
@@ -421,7 +421,7 @@ public:
     {
         AlgorithmFactory af = globalState().algorithmFactory();
 
-        RandomNumberGenerator rng = globalState().global_rng();
+        RandomNumberGenerator rng = globalState().globalRng();
 
         foreach (Engine engine; af.engines) {
             m_op = engine.getVerifyOp(key, rng);
@@ -432,7 +432,7 @@ public:
         if (!m_op)
             throw new LookupError("Verification with " ~ key.algo_name ~ " not supported");
         
-        m_emsa = get_emsa(emsa_name);
+        m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
     }
 
@@ -441,14 +441,14 @@ private:
     {
         if (m_op.withRecovery())
         {
-            SecureVector!ubyte output_of_key = m_op.verify_mr(sig, sig_len);
+            SecureVector!ubyte output_of_key = m_op.verifyMr(sig, sig_len);
             return m_emsa.verify(output_of_key, msg, m_op.maxInputBits());
         }
         else
         {
-            RandomNumberGenerator rng = globalState().global_rng();
+            RandomNumberGenerator rng = globalState().globalRng();
             
-            SecureVector!ubyte encoded = m_emsa.encoding_of(msg, m_op.maxInputBits(), rng);
+            SecureVector!ubyte encoded = m_emsa.encodingOf(msg, m_op.maxInputBits(), rng);
             
             return m_op.verify(encoded.ptr, encoded.length, sig, sig_len);
         }
@@ -534,7 +534,7 @@ public:
     this(in PKKeyAgreementKey key, in string kdf_name)
     {
         AlgorithmFactory af = globalState().algorithmFactory();
-        RandomNumberGenerator rng = globalState().global_rng();
+        RandomNumberGenerator rng = globalState().globalRng();
 
         foreach (Engine engine; af.engines)
         {
@@ -579,7 +579,7 @@ public:
     {
         
         AlgorithmFactory af = globalState().algorithmFactory();
-        RandomNumberGenerator rng = globalState().global_rng();
+        RandomNumberGenerator rng = globalState().globalRng();
 
         foreach (Engine engine; af.engines) {
             m_op = engine.getEncryptionOp(key, rng);
@@ -590,7 +590,7 @@ public:
         if (!m_op)
             throw new LookupError("Encryption with " ~ key.algo_name ~ " not supported");
         
-        m_eme = get_eme(eme_name);
+        m_eme = getEme(eme_name);
     }
 
 private:
@@ -600,14 +600,14 @@ private:
         {
             SecureVector!ubyte encoded = m_eme.encode(input, length, m_op.maxInputBits(), rng);
             
-            if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.maxInputBits())
+            if (8*(encoded.length - 1) + highBit(encoded[0]) > m_op.maxInputBits())
                 throw new InvalidArgument("PKEncryptorEME: Input is too large");
             
             return unlock(m_op.encrypt(encoded.ptr, encoded.length, rng));
         }
         else
         {
-            if (8*(length - 1) + high_bit(input[0]) > m_op.maxInputBits())
+            if (8*(length - 1) + highBit(input[0]) > m_op.maxInputBits())
                 throw new InvalidArgument("PKEncryptorEME: Input is too large");
             
             return unlock(m_op.encrypt(input.ptr, length, rng));
@@ -632,7 +632,7 @@ public:
     this(in PrivateKey key, in string eme_name)
     {
         AlgorithmFactory af = globalState().algorithmFactory();
-        RandomNumberGenerator rng = globalState().global_rng();
+        RandomNumberGenerator rng = globalState().globalRng();
 
         foreach (Engine engine; af.engines)
         {
@@ -644,7 +644,7 @@ public:
         if (!m_op)
             throw new LookupError("Decryption with " ~ key.algo_name ~ " not supported");
         
-        m_eme = get_eme(eme_name);
+        m_eme = getEme(eme_name);
     }
 
 private:

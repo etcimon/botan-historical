@@ -118,8 +118,8 @@ public:
         this = decode(cast(const ubyte*)(str.data()) + markers,
                        str.length - markers, base);
         
-        if (negative) set_sign(Negative);
-        else            set_sign(Positive);
+        if (negative) setSign(Negative);
+        else            setSign(Positive);
     }
 
     /**
@@ -149,7 +149,7 @@ public:
     */
     this(Sign s, size_t size)
     {
-        m_reg.resize(round_up!size_t(size, 8));
+        m_reg.resize(roundUp!size_t(size, 8));
         m_signedness = s;
     }
 
@@ -194,13 +194,13 @@ public:
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "+=")
     {
-        const size_t x_sw = sig_words(), y_sw = y.sig_words();
+        const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
         const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
-        grow_to(reg_size);
+        growTo(reg_size);
         
         if (sign() == y.sign())
-            bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
+            bigint_add2(mutableData(), reg_size - 1, y.data(), y_sw);
         else
         {
             int relative_size = bigint_cmp(data(), x_sw, y.data(), y_sw);
@@ -210,15 +210,15 @@ public:
                 SecureVector!word z(reg_size - 1);
                 bigint_sub3(z.ptr, y.data(), reg_size - 1, data(), x_sw);
                 std.algorithm.swap(m_reg, z);
-                set_sign(y.sign());
+                setSign(y.sign());
             }
             else if (relative_size == 0)
             {
                 zeroise(m_reg);
-                set_sign(Positive);
+                setSign(Positive);
             }
             else if (relative_size > 0)
-                bigint_sub2(mutable_data(), x_sw, y.data(), y_sw);
+                bigint_sub2(mutableData(), x_sw, y.data(), y_sw);
         }
         
         return this;
@@ -231,38 +231,38 @@ public:
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "-=")
     {
-        const size_t x_sw = sig_words(), y_sw = y.sig_words();
+        const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
         int relative_size = bigint_cmp(data(), x_sw, y.data(), y_sw);
         
         const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
-        grow_to(reg_size);
+        growTo(reg_size);
         
         if (relative_size < 0)
         {
             if (sign() == y.sign())
-                bigint_sub2_rev(mutable_data(), y.data(), y_sw);
+                bigint_sub2_rev(mutableData(), y.data(), y_sw);
             else
-                bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
+                bigint_add2(mutableData(), reg_size - 1, y.data(), y_sw);
             
-            set_sign(y.reverseSign());
+            setSign(y.reverseSign());
         }
         else if (relative_size == 0)
         {
             if (sign() == y.sign())
             {
                 clear();
-                set_sign(Positive);
+                setSign(Positive);
             }
             else
-                bigint_shl1(mutable_data(), x_sw, 0, 1);
+                bigint_shl1(mutableData(), x_sw, 0, 1);
         }
         else if (relative_size > 0)
         {
             if (sign() == y.sign())
-                bigint_sub2(mutable_data(), x_sw, y.data(), y_sw);
+                bigint_sub2(mutableData(), x_sw, y.data(), y_sw);
             else
-                bigint_add2(mutable_data(), reg_size - 1, y.data(), y_sw);
+                bigint_add2(mutableData(), reg_size - 1, y.data(), y_sw);
         }
         
         return this;
@@ -275,32 +275,32 @@ public:
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "*=")
     {
-        const size_t x_sw = sig_words(), y_sw = y.sig_words();
-        set_sign((sign() == y.sign()) ? Positive : Negative);
+        const size_t x_sw = sigWords(), y_sw = y.sigWords();
+        setSign((sign() == y.sign()) ? Positive : Negative);
         
         if (x_sw == 0 || y_sw == 0)
         {
             clear();
-            set_sign(Positive);
+            setSign(Positive);
         }
         else if (x_sw == 1 && y_sw)
         {
-            grow_to(y_sw + 2);
-            bigint_linmul3(mutable_data(), y.data(), y_sw, word_at(0));
+            growTo(y_sw + 2);
+            bigint_linmul3(mutableData(), y.data(), y_sw, wordAt(0));
         }
         else if (y_sw == 1 && x_sw)
         {
-            grow_to(x_sw + 2);
-            bigint_linmul2(mutable_data(), x_sw, y.wordAt(0));
+            growTo(x_sw + 2);
+            bigint_linmul2(mutableData(), x_sw, y.wordAt(0));
         }
         else
         {
-            grow_to(size() + y.length);
+            growTo(size() + y.length);
             
             SecureVector!word z = SecureVector!word(data(), data() + x_sw);
             SecureVector!word workspace = SecureVector!word(size());
             
-            bigint_mul(mutable_data(), size(), workspace.ptr, z.ptr, z.length, x_sw, y.data(), y.length, y_sw);
+            bigint_mul(mutableData(), size(), workspace.ptr, z.ptr, z.length, x_sw, y.data(), y.length, y_sw);
         }
         
         return this;
@@ -344,28 +344,28 @@ public:
         
         if (isPowerOf2(mod))
         {
-            word result = (word_at(0) & (mod - 1));
+            word result = (wordAt(0) & (mod - 1));
             clear();
-            grow_to(2);
+            growTo(2);
             m_reg[0] = result;
             return result;
         }
         
         word remainder = 0;
         
-        for (size_t j = sig_words(); j > 0; --j)
-            remainder = bigint_modop(remainder, word_at(j-1), mod);
+        for (size_t j = sigWords(); j > 0; --j)
+            remainder = bigint_modop(remainder, wordAt(j-1), mod);
         clear();
-        grow_to(2);
+        growTo(2);
         
         if (remainder && sign() == Negative)
             m_reg[0] = mod - remainder;
         else
             m_reg[0] = remainder;
         
-        set_sign(Positive);
+        setSign(Positive);
         
-        return word_at(0);
+        return wordAt(0);
     }
 
 
@@ -380,10 +380,10 @@ public:
         {
             const size_t shift_words = shift / MP_WORD_BITS;
             const size_t shift_bits  = shift % MP_WORD_BITS;
-            const size_t words = sig_words();
+            const size_t words = sigWords();
             
-            grow_to(words + shift_words + (shift_bits ? 1 : 0));
-            bigint_shl1(mutable_data(), words, shift_words, shift_bits);
+            growTo(words + shift_words + (shift_bits ? 1 : 0));
+            bigint_shl1(mutableData(), words, shift_words, shift_bits);
         }
         
         return this;
@@ -401,10 +401,10 @@ public:
             const size_t shift_words = shift / MP_WORD_BITS;
             const size_t shift_bits  = shift % MP_WORD_BITS;
             
-            bigint_shr1(mutable_data(), sig_words(), shift_words, shift_bits);
+            bigint_shr1(mutableData(), sigWords(), shift_words, shift_bits);
             
-            if (is_zero())
-                set_sign(Positive);
+            if (isZero())
+                setSign(Positive);
         }
         
         return this;
@@ -427,15 +427,15 @@ public:
     ref BigInt opUnary(string op)() const
         if (op == "-")
     {
-        flip_sign();
+        flipSign();
         return this;
     }
 
     /**
-    * ! operator
-    * @return true iff this is zero, otherwise false
+    * bool cast
+    * @return true iff this is not zero, otherwise false
     */
-    bool operator !() const { return (!is_nonzero()); }
+    T opCast(T : bool)() const { return isNonzero(); }
 
     /**
     * Zeroize the BigInt. The size of the underlying register is not
@@ -498,7 +498,7 @@ public:
     * Test if the integer is not zero
     * @result true if the integer is non-zero, false otherwise
     */
-    bool isNonzero() const { return (!is_zero()); }
+    bool isNonzero() const { return (!isZero()); }
 
     /**
     * Test if the integer is zero
@@ -506,7 +506,7 @@ public:
     */
     bool isZero() const
     {
-        const size_t sw = sig_words();
+        const size_t sw = sigWords();
 
         foreach (size_t i; 0 .. sw)
             if (m_reg[i])
@@ -522,7 +522,7 @@ public:
     {
         const size_t which = n / MP_WORD_BITS;
         const word mask = cast(word)(1) << (n % MP_WORD_BITS);
-        if (which >= size()) grow_to(which + 1);
+        if (which >= size()) growTo(which + 1);
         m_reg[which] |= mask;
     }
 
@@ -551,7 +551,7 @@ public:
         const word mask = (cast(word)(1) << (n % MP_WORD_BITS)) - 1;
         
         if (top_word < size())
-            clear_mem(&m_reg[top_word+1], size() - (top_word + 1));
+            clearMem(&m_reg[top_word+1], size() - (top_word + 1));
         
         m_reg[top_word] &= mask;
     }
@@ -563,7 +563,7 @@ public:
     */
     bool getBit(size_t n) const
     {
-        return ((word_at(n / MP_WORD_BITS) >> (n % MP_WORD_BITS)) & 1);
+        return ((wordAt(n / MP_WORD_BITS) >> (n % MP_WORD_BITS)) & 1);
     }
 
     /**
@@ -576,12 +576,12 @@ public:
     uint getSubstring(size_t offset, size_t length) const
     {
         if (length > 32)
-            throw new InvalidArgument("BigInt.get_substring: Substring size too big");
+            throw new InvalidArgument("BigInt.getSubstring: Substring size too big");
         
         ulong piece = 0;
         foreach (size_t i; 0 .. 8)
         {
-            const ubyte part = byte_at((offset / 8) + (7-i));
+            const ubyte part = byteAt((offset / 8) + (7-i));
             piece = (piece << 8) | part;
         }
         
@@ -598,14 +598,14 @@ public:
     */
     uint toUint() const
     {
-        if (is_negative())
+        if (isNegative())
             throw new EncodingError("BigInt.to_uint: Number is negative");
         if (bits() >= 32)
             throw new EncodingError("BigInt.to_uint: Number is too big to convert");
         
         uint output = 0;
         for (uint j = 0; j != 4; ++j)
-            output = (output << 8) | byte_at(3-j);
+            output = (output << 8) | byteAt(3-j);
         return output;
     }
 
@@ -664,7 +664,7 @@ public:
     */
     void flipSign()
     {
-        set_sign(reverse_sign());
+        setSign(reverseSign());
     }
 
     /**
@@ -673,7 +673,7 @@ public:
     */
     void setSign(Sign s)
     {
-        if (is_zero())
+        if (isZero())
             m_signedness = Positive;
         else
             m_signedness = s;
@@ -684,7 +684,7 @@ public:
     */
     ref BigInt abs() const
     {
-        set_sign(Positive);
+        setSign(Positive);
         return this;
     }
 
@@ -723,13 +723,13 @@ public:
     */
     size_t bits() const
     {
-        const size_t words = sig_words();
+        const size_t words = sigWords();
         
         if (words == 0)
             return 0;
         
         size_t full_words = words - 1, top_bits = MP_WORD_BITS;
-        word top_word = word_at(full_words), mask = MP_WORD_TOP_BIT;
+        word top_word = wordAt(full_words), mask = MP_WORD_TOP_BIT;
         
         while (top_bits && ((top_word & mask) == 0))
         { mask >>= 1; top_bits--; }
@@ -756,7 +756,7 @@ public:
     void growTo(size_t n)
     {
         if (n > size())
-            m_reg.resize(round_up!size_t(n, 8));
+            m_reg.resize(roundUp!size_t(n, 8));
     }
 
     /**
@@ -767,18 +767,18 @@ public:
     void randomize(RandomNumberGenerator rng,
                    size_t bitsize = 0)
     {
-        set_sign(Positive);
+        setSign(Positive);
         
         if (bitsize == 0)
             clear();
         else
         {
-            SecureVector!ubyte array = rng.random_vec((bitsize + 7) / 8);
+            SecureVector!ubyte array = rng.randomVec((bitsize + 7) / 8);
             
             if (bitsize % 8)
                 array[0] &= 0xFF >> (8 - (bitsize % 8));
             array[0] |= 0x80 >> ((bitsize % 8) ? (8 - bitsize % 8) : 0);
-            binary_decode(array.ptr, array.length);
+            binaryDecode(array.ptr, array.length);
         }
     }
 
@@ -790,7 +790,7 @@ public:
     {
         const size_t sig_bytes = bytes();
         foreach (size_t i; 0 .. sig_bytes)
-            output[sig_bytes-i-1] = byte_at(i);
+            output[sig_bytes-i-1] = byteAt(i);
     }
 
     /**
@@ -803,7 +803,7 @@ public:
         const size_t WORD_BYTES = (word).sizeof;
         
         clear();
-        m_reg.resize(round_up!size_t((length / WORD_BYTES) + 1, 8));
+        m_reg.resize(roundUp!size_t((length / WORD_BYTES) + 1, 8));
         
         foreach (size_t i; 0 .. (length / WORD_BYTES))
         {
@@ -823,7 +823,7 @@ public:
     */
     void binaryDecode(in SecureVector!ubyte buf)
     {
-        binary_decode(buf.ptr, buf.length);
+        binaryDecode(buf.ptr, buf.length);
     }
 
     /**
@@ -880,7 +880,7 @@ public:
     */
     static Vector!ubyte encode(in BigInt n, Base base = Binary)
     {
-        Vector!ubyte output = Vector!ubyte(n.encoded_size(base));
+        Vector!ubyte output = Vector!ubyte(n.encodedSize(base));
         encode(output.ptr, n, base);
         if (base != Binary)
             for (size_t j = 0; j != output.length; ++j)
@@ -897,7 +897,7 @@ public:
     */
     static SecureVector!ubyte encodeLocked(in BigInt n, Base base = Binary)
     {
-        SecureVector!ubyte output = SecureVector!ubyte(n.encoded_size(base));
+        SecureVector!ubyte output = SecureVector!ubyte(n.encodedSize(base));
         encode(output.ptr, n, base);
         if (base != Binary)
             for (size_t j = 0; j != output.length; ++j)
@@ -921,7 +921,7 @@ public:
         }
         else if (base == Hexadecimal)
         {
-            SecureVector!ubyte binary = SecureVector!ubyte(n.encoded_size(Binary));
+            SecureVector!ubyte binary = SecureVector!ubyte(n.encodedSize(Binary));
             n.binaryEncode(binary.ptr);
             
             hexEncode(cast(char*)(output), binary.ptr, binary.length);
@@ -931,7 +931,7 @@ public:
             BigInt copy = n;
             BigInt remainder;
             copy.setSign(Positive);
-            const size_t output_size = n.encoded_size(Decimal);
+            const size_t output_size = n.encodedSize(Decimal);
             foreach (size_t j; 0 .. output_size)
             {
                 divide(copy, 10, copy, remainder);
@@ -978,10 +978,10 @@ public:
         {
             foreach (size_t i; 0 .. length)
             {
-                if (is_space(buf[i]))
+                if (isSpace(buf[i]))
                     continue;
                 
-                if (!is_digit(buf[i]))
+                if (!isDigit(buf[i]))
                     throw new InvalidArgument("BigInt.decode: "
                                                ~ "Invalid character in decimal input");
                 
@@ -1051,7 +1051,7 @@ public:
         if (op == "+")
     {
         const BigInt x = this;
-        const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
+        const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
         BigInt z = BigInt(x.sign(), std.algorithm.max(x_sw, y_sw) + 1);
         
@@ -1082,7 +1082,7 @@ public:
         if (op == "-")
     {
         const BigInt x = this;
-        const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
+        const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
         int relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
         
@@ -1119,7 +1119,7 @@ public:
         if (op == "*")
     {
         const BigInt x = this;
-        const size_t x_sw = x.sig_words(), y_sw = y.sig_words();
+        const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
         BigInt z(BigInt.Positive, x.length + y.length);
         
@@ -1186,7 +1186,7 @@ public:
         
         word remainder = 0;
         
-        for (size_t j = n.sig_words(); j > 0; --j)
+        for (size_t j = n.sigWords(); j > 0; --j)
             remainder = bigint_modop(remainder, n.wordAt(j-1), mod);
         
         if (remainder && n.sign() == BigInt.Negative)
@@ -1207,7 +1207,7 @@ public:
         const size_t shift_words = shift / MP_WORD_BITS,
             shift_bits  = shift % MP_WORD_BITS;
         
-        const size_t x_sw = x.sig_words();
+        const size_t x_sw = x.sigWords();
         
         BigInt y(x.sign(), x_sw + shift_words + (shift_bits ? 1 : 0));
         bigint_shl2(y.mutableData(), x.data(), x_sw, shift_words, shift_bits);
@@ -1228,7 +1228,7 @@ public:
         
         const size_t shift_words = shift / MP_WORD_BITS,
             shift_bits  = shift % MP_WORD_BITS,
-            x_sw = x.sig_words();
+            x_sw = x.sigWords();
         
         BigInt y(x.sign(), x_sw - shift_words);
         bigint_shr2(y.mutableData(), x.data(), x_sw, shift_words, shift_bits);

@@ -89,7 +89,7 @@ public:
         m_d2 = m_d % (m_q - 1);
         m_c = inverseMod(m_q, m_p);
         
-        gen_check(rng);
+        genCheck(rng);
     }
 
     /*
@@ -106,7 +106,7 @@ public:
         if ((m_e * m_d) % (lcm(m_p - 1, m_q - 1) / 2) != 1)
             return false;
         
-        return signature_consistency_check(rng, this, "EMSA2(SHA-1)");
+        return signatureConsistencyCheck(rng, this, "EMSA2(SHA-1)");
     }
 }
 

@@ -335,19 +335,19 @@ void testEacTime(RandomNumberGenerator)
     
     ASN1Cex my_cex = ASN1Cex("2007 08 01");
     my_cex.addMonths(12);
-    mixin( CHECK(` my_cex.get_year() == 2008 `) );
+    mixin( CHECK(` my_cex.getYear() == 2008 `) );
     mixin( CHECK_MESSAGE( my_cex.getMonth() == 8, "shoult be 8, was " ~ my_cex.getMonth() ) );
     
     my_cex.addMonths(4);
-    mixin( CHECK(` my_cex.get_year() == 2008 `) );
+    mixin( CHECK(` my_cex.getYear() == 2008 `) );
     mixin( CHECK(` my_cex.get_month() == 12 `) );
     
     my_cex.addMonths(4);
-    mixin( CHECK(` my_cex.get_year() == 2009 `) );
+    mixin( CHECK(` my_cex.getYear() == 2009 `) );
     mixin( CHECK(` my_cex.get_month() == 4 `) );
     
     my_cex.addMonths(41);
-    mixin( CHECK(` my_cex.get_year() == 2012 `) );
+    mixin( CHECK(` my_cex.getYear() == 2012 `) );
     mixin( CHECK(` my_cex.get_month() == 9 `) );
     
     
@@ -506,7 +506,7 @@ void testCvcChain(RandomNumberGenerator rng)
     ECDSAPublicKey cert_pk = cast(ECDSAPublicKey)(*ap_pk);
     
     //cert_pk.set_domain_parameters(dom_pars);
-    //writeln("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_public_point(), ec::PointGFp.COMPRESSED).length);
+    //writeln("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_publicPoint(), ec::PointGFp.COMPRESSED).length);
     EAC11CVC dvca_cert1_reread = EAC11CVC("test_data/ecc/cvc_chain_cvca.cer");
     mixin( CHECK(` dvca_ado2.checkSignature(cert_pk) `) );
     

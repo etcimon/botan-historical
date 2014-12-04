@@ -127,7 +127,7 @@ SecureVector!ubyte PGP_decode(DataSource source,
         
         end_of_headers = true;
         for (size_t j = 0; j != this_header.length; ++j)
-            if (!is_space(this_header[j]))
+            if (!isSpace(this_header[j]))
                 end_of_headers = false;
         
         if (!end_of_headers)

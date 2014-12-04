@@ -26,7 +26,7 @@ public:
     */
     static RandomNumberGenerator makeRng()
     {
-        return make_rng(globalState().algorithmFactory());
+        return makeRng(globalState().algorithmFactory());
     }
 
     /**
@@ -35,8 +35,8 @@ public:
     */
     static RandomNumberGenerator makeRng(AlgorithmFactory af)
     {
-        RandomNumberGenerator rng = new HMAC_RNG(af.make_mac("HMAC(SHA-512)"),
-                                                 af.make_mac("HMAC(SHA-256)"));
+        RandomNumberGenerator rng = new HMAC_RNG(af.makeMac("HMAC(SHA-512)"),
+                                                 af.makeMac("HMAC(SHA-256)"));
         
         rng.reseed(256);
         

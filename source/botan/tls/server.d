@@ -270,7 +270,7 @@ private:
                     * anonymous operation.
                     */
                     if (!cert_chains.empty)
-                        send_alert(TLSAlert(TLSAlert.UNRECOGNIZED_NAME));
+                        sendAlert(TLSAlert(TLSAlert.UNRECOGNIZED_NAME));
                	}
                 state.serverHello(
                     new ServerHello(    state.handshakeIo(),

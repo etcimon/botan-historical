@@ -125,7 +125,7 @@ public:
     */
     this(in string pem)
     {
-        SecureVector!ubyte der = PEM.decode_check_label(pem, "SSL SESSION");
+        SecureVector!ubyte der = PEM.decodeCheckLabel(pem, "SSL SESSION");
         
         this(der.ptr, der.length);
     }

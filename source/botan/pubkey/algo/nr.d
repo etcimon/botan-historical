@@ -69,7 +69,7 @@ public:
         if (!strong)
             return true;
         
-        return signature_consistency_check(rng, this, "EMSA1(SHA-1)");
+        return signatureConsistencyCheck(rng, this, "EMSA1(SHA-1)");
     }
 
 
@@ -87,9 +87,9 @@ public:
         m_y = powerMod(groupG(), m_x, groupP());
         
         if (x_arg == 0)
-            gen_check(rng);
+            genCheck(rng);
         else
-            load_check(rng);
+            loadCheck(rng);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
@@ -97,7 +97,7 @@ public:
         super(alg_id, key_bits, DLGroup.ANSI_X9_57);
         m_y = powerMod(groupG(), m_x, groupP());
         
-        load_check(rng);
+        loadCheck(rng);
     }
 
 }
@@ -178,7 +178,7 @@ public:
 
     SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
-        const BigInt q = m_mod_q.get_modulus(); // todo: why not use m_q?
+        const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?
         size_t msg_len = msg.length;
         if (msg_len != 2*q.bytes())
             throw new InvalidArgument("NR verification: Invalid signature");

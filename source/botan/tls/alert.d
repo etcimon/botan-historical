@@ -167,7 +167,7 @@ public:
     Vector!ubyte serialize() const
     {
         return Vector!ubyte([
-            cast(ubyte)(is_fatal() ? 2 : 1),
+            cast(ubyte)(isFatal() ? 2 : 1),
             cast(ubyte)(type())
         ]);
     }

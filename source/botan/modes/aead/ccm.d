@@ -210,7 +210,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         
-        buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
+        buffer.insert(buffer.ptr + offset, msgBuf().ptr, msgBuf().end());
         
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
@@ -257,7 +257,7 @@ public:
         
         T ^= S0;
         
-        if (!same_mem(T.ptr, buf_end, tagSize()))
+        if (!sameMem(T.ptr, buf_end, tagSize()))
             throw new IntegrityFailure("CCM tag check failed");
         
         buffer.resize(buffer.length - tagSize());
@@ -291,7 +291,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         
-        buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
+        buffer.insert(buffer.ptr + offset, msgBuf().ptr, msgBuf().end());
         
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];

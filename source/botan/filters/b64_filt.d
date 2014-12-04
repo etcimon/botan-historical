@@ -28,7 +28,7 @@ public:
     */
     void write(in ubyte* input, size_t length)
     {
-        buffer_insert(m_input, m_position, input, length);
+        bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
         {
             encodeAndSend(m_input.ptr, m_input.length);

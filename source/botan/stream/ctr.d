@@ -44,12 +44,12 @@ public:
         
         zeroise(m_counter);
         
-        buffer_insert(m_counter, 0, iv, iv_len);
+        bufferInsert(m_counter, 0, iv, iv_len);
         
         // Set m_counter blocks to IV, IV + 1, ... IV + 255
         foreach (size_t i; 1 .. 256)
         {
-            buffer_insert(m_counter, i*bs, &m_counter[(i-1)*bs], bs);
+            bufferInsert(m_counter, i*bs, &m_counter[(i-1)*bs], bs);
             
             foreach (size_t j; 0 .. bs)
                 if (++m_counter[i*bs + (bs - 1 - j)])

@@ -77,9 +77,9 @@ public:
             
             if (stmt.step())
             {
-                Pair!(const ubyte*, size_t) salt = stmt.get_blob(0);
-                const size_t iterations = stmt.get_size_t(1);
-                const size_t check_val_db = stmt.get_size_t(2);
+                Pair!(const ubyte*, size_t) salt = stmt.getBlob(0);
+                const size_t iterations = stmt.getSizeT(1);
+                const size_t check_val_db = stmt.getSizeT(2);
                 
                 size_t check_val_created;
                 m_session_key = deriveKey(passphrase,
@@ -100,15 +100,14 @@ public:
             
             // new database case
             
-            Vector!ubyte salt = unlock(rng.random_vec(16));
+            Vector!ubyte salt = unlock(rng.randomVec(16));
             const size_t iterations = 256 * 1024;
             size_t check_val = 0;
             
-            m_session_key = deriveKey(passphrase, salt.ptr, salt.length,
-            iterations, check_val);
+            m_session_key = deriveKey(passphrase, salt.ptr, salt.length, iterations, check_val);
             
             sqlite3_statement stmt = sqlite3_statement(m_db, "insert into tls_sessions_metadata"
-                                   ~ " values(?1, ?2, ?3)");
+                                                                ~ " values(?1, ?2, ?3)");
             
             stmt.bind(1, salt);
             stmt.bind(2, iterations);
@@ -131,7 +130,7 @@ public:
         
         while (stmt.step())
         {
-            Pair!(const ubyte*, size_t) blob = stmt.get_blob(0);
+            Pair!(const ubyte*, size_t) blob = stmt.getBlob(0);
             
             try
             {
@@ -150,15 +149,15 @@ public:
                                         ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions"
-                                                   ~ " where hostname = ?1 and hostport = ?2"
-                                                   ~ " order by session_start desc");
+                                                       ~ " where hostname = ?1 and hostport = ?2"
+                                                       ~ " order by session_start desc");
         
         stmt.bind(1, server.hostname());
         stmt.bind(2, server.port());
         
         while (stmt.step())
         {
-            Pair!(const ubyte*, size_t) blob = stmt.get_blob(0);
+            Pair!(const ubyte*, size_t) blob = stmt.getBlob(0);
             
             try
             {
@@ -238,12 +237,9 @@ SymmetricKey deriveKey(in string passphrase,
                         size_t iterations,
                         ref size_t check_val)
 {
-    Unique!PBKDF pbkdf = get_pbkdf("PBKDF2(SHA-512)");
+    Unique!PBKDF pbkdf = getPbkdf("PBKDF2(SHA-512)");
     
-    SecureVector!ubyte x = pbkdf.deriveKey(32 + 2,
-                                          passphrase,
-                                          salt, salt_len,
-                                          iterations).bitsOf();
+    SecureVector!ubyte x = pbkdf.deriveKey(32 + 2, passphrase, salt, salt_len, iterations).bitsOf();
     
     check_val = make_ushort(x[0], x[1]);
     return SymmetricKey(&x[2], x.length - 2);

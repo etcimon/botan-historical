@@ -77,7 +77,7 @@ private:
     void keySchedule(in ubyte* key, size_t length)
     {
         m_state.resize(256);
-        m_buffer.resize(round_up!size_t(DEFAULT_BUFFERSIZE, 4));
+        m_buffer.resize(roundUp!size_t(DEFAULT_BUFFERSIZE, 4));
         
         m_position = m_X = m_Y = 0;
         

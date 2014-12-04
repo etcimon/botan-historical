@@ -44,7 +44,7 @@ private:
         foreach (size_t j; 1 .. (olen - inlen - 1))
             while (output[j] == 0)
                 output[j] = rng.nextByte();
-        buffer_insert(output, olen - inlen, input, inlen);
+        bufferInsert(output, olen - inlen, input, inlen);
         
         return output;
     }

@@ -53,7 +53,7 @@ void aontPackage(RandomNumberGenerator rng,
     const size_t blocks = (input_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
     
     ubyte* final_block = output + input_len;
-    clear_mem(final_block, BLOCK_SIZE);
+    clearMem(final_block, BLOCK_SIZE);
     
     // XOR the hash blocks into the final block
     foreach (size_t i; 0 .. blocks)

@@ -107,7 +107,7 @@ public:
             if (share.length < RTSS_HEADER_SIZE)
                 throw new DecodingError("Missing or malformed RTSS header");
             
-            if (!same_mem(&shares[0].m_contents[0], &share.m_contents[0], RTSS_HEADER_SIZE))
+            if (!sameMem(&shares[0].m_contents[0], &share.m_contents[0], RTSS_HEADER_SIZE))
                 throw new DecodingError("Different RTSS headers detected");
         }
         
@@ -163,7 +163,7 @@ public:
         hash.update(secret.ptr, secret_len);
         SecureVector!ubyte hash_check = hash.finished();
         
-        if (!same_mem(hash_check.ptr, &secret[secret_len], hash.output_length))
+        if (!sameMem(hash_check.ptr, &secret[secret_len], hash.output_length))
             throw new DecodingError("RTSS hash check failed");
         
         return SecureVector!ubyte(secret.ptr[0 .. secret_len]);

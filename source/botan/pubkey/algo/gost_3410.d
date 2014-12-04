@@ -88,8 +88,8 @@ public:
     Vector!ubyte x509SubjectPublicKey() const
     {
         // Trust CryptoPro to come up with something obnoxious
-        const BigInt x = public_point().getAffineX();
-        const BigInt y = public_point().getAffineY();
+        const BigInt x = publicPoint().getAffineX();
+        const BigInt y = publicPoint().getAffineY();
         
         size_t part_size = std.algorithm.max(x.bytes(), y.bytes());
         
@@ -251,7 +251,7 @@ public:
         BigInt z1 = (s*v) % m_order;
         BigInt z2 = (-r*v) % m_order;
         
-        PointGFp R = multi_exponentiate(m_base_point, z1,
+        PointGFp R = multiExponentiate(m_base_point, z1,
                                         m_public_point, z2);
         
         if (R.isZero())

@@ -32,9 +32,9 @@ struct CryptoBox {
     {
         Unique!KDF kdf = getKdf(CRYPTOBOX_KDF);
         
-        const SecureVector!ubyte cipher_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
+        const SecureVector!ubyte cipher_key_salt = rng.randomVec(KEY_KDF_SALT_LENGTH);
         
-        const SecureVector!ubyte mac_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
+        const SecureVector!ubyte mac_key_salt = rng.randomVec(KEY_KDF_SALT_LENGTH);
         
         SymmetricKey cipher_key = kdf.deriveKey(CIPHER_KEY_LENGTH, master_key.bitsOf(), cipher_key_salt);
         
@@ -47,7 +47,7 @@ struct CryptoBox {
         
         Pipe pipe = Pipe(getCipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
         pipe.processMsg(input, input_len);
-        SecureVector!ubyte ctext = pipe.read_all(0);
+        SecureVector!ubyte ctext = pipe.readAll(0);
         
         SecureVector!ubyte output = SecureVector!ubyte(MAGIC_LENGTH);
         storeBigEndian(CRYPTOBOX_MAGIC, output.ptr);
@@ -99,7 +99,7 @@ struct CryptoBox {
         mac.update(input.ptr, input_len - MAC_OUTPUT_LENGTH);
         SecureVector!ubyte computed_mac = mac.finished();
         
-        if (!same_mem(&input[input_len - MAC_OUTPUT_LENGTH], computed_mac.ptr, computed_mac.length))
+        if (!sameMem(&input[input_len - MAC_OUTPUT_LENGTH], computed_mac.ptr, computed_mac.length))
             throw new DecodingError("MAC verification failed");
         
         SymmetricKey cipher_key = kdf.deriveKey(CIPHER_KEY_LENGTH, master_key.bitsOf(), cipher_key_salt, KEY_KDF_SALT_LENGTH);

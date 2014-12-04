@@ -232,7 +232,7 @@ void checkSignature(in Vector!ubyte tbs_response,
     if (!certs[0].allowedUsage("PKIX.OCSPSigning"))
         throw new Exception("OCSP response cert does not allow OCSP signing");
     
-    auto result = x509_path_validate(certs, Path_Validation_Restrictions(), trusted_roots);
+    auto result = x509PathValidate(certs, Path_Validation_Restrictions(), trusted_roots);
     
     if (!result.successfulValidation())
         throw new Exception("Certificate validation failure: " ~ result.resultString());

@@ -184,12 +184,12 @@ public:
         BigInt output = BigInt(BigInt.Positive, (bytes() + (word).sizeof - 1) / (word).sizeof);
         size_t dummy = 0;
         
-        word* reg = output.mutable_data();
+        word* reg = output.mutableData();
         
         mpz_export(reg, &dummy, -1, (word).sizeof, 0, 0, value);
         
         if (mpz_sgn(value) < 0)
-            output.flip_sign();
+            output.flipSign();
         
         return output;
     }
@@ -237,7 +237,7 @@ public:
     {
         mpz_init(value);
         if (input != 0)
-            mpz_import(value, input.sig_words(), -1, (word).sizeof, 0, 0, input.data());
+            mpz_import(value, input.sigWords(), -1, (word).sizeof, 0, 0, input.data());
     }
     
     /*
@@ -344,7 +344,7 @@ static if (BOTAN_HAS_DSA) {
     public:
         this(in DSAPublicKey dsa) 
         {
-            m_y = dsa.get_y();
+            m_y = dsa.getY();
             m_p = dsa.groupP();
             m_q = dsa.groupQ();
             m_g = dsa.groupG();
@@ -423,18 +423,18 @@ static if (BOTAN_HAS_DSA) {
             SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
-                BigInt x = private_op(m);
+                BigInt x = privateOp(m);
                 return BigInt.encode1363(x, (m_n_bits + 7) / 8);
             }
             
             SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encodeLocked(private_op(m));
+                return BigInt.encodeLocked(privateOp(m));
             }
             
         private:
-            BigInt private_op(in BigInt m) const
+            BigInt privateOp(in BigInt m) const
             {
                 GMP_MPZ j1, j2;
                 GMP_MPZ h = GMP_MPZ(m);
@@ -474,7 +474,7 @@ static if (BOTAN_HAS_DSA) {
                 return BigInt.encode1363(publicOp(m), m_n.bytes());
             }
             
-            SecureVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encodeLocked(publicOp(m));

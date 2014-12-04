@@ -34,7 +34,7 @@ public:
         copyMem(m_tweak.ptr, nonce, nonce_len);
         m_tweak_cipher.encrypt(m_tweak.ptr);
         
-        update_tweak(0);
+        updateTweak(0);
         
         return SecureVector!ubyte();
     }
@@ -90,12 +90,12 @@ protected:
         const size_t BS = m_tweak_cipher.blockSize();
         
         if (which > 0)
-            poly_double(m_tweak.ptr, &m_tweak[(which-1)*BS], BS);
+            polyDouble(m_tweak.ptr, &m_tweak[(which-1)*BS], BS);
         
         const size_t blocks_in_tweak = updateGranularity() / BS;
         
         for (size_t i = 1; i < blocks_in_tweak; ++i)
-            poly_double(&m_tweak[i*BS], &m_tweak[(i-1)*BS], BS);
+            polyDouble(&m_tweak[i*BS], &m_tweak[(i-1)*BS], BS);
     }
 
 private:
@@ -150,7 +150,7 @@ public:
             buf += to_proc * BS;
             blocks -= to_proc;
             
-            update_tweak(to_proc);
+            updateTweak(to_proc);
         }
     }
 
@@ -200,7 +200,7 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        return round_up(input_length, cipher().blockSize());
+        return roundUp(input_length, cipher().blockSize());
     }
 }
 
@@ -240,7 +240,7 @@ public:
             buf += to_proc * BS;
             blocks -= to_proc;
             
-            update_tweak(to_proc);
+            updateTweak(to_proc);
         }
     }
 
@@ -327,7 +327,7 @@ void polyDouble64(ubyte* output, in ubyte* input) pure
 void polyDouble(ubyte* output, in ubyte* input) pure
 {
     if (size == 8)
-        poly_double_64(output, input);
+        polyDouble64(output, input);
     else
-        poly_double_128(output, input);
+        polyDouble128(output, input);
 }

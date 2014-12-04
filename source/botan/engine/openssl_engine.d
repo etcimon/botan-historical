@@ -394,7 +394,7 @@ package:
 final class RC4OpenSSL : StreamCipher
 {
 public:
-    void clear() { clear_mem(&m_state, 1); }
+    void clear() { clearMem(&m_state, 1); }
     
     /*
     * Return the name of this type
@@ -848,14 +848,14 @@ static if (BOTAN_HAS_DSA) {
                                   RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
-                BigInt x = private_op(m);
+                BigInt x = privateOp(m);
                 return BigInt.encode1363(x, (m_n_bits + 7) / 8);
             }
             
             SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encodeLocked(private_op(m));
+                return BigInt.encodeLocked(privateOp(m));
             }
             
         private:

@@ -142,5 +142,5 @@ size_t chooseUpdateSize(size_t update_granularity)
     if (update_granularity >= target_size)
         return update_granularity;
     
-    return round_up(target_size, update_granularity);
+    return roundUp(target_size, update_granularity);
 }

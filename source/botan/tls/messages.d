@@ -682,7 +682,7 @@ public:
             * Some timing channel likely remains due to exception handling
             * and the like.
             */
-            SecureVector!ubyte fake_pre_master = rng.random_vec(48);
+            SecureVector!ubyte fake_pre_master = rng.randomVec(48);
             fake_pre_master[0] = client_version.majorVersion();
             fake_pre_master[1] = client_version.minorVersion();
             

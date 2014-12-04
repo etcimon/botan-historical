@@ -185,7 +185,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         
-        buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
+        buffer.insert(buffer.ptr + offset, msgBuf().ptr, msgBuf().end());
         
         SecureVector!ubyte V = S2V(&buffer[offset], buffer.length - offset);
         
@@ -219,7 +219,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         
-        buffer.insert(buffer.ptr + offset, msg_buf().ptr, msg_buf().end());
+        buffer.insert(buffer.ptr + offset, msgBuf().ptr, msgBuf().end());
         
         const size_t sz = buffer.length - offset;
         

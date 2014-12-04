@@ -64,7 +64,7 @@ private:
             if (raw[i])
                 same_modulo_leading_zeros = false;
         
-        if (!same_mem(coded.ptr, &raw[leading_zeros_expected], coded.length))
+        if (!sameMem(coded.ptr, &raw[leading_zeros_expected], coded.length))
             same_modulo_leading_zeros = false;
         
         return same_modulo_leading_zeros;

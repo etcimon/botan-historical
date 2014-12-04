@@ -101,7 +101,7 @@ protected:
     */
     abstract void loadCheck(RandomNumberGenerator rng) const
     {
-        if (!check_key(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
+        if (!checkKey(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
             throw new InvalidArgument(algo_name ~ ": Invalid public key");
     }
 }
@@ -122,7 +122,7 @@ public:
     * Might be different from the X.509 identifier, but normally is not
     */
     abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const
-    { return algorithm_identifier(); }
+    { return algorithmIdentifier(); }
 
 protected:
     /**
@@ -131,7 +131,7 @@ protected:
     */
     final override void loadCheck(RandomNumberGenerator rng) const
     {
-        if (!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD))
+        if (!checkKey(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD))
             throw new InvalidArgument(algo_name ~ ": Invalid private key");
     }
 
@@ -141,7 +141,7 @@ protected:
     */
     final void genCheck(RandomNumberGenerator rng) const
     {
-        if (!check_key(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE))
+        if (!checkKey(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE))
             throw new SelfTestFailure(algo_name ~ " private key generation failed");
     }
 }

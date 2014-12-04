@@ -40,7 +40,7 @@ public:
         
         assert(m_L, "A key was set");
         
-        m_offset = update_nonce(nonce, nonce_len);
+        m_offset = updateNonce(nonce, nonce_len);
         zeroise(m_checksum);
         m_block_index = 0;
         
@@ -50,7 +50,7 @@ public:
     final override void setAssociatedData(in ubyte* ad, size_t ad_len)
     {
         assert(m_L, "A key was set");
-        m_ad_hash = ocb_hash(*m_L, *m_cipher, ad.ptr, ad_len);
+        m_ad_hash = ocbHash(*m_L, *m_cipher, ad.ptr, ad_len);
     }
 
     final override @property string name() const
@@ -262,7 +262,7 @@ private:
             const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
             const size_t proc_bytes = proc_blocks * BS;
             
-            const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
+            const offsets = L.computeOffsets(m_offset, m_block_index, proc_blocks);
             
             xorBuf(m_checksum.ptr, buffer.ptr, proc_bytes);
             
@@ -366,7 +366,7 @@ public:
         // compare mac
         const ubyte* included_tag = &buf[remaining];
         
-        if (!same_mem(mac.ptr, included_tag, tagSize()))
+        if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("OCB tag check failed");
         
         // remove tag from end of message
@@ -378,7 +378,7 @@ private:
     {
         const L_computer L = *m_L; // convenient name
         
-        const size_t par_bytes = m_cipher.parallel_bytes();
+        const size_t par_bytes = m_cipher.parallelBytes();
         
         assert(par_bytes % BS == 0, "Cipher is parallel in full blocks");
         
@@ -389,7 +389,7 @@ private:
             const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
             const size_t proc_bytes = proc_blocks * BS;
             
-            const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
+            const offsets = L.computeOffsets(m_offset, m_block_index, proc_blocks);
             
             xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
             m_cipher.decryptN(buffer.ptr, buffer.ptr, proc_blocks);
@@ -417,8 +417,8 @@ public:
     {
         m_L_star.resize(cipher.blockSize());
         cipher.encrypt(m_L_star);
-        m_L_dollar = poly_double(star());
-        m_L.pushBack(poly_double(dollar()));
+        m_L_dollar = polyDouble(star());
+        m_L.pushBack(polyDouble(dollar()));
     }
     
     SecureVector!ubyte star() const { return m_L_star; }
@@ -446,7 +446,7 @@ private:
     SecureVector!ubyte get(size_t i) const
     {
         while (m_L.length <= i)
-            m_L.pushBack(poly_double(m_L.back()));
+            m_L.pushBack(polyDouble(m_L.back()));
         
         return m_L[i];
     }
@@ -548,7 +548,7 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     try
     {
         Vector!ubyte pt2 = ocbDecrypt(key, nonce, &buf[0], buf.length, ad, ad_len);
-        if (pt_len != pt2.length || !same_mem(pt, &pt2[0], pt_len))
+        if (pt_len != pt2.length || !sameMem(pt, &pt2[0], pt_len))
             writeln("OCB failed to decrypt correctly");
     }
     catch(Exception e)

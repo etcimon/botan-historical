@@ -28,7 +28,7 @@ public:
 
     /**
     * Return the encoding of a message
-    * @param msg = the result of raw_data()
+    * @param msg = the result of rawData()
     * @param output_bits = the desired output bit size
     * @param rng = a random number generator
     * @return encoded signature

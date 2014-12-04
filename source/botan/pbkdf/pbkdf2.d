@@ -61,7 +61,7 @@ public:
         
         SecureVector!ubyte U = SecureVector!ubyte(m_mac.output_length);
         
-        const size_t blocks_needed = round_up(key_len, m_mac.output_length) / m_mac.output_length;
+        const size_t blocks_needed = roundUp(key_len, m_mac.output_length) / m_mac.output_length;
         
         Duration dur_per_block = loop_for / blocks_needed;
         

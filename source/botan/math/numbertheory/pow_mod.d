@@ -155,7 +155,7 @@ public:
     this(in BigInt n, UsageHints hints = NO_HINTS)
     {
         core = null;
-        set_modulus(n, hints);
+        setModulus(n, hints);
     }
 
     this(in PowerMod other)
@@ -191,7 +191,7 @@ public:
          in BigInt n,
          UsageHints hints = NO_HINTS)
     { 
-        super(n, Usage_Hints(hints | EXP_IS_FIXED | choose_exp_hints(e, n)));
+        super(n, Usage_Hints(hints | EXP_IS_FIXED | chooseExpHints(e, n)));
         setExponent(e);
     }
     
@@ -213,7 +213,7 @@ public:
     */
     this(in BigInt b, in BigInt n, UsageHints hints = NO_HINTS)
     {
-        super(n, Usage_Hints(hints | BASE_IS_FIXED | choose_base_hints(b, n)));
+        super(n, Usage_Hints(hints | BASE_IS_FIXED | chooseBaseHints(b, n)));
         setBase(b);
     }
 

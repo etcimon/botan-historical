@@ -42,7 +42,7 @@ public:
         m_domain_params = dom_par;
         m_public_key = pub_point;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-        if (domain().getCurve() != public_point().getCurve())
+        if (domain().getCurve() != publicPoint().getCurve())
             throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
     }
 
@@ -69,12 +69,12 @@ public:
 
     Vector!ubyte x509SubjectPublicKey() const
     {
-        return unlock(EC2OSP(public_point(), PointGFp.COMPRESSED));
+        return unlock(EC2OSP(publicPoint(), PointGFp.COMPRESSED));
     }
 
     bool checkKey(RandomNumberGenerator, bool) const
     {
-        return public_point().onTheCurve();
+        return publicPoint().onTheCurve();
     }
 
     /**

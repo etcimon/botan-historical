@@ -14,7 +14,7 @@ public:
     
     ubyte random()
     {
-        if (!is_seeded())
+        if (!isSeeded())
             throw new Exception("Out of bytes");
         
         ubyte output = m_buf.front();
@@ -78,7 +78,7 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
     
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    const auto algo_name = parse_algorithm_name(algo_str);
+    const auto algo_name = parseAlgorithmName(algo_str);
     
     const string rng_name = algo_name[0];
     
@@ -109,7 +109,7 @@ size_t x931Test(string algo,
     if (!rng)
         throw new Exception("Unknown RNG " ~ algo);
     
-    const string got = hexEncode(rng.random_vec(L));
+    const string got = hexEncode(rng.randomVec(L));
     
     if (got != output)
     {
@@ -144,7 +144,7 @@ size_t hmacDrbgTest(string[string] m)
     
     rng.randomVec(out_len); // gen 1st block (discarded)
     
-    const string got = hexEncode(rng.random_vec(out_len));
+    const string got = hexEncode(rng.randomVec(out_len));
     
     if (got != output)
     {

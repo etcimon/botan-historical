@@ -113,10 +113,10 @@ public:
                                        " bit cipher " ~ m_cipher.name);
         }
         
-        m_state.resize(output_length());
-        m_buffer.resize(output_length());
-        m_B.resize(output_length());
-        m_P.resize(output_length());
+        m_state.resize(outputLength());
+        m_buffer.resize(outputLength());
+        m_B.resize(outputLength());
+        m_P.resize(outputLength());
         m_position = 0;
     }
 
@@ -126,19 +126,19 @@ private:
     */
     void addData(in ubyte* input, size_t length)
     {
-        buffer_insert(m_buffer, m_position, input, length);
-        if (m_position + length > output_length())
+        bufferInsert(m_buffer, m_position, input, length);
+        if (m_position + length > outputLength())
         {
-            xorBuf(m_state, m_buffer, output_length());
+            xorBuf(m_state, m_buffer, outputLength());
             m_cipher.encrypt(m_state);
-            input += (output_length() - m_position);
-            length -= (output_length() - m_position);
-            while (length > output_length())
+            input += (outputLength() - m_position);
+            length -= (outputLength() - m_position);
+            while (length > outputLength())
             {
-                xorBuf(m_state, input, output_length());
+                xorBuf(m_state, input, outputLength());
                 m_cipher.encrypt(m_state);
-                input += output_length();
-                length -= output_length();
+                input += outputLength();
+                length -= outputLength();
             }
             copyMem(m_buffer.ptr, input, length);
             m_position = 0;
@@ -153,19 +153,19 @@ private:
     {
         xorBuf(m_state, m_buffer, m_position);
         
-        if (m_position == output_length())
+        if (m_position == outputLength())
         {
-            xorBuf(m_state, m_B, output_length());
+            xorBuf(m_state, m_B, outputLength());
         }
         else
         {
             m_state[m_position] ^= 0x80;
-            xorBuf(m_state, m_P, output_length());
+            xorBuf(m_state, m_P, outputLength());
         }
         
         m_cipher.encrypt(m_state);
         
-        for (size_t i = 0; i != output_length(); ++i)
+        for (size_t i = 0; i != outputLength(); ++i)
             mac[i] = m_state[i];
         
         zeroise(m_state);
@@ -181,8 +181,8 @@ private:
         clear();
         m_cipher.setKey(key, length);
         m_cipher.encrypt(m_B);
-        m_B = poly_double(m_B);
-        m_P = poly_double(m_B);
+        m_B = polyDouble(m_B);
+        m_P = polyDouble(m_B);
     }
 
 

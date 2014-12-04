@@ -257,7 +257,7 @@ PathValidationResult
                        in Vector!CertificateStore certstores)
 {
     if (end_certs.empty)
-        throw new InvalidArgument("x509_path_validate called with no subjects");
+        throw new InvalidArgument("x509PathValidate called with no subjects");
     
     Vector!X509Certificate cert_path;
     cert_path.pushBack(end_certs[0]);
@@ -288,7 +288,7 @@ PathValidationResult x509PathValidate(in X509Certificate end_cert,
 {
     Vector!X509Certificate certs;
     certs.pushBack(end_cert);
-    return x509_path_validate(certs, restrictions, certstores);
+    return x509PathValidate(certs, restrictions, certstores);
 }
 
 /**
@@ -305,7 +305,7 @@ PathValidationResult x509PathValidate(in X509Certificate end_cert,
     Vector!CertificateStore certstores;
     certstores.pushBack(&store);
     
-    return x509_path_validate(certs, restrictions, certstores);
+    return x509PathValidate(certs, restrictions, certstores);
 }
 /**
 * PKIX Path Validation
@@ -317,7 +317,7 @@ PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
     Vector!CertificateStore certstores;
     certstores.pushBack(&store);
     
-    return x509_path_validate(end_certs, restrictions, certstores);
+    return x509PathValidate(end_certs, restrictions, certstores);
 }
 
 X509Certificate findIssuingCert(in X509Certificate cert,

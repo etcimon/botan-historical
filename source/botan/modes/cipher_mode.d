@@ -55,7 +55,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
     
     size_t fails = 0;
     
-    const string ct2 = hexEncode(run_mode(algo, ENCRYPTION, hexDecodeLocked(pt), nonce, key));
+    const string ct2 = hexEncode(runMode(algo, ENCRYPTION, hexDecodeLocked(pt), nonce, key));
     atomicOp!"+="(total_tests, 1);
     if (ct != ct2)
     {
@@ -63,7 +63,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
         ++fails;
     }
     
-    const string pt2 = hexEncode(run_mode(algo, DECRYPTION, hexDecodeLocked(ct), nonce, key));
+    const string pt2 = hexEncode(runMode(algo, DECRYPTION, hexDecodeLocked(ct), nonce, key));
     atomicOp!"+="(total_tests, 1);
     if (pt != pt2)
     {

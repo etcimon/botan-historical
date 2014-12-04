@@ -78,7 +78,7 @@ private:
     {
         m_hash.flushInto(mac);
         m_hash.update(m_okey);
-        m_hash.update(mac, output_length());
+        m_hash.update(mac, outputLength());
         m_hash.flushInto(mac);
         m_hash.update(m_ikey);
     }

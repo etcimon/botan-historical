@@ -35,7 +35,7 @@ string generatePasshash9(in string pass,
                           ushort work_factor = 10,
                           ubyte alg_id = 1)
 {
-    MessageAuthenticationCode prf = get_pbkdf_prf(alg_id);
+    MessageAuthenticationCode prf = getPbkdfPrf(alg_id);
     
     if (!prf)
         throw new InvalidArgument("Passhash9: Algorithm id " ~ to!string(alg_id) ~ " is not defined");
@@ -87,7 +87,7 @@ bool checkPasshash9(in string password, in string hash)
     pipe.write(hash.toStringz + MAGIC_PREFIX.length);
     pipe.endMsg();
     
-    SecureVector!ubyte bin = pipe.read_all();
+    SecureVector!ubyte bin = pipe.readAll();
     
     if (bin.length != BINARY_LENGTH)
         return false;
@@ -105,7 +105,7 @@ bool checkPasshash9(in string password, in string hash)
     
     const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
     
-    MessageAuthenticationCode pbkdf_prf = get_pbkdf_prf(alg_id);
+    MessageAuthenticationCode pbkdf_prf = getPbkdfPrf(alg_id);
     
     if (!pbkdf_prf)
         return false; // unknown algorithm, reject
@@ -116,7 +116,7 @@ bool checkPasshash9(in string password, in string hash)
                                              &binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
                                              kdf_iterations).bitsOf();
     
-    return same_mem(cmp.ptr, &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
+    return sameMem(cmp.ptr, &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
 }
 
 private:

@@ -131,7 +131,7 @@ public:
     {
         PointGFp minus_rhs = PointGFp(rhs).negate();
         
-        if (is_zero())
+        if (isZero())
             this = minus_rhs;
         else
             this += minus_rhs;
@@ -170,7 +170,7 @@ public:
         
         if (scalar.abs() <= 2) // special cases for small values
         {
-            ubyte value = scalar.abs().byte_at(0);
+            ubyte value = scalar.abs().byteAt(0);
             
             PointGFp result = point;
             
@@ -237,7 +237,7 @@ public:
                 foreach (size_t i; 0 .. window_size)
                     H.mult2(ws);
                 
-                const uint nibble = scalar.get_substring(bits_left - window_size,
+                const uint nibble = scalar.getSubstring(bits_left - window_size,
                                                          window_size);
                 
                 H.add(Ps[nibble], ws);
@@ -308,7 +308,7 @@ public:
     */
     ref PointGFp negate()
     {
-        if (!is_zero())
+        if (!isZero())
             coord_y = curve.getP() - coord_y;
         return this;
     }
@@ -325,7 +325,7 @@ public:
     */
     BigInt getAffineX() const
     {
-        if (is_zero())
+        if (isZero())
             throw new IllegalTransformation("Cannot convert zero point to affine");
         
         const BigInt r2 = curve.getR2();
@@ -343,7 +343,7 @@ public:
     */
     BigInt getAffineY() const
     {
-        if (is_zero())
+        if (isZero())
             throw new IllegalTransformation("Cannot convert zero point to affine");
         
         const BigInt r2 = curve.getR2();
@@ -375,7 +375,7 @@ public:
         (or internal computational error), then return false.
         */
         
-        if (is_zero())
+        if (isZero())
             return true;
         
         BigInt y2 = montyMult(montySqr(coord_y), 1);
@@ -428,7 +428,7 @@ public:
             return false;
         
         // If this is zero, only equal if other is also zero
-        if (is_zero())
+        if (isZero())
             return other.isZero();
         
         return (getAffineX() == other.getAffineX() &&
@@ -532,7 +532,7 @@ private:
     */
     void add(in PointGFp rhs, ref Vector!BigInt ws_bn)
     {
-        if (is_zero())
+        if (isZero())
         {
             coord_x = rhs.coord_x;
             coord_y = rhs.coord_y;
@@ -616,7 +616,7 @@ private:
     */
     void mult2(ref Vector!BigInt ws_bn)
     {
-        if (is_zero())
+        if (isZero())
             return;
         else if (coord_y.isZero())
         {

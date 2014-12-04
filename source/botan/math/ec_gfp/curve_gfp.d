@@ -81,7 +81,7 @@ public:
     word getPDash() const { return m_p_dash; }
 
     /**
-    * @return p.sig_words()
+    * @return p.sigWords()
     */
     size_t getPWords() const { return m_p_words; }
 
@@ -132,7 +132,7 @@ private:
     // Curve parameters
     BigInt m_p, m_a, m_b;
 
-    size_t m_p_words; // cache of m_p.sig_words()
+    size_t m_p_words; // cache of m_p.sigWords()
 
     // Montgomery parameters
     BigInt m_r2, m_a_r, m_b_r;

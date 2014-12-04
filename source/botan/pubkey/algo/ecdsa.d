@@ -95,13 +95,13 @@ public:
 
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!public_point().onTheCurve())
+        if (!publicPoint().onTheCurve())
             return false;
         
         if (!strong)
             return true;
         
-        return signature_consistency_check(rng, this, "EMSA1(SHA-1)");
+        return signatureConsistencyCheck(rng, this, "EMSA1(SHA-1)");
     }
 }
 
@@ -193,7 +193,7 @@ public:
         
         BigInt w = inverseMod(s, m_order);
         
-        PointGFp R = w * multi_exponentiate(m_base_point, e, m_public_point, r);
+        PointGFp R = w * multiExponentiate(m_base_point, e, m_public_point, r);
         
         if (R.isZero())
             return false;
@@ -261,14 +261,14 @@ size_t testHashLargerThanN(RandomNumberGenerator rng)
     PKSigner pk_signer_224 = PKSigner(priv_key, "EMSA1_BSI(SHA-224)");
     
     // Verify we can sign and verify with SHA-160
-    Vector!ubyte signature_160 = pk_signer_160.sign_message(message, rng);
+    Vector!ubyte signature_160 = pk_signer_160.signMessage(message, rng);
     
-    mixin( CHECK(` PKVerifier_160.verify_message(message, signature_160) `) );
+    mixin( CHECK(` PKVerifier_160.verifyMessage(message, signature_160) `) );
     
     bool signature_failed = false;
     try
     {
-        Vector!ubyte signature_224 = pk_signer_224.sign_message(message, rng);
+        Vector!ubyte signature_224 = pk_signer_224.signMessage(message, rng);
     }
     catch(EncodingError)
     {
@@ -281,7 +281,7 @@ size_t testHashLargerThanN(RandomNumberGenerator rng)
     
     // sign it with the normal EMSA1
     PKSigner pk_signer = PKSigner(priv_key, "EMSA1(SHA-224)");
-    Vector!ubyte signature = pk_signer.sign_message(message, rng);
+    Vector!ubyte signature = pk_signer.signMessage(message, rng);
     
     PKVerifier PKVerifier = PKVerifier(priv_key, "EMSA1_BSI(SHA-224)");
     
@@ -304,9 +304,9 @@ size_t testDecodeEcdsaX509()
     
     mixin( CHECK_MESSAGE( OIDS.lookup(cert.signatureAlgorithm().oid) == "ECDSA/EMSA1(SHA-224)", "error reading signature algorithm from x509 ecdsa certificate" ) );
     
-    mixin( CHECK_MESSAGE( to_hex(cert.serialNumber()) == "01", "error reading serial from x509 ecdsa certificate" ) );
-    mixin( CHECK_MESSAGE( to_hex(cert.authorityKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7", "error reading authority key id from x509 ecdsa certificate" ) );
-    mixin( CHECK_MESSAGE( to_hex(cert.subjectKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7", "error reading Subject key id from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( toHex(cert.serialNumber()) == "01", "error reading serial from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( toHex(cert.authorityKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7", "error reading authority key id from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( toHex(cert.subjectKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7", "error reading Subject key id from x509 ecdsa certificate" ) );
     
     Unique!X509PublicKey pubkey = cert.subjectPublicKey();
     bool ver_ec = cert.checkSignature(*pubkey);
@@ -353,11 +353,11 @@ size_t testSignThenVer(RandomNumberGenerator rng)
     PKSigner signer = PKSigner(ecdsa, "EMSA1(SHA-1)");
     
     auto msg = hexDecode("12345678901234567890abcdef12");
-    Vector!ubyte sig = signer.sign_message(msg, rng);
+    Vector!ubyte sig = signer.signMessage(msg, rng);
     
     PKVerifier verifier = PKVerifier(ecdsa, "EMSA1(SHA-1)");
     
-    bool ok = verifier.verify_message(msg, sig);
+    bool ok = verifier.verifyMessage(msg, sig);
     
     if (!ok)
     {
@@ -476,11 +476,11 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     File priv_key = File("test_data/ecc/dompar_private.pkcs8.pem");
     priv_key.write( pkcs8.PEM_encode(key) );
     
-    Unique!PKCS8PrivateKey loaded_key = pkcs8.load_key("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
+    Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
     ECDSAPrivateKey* loaded_ec_key = cast(ECDSAPrivateKey)(*loaded_key);
     mixin( CHECK_MESSAGE( loaded_ec_key, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
     
-    Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.load_key("test_data/ecc/rsa_private.pkcs8.pem", rng);
+    Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("test_data/ecc/rsa_private.pkcs8.pem", rng);
     ECDSAPrivateKey loaded_rsa_key = cast(ECDSAPrivateKey)(*loaded_key_1);
     mixin( CHECK_MESSAGE( !loaded_rsa_key, "the loaded key is ECDSAPrivateKey -> shouldn't be, is a RSA-Key" ) );
     
@@ -514,7 +514,7 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     string key_odd_oid_str = pkcs8.PEM_encode(key_odd_oid);
     
     auto key_data_src = scoped!DataSourceMemory(key_odd_oid_str);
-    Unique!PKCS8PrivateKey loaded_key2 = pkcs8.load_key(key_data_src, rng);
+    Unique!PKCS8PrivateKey loaded_key2 = pkcs8.loadKey(key_data_src, rng);
     
     if (!cast(ECDSAPrivateKey)(*loaded_key))
     {
@@ -573,7 +573,7 @@ size_t testCurveRegistry(RandomNumberGenerator rng)
             PKVerifier verifier = PKVerifier(ecdsa, "EMSA1(SHA-1)");
             
             auto msg = hexDecode("12345678901234567890abcdef12");
-            Vector!ubyte sig = signer.sign_message(msg, rng);
+            Vector!ubyte sig = signer.signMessage(msg, rng);
             
             if (!verifier.verifyMessage(msg, sig))
             {
@@ -598,13 +598,13 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
     
     try
     {
-        Unique!PKCS8PrivateKey loaded_key = pkcs8.load_key("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
+        Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
         ECDSAPrivateKey ecdsa = cast(ECDSAPrivateKey)(*loaded_key);
         mixin( CHECK_MESSAGE( ecdsa, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
         
         PKSigner signer = PKSigner(ecdsa, "EMSA1(SHA-1)");
         
-        Vector!ubyte sig = signer.sign_message(msg, rng);
+        Vector!ubyte sig = signer.signMessage(msg, rng);
         
         PKVerifier verifier = PKVerifier(ecdsa, "EMSA1(SHA-1)");
         
@@ -618,7 +618,7 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
     
     try
     {
-        Unique!PKCS8PrivateKey loaded_key_nodp = pkcs8.load_key("test_data/ecc/nodompar_private.pkcs8.pem", rng);
+        Unique!PKCS8PrivateKey loaded_key_nodp = pkcs8.loadKey("test_data/ecc/nodompar_private.pkcs8.pem", rng);
         // anew in each test with unregistered domain-parameters
         ECDSAPrivateKey ecdsa_nodp = cast(ECDSAPrivateKey)(*loaded_key_nodp);
         mixin( CHECK_MESSAGE( ecdsa_nodp, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
@@ -626,14 +626,14 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
         PKSigner signer = PKSigner(ecdsa_nodp, "EMSA1(SHA-1)");
         PKVerifier verifier = PKVerifier(ecdsa_nodp, "EMSA1(SHA-1)");
         
-        Vector!ubyte signature_nodp = signer.sign_message(msg, rng);
+        Vector!ubyte signature_nodp = signer.signMessage(msg, rng);
         
         mixin( CHECK_MESSAGE(verifier.verifyMessage(msg, signature_nodp),
                              "generated signature could not be verified positively (no_dom)"));
         
         try
         {
-            Unique!PKCS8PrivateKey loaded_key_withdp = pkcs8.load_key("test_data/ecc/withdompar_private.pkcs8.pem", rng);
+            Unique!PKCS8PrivateKey loaded_key_withdp = pkcs8.loadKey("test_data/ecc/withdompar_private.pkcs8.pem", rng);
             
             writeln("Unexpected success: loaded key with unknown OID");
             ++fails;
@@ -656,7 +656,7 @@ size_t testEccKeyWithRfc5915Extensions(RandomNumberGenerator rng)
     
     try
     {
-        Unique!PKCS8PrivateKey pkcs8 = pkcs8.load_key("test_data/ecc/ecc_private_with_rfc5915_ext.pem", rng);
+        Unique!PKCS8PrivateKey pkcs8 = pkcs8.loadKey("test_data/ecc/ecc_private_with_rfc5915_ext.pem", rng);
         
         if (!cast(ECDSAPrivateKey)(*pkcs8))
         {

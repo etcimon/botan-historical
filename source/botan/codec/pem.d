@@ -143,7 +143,7 @@ struct PEM
                                         in string label_want)
     {
         auto src = scoped!DataSourceMemory(pem);
-        return decode_check_label(src, label_want);
+        return decodeCheckLabel(src, label_want);
     }
 
     /**

@@ -44,7 +44,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
     else if (compare > 0)
     {
         size_t shifts = 0;
-        word y_top = y.word_at(y.sig_words()-1);
+        word y_top = y.wordAt(y.sig_words()-1);
         while (y_top < MP_WORD_TOP_BIT) { y_top <<= 1; ++shifts; }
         y <<= shifts;
         r <<= shifts;
@@ -72,9 +72,9 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
         
         for (size_t j = n; j != t; --j)
         {
-            const word x_j0  = r.word_at(j);
-            const word x_j1 = r.word_at(j-1);
-            const word y_t  = y.word_at(t);
+            const word x_j0  = r.wordAt(j);
+            const word x_j1 = r.wordAt(j-1);
+            const word y_t  = y.wordAt(t);
             
             if (x_j0 == y_t)
                 q_words[j-t-1] = MP_WORD_MAX;

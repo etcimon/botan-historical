@@ -239,10 +239,10 @@ void loadLittleEndian(T)(T* output, in ubyte* input, size_t count)
             const size_t left = count - blocks;
 
             for (size_t i = 0; i != blocks; i += 4)
-                bswap_4(*cast(T[4]*) (output + i));
+                bswap4(*cast(T[4]*) (output + i));
 
             foreach (size_t i; 0 .. left)
-                output[blocks+i] = reverse_bytes(output[blocks+i]);
+                output[blocks+i] = reverseBytes(output[blocks+i]);
         }
     } else {
         foreach (size_t i; 0 .. count)
@@ -322,10 +322,10 @@ void loadBigEndian(T)(T* output, in ubyte* input, size_t count)
             const size_t left = count - blocks;
 
             for (size_t i = 0; i != blocks; i += 4)
-                bswap_4(*cast(T[4]*) (output + i));
+                bswap4(*cast(T[4]*) (output + i));
 
             foreach (size_t i; 0 .. left)
-                output[blocks+i] = reverse_bytes(output[blocks+i]);
+                output[blocks+i] = reverseBytes(output[blocks+i]);
         }
 
     } else {

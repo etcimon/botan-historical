@@ -226,7 +226,7 @@ unittest
             
             auto restrictions = Path_Validation_Restrictions(true);
             
-            Path_Validation_Result validation_result = x509_path_validate(end_user,restrictions, store);
+            Path_Validation_Result validation_result = x509PathValidate(end_user,restrictions, store);
             auto expected = expected_results[test_no];
             Certificate_Status_Code result = validation_result.result();
             if (result != expected)

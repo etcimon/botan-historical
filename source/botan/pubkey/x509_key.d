@@ -63,7 +63,7 @@ PublicKey loadKey(DataSource source)
         AlgorithmIdentifier alg_id;
         SecureVector!ubyte key_bits;
         
-        if (maybe_BER(source) && !PEM.matches(source))
+        if (maybeBER(source) && !PEM.matches(source))
         {
             BERDecoder(source)
                     .startCons(ASN1Tag.SEQUENCE)
@@ -74,7 +74,7 @@ PublicKey loadKey(DataSource source)
         }
         else
         {
-            auto ber = scoped!DataSourceMemory(PEM.decode_check_label(source, "PUBLIC KEY"));
+            auto ber = scoped!DataSourceMemory(PEM.decodeCheckLabel(source, "PUBLIC KEY"));
             
             BERDecoder(ber)
                     .startCons(ASN1Tag.SEQUENCE)
@@ -152,7 +152,7 @@ ulong keyId(const PublicKey* key)
     pipe.write(key.x509SubjectPublicKey());
     pipe.endMsg();
     
-    SecureVector!ubyte output = pipe.read_all();
+    SecureVector!ubyte output = pipe.readAll();
     
     if (output.length != 8)
         throw new InternalError("PublicKey::key_id: Incorrect output size");
@@ -171,7 +171,7 @@ X509CertOptions caOpts()
     
     opts.uri = "http://botan.randombit.net";
     opts.dns = "botan.randombit.net";
-    opts.email = "testing@randombit.net";
+    opts.email = "testing@globecsys.com";
     
     opts.cAKey(1);
     
@@ -184,7 +184,7 @@ X509CertOptions reqOpts1()
     
     opts.uri = "http://botan.randombit.net";
     opts.dns = "botan.randombit.net";
-    opts.email = "testing@randombit.net";
+    opts.email = "testing@globecsys.com";
     
     return opts;
 }
@@ -209,12 +209,12 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
     
     const string passphrase = "I need work! -Mr. T";
     DataSourceMemory enc_source = pkcs8.PEM_encode(orig, rng, passphrase);
-    PrivateKey copy_priv_enc = pkcs8.load_key(enc_source, rng, passphrase);
+    PrivateKey copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
     
-    ulong orig_id = key_id(&orig);
-    ulong pub_id = key_id(copy_pub);
-    ulong priv_id = key_id(copy_priv);
-    ulong priv_enc_id = key_id(copy_priv_enc);
+    ulong orig_id = keyId(&orig);
+    ulong pub_id = keyId(copy_pub);
+    ulong priv_id = keyId(copy_priv);
+    ulong priv_enc_id = keyId(copy_priv_enc);
     
     delete copy_pub;
     delete copy_priv;
@@ -238,11 +238,11 @@ unittest
     /* Create the CA's key and self-signed cert */
     auto ca_key = scoped!RSAPrivateKey(rng, 2048);
     
-    X509Certificate ca_cert = x509self.createSelfSignedCert(ca_opts(), ca_key, hash_fn, rng);
+    X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), ca_key, hash_fn, rng);
     /* Create user #1's key and cert request */
     auto user1_key = scoped!DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
     
-    PKCS10Request user1_req = x509self.create_cert_req(req_opts1(), user1_key, "SHA-1", rng);
+    PKCS10Request user1_req = x509self.createCertReq(req_opts1(), user1_key, "SHA-1", rng);
     
     /* Create user #2's key and cert request */
     static if (BOTAN_HAS_ECDSA) {
@@ -252,7 +252,7 @@ unittest
         RSAPrivateKey user2_key = scoped!RSAPrivateKey(rng, 1536);
     } else static assert(false, "Must have ECSA or RSA for X509!");
     
-    PKCS10Request user2_req = x509self.create_cert_req(req_opts2(), user2_key, hash_fn, rng);
+    PKCS10Request user2_req = x509self.createCertReq(req_opts2(), user2_key, hash_fn, rng);
     
     /* Create the CA object */
     X509_CA ca = X509_CA(ca_cert, ca_key, hash_fn);
@@ -270,14 +270,14 @@ unittest
     
     Path_Validation_Restrictions restrictions = Path_Validation_Restrictions(false);
     
-    Path_Validation_Result result_u1 = x509_path_validate(user1_cert, restrictions, store);
+    Path_Validation_Result result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (!result_u1.successfulValidation())
     {
         writeln("FAILED: User cert #1 did not validate - " ~ result_u1.resultString());
         ++fails;
     }
     
-    Path_Validation_Result result_u2 = x509_path_validate(user2_cert, restrictions, store);
+    Path_Validation_Result result_u2 = x509PathValidate(user2_cert, restrictions, store);
     if (!result_u2.successfulValidation())
     {
         writeln("FAILED: User cert #2 did not validate - " ~ result_u2.resultString());
@@ -294,14 +294,14 @@ unittest
     
     store.addCrl(crl2);
     
-    result_u1 = x509_path_validate(user1_cert, restrictions, store);
+    result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (result_u1.result() != Certificate_Status_Code.CERT_IS_REVOKED)
     {
         writeln("FAILED: User cert #1 was not revoked - " ~ result_u1.resultString());
         ++fails;
     }
     
-    result_u2 = x509_path_validate(user2_cert, restrictions, store);
+    result_u2 = x509PathValidate(user2_cert, restrictions, store);
     if (result_u2.result() != Certificate_Status_Code.CERT_IS_REVOKED)
     {
         writeln("FAILED: User cert #2 was not revoked - " ~ result_u2.resultString());
@@ -314,7 +314,7 @@ unittest
     
     store.addCrl(crl3);
     
-    result_u1 = x509_path_validate(user1_cert, restrictions, store);
+    result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (!result_u1.successfulValidation())
     {
         writeln("FAILED: User cert #1 was not un-revoked - " ~ result_u1.resultString());

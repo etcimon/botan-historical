@@ -128,7 +128,7 @@ BigInt square(in BigInt x)
 {
     const size_t x_sw = x.sig_words();
     
-    BigInt z = BigInt(BigInt.Positive, round_up!size_t(2*x_sw, 16));
+    BigInt z = BigInt(BigInt.Positive, roundUp!size_t(2*x_sw, 16));
     SecureVector!word workspace = SecureVector!word(z.length);
     
     bigint_sqr(z.mutableData(), z.length, workspace.ptr, x.data(), x.length, x_sw);
@@ -152,7 +152,7 @@ BigInt inverseMod(in BigInt n, in BigInt mod)
         return 0; // fast fail checks
     
     if (mod.isOdd())
-        return inverseMod_odd_modulus(n, mod);
+        return inverseModOddModulus(n, mod);
     
     BigInt u = mod, v = n;
     BigInt A = 1, B = 0, C = 0, D = 1;
@@ -394,7 +394,7 @@ size_t lowZeroBits(in BigInt n)
     {
         for (size_t i = 0; i != n.length; ++i)
         {
-            const word x = n.word_at(i);
+            const word x = n.wordAt(i);
             
             if (x)
             {
@@ -429,7 +429,7 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng,
     // Fast path testing for small numbers (<= 65521)
     if (n <= PRIMES[PRIME_TABLE_SIZE-1])
     {
-        const ushort num = n.word_at(0);
+        const ushort num = n.wordAt(0);
         auto r = assumeSorted(PRIMES);
         return r.equalRange(num).front;
     }

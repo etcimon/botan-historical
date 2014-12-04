@@ -44,13 +44,13 @@ public:
     size_t receivedData(in ubyte* input, size_t input_size)
     {
         const auto get_cipherstate = (ushort epoch)
-        { return this.read_cipher_state_epoch(epoch); };
+        { return this.readCipherStateEpoch(epoch); };
         
         const size_t max_fragment_size = maximumFragmentSize();
         
         try
         {
-            while (!is_closed() && input_size)
+            while (!isClosed() && input_size)
             {
                 SecureVector!ubyte record;
                 ulong record_sequence = 0;
@@ -104,14 +104,14 @@ public:
                             if (msg.first == HANDSHAKE_NONE) // no full handshake yet
                                 break;
                             
-                            process_handshake_msg(active_state(), *pending,
+                            process_handshake_msg(activeState(), *pending,
                                                   msg.first, msg.second);
                         } else break;
                     }
                 }
                 else if (record_type == HEARTBEAT && peer_supports_heartbeats())
                 {
-                    if (!active_state())
+                    if (!activeState())
                         throw new TLSUnexpectedMessage("Heartbeat sent before handshake done");
                     
                     Heartbeat_Message heartbeat = Heartbeat_Message(unlock(record));
@@ -120,7 +120,7 @@ public:
                     
                     if (heartbeat.isRequest())
                     {
-                        if (!pending_state())
+                        if (!pendingState())
                         {
                             Heartbeat_Message response = Heartbeat_Message(Heartbeat_Message.RESPONSE,
                                                        payload.ptr, payload.length);
@@ -135,7 +135,7 @@ public:
                 }
                 else if (record_type == APPLICATION_DATA)
                 {
-                    if (!active_state())
+                    if (!activeState())
                         throw new TLSUnexpectedMessage("Application data before handshake done");
                             
                     /*
@@ -157,7 +157,7 @@ public:
                 
                 if (alert_msg.isFatal())
                 {
-                    if (auto active = active_state())
+                    if (auto active = activeState())
                         m_session_manager.removeEntry(active.serverHello().sessionId());
                 }
                         
@@ -213,7 +213,7 @@ public:
     */
     void send(in ubyte* buf, size_t buf_size)
     {
-        if (!is_active())
+        if (!isActive())
             throw new Exception("Data cannot be sent on inactive TLS connection");
         
         sendRecordArray(sequence_numbers().currentWriteEpoch(), APPLICATION_DATA, buf, buf_size);
@@ -244,7 +244,7 @@ public:
     */
     void sendAlert(in TLSAlert alert)
     {
-        if (alert.isValid() && !is_closed())
+        if (alert.isValid() && !isClosed())
         {
             try
             {
@@ -257,7 +257,7 @@ public:
             m_pending_state.clear();
         
         if (alert.isFatal())
-            if (auto active = active_state())
+            if (auto active = activeState())
                 m_session_manager.removeEntry(active.serverHello().sessionId());
         
         if (alert.type() == TLSAlert.CLOSE_NOTIFY || alert.isFatal())
@@ -267,12 +267,12 @@ public:
     /**
     * Send a warning alert
     */
-    void sendWarningAlert(TLSAlertType type) { send_alert(TLSAlert(type, false)); }
+    void sendWarningAlert(TLSAlertType type) { sendAlert(TLSAlert(type, false)); }
 
     /**
     * Send a fatal alert
     */
-    void sendFatalAlert(TLSAlertType type) { send_alert(TLSAlert(type, true)); }
+    void sendFatalAlert(TLSAlertType type) { sendAlert(TLSAlert(type, true)); }
 
     /**
     * Send a close notification alert
@@ -284,7 +284,7 @@ public:
     */
     bool isActive() const
     {
-        return (active_state() != null);
+        return (activeState() != null);
     }
 
     /**
@@ -292,7 +292,7 @@ public:
     */
     bool isClosed() const
     {
-        if (active_state() || pending_state())
+        if (activeState() || pendingState())
             return false;
         
         /*
@@ -311,10 +311,10 @@ public:
     */
     void renegotiate(bool force_full_renegotiation = false)
     {
-        if (pending_state()) // currently in handshake?
+        if (pendingState()) // currently in handshake?
             return;
         
-        if (HandshakeState active = active_state())
+        if (HandshakeState active = activeState())
             initiate_handshake(createHandshakeState(active.Version()),
                                force_full_renegotiation);
         else
@@ -326,7 +326,7 @@ public:
     */
     bool peerSupportsHeartbeats() const
     {
-        if (HandshakeState active = active_state())
+        if (HandshakeState active = activeState())
             return active.serverHello().supportsHeartbeats();
         return false;
     }
@@ -336,7 +336,7 @@ public:
     */
     bool heartbeatSendingAllowed() const
     {
-        if (HandshakeState active = active_state())
+        if (HandshakeState active = activeState())
             return active.serverHello().peerCanSendHeartbeats();
         return false;
     }
@@ -373,7 +373,7 @@ public:
     */
     Vector!X509Certificate peerCertChain() const
     {
-        if (HandshakeState active = active_state())
+        if (HandshakeState active = activeState())
             return getPeerCertChain(*active);
         return Vector!X509Certificate();
     }
@@ -389,7 +389,7 @@ public:
                                      in string context,
                                      size_t length) const
     {
-        if (auto active = active_state())
+        if (auto active = activeState())
         {
             Unique!KDF prf = active.protocolSpecificPrf();
             
@@ -459,10 +459,10 @@ protected:
 
     HandshakeState createHandshakeState(TLSProtocolVersion _version)
     {
-        if (pending_state())
+        if (pendingState())
             throw new InternalError("createHandshakeState called during handshake");
         
-        if (HandshakeState active = active_state())
+        if (HandshakeState active = activeState())
         {
             TLSProtocolVersion active_version = active.Version();
             
@@ -487,7 +487,7 @@ protected:
         
         m_pending_state = new_handshake_state(*io);
         
-        if (auto active = active_state())
+        if (auto active = activeState())
             m_pending_state.setVersion(active.Version());
         
         return *m_pending_state;
@@ -520,7 +520,7 @@ protected:
 
     void changeCipherSpecReader(ConnectionSide side)
     {
-        auto pending = pending_state();
+        auto pending = pendingState();
         
         assert(pending && pending.serverHello(), "Have received server hello");
         
@@ -545,7 +545,7 @@ protected:
 
     void changeCipherSpecWriter(ConnectionSide side)
     {
-        auto pending = pending_state();
+        auto pending = pendingState();
         
         assert(pending && pending.serverHello(), "Have received server hello");
         
@@ -572,7 +572,7 @@ protected:
     {
         const bool secure_renegotiation = client_hello.secureRenegotiation();
         
-        if (auto active = active_state())
+        if (auto active = activeState())
         {
             const bool active_sr = active.clientHello().secureRenegotiation();
             
@@ -593,7 +593,7 @@ protected:
     {
         const bool secure_renegotiation = server_hello.secureRenegotiation();
         
-        if (auto active = active_state())
+        if (auto active = activeState())
         {
             const bool active_sr = active.clientHello().secureRenegotiation();
             
@@ -612,14 +612,14 @@ protected:
 
     Vector!ubyte secureRenegotiationDataForClientHello() const
     {
-        if (auto active = active_state())
+        if (auto active = activeState())
             return active.clientFinished().verifyData();
         return Vector!ubyte();
     }
 
     Vector!ubyte secureRenegotiationDataForServerHello() const
     {
-        if (auto active = active_state())
+        if (auto active = activeState())
         {
             Vector!ubyte buf = active.client_finished().verify_data();
             buf ~= active.serverFinished().verifyData();
@@ -631,10 +631,10 @@ protected:
 
     bool secureRenegotiationSupported() const
     {
-        if (auto active = active_state())
+        if (auto active = activeState())
             return active.serverHello().secureRenegotiation();
         
-        if (auto pending = pending_state())
+        if (auto pending = pendingState())
             if (auto hello = pending.serverHello())
                 return hello.secureRenegotiation();
         
@@ -653,12 +653,12 @@ private:
     {
         // should we be caching this value?
         
-        if (auto pending = pending_state())
+        if (auto pending = pendingState())
             if (auto server_hello = pending.serverHello())
                 if (size_t frag = server_hello.fragmentSize())
                     return frag;
         
-        if (auto active = active_state())
+        if (auto active = activeState())
             if (size_t frag = active.serverHello().fragmentSize())
                 return frag;
         

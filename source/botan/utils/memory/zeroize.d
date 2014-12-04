@@ -31,13 +31,13 @@ final class ZeroizeAllocator(Base : Allocator)
         if (void[] p = m_primary.alloc(n))
             return p;
         void[] p = m_secondary.alloc(n);
-        clear_mem(p, n);
+        clearMem(p, n);
         return p;
     }
 
     void free(void[] mem)
     {
-        clear_mem(mem.ptr, mem.length);
+        clearMem(mem.ptr, mem.length);
         if (m_primary.free(mem))
             return;
         m_secondary.free(mem);
@@ -75,7 +75,7 @@ size_t bufferInsert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, 
 */
 void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
 {
-    clear_mem(vec.ptr, vec.length);
+    clearMem(vec.ptr, vec.length);
 }
 
 /**

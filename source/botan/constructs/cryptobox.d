@@ -88,7 +88,7 @@ struct CryptoBox {
     static string decrypt(in ubyte* input, size_t input_len, in string passphrase)
     {
         DataSourceMemory inputSrc(input, input_len);
-        SecureVector!ubyte ciphertext = PEM.decode_check_label(input_src, "BOTAN CRYPTOBOX MESSAGE");
+        SecureVector!ubyte ciphertext = PEM.decodeCheckLabel(input_src, "BOTAN CRYPTOBOX MESSAGE");
         
         if (ciphertext.length < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
             throw new DecodingError("Invalid CryptoBox input");
@@ -124,7 +124,7 @@ struct CryptoBox {
         ubyte[MAC_OUTPUT_LEN] computed_mac;
         pipe.read(computed_mac, MAC_OUTPUT_LEN, 1);
         
-        if (!same_mem(computed_mac, &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN], MAC_OUTPUT_LEN))
+        if (!sameMem(computed_mac, &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN], MAC_OUTPUT_LEN))
             throw new DecodingError("CryptoBox integrity failure");
         
         return pipe.toString(0);
@@ -180,7 +180,7 @@ unittest
     {
         string plaintext = CryptoBox.decrypt(ciphertext, "secret password");
         
-        if (plaintext.length != msg.length || !same_mem(cast(const ubyte*)(&plaintext[0]), msg.ptr, msg.length))
+        if (plaintext.length != msg.length || !sameMem(cast(const ubyte*)(&plaintext[0]), msg.ptr, msg.length))
             ++fails;
         
     }

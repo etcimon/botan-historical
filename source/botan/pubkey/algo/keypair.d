@@ -35,7 +35,7 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
     if (encryptor.maximumInputSize() == 0)
         return true;
     
-    Vector!ubyte plaintext = unlock(rng.random_vec(encryptor.maximumInputSize() - 1));
+    Vector!ubyte plaintext = unlock(rng.randomVec(encryptor.maximumInputSize() - 1));
     
     Vector!ubyte ciphertext = encryptor.encrypt(plaintext, rng);
     if (ciphertext == plaintext)
@@ -60,7 +60,7 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
 {
     auto signer = PKSigner(key, padding);
     auto verifier = PKVerifier(key, padding);
-    Vector!ubyte message = unlock(rng.random_vec(16));
+    Vector!ubyte message = unlock(rng.randomVec(16));
     
     Vector!ubyte signature;
     

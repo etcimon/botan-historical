@@ -69,22 +69,22 @@ private:
     */
     void addData(in ubyte* input, size_t length)
     {
-        size_t xored = std.algorithm.min(output_length() - m_position, length);
+        size_t xored = std.algorithm.min(outputLength() - m_position, length);
         xorBuf(&m_state[m_position], input, xored);
         m_position += xored;
         
-        if (m_position < output_length())
+        if (m_position < outputLength())
             return;
         
         m_cipher.encrypt(m_state);
         input += xored;
         length -= xored;
-        while (length >= output_length())
+        while (length >= outputLength())
         {
-            xorBuf(m_state, input, output_length());
+            xorBuf(m_state, input, outputLength());
             m_cipher.encrypt(m_state);
-            input += output_length();
-            length -= output_length();
+            input += outputLength();
+            length -= outputLength();
         }
         
         xorBuf(m_state, input, length);

@@ -55,7 +55,7 @@ public:
     * @return public point value
     */
     Vector!ubyte publicValue() const
-    { return unlock(EC2OSP(public_point(), PointGFp.UNCOMPRESSED)); }
+    { return unlock(EC2OSP(publicPoint(), PointGFp.UNCOMPRESSED)); }
 
 protected:
     this() {}
@@ -223,9 +223,9 @@ unittest
     
     AutoSeededRNG rng;
     
-    fails += test_ecdh_normal_derivation(rng);
-    fails += test_ecdh_some_dp(rng);
-    fails += test_ecdh_der_derivation(rng);
+    fails += testEcdhNormalDerivation(rng);
+    fails += testEcdhSomeDp(rng);
+    fails += testEcdhDerDerivation(rng);
     
     testReport("ECDH", 7, fails);
 }

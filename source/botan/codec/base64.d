@@ -80,7 +80,7 @@ string base64Encode(in ubyte* input,
 {
     import std.conv : to;
     string output;
-    output.capacity = round_up!size_t(input_length, 3) / 3 * 4;
+    output.capacity = roundUp!size_t(input_length, 3) / 3 * 4;
     
     size_t consumed = 0;
     size_t produced = base64Encode(output.ptr,
@@ -161,7 +161,7 @@ size_t base64Decode(ubyte* output,
     size_t decode_buf_pos = 0;
     size_t final_truncate = 0;
     
-    clear_mem(output, input_length * 3 / 4);
+    clearMem(output, input_length * 3 / 4);
     
     foreach (size_t i; 0 .. input_length)
     {
@@ -267,7 +267,7 @@ size_t base64Decode(ubyte* output, in string input, bool ignore_ws = true)
 SecureVector!ubyte base64Decode(string input, size_t input_length, bool ignore_ws = true)
 {
     SecureVector!ubyte bin;
-    bin.reserve((round_up!size_t(input_length, 4) * 3) / 4);
+    bin.reserve((roundUp!size_t(input_length, 4) * 3) / 4);
     
     size_t written = base64Decode(bin.ptr, input.ptr, input_length, ignore_ws);
     

@@ -67,13 +67,13 @@ private:
         const size_t HASH_SIZE = m_hash.output_length;
         
         if (msg.length != HASH_SIZE)
-            throw new EncodingError("encoding_of: Bad input length");
+            throw new EncodingError("encodingOf: Bad input length");
         if (output_bits < 8*HASH_SIZE + 8*m_SALT_SIZE + 9)
-            throw new EncodingError("encoding_of: Output length is too small");
+            throw new EncodingError("encodingOf: Output length is too small");
         
         const size_t output_length = (output_bits + 7) / 8;
         
-        SecureVector!ubyte salt = rng.random_vec(m_SALT_SIZE);
+        SecureVector!ubyte salt = rng.randomVec(m_SALT_SIZE);
         
         foreach (size_t j; 0 .. 8)
             m_hash.update(0);
@@ -84,10 +84,10 @@ private:
         SecureVector!ubyte EM = SecureVector!ubyte(output_length);
         
         EM[output_length - HASH_SIZE - m_SALT_SIZE - 2] = 0x01;
-        buffer_insert(EM, output_length - 1 - HASH_SIZE - m_SALT_SIZE, salt);
-        mgf1_mask(*m_hash, H.ptr, HASH_SIZE, EM.ptr, output_length - HASH_SIZE - 1);
+        bufferInsert(EM, output_length - 1 - HASH_SIZE - m_SALT_SIZE, salt);
+        mfg1Mask(*m_hash, H.ptr, HASH_SIZE, EM.ptr, output_length - HASH_SIZE - 1);
         EM[0] &= 0xFF >> (8 * ((output_bits + 7) / 8) - output_bits);
-        buffer_insert(EM, output_length - 1 - HASH_SIZE, H);
+        bufferInsert(EM, output_length - 1 - HASH_SIZE, H);
         EM[output_length-1] = 0xBC;
         
         return EM;
@@ -118,12 +118,12 @@ private:
         if (coded.length < KEY_BYTES)
         {
             SecureVector!ubyte temp = SecureVector!ubyte(KEY_BYTES);
-            buffer_insert(temp, KEY_BYTES - coded.length, coded);
+            bufferInsert(temp, KEY_BYTES - coded.length, coded);
             coded = temp;
         }
         
         const size_t TOP_BITS = 8 * ((key_bits + 7) / 8) - key_bits;
-        if (TOP_BITS > 8 - high_bit(coded[0]))
+        if (TOP_BITS > 8 - highBit(coded[0]))
             return false;
         
         ubyte* DB = coded.ptr;
@@ -132,7 +132,7 @@ private:
         const ubyte* H = &coded[DB_size];
         const size_t H_size = HASH_SIZE;
         
-        mgf1_mask(*m_hash, H.ptr, H_size, DB.ptr, DB_size);
+        mfg1Mask(*m_hash, H.ptr, H_size, DB.ptr, DB_size);
         DB[0] &= 0xFF >> TOP_BITS;
         
         size_t salt_offset = 0;
@@ -152,7 +152,7 @@ private:
         m_hash.update(&DB[salt_offset], DB_size - salt_offset);
         SecureVector!ubyte H2 = m_hash.finished();
         
-        return same_mem(H.ptr, H2.ptr, HASH_SIZE);
+        return sameMem(H.ptr, H2.ptr, HASH_SIZE);
     }
 
     size_t m_SALT_SIZE;

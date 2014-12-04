@@ -127,7 +127,7 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        return round_up(input_length, cipher().blockSize());
+        return roundUp(input_length, cipher().blockSize());
     }
 
     override size_t minimumFinalSize() const

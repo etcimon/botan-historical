@@ -77,7 +77,7 @@ AEADMode getAead(in string algo_spec, CipherDir direction)
     if (!cipher)
         return null;
     
-    const Vector!string mode_info = parse_algorithm_name(algo_parts[1]);
+    const Vector!string mode_info = parseAlgorithmName(algo_parts[1]);
     
     if (mode_info.empty)
         return null;
@@ -164,8 +164,8 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     const auto ad = hexDecodeLocked(ad_hex);
     const auto key = hexDecodeLocked(key_hex);
     
-    Unique!CipherMode enc = get_aead(algo, ENCRYPTION);
-    Unique!CipherMode dec = get_aead(algo, DECRYPTION);
+    Unique!CipherMode enc = getAead(algo, ENCRYPTION);
+    Unique!CipherMode dec = getAead(algo, DECRYPTION);
     
     if (!enc || !dec)
         throw new Exception("Unknown AEAD " ~ algo);

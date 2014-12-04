@@ -54,7 +54,7 @@ public:
             foreach (size_t j; 0 .. m_window_bits)
                 x = reducer.square(x);
             
-            const uint nibble = exp.get_substring(m_window_bits*(i-1), m_window_bits);
+            const uint nibble = exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
             x = reducer.multiply(x, m_g[nibble]);
         }
@@ -121,12 +121,12 @@ public:
         m_g[1] = z;
         
         const BigInt x = m_g[1];
-        const size_t x_sig = x.sig_words();
+        const size_t x_sig = x.sigWords();
         
         for (size_t i = 2; i != m_g.length; ++i)
         {
             const BigInt y = m_g[i-1];
-            const size_t y_sig = y.sig_words();
+            const size_t y_sig = y.sigWords();
             
             bigint_monty_mul(z.mutableData(), z.length,
                              x.data(), x.length, x_sig,
@@ -162,7 +162,7 @@ public:
                 x = z;
             }
             
-            const uint nibble = m_exp.get_substring(m_window_bits*(i-1), m_window_bits);
+            const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
             const BigInt y = m_g[nibble];
 

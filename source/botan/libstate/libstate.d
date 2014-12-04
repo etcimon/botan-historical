@@ -107,7 +107,7 @@ public:
                 m_sources = entropy_sources();
 
         static if (BOTAN_HAS_SELFTESTS)
-            confirm_startup_self_tests(algorithmFactory());
+            confirmStartupSelfTests(algorithmFactory());
 
         m_initialized = true;
 

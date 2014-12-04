@@ -157,7 +157,7 @@ private:
     */
     void copyOut(ubyte* output)
     {
-        for (size_t i = 0; i != output_length(); i += 8)
+        for (size_t i = 0; i != outputLength(); i += 8)
             storeBigEndian(m_digest[i/8], output + i);
     }
     

@@ -68,9 +68,9 @@ public:
         m_y = powerMod(groupG(), m_x, groupP());
         
         if (private_key == 0)
-            gen_check(rng);
+            genCheck(rng);
         else
-            load_check(rng);
+            loadCheck(rng);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
@@ -78,7 +78,7 @@ public:
         super(alg_id, key_bits, DLGroup.ANSI_X9_57);
         m_y = powerMod(groupG(), m_x, groupP());
         
-        load_check(rng);
+        loadCheck(rng);
     }
 
     /*
@@ -92,7 +92,7 @@ public:
         if (!strong)
             return true;
         
-        return signature_consistency_check(rng, this, "EMSA1(SHA-1)");
+        return signatureConsistencyCheck(rng, this, "EMSA1(SHA-1)");
     }
 
 }
@@ -178,7 +178,7 @@ public:
                 in ubyte* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;
-        const BigInt q = mod_q.get_modulus();
+        const BigInt q = mod_q.getModulus();
         
         if (sig_len != 2*q.bytes() || msg_len > q.bytes())
             return false;

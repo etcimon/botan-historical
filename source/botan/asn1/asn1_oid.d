@@ -41,7 +41,7 @@ public:
                 encoding.pushBack(0);
             else
             {
-                size_t blocks = high_bit(m_id[i]) + 6;
+                size_t blocks = highBit(m_id[i]) + 6;
                 blocks = (blocks - (blocks % 7)) / 7;
                 
                 foreach (size_t j; 0 .. (blocks - 1))

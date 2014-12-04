@@ -158,7 +158,7 @@ bool maybeBER(DataSource source)
 {
     ubyte first_byte;
     if (!source.peekByte(first_byte))
-        throw new StreamIOError("maybe_BER: Source was empty");
+        throw new StreamIOError("maybeBER: Source was empty");
     
     if (first_byte == (ASN1Tag.SEQUENCE | ASN1Tag.CONSTRUCTED))
         return true;

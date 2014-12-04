@@ -289,7 +289,7 @@ public:
                 m_p = X - (X % (2*m_q) - 1);
             }
             
-            m_g = make_dsa_generator(m_p, m_q);
+            m_g = makeDsaGenerator(m_p, m_q);
         }
         else if (type == DSA_Kosherizer)
         {
@@ -300,7 +300,7 @@ public:
                                 m_p, m_q,
                                 pbits, qbits);
             
-            m_g = make_dsa_generator(m_p, m_q);
+            m_g = makeDsaGenerator(m_p, m_q);
         }
         
         m_initialized = true;
@@ -319,7 +319,7 @@ public:
             throw new InvalidArgument("DLGroup: The seed given does not "
                                        ~ "generate a DSA group");
         
-        m_g = make_dsa_generator(m_p, m_q);
+        m_g = makeDsaGenerator(m_p, m_q);
 
         m_initialized = true;
     }
@@ -356,7 +356,7 @@ private:
         const BigInt e = (p - 1) / q;
         
         if (e == 0 || (p - 1) % q > 0)
-            throw new InvalidArgument("make_dsa_generator q does not divide p-1");
+            throw new InvalidArgument("makeDsaGenerator q does not divide p-1");
 
         foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
         {

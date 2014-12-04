@@ -115,7 +115,7 @@ private:
         padding[0] = 0x01;
         padding[padding.length-1] |= 0x80;
         
-        add_data(padding.ptr, padding.length);
+        addData(padding.ptr, padding.length);
         
         /*
         * We never have to run the permutation again because we only support

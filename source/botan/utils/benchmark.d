@@ -101,8 +101,8 @@ HashMap!(string, double)
         }
     }
     {
-        Unique!AEADMode enc = get_aead(name, ENCRYPTION);
-        Unique!AEADMode dec = get_aead(name, DECRYPTION);
+        Unique!AEADMode enc = getAead(name, ENCRYPTION);
+        Unique!AEADMode dec = getAead(name, DECRYPTION);
         
         if (!enc.isEmpty && !dec.isEmpty)
         {

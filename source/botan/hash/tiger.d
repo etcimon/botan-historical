@@ -27,14 +27,14 @@ public:
     */
     @property string name() const
     {
-        return "Tiger(" ~ to!string(output_length()) ~ "," ~ to!string(m_passes) ~ ")";
+        return "Tiger(" ~ to!string(outputLength()) ~ "," ~ to!string(m_passes) ~ ")";
     }
 
     @property size_t outputLength() const { return m_hash_len; }
 
     HashFunction clone() const
     {
-        return new Tiger(output_length(), m_passes);
+        return new Tiger(outputLength(), m_passes);
     }
 
 
@@ -61,8 +61,8 @@ public:
         m_digest = 3;
         m_hash_len = hash_len;
         m_passes = passes;
-        if (output_length() != 16 && output_length() != 20 && output_length() != 24)
-            throw new InvalidArgument("Tiger: Illegal hash output size: " ~ to!string(output_length()));
+        if (outputLength() != 16 && outputLength() != 20 && outputLength() != 24)
+            throw new InvalidArgument("Tiger: Illegal hash output size: " ~ to!string(outputLength()));
         
         if (m_passes < 3)
             throw new InvalidArgument("Tiger: Invalid number of m_passes: " ~ to!string(m_passes));
@@ -105,7 +105,7 @@ private:
     */
     void copyOut(ubyte* output)
     {
-        foreach (size_t i; 0 .. output_length())
+        foreach (size_t i; 0 .. outputLength())
             output[i] = get_byte(7 - (i % 8), m_digest[i/8]);
     }
 

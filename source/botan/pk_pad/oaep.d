@@ -57,14 +57,14 @@ private:
         
         rng.randomize(output.ptr, m_Phash.length);
         
-        buffer_insert(output, m_Phash.length, m_Phash.ptr, m_Phash.length);
+        bufferInsert(output, m_Phash.length, m_Phash.ptr, m_Phash.length);
         output[output.length - in_length - 1] = 0x01;
-        buffer_insert(output, output.length - in_length, input, in_length);
+        bufferInsert(output, output.length - in_length, input, in_length);
         
-        mgf1_mask(*m_hash, output.ptr, m_Phash.length,
+        mfg1Mask(*m_hash, output.ptr, m_Phash.length,
         &output[m_Phash.length], output.length - m_Phash.length);
         
-        mgf1_mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
+        mfg1Mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
         output.ptr, m_Phash.length);
         
         return output;
@@ -94,13 +94,13 @@ private:
             in_length = 0;
         
         SecureVector!ubyte input = SecureVector!ubyte(key_length);
-        buffer_insert(input, key_length - in_length, input, in_length);
+        bufferInsert(input, key_length - in_length, input, in_length);
         
-        mgf1_mask(*m_hash,
+        mfg1Mask(*m_hash,
                   &input[m_Phash.length], input.length - m_Phash.length,
         input.ptr, m_Phash.length);
         
-        mgf1_mask(*m_hash,
+        mfg1Mask(*m_hash,
                   input.ptr, m_Phash.length,
         &input[m_Phash.length], input.length - m_Phash.length);
         
@@ -130,7 +130,7 @@ private:
         // If we never saw any non-zero ubyte, then it's not valid input
         bad_input |= waiting_for_delim;
         
-        bad_input |= !same_mem(&input[m_Phash.length], m_Phash.ptr, m_Phash.length);
+        bad_input |= !sameMem(&input[m_Phash.length], m_Phash.ptr, m_Phash.length);
         
         if (bad_input)
             throw new DecodingError("Invalid OAEP encoding");

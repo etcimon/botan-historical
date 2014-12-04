@@ -206,7 +206,7 @@ private:
         
         if (m_position)
         {
-            buffer_insert(m_buffer, m_position, input, length);
+            bufferInsert(m_buffer, m_position, input, length);
             
             if (m_position + length >= hashBlockSize)
             {
@@ -223,7 +223,7 @@ private:
         if (full_blocks)
             compress_n(input, full_blocks);
         
-        buffer_insert(m_buffer, m_position, input + full_blocks * hashBlockSize, remaining);
+        bufferInsert(m_buffer, m_position, input + full_blocks * hashBlockSize, remaining);
         m_position += remaining;
     }
 
@@ -234,7 +234,7 @@ private:
     {
         if (m_position)
         {
-            clear_mem(m_buffer.ptr + m_position, m_buffer.length - m_position);
+            clearMem(m_buffer.ptr + m_position, m_buffer.length - m_position);
             compress_n(m_buffer.ptr, 1);
         }
         

@@ -53,8 +53,8 @@ private:
             throw new InvalidState("DLIES: The other key was never set");
         
         SecureVector!ubyte output = SecureVector!ubyte(m_my_key.length + length + m_mac.output_length);
-        buffer_insert(output, 0, m_my_key);
-        buffer_insert(output, m_my_key.length, input, length);
+        bufferInsert(output, 0, m_my_key);
+        bufferInsert(output, m_my_key.length, input, length);
         
         SecureVector!ubyte vz = SecureVector!(m_my_key.ptr, m_my_key.end());
         vz ~= m_ka.deriveKey(0, m_other_key).bitsOf();

@@ -68,7 +68,7 @@ public:
         if ((m_e * m_d) % lcm(m_p - 1, m_q - 1) != 1)
             return false;
         
-        return signature_consistency_check(rng, this, "EMSA4(SHA-1)");
+        return signatureConsistencyCheck(rng, this, "EMSA4(SHA-1)");
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
@@ -120,7 +120,7 @@ public:
         m_d2 = m_d % (m_q - 1);
         m_c = inverseMod(m_q, m_p);
         
-        gen_check(rng);
+        genCheck(rng);
     }
 }
 
@@ -156,7 +156,7 @@ public:
         */
         
         const BigInt m = BigInt(msg, msg_len);
-        const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
+        const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
         return BigInt.encode1363(x, n.bytes());
     }
 
@@ -166,7 +166,7 @@ public:
     SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
     {
         const BigInt m = BigInt(msg, msg_len);
-        const BigInt x = m_blinder.unblind(private_op(m_blinder.blind(m)));
+        const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
         
         assert(m == m_powermod_e_n(x), "RSA decrypt passed consistency check");
         

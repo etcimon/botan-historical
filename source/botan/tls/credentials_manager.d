@@ -68,7 +68,7 @@ public:
         
         Path_Validation_Restrictions restrictions;
         
-        auto result = x509_path_validate(cert_chain,
+        auto result = x509PathValidate(cert_chain,
                                          restrictions,
                                          trusted_CAs);
         

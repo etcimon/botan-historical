@@ -180,7 +180,7 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     
     if (got) return got;
     
-    word b_word = b.word_at(0);
+    word b_word = b.wordAt(0);
     
     /* Won't work for us, just pick one at random */
     while(b_word == 0)

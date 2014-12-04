@@ -23,14 +23,14 @@ import botan.algo_base.symkey;
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
 * @param af = an algorithm factory
-* @throws Self_Test_Error if a failure occured
+* @throws SelfTestFailure if a failure occured
 */
 /*
 * Perform Self Tests
 */
 void confirmStartupSelfTests(AlgorithmFactory af)
 {
-    cipher_kat(af, "DES",
+    cipherKat(af, "DES",
                "0123456789ABCDEF", "1234567890ABCDEF",
                "4E6F77206973207468652074696D6520666F7220616C6C20",
                "3FA40E8A984D48156A271787AB8883F9893D51EC4B563B53",
@@ -39,7 +39,7 @@ void confirmStartupSelfTests(AlgorithmFactory af)
                "F3096249C7F46E5135F24A242EEB3D3F3D6D5BE3255AF8C3",
                "F3096249C7F46E51163A8CA0FFC94C27FA2F80F480B86F75");
     
-    cipher_kat(af, "TripleDES",
+    cipherKat(af, "TripleDES",
                "385D7189A5C3D485E1370AA5D408082B5CCCCB5E19F2D90E",
                "C141B5FCCD28DC8A",
                "6E1BD7C6120947A464A6AAB293A0F89A563D8D40D3461B68",
@@ -49,7 +49,7 @@ void confirmStartupSelfTests(AlgorithmFactory af)
                "E26BA806A59B03307DE2BCC25A08BA40A8BA335F5D604C62",
                "E26BA806A59B03303C62C2EFF32D3ACDD5D5F35EBCC53371");
     
-    cipher_kat(af, "AES-128",
+    cipherKat(af, "AES-128",
                "2B7E151628AED2A6ABF7158809CF4F3C",
                "000102030405060708090A0B0C0D0E0F",
                "6BC1BEE22E409F96E93D7E117393172A"
@@ -65,41 +65,41 @@ void confirmStartupSelfTests(AlgorithmFactory af)
                "3B3FD92EB72DAD20333449F8E83CFB4A"
                ~ "010C041999E03F36448624483E582D0E");
     
-    hash_test(af, "SHA-1",
+    hashTest(af, "SHA-1",
               "", "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709");
     
-    hash_test(af, "SHA-1",
+    hashTest(af, "SHA-1",
               "616263", "A9993E364706816ABA3E25717850C26C9CD0D89D");
     
-    hash_test(af, "SHA-1",
+    hashTest(af, "SHA-1",
               "6162636462636465636465666465666765666768666768696768696A"
               ~ "68696A6B696A6B6C6A6B6C6D6B6C6D6E6C6D6E6F6D6E6F706E6F7071",
               "84983E441C3BD26EBAAE4AA1F95129E5E54670F1");
     
-    mac_test(af, "HMAC(SHA-1)",
+    macTest(af, "HMAC(SHA-1)",
              "4869205468657265",
              "B617318655057264E28BC0B6FB378C8EF146BE00",
              "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B");
     
-    hash_test(af, "SHA-256",
+    hashTest(af, "SHA-256",
               "",
               "E3B0C44298FC1C149AFBF4C8996FB924"
               ~ "27AE41E4649B934CA495991B7852B855");
     
-    hash_test(af, "SHA-256",
+    hashTest(af, "SHA-256",
               "616263",
               "BA7816BF8F01CFEA414140DE5DAE2223"
               ~ "B00361A396177A9CB410FF61F20015AD");
     
-    hash_test(af, "SHA-256",
+    hashTest(af, "SHA-256",
               "6162636462636465636465666465666765666768666768696768696A"
               ~ "68696A6B696A6B6C6A6B6C6D6B6C6D6E6C6D6E6F6D6E6F706E6F7071",
               "248D6A61D20638B8E5C026930C3E6039"
               ~ "A33CE45964FF2167F6ECEDD419DB06C1");
     
-    mac_test(af, "HMAC(SHA-256)",
+    macTest(af, "HMAC(SHA-256)",
              "4869205468657265",
-             "198A607EB44BFBC69903A0F1CF2BBDC5"
+             ~ "198A607EB44BFBC69903A0F1CF2BBDC5"
              ~ "BA0AA3F3D9AE3C1C7A3B1696A0B68CF7",
              "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B"
              ~ "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B");
@@ -114,7 +114,7 @@ bool passesSelfTests(AlgorithmFactory af)
 {
     try
     {
-        confirm_startup_self_tests(af);
+        confirmStartupSelfTests(af);
     }
     catch(SelfTestFailure)
     {
@@ -271,7 +271,7 @@ void hashTest(AlgorithmFactory af, in string name, in string input, in string ou
     vars["input"] = input;
     vars["output"] = output;
     
-    verify_results(name, algorithmKatDetailed(name, vars, af));
+    verifyResults(name, algorithmKatDetailed(name, vars, af));
 }
 
 void macTest(AlgorithmFactory af,
@@ -285,7 +285,7 @@ void macTest(AlgorithmFactory af,
     vars["output"] = output;
     vars["key"] = key;
     
-    verify_results(name, algorithmKatDetailed(name, vars, af));
+    verifyResults(name, algorithmKatDetailed(name, vars, af));
 }
 
 /*
@@ -313,20 +313,20 @@ void cipherKat(AlgorithmFactory af,
     HashMap!(string, bool) results;
     
     vars["output"] = ecb_out;
-    verify_results(algo ~ "/ECB", algorithmKatDetailed(algo ~ "/ECB", vars, af));
+    verifyResults(algo ~ "/ECB", algorithmKatDetailed(algo ~ "/ECB", vars, af));
     
     vars["output"] = cbc_out;
-    verify_results(algo ~ "/CBC",
+    verifyResults(algo ~ "/CBC",
                    algorithmKatDetailed(algo ~ "/CBC/NoPadding", vars, af));
     
     vars["output"] = cfb_out;
-    verify_results(algo ~ "/CFB", algorithmKatDetailed(algo ~ "/CFB", vars, af));
+    verifyResults(algo ~ "/CFB", algorithmKatDetailed(algo ~ "/CFB", vars, af));
     
     vars["output"] = ofb_out;
-    verify_results(algo ~ "/OFB", algorithmKatDetailed(algo ~ "/OFB", vars, af));
+    verifyResults(algo ~ "/OFB", algorithmKatDetailed(algo ~ "/OFB", vars, af));
     
     vars["output"] = ctr_out;
-    verify_results(algo ~ "/CTR", algorithmKatDetailed(algo ~ "/CTR-BE", vars, af));
+    verifyResults(algo ~ "/CTR", algorithmKatDetailed(algo ~ "/CTR-BE", vars, af));
 }
 
 

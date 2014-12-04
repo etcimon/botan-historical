@@ -40,8 +40,8 @@ ulong reverseBytes(ulong val)
     else {
         union { ulong u64; uint[2] u32; } input, output;
         input.u64 = val;
-        output.u32[0] = reverse_bytes(input.u32[1]);
-        output.u32[1] = reverse_bytes(input.u32[0]);
+        output.u32[0] = reverseBytes(input.u32[1]);
+        output.u32[1] = reverseBytes(input.u32[0]);
         return output.u64;
     }
 }
@@ -51,10 +51,10 @@ ulong reverseBytes(ulong val)
 */
 void bswap4(T)(ref T[4] x)
 {
-    x[0] = reverse_bytes(x[0]);
-    x[1] = reverse_bytes(x[1]);
-    x[2] = reverse_bytes(x[2]);
-    x[3] = reverse_bytes(x[3]);
+    x[0] = reverseBytes(x[0]);
+    x[1] = reverseBytes(x[1]);
+    x[2] = reverseBytes(x[2]);
+    x[3] = reverseBytes(x[3]);
 }
 
 static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {

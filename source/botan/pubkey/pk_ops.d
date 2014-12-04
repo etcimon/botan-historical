@@ -100,7 +100,7 @@ public:
 
     /**
     * @return boolean specifying if this key type supports message
-    * recovery and thus if you need to call verify() or verify_mr()
+    * recovery and thus if you need to call verify() or verifyMr()
     */
     abstract bool withRecovery() const;
 

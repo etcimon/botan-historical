@@ -150,7 +150,7 @@ public:
         
         for (size_t j = 0; j != time_str.length; ++j)
         {
-            if (is_digit(time_str[j]))
+            if (isDigit(time_str[j]))
                 current ~= time_str[j];
             else
             {

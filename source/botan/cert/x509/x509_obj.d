@@ -66,7 +66,7 @@ public:
         if (sig_info.length != 2)
             throw new InternalError("Invalid name format found for " ~ m_sig_algo.oid.toString());
         
-        Vector!string pad_and_hash = parse_algorithm_name(sig_info[1]);
+        Vector!string pad_and_hash = parseAlgorithmName(sig_info[1]);
         
         if (pad_and_hash.length != 2)
             throw new InternalError("Invalid name format " ~ sig_info[1]);
@@ -234,7 +234,7 @@ private:
         std.algorithm.sort(m_PEM_labels_allowed);
         
         try {
-            if (maybe_BER(input) && !PEM.matches(input))
+            if (maybeBER(input) && !PEM.matches(input))
             {
                 auto dec = BERDecoder(input);
                 decodeFrom(dec);

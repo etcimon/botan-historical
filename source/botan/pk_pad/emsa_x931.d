@@ -49,7 +49,7 @@ private:
                                  size_t output_bits,
                                  RandomNumberGenerator)
     {
-        return emsa2_encoding(msg, output_bits, m_empty_hash, m_hash_id);
+        return emsa2Encoding(msg, output_bits, m_empty_hash, m_hash_id);
     }
 
     /*
@@ -61,7 +61,7 @@ private:
     {
         try
         {
-            return (coded == emsa2_encoding(raw, key_bits,
+            return (coded == emsa2Encoding(raw, key_bits,
                                             m_empty_hash, m_hash_id));
         }
         catch (Throwable)
@@ -87,9 +87,9 @@ SecureVector!ubyte emsa2Encoding(in SecureVector!ubyte msg,
     size_t output_length = (output_bits + 1) / 8;
     
     if (msg.length != HASH_SIZE)
-        throw new EncodingError("encoding_of: Bad input length");
+        throw new EncodingError("encodingOf: Bad input length");
     if (output_length < HASH_SIZE + 4)
-        throw new EncodingError("encoding_of: Output length is too small");
+        throw new EncodingError("encodingOf: Output length is too small");
     
     const bool empty_input = (msg == empty_hash);
     
@@ -97,8 +97,8 @@ SecureVector!ubyte emsa2Encoding(in SecureVector!ubyte msg,
     
     output[0] = (empty_input ? 0x4B : 0x6B);
     output[output_length - 3 - HASH_SIZE] = 0xBA;
-    set_mem(&output[1], output_length - 4 - HASH_SIZE, 0xBB);
-    buffer_insert(output, output_length - (HASH_SIZE + 2), msg.ptr, msg.length);
+    setMem(&output[1], output_length - 4 - HASH_SIZE, 0xBB);
+    bufferInsert(output, output_length - (HASH_SIZE + 2), msg.ptr, msg.length);
     output[output_length-2] = hash_id;
     output[output_length-1] = 0xCC;
     

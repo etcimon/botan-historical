@@ -108,7 +108,7 @@ public:
                                     in Vector!ubyte tbs_bits,
                                     RandomNumberGenerator rng)
     {
-        const auto concat_sig = signer.sign_message(tbs_bits, rng);
+        const auto concat_sig = signer.signMessage(tbs_bits, rng);
         
         return DEREncoder()
                 .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)

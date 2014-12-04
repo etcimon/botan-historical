@@ -242,18 +242,18 @@ bool x500NameCmp(in string name1, in string name2)
     auto p1 = name1.ptr;
     auto p2 = name2.ptr;
     
-    while ((p1 != name1.length) && is_space(*p1)) ++p1;
-    while ((p2 != name2.length) && is_space(*p2)) ++p2;
+    while ((p1 != name1.length) && isSpace(*p1)) ++p1;
+    while ((p2 != name2.length) && isSpace(*p2)) ++p2;
     
     while (p1 != name1.length && p2 != name2.length)
     {
-        if (is_space(*p1))
+        if (isSpace(*p1))
         {
-            if (!is_space(*p2))
+            if (!isSpace(*p2))
                 return false;
             
-            while ((p1 != name1.length) && is_space(*p1)) ++p1;
-            while ((p2 != name2.length) && is_space(*p2)) ++p2;
+            while ((p1 != name1.length) && isSpace(*p1)) ++p1;
+            while ((p2 != name2.length) && isSpace(*p2)) ++p2;
             
             if (p1 == name1.length && p2 == name2.length)
                 return true;
@@ -265,8 +265,8 @@ bool x500NameCmp(in string name1, in string name2)
         ++p2;
     }
     
-    while ((p1 != name1.length) && is_space(*p1)) ++p1;
-    while ((p2 != name2.length) && is_space(*p2)) ++p2;
+    while ((p1 != name1.length) && isSpace(*p1)) ++p1;
+    while ((p2 != name2.length) && isSpace(*p2)) ++p2;
     
     if ((p1 != name1.length) || (p2 != name2.length))
         return false;

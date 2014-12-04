@@ -22,10 +22,10 @@ final class HMACDRBG : RandomNumberGenerator
 public:
     void randomize(ubyte* output, size_t length)
     {
-        if (!is_seeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
+        if (!isSeeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
             reseed(m_mac.output_length * 8);
         
-        if (!is_seeded())
+        if (!isSeeded())
             throw new PRNGUnseeded(name);
         
         while (length)
@@ -71,7 +71,7 @@ public:
             
             if (m_prng.isSeeded())
             {
-                SecureVector!ubyte input = m_prng.random_vec(m_mac.output_length);
+                SecureVector!ubyte input = m_prng.randomVec(m_mac.output_length);
                 update(input.ptr, input.length);
                 m_reseed_counter = 1;
             }

@@ -130,7 +130,7 @@ size_t hexDecode(ubyte* output,
     ubyte* out_ptr = output;
     bool top_nibble = true;
     
-    clear_mem(output, input_length / 2);
+    clearMem(output, input_length / 2);
     
     foreach (size_t i; 0 .. input_length)
     {

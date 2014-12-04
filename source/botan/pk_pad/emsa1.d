@@ -43,9 +43,9 @@ private:
                                  size_t output_bits,
                                  RandomNumberGenerator)
     {
-        if (msg.length != hash_output_length())
-            throw new EncodingError("encoding_of: Invalid size for input");
-        return emsa1_encoding(msg, output_bits);
+        if (msg.length != hashOutputLength())
+            throw new EncodingError("encodingOf: Invalid size for input");
+        return emsa1Encoding(msg, output_bits);
     }
 
     bool verify(in SecureVector!ubyte coded,
@@ -53,9 +53,9 @@ private:
     {
         try {
             if (raw.length != m_hash.output_length)
-                throw new EncodingError("encoding_of: Invalid size for input");
+                throw new EncodingError("encodingOf: Invalid size for input");
             
-            SecureVector!ubyte our_coding = emsa1_encoding(raw, key_bits);
+            SecureVector!ubyte our_coding = emsa1Encoding(raw, key_bits);
             
             if (our_coding == coded) return true;
             if (our_coding.empty || our_coding[0] != 0) return false;

@@ -38,7 +38,7 @@ public:
         foreach (hash; m_hashes)
             names.pushBack(hash.name);
         
-        return "Parallel(" ~ string_join(names, ',') ~ ")";
+        return "Parallel(" ~ stringJoin(names, ',') ~ ")";
     }
 
     /*

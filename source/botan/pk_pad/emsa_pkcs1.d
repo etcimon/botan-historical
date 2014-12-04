@@ -26,7 +26,7 @@ public:
     this(HashFunction hash)
     {
         m_hash = hash;
-        m_hash_id = pkcs_hash_id(m_hash.name);
+        m_hash_id = pkcsHashId(m_hash.name);
     }
 
     void update(in ubyte* input, size_t length)
@@ -45,9 +45,9 @@ public:
                     RandomNumberGenerator)
     {
         if (msg.length != m_hash.output_length)
-            throw new EncodingError("encoding_of: Bad input length");
+            throw new EncodingError("encodingOf: Bad input length");
         
-        return emsa3_encoding(msg, output_bits,
+        return emsa3Encoding(msg, output_bits,
                               m_hash_id.ptr, m_hash_id.length);
     }
 
@@ -60,7 +60,7 @@ public:
         
         try
         {
-            return (coded == emsa3_encoding(raw, key_bits,
+            return (coded == emsa3Encoding(raw, key_bits,
                                             m_hash_id.ptr, m_hash_id.length));
         }
         catch (Throwable)
@@ -97,7 +97,7 @@ public:
                                     size_t output_bits,
                                     RandomNumberGenerator)
     {
-        return emsa3_encoding(msg, output_bits, null, 0);
+        return emsa3Encoding(msg, output_bits, null, 0);
     }
 
     bool verify(in SecureVector!ubyte coded,
@@ -106,7 +106,7 @@ public:
     {
         try
         {
-            return (coded == emsa3_encoding(raw, key_bits, null, 0));
+            return (coded == emsa3Encoding(raw, key_bits, null, 0));
         }
         catch (Throwable)
         {
@@ -127,15 +127,15 @@ SecureVector!ubyte emsa3Encoding(in SecureVector!ubyte msg,
 {
     size_t output_length = output_bits / 8;
     if (output_length < hash_id_length + msg.length + 10)
-        throw new EncodingError("emsa3_encoding: Output length is too small");
+        throw new EncodingError("emsa3Encoding: Output length is too small");
     
     SecureVector!ubyte T = SecureVector!ubyte(output_length);
     const size_t P_LENGTH = output_length - msg.length - hash_id_length - 2;
     
     T[0] = 0x01;
-    set_mem(&T[1], P_LENGTH, 0xFF);
+    setMem(&T[1], P_LENGTH, 0xFF);
     T[P_LENGTH+1] = 0x00;
-    buffer_insert(T, P_LENGTH+2, hash_id, hash_id_length);
-    buffer_insert(T, output_length-msg.length, msg.ptr, msg.length);
+    bufferInsert(T, P_LENGTH+2, hash_id, hash_id_length);
+    bufferInsert(T, output_length-msg.length, msg.ptr, msg.length);
     return T;
 }

@@ -420,7 +420,7 @@ SecureVector!ubyte encodeTag(ASN1Tag m_type_tag, ASN1Tag m_class_tag)
         encoded_tag.pushBack(cast(ubyte)(m_type_tag | m_class_tag));
     else
     {
-        size_t blocks = high_bit(m_type_tag) + 6;
+        size_t blocks = highBit(m_type_tag) + 6;
         blocks = (blocks - (blocks % 7)) / 7;
         
         encoded_tag.pushBack(m_class_tag | 0x1F);

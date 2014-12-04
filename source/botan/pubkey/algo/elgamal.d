@@ -84,9 +84,9 @@ public:
         m_y = powerMod(groupG(), m_x, groupP());
         
         if (x_arg == 0)
-            gen_check(rng);
+            genCheck(rng);
         else
-            load_check(rng);
+            loadCheck(rng);
     }
 
     this(in AlgorithmIdentifier alg_id,
@@ -95,7 +95,7 @@ public:
     {
         super(alg_id, key_bits, DLGroup.ANSI_X9_42);
         m_y = powerMod(groupG(), m_x, groupP());
-        load_check(rng);
+        loadCheck(rng);
     }
 }
 
@@ -119,7 +119,7 @@ public:
 
     SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-        const BigInt p = mod_p.get_modulus();
+        const BigInt p = mod_p.getModulus();
         
         BigInt m = BigInt(msg, msg_len);
         
@@ -164,7 +164,7 @@ public:
 
     SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
     {
-        const BigInt p = m_mod_p.get_modulus();
+        const BigInt p = m_mod_p.getModulus();
         
         const size_t p_bytes = p.bytes();
         

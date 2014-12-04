@@ -213,7 +213,7 @@ public:
         mac ^= m_nonce_mac;
         mac ^= m_ad_mac;
         
-        if (!same_mem(mac.ptr, included_tag, tagSize()))
+        if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("EAX tag check failed");
         
         buffer.resize(offset + remaining);

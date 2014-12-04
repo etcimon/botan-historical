@@ -43,11 +43,11 @@ protected:
         
         if (m_position)
         {
-            buffer_insert(m_buffer, m_position, input, length);
+            bufferInsert(m_buffer, m_position, input, length);
             
             if (m_position + length >= m_buffer.length)
             {
-                compress_n(m_buffer.ptr, 1);
+                compressN(m_buffer.ptr, 1);
                 input += (m_buffer.length - m_position);
                 length -= (m_buffer.length - m_position);
                 m_position = 0;
@@ -58,9 +58,9 @@ protected:
         const size_t remaining    = length % m_buffer.length;
         
         if (full_blocks)
-            compress_n(input, full_blocks);
+            compressN(input, full_blocks);
         
-        buffer_insert(m_buffer, m_position, input + full_blocks * m_buffer.length, remaining);
+        bufferInsert(m_buffer, m_position, input + full_blocks * m_buffer.length, remaining);
         m_position += remaining;
     }
 
@@ -76,14 +76,14 @@ protected:
         
         if (m_position >= m_buffer.length - m_COUNT_SIZE)
         {
-            compress_n(m_buffer.ptr, 1);
+            compressN(m_buffer.ptr, 1);
             zeroise(m_buffer);
         }
         
         write_count(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
         
-        compress_n(m_buffer.ptr, 1);
-        copy_out(output);
+        compressN(m_buffer.ptr, 1);
+        copyOut(output);
         clear();
     }
 
@@ -117,7 +117,7 @@ protected:
     {
         if (m_COUNT_SIZE < 8)
             throw new InvalidState("MDxHashFunction::write_count: COUNT_SIZE < 8");
-        if (m_COUNT_SIZE >= output_length() || m_COUNT_SIZE >= hashBlockSize)
+        if (m_COUNT_SIZE >= outputLength() || m_COUNT_SIZE >= hashBlockSize)
             throw new InvalidArgument("MDxHashFunction: COUNT_SIZE is too big");
         
         const ulong bit_count = m_count * 8;

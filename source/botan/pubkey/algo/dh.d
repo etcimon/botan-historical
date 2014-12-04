@@ -87,7 +87,7 @@ public:
         if (m_y == 0)
             m_y = powerMod(groupG(), m_x, groupP());
         
-        load_check(rng);
+        loadCheck(rng);
     }
 
     /**
@@ -113,9 +113,9 @@ public:
             m_y = powerMod(groupG(), m_x, groupP());
         
         if (m_x == 0)
-            gen_check(rng);
+            genCheck(rng);
         else
-            load_check(rng);
+            loadCheck(rng);
     }
 }
 
