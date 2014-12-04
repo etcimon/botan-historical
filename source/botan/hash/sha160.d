@@ -164,7 +164,7 @@ pure:
 /*
 * SHA-160 F1 Function
 */
-void f1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += (D ^ (B & (C ^ D))) + msg + 0x5A827999 + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);
@@ -173,7 +173,7 @@ void f1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F2 Function
 */
-void f2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += (B ^ C ^ D) + msg + 0x6ED9EBA1 + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);
@@ -182,7 +182,7 @@ void f2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F3 Function
 */
-void f3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += ((B & C) | ((B | C) & D)) + msg + 0x8F1BBCDC + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);
@@ -191,7 +191,7 @@ void f3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F4 Function
 */
-void f4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += (B ^ C ^ D) + msg + 0xCA62C1D6 + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);

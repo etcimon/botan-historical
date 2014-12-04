@@ -27,7 +27,7 @@ import botan.utils.types;
 /**
 * PKCS #8 General Exception
 */
-final class PKCS8Exception : Decoding_Error
+final class PKCS8Exception : DecodingError
 {
     this(in string error)
     {
@@ -84,7 +84,7 @@ Vector!ubyte BER_encode(in PrivateKey key,
     
     Unique!PBE pbe = get_pbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
     
-    AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.get_oid(), pbe.encode_params());
+    AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.getOid(), pbe.encodeParams());
     
     Pipe key_encrytor = Pipe(*pbe);
     key_encrytor.processMsg(BER_encode(key));
@@ -279,7 +279,7 @@ SecureVector!ubyte pKCS8Decode(DataSource source,    SingleShotPassphrase get_pa
             
             BERDecoder(key)
                     .startCons(ASN1Tag.SEQUENCE)
-                    .decode_and_check!size_t(0, "Unknown PKCS #8 version number")
+                    .decodeAndCheck!size_t(0, "Unknown PKCS #8 version number")
                     .decode(pk_alg_id)
                     .decode(key, ASN1Tag.OCTET_STRING)
                     .discardRemaining()

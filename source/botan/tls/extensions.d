@@ -21,7 +21,7 @@ import botan.tls.reader;
 import botan.tls.exceptn;
 import botan.utils.types : Unique;
 
-typedef ushort Handshake_Extension_Type;
+typedef ushort HandshakeExtensionType;
 enum : HandshakeExtensionType {
     TLSEXT_SERVER_NAME_INDICATION    = 0,
     TLSEXT_MAX_FRAGMENT_LENGTH       = 1,
@@ -729,7 +729,7 @@ struct TLSExtensions
 public:
     HandshakeExtensionType[] extensionTypes() const
     {
-        Appender!Handshake_Extension_Type offers;
+        Appender!HandshakeExtensionType offers;
         foreach (t, ext; extensions)
             offers ~= t;
         return offers.data;
@@ -738,7 +738,7 @@ public:
 
     T get(T)() const
     {
-        Handshake_Extension_Type type = T.static_type();
+        HandshakeExtensionType type = T.static_type();
 
         return extensions.get(type, null);
     }
@@ -812,7 +812,7 @@ public:
     this(ref TLSDataReader reader) { deserialize(reader); }
 
 private:
-    HashMap!(Handshake_Extension_Type, Extension) extensions;
+    HashMap!(HandshakeExtensionType, Extension) extensions;
 }
 
 

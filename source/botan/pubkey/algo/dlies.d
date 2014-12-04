@@ -13,16 +13,16 @@ static if (BOTAN_HAS_DLIES):
 import botan.pubkey.pubkey;
 import botan.mac.mac;
 import botan.kdf.kdf;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 
 /**
 * DLIES Encryption
 */
-class DLIESEncryptor : PK_Encryptor
+class DLIESEncryptor : PKEncryptor
 {
 public:
     /*
-    * DLIES_Encryptor Constructor
+    * DLIESEncryptor Constructor
     */
     this(in PKKeyAgreementKey key, KDF kdf_obj, MessageAuthenticationCode mac_obj, size_t mac_keylen = 20)
     { 
@@ -47,7 +47,7 @@ private:
     Vector!ubyte enc(in ubyte* input, size_t length,
                      RandomNumberGenerator) const
     {
-        if (length > maximum_input_size())
+        if (length > maximumInputSize())
             throw new InvalidArgument("DLIES: Plaintext too large");
         if (m_other_key.empty)
             throw new InvalidState("DLIES: The other key was never set");
@@ -66,7 +66,7 @@ private:
             throw new EncodingError("DLIES: KDF did not provide sufficient output");
         ubyte* C = &output[m_my_key.length];
         
-        xor_buf(C, K.ptr + m_mac_keylen, length);
+        xorBuf(C, K.ptr + m_mac_keylen, length);
         m_mac.setKey(K.ptr, m_mac_keylen);
         
         m_mac.update(C, length);
@@ -97,11 +97,11 @@ private:
 /**
 * DLIES Decryption
 */
-class DLIESDecryptor : PK_Decryptor
+class DLIESDecryptor : PKDecryptor
 {
 public:
     /*
-    * DLIES_Decryptor Constructor
+    * DLIESDecryptor Constructor
     */
     this(in PKKeyAgreementKey key, KDF kdf_obj, MessageAuthenticationCode mac_obj, size_t mac_key_len = 20)
     {
@@ -146,7 +146,7 @@ private:
         if (T != T2)
             throw new DecodingError("DLIES: message authentication failed");
         
-        xor_buf(C, K.ptr + m_mac_keylen, C.length);
+        xorBuf(C, K.ptr + m_mac_keylen, C.length);
         
         return C;
     }
@@ -180,7 +180,7 @@ size_t dliesKat(string p,
                  string ciphertext)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     BigInt p_bn = BigInt(p);
     BigInt g_bn = BigInt(g);
@@ -201,13 +201,13 @@ size_t dliesKat(string p,
     
     const size_t mac_key_len = to!uint(options[2]);
     
-    auto e = scoped!DLIES_Encryptor(from, get_kdf(options[0]), get_mac(options[1]), mac_key_len);
+    auto e = scoped!DLIESEncryptor(from, getKdf(options[0]), getMac(options[1]), mac_key_len);
     
-    auto d = scoped!DLIES_Decryptor(to, get_kdf(options[0]), get_mac(options[1]), mac_key_len);
+    auto d = scoped!DLIESDecryptor(to, getKdf(options[0]), getMac(options[1]), mac_key_len);
     
     e.setOtherKey(to.publicValue());
     
-    return validate_encryption(e, d, "DLIES", msg, "", ciphertext);
+    return validateEncryption(e, d, "DLIES", msg, "", ciphertext);
 }
 
 unittest

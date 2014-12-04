@@ -58,7 +58,7 @@ public:
     */
     void decodeFrom(BERDecoder decoder)
     {
-        BER_Object obj = decoder.getNextObject();
+        BERObject obj = decoder.getNextObject();
         if (obj.type_tag != ASN1Tag.OBJECT_ID || obj.class_tag != ASN1Tag.UNIVERSAL)
             throw new BERBadTag("Error decoding OID, unknown tag",
                                   obj.type_tag, obj.class_tag);

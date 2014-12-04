@@ -29,7 +29,7 @@ static if (BOTAN_HAS_EME_PKCS1v15)  import botan.pk_pad.eme_pkcs;
 */
 EMSA getEmsa(in string algo_spec)
 {
-    SCANName request = SCANName(algo_spec);
+    SCANToken request = SCANToken(algo_spec);
     
     AlgorithmFactory af = globalState().algorithmFactory();
     
@@ -94,7 +94,7 @@ EMSA getEmsa(in string algo_spec)
 */
 EME getEme(in string algo_spec)
 {
-    SCANName request(algo_spec);
+    SCANToken request = SCANToken(algo_spec);
     
     if (request.algo_name == "Raw")
         return null; // No padding

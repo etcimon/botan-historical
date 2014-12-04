@@ -66,7 +66,7 @@ KeyConstraints findConstraints(in PublicKey pub_key,
 */
 void decode(BERDecoder source, ref KeyConstraints key_usage)
 {
-    BER_Object obj = source.getNextObject();
+    BERObject obj = source.getNextObject();
 
     if (obj.type_tag != ASN1Tag.BIT_STRING || obj.class_tag != ASN1Tag.UNIVERSAL)
         throw new BERBadTag("Bad tag for usage constraint",

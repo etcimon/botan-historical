@@ -22,7 +22,7 @@ static if (BOTAN_HAS_AEAD_OCB) import botan.modes.aead.ocb;
 * which is not included in the ciphertext (for instance a sequence
 * number).
 */
-class AEADMode : Cipher_Mode
+class AEADMode : CipherMode
 {
 public:
     final override bool authenticated() const { return true; }
@@ -84,7 +84,7 @@ AEADMode getAead(in string algo_spec, CipherDir direction)
     
     const string mode_name = mode_info[0];
     
-    const size_t tag_size = (mode_info.length > 1) ? to!uint(mode_info[1]) : cipher.block_size;
+    const size_t tag_size = (mode_info.length > 1) ? to!uint(mode_info[1]) : cipher.blockSize();
     
     static if (BOTAN_HAS_AEAD_CCM) {
         if (mode_name == "CCM-8")
@@ -164,8 +164,8 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     const auto ad = hexDecodeLocked(ad_hex);
     const auto key = hexDecodeLocked(key_hex);
     
-    Unique!Cipher_Mode enc = get_aead(algo, ENCRYPTION);
-    Unique!Cipher_Mode dec = get_aead(algo, DECRYPTION);
+    Unique!CipherMode enc = get_aead(algo, ENCRYPTION);
+    Unique!CipherMode dec = get_aead(algo, DECRYPTION);
     
     if (!enc || !dec)
         throw new Exception("Unknown AEAD " ~ algo);

@@ -34,7 +34,7 @@ public:
         In practice it seems some responders, including, notably,
         ocsp.verisign.com, will reject anything but SHA-1 here
         */
-        Unique!HashFunction hash = get_hash("SHA-160");
+        Unique!HashFunction hash = getHash("SHA-160");
         
         m_hash_id = AlgorithmIdentifier(hash.name, AlgorithmIdentifier.USE_NULL_PARAM);
         m_issuer_key_hash = unlock(hash.process(extractKeyBitstr(issuer)));
@@ -50,7 +50,7 @@ public:
             if (BigInt.decode(subject.serialNumber()) != m_subject_serial)
                 return false;
             
-            Unique!HashFunction hash = get_hash(OIDS.lookup(m_hash_id.oid));
+            Unique!HashFunction hash = getHash(OIDS.lookup(m_hash_id.oid));
             
             if (m_issuer_dn_hash != unlock(hash.process(subject.rawIssuerDn())))
                 return false;
@@ -129,7 +129,7 @@ public:
 
     override void decodeFrom(BERDecoder from)
     {
-        BER_Object cert_status;
+        BERObject cert_status;
         X509Extensions extensions;
         
         from.startCons(ASN1Tag.SEQUENCE)

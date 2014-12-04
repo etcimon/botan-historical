@@ -11,7 +11,7 @@ import botan.algo_base.transform;
 /**
 * Interface for cipher modes
 */
-class CipherMode : Keyed_Transform
+class CipherMode : KeyedTransform
 {
 public:
     /**
@@ -32,10 +32,10 @@ private __gshared size_t total_tests;
 SecureVector!ubyte runMode(string algo, CipherDir dir, in SecureVector!ubyte pt, in SecureVector!ubyte nonce, in SecureVector!ubyte key)
 {
     /*
-    Unique!Cipher_Mode cipher = getCipher(algo, dir);
+    Unique!CipherMode cipher = getCipher(algo, dir);
 
     cipher.setKey(key);
-    cipher.start_vec(nonce);
+    cipher.startVec(nonce);
 
     SecureVector!ubyte ct = pt;
     cipher.finish(ct);

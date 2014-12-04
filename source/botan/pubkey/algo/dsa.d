@@ -19,15 +19,15 @@ import botan.pubkey.algo.keypair;
 /**
 * DSA Public Key
 */
-class DSAPublicKey : DL_SchemePublicKey
+class DSAPublicKey : DLSchemePublicKey
 {
 public:
     @property string algoName() const { return "DSA"; }
 
     DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_57; }
     size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return group_q().bytes(); }
-    size_t maxInputBits() const { return group_q().bits(); }
+    size_t messagePartSize() const { return groupQ().bytes(); }
+    size_t maxInputBits() const { return groupQ().bits(); }
 
     this(in AlgorithmIdentifier alg_id,
                       in SecureVector!ubyte key_bits) 
@@ -51,7 +51,7 @@ protected:
 * DSA Private Key
 */
 final class DSAPrivateKey : DSAPublicKey,
-                             DL_SchemePrivateKey
+                             DLSchemePrivateKey
 {
 public:
     /*
@@ -63,9 +63,9 @@ public:
         m_x = private_key;
         
         if (m_x == 0)
-            m_x = BigInt.randomInteger(rng, 2, group_q() - 1);
+            m_x = BigInt.randomInteger(rng, 2, groupQ() - 1);
         
-        m_y = powerMod(group_g(), m_x, group_p());
+        m_y = powerMod(groupG(), m_x, groupP());
         
         if (private_key == 0)
             gen_check(rng);
@@ -76,7 +76,7 @@ public:
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     {
         super(alg_id, key_bits, DLGroup.ANSI_X9_57);
-        m_y = powerMod(group_g(), m_x, group_p());
+        m_y = powerMod(groupG(), m_x, groupP());
         
         load_check(rng);
     }
@@ -86,7 +86,7 @@ public:
     */
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.checkKey(rng, strong) || m_x >= group_q())
+        if (!super.checkKey(rng, strong) || m_x >= groupQ())
             return false;
         
         if (!strong)
@@ -231,7 +231,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!DSAPrivateKey(rng, DLGroup(dsa));
         key.checkKey(rng, true);
-        fails += validate_save_and_load(&key, rng);
+        fails += validateSaveAndLoad(&key, rng);
     }
     
     return fails;
@@ -248,7 +248,7 @@ size_t dsaSigKat(string p,
 {
     atomicOp!"+="(total_tests, 1);
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     BigInt p_bn = BigInt(p);
     BigInt q_bn = BigInt(q);
@@ -265,14 +265,14 @@ size_t dsaSigKat(string p,
     PKVerifier verify = PKVerifier(pubkey, padding);
     PKSigner sign = PKSigner(privkey, padding);
     
-    return validate_signature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
+    return validateSignature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }
 
 unittest
 {
     size_t fails;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     

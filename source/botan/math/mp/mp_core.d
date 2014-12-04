@@ -219,7 +219,7 @@ void bigint_sub2_rev(word* x,  in word* y, size_t y_size)
         x[i] = word_sub(y[i], x[i], &borrow);
     
     if (borrow)
-        throw new Internal_Error("bigint_sub2_rev: x >= y");
+        throw new InternalError("bigint_sub2_rev: x >= y");
 }
 
 /**

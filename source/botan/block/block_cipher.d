@@ -18,7 +18,7 @@ public:
     /**
     * @return block size of this algorithm
     */
-    abstract @property size_t blockSize() const;
+    abstract size_t blockSize() const;
 
     /**
     * @return native parallelism of this cipher in blocks
@@ -30,7 +30,7 @@ public:
     */
     final size_t parallelBytes() const
     {
-        return parallelism * this.block_size * BOTAN_BLOCK_CIPHER_PAR_MULT;
+        return parallelism * this.blockSize() * BOTAN_BLOCK_CIPHER_PAR_MULT;
     }
 
     /**
@@ -41,7 +41,7 @@ public:
     * Must be of length blockSize().
     */
     final void encrypt(ubyte* input, ubyte* output) const
-    { encrypt_n(input, output, 1); }
+    { encryptN(input, output, 1); }
 
     /**
     * Decrypt a block.
@@ -51,7 +51,7 @@ public:
     * Must be of length blockSize().
     */
     final void decrypt(ubyte* input, ubyte* output) const
-    { decrypt_n(input, output, 1); }
+    { decryptN(input, output, 1); }
 
     /**
     * Encrypt a block.
@@ -59,7 +59,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void encrypt(ubyte* block) const { encrypt_n(block, block, 1); }
+    final void encrypt(ubyte* block) const { encryptN(block, block, 1); }
     
     /**
     * Decrypt a block.
@@ -67,7 +67,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void decrypt(ubyte* block) const { decrypt_n(block, block, 1); }
+    final void decrypt(ubyte* block) const { decryptN(block, block, 1); }
 
     /**
     * Encrypt a block.
@@ -76,8 +76,8 @@ public:
     * has finished.
     */
     final void encrypt(ref ubyte[] block) const 
-    in { assert(block.length == this.block_size); }
-    body { encrypt_n(block.ptr, block.ptr, 1); }
+    in { assert(block.length == this.blockSize()); }
+    body { encryptN(block.ptr, block.ptr, 1); }
     
     /**
     * Decrypt a block.
@@ -86,8 +86,8 @@ public:
     * has finished.
     */
     final void decrypt(ref ubyte[] block) const 
-    in { assert(block.length == this.block_size); }
-    body { decrypt_n(block.ptr, block.ptr, 1); }
+    in { assert(block.length == this.blockSize()); }
+    body { decryptN(block.ptr, block.ptr, 1); }
 
     /**
     * Encrypt one or more blocks
@@ -95,7 +95,7 @@ public:
     */
     final void encrypt(Alloc)(Vector!( ubyte, Alloc ) block) const
     {
-        return encrypt_n(block.ptr, block.ptr, block.length / this.block_size);
+        return encryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
 
     /**
@@ -104,7 +104,7 @@ public:
     */
     final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block) const
     {
-        return decrypt_n(block.ptr, block.ptr, block.length / this.block_size);
+        return decryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
 
     /**
@@ -115,7 +115,7 @@ public:
     final void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
                                       ref Vector!( ubyte, Alloc2 ) output) const
     {
-        return encrypt_n(input.ptr, output.ptr, input.length / this.block_size);
+        return encryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
     
     /**
@@ -126,7 +126,7 @@ public:
     final void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
                                       ref Vector!( ubyte, Alloc2 ) output) const
     {
-        return decrypt_n(input.ptr, output.ptr, input.length / this.block_size);
+        return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
     /**
     * Encrypt one or more blocks
@@ -135,9 +135,9 @@ public:
     */
     final void encrypt(in ubyte[] input,
                        ref ubyte[] output) const
-    in { assert(input.length >= this.block_size); }
+    in { assert(input.length >= this.blockSize()); }
     body {
-        return encrypt_n(input.ptr, output.ptr, input.length / blockSize());
+        return encryptN(input.ptr, output.ptr, input.length / blockSize());
     }
     
     /**
@@ -147,9 +147,9 @@ public:
     */
     final void decrypt(in ubyte[] input,
                        ref ubyte[] output) const
-    in { assert(input.length >= this.block_size); }
+    in { assert(input.length >= this.blockSize()); }
     body {
-        return decrypt_n(input.ptr, output.ptr, input.length / this.block_size);
+        return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
 
     /**
@@ -183,11 +183,11 @@ class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMO
 {
     public:
         enum { BLOCK_SIZE = BS }
-        @property size_t blockSize() const { return BS; }
+        size_t blockSize() const { return BS; }
 
         KeyLengthSpecification keySpec() const
         {
-            return Key_Length_Specification(KMIN, KMAX, KMOD);
+            return KeyLengthSpecification(KMIN, KMAX, KMOD);
         }
 }
 

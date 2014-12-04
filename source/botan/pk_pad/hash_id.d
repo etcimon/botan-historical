@@ -16,7 +16,7 @@ import botan.utils.types;
 * @see RFC 3447 section 9.2
 * @param hash_name = the name of the hash function
 * @return ubyte sequence identifying the hash
-* @throw new Invalid_Argument if the hash has no known PKCS #1 hash id
+* @throw new InvalidArgument if the hash has no known PKCS #1 hash id
 */
 Vector!ubyte pkcsHashId(in string name)
 {

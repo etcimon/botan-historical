@@ -12,7 +12,7 @@ static if (BOTAN_HAS_CHACHA):
 import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.types;
 
 /**
@@ -28,7 +28,7 @@ public:
     {
         while (length >= m_buffer.length - m_position)
         {
-            xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
+            xorBuf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
             length -= (m_buffer.length - m_position);
             input += (m_buffer.length - m_position);
             output += (m_buffer.length - m_position);
@@ -40,7 +40,7 @@ public:
             m_position = 0;
         }
         
-        xor_buf(output, input, &m_buffer[m_position], length);
+        xorBuf(output, input, &m_buffer[m_position], length);
         
         m_position += length;
     }
@@ -71,7 +71,7 @@ public:
 
     KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(16, 32, 16);
+        return KeyLengthSpecification(16, 32, 16);
     }
 
     /*

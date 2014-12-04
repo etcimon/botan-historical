@@ -20,7 +20,7 @@ import botan.rng.rng;
 /**
 * This class represents Diffie-Hellman public keys.
 */
-class DHPublicKey : DL_SchemePublicKey
+class DHPublicKey : DLSchemePublicKey
 {
 public:
     @property string algoName() const { return "DH"; }
@@ -30,10 +30,10 @@ public:
     */
     Vector!ubyte publicValue() const
     {
-        return unlock(BigInt.encode1363(y, group_p().bytes()));
+        return unlock(BigInt.encode1363(y, groupP().bytes()));
     }
 
-    size_t maxInputBits() const { return group_p().bits(); }
+    size_t maxInputBits() const { return groupP().bits(); }
 
     DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_42; }
 
@@ -62,7 +62,7 @@ protected:
 */
 class DHPrivateKey : DHPublicKey,
                       PKKeyAgreementKey,
-                      DL_SchemePrivateKey
+                      DLSchemePrivateKey
 {
 public:
     /*
@@ -85,7 +85,7 @@ public:
     {
         super(alg_id, key_bits, DLGroup.ANSI_X9_42);
         if (m_y == 0)
-            m_y = powerMod(group_g(), m_x, group_p());
+            m_y = powerMod(groupG(), m_x, groupP());
         
         load_check(rng);
     }
@@ -105,12 +105,12 @@ public:
         
         if (m_x == 0)
         {
-            const BigInt m_p = group_p();
-            m_x.randomize(rng, 2 * dl_work_factor(m_p.bits()));
+            const BigInt m_p = groupP();
+            m_x.randomize(rng, 2 * dlWorkFactor(m_p.bits()));
         }
         
         if (m_y == 0)
-            m_y = powerMod(group_g(), m_x, group_p());
+            m_y = powerMod(groupG(), m_x, groupP());
         
         if (m_x == 0)
             gen_check(rng);
@@ -122,13 +122,13 @@ public:
 /**
 * DH operation
 */
-class DHKAOperation : Key_Agreement
+class DHKAOperation : KeyAgreement
 {
 public:
     this(in DHPrivateKey dh, RandomNumberGenerator rng) 
     {
         m_p = dh.groupP();
-        m_powermod_x_p = Fixed_Exponent_Power_Mod(dh.getX(), m_p);
+        m_powermod_x_p = FixedExponentPowerMod(dh.getX(), m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
         m_blinder = Blinder(k, m_powermod_x_p(inverseMod(k, m_p)), m_p);
     }
@@ -148,7 +148,7 @@ public:
 private:
     const BigInt m_p;
 
-    Fixed_Exponent_Power_Mod m_powermod_x_p;
+    FixedExponentPowerMod m_powermod_x_p;
     Blinder m_blinder;
 }
 
@@ -175,7 +175,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!DHPrivateKey(rng, ECGroup(OIDS.lookup(dh)));
         key.checkKey(rng, true);
-        fails += validate_save_and_load(&key, rng);
+        fails += validateSaveAndLoad(&key, rng);
     }
     
     return fails;
@@ -184,7 +184,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 size_t dhSigKat(string p, string g, string x, string y, string kdf, string outlen, string key)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     BigInt p_bn = BigInt(p);
     BigInt g_bn = BigInt(g);
@@ -212,7 +212,7 @@ unittest
 {
     size_t fails = 0;
 
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
 
     fails += testPkKeygen(rng);
 

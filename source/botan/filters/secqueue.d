@@ -14,7 +14,7 @@ import std.algorithm;
 /**
 * A queue that knows how to zeroize itself
 */
-final class SecureQueue : Fanout_Filter, DataSource
+final class SecureQueue : FanoutFilter, DataSource
 {
 public:
     @property string name() const { return "Queue"; }
@@ -134,7 +134,7 @@ public:
     bool attachable() { return false; }
 
     /**
-    * Secure_Queue assignment
+    * SecureQueue assignment
     * @param other = the queue to copy
     */
     SecureQueue opAssign(in SecureQueue input)
@@ -152,23 +152,23 @@ public:
 
 
     /**
-    * Secure_Queue default constructor (creates empty queue)
+    * SecureQueue default constructor (creates empty queue)
     */
     this()
     {
         bytes_read = 0;
-        set_next(null, 0);
+        setNext(null, 0);
         m_head = m_tail = new SecureQueueNode;
     }
 
     /**
-    * Secure_Queue copy constructor
+    * SecureQueue copy constructor
     * @param other = the queue to copy
     */
     this(in SecureQueue input)
     {
         bytes_read = 0;
-        set_next(null, 0);
+        setNext(null, 0);
         
         m_head = m_tail = new SecureQueueNode;
         SecureQueueNode temp = input.m_head;
@@ -184,7 +184,7 @@ private:
     size_t bytes_read;
 
     /*
-    * Destroy this Secure_Queue
+    * Destroy this SecureQueue
     */
     void destroy()
     {
@@ -203,7 +203,7 @@ private:
 }
 
 /**
-* A node in a Secure_Queue
+* A node in a SecureQueue
 */
 class SecureQueueNode
 {

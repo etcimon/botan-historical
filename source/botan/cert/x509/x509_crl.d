@@ -204,7 +204,7 @@ private:
         m_info.add("X509.CRL.start", start.readableString());
         m_info.add("X509.CRL.end", end.readableString());
         
-        BER_Object next = tbs_crl.getNextObject();
+        BERObject next = tbs_crl.getNextObject();
         
         if (next.type_tag == ASN1Tag.SEQUENCE && next.class_tag == ASN1Tag.CONSTRUCTED)
         {
@@ -242,5 +242,5 @@ private:
 
     bool m_throw_on_unknown_critical;
     Vector!CRLEntry m_revoked;
-    Data_Store m_info;
+    DataStore m_info;
 }

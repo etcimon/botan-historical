@@ -44,7 +44,7 @@ public:
     */
     void decodeFrom(BERDecoder source)
     {
-        BER_Object ber_time = source.getNextObject();
+        BERObject ber_time = source.getNextObject();
         
         setTo(transcode(ber_time.toString(),
                          LATIN1_CHARSET,

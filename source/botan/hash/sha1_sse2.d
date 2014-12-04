@@ -16,7 +16,7 @@ import botan.utils.simd.emmintrin;
 /**
 * SHA-160 using SSE2 for the message expansion
 */
-class SHA160SSE2 : SHA_160
+class SHA160SSE2 : SHA160
 {
 public:
     HashFunction clone() const { return new SHA160SSE2; }

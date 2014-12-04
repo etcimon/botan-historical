@@ -31,7 +31,7 @@ public:
     */
     BigInt getP() const
     {
-        init_check();
+        initCheck();
         return m_p;
     }
 
@@ -41,7 +41,7 @@ public:
     */
     BigInt getQ() const
     {
-        init_check();
+        initCheck();
         if (m_q == 0)
             throw new InvalidState("DLP group has no m_q prime specified");
         return m_q;
@@ -53,7 +53,7 @@ public:
     */
     BigInt getG() const
     {
-        init_check();
+        initCheck();
         return m_g;
     }
 
@@ -86,7 +86,7 @@ public:
     bool verifyGroup(RandomNumberGenerator rng,
                       bool strong) const
     {
-        init_check();
+        initCheck();
         
         if (m_g < 2 || m_p < 3 || m_q < 0)
             return false;
@@ -126,9 +126,9 @@ public:
     * @param format = the encoding format
     * @return string holding the DER encoded group
     */
-    Vector!ubyte dEREncode(Format format) const
+    Vector!ubyte DER_encode(Format format) const
     {
-        init_check();
+        initCheck();
         
         if ((m_q == 0) && (format != PKCS_3))
             throw new EncodingError("The ANSI DL parameter formats require a subgroup");
@@ -171,7 +171,7 @@ public:
     * @param ber = a vector containing the DER/BER encoded group
     * @param format = the format of the encoded group
     */
-    void bERDecode(in Vector!ubyte data,
+    void BER_decode(in Vector!ubyte data,
                     Format format)
     {
         BigInt new_p, new_q, new_g;
@@ -209,7 +209,7 @@ public:
     * Decode a PEM encoded group into this instance.
     * @param pem = the PEM encoding of the group
     */
-    void pEMDecode(in string pem)
+    void PEM_decode(in string pem)
     {
         string label;
         
@@ -244,7 +244,7 @@ public:
     */
     this(in string name)
     {
-        string pem = PEM_for_named_group(name);
+        string pem = getPemForNamedGroup(name);
         
         if (!pem)
             throw new InvalidArgument("DLGroup: Unknown group " ~ name);
@@ -279,7 +279,7 @@ public:
         else if (type == Prime_Subgroup)
         {
             if (!qbits)
-                qbits = 2 * dl_work_factor(pbits);
+                qbits = 2 * dlWorkFactor(pbits);
             
             m_q = randomPrime(rng, qbits);
             BigInt X;
@@ -396,7 +396,7 @@ private:
     /**
     * Return PEM representation of named DL group
     */
-    public static string pEMForNamedGroup(in string name)
+    public static string getPemForNamedGroup(in string name)
     {
         if (name == "modp/ietf/1024")
             return

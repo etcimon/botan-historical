@@ -40,7 +40,7 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    BlockCipher findBlockCipher(in SCANName algo_spec, AlgorithmFactory af) const;
+    BlockCipher findBlockCipher(in SCANToken algo_spec, AlgorithmFactory af) const;
 
 
     /**
@@ -48,14 +48,14 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    StreamCipher findStreamCipher(in SCANName algo_spec, AlgorithmFactory af) const;
+    StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactory af) const;
 
     /**
     * @param algo_spec = the algorithm name/specification
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    HashFunction findHash(in SCANName algo_spec, AlgorithmFactory af) const;
+    HashFunction findHash(in SCANToken algo_spec, AlgorithmFactory af) const;
 
 
     /**
@@ -63,14 +63,14 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    MessageAuthenticationCode findMac(in SCANName algo_spec, AlgorithmFactory af) const;
+    MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactory af) const;
 
     /**
     * @param algo_spec = the algorithm name/specification
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    PBKDF findPbkdf(in SCANName algo_spec, AlgorithmFactory af) const;
+    PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const;
 
     /**
     * @param n = the modulus

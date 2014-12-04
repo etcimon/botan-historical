@@ -185,7 +185,7 @@ public:
         m_block_cipher = cipher;
         m_prf = mac;
         m_salt = rng.randomVec(12);
-        m_iv = rng.randomVec(m_block_cipher.block_size);
+        m_iv = rng.randomVec(m_block_cipher.blockSize());
         m_iterations = 0;
         m_key_length = m_block_cipher.maximumKeylength();
         PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());

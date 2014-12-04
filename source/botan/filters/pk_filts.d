@@ -11,7 +11,7 @@ import botan.pubkey.pubkey;
 import botan.rng.rng;
 
 /**
-* PK_Encryptor Filter
+* PKEncryptor Filter
 */
 final class PKEncryptorFilter : Filter
 {
@@ -41,13 +41,13 @@ public:
 
     ~this() { delete cipher; }
 private:
-    PK_Encryptor m_cipher;
+    PKEncryptor m_cipher;
     RandomNumberGenerator m_rng;
     SecureVector!ubyte m_buffer;
 }
 
 /**
-* PK_Decryptor Filter
+* PKDecryptor Filter
 */
 final class PKDecryptorFilter : Filter
 {
@@ -72,7 +72,7 @@ public:
     this(PKDecryptor c) {  m_cipher = c; }
     ~this() { delete m_cipher; }
 private:
-    PK_Decryptor m_cipher;
+    PKDecryptor m_cipher;
     SecureVector!ubyte m_buffer;
 }
 
@@ -132,7 +132,7 @@ public:
     void endMsg()
     {
         if (m_signature.empty)
-            throw new InvalidState("PKVerifier_Filter: No signature to check against");
+            throw new InvalidState("PKVerifierFilter: No signature to check against");
         bool is_valid = verifier.checkSignature(m_signature);
         send((is_valid ? 1 : 0));
     }
@@ -157,7 +157,7 @@ public:
 
     this(ref PKVerifier v) { verifier = v; }
     /*
-    * PKVerifier_Filter Constructor
+    * PKVerifierFilter Constructor
     */
     this(ref PKVerifier v, in ubyte* sig,
          size_t length)
@@ -167,7 +167,7 @@ public:
     }
     
     /*
-    * PKVerifier_Filter Constructor
+    * PKVerifierFilter Constructor
     */
     this(ref PKVerifier v,
          in SecureVector!ubyte sig) 

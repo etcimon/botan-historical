@@ -208,7 +208,7 @@ unittest
             
             ++ran;
             
-            Certificate_Store_In_Memory store;
+            CertificateStoreInMemory store;
             
             store.addCertificate(X509Certificate(root_cert));
             

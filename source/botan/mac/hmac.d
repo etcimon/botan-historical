@@ -12,7 +12,7 @@ static if (BOTAN_HAS_HMAC || BOTAN_HAS_PBE_PKCS_V20):
 public import botan.mac.mac;
 import botan.hash.hash;
 import std.algorithm : fill;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 /**
 * HMAC
 */
@@ -50,7 +50,7 @@ public:
     KeyLengthSpecification keySpec() const
     {
         // Absurd max length here is to support PBKDF2
-        return Key_Length_Specification(0, 512);
+        return KeyLengthSpecification(0, 512);
     }
 
     /**
@@ -99,13 +99,13 @@ private:
         if (length > m_hash.hashBlockSize)
         {
             SecureVector!ubyte hmac_key = m_hash.process(key, length);
-            xor_buf(m_ikey, hmac_key, hmac_key.length);
-            xor_buf(m_okey, hmac_key, hmac_key.length);
+            xorBuf(m_ikey, hmac_key, hmac_key.length);
+            xorBuf(m_okey, hmac_key, hmac_key.length);
         }
         else
         {
-            xor_buf(m_ikey, key, length);
-            xor_buf(m_okey, key, length);
+            xorBuf(m_ikey, key, length);
+            xorBuf(m_okey, key, length);
         }
         
         m_hash.update(m_ikey);

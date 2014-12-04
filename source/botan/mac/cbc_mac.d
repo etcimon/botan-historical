@@ -11,7 +11,7 @@ static if (BOTAN_HAS_CBC_MAC):
 
 import botan.mac.mac;
 import botan.block.block_cipher;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 
 /**
@@ -36,7 +36,7 @@ public:
         return new CBCMAC(m_cipher.clone());
     }
 
-    @property size_t outputLength() const { return m_cipher.block_size; }
+    @property size_t outputLength() const { return m_cipher.blockSize(); }
 
     /*
     * Clear memory of sensitive data
@@ -59,7 +59,7 @@ public:
     this(BlockCipher cipher)
     {
         m_cipher = cipher;
-        m_state = cipher.block_size;
+        m_state = cipher.blockSize();
     }
 
 
@@ -70,7 +70,7 @@ private:
     void addData(in ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(output_length() - m_position, length);
-        xor_buf(&m_state[m_position], input, xored);
+        xorBuf(&m_state[m_position], input, xored);
         m_position += xored;
         
         if (m_position < output_length())
@@ -81,13 +81,13 @@ private:
         length -= xored;
         while (length >= output_length())
         {
-            xor_buf(m_state, input, output_length());
+            xorBuf(m_state, input, output_length());
             m_cipher.encrypt(m_state);
             input += output_length();
             length -= output_length();
         }
         
-        xor_buf(m_state, input, length);
+        xorBuf(m_state, input, length);
         m_position = length;
     }    
 

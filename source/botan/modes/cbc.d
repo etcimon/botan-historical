@@ -13,13 +13,13 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
 import botan.utils.loadstor;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.rounding;
 
 /**
 * CBC Mode
 */
-class CBCMode : Cipher_Mode
+class CBCMode : CipherMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -58,12 +58,12 @@ public:
 
     final override size_t defaultNonceLength() const
     {
-        return cipher().block_size;
+        return cipher().blockSize();
     }
 
     final override bool validNonceLength(size_t n) const
     {
-        return (n == 0 || n == cipher().block_size);
+        return (n == 0 || n == cipher().blockSize());
     }
 
     final override void clear()
@@ -76,8 +76,8 @@ protected:
     {
         m_cipher = cipher;
         m_padding = padding;
-        m_state = m_cipher.block_size;
-        if (m_padding && !m_padding.validBlocksize(cipher.block_size))
+        m_state = m_cipher.blockSize();
+        if (m_padding && !m_padding.validBlocksize(cipher.blockSize()))
             throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/CBC");
     }
 
@@ -107,7 +107,7 @@ private:
 /**
 * CBC Encryption
 */
-class CBCEncryption : CBC_Mode
+class CBCEncryption : CBCMode
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)
@@ -121,7 +121,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         assert(sz % BS == 0, "CBC input is full blocks");
         const size_t blocks = sz / BS;
@@ -132,7 +132,7 @@ public:
         {
             foreach (size_t i; 0 .. blocks)
             {
-                xor_buf(&buf[BS*i], prev_block, BS);
+                xorBuf(&buf[BS*i], prev_block, BS);
                 cipher().encrypt(&buf[BS*i]);
                 prev_block = &buf[BS*i];
             }
@@ -146,7 +146,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         const size_t bytes_in_final_block = (buffer.length-offset) % BS;
         
@@ -160,7 +160,7 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        return round_up(input_length, cipher().block_size);
+        return round_up(input_length, cipher().blockSize());
     }
 
     override size_t minimumFinalSize() const
@@ -172,7 +172,7 @@ public:
 /**
 * CBC Encryption with ciphertext stealing (CBC-CS3 variant)
 */
-final class CTSEncryption : CBC_Encryption
+final class CTSEncryption : CBCEncryption
 {
 public:
     this(BlockCipher cipher)
@@ -191,7 +191,7 @@ public:
         ubyte* buf = &buffer[offset];
         const size_t sz = buffer.length - offset;
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         if (sz < BS + 1)
             throw new EncodingError(name() ~ ": insufficient data to encrypt");
@@ -214,7 +214,7 @@ public:
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
-            xor_buf(last.ptr, state_ptr(), BS);
+            xorBuf(last.ptr, state_ptr(), BS);
             cipher().encrypt(last.ptr);
             
             foreach (size_t i; 0 .. (final_bytes - BS))
@@ -231,12 +231,12 @@ public:
 
     override size_t minimumFinalSize() const
     {
-        return cipher().block_size + 1;
+        return cipher().blockSize() + 1;
     }
 
     bool validNonceLength(size_t n) const
     {
-        return (n == cipher().block_size);
+        return (n == cipher().blockSize());
     }
 
 }
@@ -244,7 +244,7 @@ public:
 /**
 * CBC Decryption
 */
-class CBCDecryption : CBC_Mode
+class CBCDecryption : CBCMode
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)  
@@ -259,7 +259,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
@@ -270,8 +270,8 @@ public:
             
             cipher().decryptN(buf, m_tempbuf.ptr, to_proc / BS);
             
-            xor_buf(m_tempbuf.ptr, state_ptr(), BS);
-            xor_buf(&m_tempbuf[BS], buf, to_proc - BS);
+            xorBuf(m_tempbuf.ptr, state_ptr(), BS);
+            xorBuf(&m_tempbuf[BS], buf, to_proc - BS);
             copyMem(state_ptr(), buf + (to_proc - BS), BS);
             
             copyMem(buf, m_tempbuf.ptr, to_proc);
@@ -286,7 +286,7 @@ public:
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         if (sz == 0 || sz % BS)
             throw new DecodingError(name() ~ ": Ciphertext not a multiple of block size");
@@ -304,7 +304,7 @@ public:
 
     override size_t minimumFinalSize() const
     {
-        return cipher().block_size;
+        return cipher().blockSize();
     }     
 private:
     SecureVector!ubyte m_tempbuf;
@@ -313,7 +313,7 @@ private:
 /**
 * CBC Decryption with ciphertext stealing (CBC-CS3 variant)
 */
-final class CTSDecryption : CBC_Decryption
+final class CTSDecryption : CBCDecryption
 {
 public:
     this(BlockCipher cipher)
@@ -327,7 +327,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         if (sz < BS + 1)
             throw new EncodingError(name() ~ ": insufficient data to decrypt");
@@ -353,13 +353,13 @@ public:
             
             cipher().decrypt(last.ptr);
             
-            xor_buf(last.ptr, &last[BS], final_bytes - BS);
+            xorBuf(last.ptr, &last[BS], final_bytes - BS);
             
             foreach (size_t i; 0 .. (final_bytes - BS))
                 std.algorithm.swap(last[i], last[i + BS]);
             
             cipher().decrypt(last.ptr);
-            xor_buf(last.ptr, state_ptr(), BS);
+            xorBuf(last.ptr, state_ptr(), BS);
             
             buffer += last;
         }
@@ -368,11 +368,11 @@ public:
 
     override size_t minimumFinalSize() const
     {
-        return cipher().block_size + 1;
+        return cipher().blockSize() + 1;
     }
 
     bool validNonceLength(size_t n) const
     {
-        return (n == cipher().block_size);
+        return (n == cipher().blockSize());
     }
 }

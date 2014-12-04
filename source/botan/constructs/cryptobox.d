@@ -30,7 +30,7 @@ struct CryptoBox {
     * @param input = the input data
     * @param input_len = the length of input in bytes
     * @param passphrase = the passphrase used to encrypt the message
-    * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
+    * @param rng = a ref to a random number generator, such as AutoSeededRNG
     */
     static string encrypt(in ubyte* input, size_t input_len,
                           in string passphrase,
@@ -171,7 +171,7 @@ unittest
 {
     size_t fails = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     __gshared immutable ubyte[3] msg = [ 0xAA, 0xBB, 0xCC ];
     string ciphertext = CryptoBox.encrypt(msg.ptr, msg.length, "secret password", rng);

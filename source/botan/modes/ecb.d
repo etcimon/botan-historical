@@ -13,14 +13,14 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
 import botan.utils.loadstor;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.rounding;
 import botan.utils.types;
 
 /**
 * ECB mode
 */
-class ECBMode : Cipher_Mode
+class ECBMode : CipherMode
 {
 public:
     final override SecureVector!ubyte start(const ubyte[], size_t nonce_len)
@@ -65,7 +65,7 @@ protected:
     {
         m_cipher = cipher;
         m_padding = padding;
-        if (!m_padding.validBlocksize(cipher.block_size))
+        if (!m_padding.validBlocksize(cipher.blockSize()))
             throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/ECB");
     }
 
@@ -86,7 +86,7 @@ private:
 /**
 * ECB Encryption
 */
-final class ECBEncryption : ECB_Mode
+final class ECBEncryption : ECBMode
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding) 
@@ -100,7 +100,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         assert(sz % BS == 0, "ECB input is full blocks");
         const size_t blocks = sz / BS;
@@ -113,7 +113,7 @@ public:
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         const size_t bytes_in_final_block = sz % BS;
         
@@ -127,7 +127,7 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        return round_up(input_length, cipher().block_size);
+        return round_up(input_length, cipher().blockSize());
     }
 
     override size_t minimumFinalSize() const
@@ -139,7 +139,7 @@ public:
 /**
 * ECB Decryption
 */
-final class ECBDecryption : ECB_Mode
+final class ECBDecryption : ECBMode
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)
@@ -153,7 +153,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
@@ -166,7 +166,7 @@ public:
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         if (sz == 0 || sz % BS)
             throw new DecodingError(name ~ ": Ciphertext not a multiple of block size");
@@ -184,6 +184,6 @@ public:
 
     override size_t minimumFinalSize() const
     {
-        return cipher().block_size;
+        return cipher().blockSize();
     }
 }

@@ -61,27 +61,27 @@ public:
 
     string providerName() const { return m_engine.providerName(); }
 
-    BlockCipher findBlockCipher(in SCANName algo_spec, AlgorithmFactory af) const
+    BlockCipher findBlockCipher(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         return m_engine.findBlockCipher(algo_spec, af);
     }
 
-    StreamCipher findStreamCipher(in SCANName algo_spec, AlgorithmFactory af) const
+    StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         return m_engine.findStreamCipher(algo_spec, af);
     }
 
-    HashFunction findHash(in SCANName algo_spec, AlgorithmFactory af) const
+    HashFunction findHash(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         return m_engine.findHash(algo_spec, af);
     }
 
-    MessageAuthenticationCode findMac(in SCANName algo_spec, AlgorithmFactory af) const
+    MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         return m_engine.findMac(algo_spec, af);
     }
 
-    PBKDF findPbkdf(in SCANName algo_spec, AlgorithmFactory af) const
+    PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         return m_engine.findPbkdf(algo_spec, af);
     }

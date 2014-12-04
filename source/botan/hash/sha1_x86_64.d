@@ -14,10 +14,10 @@ import botan.hash.sha160;
 /**
 * SHA-160 in x86-64 assembly
 */
-class SHA160X8664 : SHA_160
+class SHA160_X86_64 : SHA160
 {
 public:
-    override HashFunction clone() const { return new SHA160X8664; }
+    override HashFunction clone() const { return new SHA160_X86_64; }
 private:
     /*
     * SHA-160 Compression Function
@@ -252,7 +252,7 @@ enum MAGIC4 = -0x359D3E2A;
 enum T = "RSI";
 enum T2 = "EAX";
 
-string f1(string A, string B, string C, string D, string E, string F, ubyte N)
+string F1(string A, string B, string C, string D, string E, string F, ubyte N)
 {
     return ASSIGN(T2, ARRAY4(W, N))    ~
             ASSIGN(A, F) ~
@@ -267,7 +267,7 @@ string f1(string A, string B, string C, string D, string E, string F, ubyte N)
             ADD(E, F);
 }
 
-string f2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
+string F2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
 {
     return ASSIGN(T2, ARRAY4(W, N)) ~
             ASSIGN(A, F) ~
@@ -281,7 +281,7 @@ string f2_4(string A, string B, string C, string D, string E, string F, ubyte N,
             ADD(E, F);
 }
 
-string f3(string A, string B, string C, string D, string E, string F, ubyte N)
+string F3(string A, string B, string C, string D, string E, string F, ubyte N)
 {
     return ASSIGN(T2, ARRAY4(W, N)) ~
             ASSIGN(A, F) ~
@@ -298,12 +298,12 @@ string f3(string A, string B, string C, string D, string E, string F, ubyte N)
             ADD(E, F);
 }
 
-string f2(string A, string B, string C, string D, string E, string F, ubyte W2)
+string F2(string A, string B, string C, string D, string E, string F, ubyte W2)
 {
     return F2_4(A, B, C, D, E, F, W2, MAGIC2);
 }
 
-string f4(string A, string B, string C, string D, string E, string F, ubyte W2)
+string F4(string A, string B, string C, string D, string E, string F, ubyte W2)
 {
     return F2_4(A, B, C, D, E, F, W2, MAGIC4);
 }

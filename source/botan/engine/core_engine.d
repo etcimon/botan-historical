@@ -289,7 +289,7 @@ public:
     }
 
 
-    BlockCipher findBlockCipher(in SCANName request, AlgorithmFactory af) const
+    BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
     {
         
         static if (BOTAN_HAS_AES) {
@@ -425,7 +425,7 @@ public:
         static if (BOTAN_HAS_LION) {
             if (request.algo_name == "Lion" && request.argCountBetween(2, 3))
             {
-                const size_t block_size = request.arg_as_integer(2, 1024);
+                const size_t block_size = request.argAsInteger(2, 1024);
                 
                 const HashFunction hash = af.prototypeHashFunction(request.arg(0));
                 
@@ -441,7 +441,7 @@ public:
         return null;
     }
 
-    StreamCipher findStreamCipher(in SCANName request, AlgorithmFactory af) const
+    StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_OFB) {
             if (request.algo_name == "OFB" && request.argCount() == 1)
@@ -479,7 +479,7 @@ public:
         return null;
     }
 
-    HashFunction findHash(in SCANName request, AlgorithmFactory af) const
+    HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_ADLER32) {
             if (request.algo_name == "Adler32")
@@ -613,7 +613,7 @@ public:
         
     }
 
-    MessageAuthenticationCode findMac(in SCANName request, AlgorithmFactory af) const
+    MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
     {
         
         static if (BOTAN_HAS_CBC_MAC) {
@@ -645,7 +645,7 @@ public:
     }
 
 
-    PBKDF findPbkdf(in SCANName algo_spec, AlgorithmFactory af) const
+    PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_PBKDF1) {
             if (algo_spec.algo_name == "PBKDF1" && algo_spec.argCount() == 1)
@@ -742,7 +742,7 @@ KeyedFilter getCipherMode(const BlockCipher block_cipher,
         Vector!string algo_info = parse_algorithm_name(mode);
         const string mode_name = algo_info[0];
         
-        size_t bits = 8 * block_cipher.block_size;
+        size_t bits = 8 * block_cipher.blockSize();
         if (algo_info.length > 1)
             bits = to!uint(algo_info[1]);
         

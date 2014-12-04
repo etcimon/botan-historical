@@ -314,7 +314,7 @@ public:
     ref BigInt opOpAssign(string op)(in BigInt y)
         if (op == "/=")
     {
-        if (y.sigWords() == 1 && is_power_of_2(y.wordAt(0)))
+        if (y.sigWords() == 1 && isPowerOf2(y.wordAt(0)))
             this >>= (y.bits() - 1);
         else
             this = this / y;
@@ -342,7 +342,7 @@ public:
         if (mod == 0)
             throw new DivideByZero();
         
-        if (is_power_of_2(mod))
+        if (isPowerOf2(mod))
         {
             word result = (word_at(0) & (mod - 1));
             clear();
@@ -486,13 +486,13 @@ public:
     * Test if the integer has an even value
     * @result true if the integer is even, false otherwise
     */
-    bool isEven() const { return (get_bit(0) == 0); }
+    bool isEven() const { return (getBit(0) == 0); }
 
     /**
     * Test if the integer has an odd value
     * @result true if the integer is odd, false otherwise
     */
-    bool isOdd()  const { return (get_bit(0) == 1); }
+    bool isOdd()  const { return (getBit(0) == 1); }
 
     /**
     * Test if the integer is not zero
@@ -855,7 +855,7 @@ public:
         BigInt range = max - min;
         
         if (range <= 0)
-            throw new InvalidArgument("random_integer: invalid min/max values");
+            throw new InvalidArgument("randomInteger: invalid min/max values");
         
         return (min + (BigInt(rng, range.bits() + 2) % range));
     }
@@ -1035,7 +1035,7 @@ public:
     {
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
-            throw new EncodingError("encode_1363: n is too large to encode properly");
+            throw new EncodingError("encode1363: n is too large to encode properly");
         
         const size_t leading_0s = bytes - n_bytes;
         
@@ -1181,7 +1181,7 @@ public:
         if (mod == 0)
             throw new BigInt.DivideByZero();
         
-        if (is_power_of_2(mod))
+        if (isPowerOf2(mod))
             return (n.wordAt(0) & (mod - 1));
         
         word remainder = 0;

@@ -110,10 +110,10 @@ public:
     void setBase(in BigInt b) const
     {
         if (b.isZero() || b.isNegative())
-            throw new InvalidArgument("PowerMod.set_base: arg must be > 0");
+            throw new InvalidArgument("PowerMod.setBase: arg must be > 0");
         
         if (!core)
-            throw new InternalError("PowerMod.set_base: core was NULL");
+            throw new InternalError("PowerMod.setBase: core was NULL");
         core.setBase(b);
     }
 
@@ -123,10 +123,10 @@ public:
     void setExponent(in BigInt e) const
     {
         if (e.isNegative())
-            throw new InvalidArgument("PowerMod.set_exponent: arg must be > 0");
+            throw new InvalidArgument("PowerMod.setExponent: arg must be > 0");
         
         if (!core)
-            throw new InternalError("PowerMod.set_exponent: core was NULL");
+            throw new InternalError("PowerMod.setExponent: core was NULL");
         core.setExponent(e);
     }
 
@@ -170,7 +170,7 @@ public:
         delete core;
     }
 private:
-    Modular_Exponentiator core;
+    ModularExponentiator core;
 }
 
 /**
@@ -180,19 +180,19 @@ class FixedExponentPowerMod : PowerMod
 {
 public:
     BigInt opCall(in BigInt b) const
-    { set_base(b); return execute(); }
+    { setBase(b); return execute(); }
 
     this() {}
 
     /*
-    * Fixed_Exponent_Power_Mod Constructor
+    * FixedExponentPowerMod Constructor
     */
     this(in BigInt e,
          in BigInt n,
          UsageHints hints = NO_HINTS)
     { 
         super(n, Usage_Hints(hints | EXP_IS_FIXED | choose_exp_hints(e, n)));
-        set_exponent(e);
+        setExponent(e);
     }
     
 
@@ -205,7 +205,7 @@ class FixedBasePowerMod : PowerMod
 {
 public:
     BigInt opCall(in BigInt e) const
-    { set_exponent(e); return execute(); }
+    { setExponent(e); return execute(); }
 
     this() {}
     /*
@@ -214,7 +214,7 @@ public:
     this(in BigInt b, in BigInt n, UsageHints hints = NO_HINTS)
     {
         super(n, Usage_Hints(hints | BASE_IS_FIXED | choose_base_hints(b, n)));
-        set_base(b);
+        setBase(b);
     }
 
 }

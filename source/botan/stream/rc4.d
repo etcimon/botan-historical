@@ -11,7 +11,7 @@ static if (BOTAN_HAS_RC4):
 
 import botan.stream.stream_cipher;
 import botan.utils.types;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.rounding;
 
 /**
@@ -27,13 +27,13 @@ public:
     {
         while (length >= m_buffer.length - m_position)
         {
-            xor_buf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
+            xorBuf(output, input, &m_buffer[m_position], m_buffer.length - m_position);
             length -= (m_buffer.length - m_position);
             input += (m_buffer.length - m_position);
             output += (m_buffer.length - m_position);
             generate();
         }
-        xor_buf(output, input, &m_buffer[m_position], length);
+        xorBuf(output, input, &m_buffer[m_position], length);
         m_position += length;
     }
 
@@ -61,7 +61,7 @@ public:
 
     KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(1, 256);
+        return KeyLengthSpecification(1, 256);
     }
 
     /**

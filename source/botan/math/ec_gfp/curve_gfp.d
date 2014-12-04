@@ -33,7 +33,7 @@ public:
         m_b = b;
         m_p_words = m_p.sigWords();
         m_p_dash = montyInverse(m_p.wordAt(0));
-        const BigInt r = BigInt.power_of_2(m_p_words * BOTAN_MP_WORD_BITS);
+        const BigInt r = BigInt.powerOf2(m_p_words * BOTAN_MP_WORD_BITS);
 
         m_r2  = (r * r) % p;
         m_a_r = (a * r) % p;

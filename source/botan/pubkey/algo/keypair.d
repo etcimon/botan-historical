@@ -25,8 +25,8 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
                                   in PrivateKey key,
                                   in string padding)
 {
-    auto encryptor = scoped!PK_Encryptor_EME(key, padding);
-    auto decryptor = scoped!PK_Decryptor_EME(key, padding);
+    auto encryptor = scoped!PKEncryptorEME(key, padding);
+    auto decryptor = scoped!PKDecryptorEME(key, padding);
     
     /*
     Weird corner case, if the key is too small to encrypt anything at
@@ -35,7 +35,7 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
     if (encryptor.maximumInputSize() == 0)
         return true;
     
-    Vector!ubyte plaintext = unlock(rng.random_vec(encryptor.maximum_input_size() - 1));
+    Vector!ubyte plaintext = unlock(rng.random_vec(encryptor.maximumInputSize() - 1));
     
     Vector!ubyte ciphertext = encryptor.encrypt(plaintext, rng);
     if (ciphertext == plaintext)

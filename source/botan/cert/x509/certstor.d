@@ -45,7 +45,7 @@ public:
 /**
 * In Memory Certificate Store
 */
-final class CertificateStoreInMemory : Certificate_Store
+final class CertificateStoreInMemory : CertificateStore
 {
 public:
     /**
@@ -135,7 +135,7 @@ private:
     Vector!X509CRL m_crls;
 }
 
-final class CertificateStoreOverlay : Certificate_Store
+final class CertificateStoreOverlay : CertificateStore
 {
 public:
     this(in Vector!X509Certificate certs)

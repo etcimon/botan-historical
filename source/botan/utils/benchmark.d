@@ -57,7 +57,7 @@ HashMap!(string, double)
         if (proto) {
             Unique!BlockCipher bc = proto.clone();
             
-            const SymmetricKey key = SymmetricKey(rng, bc.maximum_keylength());
+            const SymmetricKey key = SymmetricKey(rng, bc.maximumKeylength());
             
             HashMap!(string, double) ret;
             ret["key schedule"] = time_op(runtime / 8, { bc.setKey(key); });
@@ -71,7 +71,7 @@ HashMap!(string, double)
         if (proto) {
             Unique!StreamCipher sc = proto.clone();
             
-            const SymmetricKey key = SymmetricKey(rng, sc.maximum_keylength());
+            const SymmetricKey key = SymmetricKey(rng, sc.maximumKeylength());
             HashMap!(string, double) ret;
             ret["key schedule"] = time_op(runtime / 8, [&]() { sc.setKey(key); });
             ret[""] = mb_mult * time_op(runtime, [&]() { sc.encipher(buffer); });
@@ -93,7 +93,7 @@ HashMap!(string, double)
         if (proto) {
             Unique!MessageAuthenticationCode mac = proto.clone();
             
-            const SymmetricKey key = SymmetricKey(rng, mac.maximum_keylength());
+            const SymmetricKey key = SymmetricKey(rng, mac.maximumKeylength());
             HashMap!(string, double) ret;
             ret["key schedule"] =time_op(runtime / 8, { mac.setKey(key); });
             ret[""] = mb_mult * time_op(runtime, { mac.update(buffer); });
@@ -101,12 +101,12 @@ HashMap!(string, double)
         }
     }
     {
-        Unique!AEAD_Mode enc = get_aead(name, ENCRYPTION);
-        Unique!AEAD_Mode dec = get_aead(name, DECRYPTION);
+        Unique!AEADMode enc = get_aead(name, ENCRYPTION);
+        Unique!AEADMode dec = get_aead(name, DECRYPTION);
         
         if (!enc.isEmpty && !dec.isEmpty)
         {
-            const SymmetricKey key = SymmetricKey(rng, enc.keySpec().maximum_keylength());
+            const SymmetricKey key = SymmetricKey(rng, enc.keySpec().maximumKeylength());
             HashMap!(string, double) ret;
             ret["key schedule"] = time_op(runtime / 4, { enc.setKey(key); dec.setKey(key); }) / 2;
             ret["encrypt"] = mb_mult * time_op(runtime / 2, { enc.update(buffer, 0); buffer.resize(buf_size*1024); });

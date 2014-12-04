@@ -9,7 +9,7 @@ module botan.pk_pad.mgf1;
 import botan.kdf.kdf;
 import botan.hash.hash;
 import botan.utils.exceptn;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 
 /**
@@ -28,7 +28,7 @@ void mgf1Mask(HashFunction hash,
         SecureVector!ubyte buffer = hash.finished();
         
         size_t xored = std.algorithm.min(buffer.length, out_len);
-        xor_buf(output, buffer.ptr, xored);
+        xorBuf(output, buffer.ptr, xored);
         output += xored;
         out_len -= xored;
         

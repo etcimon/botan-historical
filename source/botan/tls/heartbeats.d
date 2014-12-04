@@ -22,7 +22,7 @@ import botan.utils.types;
 struct HeartbeatMessage
 {
 public:
-    typedef ubyte Message_Type;
+    typedef ubyte MessageType;
     enum MessageType { REQUEST = 1, RESPONSE = 2 }
 
     Vector!ubyte contents() const
@@ -66,6 +66,6 @@ public:
         m_payload = Vector!ubyte(payload, payload + payload_len);
     }
 private:
-    Message_Type m_type;
+    MessageType m_type;
     Vector!ubyte m_payload;
 }

@@ -14,8 +14,6 @@ import botan.utils.memory.zeroize;
 import botan.utils.types;
 import core.stdc.string;
 
-enum _POSIX_C_SOURCE = 199309;
-
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.stat;
 import core.sys.posix.fcntl;
@@ -23,7 +21,7 @@ import core.sys.posix.unistd;
 import core.sys.posix.dirent;
 
 
-final class DirectoryWalker : File_Descriptor_Source
+final class DirectoryWalker : FileDescriptorSource
 {
 public:
     this(in string root) 
@@ -164,5 +162,5 @@ public:
 
 private:
     const string m_path;
-    Unique!File_Descriptor_Source m_dir;
+    Unique!FileDescriptorSource m_dir;
 }

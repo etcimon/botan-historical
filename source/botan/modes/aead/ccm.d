@@ -14,14 +14,14 @@ import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.utils.parsing;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 
 /**
 * Base class for CCM encryption and decryption
 * @see RFC 3610
 */
-class CCMMode : AEAD_Mode
+class CCMMode : AEADMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -64,7 +64,7 @@ public:
 
     final override @property string name() const
     {
-        return (m_cipher.name ~ "/CCM(" ~ to!string(tag_size()) ~ "," ~ to!string(L())) ~ ")";
+        return (m_cipher.name ~ "/CCM(" ~ to!string(tagSize()) ~ "," ~ to!string(L())) ~ ")";
     }
 
     final size_t updateGranularity() const
@@ -72,7 +72,7 @@ public:
         /*
         This value does not particularly matter as regardless update
         buffers all input, so in theory this could be 1. However as for instance
-        Transformation_Filter creates updateGranularity() ubyte buffers, use a
+        TransformationFilter creates updateGranularity() ubyte buffers, use a
         somewhat large size to avoid bouncing on a tiny buffer.
         */
         return m_cipher.parallelBytes();
@@ -107,14 +107,14 @@ protected:
     const size_t BS = 16; // intrinsic to CCM definition
 
     /*
-    * CCM_Mode Constructor
+    * CCMMode Constructor
     */
     this(BlockCipher cipher, size_t tag_size, size_t L)
     { 
         m_tag_size = tag_size;
         m_L = L;
         m_cipher = cipher;
-        if (m_cipher.block_size != BS)
+        if (m_cipher.blockSize() != BS)
             throw new InvalidArgument(m_cipher.name ~ " cannot be used with CCM mode");
         
         if (L < 2 || L > 8)
@@ -155,11 +155,11 @@ protected:
     {
         SecureVector!ubyte B0 = SecureVector!ubyte(BS);
         
-        const ubyte b_flags = (m_ad_buf.length ? 64 : 0) + (((tag_size()/2)-1) << 3) + (L()-1);
+        const ubyte b_flags = (m_ad_buf.length ? 64 : 0) + (((tagSize()/2)-1) << 3) + (L()-1);
         
         B0[0] = b_flags;
         copyMem(&B0[1], m_nonce.ptr, m_nonce.length);
-        encode_length(sz, &B0[m_nonce.length+1]);
+        encodeLength(sz, &B0[m_nonce.length+1]);
         
         return B0;
     }
@@ -191,7 +191,7 @@ private:
 /**
 * CCM Encryption
 */
-final class CCMEncryption : CCM_Mode
+final class CCMEncryption : CCMMode
 {
 public:
     /**
@@ -215,23 +215,23 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        assert(sz >= tag_size(), "We have the tag");
+        assert(sz >= tagSize(), "We have the tag");
         
-        const SecureVector!ubyte ad = ad_buf();
+        const SecureVector!ubyte ad = adBuf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
         const BlockCipher E = cipher();
         
         SecureVector!ubyte T = SecureVector!ubyte(BS);
-        E.encrypt(formatB0(sz - tag_size()), T);
+        E.encrypt(formatB0(sz - tagSize()), T);
         
         for (size_t i = 0; i != ad.length; i += BS)
         {
-            xor_buf(T.ptr, &ad[i], BS);
+            xorBuf(T.ptr, &ad[i], BS);
             E.encrypt(T);
         }
         
-        SecureVector!ubyte C = format_c0();
+        SecureVector!ubyte C = formatC0();
         
         SecureVector!ubyte S0 = SecureVector!ubyte(BS);
         E.encrypt(C, S0);
@@ -239,17 +239,17 @@ public:
         
         SecureVector!ubyte X = SecureVector!ubyte(BS);
         
-        const ubyte* buf_end = &buf[sz - tag_size()];
+        const ubyte* buf_end = &buf[sz - tagSize()];
         
         while (buf != buf_end)
         {
             const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
             
             E.encrypt(C, X);
-            xor_buf(buf, X.ptr, to_proc);
+            xorBuf(buf, X.ptr, to_proc);
             inc(C);
             
-            xor_buf(T.ptr, buf, to_proc);
+            xorBuf(T.ptr, buf, to_proc);
             E.encrypt(T);
             
             buf += to_proc;
@@ -257,14 +257,14 @@ public:
         
         T ^= S0;
         
-        if (!same_mem(T.ptr, buf_end, tag_size()))
+        if (!same_mem(T.ptr, buf_end, tagSize()))
             throw new IntegrityFailure("CCM tag check failed");
         
-        buffer.resize(buffer.length - tag_size());
+        buffer.resize(buffer.length - tagSize());
     }
 
     override size_t outputLength(size_t input_length) const
-    { return input_length + tag_size(); }
+    { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
 }
@@ -272,7 +272,7 @@ public:
 /**
 * CCM Decryption
 */
-final class CCMDecryption : CCM_Mode
+final class CCMDecryption : CCMMode
 {
 public:
     /**
@@ -296,7 +296,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const SecureVector!ubyte ad = ad_buf();
+        const SecureVector!ubyte ad = adBuf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
         const BlockCipher E = cipher();
@@ -306,11 +306,11 @@ public:
         
         for (size_t i = 0; i != ad.length; i += BS)
         {
-            xor_buf(T.ptr, &ad[i], BS);
+            xorBuf(T.ptr, &ad[i], BS);
             E.encrypt(T);
         }
         
-        SecureVector!ubyte C = format_c0();
+        SecureVector!ubyte C = formatC0();
         SecureVector!ubyte S0 = SecureVector!ubyte(BS);
         E.encrypt(C, S0);
         inc(C);
@@ -323,11 +323,11 @@ public:
         {
             const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
             
-            xor_buf(T.ptr, buf, to_proc);
+            xorBuf(T.ptr, buf, to_proc);
             E.encrypt(T);
             
             E.encrypt(C, X);
-            xor_buf(buf, X.ptr, to_proc);
+            xorBuf(buf, X.ptr, to_proc);
             inc(C);
             
             buf += to_proc;
@@ -335,14 +335,14 @@ public:
         
         T ^= S0;
         
-        buffer += Pair(T.ptr, tag_size());
+        buffer += Pair(T.ptr, tagSize());
     }
 
     override size_t outputLength(size_t input_length) const
     {
-        assert(input_length > tag_size(), "Sufficient input");
-        return input_length - tag_size();
+        assert(input_length > tagSize(), "Sufficient input");
+        return input_length - tagSize();
     }
 
-    override size_t minimumFinalSize() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tagSize(); }
 }

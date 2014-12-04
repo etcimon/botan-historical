@@ -16,13 +16,13 @@ import botan.mac.mac;
 import botan.cmac.cmac;
 import botan.stream.ctr;
 import botan.utils.parsing;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 
 /**
 * EAX base class
 */
-class EAXMode : AEAD_Mode
+class EAXMode : AEADMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -30,11 +30,11 @@ public:
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
         
-        m_nonce_mac = eax_prf(0, this.block_size, *m_cmac, nonce, nonce_len);
+        m_nonce_mac = eaxPrf(0, this.blockSize(), *m_cmac, nonce, nonce_len);
         
         m_ctr.setIv(m_nonce_mac.ptr, m_nonce_mac.length);
         
-        for (size_t i = 0; i != this.block_size - 1; ++i)
+        for (size_t i = 0; i != this.blockSize() - 1; ++i)
             m_cmac.update(0);
         m_cmac.update(2);
         
@@ -44,7 +44,7 @@ public:
 
     final override void setAssociatedData(in ubyte* ad, size_t length)
     {
-        m_ad_mac = eax_prf(1, this.block_size, *m_cmac, ad, length);
+        m_ad_mac = eaxPrf(1, this.blockSize(), *m_cmac, ad, length);
     }
 
     final override @property string name() const
@@ -86,7 +86,7 @@ protected:
         m_ctr.setKey(key, length);
         m_cmac.setKey(key, length);
         
-        m_ad_mac = eax_prf(1, this.block_size, *m_cmac, null, 0);
+        m_ad_mac = eaxPrf(1, this.blockSize(), *m_cmac, null, 0);
     }
 
     /**
@@ -95,7 +95,7 @@ protected:
     */
     this(BlockCipher cipher, size_t tag_size) 
     {
-        m_tag_size = tag_size ? tag_size : cipher.block_size;
+        m_tag_size = tag_size ? tag_size : cipher.blockSize();
         m_cipher = cipher;
         m_ctr = new CTRBE(m_cipher.clone());
         m_cmac = new CMAC(m_cipher.clone());
@@ -103,7 +103,7 @@ protected:
             throw new InvalidArgument(name ~ ": Bad tag size " ~ to!string(tag_size));
     }
 
-    final @property size_t blockSize() const { return m_cipher.block_size; }
+    final size_t blockSize() const { return m_cipher.blockSize(); }
 
     size_t m_tag_size;
 
@@ -119,7 +119,7 @@ protected:
 /**
 * EAX Encryption
 */
-final class EAXEncryption : EAX_Mode
+final class EAXEncryption : EAXMode
 {
 public:
     /**
@@ -132,7 +132,7 @@ public:
     }
 
     override size_t outputLength(size_t input_length) const
-    { return input_length + tag_size(); }
+    { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
 
@@ -151,17 +151,17 @@ public:
         update(buffer, offset);
         
         SecureVector!ubyte data_mac = m_cmac.finished();
-        xor_buf(data_mac, m_nonce_mac, data_mac.length);
-        xor_buf(data_mac, m_ad_mac, data_mac.length);
+        xorBuf(data_mac, m_nonce_mac, data_mac.length);
+        xorBuf(data_mac, m_ad_mac, data_mac.length);
         
-        buffer += Pair(data_mac.ptr, tag_size());
+        buffer += Pair(data_mac.ptr, tagSize());
     }
 }
 
 /**
 * EAX Decryption
 */
-final class EAXDecryption : EAX_Mode
+final class EAXDecryption : EAXMode
 {
 public:
     /**
@@ -175,11 +175,11 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        assert(input_length > tag_size(), "Sufficient input");
-        return input_length - tag_size();
+        assert(input_length > tagSize(), "Sufficient input");
+        return input_length - tagSize();
     }
 
-    override size_t minimumFinalSize() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tagSize(); }
 
     override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
@@ -197,9 +197,9 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        assert(sz >= tag_size(), "Have the tag as part of final input");
+        assert(sz >= tagSize(), "Have the tag as part of final input");
         
-        const size_t remaining = sz - tag_size();
+        const size_t remaining = sz - tagSize();
         
         if (remaining)
         {
@@ -213,7 +213,7 @@ public:
         mac ^= m_nonce_mac;
         mac ^= m_ad_mac;
         
-        if (!same_mem(mac.ptr, included_tag, tag_size()))
+        if (!same_mem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("EAX tag check failed");
         
         buffer.resize(offset + remaining);
@@ -225,9 +225,9 @@ public:
 * EAX MAC-based PRF
 */
 SecureVector!ubyte eaxPrf(ubyte tag, size_t block_size,
-                         MessageAuthenticationCode mac,
-                         in ubyte* input,
-                         size_t length) pure
+                          MessageAuthenticationCode mac,
+                          in ubyte* input,
+                          size_t length) pure
 {
     foreach (size_t i; 0 .. (block_size - 1))
         mac.update(0);

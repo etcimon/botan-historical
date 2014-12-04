@@ -78,7 +78,7 @@ public:
     {
         foreach (const extension; m_extensions)
         {
-            const Certificate_Extension ext = extension.first;
+            const CertificateExtension ext = extension.first;
             const bool is_critical = extension.second;
             
             const bool should_encode = ext.should_encode();
@@ -115,7 +115,7 @@ public:
                     .verifyEnd()
                     .endCons();
             
-            Certificate_Extension ext = get_extension(oid);
+            CertificateExtension ext = get_extension(oid);
             
             if (!ext && critical && m_throw_on_unknown_critical)
                 throw new DecodingError("Encountered unknown X.509 extension marked "
@@ -204,7 +204,7 @@ private:
     }
 
 
-    Vector!( Pair!(Certificate_Extension, bool)  ) m_extensions;
+    Vector!( Pair!(CertificateExtension, bool)  ) m_extensions;
     bool m_throw_on_unknown_critical;
 }
 
@@ -213,7 +213,7 @@ __gshared immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 /**
 * Basic Constraints Extension
 */
-final class BasicConstraints : Certificate_Extension
+final class BasicConstraints : CertificateExtension
 {
 public:
     BasicConstraints copy() const
@@ -287,7 +287,7 @@ private:
 /**
 * Key Usage Constraints Extension
 */
-final class KeyUsage : Certificate_Extension
+final class KeyUsage : CertificateExtension
 {
 public:
     KeyUsage copy() const { return new KeyUsage(m_constraints); }
@@ -328,7 +328,7 @@ private:
     {
         BERDecoder ber = BERDecoder(input);
         
-        BER_Object obj = ber.getNextObject();
+        BERObject obj = ber.getNextObject();
         
         if (obj.type_tag != ASN1Tag.BIT_STRING || obj.class_tag != ASN1Tag.UNIVERSAL)
             throw new BERBadTag("Bad tag for usage constraint",
@@ -363,7 +363,7 @@ private:
 /**
 * Subject Key Identifier Extension
 */
-final class SubjectKeyID : Certificate_Extension
+final class SubjectKeyID : CertificateExtension
 {
 public:
     SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
@@ -371,7 +371,7 @@ public:
     this() {}
     this(in Vector!ubyte pub_key)
     {
-        SHA_160 hash;
+        SHA160 hash;
         m_key_id = unlock(hash.process(pub_key));
     }
 
@@ -412,7 +412,7 @@ private:
 /**
 * Authority Key Identifier Extension
 */
-class AuthorityKeyID : Certificate_Extension
+class AuthorityKeyID : CertificateExtension
 {
 public:
     AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
@@ -464,7 +464,7 @@ private:
 /**
 * Alternative Name Extension Base Class
 */
-class AlternativeName : Certificate_Extension
+class AlternativeName : CertificateExtension
 {
 public:
     AlternativeName getAltName() const { return m_alt_name; }
@@ -505,7 +505,7 @@ private:
     void contentsTo(ref DataStore subject_info,
                      ref DataStore issuer_info) const
     {
-        MultiMap!(string, string) contents = get_alt_name().contents();
+        MultiMap!(string, string) contents = getAltName().contents();
         
         if (m_oid_name_str == "X509v3.SubjectAlternativeName")
             subject_info.add(contents);
@@ -530,7 +530,7 @@ final class SubjectAlternativeName : AlternativeName
 {
 public:
     SubjectAlternativeName copy() const
-    { return new SubjectAlternativeName(get_alt_name()); }
+    { return new SubjectAlternativeName(getAltName()); }
 
     this() {}
     this(in AlternativeName name = new SubjectAlternativeName()) {
@@ -545,7 +545,7 @@ final class IssuerAlternativeName : AlternativeName
 {
 public:
     IssuerAlternativeName copy() const
-    { return new IssuerAlternativeName(get_alt_name()); }
+    { return new IssuerAlternativeName(getAltName()); }
 
     this(in AlternativeName name = new IssuerAlternativeName()) {
         super(name, "X509v3.IssuerAlternativeName");
@@ -555,7 +555,7 @@ public:
 /**
 * Extended Key Usage Extension
 */
-final class ExtendedKeyUsage : Certificate_Extension
+final class ExtendedKeyUsage : CertificateExtension
 {
 public:
     ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids); }
@@ -606,7 +606,7 @@ private:
 /**
 * Certificate Policies Extension
 */
-final class CertificatePolicies : Certificate_Extension
+final class CertificatePolicies : CertificateExtension
 {
 public:
     CertificatePolicies copy() const
@@ -663,7 +663,7 @@ private:
     Vector!OID m_oids;
 }
 
-final class AuthorityInformationAccess : Certificate_Extension
+final class AuthorityInformationAccess : CertificateExtension
 {
 public:
     AuthorityInformationAccess copy() const
@@ -705,7 +705,7 @@ private:
             
             if (oid == OIDS.lookup("PKIX.OCSP"))
             {
-                BER_Object name = info.getNextObject();
+                BERObject name = info.getNextObject();
                 
                 if (name.type_tag == 6 && name.class_tag == ASN1Tag.CONTEXT_SPECIFIC)
                 {
@@ -733,7 +733,7 @@ private:
 /**
 * CRL Number Extension
 */
-final class CRLNumber : Certificate_Extension
+final class CRLNumber : CertificateExtension
 {
 public:
     /*
@@ -794,7 +794,7 @@ private:
 /**
 * CRL Entry Reason Code Extension
 */
-final class CRLReasonCode : Certificate_Extension
+final class CRLReasonCode : CertificateExtension
 {
 public:
     CRLReasonCode copy() const { return new CRLReasonCode(m_reason); }
@@ -841,7 +841,7 @@ private:
 /**
 * CRL Distribution Points Extension
 */
-final class CRLDistributionPoints : Certificate_Extension
+final class CRLDistributionPoints : CertificateExtension
 {
 public:
     alias DistributionPoint = FreeListRef!DistributionPointImpl;

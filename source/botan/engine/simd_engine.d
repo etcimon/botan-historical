@@ -29,7 +29,7 @@ final class SIMDEngine : Engine
 public:
     string providerName() const { return "simd"; }
 
-    BlockCipher findBlockCipher(in SCANName request,
+    BlockCipher findBlockCipher(in SCANToken request,
                                   AlgorithmFactory) const
     {
         static if (BOTAN_HAS_AES_SSSE3) {
@@ -69,7 +69,7 @@ public:
         return null;
     }
 
-    HashFunction findHash(in SCANName request,
+    HashFunction findHash(in SCANToken request,
                            AlgorithmFactory) const
     {
         static if (BOTAN_HAS_SHA1_SSE2) {

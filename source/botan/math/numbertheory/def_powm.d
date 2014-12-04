@@ -14,7 +14,7 @@ import botan.utils.types;
 /**
 * Fixed Window Exponentiator
 */
-final class FixedWindowExponentiator : Modular_Exponentiator
+final class FixedWindowExponentiator : ModularExponentiator
 {
 public:
     /*
@@ -82,7 +82,7 @@ private:
 /**
 * Montgomery Exponentiator
 */
-class MontgomeryExponentiator : Modular_Exponentiator
+class MontgomeryExponentiator : ModularExponentiator
 {
 public:
     /*
@@ -196,9 +196,9 @@ public:
         if (!m_modulus.isPositive() || m_modulus.isEven())
             throw new InvalidArgument("Montgomery_Exponentiator: invalid modulus");
         
-        m_mod_prime = monty_inverse(mod.wordAt(0));
+        m_mod_prime = montyInverse(mod.wordAt(0));
         
-        const BigInt r = BigInt.power_of_2(m_mod_words * BOTAN_MP_WORD_BITS);
+        const BigInt r = BigInt.powerOf2(m_mod_words * BOTAN_MP_WORD_BITS);
         m_R_mod = r % m_modulus;
         m_R2_mod = (m_R_mod * m_R_mod) % m_modulus;
     }

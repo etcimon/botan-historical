@@ -34,7 +34,7 @@ struct FPE {
                               in SymmetricKey key,
                               in Vector!ubyte tweak)
     {
-        FPE_Encryptor F = scoped!FPE_Encryptor(key, n, tweak);
+        FPEEncryptor F = scoped!FPEEncryptor(key, n, tweak);
         
         BigInt a, b;
         factor(n, a, b);
@@ -65,7 +65,7 @@ struct FPE {
     */
     static BigInt fe1Decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
     {
-        auto F = scoped!FPE_Encryptor(key, n, tweak);
+        auto F = scoped!FPEEncryptor(key, n, tweak);
         
         BigInt a, b;
         factor(n, a, b);
@@ -175,7 +175,7 @@ public:
     
     BigInt opCall(size_t round_no, in BigInt R)
     {
-        SecureVector!ubyte r_bin = BigInt.encode_locked(R);
+        SecureVector!ubyte r_bin = BigInt.encodeLocked(R);
 
         m_mac.update(m_mac_n_t);
         m_mac.updateBigEndian(cast(uint)(round_no));

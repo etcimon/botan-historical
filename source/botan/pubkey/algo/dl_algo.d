@@ -22,7 +22,7 @@ class DLSchemePublicKey : PublicKey
 public:
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (m_y < 2 || m_y >= group_p())
+        if (m_y < 2 || m_y >= groupP())
             return false;
         if (!m_group.verifyGroup(rng, strong))
             return false;
@@ -31,7 +31,7 @@ public:
 
     AlgorithmIdentifier algorithmIdentifier() const
     {
-        return AlgorithmIdentifier(get_oid(), m_group.dEREncode(group_format()));
+        return AlgorithmIdentifier(getOid(), m_group.DER_encode(group_format()));
     }
 
     Vector!ubyte x509SubjectPublicKey() const
@@ -76,14 +76,14 @@ public:
 
     override size_t estimatedStrength() const
     {
-        return dl_work_factor(m_group.getP().bits());
+        return dlWorkFactor(m_group.getP().bits());
     }
 
     this(in AlgorithmIdentifier alg_id,
          in SecureVector!ubyte key_bits,
          DLGroup.Format format)
     {
-        m_group.bERDecode(alg_id.parameters, format);
+        m_group.BER_decode(alg_id.parameters, format);
         
         BERDecoder(key_bits).decode(m_y);
     }
@@ -105,16 +105,15 @@ protected:
 /**
 * This class represents discrete logarithm (DL) private keys.
 */
-class DLSchemePrivateKey : DL_SchemePublicKey,
-                             PrivateKey
+class DLSchemePrivateKey : DLSchemePublicKey, PrivateKey
 {
 public:
 
     bool checkKey(RandomNumberGenerator rng,
-                   bool strong) const
+                  bool strong) const
     {
-        const BigInt p = group_p();
-        const BigInt g = group_g();
+        const BigInt p = groupP();
+        const BigInt g = groupG();
         
         if (m_y < 2 || m_y >= p || m_x < 2 || m_x >= p)
             return false;
@@ -145,7 +144,7 @@ public:
          in SecureVector!ubyte key_bits,
          DLGroup.Format format)
     {
-        m_group.bERDecode(alg_id.parameters, format);
+        m_group.BER_decode(alg_id.parameters, format);
         
         BERDecoder(key_bits).decode(m_x);
     }

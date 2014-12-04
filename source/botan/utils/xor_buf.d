@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.utils.xor_buf;
+module botan.utils.xorBuf;
 
 import botan.utils.types;
 pure:
@@ -82,14 +82,14 @@ void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
                             in Vector!( ubyte, Alloc2 ) input,
                             size_t n)
 {
-    xor_buf(output.ptr, input.ptr, n);
+    xorBuf(output.ptr, input.ptr, n);
 }
 
 void xorBuf(Alloc)(ref Vector!( ubyte, Alloc ) output,
                     in ubyte* input,
                     size_t n)
 {
-    xor_buf(output.ptr, input, n);
+    xorBuf(output.ptr, input, n);
 }
 
 void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
@@ -97,7 +97,7 @@ void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
                             in Vector!( ubyte, Alloc2 ) input2,
                             size_t n)
 {
-    xor_buf(output.ptr, input.ptr, input2.ptr, n);
+    xorBuf(output.ptr, input.ptr, input2.ptr, n);
 }
 
 // fixme: Move into Vector type
@@ -108,6 +108,6 @@ Vector!(T, Alloc) opOpAssign(string op, T, Alloc, Alloc2)(Vector!(T, Alloc) outp
     if (output.length < input.length)
         output.resize(input.length);
 
-    xor_buf(output.ptr, input.ptr, input.length);
+    xorBuf(output.ptr, input.ptr, input.length);
     return output;
 }

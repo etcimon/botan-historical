@@ -62,7 +62,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
         {
             while (r > y) { r -= y; ++q; }
             r >>= shifts;
-            sign_fixup(x, y_arg, q, r);
+            signFixup(x, y_arg, q, r);
             return;
         }
         
@@ -81,7 +81,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
             else
                 q_words[j-t-1] = bigint_divop(x_j0, x_j1, y_t);
             
-            while (division_check(q_words[j-t-1],
+            while (divisionCheck(q_words[j-t-1],
             y_t, y.wordAt(t-1),
             x_j0, x_j1, r.wordAt(j-2)))
             {
@@ -99,7 +99,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
         r >>= shifts;
     }
     
-    sign_fixup(x, y_arg, q, r);
+    signFixup(x, y_arg, q, r);
 }
 
 private:

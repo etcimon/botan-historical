@@ -123,7 +123,7 @@ private:
 */
 KDF getKdf(in string algo_spec)
 {
-    SCANName request = SCANName(algo_spec);
+    SCANToken request = SCANToken(algo_spec);
     
     AlgorithmFactory af = globalState().algorithmFactory();
     
@@ -171,10 +171,10 @@ import botan.codec.hex;
 unittest
 {
     auto test = (string input) {
-        return run_tests(input, "KDF", "Output", true,
+        return runTests(input, "KDF", "Output", true,
                          (string[string] vec)
                          {
-            Unique!KDF kdf = get_kdf(vec["KDF"]);
+            Unique!KDF kdf = getKdf(vec["KDF"]);
             
             const size_t outlen = to!uint(vec["OutputLen"]);
             const auto salt = hexDecode(vec["Salt"]);

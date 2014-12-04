@@ -11,7 +11,7 @@ static if (BOTAN_HAS_ANSI_X919_MAC):
 
 import botan.mac.mac;
 import botan.block.block_cipher;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 
 /**
@@ -46,7 +46,7 @@ public:
 
     KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(8, 16, 8);
+        return KeyLengthSpecification(8, 16, 8);
     }
 
     /**
@@ -69,7 +69,7 @@ private:
     void addData(in ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(8 - m_position, length);
-        xor_buf(&m_state[m_position], input, xored);
+        xorBuf(&m_state[m_position], input, xored);
         m_position += xored;
         
         if (m_position < 8) return;
@@ -79,13 +79,13 @@ private:
         length -= xored;
         while (length >= 8)
         {
-            xor_buf(m_state, input, 8);
+            xorBuf(m_state, input, 8);
             m_des1.encrypt(m_state);
             input += 8;
             length -= 8;
         }
         
-        xor_buf(m_state, input, length);
+        xorBuf(m_state, input, length);
         m_position = length;
     }
 

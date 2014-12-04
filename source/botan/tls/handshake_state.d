@@ -214,21 +214,21 @@ public:
     {
         if (Version() == TLSProtocolVersion.SSL_V3)
         {
-            return get_kdf("SSL3-PRF");
+            return getKdf("SSL3-PRF");
         }
         else if (Version().supportsCiphersuiteSpecificPrf())
         {
             const string prf_algo = ciphersuite().prfAlgo();
             
             if (prf_algo == "MD5" || prf_algo == "SHA-1")
-                return get_kdf("TLS-12-PRF(SHA-256)");
+                return getKdf("TLS-12-PRF(SHA-256)");
             
-            return get_kdf("TLS-12-PRF(" ~ prf_algo ~ ")");
+            return getKdf("TLS-12-PRF(" ~ prf_algo ~ ")");
         }
         else
         {
             // TLS v1.0, v1.1 and DTLS v1.0
-            return get_kdf("TLS-PRF");
+            return getKdf("TLS-PRF");
         }
         
         throw new InternalError("Unknown version code " ~ Version().toString());
@@ -398,7 +398,7 @@ private:
 
     void delegate(in HandshakeMessage) m_msg_callback;
 
-    Unique!Handshake_IO m_handshake_io;
+    Unique!HandshakeIO m_handshake_io;
 
     uint m_hand_expecting_mask = 0;
     uint m_hand_received_mask = 0;
@@ -407,14 +407,14 @@ private:
     TLSSessionKeys m_session_keys;
     Handshake_Hash m_handshake_hash;
 
-    Unique!Client_Hello m_client_hello;
-    Unique!Server_Hello m_server_hello;
+    Unique!ClientHello m_client_hello;
+    Unique!ServerHello m_server_hello;
     Unique!Certificate m_server_certs;
-    Unique!Server_Key_Exchange m_server_kex;
+    Unique!ServerKeyExchange m_server_kex;
     Unique!Certificate_Req m_cert_req;
-    Unique!Server_Hello_Done m_server_hello_done;
+    Unique!ServerHello_Done m_server_hello_done;
     Unique!Certificate m_client_certs;
-    Unique!Client_Key_Exchange m_client_kex;
+    Unique!ClientKeyExchange m_client_kex;
     Unique!Certificate_Verify m_client_verify;
     Unique!Next_Protocol m_next_protocol;
     Unique!New_SessionTicket m_new_session_ticket;

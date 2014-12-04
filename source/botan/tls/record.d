@@ -24,7 +24,7 @@ import botan.rng.rng;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.utils.rounding;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.loadstor;
 import botan.utils.types;
 import std.algorithm;
@@ -150,7 +150,7 @@ public:
 
     SecureVector!ubyte cbcState() { return m_block_cipher_cbc_state; }
 
-    @property size_t blockSize() const { return m_block_size; }
+    size_t blockSize() const { return m_block_size; }
 
     size_t macSize() const { return m_mac.output_length; }
 
@@ -175,7 +175,7 @@ private:
     Unique!StreamCipher m_stream_cipher;
     Unique!MessageAuthenticationCode m_mac;
 
-    Unique!AEAD_Mode m_aead;
+    Unique!AEADMode m_aead;
     SecureVector!ubyte m_nonce, m_ad;
 
     size_t m_block_size;
@@ -224,7 +224,7 @@ void writeRecord(ref SecureVector!ubyte output,
         return;
     }
     
-    if (Unique!AEAD_Mode aead = cipherstate.aead())
+    if (Unique!AEADMode aead = cipherstate.aead())
     {
         const size_t ctext_size = aead.output_length(msg_length);
         
@@ -234,7 +234,7 @@ void writeRecord(ref SecureVector!ubyte output,
         
         assert(nonce.length == implicit_nonce_bytes + explicit_nonce_bytes, "Expected nonce size");
         
-        // wrong if start_vec returns something
+        // wrong if startVec returns something
         const size_t rec_size = ctext_size + explicit_nonce_bytes;
         
         assert(rec_size <= 0xFFFF, "Ciphertext length fits in field");
@@ -262,7 +262,7 @@ void writeRecord(ref SecureVector!ubyte output,
     
     cipherstate.mac().update(msg, msg_length);
     
-    const size_t block_size = cipherstate.block_size;
+    const size_t block_size = cipherstate.blockSize();
     const size_t iv_size = cipherstate.ivSize();
     const size_t mac_size = cipherstate.macSize();
     
@@ -316,12 +316,12 @@ void writeRecord(ref SecureVector!ubyte output,
         
         const size_t blocks = buf_size / block_size;
         
-        xor_buf(buf.ptr, cbc_state.ptr, block_size);
+        xorBuf(buf.ptr, cbc_state.ptr, block_size);
         bc.encrypt(buf.ptr);
         
         for (size_t i = 1; i < blocks; ++i)
         {
-            xor_buf(&buf[block_size*i], &buf[block_size*(i-1)], block_size);
+            xorBuf(&buf[block_size*i], &buf[block_size*(i-1)], block_size);
             bc.encrypt(&buf[block_size*i]);
         }
         
@@ -543,7 +543,7 @@ size_t tlsPaddingCheck(bool sslv3_padding, size_t block_size, in ubyte* record, 
 void cbcDecryptRecord(ubyte[] record_contents, ConnectionCipherState cipherstate, in BlockCipher bc)
 {
     size_t record_len = record_contents.length;
-    const size_t block_size = cipherstate.block_size;
+    const size_t block_size = cipherstate.blockSize();
     
     assert(record_len % block_size == 0, "Buffer is an even multiple of block size");
     
@@ -557,7 +557,7 @@ void cbcDecryptRecord(ubyte[] record_contents, ConnectionCipherState cipherstate
     copyMem(last_ciphertext.ptr, buf.ptr, block_size);
     
     bc.decrypt(buf.ptr);
-    xor_buf(buf.ptr, &cipherstate.cbcState()[0], block_size);
+    xorBuf(buf.ptr, &cipherstate.cbcState()[0], block_size);
     
     SecureVector!ubyte last_ciphertext2;
     
@@ -565,7 +565,7 @@ void cbcDecryptRecord(ubyte[] record_contents, ConnectionCipherState cipherstate
     {
         last_ciphertext2.replace(buf.ptr[block_size*i .. block_size*(i+1)]);
         bc.decrypt(&buf[block_size*i]);
-        xor_buf(&buf[block_size*i], last_ciphertext.ptr, block_size);
+        xorBuf(&buf[block_size*i], last_ciphertext.ptr, block_size);
         std.algorithm.swap(last_ciphertext, last_ciphertext2);
     }
     
@@ -579,7 +579,7 @@ void decryptRecord(SecureVector!ubyte output,
                     RecordType record_type,
                     ConnectionCipherState cipherstate)
 {
-    if (Unique!AEAD_Mode aead = cipherstate.aead())
+    if (Unique!AEADMode aead = cipherstate.aead())
     {
         auto nonce = cipherstate.aead_nonce(record_contents);
         __gshared immutable size_t nonce_length = 8; // fixme, take from ciphersuite
@@ -617,7 +617,7 @@ void decryptRecord(SecureVector!ubyte output,
             cbc_decrypt_record(record_contents, record_len, cipherstate, bc);
             
             pad_size = tls_padding_check(cipherstate.cipherPaddingSingleByte(),
-                                         cipherstate.block_size,
+                                         cipherstate.blockSize(),
                                          record_contents, record_len);
             
             padding_bad = (pad_size == 0);

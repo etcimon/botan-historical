@@ -35,7 +35,7 @@ PBE getPbe(in string algo_spec,
             Duration dur,
             RandomNumberGenerator rng)
 {
-    SCANName request(algo_spec);
+    SCANToken request = SCANToken(algo_spec);
     
     const string pbe = request.algo_name;
     string digest_name = request.arg(0);
@@ -45,7 +45,7 @@ PBE getPbe(in string algo_spec,
     if (cipher_spec.length != 2)
         throw new InvalidArgument("PBE: Invalid cipher spec " ~ cipher);
     
-    const string cipher_algo = SCANName.derefAlias(cipher_spec[0]);
+    const string cipher_algo = SCANToken.derefAlias(cipher_spec[0]);
     const string cipher_mode = cipher_spec[1];
     
     if (cipher_mode != "CBC")
@@ -86,7 +86,7 @@ PBE getPbe(in string algo_spec,
 */
 PBE getPbe(in OID pbe_oid, in Vector!ubyte params, in string passphrase)
 {
-    SCANName request = SCANName(OIDS.lookup(pbe_oid));
+    SCANToken request = SCANToken(OIDS.lookup(pbe_oid));
     
     const string pbe = request.algo_name;
     

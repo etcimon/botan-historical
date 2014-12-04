@@ -188,7 +188,7 @@ private:
 
             m_pool = m_pool_ptr[m_pool_ptr + (m_pool_ptr % alignment) .. m_pool_ptr + m_poolsize - (m_poolsize % alignment)];
 
-            m_freelist.push_back(m_pool);
+            m_freelist.pushBack(m_pool);
         }
     }
 

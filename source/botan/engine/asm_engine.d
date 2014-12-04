@@ -26,38 +26,38 @@ public:
     string providerName() const { return "asm"; }
 
         
-    BlockCipher findBlockCipher(    in SCANName request,
-                                             AlgorithmFactory af) const
+    BlockCipher findBlockCipher(in SCANToken request,
+                                AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_SERPENT_X86_32) { 
             if (request.algo_name == "Serpent")
             {
                 
-                return new SerpentX8632;
+                return new Serpent_X86_32;
             }
         }
         return null;
     }
 
-    HashFunction findHash(in SCANName request,
-                                    AlgorithmFactory af) const
+    HashFunction findHash(in SCANToken request,
+                          AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_MD4_X86_32) {
             if (request.algo_name == "MD4")
-                return new MD4X8632;
+                return new MD4_X86_32;
         }
         
         static if (BOTAN_HAS_MD5_X86_32) {
             if (request.algo_name == "MD5")
-                return new MD5X8632;
+                return new MD5_X86_32;
         }
         
         if (request.algo_name == "SHA-160")
         {
             static if (BOTAN_HAS_SHA1_X86_64)
-                return new SHA160X8664;
+                return new SHA160_X86_64;
             else static if (BOTAN_HAS_SHA1_X86_32)
-                return new SHA160X8632;
+                return new SHA160_X86_32;
         }
         
         return null;

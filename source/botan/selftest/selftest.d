@@ -134,7 +134,7 @@ bool passesSelfTests(AlgorithmFactory af)
 * @returns map from provider name to test result for that provider
 */
 HashMap!(string, bool)
-    algorithmKat(in SCANName algo_name,
+    algorithmKat(in SCANToken algo_name,
                   in HashMap!(string, string) vars,
                   AlgorithmFactory af)
 {
@@ -157,11 +157,11 @@ HashMap!(string, bool)
 * @returns map from provider name to test result for that provider
 */
 HashMap!(string, string)
-    algorithmKatDetailed(in SCANName algo_name,
+    algorithmKatDetailed(in SCANToken algo_name,
                            in HashMap!(string, string) vars,
                            AlgorithmFactory af)
 {
-    const string algo = algo_name.algo_name_and_args();
+    const string algo = algo_name.algoNameAndArgs();
     
     Vector!string providers = af.providers_of(algo);
     HashMap!(string, string) all_results;
@@ -182,7 +182,7 @@ HashMap!(string, string)
         if (const HashFunction proto =
             af.prototypeHashFunction(algo, provider))
         {
-            Filter filt = new Hash_Filter(proto.clone());
+            Filter filt = new HashFilter(proto.clone());
             all_results[provider] = testFilterKat(filt, input, output);
         }
         else if (const MessageAuthenticationCode proto =
@@ -194,7 +194,7 @@ HashMap!(string, string)
         else if (const StreamCipher proto =
                  af.prototypeStreamCipher(algo, provider))
         {
-            KeyedFilter filt = new StreamCipher_Filter(proto.clone());
+            KeyedFilter filt = new StreamCipherFilter(proto.clone());
             filt.setKey(key);
             filt.setIv(iv);
             
@@ -204,12 +204,12 @@ HashMap!(string, string)
                  af.prototypeBlockCipher(algo, provider))
         {
             KeyedFilter enc = getCipherMode(proto, ENCRYPTION,
-                                               algo_name.cipher_mode(),
-                                               algo_name.cipher_mode_pad());
+                                               algo_name.cipherMode(),
+                                               algo_name.cipherModePad());
             
             KeyedFilter dec = getCipherMode(proto, DECRYPTION,
-                                               algo_name.cipher_mode(),
-                                               algo_name.cipher_mode_pad());
+                                               algo_name.cipherMode(),
+                                               algo_name.cipherModePad());
             
             if (!enc || !dec)
             {

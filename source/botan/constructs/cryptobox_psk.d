@@ -24,13 +24,13 @@ struct CryptoBox {
     * @param input = the input data
     * @param input_len = the length of input in bytes
     * @param key = the key used to encrypt the message
-    * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
+    * @param rng = a ref to a random number generator, such as AutoSeededRNG
     */
     static Vector!ubyte encrypt(in ubyte* input, size_t input_len,
                                 in SymmetricKey master_key,
                                 RandomNumberGenerator rng)
     {
-        Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
+        Unique!KDF kdf = getKdf(CRYPTOBOX_KDF);
         
         const SecureVector!ubyte cipher_key_salt = rng.random_vec(KEY_KDF_SALT_LENGTH);
         
@@ -42,7 +42,7 @@ struct CryptoBox {
         
         InitializationVector cipher_iv = InitializationVector(rng, 16);
         
-        Unique!MessageAuthenticationCode mac = get_mac(CRYPTOBOX_MAC);
+        Unique!MessageAuthenticationCode mac = getMac(CRYPTOBOX_MAC);
         mac.setKey(mac_key);
         
         Pipe pipe = Pipe(getCipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
@@ -67,7 +67,7 @@ struct CryptoBox {
     * @param input = the input data
     * @param input_len = the length of input in bytes
     * @param key = the key used to encrypt the message
-    * @param rng = a ref to a random number generator, such as AutoSeeded_RNG
+    * @param rng = a ref to a random number generator, such as AutoSeededRNG
     */
     static SecureVector!ubyte decrypt(in ubyte* input, size_t input_len, in SymmetricKey master_key)
     {
@@ -82,7 +82,7 @@ struct CryptoBox {
         if (loadBigEndian!uint(input, 0) != CRYPTOBOX_MAGIC)
             throw new DecodingError("Unknown header value in cryptobox");
         
-        Unique!KDF kdf = get_kdf(CRYPTOBOX_KDF);
+        Unique!KDF kdf = getKdf(CRYPTOBOX_KDF);
         
         const ubyte* cipher_key_salt = &input[MAGIC_LENGTH];
         
@@ -93,7 +93,7 @@ struct CryptoBox {
                                               mac_key_salt,
                                               KEY_KDF_SALT_LENGTH);
         
-        Unique!MessageAuthenticationCode mac = get_mac(CRYPTOBOX_MAC);
+        Unique!MessageAuthenticationCode mac = getMac(CRYPTOBOX_MAC);
         mac.setKey(mac_key);
         
         mac.update(input.ptr, input_len - MAC_OUTPUT_LENGTH);

@@ -51,15 +51,15 @@ Pair!(BigInt, SymmetricKey)
     
     BigInt a = BigInt(rng, 256);
     
-    BigInt A = power_mod(g, a, p);
+    BigInt A = powerMod(g, a, p);
     
     BigInt u = hash_seq(hash_id, p_bytes, A, B);
     
     const BigInt x = compute_x(hash_id, identifier, password, salt);
     
-    BigInt S = power_mod((B - (k * power_mod(g, x, p))) % p, (a + (u * x)), p);
+    BigInt S = powerMod((B - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
     
-    SymmetricKey Sk = SymmetricKey(BigInt.encode_1363(S, p_bytes));
+    SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
     return Pair(A, Sk);
 }
@@ -82,7 +82,7 @@ BigInt generateSrp6Verifier(in string identifier,
     const BigInt x = compute_x(hash_id, identifier, password, salt);
     
     DLGroup group = DLGroup(group_id);
-    return power_mod(group.getG(), x, group.getP());
+    return powerMod(group.getG(), x, group.getP());
 }
 
 
@@ -145,7 +145,7 @@ public:
         
         BigInt b = BigInt(rng, 256);
         
-        m_B = (v*k + power_mod(g, b, p)) % p;
+        m_B = (v*k + powerMod(g, b, p)) % p;
         
         m_v = v;
         m_b = b;
@@ -167,7 +167,7 @@ public:
         
         BigInt u = hash_seq(m_hash_id, m_p_bytes, A, m_B);
         
-        BigInt S = power_mod(A * power_mod(m_v, u, m_p), m_b, m_p);
+        BigInt S = powerMod(A * powerMod(m_v, u, m_p), m_b, m_p);
         
         return BigInt.encode1363(S, m_p_bytes);
     }

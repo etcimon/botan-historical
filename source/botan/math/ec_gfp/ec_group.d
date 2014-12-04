@@ -58,7 +58,7 @@ public:
     this(in Vector!ubyte ber_data)
     {
         BERDecoder ber = BERDecoder(ber_data);
-        BER_Object obj = ber.getNextObject();
+        BERObject obj = ber.getNextObject();
         
         if (obj.type_tag == ASN1Tag.NULL_TAG)
             throw new DecodingError("Cannot handle ImplicitCA ECDSA parameters");
@@ -75,7 +75,7 @@ public:
             
             BERDecoder(ber_data)
                     .startCons(ASN1Tag.SEQUENCE)
-                    .decode_and_check!size_t(1, "Unknown ECC param version code")
+                    .decodeAndCheck!size_t(1, "Unknown ECC param version code")
                     .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck(OID("1.2.840.10045.1.1"), "Only prime ECC fields supported")
                     .decode(p)
@@ -103,7 +103,7 @@ public:
     */
     this(in OID domain_oid)
     {
-        string pem = PEM_for_named_group(OIDS.lookup(domain_oid));
+        string pem = getPemForNamedGroup(OIDS.lookup(domain_oid));
         
         if (!pem)
             throw new LookupError("No ECC domain data for " ~ domain_oid.toString());
@@ -139,7 +139,7 @@ public:
     * @param form = of encoding to use
     * @returns bytes encododed as DER
     */
-    Vector!ubyte dEREncode(ECGroupEncoding form) const
+    Vector!ubyte DER_encode(ECGroupEncoding form) const
     {
         if (form == EC_DOMPAR_ENC_EXPLICIT)
         {
@@ -166,7 +166,7 @@ public:
                     .getContentsUnlocked();
         }
         else if (form == EC_DOMPAR_ENC_OID)
-            return DEREncoder().encode(OID(get_oid())).getContentsUnlocked();
+            return DEREncoder().encode(OID(getOid())).getContentsUnlocked();
         else if (form == EC_DOMPAR_ENC_IMPLICITCA)
             return DEREncoder().encodeNull().getContentsUnlocked();
         else
@@ -199,13 +199,13 @@ public:
     * Return the order of the base point
     * @result order of the base point
     */
-    BigInt get_order() const const { return m_order; }
+    BigInt getOrder() const { return m_order; }
 
     /**
     * Return the cofactor
     * @result the cofactor
     */
-    BigInt get_cofactor() const const { return m_cofactor; }
+    BigInt getCofactor() const { return m_cofactor; }
 
     bool initialized() const { return !m_base_point.isZero(); }
 
@@ -223,10 +223,10 @@ public:
 
     bool opEquals(U : ECGroup)(auto ref U other) const
     {
-        return ((getCurve()() == other.getCurve()) &&
-                  (get_base_point() == other.getBasePoint()) &&
-                  (get_order() == other.getOrder()) &&
-                  (get_cofactor() == other.getCofactor()));
+        return ((getCurve() == other.getCurve()) &&
+                  (getBasePoint() == other.getBasePoint()) &&
+                  (getOrder() == other.getOrder()) &&
+                  (getCofactor() == other.getCofactor()));
     }
 
 
@@ -236,11 +236,10 @@ private:
     BigInt m_order, m_cofactor;
     string m_oid;
 
-public:
     /**
     * Return PEM representation of named EC group
     */
-    static string pEMForNamedGroup(in string name)
+    static string getPemForNamedGroup(in string name)
     {
         if (name == "secp112r1")
             return

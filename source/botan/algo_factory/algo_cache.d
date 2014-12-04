@@ -87,7 +87,7 @@ public:
     * Add a new algorithm implementation to the cache
     * @param algo = the algorithm prototype object
     * @param requested_name = how this name will be requested
-    * @param provider_name = is the name of the provider of this prototype
+    * @param providerName = is the name of the provider of this prototype
     */
     void add(T algo,
              in string requested_name,
@@ -113,7 +113,7 @@ public:
     * @param provider = names the preferred provider
     */
     void setPreferredProvider(in string algo_spec,
-                                in string provider)
+                              in string provider)
     {        
         m_pref_providers[algo_spec] = provider;
     }

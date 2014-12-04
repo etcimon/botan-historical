@@ -179,7 +179,7 @@ private:
                 (!m_policy.allowInsecureRenegotiation() && !secureRenegotiationSupported()))
             {
                 // RFC 5746 section 4.2
-                send_warning_alert(TLSAlert.NO_RENEGOTIATION);
+                sendWarningAlert(TLSAlert.NO_RENEGOTIATION);
                 return;
             }
             

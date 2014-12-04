@@ -10,7 +10,7 @@ import botan.algo_base.buf_comp;
 /**
 * This class represents hash function (message digest) objects
 */
-class HashFunction : Buffered_Computation
+class HashFunction : BufferedComputation
 {
 public:
     /**

@@ -105,7 +105,7 @@ private:
             if (!m_policy.allowInsecureRenegotiation() &&
                 !(initial_handshake || secureRenegotiationSupported()))
             {
-                send_warning_alert(TLSAlert.NO_RENEGOTIATION);
+                sendWarningAlert(TLSAlert.NO_RENEGOTIATION);
                 return;
             }
             

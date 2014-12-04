@@ -18,14 +18,14 @@ import std.datetime;
 
 
 /**
-* An implementation of TLS_Session_Manager that saves values in a SQLite3
+* An implementation of TLSSessionManager that saves values in a SQLite3
 * database file, with the session data encrypted using a passphrase.
 *
 * @warning For clients, the hostnames associated with the saved
 * sessions are stored in the database in plaintext. This may be a
 * serious privacy risk in some situations.
 */
-final class TLSSessionManagerSQLite : TLS_Session_Manager
+final class TLSSessionManagerSQLite : TLSSessionManager
 {
 public:
     /**

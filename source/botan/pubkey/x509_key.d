@@ -145,7 +145,7 @@ import botan.cert.x509.pkcs10;
 
 ulong keyId(const PublicKey* key)
 {
-    Pipe pipe = Pipe(new Hash_Filter("SHA-1", 8));
+    Pipe pipe = Pipe(new HashFilter("SHA-1", 8));
     pipe.startMsg();
     pipe.write(key.algoName());
     pipe.write(key.algorithmIdentifier().parameters);
@@ -230,7 +230,7 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 
 unittest
 {
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     const string hash_fn = "SHA-256";
     
     size_t fails = 0;
@@ -258,13 +258,13 @@ unittest
     X509_CA ca = X509_CA(ca_cert, ca_key, hash_fn);
     
     /* Sign the requests to create the certs */
-    X509Certificate user1_cert = ca.sign_request(user1_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
+    X509Certificate user1_cert = ca.signRequest(user1_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
     
-    X509Certificate user2_cert = ca.sign_request(user2_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
+    X509Certificate user2_cert = ca.signRequest(user2_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
     X509CRL crl1 = ca.newCRL(rng);
     
     /* Verify the certs */
-    Certificate_Store_In_Memory store;
+    CertificateStoreInMemory store;
     
     store.addCertificate(ca_cert);
     

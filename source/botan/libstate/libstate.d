@@ -75,7 +75,7 @@ public:
         if (m_initialized)
             return false;
 
-        SCANName.setDefaultAliases();
+        SCANToken.setDefaultAliases();
         OIDS.setDefaults();
 
         m_algorithm_factory = AlgorithmFactory.init;

@@ -13,12 +13,12 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.xts;
 import botan.utils.loadstor;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.rounding;
 /**
 * IEEE P1619 XTS Mode
 */
-class XTSMode : Cipher_Mode
+class XTSMode : CipherMode
 {
 public:
     final override @property string name() const
@@ -46,7 +46,7 @@ public:
 
     final override size_t minimumFinalSize() const
     {
-        return cipher().block_size + 1;
+        return cipher().blockSize() + 1;
     }
 
     final override KeyLengthSpecification keySpec() const
@@ -56,12 +56,12 @@ public:
 
     final override size_t defaultNonceLength() const
     {
-        return cipher().block_size;
+        return cipher().blockSize();
     }
 
     final override bool validNonceLength(size_t n) const
     {
-        return cipher().block_size == n;
+        return cipher().blockSize() == n;
     }
 
     final override void clear()
@@ -74,7 +74,7 @@ protected:
     this(BlockCipher cipher) 
     {
         m_cipher = cipher;
-        if (m_cipher.block_size != 8 && m_cipher.block_size != 16)
+        if (m_cipher.blockSize() != 8 && m_cipher.blockSize() != 16)
             throw new InvalidArgument("Bad cipher for XTS: " ~ cipher.name);
         
         m_tweak_cipher = m_cipher.clone();
@@ -87,7 +87,7 @@ protected:
 
     final void updateTweak(size_t which)
     {
-        const size_t BS = m_tweak_cipher.block_size;
+        const size_t BS = m_tweak_cipher.blockSize();
         
         if (which > 0)
             poly_double(m_tweak.ptr, &m_tweak[(which-1)*BS], BS);
@@ -117,7 +117,7 @@ private:
 /**
 * IEEE P1619 XTS Encryption
 */
-final class XTSEncryption : XTS_Mode
+final class XTSEncryption : XTSMode
 {
 public:
     this(BlockCipher cipher) 
@@ -131,7 +131,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
@@ -143,9 +143,9 @@ public:
             const size_t to_proc = std.algorithm.min(blocks, blocks_in_tweak);
             const size_t to_proc_bytes = to_proc * BS;
             
-            xor_buf(buf, tweak(), to_proc_bytes);
+            xorBuf(buf, tweak(), to_proc_bytes);
             cipher().encryptN(buf, buf, to_proc);
-            xor_buf(buf, tweak(), to_proc_bytes);
+            xorBuf(buf, tweak(), to_proc_bytes);
             
             buf += to_proc * BS;
             blocks -= to_proc;
@@ -162,7 +162,7 @@ public:
         
         assert(sz >= minimumFinalSize(), "Have sufficient final input");
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         if (sz % BS == 0)
         {
@@ -179,9 +179,9 @@ public:
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
-            xor_buf(last, tweak(), BS);
+            xorBuf(last, tweak(), BS);
             cipher().encrypt(last);
-            xor_buf(last, tweak(), BS);
+            xorBuf(last, tweak(), BS);
             
             foreach (size_t i; 0 .. (final_bytes - BS))
             {
@@ -190,9 +190,9 @@ public:
                 last[i] ^= last[i + BS];
             }
             
-            xor_buf(last, tweak() + BS, BS);
+            xorBuf(last, tweak() + BS, BS);
             cipher().encrypt(last);
-            xor_buf(last, tweak() + BS, BS);
+            xorBuf(last, tweak() + BS, BS);
             
             buffer += last;
         }
@@ -200,14 +200,14 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        return round_up(input_length, cipher().block_size);
+        return round_up(input_length, cipher().blockSize());
     }
 }
 
 /**
 * IEEE P1619 XTS Decryption
 */
-final class XTSDecryption : XTS_Mode
+final class XTSDecryption : XTSMode
 {
 public:
     this(BlockCipher cipher)
@@ -221,7 +221,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         assert(sz % BS == 0, "Input is full blocks");
         size_t blocks = sz / BS;
@@ -233,9 +233,9 @@ public:
             const size_t to_proc = std.algorithm.min(blocks, blocks_in_tweak);
             const size_t to_proc_bytes = to_proc * BS;
             
-            xor_buf(buf, tweak(), to_proc_bytes);
+            xorBuf(buf, tweak(), to_proc_bytes);
             cipher().decryptN(buf, buf, to_proc);
-            xor_buf(buf, tweak(), to_proc_bytes);
+            xorBuf(buf, tweak(), to_proc_bytes);
             
             buf += to_proc * BS;
             blocks -= to_proc;
@@ -252,7 +252,7 @@ public:
         
         assert(sz >= minimumFinalSize(), "Have sufficient final input");
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         if (sz % BS == 0)
         {
@@ -269,9 +269,9 @@ public:
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
-            xor_buf(last, tweak() + BS, BS);
+            xorBuf(last, tweak() + BS, BS);
             cipher().decrypt(last);
-            xor_buf(last, tweak() + BS, BS);
+            xorBuf(last, tweak() + BS, BS);
             
             foreach (size_t i; 0 .. (final_bytes - BS))
             {
@@ -280,9 +280,9 @@ public:
                 last[i] ^= last[i + BS];
             }
             
-            xor_buf(last, tweak(), BS);
+            xorBuf(last, tweak(), BS);
             cipher().decrypt(last);
-            xor_buf(last, tweak(), BS);
+            xorBuf(last, tweak(), BS);
             
             buffer += last;
         }

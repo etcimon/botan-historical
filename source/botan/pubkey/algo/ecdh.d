@@ -94,7 +94,7 @@ public:
 /**
 * ECDH operation
 */
-final class ECDHKAOperation : Key_Agreement
+final class ECDHKAOperation : KeyAgreement
 {
 public:
     this(in ECDHPrivateKey key) 
@@ -221,7 +221,7 @@ unittest
 {
     size_t fails = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     fails += test_ecdh_normal_derivation(rng);
     fails += test_ecdh_some_dp(rng);

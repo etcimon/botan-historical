@@ -45,11 +45,11 @@ __gshared size_t gmp_alloc_refcnt;
 /**
 * Engine using GNU MP
 */
-final class GMP_Engine : Engine
+final class GMPEngine : Engine
 {
 public:
     /*
-    * GMP_Engine Constructor
+    * GMPEngine Constructor
     */
     this()
     {
@@ -72,9 +72,9 @@ public:
     }
 
 
-    string provider_name() const { return "gmp"; }
+    string providerName() const { return "gmp"; }
 
-    Key_Agreement get_key_agreement_op(in PrivateKey key, RandomNumberGenerator) const
+    KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_DIFFIE_HELLMAN) {
             if (const DHPrivateKey dh = cast(const DHPrivateKey)(key))
@@ -84,16 +84,16 @@ public:
         return null;
     }
 
-    Signature get_signature_op(in PrivateKey key, RandomNumberGenerator) const
+    Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
             if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new GMP_RSA_Private_Operation(s);
+                return new GMPRSAPrivateOperation(s);
         }
         
         static if (BOTAN_HAS_DSA) {
             if (const DSAPrivateKey s = cast(const DSAPrivateKey)(key))
-                return new GMP_DSA_Signature_Operation(s);
+                return new GMPDSASignatureOperation(s);
         }
         
         return null;
@@ -103,32 +103,32 @@ public:
     {
         static if (BOTAN_HAS_RSA) {
             if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new GMP_RSA_Public_Operation(s);
+                return new GMPRSAPublicOperation(s);
         }
         
         static if (BOTAN_HAS_DSA) {
             if (const DSAPublicKey s = cast(const DSAPublicKey)(key))
-                return new GMP_DSA_Verification_Operation(s);
+                return new GMPDSAVerificationOperation(s);
         }
         
         return null;
     }
     
-    Encryption get_encryption_op(in PublicKey key, RandomNumberGenerator) const
+    Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
             if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new GMP_RSA_Public_Operation(s);
+                return new GMPRSAPublicOperation(s);
         }
         
         return null;
     }
     
-    Decryption get_decryption_op(in PrivateKey key, RandomNumberGenerator) const
+    Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
             if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new GMP_RSA_Private_Operation(s);
+                return new GMPRSAPrivateOperation(s);
         }
         
         return null;
@@ -137,9 +137,9 @@ public:
     /*
     * Return the GMP-based modular exponentiator
     */
-    Modular_Exponentiator mod_exp(in BigInt n, PowerMod.Usage_Hints) const
+    ModularExponentiator modExp(in BigInt n, PowerMod.Usage_Hints) const
     {
-        return new GMP_Modular_Exponentiator(n);
+        return new GMPModularExponentiator(n);
     }
 
 }
@@ -148,20 +148,20 @@ public:
 /*
 * GMP Modular Exponentiator
 */
-final class GMP_Modular_Exponentiator : Modular_Exponentiator
+final class GMPModularExponentiator : ModularExponentiator
 {
 public:
-    void set_base(in BigInt b) { m_base = b; }
-    void set_exponent(in BigInt e) { m_exp = e; }
+    void setBase(in BigInt b) { m_base = b; }
+    void setExponent(in BigInt e) { m_exp = e; }
     BigInt execute() const
     {
         GMP_MPZ r;
         mpz_powm(r.value, m_base.value, m_exp.value, mod.value);
-        return r.to_bigint();
+        return r.toBigint();
     }
     
-    Modular_Exponentiator copy() const
-    { return new GMP_Modular_Exponentiator(this); }
+    ModularExponentiator copy() const
+    { return new GMPModularExponentiator(this); }
     
     this(in BigInt n) { m_mod = n; }
 private:
@@ -179,7 +179,7 @@ public:
     /*
     * GMP to BigInt Conversions
     */
-    BigInt to_bigint() const
+    BigInt toBigint() const
     {
         BigInt output = BigInt(BigInt.Positive, (bytes() + (word).sizeof - 1) / (word).sizeof);
         size_t dummy = 0;
@@ -211,8 +211,8 @@ public:
         return ((mpz_sizeinbase(value, 2) + 7) / 8);
     }
     
-    SecureVector!ubyte to_bytes() const
-    { return BigInt.encode_locked(to_bigint()); }
+    SecureVector!ubyte toBytes() const
+    { return BigInt.encodeLocked(toBigint()); }
     
     /*
     * GMP_MPZ Assignment Operator
@@ -259,20 +259,20 @@ public:
 }
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-    final class GMP_DH_KA_Operation : Key_Agreement
+    final class GMP_DH_KA_Operation : KeyAgreement
     {
     public:
         this(in DHPrivateKey dh) 
         {
-            m_x = dh.get_x();
-            m_p = dh.group_p();
+            m_x = dh.getX();
+            m_p = dh.groupP();
         }
         
         SecureVector!ubyte agree(in ubyte* w, size_t w_len)
         {
             GMP_MPZ z = GMP_MPZ(w, w_len);
             mpz_powm(z.value, z.value, m_x.value, m_p.value);
-            return z.to_bytes();
+            return z.toBytes();
         }
         
     private:
@@ -282,32 +282,32 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
 
 static if (BOTAN_HAS_DSA) {
     
-    final class GMP_DSA_Signature_Operation : Signature
+    final class GMPDSASignatureOperation : Signature
     {
     public:
         this(in DSAPrivateKey dsa) 
         {
-            m_x = dsa.get_x();
-            m_p = dsa.group_p();
-            m_q = dsa.group_q();
-            m_g = dsa.group_g();
-            m_q_bits = dsa.group_q().bits();
+            m_x = dsa.getX();
+            m_p = dsa.groupP();
+            m_q = dsa.groupQ();
+            m_g = dsa.groupG();
+            m_q_bits = dsa.groupQ().bits();
         }
         
-        size_t message_parts() const { return 2; }
-        size_t message_part_size() const { return (m_q_bits + 7) / 8; }
-        size_t max_input_bits() const { return m_q_bits; }
+        size_t messageParts() const { return 2; }
+        size_t messagePartSize() const { return (m_q_bits + 7) / 8; }
+        size_t maxInputBits() const { return m_q_bits; }
         
         SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
         {
             const size_t q_bytes = (m_q_bits + 7) / 8;
             
-            rng.add_entropy(msg, msg_len);
+            rng.addEntropy(msg, msg_len);
             
             BigInt k_bn;
             do
                 k_bn.randomize(rng, m_q_bits);
-            while (k_bn >= m_q.to_bigint());
+            while (k_bn >= m_q.toBigint());
             
             GMP_MPZ i = GMP_MPZ(msg, msg_len);
             GMP_MPZ k = GMP_MPZ(k_bn);
@@ -325,7 +325,7 @@ static if (BOTAN_HAS_DSA) {
             mpz_mod(s.value, s.value, m_q.value);
             
             if (mpz_cmp_ui(r.value, 0) == 0 || mpz_cmp_ui(s.value, 0) == 0)
-                throw new Internal_Error("GMP_DSA_Op::sign: r or s was zero");
+                throw new InternalError("GMP_DSA_Op::sign: r or s was zero");
             
             SecureVector!ubyte output = SecureVector(2*q_bytes);
             r.encode(output.ptr, q_bytes);
@@ -339,23 +339,23 @@ static if (BOTAN_HAS_DSA) {
     }
     
     
-    final class GMP_DSA_Verification_Operation : Verification
+    final class GMPDSAVerificationOperation : Verification
     {
     public:
         this(in DSAPublicKey dsa) 
         {
             m_y = dsa.get_y();
-            m_p = dsa.group_p();
-            m_q = dsa.group_q();
-            m_g = dsa.group_g();
-            m_q_bits = dsa.group_q().bits(); 
+            m_p = dsa.groupP();
+            m_q = dsa.groupQ();
+            m_g = dsa.groupG();
+            m_q_bits = dsa.groupQ().bits(); 
         }
         
-        size_t message_parts() const { return 2; }
-        size_t message_part_size() const { return (m_q_bits + 7) / 8; }
-        size_t max_input_bits() const { return m_q_bits; }
+        size_t messageParts() const { return 2; }
+        size_t messagePartSize() const { return (m_q_bits + 7) / 8; }
+        size_t maxInputBits() const { return m_q_bits; }
         
-        bool with_recovery() const { return false; }
+        bool withRecovery() const { return false; }
         
         bool verify(in ubyte* msg, size_t msg_len,
                     in ubyte* sig, size_t sig_len)
@@ -404,33 +404,33 @@ static if (BOTAN_HAS_DSA) {
     
     static if (BOTAN_HAS_RSA) {
         
-        final class GMP_RSA_Private_Operation : Signature, Decryption
+        final class GMPRSAPrivateOperation : Signature, Decryption
         {
         public:
             this(in RSAPrivateKey rsa)
             {
-                m_mod = rsa.get_n();
+                m_mod = rsa.getN();
                 m_p = rsa.getP();
-                m_q = rsa.get_q();
-                m_d1 = rsa.get_d1();
-                m_d2 = rsa.get_d2();
-                m_c = rsa.get_c();
-                m_n_bits = rsa.get_n().bits();
+                m_q = rsa.getQ();
+                m_d1 = rsa.getD1();
+                m_d2 = rsa.getD2();
+                m_c = rsa.getC();
+                m_n_bits = rsa.getN().bits();
             }
             
-            size_t max_input_bits() const { return (m_n_bits - 1); }
+            size_t maxInputBits() const { return (m_n_bits - 1); }
             
             SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 BigInt x = private_op(m);
-                return BigInt.encode_1363(x, (m_n_bits + 7) / 8);
+                return BigInt.encode1363(x, (m_n_bits + 7) / 8);
             }
             
             SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encode_locked(private_op(m));
+                return BigInt.encodeLocked(private_op(m));
             }
             
         private:
@@ -446,7 +446,7 @@ static if (BOTAN_HAS_DSA) {
                 mpz_mod(h.value, h.value, m_p.value);
                 mpz_mul(h.value, h.value, m_q.value);
                 mpz_add(h.value, h.value, j2.value);
-                return h.to_bigint();
+                return h.toBigint();
             }
             
             GMP_MPZ m_mod, m_p, m_q, m_d1, m_d2, m_c;
@@ -454,42 +454,41 @@ static if (BOTAN_HAS_DSA) {
         }
         
         
-        final class GMP_RSA_Public_Operation : Verification, Encryption
+        final class GMPRSAPublicOperation : Verification, Encryption
         {
         public:
             this(in RSAPublicKey rsa)
             {
-                m_n = rsa.get_n();
-                m_e = rsa.get_e();
-                m_mod = rsa.get_n();
+                m_n = rsa.getN();
+                m_e = rsa.getE();
+                m_mod = rsa.getN();
             }
             
-            size_t max_input_bits() const { return (m_n.bits() - 1); }
-            bool with_recovery() const { return true; }
+            size_t maxInputBits() const { return (m_n.bits() - 1); }
+            bool withRecovery() const { return true; }
             
-            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
-                                     RandomNumberGenerator)
+            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
             {
 
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encode_1363(public_op(m), m_n.bytes());
+                return BigInt.encode1363(publicOp(m), m_n.bytes());
             }
             
             SecureVector!ubyte verify_mr(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encode_locked(public_op(m));
+                return BigInt.encodeLocked(publicOp(m));
             }
             
         private:
-            BigInt public_op(in BigInt m) const
+            BigInt publicOp(in BigInt m) const
             {
                 if (m >= n)
-                    throw new Invalid_Argument("RSA public op - input is too large");
+                    throw new InvalidArgument("RSA public op - input is too large");
                 
                 GMP_MPZ m_gmp = GMP_MPZ(m);
                 mpz_powm(m_gmp.value, m_gmp.value, m_e.value, m_mod.value);
-                return m_gmp.to_bigint();
+                return m_gmp.toBigint();
             }
             
             const BigInt m_n;
@@ -505,9 +504,9 @@ static if (BOTAN_HAS_DSA) {
 */
 void* gmp_malloc(size_t n)
 {
-    import botan.utils.memory.zeroize : Secure_Allocator;
+    import botan.utils.memory.zeroize : SecureAllocator;
     import botan.utils.memory.memory : getAllocator;
-    return getAllocator!Secure_Allocator().alloc(n).ptr;
+    return getAllocator!SecureAllocator().alloc(n).ptr;
 }
 
 /*
@@ -515,9 +514,9 @@ void* gmp_malloc(size_t n)
 */
 void gmp_free(void* ptr, size_t n)
 {
-    import botan.utils.memory.zeroize : Secure_Allocator;
+    import botan.utils.memory.zeroize : SecureAllocator;
     import botan.utils.memory.memory : getAllocator;
-    getAllocator!Secure_Allocator().free(ptr[0 .. n]);
+    getAllocator!SecureAllocator().free(ptr[0 .. n]);
 }
 
 /*
@@ -575,10 +574,10 @@ extern(C) nothrow @nogc
     alias mp_limb_signed_t = int;
     struct  __mpz_struct{
         int _mp_alloc;        /* Number of *limbs* allocated and pointed
-                   to by the _mp_d field.  */
+                                 to by the _mp_d field.  */
         int _mp_size;            /* abs(_mp_size) is the number of limbs the
-                   last field points to.  If _mp_size is
-                   negative this is a negative number.  */
+                                    last field points to.  If _mp_size is
+                                    negative this is a negative number.  */
         mp_limb_t *_mp_d;        /* Pointer to the limbs.  */
     }
     alias MP_INT = __mpz_struct;
@@ -596,12 +595,12 @@ extern(C) nothrow @nogc
     alias mpq_t = __mpq_struct[1];
     struct  __mpf_struct{
         int _mp_prec;            /* Max precision, in number of `mp_limb_t's.
-                   Set by mpf_init and modified by
-                   mpf_set_prec.  The area pointed to by the
-                   _mp_d field contains `prec' + 1 limbs.  */
+                                    Set by mpf_init and modified by
+                                    mpf_set_prec.  The area pointed to by the
+                                    _mp_d field contains `prec' + 1 limbs.  */
         int _mp_size;            /* abs(_mp_size) is the number of limbs the
-                   last field points to.  If _mp_size is
-                   negative this is a negative number.  */
+                                    last field points to.  If _mp_size is
+                                    negative this is a negative number.  */
         mp_exp_t _mp_exp;        /* Exponent, in the base of `mp_limb_t'.  */
         mp_limb_t *_mp_d;        /* Pointer to the limbs.  */
     }

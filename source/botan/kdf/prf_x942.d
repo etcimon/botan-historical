@@ -26,7 +26,7 @@ public:
                             in ubyte* secret, size_t secret_len,
                             in ubyte* salt, size_t salt_len) const
     {
-        SHA_160 hash;
+        SHA160 hash;
         const OID kek_algo = OID(m_key_wrap_oid);
         
         SecureVector!ubyte key;
@@ -38,24 +38,23 @@ public:
             
             hash.update(
                 DEREncoder().startCons(ASN1Tag.SEQUENCE)
-                
-                .startCons(ASN1Tag.SEQUENCE)
-                .encode(kek_algo)
-                .rawBytes(encode_x942_int(counter))
-                .endCons()
-                
-                .encodeIf (salt_len != 0,
-                        DEREncoder()
-                        .startExplicit(0)
-                        .encode(salt, salt_len, ASN1Tag.OCTET_STRING)
-                        .endExplicit()
-                        )
-                
-                .startExplicit(2)
-                .rawBytes(encode_x942_int(cast(uint)(8 * key_len)))
-                .endExplicit()
-                
-                .endCons().getContents()
+                            .startCons(ASN1Tag.SEQUENCE)
+                            .encode(kek_algo)
+                            .rawBytes(encodeX942Int(counter))
+                            .endCons()
+                            
+                            .encodeIf (salt_len != 0,
+                                    DEREncoder()
+                                    .startExplicit(0)
+                                    .encode(salt, salt_len, ASN1Tag.OCTET_STRING)
+                                    .endExplicit()
+                                    )
+                            
+                            .startExplicit(2)
+                            .rawBytes(encodeX942Int(cast(uint)(8 * key_len)))
+                            .endExplicit()
+                            
+                            .endCons().getContents()
                 );
             
             SecureVector!ubyte digest = hash.finished();

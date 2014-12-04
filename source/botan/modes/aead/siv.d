@@ -13,13 +13,13 @@ import botan.mac.mac;
 import botan.cmac.cmac;
 import botan.stream.ctr;
 import botan.utils.parsing;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 
 /**
 * Base class for SIV encryption and decryption (@see RFC 5297)
 */
-class SIVMode : AEAD_Mode
+class SIVMode : AEADMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -57,7 +57,7 @@ public:
 
     final override void setAssociatedData(in ubyte* ad, size_t ad_len)
     {
-        set_associated_data_n(0, ad, ad_len);
+        setAssociatedDataN(0, ad, ad_len);
     }
 
     final override @property string name() const
@@ -70,7 +70,7 @@ public:
         /*
         This value does not particularly matter as regardless update
         buffers all input, so in theory this could be 1. However as for instance
-        Transformation_Filter creates updateGranularity() ubyte buffers, use a
+        TransformationFilter creates updateGranularity() ubyte buffers, use a
         somewhat large size to avoid bouncing on a tiny buffer.
         */
         return 128;
@@ -116,7 +116,7 @@ protected:
 
     final SecureVector!ubyte msgBuf() { return m_msg_buf; }
 
-    final SecureVector!ubyte s2V(in ubyte* text, size_t text_len)
+    final SecureVector!ubyte S2V(in ubyte* text, size_t text_len)
     {
         const ubyte[16] zero;
         
@@ -137,13 +137,13 @@ protected:
         if (text_len < 16)
         {
             V = CMAC.polyDouble(V);
-            xor_buf(V.ptr, text, text_len);
+            xorBuf(V.ptr, text, text_len);
             V[text_len] ^= 0x80;
             return cmac().process(V);
         }
         
         cmac().update(text, text_len - 16);
-        xor_buf(V.ptr, &text[text_len - 16], 16);
+        xorBuf(V.ptr, &text[text_len - 16], 16);
         cmac().update(V);
         
         return cmac().finished();
@@ -170,7 +170,7 @@ private:
 /**
 * SIV Encryption
 */
-final class SIVEncryption : SIV_Mode
+final class SIVEncryption : SIVMode
 {
 public:
     /**
@@ -191,12 +191,12 @@ public:
         
         buffer.insert(buffer.ptr + offset, V.ptr, V.end());
         
-        set_ctr_iv(V);
+        setCtrIv(V);
         ctr().cipher1(&buffer[offset + V.length], buffer.length - offset - V.length);
     }
 
     override size_t outputLength(size_t input_length) const
-    { return input_length + tag_size(); }
+    { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
 }
@@ -204,7 +204,7 @@ public:
 /**
 * SIV Decryption
 */
-final class SIVDecryption : SIV_Mode
+final class SIVDecryption : SIVMode
 {
 public:
     /**
@@ -223,11 +223,11 @@ public:
         
         const size_t sz = buffer.length - offset;
         
-        assert(sz >= tag_size(), "We have the tag");
+        assert(sz >= tagSize(), "We have the tag");
 
         SecureVector!ubyte V = SecureVector!ubyte(buffer.ptr[offset .. offset + 16]);
         
-        set_ctr_iv(V);
+        setCtrIv(V);
         
         ctr().cipher(&buffer[offset + V.length], &buffer[offset], buffer.length - offset - V.length);
         
@@ -236,14 +236,14 @@ public:
         if (T != V)
             throw new IntegrityFailure("SIV tag check failed");
         
-        buffer.resize(buffer.length - tag_size());
+        buffer.resize(buffer.length - tagSize());
     }
 
     override size_t outputLength(size_t input_length) const
     {
-        assert(input_length > tag_size(), "Sufficient input");
-        return input_length - tag_size();
+        assert(input_length > tagSize(), "Sufficient input");
+        return input_length - tagSize();
     }
 
-    override size_t minimumFinalSize() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tagSize(); }
 }

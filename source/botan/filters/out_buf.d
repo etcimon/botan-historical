@@ -22,7 +22,7 @@ public:
     size_t read(ubyte* output, size_t length,
                 Pipe.message_id msg)
     {
-        Secure_Queue q = get(msg);
+        SecureQueue q = get(msg);
         if (q)
             return q.read(output, length);
         return 0;
@@ -35,7 +35,7 @@ public:
                 size_t stream_offset,
                 Pipe.message_id msg) const
     {
-        Secure_Queue q = get(msg);
+        SecureQueue q = get(msg);
         if (q)
             return q.peek(output, length, stream_offset);
         return 0;
@@ -46,7 +46,7 @@ public:
     */
     size_t getBytesRead(Pipe.message_id msg) const
     {
-        Secure_Queue q = get(msg);
+        SecureQueue q = get(msg);
         if (q)
             return q.getBytesRead();
         return 0;
@@ -57,7 +57,7 @@ public:
     */
     size_t remaining(Pipe.message_id msg) const
     {
-        Secure_Queue q = get(msg);
+        SecureQueue q = get(msg);
         if (q)
             return q.length;
         return 0;
@@ -123,6 +123,6 @@ private:
         return m_buffers[msg - m_offset];
     }
 
-    Vector!Secure_Queue m_buffers;
+    Vector!SecureQueue m_buffers;
     Pipe.message_id m_offset;
 }

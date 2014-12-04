@@ -175,7 +175,7 @@ private:
         
         m_info.add(dn_subject.contents());
         
-        BER_Object public_key = cert_req_info.getNextObject();
+        BERObject public_key = cert_req_info.getNextObject();
         if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
             throw new BERBadTag("PKCS10Request: Unexpected tag for public key",
                                   public_key.type_tag, public_key.class_tag);
@@ -183,7 +183,7 @@ private:
         m_info.add("X509.Certificate.public_key", 
                    PEM.encode(put_in_sequence(unlock(public_key.value)), "PUBLIC KEY"));
         
-        BER_Object attr_bits = cert_req_info.getNextObject();
+        BERObject attr_bits = cert_req_info.getNextObject();
         
         if (attr_bits.type_tag == 0 &&
             attr_bits.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
@@ -231,11 +231,11 @@ private:
             auto extensions = scoped!X509Extensions;
             value.decode(extensions).verifyEnd();
             
-            Data_Store issuer_info;
+            DataStore issuer_info;
             extensions.contentsTo(m_info, issuer_info);
         }
     }
 
 
-    Data_Store m_info;
+    DataStore m_info;
 }

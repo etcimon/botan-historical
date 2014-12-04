@@ -14,10 +14,10 @@ import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * SHA-160 in x86 assembly
 */
-class SHA160X8632 : SHA_160
+class SHA160_X86_32 : SHA160
 {
 public:
-    override HashFunction clone() const { return new SHA160X8632; }
+    override HashFunction clone() const { return new SHA160_X86_32; }
 
     // Note 81 instead of normal 80: x86-32 asm needs an extra temp
     this() 
@@ -231,7 +231,7 @@ enum MAGIC4 = 0xCA62C1D6;
 enum MSG = ESP;
 enum T2 = EBP;
 
-string f1(string A, string B, string C, string D, string E, string F, ubyte N) 
+string F1(string A, string B, string C, string D, string E, string F, ubyte N) 
 {
     return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F) ~
@@ -246,7 +246,7 @@ string f1(string A, string B, string C, string D, string E, string F, ubyte N)
             ADD(E, F);
 }
 
-string f2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
+string F2_4(string A, string B, string C, string D, string E, string F, ubyte N, int MAGIC)
 {
     return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F)     ~
@@ -260,7 +260,7 @@ string f2_4(string A, string B, string C, string D, string E, string F, ubyte N,
             ADD(E, F);
 }
 
-string f3(string A, string B, string C, string D, string E, string F, ubyte N)
+string F3(string A, string B, string C, string D, string E, string F, ubyte N)
 {
     return  ASSIGN(T2, ARRAY4(MSG, N)) ~
             ASSIGN(A, F)     ~
@@ -277,12 +277,12 @@ string f3(string A, string B, string C, string D, string E, string F, ubyte N)
             ADD(E, F);
 }
 
-string f2(string A, string B, string C, string D, string E, string F, ubyte MSG2)
+string F2(string A, string B, string C, string D, string E, string F, ubyte MSG2)
 {
     return F2_4(A, B, C, D, E, F, MSG2, MAGIC2);
 }
 
-string f4(string A, string B, string C, string D, string E, string F, ubyte MSG2)
+string F4(string A, string B, string C, string D, string E, string F, ubyte MSG2)
 {
     return F2_4(A, B, C, D, E, F, MSG2, MAGIC4);
 }

@@ -107,7 +107,7 @@ public:
     /*
     * Look for an algorithm with this name
     */
-    BlockCipher findBlockCipher(in SCANName request, AlgorithmFactory af) const
+    BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
     {
         
         static if (!BOTAN_HAS_OPENSSL_NO_SHA) {
@@ -146,7 +146,7 @@ public:
         static if (!BOTAN_HAS_OPENSSL_NO_RC5) {
             /*
             if (request.algo_name == "RC5")
-                if (request.arg_as_integer(0, 12) == 12)
+                if (request.argAsInteger(0, 12) == 12)
                     return new EVP_BlockCipher(EVP_rc5_32_12_16_ecb,
                                                "RC5(12)", 1, 32, 1);
             */
@@ -166,7 +166,7 @@ public:
     /**
     * Look for an OpenSSL-supported stream cipher (RC4)
     */
-    StreamCipher findStreamCipher(in SCANName request,
+    StreamCipher findStreamCipher(in SCANToken request,
                                     AlgorithmFactory) const
     {
         if (request.algo_name == "RC4")
@@ -181,7 +181,7 @@ public:
     /*
     * Look for an algorithm with this name
     */
-    HashFunction findHash(in SCANName request,
+    HashFunction findHash(in SCANToken request,
                            AlgorithmFactory af) const
     {
         static if (!BOTAN_HAS_OPENSSL_NO_SHA) {
@@ -232,7 +232,7 @@ package:
 /*
 * OpenSSL Modular Exponentiator
 */
-final class OpenSSLModularExponentiator : Modular_Exponentiator
+final class OpenSSLModularExponentiator : ModularExponentiator
 {
 public:
     void setBase(in BigInt b) { m_base = b; }
@@ -296,7 +296,7 @@ public:
     
     SecureVector!ubyte toBytes() const
     { 
-        return BigInt.encodeLocked(to_bigint()); 
+        return BigInt.encodeLocked(toBigint()); 
     }
     
     OSSLBN opAssign(in OSSLBN other)
@@ -311,7 +311,7 @@ public:
     this(in BigInt input = 0)
     {
         m_bn = BN_new();
-        SecureVector!ubyte encoding = BigInt.encode_locked(input);
+        SecureVector!ubyte encoding = BigInt.encodeLocked(input);
         if (input != 0)
             BN_bin2bn(encoding.ptr, encoding.length, m_bn);
     }
@@ -410,7 +410,7 @@ public:
     
     KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(1, 32);
+        return KeyLengthSpecification(1, 32);
     }        
     
     this(size_t s = 0) { m_SKIP = s; clear(); }
@@ -509,7 +509,7 @@ public:
          size_t key_mod) 
     {
         m_block_sz = EVP_CIPHER_block_size(algo);
-        m_cipher_key_spec = Key_Length_Specification(key_min, key_max, key_mod);
+        m_cipher_key_spec = KeyLengthSpecification(key_min, key_max, key_mod);
         m_cipher_name = algo_name;
         if (EVP_CIPHER_mode(algo) != EVP_CIPH_ECB_MODE)
             throw new InvalidArgument("EVP_BlockCipher: Non-ECB EVP was passed in");
@@ -584,7 +584,7 @@ private:
     }
     
     size_t m_block_sz;
-    Key_Length_Specification m_cipher_key_spec;
+    KeyLengthSpecification m_cipher_key_spec;
     string m_cipher_name;
     EVP_CIPHER_CTX m_encrypt, m_decrypt;
 }
@@ -683,7 +683,7 @@ private:
 package:
 
 static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-    final class OSSLDHKAOperation : Key_Agreement
+    final class OSSLDHKAOperation : KeyAgreement
     {
     public:
         this(in DHPrivateKey dh) 
@@ -896,13 +896,13 @@ static if (BOTAN_HAS_DSA) {
                                      RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encode1363(public_op(m), m_n.bytes());
+                return BigInt.encode1363(publicOp(m), m_n.bytes());
             }
             
             SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
-                return BigInt.encodeLocked(public_op(m));
+                return BigInt.encodeLocked(publicOp(m));
             }
             
         private:

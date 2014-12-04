@@ -37,10 +37,10 @@ public:
     * @param context = specifies a context relative to type. For instance
     *          for type "tls-client", context specifies the servers name.
     */
-    abstract Vector!Certificate_Store 
+    abstract Vector!CertificateStore 
         trustedCertificateAuthorities(in string type, in string context)
     {
-        return Vector!Certificate_Store();
+        return Vector!CertificateStore();
     }
 
     /**
@@ -87,7 +87,7 @@ public:
     * or else an empty vector.
     *
     * It is assumed that the caller can get the private key of the
-    * leaf with Private_Key_for
+    * leaf with Private_Keyfor
     *
     * @param cert_key_types = specifies the key types desired ("RSA",
     *                              "DSA", "ECDSA", etc), or empty if there
@@ -115,7 +115,7 @@ public:
     * or else an empty vector.
     *
     * It is assumed that the caller can get the private key of the
-    * leaf with Private_Key_for
+    * leaf with Private_Keyfor
     *
     * @param cert_key_type = specifies the type of key requested
     *                             ("RSA", "DSA", "ECDSA", etc)
@@ -233,7 +233,7 @@ public:
 
 private:
 
-bool certInSomeStore(in Vector!Certificate_Store trusted_CAs, in X509Certificate trust_root)
+bool certInSomeStore(in Vector!CertificateStore trusted_CAs, in X509Certificate trust_root)
 {
     foreach (CAs; trusted_CAs)
         if (CAs.certificateKnown(trust_root))

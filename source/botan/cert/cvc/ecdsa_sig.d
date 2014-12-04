@@ -46,15 +46,15 @@ public:
         // use the larger
         const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
         
-        const auto sv_r = BigInt.encode_1363(m_r, enc_len);
-        const auto sv_s = BigInt.encode_1363(m_s, enc_len);
+        const auto sv_r = BigInt.encode1363(m_r, enc_len);
+        const auto sv_s = BigInt.encode1363(m_s, enc_len);
         
         SecureVector!ubyte result = SecureVector!ubyte(sv_r);
         result ~= sv_s;
         return unlock(result);
     }
 
-    Vector!ubyte dEREncode() const
+    Vector!ubyte DER_encode() const
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)

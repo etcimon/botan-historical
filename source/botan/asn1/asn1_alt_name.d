@@ -36,19 +36,19 @@ public:
     {
         der.startCons(ASN1Tag.SEQUENCE);
         
-        encode_entries(der, m_alt_info, "RFC822", ASN1Tag(1));
-        encode_entries(der, m_alt_info, "DNS", ASN1Tag(2));
-        encode_entries(der, m_alt_info, "URI", ASN1Tag(6));
-        encode_entries(der, m_alt_info, "IP", ASN1Tag(7));
+        encodeEntries(der, m_alt_info, "RFC822", ASN1Tag(1));
+        encodeEntries(der, m_alt_info, "DNS", ASN1Tag(2));
+        encodeEntries(der, m_alt_info, "URI", ASN1Tag(6));
+        encodeEntries(der, m_alt_info, "IP", ASN1Tag(7));
         
         foreach (oid, asn1_str; m_othernames)
         {
             der.startExplicit(0)
-                    .encode(oid)
-                    .startExplicit(0)
-                    .encode(asn1_str)
-                    .endExplicit()
-                    .endExplicit();
+               .encode(oid)
+               .startExplicit(0)
+               .encode(asn1_str)
+               .endExplicit()
+               .endExplicit();
         }
         
         der.endCons();
@@ -63,7 +63,7 @@ public:
         
         while (names.moreItems())
         {
-            BER_Object obj = names.getNextObject();
+            BERObject obj = names.getNextObject();
             if ((obj.class_tag != ASN1Tag.CONTEXT_SPECIFIC) &&
                 (obj.class_tag != (ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED)))
                 continue;
@@ -78,7 +78,7 @@ public:
                 othername.decode(oid);
                 if (othername.moreItems())
                 {
-                    BER_Object othername_value_outer = othername.getNextObject();
+                    BERObject othername_value_outer = othername.getNextObject();
                     othername.verifyEnd();
                     
                     if (othername_value_outer.type_tag != ASN1Tag(0) ||
@@ -87,7 +87,7 @@ public:
                     
                     auto othername_value_inner = BERDecoder(othername_value_outer.value);
                     
-                    BER_Object value = othername_value_inner.getNextObject();
+                    BERObject value = othername_value_inner.getNextObject();
                     othername_value_inner.verifyEnd();
                     
                     const ASN1Tag value_type = value.type_tag;

@@ -14,7 +14,7 @@ import botan.algo_factory.algo_factory;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.exceptn;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.algo_factory.algo_factory;
 import botan.utils.types;
 
@@ -60,7 +60,7 @@ SecureVector!ubyte rfc3394Keywrap(in SecureVector!ubyte key,
             
             ubyte[4] t_buf;
             storeBigEndian(t, t_buf.ptr);
-            xor_buf(&A[4], t_buf.ptr, 4);
+            xorBuf(&A[4], t_buf.ptr, 4);
         }
     }
     
@@ -107,7 +107,7 @@ SecureVector!ubyte rfc3394Keyunwrap(in SecureVector!ubyte key,
             ubyte[4] t_buf;
             storeBigEndian(t, t_buf);
             
-            xor_buf(&A[4], t_buf.ptr, 4);
+            xorBuf(&A[4], t_buf.ptr, 4);
             
             copyMem(&A[8], &R[8*(i-1)], 8);
             

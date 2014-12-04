@@ -20,7 +20,7 @@ import std.datetime;
 import botan.utils.containers.hashmap;
 
 /**
-* TLS_Session_Manager is an interface to systems which can save
+* TLSSessionManager is an interface to systems which can save
 * session parameters for supporting session resumption.
 *
 * Saving sessions is done on a best-effort basis; an implementation is
@@ -77,10 +77,10 @@ public:
 }
 
 /**
-* An implementation of TLS_Session_Manager that does not save sessions at
+* An implementation of TLSSessionManager that does not save sessions at
 * all, preventing session resumption.
 */
-final class TLSSessionManagerNoop : TLS_Session_Manager
+final class TLSSessionManagerNoop : TLSSessionManager
 {
 public:
     override bool loadFromSessionId(in Vector!ubyte, TLSSession)
@@ -98,9 +98,9 @@ public:
 }
 
 /**
-* An implementation of TLS_Session_Manager that saves values in memory.
+* An implementation of TLSSessionManager that saves values in memory.
 */
-final class TLSSessionManagerInMemory : TLS_Session_Manager
+final class TLSSessionManagerInMemory : TLSSessionManager
 {
 public:
     /**

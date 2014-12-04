@@ -15,7 +15,7 @@ import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * Serpent implementation in x86-32 assembly
 */
-final class SerpentX8632 : Serpent
+final class Serpent_X86_32 : Serpent
 {
 public:
     /*
@@ -48,7 +48,7 @@ public:
     }
 
 
-    BlockCipher clone() const { return new SerpentX8632; }
+    BlockCipher clone() const { return new Serpent_X86_32; }
 protected:
     /*
     * Serpent Key Schedule

@@ -253,13 +253,13 @@ size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
     BigInt n = BigInt(args[0]);
     bool should_be_prime = (args[1] == "1");
     
-    bool is_prime = is_prime(n, rng);
+    bool isPrime = isPrime(n, rng);
     
-    if (is_prime != should_be_prime)
+    if (isPrime != should_be_prime)
     {
-        writeln("ERROR: is_prime");
+        writeln("ERROR: isPrime");
         writeln("n = " ~ n);
-        writeln(is_prime ~ " != " ~ should_be_prime);
+        writeln(isPrime ~ " != " ~ should_be_prime);
     }
     return 0;
 }
@@ -280,7 +280,7 @@ unittest
     bool first = true;
     size_t counter = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     while(!test_data.eof)
     {

@@ -26,7 +26,7 @@ enum : SizeLimits {
 typedef ubyte Connection_Side;
 enum : ConnectionSide { CLIENT = 1, SERVER = 2 }
 
-typedef ubyte Record_Type;
+typedef ubyte RecordType;
 enum : RecordType {
     NO_RECORD             = 0,
 
@@ -37,7 +37,7 @@ enum : RecordType {
     HEARTBEAT             = 24,
 }
 
-typedef ubyte Handshake_Type;
+typedef ubyte HandshakeType;
 enum : HandshakeType {
     HELLO_REQUEST         = 0,
     CLIENT_HELLO          = 1,

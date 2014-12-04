@@ -316,30 +316,30 @@ private:
 /*
 * Template functions for the factory prototype/search algorithm
 */
-T engineGetAlgo(T)(Engine, in SCANName, AlgorithmFactory)
+T engineGetAlgo(T)(Engine, in SCANToken, AlgorithmFactory)
 { static assert(false, "Invalid engine"); }
 
-BlockCipher engineGetAlgo(T : BlockCipher, U : SCANName)(Engine engine, 
+BlockCipher engineGetAlgo(T : BlockCipher, U : SCANToken)(Engine engine, 
                                                             auto ref U request, 
                                                             AlgorithmFactory af)
 { return engine.findBlockCipher(request, af); }
 
-StreamCipher engineGetAlgo(T : StreamCipher, U : SCANName)(Engine engine, 
+StreamCipher engineGetAlgo(T : StreamCipher, U : SCANToken)(Engine engine, 
                                                               auto ref U request, 
                                                               AlgorithmFactory af)
 { return engine.findStreamCipher(request, af); }
 
-HashFunction engineGetAlgo(T : HashFunction, U : SCANName)(Engine engine, 
+HashFunction engineGetAlgo(T : HashFunction, U : SCANToken)(Engine engine, 
                                                               auto ref U request, 
                                                               AlgorithmFactory af)
 { return engine.findHash(request, af); }
 
-MessageAuthenticationCode engineGetAlgo(T : MessageAuthenticationCode, U : SCANName)(Engine engine, 
+MessageAuthenticationCode engineGetAlgo(T : MessageAuthenticationCode, U : SCANToken)(Engine engine, 
                                                                                         auto ref U request,
                                                                                         AlgorithmFactory af)
 { return engine.findMac(request, af); }
 
-PBKDF engineGetAlgo(T : PBKDF, U : SCANName)(Engine engine, 
+PBKDF engineGetAlgo(T : PBKDF, U : SCANToken)(Engine engine, 
                                                 auto ref U request, 
                                                 AlgorithmFactory af)
 { return engine.findPbkdf(request, af); }
@@ -352,14 +352,14 @@ T factoryPrototype(T)(in string algo_spec,
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
 
-    SCANName scan_name = SCANName(algo_spec);
+    SCANToken scan_name = SCANToken(algo_spec);
 
     if (scan_name.cipherMode() != "")
         return null;
 
     foreach (const engine; engines[])
     {
-        if (provider == "" || engine.provider_name == provider)
+        if (provider == "" || engine.providerName() == provider)
         {
             if (T impl = af.engineGetAlgo!T(engine, scan_name, af))
                 cache.add(impl, algo_spec, engine.providerName());

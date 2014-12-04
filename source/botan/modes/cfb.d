@@ -13,11 +13,11 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
 import botan.utils.parsing;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 /**
 * CFB Mode
 */
-class CFBMode : Cipher_Mode
+class CFBMode : CipherMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -34,7 +34,7 @@ public:
 
     final override @property string name() const
     {
-        if (feedback() == cipher().block_size)
+        if (feedback() == cipher().blockSize())
             return cipher().name ~ "/CFB";
         else
             return cipher().name ~ "/CFB(" ~ to!string(feedback()*8) ~ ")";
@@ -62,12 +62,12 @@ public:
 
     final override size_t defaultNonceLength() const
     {
-        return cipher().block_size;
+        return cipher().blockSize();
     }
 
     final override bool validNonceLength(size_t n) const
     {
-        return (n == cipher().block_size);
+        return (n == cipher().blockSize());
     }
 
     final override void clear()
@@ -79,8 +79,8 @@ protected:
     this(BlockCipher cipher, size_t feedback_bits)
     { 
         m_cipher = cipher;
-        m_feedback_bytes = feedback_bits ? feedback_bits / 8 : cipher.block_size;
-        if (feedback_bits % 8 || feedback() > cipher.block_size)
+        m_feedback_bytes = feedback_bits ? feedback_bits / 8 : cipher.blockSize();
+        if (feedback_bits % 8 || feedback() > cipher.blockSize())
             throw new InvalidArgument(name() ~ ": feedback bits " ~
                                        to!string(feedback_bits) ~ " not supported");
     }
@@ -108,7 +108,7 @@ private:
 /**
 * CFB Encryption
 */
-final class CFBEncryption : CFB_Mode
+final class CFBEncryption : CFBMode
 {
 public:
     this(BlockCipher cipher, size_t feedback_bits)
@@ -122,7 +122,7 @@ public:
         size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         SecureVector!ubyte state = shift_register();
         const size_t shift = feedback();
@@ -130,7 +130,7 @@ public:
         while (sz)
         {
             const size_t took = std.algorithm.min(shift, sz);
-            xor_buf(buf.ptr, &keystream_buf()[0], took);
+            xorBuf(buf.ptr, &keystream_buf()[0], took);
             
             // Assumes feedback-sized block except for last input
             copyMem(state.ptr, &state[shift], BS - shift);
@@ -152,7 +152,7 @@ public:
 /**
 * CFB Decryption
 */
-final class CFBDecryption : CFB_Mode
+final class CFBDecryption : CFBMode
 {
 public:
     this(BlockCipher cipher, size_t feedback_bits) 
@@ -166,7 +166,7 @@ public:
         size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const size_t BS = cipher().block_size;
+        const size_t BS = cipher().blockSize();
         
         SecureVector!ubyte state = shift_register();
         const size_t shift = feedback();
@@ -180,7 +180,7 @@ public:
             copyMem(&state[BS-shift], buf.ptr, took);
             
             // then decrypt
-            xor_buf(buf.ptr, &keystream_buf()[0], took);
+            xorBuf(buf.ptr, &keystream_buf()[0], took);
             
             // then update keystream
             cipher().encrypt(state, keystream_buf());

@@ -30,7 +30,7 @@ final class BitBucket : Filter
 * through all the Filters contained in the Chain.
 */
 
-final class Chain : Fanout_Filter
+final class Chain : FanoutFilter
 {
 public:
     void write(in ubyte* input, size_t length) { send(input, length); }
@@ -76,7 +76,7 @@ public:
 * flow of data. It causes an input message to result in n messages at
 * the end of the filter, where n is the number of forks.
 */
-class Fork : Fanout_Filter
+class Fork : FanoutFilter
 {
 public:
     final void write(in ubyte* input, size_t length) { send(input, length); }
@@ -93,7 +93,7 @@ public:
     this(Filter f1, Filter f2, Filter f3 = null, Filter f4 = null)
     {
         Filter[4] filters = [ f1, f2, f3, f4 ];
-        set_next(filters, 4);
+        setNext(filters, 4);
     }
 
     /**
@@ -103,7 +103,7 @@ public:
     */    
     this(Filter* filter_arr, size_t length)
     {
-        set_next(filter_arr, length);
+        setNext(filter_arr, length);
     }
 }
 
@@ -128,7 +128,7 @@ public:
         super(null, cast(size_t)(0));
         m_thread_data = new ThreadedForkData;
         Filter[4] filters = [ f1, f2, f3, f4 ];
-        set_next(filters, 4);
+        setNext(filters, 4);
     }
 
     /**
@@ -141,7 +141,7 @@ public:
         
         super(null, cast(size_t)(0));
         m_thread_data = new ThreadedForkData;
-        set_next(filter_arr, length);
+        setNext(filter_arr, length);
     }
 
     ~this()
@@ -170,7 +170,7 @@ protected:
             {
                 m_threads.pushBack(
                     FreeListRef!Thread(
-                        spawn(&thread_entry, this, next[i])));
+                        spawn(&threadEntry, this, next[i])));
             }
         }
     }

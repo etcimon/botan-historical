@@ -43,7 +43,7 @@ string PGP_encode(in ubyte* input, size_t length, in string label,
     
     Pipe pipe = Pipe(new Fork(
         new Base64Encoder(true, PGP_WIDTH),
-        new Chain(new Hash_Filter(new CRC24), new Base64Encoder)
+        new Chain(new HashFilter(new CRC24), new Base64Encoder)
         )
     );
     
@@ -145,7 +145,7 @@ SecureVector!ubyte PGP_decode(DataSource source,
     
     Pipe base64 = Pipe(new Base64Decoder,
                         new Fork(    null, 
-                             new Chain(new Hash_Filter(new CRC24),
+                             new Chain(new HashFilter(new CRC24),
                               new Base64Encoder)
                          )
                        );

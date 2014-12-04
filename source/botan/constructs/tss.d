@@ -307,7 +307,7 @@ import botan.codec.hex;
 
 unittest
 {    
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     size_t fails = 0;
     

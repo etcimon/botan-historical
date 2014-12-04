@@ -150,9 +150,9 @@ public:
         const Vector!ubyte cert = X509Object.makeSigned(
             signer, rng, sig_algo,
             DEREncoder().startCons(ASN1Tag.SEQUENCE)
-            .start_explicit(0)
+            .startExplicit(0)
             .encode(X509_CERT_VERSION-1)
-            .end_explicit()
+            .endExplicit()
             
             .encode(serial_no)
             
@@ -167,11 +167,11 @@ public:
             .encode(subject_dn)
             .rawBytes(pub_key)
             
-            .start_explicit(3)
+            .startExplicit(3)
             .startCons(ASN1Tag.SEQUENCE)
             .encode(extensions)
             .endCons()
-            .end_explicit()
+            .endExplicit()
             .endCons()
             .getContents());
         
@@ -230,17 +230,17 @@ private:
             .encode(m_cert.issuerDn())
             .encode(X509Time(current_time))
             .encode(X509Time(expire_time))
-            .encode_if (revoked.length > 0,
+            .encodeIf (revoked.length > 0,
                     DEREncoder()
                     .startCons(ASN1Tag.SEQUENCE)
-                    .encode_list(revoked)
+                    .encodeList(revoked)
                     .endCons()
                     )
-            .start_explicit(0)
+            .startExplicit(0)
             .startCons(ASN1Tag.SEQUENCE)
             .encode(extensions)
             .endCons()
-            .end_explicit()
+            .endExplicit()
             .endCons()
             .getContents());
         
@@ -289,7 +289,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
     else
         throw new InvalidArgument("Unknown X.509 signing key type: " ~ algo_name);
     
-    Signature_Format format = (key.message_parts() > 1) ? DER_SEQUENCE : IEEE_1363;
+    Signature_Format format = (key.messageParts() > 1) ? DER_SEQUENCE : IEEE_1363;
 
     padding ~= padding.data ~ '(' ~ proto_hash.name ~ ')';
     

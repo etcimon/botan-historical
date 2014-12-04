@@ -72,7 +72,7 @@ public:
             }
             
             string padding = sig_info[1];
-            Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+            Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
             Vector!ubyte to_sign = tbs_data();
             

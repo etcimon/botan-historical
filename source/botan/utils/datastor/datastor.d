@@ -23,7 +23,7 @@ struct DataStore
 {
 public:
     /*
-    * Data_Store Equality Comparison
+    * DataStore Equality Comparison
     */
     bool opEquals(in DataStore other) const
     {

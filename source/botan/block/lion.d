@@ -12,7 +12,7 @@ static if (BOTAN_HAS_LION):
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.parsing;
 
 /**
@@ -31,7 +31,7 @@ public:
     */
     override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        const size_t LEFT_SIZE = left_size();
+        const size_t LEFT_SIZE = leftSize();
         const size_t RIGHT_SIZE = right_size();
         
         SecureVector!ubyte buffer_vec = SecureVector!ubyte(LEFT_SIZE);
@@ -39,15 +39,15 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            xor_buf(buffer, input, m_key1.ptr, LEFT_SIZE);
+            xorBuf(buffer, input, m_key1.ptr, LEFT_SIZE);
             m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
             
             m_hash.update(output + LEFT_SIZE, RIGHT_SIZE);
             m_hash.flushInto(buffer);
-            xor_buf(output, input, buffer, LEFT_SIZE);
+            xorBuf(output, input, buffer, LEFT_SIZE);
             
-            xor_buf(buffer, output, m_key2.ptr, LEFT_SIZE);
+            xorBuf(buffer, output, m_key2.ptr, LEFT_SIZE);
             m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
             
@@ -61,7 +61,7 @@ public:
     */
     override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        const size_t LEFT_SIZE = left_size();
+        const size_t LEFT_SIZE = leftSize();
         const size_t RIGHT_SIZE = right_size();
         
         SecureVector!ubyte buffer_vec = SecureVector!ubyte(LEFT_SIZE);
@@ -69,15 +69,15 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         {
-            xor_buf(buffer, input, m_key2.ptr, LEFT_SIZE);
+            xorBuf(buffer, input, m_key2.ptr, LEFT_SIZE);
             m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher(input + LEFT_SIZE, output + LEFT_SIZE, RIGHT_SIZE);
             
             m_hash.update(output + LEFT_SIZE, RIGHT_SIZE);
             m_hash.flushInto(buffer);
-            xor_buf(output, input, buffer, LEFT_SIZE);
+            xorBuf(output, input, buffer, LEFT_SIZE);
             
-            xor_buf(buffer, output, m_key1.ptr, LEFT_SIZE);
+            xorBuf(buffer, output, m_key1.ptr, LEFT_SIZE);
             m_cipher.setKey(buffer, LEFT_SIZE);
             m_cipher.cipher1(output + LEFT_SIZE, RIGHT_SIZE);
             
@@ -86,11 +86,11 @@ public:
         }
     }
 
-    @property size_t blockSize() const { return m_block_size; }
+    size_t blockSize() const { return m_block_size; }
 
     override KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(2, 2*m_hash.output_length, 2);
+        return KeyLengthSpecification(2, 2*m_hash.output_length, 2);
     }
 
     /*
@@ -134,14 +134,14 @@ public:
         m_hash = hash;
         m_cipher = cipher;
         
-        if (2*left_size() + 1 > m_block_size)
+        if (2*leftSize() + 1 > m_block_size)
             throw new InvalidArgument(name ~ ": Chosen block size is too small");
         
-        if (!m_cipher.validKeylength(left_size()))
+        if (!m_cipher.validKeylength(leftSize()))
             throw new InvalidArgument(name ~ ": This stream/hash combo is invalid");
         
-        m_key1.resize(left_size());
-        m_key2.resize(left_size());
+        m_key1.resize(leftSize());
+        m_key2.resize(leftSize());
     }
 protected:
 
@@ -158,8 +158,8 @@ protected:
     }
 
 private:
-    size_t left_size() const { return m_hash.output_length; }
-    size_t right_size() const { return m_block_size - left_size(); }
+    size_t leftSize() const { return m_hash.output_length; }
+    size_t right_size() const { return m_block_size - leftSize(); }
 
     const size_t m_block_size;
     Unique!HashFunction m_hash;

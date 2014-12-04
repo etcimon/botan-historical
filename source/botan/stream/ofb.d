@@ -11,7 +11,7 @@ static if (BOTAN_HAS_OFB):
 
 import botan.stream.stream_cipher;
 import botan.block.block_cipher;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 
 /**
 * Output Feedback Mode
@@ -23,14 +23,14 @@ public:
     {
         while (length >= m_buffer.length - m_buf_pos)
         {
-            xor_buf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
+            xorBuf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
             length -= (m_buffer.length - m_buf_pos);
             input += (m_buffer.length - m_buf_pos);
             output += (m_buffer.length - m_buf_pos);
             m_cipher.encrypt(m_buffer);
             m_buf_pos = 0;
         }
-        xor_buf(output, input, &m_buffer[m_buf_pos], length);
+        xorBuf(output, input, &m_buffer[m_buf_pos], length);
         m_buf_pos += length;
     }
 
@@ -47,7 +47,7 @@ public:
     }
 
     bool validIvLength(size_t iv_len) const
-    { return (iv_len <= m_cipher.block_size); }
+    { return (iv_len <= m_cipher.blockSize()); }
 
     KeyLengthSpecification keySpec() const
     {
@@ -75,7 +75,7 @@ public:
     this(BlockCipher cipher)
     {
         m_cipher = cipher;
-        m_buffer = m_cipher.block_size;
+        m_buffer = m_cipher.blockSize();
         m_buf_pos = 0;
     }
 private:

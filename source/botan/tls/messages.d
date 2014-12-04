@@ -113,7 +113,7 @@ public:
 
     this(in Vector!ubyte client_hello_bits, in string client_identity, in SymmetricKey secret_key)
     {
-        Unique!MessageAuthenticationCode hmac = get_mac("HMAC(SHA-256)");
+        Unique!MessageAuthenticationCode hmac = getMac("HMAC(SHA-256)");
         hmac.setKey(secret_key);
         
         hmac.updateBigEndian(client_hello_bits.length);
@@ -372,10 +372,10 @@ private:
     void deserialize(in Vector!ubyte buf)
     {
         if (buf.length == 0)
-            throw new DecodingError("Client_Hello: Packet corrupted");
+            throw new DecodingError("ClientHello: Packet corrupted");
         
         if (buf.length < 41)
-            throw new DecodingError("Client_Hello: Packet corrupted");
+            throw new DecodingError("ClientHello: Packet corrupted");
         
         TLSDataReader reader = TLSDataReader("ClientHello", buf);
         
@@ -416,7 +416,7 @@ private:
     void deserializeSslv2(in Vector!ubyte buf)
     {
         if (buf.length < 12 || buf[0] != 1)
-            throw new DecodingError("Client_Hello: SSLv2 hello corrupted");
+            throw new DecodingError("ClientHello: SSLv2 hello corrupted");
         
         const size_t cipher_spec_len = make_ushort(buf[3], buf[4]);
         const size_t m_session_id_len = make_ushort(buf[5], buf[6]);
@@ -425,12 +425,12 @@ private:
         const size_t expected_size = (9 + m_session_id_len + cipher_spec_len + challenge_len);
         
         if (buf.length != expected_size)
-            throw new DecodingError("Client_Hello: SSLv2 hello corrupted");
+            throw new DecodingError("ClientHello: SSLv2 hello corrupted");
         
         if (m_session_id_len != 0 || cipher_spec_len % 3 != 0 ||
             (challenge_len < 16 || challenge_len > 32))
         {
-            throw new DecodingError("Client_Hello: SSLv2 hello corrupted");
+            throw new DecodingError("ClientHello: SSLv2 hello corrupted");
         }
         
         m_version = TLSProtocolVersion(buf[1], buf[2]);
@@ -457,7 +457,7 @@ private:
     Vector!ubyte m_comp_methods;
     Vector!ubyte m_hello_cookie; // DTLS only
 
-    TLS_Extensions m_extensions;
+    TLSExtensions m_extensions;
 }
 
 /**
@@ -582,7 +582,7 @@ public:
     this(in Vector!ubyte buf)
     {
         if (buf.length < 38)
-            throw new DecodingError("Server_Hello: Packet corrupted");
+            throw new DecodingError("ServerHello: Packet corrupted");
         
         TLSDataReader reader = TLSDataReader("ServerHello", buf);
         
@@ -630,7 +630,7 @@ private:
     ushort m_ciphersuite;
     ubyte m_comp_method;
 
-    TLS_Extensions m_extensions;
+    TLSExtensions m_extensions;
 }
 
 /**
@@ -667,7 +667,7 @@ public:
             if (!cast(const RSAPrivateKey)(server_rsa_kex_key))
                 throw new InternalError("Expected RSA key but got " ~ server_rsa_kex_key.algo_name);
             
-            auto decryptor = scoped!PK_Decryptor_EME(*server_rsa_kex_key, "PKCS1v15");
+            auto decryptor = scoped!PKDecryptorEME(*server_rsa_kex_key, "PKCS1v15");
             
             TLSProtocolVersion client_version = state.clientHello().Version();
             
@@ -702,7 +702,7 @@ public:
                     client_version.majorVersion() != m_pre_master[0] ||
                     client_version.minorVersion() != m_pre_master[1])
                 {
-                    throw new DecodingError("Client_Key_Exchange: Secret corrupted");
+                    throw new DecodingError("ClientKeyExchange: Secret corrupted");
                 }
             }
             catch (Throwable)
@@ -742,7 +742,7 @@ public:
             }
             else if (kex_algo == "SRP_SHA")
             {
-                SRP6_Server_Session srp = state.serverKex().serverSrpParams();
+                SRP6ServerSession srp = state.serverKex().serverSrpParams();
                 
                 m_pre_master = srp.step2(BigInt.decode(reader.getRange!ubyte(2, 0, 65535))).bitsOf();
             }
@@ -793,7 +793,7 @@ public:
                 }
             }
             else
-                throw new InternalError("Client_Key_Exchange: Unknown kex type " ~ kex_algo);
+                throw new InternalError("ClientKeyExchange: Unknown kex type " ~ kex_algo);
         }
     }
 
@@ -923,7 +923,7 @@ public:
                 
                 Vector!ubyte ecdh_key = reader.getRange!ubyte(1, 1, 255);
                 
-                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve()()));
+                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve()));
                 
                 auto priv_key = scoped!ECDHPrivateKey(rng, group);
                 
@@ -968,7 +968,7 @@ public:
             }
             else
             {
-                throw new InternalError("Client_Key_Exchange: Unknown kex " ~
+                throw new InternalError("ClientKeyExchange: Unknown kex " ~
                                          kex_algo);
             }
             
@@ -992,7 +992,7 @@ public:
                 m_pre_master[0] = offered_version.majorVersion();
                 m_pre_master[1] = offered_version.minorVersion();
                 
-                auto encryptor = scoped!PK_Encryptor_EME(rsa_pub, "PKCS1v15");
+                auto encryptor = scoped!PKEncryptorEME(rsa_pub, "PKCS1v15");
                 
                 Vector!ubyte encrypted_key = encryptor.encrypt(m_pre_master, rng);
                 
@@ -1462,7 +1462,7 @@ public:
     // Only valid for SRP negotiation
     SRP6ServerSession serverSrpParams() const
     {
-        assert(m_srp_params, "SRP6_Server_Session cannot be null");
+        assert(m_srp_params, "SRP6ServerSession cannot be null");
         return *m_srp_params;
     }
 
@@ -1477,7 +1477,7 @@ public:
         m_kex_key.clear();
         m_srp_params.clear();
         if (buf.length < 6)
-            throw new DecodingError("Server_Key_Exchange: Packet corrupted");
+            throw new DecodingError("ServerKeyExchange: Packet corrupted");
         
         TLSDataReader reader = TLSDataReader("ServerKeyExchange", buf);
         
@@ -1508,7 +1508,7 @@ public:
             const ubyte curve_type = reader.get_byte();
             
             if (curve_type != 3)
-                throw new DecodingError("Server_Key_Exchange: TLS_Server sent non-named ECC curve");
+                throw new DecodingError("ServerKeyExchange: TLS_Server sent non-named ECC curve");
             
             const ushort curve_id = reader.get_ushort();
             
@@ -1517,7 +1517,7 @@ public:
             Vector!ubyte ecdh_key = reader.getRange!ubyte(1, 1, 255);
             
             if (name == "")
-                throw new DecodingError("Server_Key_Exchange: TLS_Server sent unknown named curve " ~
+                throw new DecodingError("ServerKeyExchange: TLS_Server sent unknown named curve " ~
                                          to!string(curve_id));
             
             m_params.pushBack(curve_type);
@@ -1540,7 +1540,7 @@ public:
             appendTLSLengthValue(m_params, BigInt.encode(B), 2);
         }
         else if (kex_algo != "PSK")
-                throw new DecodingError("Server_Key_Exchange: Unsupported kex type " ~ kex_algo);
+                throw new DecodingError("ServerKeyExchange: Unsupported kex type " ~ kex_algo);
         
         if (sig_algo != "")
         {
@@ -1601,7 +1601,7 @@ public:
             
             Unique!ECDHPrivateKey ecdh = new ECDHPrivateKey(rng, ec_group);
             
-            const string ecdh_domain_oid = ecdh.domain().get_oid();
+            const string ecdh_domain_oid = ecdh.domain().getOid();
             const string domain = OIDS.lookup(OID(ecdh_domain_oid));
             
             if (domain == "")
@@ -1645,7 +1645,7 @@ public:
             appendTLSLengthValue(m_params, BigInt.encode(B), 2);
         }
         else if (kex_algo != "PSK")
-            throw new InternalError("Server_Key_Exchange: Unknown kex type " ~ kex_algo);
+            throw new InternalError("ServerKeyExchange: Unknown kex type " ~ kex_algo);
         
         if (state.ciphersuite().sigAlgo() != "")
         {
@@ -1690,7 +1690,7 @@ private:
     }
 
     Unique!PrivateKey m_kex_key;
-    Unique!SRP6_Server_Session m_srp_params;
+    Unique!SRP6ServerSession m_srp_params;
 
     Vector!ubyte m_params;
 
@@ -1721,7 +1721,7 @@ public:
     this(in Vector!ubyte buf)
     {
         if (buf.length)
-            throw new DecodingError("Server_Hello_Done: Must be empty, and is not");
+            throw new DecodingError("ServerHello_Done: Must be empty, and is not");
     }
 private:
     /*

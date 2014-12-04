@@ -46,9 +46,9 @@ public:
     * Start a new ASN.1 ASN1Tag.SEQUENCE/SET/EXPLICIT
     */
     DEREncoder startCons(ASN1Tag m_type_tag,
-                           ASN1Tag m_class_tag)
+                         ASN1Tag m_class_tag)
     {
-        m_subsequences.pushBack(DER_Sequence(m_type_tag, m_class_tag));
+        m_subsequences.pushBack(DERSequence(m_type_tag, m_class_tag));
         return this;
     }
     
@@ -74,7 +74,7 @@ public:
         ASN1Tag m_type_tag = cast(ASN1Tag)(type_no);
         
         if (m_type_tag == ASN1Tag.SET)
-            throw new InternalError("DEREncoder.start_explicit(SET); cannot perform");
+            throw new InternalError("DEREncoder.startExplicit(SET); cannot perform");
         
         return startCons(m_type_tag, ASN1Tag.CONTEXT_SPECIFIC);
     }
@@ -118,7 +118,7 @@ public:
     */
     DEREncoder encodeNull()
     {
-        return add_object(ASN1Tag.NULL_TAG, ASN1Tag.UNIVERSAL, null, 0);
+        return addObject(ASN1Tag.NULL_TAG, ASN1Tag.UNIVERSAL, null, 0);
     }
     
     /*
@@ -149,7 +149,7 @@ public:
     * DER encode an OCTET STRING or BIT STRING
     */
     DEREncoder encode(in SecureVector!ubyte bytes,
-                       ASN1Tag real_type)
+                      ASN1Tag real_type)
     {
         return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -158,17 +158,16 @@ public:
     * DER encode an OCTET STRING or BIT STRING
     */
     DEREncoder encode(in Vector!ubyte bytes,
-                       ASN1Tag real_type)
+                      ASN1Tag real_type)
     {
-        return encode(bytes.ptr, bytes.length,
-        real_type, real_type, ASN1Tag.UNIVERSAL);
+        return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
     
     /*
     * Encode this object
     */
     DEREncoder encode(in ubyte* bytes, size_t length,
-                       ASN1Tag real_type)
+                      ASN1Tag real_type)
     {
         return encode(bytes, length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -177,10 +176,10 @@ public:
     * DER encode a BOOLEAN
     */
     DEREncoder encode(bool is_true,
-                       ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         ubyte val = is_true ? 0xFF : 0x00;
-        return add_object(m_type_tag, m_class_tag, &val, 1);
+        return addObject(m_type_tag, m_class_tag, &val, 1);
     }
     
     /*
@@ -196,10 +195,10 @@ public:
     * DER encode an INTEGER
     */
     DEREncoder encode(in BigInt n,
-                       ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         if (n == 0)
-            return add_object(m_type_tag, m_class_tag, 0);
+            return addObject(m_type_tag, m_class_tag, 0);
         
         bool extra_zero = (n.bits() % 8 == 0);
         SecureVector!ubyte m_contents = SecureVector!ubyte(extra_zero + n.bytes());
@@ -213,15 +212,15 @@ public:
                     break;
         }
         
-        return add_object(m_type_tag, m_class_tag, m_contents);
+        return addObject(m_type_tag, m_class_tag, m_contents);
     }
     
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
     DEREncoder encode(in SecureVector!ubyte bytes,
-                       ASN1Tag real_type,
-                       ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                      ASN1Tag real_type,
+                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
     }
@@ -230,8 +229,8 @@ public:
     * DER encode an OCTET STRING or BIT STRING
     */
     DEREncoder encode(in Vector!ubyte bytes,
-                       ASN1Tag real_type,
-                       ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                      ASN1Tag real_type,
+                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
     }
@@ -240,8 +239,8 @@ public:
     * DER encode an OCTET STRING or BIT STRING
     */
     DEREncoder encode(in ubyte* bytes, size_t length,
-                       ASN1Tag real_type,
-                       ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                      ASN1Tag real_type,
+                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         if (real_type != ASN1Tag.OCTET_STRING && real_type != ASN1Tag.BIT_STRING)
             throw new InvalidArgument("DEREncoder: Invalid tag for ubyte/bit string");
@@ -251,10 +250,10 @@ public:
             SecureVector!ubyte encoded;
             encoded.pushBack(0);
             encoded ~= bytes[0 .. length];
-            return add_object(m_type_tag, m_class_tag, encoded);
+            return addObject(m_type_tag, m_class_tag, encoded);
         }
         else
-            return add_object(m_type_tag, m_class_tag, bytes, length);
+            return addObject(m_type_tag, m_class_tag, bytes, length);
     }
 
     /*
@@ -304,7 +303,7 @@ public:
     {
         const ubyte* rep = cast(const ubyte*)(rep_str.data());
         const size_t rep_len = rep_str.length;
-        return add_object(m_type_tag, m_class_tag, rep, rep_len);
+        return addObject(m_type_tag, m_class_tag, rep, rep_len);
     }
 
     /*
@@ -313,8 +312,8 @@ public:
     DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in ubyte* rep, size_t length)
     {
         SecureVector!ubyte buffer;
-        buffer ~= encode_tag(m_type_tag, m_class_tag);
-        buffer ~= encode_length(length);
+        buffer ~= encodeTag(m_type_tag, m_class_tag);
+        buffer ~= encodeLength(length);
         buffer ~= rep[0 .. length];
         
         return rawBytes(buffer);
@@ -325,18 +324,18 @@ public:
     */
     DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, ubyte rep)
     {
-        return add_object(m_type_tag, m_class_tag, &rep, 1);
+        return addObject(m_type_tag, m_class_tag, &rep, 1);
     }
 
 
     DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in Vector!ubyte rep)
     {
-        return add_object(m_type_tag, m_class_tag, rep.ptr, rep.length);
+        return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
 
     DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in SecureVector!ubyte rep)
     {
-        return add_object(m_type_tag, m_class_tag, rep.ptr, rep.length);
+        return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
 private:
     class DERSequence
@@ -367,8 +366,8 @@ private:
             }
             
             SecureVector!ubyte result;
-            result ~= encode_tag(m_type_tag, real_class_tag);
-            result ~= encode_length(m_contents.length);
+            result ~= encodeTag(m_type_tag, real_class_tag);
+            result ~= encodeLength(m_contents.length);
             result ~= m_contents;
             m_contents.clear();
             
@@ -387,7 +386,7 @@ private:
         }
 
         /*
-        * DER_Sequence Constructor
+        * DERSequence Constructor
         */
         this(ASN1Tag t1, ASN1Tag t2)
         {
@@ -404,7 +403,7 @@ private:
     }
 
     SecureVector!ubyte m_contents;
-    Vector!DER_Sequence m_subsequences;
+    Vector!DERSequence m_subsequences;
 }
 
 /*

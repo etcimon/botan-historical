@@ -46,7 +46,7 @@ public:
         const auto get_cipherstate = (ushort epoch)
         { return this.read_cipher_state_epoch(epoch); };
         
-        const size_t max_fragment_size = maximum_fragment_size();
+        const size_t max_fragment_size = maximumFragmentSize();
         
         try
         {
@@ -54,7 +54,7 @@ public:
             {
                 SecureVector!ubyte record;
                 ulong record_sequence = 0;
-                Record_Type record_type = NO_RECORD;
+                RecordType record_type = NO_RECORD;
                 TLSProtocolVersion record_version;
                 
                 size_t consumed = 0;
@@ -125,7 +125,7 @@ public:
                             Heartbeat_Message response = Heartbeat_Message(Heartbeat_Message.RESPONSE,
                                                        payload.ptr, payload.length);
                             
-                            send_record(HEARTBEAT, response.contents());
+                            sendRecord(HEARTBEAT, response.contents());
                         }
                     }
                     else
@@ -162,7 +162,7 @@ public:
                 }
                         
                 if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY)
-                    send_warning_alert(TLSAlert.CLOSE_NOTIFY); // reply in kind
+                    sendWarningAlert(TLSAlert.CLOSE_NOTIFY); // reply in kind
                             
                 if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY || alert_msg.isFatal())
                 {
@@ -178,22 +178,22 @@ public:
         }
         catch(TLSException e)
         {
-            send_fatal_alert(e.type());
+            sendFatalAlert(e.type());
             throw e;
         }
         catch(IntegrityFailure e)
         {
-            send_fatal_alert(TLSAlert.BAD_RECORD_MAC);
+            sendFatalAlert(TLSAlert.BAD_RECORD_MAC);
             throw e;
         }
         catch(DecodingError e)
         {
-            send_fatal_alert(TLSAlert.DECODE_ERROR);
+            sendFatalAlert(TLSAlert.DECODE_ERROR);
             throw e;
         }
         catch(Throwable e)
         {
-            send_fatal_alert(TLSAlert.INTERNAL_ERROR);
+            sendFatalAlert(TLSAlert.INTERNAL_ERROR);
             throw e;
         }
     }
@@ -216,7 +216,7 @@ public:
         if (!is_active())
             throw new Exception("Data cannot be sent on inactive TLS connection");
         
-        send_record_array(sequence_numbers().currentWriteEpoch(), APPLICATION_DATA, buf, buf_size);
+        sendRecordArray(sequence_numbers().currentWriteEpoch(), APPLICATION_DATA, buf, buf_size);
     }
 
     /**
@@ -248,7 +248,7 @@ public:
         {
             try
             {
-                send_record(ALERT, alert.serialize());
+                sendRecord(ALERT, alert.serialize());
             }
             catch (Throwable) { /* swallow it */ }
         }
@@ -277,7 +277,7 @@ public:
     /**
     * Send a close notification alert
     */
-    void close() { send_warning_alert(TLSAlert.CLOSE_NOTIFY); }
+    void close() { sendWarningAlert(TLSAlert.CLOSE_NOTIFY); }
 
     /**
     * @return true iff the connection is active for sending application data
@@ -359,7 +359,7 @@ public:
             Heartbeat_Message heartbeat = Heartbeat_Message(Heartbeat_Message.REQUEST,
                                         payload, payload_size);
             
-            send_record(HEARTBEAT, heartbeat.contents());
+            sendRecord(HEARTBEAT, heartbeat.contents());
         }
     }
 
@@ -479,11 +479,11 @@ protected:
                 m_sequence_numbers = new StreamSequenceNumbers;
         }
         
-        Unique!Handshake_IO io;
+        Unique!HandshakeIO io;
         if (_version.isDatagramProtocol())
-            io = new DatagramHandshakeIO(sequence_numbers(), &send_record_under_epoch);
+            io = new DatagramHandshakeIO(sequence_numbers(), &sendRecordUnderEpoch);
         else
-            io = new StreamHandshakeIO(&send_record);
+            io = new StreamHandshakeIO(&sendRecord);
         
         m_pending_state = new_handshake_state(*io);
         
@@ -667,14 +667,14 @@ private:
 
     void sendRecord(ubyte record_type, in Vector!ubyte record)
     {
-        send_record_array(sequence_numbers().currentWriteEpoch(),
+        sendRecordArray(sequence_numbers().currentWriteEpoch(),
                           record_type, record.ptr, record.length);
     }
 
     void sendRecordUnderEpoch(ushort epoch, ubyte record_type,
                                  in Vector!ubyte record)
     {
-        send_record_array(epoch, record_type, record.ptr, record.length);
+        sendRecordArray(epoch, record_type, record.ptr, record.length);
     }
 
     void sendRecordArray(ushort epoch, ubyte type, in ubyte* input, size_t length)
@@ -703,7 +703,7 @@ private:
             length -= 1;
         }
         
-        const size_t max_fragment_size = maximum_fragment_size();
+        const size_t max_fragment_size = maximumFragmentSize();
         
         while (length)
         {
@@ -781,7 +781,7 @@ private:
 
     /* external state */
     RandomNumberGenerator m_rng;
-    TLS_Session_Manager m_session_manager;
+    TLSSessionManager m_session_manager;
 
     /* sequence number state */
     Unique!Connection_Sequence_Numbers m_sequence_numbers;

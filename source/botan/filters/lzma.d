@@ -14,14 +14,15 @@ import botan.utils.exceptn;
 import std.c.string;
 import std.c.stdlib;
 import botan.utils.containers.hashmap;
+import botan.utils.types;
 
 /**
 * Lzma Compression Filter
 */
-final class Lzma_Compression : Filter
+final class LzmaCompression : Filter
 {
 public:
-    @property string name() const { return "Lzma_Compression"; }
+    @property string name() const { return "LzmaCompression"; }
 
     /*
     * Compress Input with Lzma
@@ -60,7 +61,7 @@ public:
         if (ret == LZMA_MEM_ERROR)
             throw new Memory_Exhaustion();
         else if (ret != LZMA_OK)
-            throw new Invalid_Argument("Bad setting in lzma_easy_encoder");
+            throw new InvalidArgument("Bad setting in lzma_easy_encoder");
     }
 
     /*
@@ -145,10 +146,10 @@ private:
 /**
 * Lzma Decompression Filter
 */
-final class Lzma_Decompression : Filter
+final class LzmaDecompression : Filter
 {
 public:
-    @property string name() const { return "Lzma_Decompression"; }
+    @property string name() const { return "LzmaDecompression"; }
 
     /*
     * Decompress Input with Lzma
@@ -173,7 +174,7 @@ public:
             {
                 clear();
                 if (ret == LZMA_DATA_ERROR)
-                    throw new Decoding_Error("Lzma_Decompression: Data integrity error");
+                    throw new DecodingError("LzmaDecompression: Data integrity error");
                 else if (ret == LZMA_MEM_ERROR)
                     throw new Memory_Exhaustion();
                 else
@@ -209,7 +210,7 @@ public:
         if (ret == LZMA_MEM_ERROR)
             throw new Memory_Exhaustion();
         else if (ret != LZMA_OK)
-            throw new Invalid_Argument("Bad setting in lzma_stream_decoder");
+            throw new InvalidArgument("Bad setting in lzma_stream_decoder");
     }
 
     /*
@@ -232,7 +233,7 @@ public:
             if (ret != LZMA_OK && ret != LZMA_STREAM_END)
             {
                 clear();
-                throw new Decoding_Error("Lzma_Decompression: Error finalizing");
+                throw new DecodingError("LzmaDecompression: Error finalizing");
             }
             
             send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
@@ -342,7 +343,7 @@ void lzma_free(void *opaque, void *ptr)
     Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(opaque);
     auto i = info.current_allocs.find(ptr);
     if (i == info.current_allocs.end())
-        throw new Invalid_Argument("lzma_free: Got pointer not allocated by us");
+        throw new InvalidArgument("lzma_free: Got pointer not allocated by us");
     
     memset(ptr, 0, i.second);
     free(ptr);

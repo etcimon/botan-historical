@@ -49,7 +49,7 @@ public:
     */
     void decodeFrom(BERDecoder source)
     {
-        BER_Object obj = source.getNextObject();
+        BERObject obj = source.getNextObject();
         
         if (obj.type_tag != this.m_tag)
             throw new BERDecodingError("Tag mismatch when decoding");
@@ -395,7 +395,7 @@ public:
     */
     void encodeInto(DEREncoder encoder) const
     {
-        string value = iso_8859();
+        string value = iso8859();
         encoder.addObject(tagging(), ASN1Tag.APPLICATION, value);
     }
     
@@ -404,7 +404,7 @@ public:
     */
     void decodeFrom(BERDecoder source)
     {
-        BER_Object obj = source.getNextObject();
+        BERObject obj = source.getNextObject();
         
         if (obj.type_tag != this.m_tag)
         {
@@ -474,7 +474,7 @@ public:
 
     bool opEquals(in ASN1EACString rhs)
     {
-        return (iso_8859() == rhs.iso8859());
+        return (iso8859() == rhs.iso8859());
     }
 
     bool opCmp(string op)(in ASN1EACString rhs)

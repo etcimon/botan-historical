@@ -21,12 +21,12 @@ public:
         m_server_cert = server_cert;
         m_ca_cert = ca_cert;
         m_key = server_key;
-        auto store = new Certificate_Store_In_Memory;
+        auto store = new CertificateStoreInMemory;
         store.addCertificate(m_ca_cert);
         m_stores.pushBack(store);
     }
     
-    override Vector!Certificate_Store trustedCertificateAuthorities(string, string)
+    override Vector!CertificateStore trustedCertificateAuthorities(string, string)
     {
         return m_stores;
     }
@@ -71,7 +71,7 @@ public:
 public:
     X509Certificate m_server_cert, m_ca_cert;
     PrivateKey m_key;
-    Vector!Certificate_Store m_stores;
+    Vector!CertificateStore m_stores;
 }
 
 TLSCredentialsManager createCreds(RandomNumberGenerator rng)
@@ -99,7 +99,7 @@ TLSCredentialsManager createCreds(RandomNumberGenerator rng)
     X509Time start_time = X509Time(now);
     X509Time end_time = X509Time(now + 1.years);
     
-    X509Certificate server_cert = ca.sign_request(req, rng, start_time, end_time);
+    X509Certificate server_cert = ca.signRequest(req, rng, start_time, end_time);
     
     return new TLSCredentialsManagerTest(server_cert, ca_cert, server_key);
 }
@@ -109,8 +109,8 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
                             TLSCredentialsManager creds,
                             TLSPolicy policy)
 {
-    auto server_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
-    auto client_sessions = scoped!TLS_Session_Manager_In_Memory(rng);
+    auto server_sessions = scoped!TLSSessionManagerInMemory(rng);
+    auto client_sessions = scoped!TLSSessionManagerInMemory(rng);
     
     Vector!ubyte c2s_q, s2c_q, c2s_data, s2c_data;
     
@@ -242,7 +242,7 @@ unittest
     size_t errors = 0;
     
     Test_Policy default_policy;
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     TLSCredentialsManager basic_creds = create_creds(rng);
     
     errors += basic_test_handshake(rng, TLSProtocolVersion.SSL_V3, basic_creds, default_policy);

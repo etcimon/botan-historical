@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_MD2):
 
 import botan.hash.hash;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 /**
 * MD2
 */
@@ -94,7 +94,7 @@ private:
             0x9F, 0x11, 0x83, 0x14 ];
         
         buffer_insert(m_X, 16, input, hashBlockSize);
-        xor_buf(&m_X[32], m_X.ptr, &m_X[16], hashBlockSize);
+        xorBuf(&m_X[32], m_X.ptr, &m_X[16], hashBlockSize);
         ubyte T = 0;
         
         foreach (size_t i; 0 .. 18)

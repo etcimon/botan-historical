@@ -205,7 +205,7 @@ public:
         m_position = 0;
     }
 private:
-    const Decoder_Checking m_checking;
+    const DecoderChecking m_checking;
     Vector!ubyte m_input, m_output;
     size_t m_position;
 }

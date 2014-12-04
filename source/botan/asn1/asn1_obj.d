@@ -110,7 +110,7 @@ public:
 /**
 * General BER Decoding Error Exception
 */
-class BERDecodingError : Decoding_Error
+class BERDecodingError : DecodingError
 {
     this(in string str) {
         super("BER: " ~ str);
@@ -120,7 +120,7 @@ class BERDecodingError : Decoding_Error
 /**
 * Exception For Incorrect BER Taggings
 */
-class BERBadTag : BER_Decoding_Error
+class BERBadTag : BERDecodingError
 {
 
     /*

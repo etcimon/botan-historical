@@ -10,16 +10,17 @@ import botan.filters.filter;
 import botan.utils.exceptn;
 
 import botan.utils.containers.hashmap;
+import botan.utils.types;
 import std.c.string;
 import std.c.stdlib;
 
 /**
 * Bzip Compression Filter
 */
-final class Bzip_Compression : Filter
+final class BzipCompression : Filter
 {
 public:
-    @property string name() const { return "Bzip_Compression"; }
+    @property string name() const { return "BzipCompression"; }
 
     /*
     * Compress Input with Bzip
@@ -63,7 +64,7 @@ public:
             m_bz.m_stream.avail_out = m_buffer.length;
             rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FINISH);
             send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
-        }
+        }LzmaCompression
         clear();
     }
 
@@ -116,10 +117,10 @@ private:
 /**
 * Bzip Decompression Filter
 */
-final class Bzip_Decompression : Filter
+final class BzipDecompression : Filter
 {
 public:
-    @property string name() const { return "Bzip_Decompression"; }
+    @property string name() const { return "BzipDecompression"; }
 
     /*
     * Decompress Input with Bzip
@@ -145,9 +146,9 @@ public:
                 clear();
                 
                 if (rc == BZ_DATA_ERROR)
-                    throw new Decoding_Error("Bzip_Decompression: Data integrity error");
+                    throw new DecodingError("BzipDecompression: Data integrity error");
                 else if (rc == BZ_DATA_ERROR_MAGIC)
-                    throw new Decoding_Error("Bzip_Decompression: Invalid input");
+                    throw new DecodingError("BzipDecompression: Invalid input");
                 else if (rc == BZ_MEM_ERROR)
                     throw new Memory_Exhaustion();
                 else
@@ -201,7 +202,7 @@ public:
             if (rc != BZ_OK && rc != BZ_STREAM_END)
             {
                 clear();
-                throw new Decoding_Error("Bzip_Decompression: Error finalizing");
+                throw new DecodingError("BzipDecompression: Error finalizing");
             }
             
             send(m_buffer, m_buffer.length - bz.m_stream.avail_out);
@@ -305,7 +306,7 @@ void bzip_free(void* info_ptr, void* ptr)
     Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
     auto i = info.current_allocs.find(ptr);
     if (i == info.current_allocs.end())
-        throw new Invalid_Argument("bzip_free: Got pointer not allocated by us");
+        throw new InvalidArgument("bzip_free: Got pointer not allocated by us");
     
     memset(ptr, 0, i.second);
     free(ptr);

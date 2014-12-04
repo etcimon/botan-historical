@@ -122,9 +122,9 @@ public:
         m_e = rw.getE();
         m_q = rw.getQ();
         m_c = rw.getC();
-        m_powermod_d1_p = Fixed_Exponent_Power_Mod(rw.getD1(), rw.getP());
-        m_powermod_d2_q = Fixed_Exponent_Power_Mod(rw.getD2(), rw.getQ());
-        m_mod_p = Fixed_Exponent_Power_Mod(rw.getP());
+        m_powermod_d1_p = FixedExponentPowerMod(rw.getD1(), rw.getP());
+        m_powermod_d2_q = FixedExponentPowerMod(rw.getD2(), rw.getQ());
+        m_mod_p = FixedExponentPowerMod(rw.getP());
     }
 
     size_t maxInputBits() const { return (m_n.bits() - 1); }
@@ -151,7 +151,7 @@ public:
 
         import std.concurrency : spawn, thisTid, send, receiveOnly;
 
-        auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt i2) 
+        auto tid = spawn((Tid tid, FixedExponentPowerMod powermod_d1_p2, BigInt i2) 
                          { send(tid, powermod_d1_p2(i2)); }, thisTid, m_powermod_d1_p, i);
         const BigInt j2 = m_powermod_d2_q(i);
         BigInt j1 = receiveOnly!BigInt();
@@ -168,7 +168,7 @@ private:
     const BigInt m_q;
     const BigInt m_c;
 
-    Unique!Fixed_Exponent_Power_Mod m_powermod_d1_p, m_powermod_d2_q;
+    Unique!FixedExponentPowerMod m_powermod_d1_p, m_powermod_d2_q;
     ModularReducer m_mod_p;
     Blinder m_blinder;
 }
@@ -182,7 +182,7 @@ public:
     this(in RWPublicKey rw)
     {
         m_n = rw.getN();
-        m_powermod_e_n = Fixed_Exponent_Power_Mod(rw.getE(), rw.getN());
+        m_powermod_e_n = FixedExponentPowerMod(rw.getE(), rw.getN());
     }
 
     size_t maxInputBits() const { return (m_n.bits() - 1); }
@@ -212,7 +212,7 @@ public:
 
 private:
     const BigInt m_n;
-    Fixed_Exponent_Power_Mod powermod_e_n;
+    FixedExponentPowerMod powermod_e_n;
 }
 
 
@@ -232,7 +232,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     size_t fails;
     auto rw1024 = scoped!RWPrivateKey(rng, 1024);
     rw1024.checkKey(rng, true);
-    fails += validate_save_and_load(&rw1024, rng);
+    fails += validateSaveAndLoad(&rw1024, rng);
     return fails;
 }
 size_t rwSigKat(string e,
@@ -242,7 +242,7 @@ size_t rwSigKat(string e,
                   string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     auto privkey = scoped!RWPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
@@ -251,7 +251,7 @@ size_t rwSigKat(string e,
     PKVerifier verify = PKVerifier(pubkey, padding);
     PKSigner sign = PKSigner(privkey, padding);
     
-    return validate_signature(verify, sign, "RW/" ~ padding, msg, rng, signature);
+    return validateSignature(verify, sign, "RW/" ~ padding, msg, rng, signature);
 }
 
 size_t rwSigVerify(string e,
@@ -260,7 +260,7 @@ size_t rwSigVerify(string e,
                      string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
@@ -278,7 +278,7 @@ unittest
 {
     size_t fails = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     

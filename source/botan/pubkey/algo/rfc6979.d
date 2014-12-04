@@ -29,7 +29,7 @@ BigInt generateRfc6979Nonce(in BigInt x, in BigInt q, in BigInt h, in string has
     const size_t qlen = q.bits();
     const size_t rlen = qlen / 8 + (qlen % 8 ? 1 : 0);
     
-    SecureVector!ubyte input = BigInt.encode_1363(x, rlen);
+    SecureVector!ubyte input = BigInt.encode1363(x, rlen);
     
     input ~= BigInt.encode1363(h, rlen);
     

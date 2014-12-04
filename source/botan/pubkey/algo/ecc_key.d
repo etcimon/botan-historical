@@ -56,7 +56,7 @@ public:
 
     /**
     * Get the public point of this key.
-    * @throw new Invalid_State is thrown if the
+    * @throw new InvalidState is thrown if the
     * domain parameters of this point are not set
     * @result the public point of this key
     */
@@ -64,7 +64,7 @@ public:
 
     AlgorithmIdentifier algorithmIdentifier() const
     {
-        return AlgorithmIdentifier(get_oid(), DER_domain());
+        return AlgorithmIdentifier(getOid(), DER_domain());
     }
 
     Vector!ubyte x509SubjectPublicKey() const
@@ -79,7 +79,7 @@ public:
 
     /**
     * Get the domain parameters of this key.
-    * @throw new Invalid_State is thrown if the
+    * @throw new InvalidState is thrown if the
     * domain parameters of this point are not set
     * @result the domain parameters of this key
     */
@@ -107,7 +107,7 @@ public:
     * is preset for this particular key
     */
     Vector!ubyte dERDomain() const
-    { return domain().dEREncode(domain_format()); }
+    { return domain().DER_encode(domainFormat()); }
 
     /**
     * Get the domain parameter encoding to be used when encoding this key.
@@ -169,7 +169,7 @@ public:
         
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
-                .decode_and_check!size_t(1, "Unknown version code for ECC key")
+                .decodeAndCheck!size_t(1, "Unknown version code for ECC key")
                 .decodeOctetStringBigint(m_private_key)
                 .decodeOptional(key_parameters, ASN1Tag(0), ASN1Tag.PRIVATE)
                 .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)

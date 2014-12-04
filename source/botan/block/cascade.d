@@ -20,8 +20,8 @@ public:
     void encryptN(ubyte* input, ubyte* output, size_t blocks,
                    size_t blocks) const
     {
-        size_t c1_blocks = blocks * (this.block_size / m_cipher1.block_size);
-        size_t c2_blocks = blocks * (this.block_size / m_cipher2.block_size);
+        size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
+        size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
         
         m_cipher1.encryptN(input, output, c1_blocks);
         m_cipher2.encryptN(output, output, c2_blocks);
@@ -30,18 +30,18 @@ public:
     void decryptN(ubyte* input, ubyte* output, size_t blocks,
                    size_t blocks) const
     {
-        size_t c1_blocks = blocks * (this.block_size / m_cipher1.block_size);
-        size_t c2_blocks = blocks * (this.block_size / m_cipher2.block_size);
+        size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
+        size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
         
         m_cipher2.decryptN(input, output, c2_blocks);
         m_cipher1.decryptN(output, output, c1_blocks);
     }
 
-    @property size_t blockSize() const { return m_block; }
+    size_t blockSize() const { return m_block; }
 
     KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(m_cipher1.maximumKeylength() + m_cipher2.maximumKeylength());
+        return KeyLengthSpecification(m_cipher1.maximumKeylength() + m_cipher2.maximumKeylength());
     }
 
     void clear()
@@ -70,15 +70,15 @@ public:
     this(BlockCipher c1, BlockCipher c2) 
     {
         m_cipher1 = c1; m_cipher2 = c2;
-        m_block = block_size_for_cascade(c1.block_size, c2.block_size);
+        m_block = block_size_for_cascade(c1.blockSize(), c2.blockSize());
         
-        if (this.block_size % c1.block_size || this.block_size % c2.block_size)
+        if (this.blockSize() % c1.blockSize() || this.blockSize() % c2.blockSize())
             throw new InternalError("Failure in " ~ name() ~ " constructor");
     }
 protected:
     void keySchedule(in ubyte* key, size_t)
     {
-        const ubyte* key2 = key + m_cipher1.maximum_keylength();
+        const ubyte* key2 = key + m_cipher1.maximumKeylength();
         
         m_cipher1.setKey(key , m_cipher1.maximumKeylength());
         m_cipher2.setKey(key2, m_cipher2.maximumKeylength());

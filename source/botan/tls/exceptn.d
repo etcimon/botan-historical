@@ -26,7 +26,7 @@ public:
     }
 
 private:
-    TLS_Alert_Type m_alert_type;
+    TLSAlertType m_alert_type;
 }
 
 /**

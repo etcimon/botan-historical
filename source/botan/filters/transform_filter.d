@@ -15,7 +15,7 @@ import botan.utils.rounding;
 /**
 * Filter interface for Transformations
 */
-class TransformationFilter : KeyedFilter, Buffered_Filter
+class TransformationFilter : KeyedFilter, BufferedFilter
 {
 public:
     this(Transformation transform)
@@ -44,7 +44,7 @@ public:
     {
         if (KeyedTransform keyed = cast(KeyedTransform)(*m_transform))
             return keyed.keySpec();
-        return Key_Length_Specification(0);
+        return KeyLengthSpecification(0);
     }
 
     final bool validIvLength(size_t length) const

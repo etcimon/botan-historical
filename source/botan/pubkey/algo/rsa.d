@@ -127,8 +127,7 @@ public:
 /**
 * RSA private (decrypt/sign) operation
 */
-final class RSAPrivateOperation : Signature,
-                                      Decryption
+final class RSAPrivateOperation : Signature, Decryption
 {
 public:
     this(in RSAPrivateKey rsa, RandomNumberGenerator rng) 
@@ -136,9 +135,9 @@ public:
         m_n = rsa.getN();
         m_q = rsa.getQ();
         m_c = rsa.getC();
-        m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.getE(), rsa.getN());
-        m_powermod_d1_p = Fixed_Exponent_Power_Mod(rsa.getD1(), rsa.getP());
-        m_powermod_d2_q = Fixed_Exponent_Power_Mod(rsa.getD2(), rsa.getQ());
+        m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
+        m_powermod_d1_p = FixedExponentPowerMod(rsa.getD1(), rsa.getP());
+        m_powermod_d2_q = FixedExponentPowerMod(rsa.getD2(), rsa.getQ());
         m_mod_p = rsa.getP();
         BigInt k = BigInt(rng, m_n.bits() - 1);
         m_blinder = Blinder(m_powermod_e_n(k), inverseMod(k, m_n), m_n);
@@ -180,7 +179,7 @@ private:
             throw new InvalidArgument("RSA private op - input is too large");
 
         import std.concurrency : spawn, receiveOnly, thidTid, send;
-        auto tid = spawn((Tid tid, Fixed_Exponent_Power_Mod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, 
+        auto tid = spawn((Tid tid, FixedExponentPowerMod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, 
                             thisTid, m_powermod_d1_p, m);
         BigInt j2 = m_powermod_d2_q(m);
         BigInt j1 = receiveOnly!BigInt();
@@ -193,7 +192,7 @@ private:
     const BigInt m_n;
     const BigInt m_q;
     const BigInt m_c;
-    Fixed_Exponent_Power_Mod m_powermod_e_n, m_powermod_d1_p, m_powermod_d2_q;
+    FixedExponentPowerMod m_powermod_e_n, m_powermod_d1_p, m_powermod_d2_q;
     ModularReducer m_mod_p;
     Blinder m_blinder;
 }
@@ -201,14 +200,13 @@ private:
 /**
 * RSA public (encrypt/verify) operation
 */
-final class RSAPublicOperation : Verification,
-                                   Encryption
+final class RSAPublicOperation : Verification, Encryption
 {
 public:
     this(in RSAPublicKey rsa)
     {
         m_n = rsa.getN();
-        m_powermod_e_n = Fixed_Exponent_Power_Mod(rsa.getE(), rsa.getN());
+        m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
     }
 
     size_t maxInputBits() const { return (n.bits() - 1); }
@@ -217,13 +215,13 @@ public:
     SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
     {
         BigInt m = BigInt(msg, msg_len);
-        return BigInt.encode1363(public_op(m), m_n.bytes());
+        return BigInt.encode1363(publicOp(m), m_n.bytes());
     }
 
     SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
-        return BigInt.encodeLocked(public_op(m));
+        return BigInt.encodeLocked(publicOp(m));
     }
 
 private:
@@ -235,7 +233,7 @@ private:
     }
 
     const BigInt n;
-    Fixed_Exponent_Power_Mod m_powermod_e_n;
+    FixedExponentPowerMod m_powermod_e_n;
 }
 
 static if (BOTAN_TEST):
@@ -251,15 +249,15 @@ __gshared size_t total_tests;
 
 
 size_t rsaesKat(string e,
-                 string p,
-                 string q,
-                 string msg,
-                 string padding,
-                 string nonce,
-                 string output)
+                string p,
+                string q,
+                string msg,
+                string padding,
+                string nonce,
+                string output)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     auto privkey = scoped!RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
@@ -268,10 +266,10 @@ size_t rsaesKat(string e,
     if (padding == "")
         padding = "Raw";
     
-    auto enc = scoped!PK_Encryptor_EME(pubkey, padding);
-    auto dec = scoped!PK_Decryptor_EME(privkey, padding);
+    auto enc = scoped!PKEncryptorEME(pubkey, padding);
+    auto dec = scoped!PKDecryptorEME(privkey, padding);
     
-    return validate_encryption(enc, dec, "RSAES/" ~ padding, msg, nonce, output);
+    return validateEncryption(enc, dec, "RSAES/" ~ padding, msg, nonce, output);
 }
 
 size_t rsaSigKat(string e,
@@ -283,7 +281,7 @@ size_t rsaSigKat(string e,
                    string output)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     auto privkey = scoped!RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
@@ -295,17 +293,17 @@ size_t rsaSigKat(string e,
     PKVerifier verify = PKVerifier(pubkey, padding);
     PKSigner sign = PKSigner(privkey, padding);
     
-    return validate_signature(verify, sign, "RSA/" ~ padding, msg, rng, nonce, output);
+    return validateSignature(verify, sign, "RSA/" ~ padding, msg, rng, nonce, output);
 }
 
 size_t rsaSigVerify(string e,
-                      string n,
-                      string msg,
-                      string padding,
-                      string signature)
+                    string n,
+                    string msg,
+                    string padding,
+                    string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
@@ -328,12 +326,12 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     auto rsa1024 = scoped!RSAPrivateKey(rng, 1024);
     rsa1024.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
-    fails += validate_save_and_load(&rsa1024, rng);
+    fails += validateSaveAndLoad(&rsa1024, rng);
     
     auto rsa2048 = scoped!RSAPrivateKey(rng, 2048);
     rsa2048.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
-    fails += validate_save_and_load(&rsa2048, rng);
+    fails += validateSaveAndLoad(&rsa2048, rng);
 
 }
 
@@ -341,7 +339,7 @@ unittest
 {
     size_t fails = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
 
     
     File rsa_enc = File("test_data/pubkey/rsaes.vec", "r");

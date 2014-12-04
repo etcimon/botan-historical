@@ -14,7 +14,7 @@ import botan.utils.types;
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 /**
 * CMAC, also known as OMAC1
 */
@@ -29,7 +29,7 @@ public:
         return "CMAC(" ~ m_cipher.name ~ ")";
     }
 
-    @property size_t outputLength() const { return m_cipher.block_size; }
+    @property size_t outputLength() const { return m_cipher.blockSize(); }
     /*
     * Return a clone of this object
     */
@@ -105,11 +105,11 @@ public:
     this(BlockCipher cipher)
     {
         m_cipher = cipher;
-        if (m_cipher.block_size !=  8 && m_cipher.block_size != 16 &&
-            m_cipher.block_size != 32 && m_cipher.block_size != 64)
+        if (m_cipher.blockSize() !=  8 && m_cipher.blockSize() != 16 &&
+            m_cipher.blockSize() != 32 && m_cipher.blockSize() != 64)
         {
             throw new InvalidArgument("CMAC cannot use the " ~
-                                       to!string(m_cipher.block_size * 8) ~
+                                       to!string(m_cipher.blockSize() * 8) ~
                                        " bit cipher " ~ m_cipher.name);
         }
         
@@ -129,13 +129,13 @@ private:
         buffer_insert(m_buffer, m_position, input, length);
         if (m_position + length > output_length())
         {
-            xor_buf(m_state, m_buffer, output_length());
+            xorBuf(m_state, m_buffer, output_length());
             m_cipher.encrypt(m_state);
             input += (output_length() - m_position);
             length -= (output_length() - m_position);
             while (length > output_length())
             {
-                xor_buf(m_state, input, output_length());
+                xorBuf(m_state, input, output_length());
                 m_cipher.encrypt(m_state);
                 input += output_length();
                 length -= output_length();
@@ -151,16 +151,16 @@ private:
     */
     void finalResult(ubyte* mac)
     {
-        xor_buf(m_state, m_buffer, m_position);
+        xorBuf(m_state, m_buffer, m_position);
         
         if (m_position == output_length())
         {
-            xor_buf(m_state, m_B, output_length());
+            xorBuf(m_state, m_B, output_length());
         }
         else
         {
             m_state[m_position] ^= 0x80;
-            xor_buf(m_state, m_P, output_length());
+            xorBuf(m_state, m_P, output_length());
         }
         
         m_cipher.encrypt(m_state);

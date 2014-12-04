@@ -46,8 +46,8 @@ public:
     bool validKeylength(size_t length) const
     {
         return ((length >= m_min_keylen) &&
-                  (length <= m_max_keylen) &&
-                  (length % m_keylen_mod == 0));
+                (length <= m_max_keylen) &&
+                (length % m_keylen_mod == 0));
     }
 
     /**
@@ -76,7 +76,7 @@ public:
 
     KeyLengthSpecification multiple(size_t n) const
     {
-        return Key_Length_Specification(n * m_min_keylen,
+        return KeyLengthSpecification(n * m_min_keylen,
                                         n * m_max_keylen,
                                         n * m_keylen_mod);
     }

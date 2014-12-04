@@ -78,18 +78,18 @@ public:
     AlgorithmIdentifier algorithmIdentifier() const
     {
         Vector!ubyte params = DEREncoder().startCons(ASN1Tag.SEQUENCE)
-                                            .encode(OID(domain().get_oid()))
+                                            .encode(OID(domain().getOid()))
                                             .endCons()
                                             .getContentsUnlocked();
         
-        return AlgorithmIdentifier(get_oid(), params);
+        return AlgorithmIdentifier(getOid(), params);
     }
 
     Vector!ubyte x509SubjectPublicKey() const
     {
         // Trust CryptoPro to come up with something obnoxious
-        const BigInt x = public_point().get_affine_x();
-        const BigInt y = public_point().get_affine_y();
+        const BigInt x = public_point().getAffineX();
+        const BigInt y = public_point().getAffineY();
         
         size_t part_size = std.algorithm.max(x.bytes(), y.bytes());
         
@@ -128,7 +128,7 @@ protected:
 /**
 * GOST-34.10 Private Key
 */
-final class GOST3410PrivateKey : GOST_3410PublicKey,
+final class GOST3410PrivateKey : GOST3410PublicKey,
                              ECPrivateKey
 {
 public:
@@ -190,7 +190,7 @@ public:
         assert(k_times_P.onTheCurve(),
                      "GOST 34.10 k*g is on the curve");
         
-        BigInt r = k_times_P.get_affine_x() % m_order;
+        BigInt r = k_times_P.getAffineX() % m_order;
         
         BigInt s = (r*m_x + k*e) % m_order;
         
@@ -299,9 +299,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     
     foreach (gost; gost_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!GOST_3410PrivateKey(rng, ECGroup(OIDS.lookup(gost)));
+        auto key = scoped!GOST3410PrivateKey(rng, ECGroup(OIDS.lookup(gost)));
         key.checkKey(rng, true);
-        fails += validate_save_and_load(&key, rng);
+        fails += validateSaveAndLoad(&key, rng);
     }
     
     return fails;
@@ -314,12 +314,12 @@ size_t gostVerify(string group_id,
                    string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-    PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve()());
+    PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve());
     
-    auto gost = scoped!GOST_3410PublicKey(group, public_point);
+    auto gost = scoped!GOST3410PublicKey(group, public_point);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     
@@ -335,7 +335,7 @@ unittest
 {
     size_t fails = 0;
 
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
 
     fails += testPkKeygen(rng);
 

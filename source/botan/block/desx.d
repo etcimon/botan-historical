@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_DES):
 
 import botan.block.des;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 
 /**
 * DESX
@@ -25,9 +25,9 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            xor_buf(output, input, m_K1.ptr, BLOCK_SIZE);
+            xorBuf(output, input, m_K1.ptr, BLOCK_SIZE);
             m_des.encrypt(output);
-            xor_buf(output, m_K2.ptr, BLOCK_SIZE);
+            xorBuf(output, m_K2.ptr, BLOCK_SIZE);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -41,9 +41,9 @@ public:
     {    
         foreach (size_t i; 0 .. blocks)
         {
-            xor_buf(output, input, m_K2.ptr, BLOCK_SIZE);
+            xorBuf(output, input, m_K2.ptr, BLOCK_SIZE);
             m_des.decrypt(output);
-            xor_buf(output, m_K1.ptr, BLOCK_SIZE);
+            xorBuf(output, m_K1.ptr, BLOCK_SIZE);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;

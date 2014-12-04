@@ -92,7 +92,7 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
 * @param rng = the rng to use
 * @result the new request
 */
-EAC11Req createCVCReq(in PrivateKey key,
+EAC11Req createCvcReq(in PrivateKey key,
                           in ASN1Chr chr,
                           in string hash_alg,
                           RandomNumberGenerator rng)
@@ -137,7 +137,7 @@ EAC11Req createCVCReq(in PrivateKey key,
 * CHR of the entity associated with the provided private key
 * @param rng = the rng to use
 */
-EAC11ADO createADOReq(in PrivateKey key,
+EAC11ADO createAdoReq(in PrivateKey key,
                           in EAC11Req req,
                           in ASN1Car car,
                           RandomNumberGenerator rng)
@@ -217,13 +217,13 @@ EAC11CVC linkCvca(in EAC11CVC signer,
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
     
     if (priv_key == 0)
-        throw new InvalidArgument("link_cvca(): unsupported key type");
+        throw new InvalidArgument("linkCvca(): unsupported key type");
     
     ASN1Ced ced = ASN1Ced(Clock.currTime());
     ASN1Cex cex = ASN1Cex(signee.get_cex());
     if (*cast(EACTime*)(&ced) > *cast(EACTime*)(&cex))
     {
-        Appender!string detail = "link_cvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
+        Appender!string detail = "linkCvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
         detail ~= ced.toString();
         detail ~= ", signee.cex = ";
         detail ~= cex.toString();
@@ -231,7 +231,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
     }
     if (signer.signatureAlgorithm() != signee.signatureAlgorithm())
     {
-        throw new InvalidArgument("link_cvca(): signature algorithms of signer and signee don't match");
+        throw new InvalidArgument("linkCvca(): signature algorithms of signer and signee don't match");
     }
     AlgorithmIdentifier sig_algo = signer.signatureAlgorithm();
     string padding_and_hash = padding_and_hash_from_oid(sig_algo.oid);
@@ -270,7 +270,7 @@ EAC11Req createCVCReqImplicitca(in PrivateKey prkey, in ASN1Chr chr,
     }
     ECDSAPrivateKey key = priv_key;
     key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
-    return create_cvc_req(key, chr, hash_alg, rng);
+    return createCvcReq(key, chr, hash_alg, rng);
 }
 
 /**
@@ -305,7 +305,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
-    string chr_str = signee.get_chr().value();
+    string chr_str = signee.getChr().value();
     
     string seqnr_string = to!string(seqnr);
     
@@ -350,7 +350,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     }
     else
     {
-        throw new InvalidArgument("sign_request(): encountered illegal value for CHAT");
+        throw new InvalidArgument("signRequest(): encountered illegal value for CHAT");
         // (IS cannot sign certificates)
     }
     
@@ -398,21 +398,21 @@ Vector!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
     
     if (key.domainFormat() == EC_DOMPAR_ENC_EXPLICIT)
     {
-        encode_eac_bigint(enc, domain.getCurve().getP(), ASN1Tag(1));
-        encode_eac_bigint(enc, domain.getCurve().getA(), ASN1Tag(2));
-        encode_eac_bigint(enc, domain.getCurve().getB(), ASN1Tag(3));
+        encodeEacBigint(enc, domain.getCurve().getP(), ASN1Tag(1));
+        encodeEacBigint(enc, domain.getCurve().getA(), ASN1Tag(2));
+        encodeEacBigint(enc, domain.getCurve().getB(), ASN1Tag(3));
         
         enc.encode(EC2OSP(domain.getBasePoint(), PointGFp.UNCOMPRESSED), 
                    ASN1Tag.OCTET_STRING, ASN1Tag(4));
         
-        encode_eac_bigint(enc, domain.getOrder(), ASN1Tag(4));
+        encodeEacBigint(enc, domain.getOrder(), ASN1Tag(4));
     }
     
     enc.encode(EC2OSP(key.publicPoint(), PointGFp.UNCOMPRESSED), 
                ASN1Tag.OCTET_STRING, ASN1Tag(6));
     
     if (key.domainFormat() == EC_DOMPAR_ENC_EXPLICIT)
-        encode_eac_bigint(enc, domain.getCofactor(), ASN1Tag(7));
+        encodeEacBigint(enc, domain.getCofactor(), ASN1Tag(7));
     
     enc.endCons();
     

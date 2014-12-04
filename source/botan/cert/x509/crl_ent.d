@@ -81,7 +81,7 @@ public:
         {
             X509Extensions extensions = X509Extensions(m_throw_on_unknown_critical);
             entry.decode(extensions);
-            Data_Store info;
+            DataStore info;
             extensions.contentsTo(info, info);
             m_reason = CRL_Code(info.get1Uint("X509v3.CRLReasonCode"));
         }

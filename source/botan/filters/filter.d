@@ -228,7 +228,7 @@ private:
 }
 
 /**
-* This is the abstract Fanout_Filter base class.
+* This is the abstract FanoutFilter base class.
 **/
 class FanoutFilter : Filter
 {
@@ -240,7 +240,7 @@ protected:
 
     void setPort(size_t n) { set_port(n); }
 
-    void setNext(Filter f, size_t n) { set_next(f, n); }
+    void setNext(Filter f, size_t n) { setNext(f, n); }
 
     void attach(Filter f) { attach(f); }
 
@@ -256,5 +256,5 @@ protected:
 * whitespaces, FULL_CHECK - perform checks, also complain
 * about white spaces.
 */
-typedef ubyte Decoder_Checking;
+typedef ubyte DecoderChecking;
 enum : DecoderChecking { NONE, IGNORE_WS, FULL_CHECK }

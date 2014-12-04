@@ -14,7 +14,7 @@ import botan.block.block_cipher;
 import botan.filters.buf_filt;
 
 import botan.cmac.cmac;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.bit_ops;
 import botan.utils.types;
 import std.algorithm;
@@ -22,7 +22,7 @@ import std.algorithm;
 class Lcomputer;
 
 /**
-* OCB Mode (base class for OCB_Encryption and OCB_Decryption). Note
+* OCB Mode (base class for OCBEncryption and OCBDecryption). Note
 * that OCB is patented, but is freely licensed in some circumstances.
 *
 * @see "The OCB Authenticated-Encryption Algorithm" internet draft
@@ -30,7 +30,7 @@ class Lcomputer;
 * @see Free Licenses http://www.cs.ucdavis.edu/~rogaway/ocb/license.htm
 * @see OCB home page http://www.cs.ucdavis.edu/~rogaway/ocb
 */
-class OCBMode : AEAD_Mode
+class OCBMode : AEADMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -97,7 +97,7 @@ protected:
         m_offset = BS;
         m_ad_hash = BS;
         m_tag_size = tag_size;
-        if (m_cipher.block_size != BS)
+        if (m_cipher.blockSize() != BS)
             throw new InvalidArgument("OCB requires a 128 bit cipher so cannot be used with " ~ m_cipher.name);
         
         if (m_tag_size != 8 && m_tag_size != 12 && m_tag_size != 16)
@@ -129,7 +129,7 @@ private:
         SecureVector!ubyte nonce_buf = SecureVector!ubyte(BS);
         
         copyMem(&nonce_buf[BS - nonce_len], nonce, nonce_len);
-        nonce_buf[0] = ((tag_size() * 8) % 128) << 1;
+        nonce_buf[0] = ((tagSize() * 8) % 128) << 1;
         nonce_buf[BS - nonce_len - 1] = 1;
         
         const ubyte bottom = nonce_buf[15] & 0x3F;
@@ -170,7 +170,7 @@ private:
     SecureVector!ubyte m_stretch;
 }
 
-final class OCBEncryption : OCB_Mode
+final class OCBEncryption : OCBMode
 {
 public:
     /**
@@ -183,7 +183,7 @@ public:
     }
 
     override size_t outputLength(size_t input_length) const
-    { return input_length + tag_size(); }
+    { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
 
@@ -217,14 +217,14 @@ public:
                 assert(remainder_bytes < BS, "Only a partial block left");
                 ubyte* remainder = &buf[sz - remainder_bytes];
                 
-                xor_buf(m_checksum.ptr, remainder.ptr, remainder_bytes);
+                xorBuf(m_checksum.ptr, remainder.ptr, remainder_bytes);
                 m_checksum[remainder_bytes] ^= 0x80;
                 
                 m_offset ^= m_L.star(); // Offset_*
                 
                 SecureVector!ubyte buf = SecureVector!ubyte(BS);
                 m_cipher.encrypt(m_offset, buf);
-                xor_buf(remainder.ptr, buf.ptr, remainder_bytes);
+                xorBuf(remainder.ptr, buf.ptr, remainder_bytes);
             }
         }
         
@@ -243,7 +243,7 @@ public:
         
         mac ^= m_ad_hash;
         
-        buffer += Pair(mac.ptr, tag_size());
+        buffer += Pair(mac.ptr, tagSize());
         
         zeroise(m_checksum);
         zeroise(m_offset);
@@ -264,11 +264,11 @@ private:
             
             const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
             
-            xor_buf(m_checksum.ptr, buffer.ptr, proc_bytes);
+            xorBuf(m_checksum.ptr, buffer.ptr, proc_bytes);
             
-            xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
+            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
             m_cipher.encryptN(buffer.ptr, buffer.ptr, proc_blocks);
-            xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
+            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
             
             buffer += proc_bytes;
             blocks -= proc_blocks;
@@ -277,7 +277,7 @@ private:
     }
 }
 
-final class OCBDecryption : OCB_Mode
+final class OCBDecryption : OCBMode
 {
 public:
     /**
@@ -291,11 +291,11 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        assert(input_length > tag_size(), "Sufficient input");
-        return input_length - tag_size();
+        assert(input_length > tagSize(), "Sufficient input");
+        return input_length - tagSize();
     }
 
-    override size_t minimumFinalSize() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tagSize(); }
 
     override void update(SecureVector!ubyte buffer, size_t offset)
     {
@@ -314,9 +314,9 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        assert(sz >= tag_size(), "We have the tag");
+        assert(sz >= tagSize(), "We have the tag");
         
-        const size_t remaining = sz - tag_size();
+        const size_t remaining = sz - tagSize();
         
         if (remaining)
         {
@@ -336,9 +336,9 @@ public:
                 SecureVector!ubyte pad = SecureVector!ubyte(BS);
                 m_cipher.encrypt(m_offset, pad); // P_*
                 
-                xor_buf(remainder.ptr, pad.ptr, final_bytes);
+                xorBuf(remainder.ptr, pad.ptr, final_bytes);
                 
-                xor_buf(m_checksum.ptr, remainder.ptr, final_bytes);
+                xorBuf(m_checksum.ptr, remainder.ptr, final_bytes);
                 m_checksum[final_bytes] ^= 0x80;
             }
         }
@@ -366,7 +366,7 @@ public:
         // compare mac
         const ubyte* included_tag = &buf[remaining];
         
-        if (!same_mem(mac.ptr, included_tag, tag_size()))
+        if (!same_mem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("OCB tag check failed");
         
         // remove tag from end of message
@@ -391,11 +391,11 @@ private:
             
             const offsets = L.compute_offsets(m_offset, m_block_index, proc_blocks);
             
-            xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
+            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
             m_cipher.decryptN(buffer.ptr, buffer.ptr, proc_blocks);
-            xor_buf(buffer.ptr, offsets.ptr, proc_bytes);
+            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
             
-            xor_buf(m_checksum.ptr, buffer.ptr, proc_bytes);
+            xorBuf(m_checksum.ptr, buffer.ptr, proc_bytes);
             
             buffer += proc_bytes;
             blocks -= proc_blocks;
@@ -415,7 +415,7 @@ final class Lcomputer
 public:
     this(in BlockCipher cipher)
     {
-        m_L_star.resize(cipher.block_size);
+        m_L_star.resize(cipher.blockSize());
         cipher.encrypt(m_L_star);
         m_L_dollar = poly_double(star());
         m_L.pushBack(poly_double(dollar()));
@@ -482,7 +482,7 @@ SecureVector!ubyte ocbHash(in Lcomputer L,
         offset ^= L(ctz(i+1));
         
         buf = offset;
-        xor_buf(buf.ptr, &ad[BS*i], BS);
+        xorBuf(buf.ptr, &ad[BS*i], BS);
         
         cipher.encrypt(buf);
         
@@ -494,7 +494,7 @@ SecureVector!ubyte ocbHash(in Lcomputer L,
         offset ^= L.star();
         
         buf = offset;
-        xor_buf(buf.ptr, &ad[BS*ad_blocks], ad_remainder);
+        xorBuf(buf.ptr, &ad[BS*ad_blocks], ad_remainder);
         buf[ad_len % BS] ^= 0x80;
         
         cipher.encrypt(buf);
@@ -517,7 +517,7 @@ Vector!ubyte ocbDecrypt(in SymmetricKey key,
                          in ubyte* ct, size_t ct_len,
                          in ubyte* ad, size_t ad_len)
 {
-    auto ocb = scoped!OCB_Decryption(new AES_128);
+    auto ocb = scoped!OCBDecryption(new AES128);
     
     ocb.setKey(key);
     ocb.setAssociatedData(ad, ad_len);
@@ -535,7 +535,7 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
                          in ubyte* pt, size_t pt_len,
                          in ubyte* ad, size_t ad_len)
 {
-    auto ocb = scoped!OCB_Encryption(new AES_128);
+    auto ocb = scoped!OCBEncryption(new AES128);
     
     ocb.setKey(key);
     ocb.setAssociatedData(ad, ad_len);
@@ -547,7 +547,7 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     
     try
     {
-        Vector!ubyte pt2 = ocb_decrypt(key, nonce, &buf[0], buf.length, ad, ad_len);
+        Vector!ubyte pt2 = ocbDecrypt(key, nonce, &buf[0], buf.length, ad, ad_len);
         if (pt_len != pt2.length || !same_mem(pt, &pt2[0], pt_len))
             writeln("OCB failed to decrypt correctly");
     }
@@ -564,7 +564,7 @@ Vector!ubyte ocbEncrypt(Alloc, Alloc2)(in SymmetricKey key,
                                         in Vector!(ubyte, Alloc) pt,
                                         in Vector!(ubyte, Alloc2) ad)
 {
-    return ocb_encrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
+    return ocbEncrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
 Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
@@ -572,7 +572,7 @@ Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
                                         in Vector!(ubyte, Alloc) pt,
                                         in Vector!(ubyte, Alloc2) ad)
 {
-    return ocb_decrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
+    return ocbDecrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
 Vector!ubyte ocbEncrypt(OCBEncryption ocb,
@@ -592,7 +592,7 @@ Vector!ubyte ocbEncrypt(OCBEncryption ocb,
 
 size_t testOcbLong(size_t taglen, in string expected)
 {
-    auto ocb = scoped!OCB_Encryption(new AES_128, taglen/8);
+    auto ocb = scoped!OCBEncryption(new AES128, taglen/8);
     
     ocb.setKey(SymmetricKey("00000000000000000000000000000000"));
     
@@ -605,13 +605,13 @@ size_t testOcbLong(size_t taglen, in string expected)
         const Vector!ubyte S = Vector!ubyte(i);
         N[11] = i;
         
-        C ~= ocb_encrypt(ocb, N, S, S);
-        C ~= ocb_encrypt(ocb, N, S, empty);
-        C ~= ocb_encrypt(ocb, N, empty, S);
+        C ~= ocbEncrypt(ocb, N, S, S);
+        C ~= ocbEncrypt(ocb, N, S, empty);
+        C ~= ocbEncrypt(ocb, N, empty, S);
     }
     
     N[11] = 0;
-    const Vector!ubyte cipher = ocb_encrypt(ocb, N, empty, C);
+    const Vector!ubyte cipher = ocbEncrypt(ocb, N, empty, C);
     
     const string cipher_hex = hexEncode(cipher);
     
@@ -628,9 +628,9 @@ unittest
 {
     size_t fails = 0;
     
-    fails += test_ocb_long(128, "B2B41CBF9B05037DA7F16C24A35C1C94");
-    fails += test_ocb_long(96, "1A4F0654277709A5BDA0D380");
-    fails += test_ocb_long(64, "B7ECE9D381FE437F");
+    fails += testOcbLong(128, "B2B41CBF9B05037DA7F16C24A35C1C94");
+    fails += testOcbLong(96, "1A4F0654277709A5BDA0D380");
+    fails += testOcbLong(64, "B7ECE9D381FE437F");
     
     testReport("OCB long", 3, fails);
 }

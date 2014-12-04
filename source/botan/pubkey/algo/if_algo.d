@@ -53,7 +53,7 @@ public:
 
     AlgorithmIdentifier algorithmIdentifier() const
     {
-        return AlgorithmIdentifier(get_oid(),
+        return AlgorithmIdentifier(getOid(),
                                    AlgorithmIdentifier.USE_NULL_PARAM);
     }
 
@@ -81,7 +81,7 @@ public:
 
     override size_t estimatedStrength() const
     {
-        return dl_work_factor(m_n.bits());
+        return dlWorkFactor(m_n.bits());
     }
 
 protected:
@@ -102,7 +102,7 @@ public:
     {
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
-                .decode_and_check!size_t(0, "Unknown PKCS #1 key format version")
+                .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
                 .decode(m_n)
                 .decode(m_e)
                 .decode(m_d)

@@ -135,7 +135,7 @@ public:
     * @warning if the master secret is compromised so is the
     * session traffic
     */
-    SecureVector!ubyte dEREncode() const
+    SecureVector!ubyte DER_encode() const
     {
         Vector!ubyte peer_cert_bits;
         for (size_t i = 0; i != m_peer_certs.length; ++i)
@@ -210,7 +210,7 @@ public:
     */
     string PEM_encode() const
     {
-        return PEM.encode(this.dEREncode(), "SSL SESSION");
+        return PEM.encode(this.DER_encode(), "SSL SESSION");
     }
 
     /**

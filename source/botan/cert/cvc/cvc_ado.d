@@ -28,7 +28,7 @@ alias EAC11ADO = FreeListRef!EAC11ADOImpl;
 */
 
  // CRTP continuation from EAC11obj
-final class EAC11ADOImpl : public EAC11obj!EAC11ADO
+final class EAC11ADOImpl : EAC11obj!EAC11ADO
 {
 public:
     /**
@@ -114,7 +114,7 @@ public:
     {
         return (get_concat_sig() == rhs.getConcatSig()
                 && tbs_data() == rhs.tbsData()
-                && get_car() ==  rhs.getCar());
+                && getCar() ==  rhs.getCar());
     }
 
     /**

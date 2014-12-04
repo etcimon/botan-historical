@@ -6,7 +6,7 @@
 */
 module botan.algo_base.symkey;
 
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.rng.rng;
 import botan.filters.pipe;
 import botan.codec.hex;
@@ -58,7 +58,7 @@ public:
         if (op == "^=")
     {
         if (k.ptr is this.ptr) { zeroise(m_bits); return; }
-        xor_buf(m_bits.ptr, k.ptr, min(length(), k.length));
+        xorBuf(m_bits.ptr, k.ptr, min(length(), k.length));
         return;
     }
     
@@ -187,7 +187,7 @@ public:
         SecureVector!ubyte ret = SecureVector!ubyte(max(length(), other.length));
         
         copyMem(ret.ptr, k1.ptr, k1.length);
-        xor_buf(ret.ptr, k2.ptr, k2.length);
+        xorBuf(ret.ptr, k2.ptr, k2.length);
         return OctetString(ret);
     }
 

@@ -309,7 +309,7 @@ void decrypt_round(ref uint A, ref uint B, ref uint C, ref uint D,
                    uint EK1, uint EK2) pure
 {
     uint Y = A * EK1;
-    A = rotate_right(A, 13);
+    A = rotateRight(A, 13);
     const uint X = A + EK2;
     uint Z = SBOX[X % 512];
     
@@ -331,19 +331,19 @@ void forward_mix(ref uint A, ref uint B, ref uint C, ref uint D) pure
     {
         B ^= SBOX[get_byte(3, A)]; B += SBOX[get_byte(2, A) + 256];
         C += SBOX[get_byte(1, A)]; D ^= SBOX[get_byte(0, A) + 256];
-        A = rotate_right(A, 24) + D;
+        A = rotateRight(A, 24) + D;
         
         C ^= SBOX[get_byte(3, B)]; C += SBOX[get_byte(2, B) + 256];
         D += SBOX[get_byte(1, B)]; A ^= SBOX[get_byte(0, B) + 256];
-        B = rotate_right(B, 24) + C;
+        B = rotateRight(B, 24) + C;
         
         D ^= SBOX[get_byte(3, C)]; D += SBOX[get_byte(2, C) + 256];
         A += SBOX[get_byte(1, C)]; B ^= SBOX[get_byte(0, C) + 256];
-        C = rotate_right(C, 24);
+        C = rotateRight(C, 24);
         
         A ^= SBOX[get_byte(3, D)]; A += SBOX[get_byte(2, D) + 256];
         B += SBOX[get_byte(1, D)]; C ^= SBOX[get_byte(0, D) + 256];
-        D = rotate_right(D, 24);
+        D = rotateRight(D, 24);
     }
 }
 

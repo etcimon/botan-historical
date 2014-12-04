@@ -120,7 +120,7 @@ public:
 
     /*
     * Perform a signature operation (with message recovery)
-    * Only call this if with_recovery() returns true
+    * Only call this if withRecovery() returns true
     * @param msg = the message
     * @param msg_len = the length of msg in bytes
     * @returns recovered message

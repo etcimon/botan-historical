@@ -179,7 +179,7 @@ unittest
         fails++;
     }
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     for(ushort level = 1; level != 5; ++level)
     {

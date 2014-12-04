@@ -20,7 +20,7 @@ import botan.utils.containers.hashmap;
 A class encapsulating a SCAN name (similar to JCE conventions)
 http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 */
-struct SCANName
+struct SCANToken
 {
 public:
     /**
@@ -149,7 +149,7 @@ public:
     string arg(size_t i) const
     {
         if (i >= argCount())
-            throw new RangeError("SCANName.argument - i out of range");
+            throw new RangeError("SCANToken.argument - i out of range");
         return m_args[i];
     }
     

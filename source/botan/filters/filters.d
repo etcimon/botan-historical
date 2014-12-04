@@ -136,7 +136,7 @@ public:
     void write(in ubyte* input, size_t len) { m_hash.update(input, len); }
 
     /*
-    * Complete a calculation by a Hash_Filter
+    * Complete a calculation by a HashFilter
     */
     void endMsg()
     {

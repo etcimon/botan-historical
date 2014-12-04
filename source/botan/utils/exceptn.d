@@ -18,7 +18,7 @@ class RangeError : Exception
 }
 
 /**
-* Invalid_Argument Exception
+* InvalidArgument Exception
 */
 class InvalidArgument : Exception
 {
@@ -27,7 +27,7 @@ class InvalidArgument : Exception
 }
 
 /**
-* Invalid_State Exception
+* InvalidState Exception
 */
 class InvalidState : Exception
 {
@@ -45,7 +45,7 @@ final class LogicError : Exception
 }
 
 /**
-* Lookup_Error Exception
+* LookupError Exception
 */
 final class LookupError : Exception
 {
@@ -54,7 +54,7 @@ final class LookupError : Exception
 }
 
 /**
-* Internal_Error Exception
+* InternalError Exception
 */
 class InternalError : Exception
 {
@@ -63,9 +63,9 @@ class InternalError : Exception
 }
 
 /**
-* Invalid_Key_Length Exception
+* InvalidKeyLength Exception
 */
-final class InvalidKeyLength : Invalid_Argument
+final class InvalidKeyLength : InvalidArgument
 {
     this(in string name, size_t length) {
         super(name ~ " cannot accept a key of length " ~
@@ -74,9 +74,9 @@ final class InvalidKeyLength : Invalid_Argument
 }
 
 /**
-* Invalid_IV_Length Exception
+* InvalidIVLength Exception
 */
-final class InvalidIVLength : Invalid_Argument
+final class InvalidIVLength : InvalidArgument
 {
     this(in string mode, size_t bad_len) {
         super("IV length " ~ to!string(bad_len) ~ " is invalid for " ~ mode);
@@ -84,9 +84,9 @@ final class InvalidIVLength : Invalid_Argument
 }
 
 /**
-* PRNG_Unseeded Exception
+* PRNGUnseeded Exception
 */
-final class PRNGUnseeded : Invalid_State
+final class PRNGUnseeded : InvalidState
 {
     this(in string algo) {
         super("PRNG not seeded: " ~ algo);
@@ -94,9 +94,9 @@ final class PRNGUnseeded : Invalid_State
 }
 
 /**
-* Policy_Violation Exception
+* PolicyViolation Exception
 */
-final class PolicyViolation : Invalid_State
+final class PolicyViolation : InvalidState
 {
     this(in string err) {
         super("TLSPolicy violation: " ~ err);
@@ -104,9 +104,9 @@ final class PolicyViolation : Invalid_State
 }
 
 /**
-* Algorithm_Not_Found Exception
+* AlgorithmNotFound Exception
 */
-final class AlgorithmNotFound : Lookup_Error
+final class AlgorithmNotFound : LookupError
 {
     this(in string name) {
         super("Could not find any algorithm named \"" ~ name ~ "\"");
@@ -114,9 +114,9 @@ final class AlgorithmNotFound : Lookup_Error
 }
 
 /**
-* Invalid_Algorithm_Name Exception
+* InvalidAlgorithmName Exception
 */
-final class InvalidAlgorithmName : Invalid_Argument
+final class InvalidAlgorithmName : InvalidArgument
 {
     this(in string name) {
         super("Invalid algorithm name: " ~ name);
@@ -124,9 +124,9 @@ final class InvalidAlgorithmName : Invalid_Argument
 }
 
 /**
-* Encoding_Error Exception
+* EncodingError Exception
 */
-final class EncodingError : Invalid_Argument
+final class EncodingError : InvalidArgument
 {
     this(in string name) {
         super("Encoding error: " ~ name);
@@ -134,9 +134,9 @@ final class EncodingError : Invalid_Argument
 }
 
 /**
-* Decoding_Error Exception
+* DecodingError Exception
 */
-class DecodingError : Invalid_Argument
+class DecodingError : InvalidArgument
 {
     this(in string name) 
     {
@@ -145,7 +145,7 @@ class DecodingError : Invalid_Argument
 }
 
 /**
-* Integrity_Failure Exception
+* IntegrityFailure Exception
 */
 final class IntegrityFailure : Exception
 {
@@ -155,9 +155,9 @@ final class IntegrityFailure : Exception
 }
 
 /**
-* Invalid_OID Exception
+* InvalidOID Exception
 */
-final class InvalidOID : Decoding_Error
+final class InvalidOID : DecodingError
 {
     this(in string oid) {
         super("Invalid ASN.1 OID: " ~ oid);
@@ -165,7 +165,7 @@ final class InvalidOID : Decoding_Error
 }
 
 /**
-* Stream_IO_Error Exception
+* StreamIOError Exception
 */
 final class StreamIOError : Exception
 {
@@ -177,7 +177,7 @@ final class StreamIOError : Exception
 /**
 * Self Test Failure Exception
 */
-final class SelfTestFailure : Internal_Error
+final class SelfTestFailure : InternalError
 {
     this(in string err) {
         super("Self test failed: " ~ err);

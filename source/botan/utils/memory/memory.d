@@ -18,7 +18,7 @@ import std.exception : enforceEx;
 import std.traits;
 import std.algorithm;
 
-alias Vulnerable_Allocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
+alias VulnerableAllocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 
 package R getAllocator(R)() {
     static __gshared R alloc;
@@ -112,7 +112,7 @@ final class DebugAllocator(Base) : Allocator {
     this()
     {
         m_baseAlloc = getAllocator!Base();
-        m_blocks = HashMap!(void*, size_t)(get_allocator!Vulnerable_Allocator());
+        m_blocks = HashMap!(void*, size_t)(get_allocator!VulnerableAllocator());
     }
     
     @property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -278,7 +278,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     TR alloc(ARGS...)(ARGS args)
     {
         //logInfo("alloc %s/%d", T.stringof, ElemSize);
-        auto mem = get_allocator!Vulnerable_Allocator().alloc(ElemSize);
+        auto mem = get_allocator!VulnerableAllocator().alloc(ElemSize);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) return emplace!T(mem, args);
         else return cast(TR)mem.ptr;
@@ -291,7 +291,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
             .destroy(objc);//typeid(T).destroy(cast(void*)obj);
         }
         static if( hasIndirections!T ) GC.removeRange(cast(void*)obj);
-        get_allocator!Vulnerable_Allocator().free((cast(void*)obj)[0 .. ElemSize]);
+        get_allocator!VulnerableAllocator().free((cast(void*)obj)[0 .. ElemSize]);
     }
 }
 
@@ -324,7 +324,7 @@ struct FreeListRef(T, bool INIT = true)
     {
         //logInfo("refalloc %s/%d", T.stringof, ElemSize);
         FreeListRef ret;
-        auto mem = get_allocator!Vulnerable_Allocator().alloc(ElemSize + int.sizeof);
+        auto mem = get_allocator!VulnerableAllocator().alloc(ElemSize + int.sizeof);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
         else ret.m_object = cast(TR)mem.ptr;
@@ -374,7 +374,7 @@ struct FreeListRef(T, bool INIT = true)
                     //logInfo("ref %s destroyed", T.stringof);
                 }
                 static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
-                get_allocator!Vulnerable_Allocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
+                get_allocator!VulnerableAllocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
             }
         }
         

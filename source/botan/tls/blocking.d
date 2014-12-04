@@ -16,7 +16,7 @@ import botan.tls.channel;
 import botan.tls.session_manager;
 import botan.tls.version_;
 
-alias Secure_Deque(T) = Vector!( T, Secure_Allocator);
+alias Secure_Deque(T) = Vector!( T, SecureAllocator);
 
 /**
 * Blocking TLS Client

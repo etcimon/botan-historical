@@ -905,7 +905,7 @@ void des_encrypt(ref uint L, ref uint R, in uint[32] round_key) pure
     {
         uint T0, T1;
         
-        T0 = rotate_right(R, 4) ^ round_key[2*i];
+        T0 = rotateRight(R, 4) ^ round_key[2*i];
         T1 =                   R ^ round_key[2*i + 1];
         
         L ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
@@ -913,7 +913,7 @@ void des_encrypt(ref uint L, ref uint R, in uint[32] round_key) pure
                 DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
                 DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
         
-        T0 = rotate_right(L, 4) ^ round_key[2*i + 2];
+        T0 = rotateRight(L, 4) ^ round_key[2*i + 2];
         T1 =                   L ^ round_key[2*i + 3];
         
         R ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
@@ -932,7 +932,7 @@ void des_decrypt(ref uint L, ref uint R, in uint[32] round_key) pure
     {
         uint T0, T1;
         
-        T0 = rotate_right(R, 4) ^ round_key[2*i - 2];
+        T0 = rotateRight(R, 4) ^ round_key[2*i - 2];
         T1 =                   R ^ round_key[2*i - 1];
         
         L ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
@@ -940,7 +940,7 @@ void des_decrypt(ref uint L, ref uint R, in uint[32] round_key) pure
                 DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
                 DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
         
-        T0 = rotate_right(L, 4) ^ round_key[2*i - 4];
+        T0 = rotateRight(L, 4) ^ round_key[2*i - 4];
         T1 =                   L ^ round_key[2*i - 3];
         
         R ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^

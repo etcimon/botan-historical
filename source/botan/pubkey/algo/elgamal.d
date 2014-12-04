@@ -24,13 +24,13 @@ import botan.utils.types;
 /**
 * ElGamal Public Key
 */
-class ElGamalPublicKey : DL_SchemePublicKey
+class ElGamalPublicKey : DLSchemePublicKey
 {
 public:
     @property string algoName() const { return "ElGamal"; }
     DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_42; }
 
-    size_t maxInputBits() const { return (group_p().bits() - 1); }
+    size_t maxInputBits() const { return (groupP().bits() - 1); }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
@@ -52,7 +52,7 @@ protected:
 * ElGamal Private Key
 */
 final class ElGamalPrivateKey : ElGamalPublicKey,
-                                 DL_SchemePrivateKey
+                                 DLSchemePrivateKey
 {
 public:
     /*
@@ -79,9 +79,9 @@ public:
         m_x = x_arg;
         
         if (x == 0)
-            m_x.randomize(rng, 2 * dl_work_factor(group_p().bits()));
+            m_x.randomize(rng, 2 * dlWorkFactor(groupP().bits()));
         
-        m_y = powerMod(group_g(), m_x, group_p());
+        m_y = powerMod(groupG(), m_x, groupP());
         
         if (x_arg == 0)
             gen_check(rng);
@@ -94,7 +94,7 @@ public:
          RandomNumberGenerator rng) 
     {
         super(alg_id, key_bits, DLGroup.ANSI_X9_42);
-        m_y = powerMod(group_g(), m_x, group_p());
+        m_y = powerMod(groupG(), m_x, groupP());
         load_check(rng);
     }
 }
@@ -110,7 +110,7 @@ public:
 
     this(in ElGamalPublicKey key)
     {
-        const BigInt p = key.group_p();
+        const BigInt p = key.groupP();
         
         m_powermod_g_p = Fixed_Base_Power_Mod(key.groupG(), p);
         m_powermod_y_p = Fixed_Base_Power_Mod(key.getY(), p);
@@ -126,7 +126,7 @@ public:
         if (m >= p)
             throw new InvalidArgument("ElGamal encryption: Input is too large");
 
-        BigInt k = BigInt(rng, 2 * dl_work_factor(p.bits()));
+        BigInt k = BigInt(rng, 2 * dlWorkFactor(p.bits()));
         
         BigInt a = m_powermod_g_p(k);
         BigInt b = m_mod_p.multiply(m, m_powermod_y_p(k));
@@ -153,9 +153,9 @@ public:
     this(in ElGamalPrivateKey key,
          RandomNumberGenerator rng)
     {
-        const BigInt p = key.group_p();
+        const BigInt p = key.groupP();
         
-        m_powermod_x_p = Fixed_Exponent_Power_Mod(key.getX(), p);
+        m_powermod_x_p = FixedExponentPowerMod(key.getX(), p);
         m_mod_p = ModularReducer(p);
         
         BigInt k = BigInt(rng, p.bits() - 1);
@@ -184,7 +184,7 @@ public:
         return BigInt.encodeLocked(m_blinder.unblind(r));
     }
 private:
-    Fixed_Exponent_Power_Mod m_powermod_x_p;
+    FixedExponentPowerMod m_powermod_x_p;
     ModularReducer m_mod_p;
     Blinder m_blinder;
 }
@@ -210,7 +210,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!ElGamalPrivateKey(rng, ECGroup(OIDS.lookup(elg)));
         key.checkKey(rng, true);
-        fails += validate_save_and_load(&key, rng);
+        fails += validateSaveAndLoad(&key, rng);
     }
     
     return fails;
@@ -225,7 +225,7 @@ size_t elgamalKat(string p,
                    string ciphertext)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     const BigInt p_bn = BigInt(p);
     const BigInt g_bn = BigInt(g);
@@ -239,17 +239,17 @@ size_t elgamalKat(string p,
     if (padding == "")
         padding = "Raw";
     
-    auto enc = scoped!PK_Encryptor_EME(pubkey, padding);
-    auto dec = scoped!PK_Decryptor_EME(privkey, padding);
+    auto enc = scoped!PKEncryptorEME(pubkey, padding);
+    auto dec = scoped!PKDecryptorEME(privkey, padding);
     
-    return validate_encryption(enc, dec, "ElGamal/" ~ padding, msg, nonce, ciphertext);
+    return validateEncryption(enc, dec, "ElGamal/" ~ padding, msg, nonce, ciphertext);
 }
 
 unittest
 {
     size_t fails = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     

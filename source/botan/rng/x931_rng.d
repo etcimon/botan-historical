@@ -11,7 +11,7 @@ static if (BOTAN_HAS_X931_RNG):
 
 import botan.rng.rng;
 import botan.block.block_cipher;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.types;
 import std.algorithm;
 
@@ -87,7 +87,7 @@ public:
     {
         m_cipher = cipher;
         m_prng = prng;
-        m_R = m_cipher.block_size;
+        m_R = m_cipher.blockSize();
         m_R_pos = 0;
     }
 
@@ -97,7 +97,7 @@ private:
     */
     void rekey()
     {
-        const size_t BLOCK_SIZE = m_cipher.block_size;
+        const size_t BLOCK_SIZE = m_cipher.blockSize();
         
         if (m_prng.isSeeded())
         {
@@ -116,15 +116,15 @@ private:
     */
     void updateBuffer()
     {
-        const size_t BLOCK_SIZE = m_cipher.block_size;
+        const size_t BLOCK_SIZE = m_cipher.blockSize();
         
         SecureVector!ubyte DT = m_prng.random_vec(BLOCK_SIZE);
         m_cipher.encrypt(DT);
         
-        xor_buf(m_R.ptr, m_V.ptr, DT.ptr, BLOCK_SIZE);
+        xorBuf(m_R.ptr, m_V.ptr, DT.ptr, BLOCK_SIZE);
         m_cipher.encrypt(m_R);
         
-        xor_buf(m_V.ptr, m_R.ptr, DT.ptr, BLOCK_SIZE);
+        xorBuf(m_V.ptr, m_R.ptr, DT.ptr, BLOCK_SIZE);
         m_cipher.encrypt(m_V);
         
         m_R_pos = 0;

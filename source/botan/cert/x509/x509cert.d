@@ -392,7 +392,7 @@ public:
     */
     string fingerprint(in string hash_name) const
     {
-        Unique!HashFunction hash = get_hash(hash_name);
+        Unique!HashFunction hash = getHash(hash_name);
         hash.update(BER_encode());
         const auto hex_print = hexEncode(hash.finished());
         
@@ -542,7 +542,7 @@ private:
         m_subject.add("X509.Certificate.dn_bits", put_in_sequence(dn_subject.getBits()));
         m_issuer.add("X509.Certificate.dn_bits", put_in_sequence(dn_issuer.getBits()));
         
-        BER_Object public_key = tbs_cert.getNextObject();
+        BERObject public_key = tbs_cert.getNextObject();
         if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
             throw new BERBadTag("X509Certificate: Unexpected tag for public key",
                                   public_key.type_tag, public_key.class_tag);
@@ -552,7 +552,7 @@ private:
         tbs_cert.decodeOptionalString(v2_issuer_key_id, ASN1Tag.BIT_STRING, 1);
         tbs_cert.decodeOptionalString(v2_subject_key_id, ASN1Tag.BIT_STRING, 2);
         
-        BER_Object v3_exts_data = tbs_cert.getNextObject();
+        BERObject v3_exts_data = tbs_cert.getNextObject();
         if (v3_exts_data.type_tag == 3 &&
             v3_exts_data.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
@@ -598,7 +598,7 @@ private:
 
     this() {}
 
-    Data_Store m_subject, m_issuer;
+    DataStore m_subject, m_issuer;
     bool m_self_signed;
 }
 

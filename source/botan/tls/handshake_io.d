@@ -52,7 +52,7 @@ public:
 /**
 * Handshake IO for stream-based handshakes
 */
-package final class StreamHandshakeIO : Handshake_IO
+package final class StreamHandshakeIO : HandshakeIO
 {
 public:
     this(void delegate(ubyte, in Vector!ubyte) writer) 
@@ -122,7 +122,7 @@ public:
             
             if (m_queue.length >= length + 4)
             {
-                Handshake_Type type = cast(Handshake_Type)(m_queue[0]);
+                HandshakeType type = cast(HandshakeType)(m_queue[0]);
                 
                 Vector!ubyte contents = Vector!ubyte(m_queue.ptr[4 .. 4 + length]);
                 
@@ -143,7 +143,7 @@ private:
 /**
 * Handshake IO for datagram-based handshakes
 */
-package final class DatagramHandshakeIO : Handshake_IO
+package final class DatagramHandshakeIO : HandshakeIO
 {
 public:
     this(ConnectionSequenceNumbers seq, void delegate(ushort, ubyte, in Vector!ubyte) writer) 
@@ -162,7 +162,7 @@ public:
     {
         const Vector!ubyte msg_bits = msg.serialize();
         const ushort epoch = m_seqs.current_write_epoch();
-        const Handshake_Type msg_type = msg.type();
+        const HandshakeType msg_type = msg.type();
         
         Tuple!(ushort, ubyte, Vector!ubyte) msg_info = Tuple!(ushort, ubyte, Vector!ubyte)(epoch, msg_type, msg_bits);
         
@@ -390,7 +390,7 @@ public:
     Pair!(HandshakeType, Vector!ubyte) message() const
     {
         if (!complete())
-            throw new InternalError("Datagram_Handshake_IO - message not complete");
+            throw new InternalError("DatagramHandshakeIO - message not complete");
         
         return Pair(cast(HandshakeType)(m_msg_type), m_message);
     }

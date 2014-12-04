@@ -13,7 +13,7 @@ import botan.m_hash.m_hash;
 import botan.block.gost_28147;
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 /**
 * GOST 34.11
 */
@@ -50,7 +50,7 @@ private:
     /**
     * The GOST 34.11 compression function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    void compress_n(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -142,7 +142,7 @@ private:
             S2[30] = S[ 0] ^ S[ 2] ^ S[ 4] ^ S[12] ^ S[18] ^ S[20] ^ S[28];
             S2[31] = S[ 1] ^ S[ 3] ^ S[ 5] ^ S[13] ^ S[19] ^ S[21] ^ S[29];
             
-            xor_buf(S, S2, input + 32*i, 32);
+            xorBuf(S, S2, input + 32*i, 32);
             
             S2[0] = S[0] ^ S[2] ^ S[4] ^ S[6] ^ S[24] ^ S[30];
             S2[1] = S[1] ^ S[3] ^ S[5] ^ S[7] ^ S[25] ^ S[31];
@@ -151,7 +151,7 @@ private:
             S[30] = S2[0];
             S[31] = S2[1];
             
-            xor_buf(S, m_hash.ptr, 32);
+            xorBuf(S, m_hash.ptr, 32);
             
             // 61 rounds of psi
             S2[ 0] = S[ 2] ^ S[ 6] ^ S[14] ^ S[20] ^ S[22] ^ S[26] ^ S[28] ^ S[30];

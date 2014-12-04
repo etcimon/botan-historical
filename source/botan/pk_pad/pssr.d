@@ -11,7 +11,7 @@ import botan.m_hash.m_hash;
 import botan.utils.types;
 import botan.pk_pad.mgf1;
 import botan.utils.bit_ops;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 
 
 

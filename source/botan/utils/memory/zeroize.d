@@ -13,7 +13,7 @@ import botan.utils.memory.memory;
 import botan.utils.memory.noswap;
 import std.traits : ReturnType;
 
-alias Secure_Allocator = ZeroizeAllocator!Vulnerable_Allocator;
+alias SecureAllocator = ZeroizeAllocator!VulnerableAllocator;
 
 final class ZeroizeAllocator(Base : Allocator)
 {
@@ -45,7 +45,7 @@ final class ZeroizeAllocator(Base : Allocator)
 
 }
 
-alias SecureVector(T) = Vector!(T, Secure_Allocator);
+alias SecureVector(T) = Vector!(T, SecureAllocator);
 
 Vector!T unlock(T)(in SecureVector!T input)
 {

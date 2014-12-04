@@ -181,7 +181,7 @@ public:
     */
     Vector!ubyte signature(RandomNumberGenerator rng)
     {
-        Vector!ubyte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(), m_op.max_input_bits(), rng));
+        Vector!ubyte encoded = unlock(m_emsa.encoding_of(m_emsa.raw_data(), m_op.maxInputBits(), rng));
         
         Vector!ubyte plain_sig = unlock(m_op.sign(encoded.ptr, encoded.length, rng));
         
@@ -194,9 +194,9 @@ public:
         {
             if (plain_sig.length % m_op.messageParts())
                 throw new EncodingError("PKSigner: strange signature size found");
-            const size_t SIZE_OF_PART = plain_sig.length / m_op.message_parts();
+            const size_t SIZE_OF_PART = plain_sig.length / m_op.messageParts();
 
-            Vector!BigInt sig_parts = Vector!BigInt(m_op.message_parts());
+            Vector!BigInt sig_parts = Vector!BigInt(m_op.messageParts());
             for (size_t j = 0; j != sig_parts.length; ++j)
                 sig_parts[j].binaryDecode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
             
@@ -293,7 +293,7 @@ private:
 /**
 * Public Key Verifier. Use the verify_message() functions for small
 * messages. Use multiple calls update() to process large messages and
-* verify the signature by finally calling check_signature().
+* verify the signature by finally calling checkSignature().
 */
 struct PKVerifier
 {
@@ -310,7 +310,7 @@ public:
                         in ubyte* sig, size_t sig_length)
     {
         update(msg, msg_length);
-        return check_signature(sig, sig_length);
+        return checkSignature(sig, sig_length);
     }
 
     /**
@@ -362,7 +362,7 @@ public:
     {
         try {
             if (m_sig_format == IEEE_1363)
-                return validate_signature(m_emsa.rawData(), sig, length);
+                return validateSignature(m_emsa.rawData(), sig, length);
             else if (m_sig_format == DER_SEQUENCE)
             {
                 BERDecoder decoder = BERDecoder(sig, length);
@@ -381,7 +381,7 @@ public:
                 if (count != m_op.messageParts())
                     throw new DecodingError("PKVerifier: signature size invalid");
                 
-                return validate_signature(m_emsa.rawData(), real_sig.ptr, real_sig.length);
+                return validateSignature(m_emsa.rawData(), real_sig.ptr, real_sig.length);
             }
             else
                 throw new DecodingError("PKVerifier: Unknown signature format " ~ to!string(m_sig_format));
@@ -397,7 +397,7 @@ public:
     */
     bool checkSignature(Alloc)(in Vector!( ubyte, Alloc ) sig)
     {
-        return check_signature(sig.ptr, sig.length);
+        return checkSignature(sig.ptr, sig.length);
     }
 
     /**
@@ -448,7 +448,7 @@ private:
         {
             RandomNumberGenerator rng = globalState().global_rng();
             
-            SecureVector!ubyte encoded = m_emsa.encoding_of(msg, m_op.max_input_bits(), rng);
+            SecureVector!ubyte encoded = m_emsa.encoding_of(msg, m_op.maxInputBits(), rng);
             
             return m_op.verify(encoded.ptr, encoded.length, sig, sig_len);
         }
@@ -546,17 +546,17 @@ public:
         if (!m_op)
             throw new LookupError("Key agreement with " ~ key.algo_name ~ " not supported");
         
-        m_kdf = get_kdf(kdf_name);
+        m_kdf = getKdf(kdf_name);
     }
 private:
-    Unique!Key_Agreement m_op;
+    Unique!KeyAgreement m_op;
     Unique!KDF m_kdf;
 }
 
 /**
 * Encryption with an MR algorithm and an EME.
 */
-class PKEncryptorEME : PK_Encryptor
+class PKEncryptorEME : PKEncryptor
 {
 public:
     /*
@@ -598,17 +598,17 @@ private:
     {
         if (m_eme)
         {
-            SecureVector!ubyte encoded = m_eme.encode(input, length, m_op.max_input_bits(), rng);
+            SecureVector!ubyte encoded = m_eme.encode(input, length, m_op.maxInputBits(), rng);
             
             if (8*(encoded.length - 1) + high_bit(encoded[0]) > m_op.maxInputBits())
-                throw new InvalidArgument("PK_Encryptor_EME: Input is too large");
+                throw new InvalidArgument("PKEncryptorEME: Input is too large");
             
             return unlock(m_op.encrypt(encoded.ptr, encoded.length, rng));
         }
         else
         {
             if (8*(length - 1) + high_bit(input[0]) > m_op.maxInputBits())
-                throw new InvalidArgument("PK_Encryptor_EME: Input is too large");
+                throw new InvalidArgument("PKEncryptorEME: Input is too large");
             
             return unlock(m_op.encrypt(input.ptr, length, rng));
         }
@@ -621,7 +621,7 @@ private:
 /**
 * Decryption with an MR algorithm and an EME.
 */
-class PKDecryptorEME : PK_Decryptor
+class PKDecryptorEME : PKDecryptor
 {
 public:
   /**
@@ -662,7 +662,7 @@ private:
         }
         catch(InvalidArgument)
         {
-            throw new DecodingError("PK_Decryptor_EME: Input is invalid");
+            throw new DecodingError("PKDecryptorEME: Input is invalid");
         }
     }
 

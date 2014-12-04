@@ -11,7 +11,7 @@ import botan.rng.rng;
 import botan.filters.filters;
 import botan.stream.ctr;
 import botan.utils.get_byte;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.algo_base.symkey;
 
 /**
@@ -28,7 +28,7 @@ void aontPackage(RandomNumberGenerator rng,
                   in ubyte* input, size_t input_len,
                   ubyte* output)
 {
-    const size_t BLOCK_SIZE = cipher.block_size;
+    const size_t BLOCK_SIZE = cipher.blockSize();
     
     if (!cipher.validKeylength(BLOCK_SIZE))
         throw new InvalidArgument("AONT::package: Invalid cipher");
@@ -40,7 +40,7 @@ void aontPackage(RandomNumberGenerator rng,
     
     SymmetricKey package_key = SymmetricKey(rng, BLOCK_SIZE);
     
-    Pipe pipe = Pipe(new StreamCipher_Filter(new CTR_BE(cipher), package_key));
+    Pipe pipe = Pipe(new StreamCipherFilter(new CTRBE(cipher), package_key));
     
     pipe.processMsg(input, input_len);
     pipe.read(output, pipe.remaining());
@@ -68,11 +68,11 @@ void aontPackage(RandomNumberGenerator rng,
         
         cipher.encrypt(buf.ptr);
         
-        xor_buf(final_block.ptr, buf.ptr, BLOCK_SIZE);
+        xorBuf(final_block.ptr, buf.ptr, BLOCK_SIZE);
     }
     
     // XOR the random package key into the final block
-    xor_buf(final_block.ptr, package_key.ptr, BLOCK_SIZE);
+    xorBuf(final_block.ptr, package_key.ptr, BLOCK_SIZE);
 }
 
 /**
@@ -87,7 +87,7 @@ void aontUnpackage(BlockCipher cipher,
                     in ubyte* input, size_t input_len,
                     ubyte* output)
 {
-    const size_t BLOCK_SIZE = cipher.block_size;
+    const size_t BLOCK_SIZE = cipher.blockSize();
     
     if (!cipher.validKeylength(BLOCK_SIZE))
         throw new InvalidArgument("AONT::unpackage: Invalid cipher");
@@ -124,10 +124,10 @@ void aontUnpackage(BlockCipher cipher,
         
         cipher.encrypt(buf.ptr);
         
-        xor_buf(package_key.ptr, buf.ptr, BLOCK_SIZE);
+        xorBuf(package_key.ptr, buf.ptr, BLOCK_SIZE);
     }
     
-    Pipe pipe = Pipe(new StreamCipher_Filter(new CTR_BE(cipher), package_key));
+    Pipe pipe = Pipe(new StreamCipherFilter(new CTRBE(cipher), package_key));
     
     pipe.processMsg(input, input_len - BLOCK_SIZE);
     

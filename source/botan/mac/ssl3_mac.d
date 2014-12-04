@@ -48,7 +48,7 @@ public:
 
     KeyLengthSpecification keySpec() const
     {
-        return Key_Length_Specification(m_hash.output_length);
+        return KeyLengthSpecification(m_hash.output_length);
     }
 
     /**

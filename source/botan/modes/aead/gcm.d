@@ -14,7 +14,7 @@ import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.stream.ctr;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.loadstor;
 
 import botan.utils.simd.immintrin;
@@ -24,14 +24,14 @@ import botan.utils.types;
 
 
 static if (BOTAN_HAS_GCM_CLMUL) {
-    import botan.internal.clmul;
+    import botan.utils.simd.wmmintrin;
     import botan.utils.cpuid;
 }
 
 /**
 * GCM Mode
 */
-class GCMMode : AEAD_Mode
+class GCMMode : AEADMode
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -105,13 +105,13 @@ protected:
     }
 
     /*
-    * GCM_Mode Constructor
+    * GCMMode Constructor
     */
     this(BlockCipher cipher, size_t tag_size)
     { 
         m_tag_size = tag_size;
         m_cipher_name = cipher.name;
-        if (cipher.block_size != BS)
+        if (cipher.blockSize() != BS)
             throw new InvalidArgument("GCM requires a 128 bit cipher so cannot be used with " ~ cipher.name);
         
         m_ghash = new GHASH;
@@ -134,7 +134,7 @@ protected:
 /**
 * GCM Encryption
 */
-final class GCMEncryption : GCM_Mode
+final class GCMEncryption : GCMMode
 {
 public:
     /**
@@ -147,7 +147,7 @@ public:
     }
 
     override size_t outputLength(size_t input_length) const
-    { return input_length + tag_size(); }
+    { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
 
@@ -165,14 +165,14 @@ public:
     {
         update(buffer, offset);
         auto mac = m_ghash.finished();
-        buffer ~= Pair(mac.ptr, tag_size());
+        buffer ~= Pair(mac.ptr, tagSize());
     }
 }
 
 /**
 * GCM Decryption
 */
-final class GCMDecryption : GCM_Mode
+final class GCMDecryption : GCMMode
 {
 public:
     /**
@@ -186,11 +186,11 @@ public:
 
     override size_t outputLength(size_t input_length) const
     {
-        assert(input_length > tag_size(), "Sufficient input");
-        return input_length - tag_size();
+        assert(input_length > tagSize(), "Sufficient input");
+        return input_length - tagSize();
     }
 
-    override size_t minimumFinalSize() const { return tag_size(); }
+    override size_t minimumFinalSize() const { return tagSize(); }
 
     override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
@@ -208,9 +208,9 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        assert(sz >= tag_size(), "Have the tag as part of final input");
+        assert(sz >= tagSize(), "Have the tag as part of final input");
         
-        const size_t remaining = sz - tag_size();
+        const size_t remaining = sz - tagSize();
         
         // handle any final input before the tag
         if (remaining)
@@ -223,7 +223,7 @@ public:
         
         const ubyte* included_tag = &buffer[remaining];
         
-        if (!same_mem(mac.ptr, included_tag, tag_size()))
+        if (!same_mem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("GCM tag check failed");
         
         buffer.resize(offset + remaining);
@@ -241,17 +241,17 @@ public:
     {
         zeroise(m_H_ad);
         
-        ghash_update(m_H_ad, input, length);
+        ghashUpdate(m_H_ad, input, length);
         m_ad_len = length;
     }
 
     SecureVector!ubyte nonceHash(in ubyte* nonce, size_t nonce_len)
     {
-        assert(m_ghash.length == 0, "nonce_hash called during wrong time");
+        assert(m_ghash.length == 0, "nonceHash called during wrong time");
         SecureVector!ubyte y0 = SecureVector!ubyte(16);
         
-        ghash_update(y0, nonce, nonce_len);
-        add_final_block(y0, 0, nonce_len);
+        ghashUpdate(y0, nonce, nonce_len);
+        addFinalBlock(y0, 0, nonce_len);
         
         return y0;
     }
@@ -271,12 +271,12 @@ public:
         
         m_text_len += length;
         
-        ghash_update(m_ghash, input, length);
+        ghashUpdate(m_ghash, input, length);
     }
 
     SecureVector!ubyte finished()
     {
-        add_final_block(m_ghash, m_ad_len, m_text_len);
+        addFinalBlock(m_ghash, m_ad_len, m_text_len);
         
         SecureVector!ubyte mac;
         mac.swap(m_ghash);
@@ -286,7 +286,7 @@ public:
         return mac;
     }
 
-    KeyLengthSpecification keySpec() const { return Key_Length_Specification(16); }
+    KeyLengthSpecification keySpec() const { return KeyLengthSpecification(16); }
 
     override void clear()
     {
@@ -311,7 +311,7 @@ private:
     {
         static if (BOTAN_HAS_GCM_CLMUL) {
             if (CPUID.hasClmul())
-                return gcm_multiply_clmul(*cast(ubyte[16]*) x.ptr, *cast(ubyte[16]*) m_H.ptr);
+                return gcmMultiplyClmul(*cast(ubyte[16]*) x.ptr, *cast(ubyte[16]*) m_H.ptr);
         }
         
         __gshared immutable ulong R = 0xE100000000000000;
@@ -356,9 +356,9 @@ private:
         {
             const size_t to_proc = std.algorithm.min(length, BS);
             
-            xor_buf(ghash.ptr, input.ptr, to_proc);
+            xorBuf(ghash.ptr, input.ptr, to_proc);
             
-            gcm_multiply(ghash);
+            gcmMultiply(ghash);
             
             input += to_proc;
             length -= to_proc;
@@ -370,7 +370,7 @@ private:
     {
         SecureVector!ubyte final_block = SecureVector!ubyte(16);
         storeBigEndian!ulong(final_block.ptr, 8*ad_len, 8*text_len);
-        ghash_update(hash, final_block.ptr, final_block.length);
+        ghashUpdate(hash, final_block.ptr, final_block.length);
     }
 
     SecureVector!ubyte m_H;

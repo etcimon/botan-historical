@@ -56,7 +56,7 @@ public:
                                Z_DEFAULT_STRATEGY);
         
         if (res == Z_STREAM_ERROR)
-            throw new Invalid_Argument("Bad setting in deflateInit2");
+            throw new InvalidArgument("Bad setting in deflateInit2");
         else if (res != Z_OK)
             throw new Memory_Exhaustion();
     }
@@ -174,9 +174,9 @@ public:
             {
                 clear();
                 if (rc == Z_DATA_ERROR)
-                    throw new Decoding_Error("Zlib_Decompression: Data integrity error");
+                    throw new DecodingError("Zlib_Decompression: Data integrity error");
                 else if (rc == Z_NEED_DICT)
-                    throw new Decoding_Error("Zlib_Decompression: Need preset dictionary");
+                    throw new DecodingError("Zlib_Decompression: Need preset dictionary");
                 else if (rc == Z_MEM_ERROR)
                     throw new Memory_Exhaustion();
                 else
@@ -231,7 +231,7 @@ public:
             if (rc != Z_OK && rc != Z_STREAM_END)
             {
                 clear();
-                throw new Decoding_Error("Zlib_Decompression: Error finalizing");
+                throw new DecodingError("Zlib_Decompression: Error finalizing");
             }
             
             send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
@@ -311,7 +311,7 @@ void zlib_free(void* info_ptr, void* ptr)
     Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
     auto i = info.current_allocs.find(ptr);
     if (i == info.current_allocs.end())
-        throw new Invalid_Argument("zlib_free: Got pointer not allocated by us");
+        throw new InvalidArgument("zlib_free: Got pointer not allocated by us");
     
     memset(ptr, 0, i.second);
     free(ptr);

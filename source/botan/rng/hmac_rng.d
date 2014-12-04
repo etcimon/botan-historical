@@ -12,7 +12,7 @@ import botan.utils.types;
 import botan.libstate.libstate;
 import botan.utils.get_byte;
 import botan.entropy.entropy_src;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import std.algorithm;
 import std.datetime;
 /**

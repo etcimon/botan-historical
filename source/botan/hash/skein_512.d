@@ -16,7 +16,7 @@ import memory;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.types;
 import std.algorithm;
 

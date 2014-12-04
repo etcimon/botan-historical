@@ -166,7 +166,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             size_t result;
             foreach (item; stuff)
             {
-                push_back(item);
+                pushBack(item);
                 ++result;
             }
             static if (hasLength!Stuff)
@@ -210,7 +210,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     this(Stuff)(Stuff stuff)
         if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T) && !is(Stuff == T[]))
     {
-        push_back(stuff);
+        pushBack(stuff);
     }
     
     
@@ -559,7 +559,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     }
     
     /**
-        Forwards to $(D push_back(stuff)).
+        Forwards to $(D pushBack(stuff)).
      */
     void opOpAssign(string op, Stuff)(Stuff stuff)
         if (op == "~")
@@ -569,7 +569,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         }
         else
         {
-            push_back(stuff);
+            pushBack(stuff);
         }
     }
     
@@ -600,7 +600,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         _data.length = newLength;
     }
-    alias push_back = insertBack;
+    alias pushBack = insertBack;
     /**
         Inserts $(D value) to the front or back of the container. $(D stuff)
         can be a value convertible to $(D T) or a range of objects convertible
@@ -621,11 +621,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
     size_t pushBack(U)(Vector!(U, ALLOCATOR) rhs)
     {
-        return push_back(rhs[]);
+        return pushBack(rhs[]);
     }
 
     /// ditto
-    alias insert = push_back;
+    alias insert = pushBack;
     
     /**
         Removes the value at the back of the container. The stable version
@@ -727,7 +727,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             enforce(_data);
             immutable offset = r._a;
             enforce(offset <= length);
-            auto result = push_back(stuff);
+            auto result = pushBack(stuff);
             bringToFront(this[offset .. length - result],
             this[length - result .. length]);
             return result;
@@ -741,7 +741,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         // TODO: optimize
         immutable offset = r._b;
         enforce(offset <= length);
-        auto result = push_back(stuff);
+        auto result = pushBack(stuff);
         bringToFront(this[offset .. length - result],
         this[length - result .. length]);
         return result;

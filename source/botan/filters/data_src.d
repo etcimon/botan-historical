@@ -211,7 +211,7 @@ public:
     */
     size_t peek(ubyte* output, size_t length, size_t offset) const
     {
-        if (end_of_data())
+        if (endOfData())
             throw new InvalidState("DataSourceStream: Cannot peek when out of data");
         
         size_t got = 0;

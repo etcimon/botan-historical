@@ -7,7 +7,7 @@
 module botan.kdf.prf_tls;
 import botan.kdf.kdf;
 import botan.mac.mac;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.mac.hmac;
 import botan.hash.md5;
 import botan.hash.sha160;
@@ -119,7 +119,7 @@ void pHash(SecureVector!ubyte output,
         mac.update(seed, seed_len);
         SecureVector!ubyte block = mac.finished();
         
-        xor_buf(&output[offset], block.ptr, this_block_len);
+        xorBuf(&output[offset], block.ptr, this_block_len);
         offset += this_block_len;
     }
 }

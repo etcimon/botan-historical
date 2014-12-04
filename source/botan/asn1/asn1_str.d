@@ -27,7 +27,7 @@ public:
     */
     void encodeInto(DEREncoder encoder) const
     {
-        string value = iso_8859();
+        string value = iso8859();
         if (tagging() == ASN1Tag.UTF8_STRING)
             value = transcode(value, LATIN1_CHARSET, UTF8_CHARSET);
         encoder.addObject(tagging(), ASN1Tag.UNIVERSAL, value);
@@ -38,7 +38,7 @@ public:
     */
     void decodeFrom(BERDecoder source)
     {
-        BER_Object obj = source.getNextObject();
+        BERObject obj = source.getNextObject();
         
         Character_Set charset_is;
         

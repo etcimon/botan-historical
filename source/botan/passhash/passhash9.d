@@ -170,14 +170,14 @@ unittest
         fails++;
     }
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     for(ubyte alg_id = 0; alg_id <= 4; ++alg_id)
     {
         string gen_hash = generatePasshash9(input, rng, 2, alg_id);
         
         ++ran;
-        if (!check_passhash9(input, gen_hash))
+        if (!checkPasshash9(input, gen_hash))
         {
             writeln("Passhash9 gen and check " ~ alg_id.to!string ~ " failed");
             ++fails;

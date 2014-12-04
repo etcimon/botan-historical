@@ -11,7 +11,7 @@ static if (BOTAN_HAS_CTR_BE):
 
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.types;
 
 /**
@@ -24,13 +24,13 @@ public:
     {
         while (length >= m_pad.length - m_pad_pos)
         {
-            xor_buf(output, input, &m_pad[m_pad_pos], m_pad.length - m_pad_pos);
+            xorBuf(output, input, &m_pad[m_pad_pos], m_pad.length - m_pad_pos);
             length -= (m_pad.length - m_pad_pos);
             input += (m_pad.length - m_pad_pos);
             output += (m_pad.length - m_pad_pos);
             increment_counter();
         }
-        xor_buf(output, input, &m_pad[m_pad_pos], length);
+        xorBuf(output, input, &m_pad[m_pad_pos], length);
         m_pad_pos += length;
     }
 
@@ -40,7 +40,7 @@ public:
         if (!validIvLength(iv_len))
             throw new InvalidIVLength(name, iv_len);
         
-        const size_t bs = m_cipher.block_size;
+        const size_t bs = m_cipher.blockSize();
         
         zeroise(m_counter);
         
@@ -61,7 +61,7 @@ public:
     }
 
     bool validIvLength(size_t iv_len) const
-    { return (iv_len <= m_cipher.block_size); }
+    { return (iv_len <= m_cipher.blockSize()); }
 
     KeyLengthSpecification keySpec() const
     {
@@ -90,7 +90,7 @@ public:
     this(BlockCipher ciph)
     {
         m_cipher = ciph;
-        m_counter = 256 * m_cipher.block_size;
+        m_counter = 256 * m_cipher.blockSize();
         m_pad = m_counter.length;
         m_pad_pos = 0;
     }
@@ -108,7 +108,7 @@ private:
     */
     void incrementCounter()
     {
-        const size_t bs = m_cipher.block_size;
+        const size_t bs = m_cipher.blockSize();
         
         /*
         * Each counter value always needs to be incremented by 256,

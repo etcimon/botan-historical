@@ -101,7 +101,7 @@ public:
     }
 
     /**
-    * Initialize a Buffered_Filter
+    * Initialize a BufferedFilter
     * @param block_size = the function buffered_block will be called
     *          with inputs which are a multiple of this size
     * @param final_minimum = the function buffered_final will be called

@@ -12,7 +12,7 @@ public import botan.libstate.libstate;
 import std.file;
 import std.exception;
 
-string cHECKMESSAGE (bool expr, string print) {
+string CHECK_MESSAGE (bool expr, string print) {
     return `
     {
         try { 
@@ -28,7 +28,7 @@ string cHECKMESSAGE (bool expr, string print) {
     }`;
 }
 
-string cHECK (string expr) {
+string CHECK (string expr) {
     return `
     {
         mixin( q{
@@ -64,7 +64,7 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
     import core.atomic;
     shared(size_t) shared_fails;
     
-    foreach (vec; parallel(list_dir(dir))) {
+    foreach (vec; parallel(listDir(dir))) {
         size_t local_fails = fn(vec);
         atomicOp!"+="(shared_fails, local_fails);
     }
@@ -189,7 +189,7 @@ size_t runTests(string filename,
         return 1;
     }
     
-    return run_tests(vec, name_key, output_key, clear_between_cb, cb);
+    return runTests(vec, name_key, output_key, clear_between_cb, cb);
 }
 
 size_t runTests(ref File src,

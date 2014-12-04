@@ -16,10 +16,10 @@ import botan.utils.asm_x86_32.asm_x86_32;
 /**
 * MD5 in x86 assembly
 */
-final class MD5X8632 : MD5
+final class MD5_X86_32 : MD5
 {
 public:
-    override HashFunction clone() const { return new MD5X8632; }
+    override HashFunction clone() const { return new MD5_X86_32; }
 private:
     override void compressN(in ubyte* input, size_t blocks)
     {
@@ -32,7 +32,7 @@ private:
 
 }
 
-void botanMd5X8632Compress(uint* digest, in ubyte* input, uint* M) pure
+void botan_md5_x86_32_compress(uint* digest, in ubyte* input, uint* M) pure
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 

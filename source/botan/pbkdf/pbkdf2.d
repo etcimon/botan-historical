@@ -12,7 +12,7 @@ static if (BOTAN_HAS_PBKDF2):
 import botan.pbkdf.pbkdf;
 import botan.mac.mac;
 import botan.utils.get_byte;
-import botan.utils.xor_buf;
+import botan.utils.xorBuf;
 import botan.utils.rounding;
 
 /**
@@ -74,7 +74,7 @@ public:
             m_mac.updateBigEndian(counter);
             m_mac.flushInto(U.ptr);
             
-            xor_buf(T, U.ptr, T_size);
+            xorBuf(T, U.ptr, T_size);
             
             if (iterations == 0)
             {
@@ -91,7 +91,7 @@ public:
                 {
                     m_mac.update(U);
                     m_mac.flushInto(U.ptr);
-                    xor_buf(T, U.ptr, T_size);
+                    xorBuf(T, U.ptr, T_size);
                     iterations++;
                     
                     /*
@@ -113,7 +113,7 @@ public:
                 {
                     m_mac.update(U);
                     m_mac.flushInto(U.ptr);
-                    xor_buf(T, U.ptr, T_size);
+                    xorBuf(T, U.ptr, T_size);
                 }
             }
             

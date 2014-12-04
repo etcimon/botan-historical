@@ -135,7 +135,7 @@ unittest {
     import botan.codec.hex;
 
     auto test = (string input) {
-        return run_tests(input, "PBKDF", "Output", true,
+        return runTests(input, "PBKDF", "Output", true,
                          (string[string] vec) {
                             Unique!PBKDF pbkdf = get_pbkdf(vec["PBKDF"]);
                             

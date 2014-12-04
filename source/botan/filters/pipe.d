@@ -40,7 +40,7 @@ public:
     * Exception if you use an invalid message as an argument to
     * read, remaining, etc
     */
-    class InvalidMessageNumber : Invalid_Argument
+    class InvalidMessageNumber : InvalidArgument
     {
         /**
         * @param where = the error occured
@@ -467,7 +467,7 @@ public:
         if (!filter)
             return;
         if (cast(SecureQueue)(filter))
-            throw new InvalidArgument("Pipe::prepend: Secure_Queue cannot be used");
+            throw new InvalidArgument("Pipe::prepend: SecureQueue cannot be used");
         if (filter.owned)
             throw new InvalidArgument("Filters cannot be shared among multiple Pipes");
         
@@ -488,7 +488,7 @@ public:
         if (!filter)
             return;
         if (cast(SecureQueue)(filter))
-            throw new InvalidArgument("Pipe::append: Secure_Queue cannot be used");
+            throw new InvalidArgument("Pipe::append: SecureQueue cannot be used");
         if (filter.owned)
             throw new InvalidArgument("Filters cannot be shared among multiple Pipes");
         
@@ -601,7 +601,7 @@ private:
                 find_endpoints(f.next[j]);
             else
         {
-            Secure_Queue q = new Secure_Queue;
+            SecureQueue q = new SecureQueue;
             f.next[j] = q;
             m_outputs.add(q);
         }

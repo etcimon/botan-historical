@@ -105,7 +105,7 @@ public:
                     .decode(sig_algo)
                     .decode(signature, ASN1Tag.BIT_STRING);
 
-            decode_optional_list(basicresponse, ASN1Tag(0), certs);
+            decodeOptionalList(basicresponse, ASN1Tag(0), certs);
             
             size_t responsedata_version;
             X509DN name;
@@ -173,7 +173,7 @@ void decodeOptionalList(BERDecoder ber,
                           ASN1Tag tag,
                           ref Vector!X509Certificate output)
 {
-    BER_Object obj = ber.getNextObject();
+    BERObject obj = ber.getNextObject();
     
     if (obj.type_tag != tag || obj.class_tag != (ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
     {
@@ -185,7 +185,7 @@ void decodeOptionalList(BERDecoder ber,
     
     while (list.moreItems())
     {
-        BER_Object certbits = list.getNextObject();
+        BERObject certbits = list.getNextObject();
         X509Certificate cert = X509Certificate(unlock(certbits.value));
         output.pushBack(cert);
     }
@@ -206,7 +206,7 @@ void checkSignature(in Vector!ubyte tbs_response,
         throw new Exception("Information in OCSP response does not match cert");
 
     string padding = sig_info[1];
-    Signature_Format format = (pub_key.message_parts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+    Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
     
     PKVerifier verifier = PKVerifier(*pub_key, padding, format);
     if (!verifier.verifyMessage(put_in_sequence(tbs_response), signature))

@@ -22,7 +22,7 @@ final class AESISAEngine : Engine
 public:
     string providerName() const { return "aes_isa"; }
 
-    BlockCipher findBlockCipher(in SCANName request,
+    BlockCipher findBlockCipher(in SCANToken request,
                                   AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_AES_NI) {

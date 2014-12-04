@@ -548,7 +548,7 @@ size_t testCurveRegistry(RandomNumberGenerator rng)
     oids.pushBack("1.3.132.0.10");
     oids.pushBack("1.3.132.0.34");
     oids.pushBack("1.3.132.0.35");
-    //oids.push_back("1.3.6.1.4.1.8301.3.1.2.9.0.38");
+    //oids.pushBack("1.3.6.1.4.1.8301.3.1.2.9.0.38");
     oids.pushBack("1.3.36.3.3.2.8.1.1.1");
     oids.pushBack("1.3.36.3.3.2.8.1.1.3");
     oids.pushBack("1.3.36.3.3.2.8.1.1.5");
@@ -683,7 +683,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!ECDSAPrivateKey(rng, ECGroup(OIDS.lookup(ecdsa)));
         key.checkKey(rng, true);
-        fails += validate_save_and_load(&key, rng);
+        fails += validateSaveAndLoad(&key, rng);
     }
 
     return fails;
@@ -698,7 +698,7 @@ size_t ecdsaSigKat(string group_id,
                      string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
     auto ecdsa = scoped!ECDSAPrivateKey(rng, group, BigInt(x));
@@ -708,14 +708,14 @@ size_t ecdsaSigKat(string group_id,
     PKVerifier verify = PKVerifier(ecdsa, padding);
     PKSigner sign = PKSigner(ecdsa, padding);
     
-    return validate_signature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
+    return validateSignature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }
 
 unittest
 {
     size_t fails = 0;
     
-    AutoSeeded_RNG rng;
+    AutoSeededRNG rng;
     
     fails += testHashLargerThanN(rng);
     static if (BOTAN_HAS_X509_CERTIFICATES) {

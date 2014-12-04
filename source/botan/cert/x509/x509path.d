@@ -254,7 +254,7 @@ private:
 PathValidationResult 
     x509PathValidate(in Vector!X509Certificate end_certs,
                        in PathValidationRestrictions restrictions,
-                       in Vector!Certificate_Store certstores)
+                       in Vector!CertificateStore certstores)
 {
     if (end_certs.empty)
         throw new InvalidArgument("x509_path_validate called with no subjects");
@@ -262,7 +262,7 @@ PathValidationResult
     Vector!X509Certificate cert_path;
     cert_path.pushBack(end_certs[0]);
     
-    auto extra = scoped!Certificate_Store_Overlay(end_certs);
+    auto extra = scoped!CertificateStoreOverlay(end_certs);
     
     // iterate until we reach a root or cannot find the issuer
     while (!cert_path.back().isSelfSigned())
@@ -284,7 +284,7 @@ PathValidationResult
 */
 PathValidationResult x509PathValidate(in X509Certificate end_cert,
                                           in PathValidationRestrictions restrictions,
-                                          in Vector!Certificate_Store certstores)
+                                          in Vector!CertificateStore certstores)
 {
     Vector!X509Certificate certs;
     certs.pushBack(end_cert);
@@ -302,7 +302,7 @@ PathValidationResult x509PathValidate(in X509Certificate end_cert,
     Vector!X509Certificate certs;
     certs.pushBack(end_cert);
     
-    Vector!Certificate_Store certstores;
+    Vector!CertificateStore certstores;
     certstores.pushBack(&store);
     
     return x509_path_validate(certs, restrictions, certstores);
@@ -314,7 +314,7 @@ PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
                                           in PathValidationRestrictions restrictions,
                                           in CertificateStore store)
 {
-    Vector!Certificate_Store certstores;
+    Vector!CertificateStore certstores;
     certstores.pushBack(&store);
     
     return x509_path_validate(end_certs, restrictions, certstores);
@@ -322,7 +322,7 @@ PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
 
 X509Certificate findIssuingCert(in X509Certificate cert,
                                          ref CertificateStore end_certs, 
-                                         in Vector!Certificate_Store certstores) const
+                                         in Vector!CertificateStore certstores) const
 {
     const X509DN issuer_dn = cert.issuerDn();
     const Vector!ubyte auth_key_id = cert.authorityKeyId();
@@ -340,7 +340,7 @@ X509Certificate findIssuingCert(in X509Certificate cert,
 }
 
 X509CRL findCrlsFor(in X509Certificate cert,
-                              const ref Vector!Certificate_Store certstores) const
+                              const ref Vector!CertificateStore certstores) const
 {
     foreach (certstore; certstores)
     {
@@ -374,7 +374,7 @@ X509CRL findCrlsFor(in X509Certificate cert,
 Vector!( RedBlackTree!Certificate_Status_Code )
     checkChain(in Vector!X509Certificate cert_path,
                 in PathValidationRestrictions restrictions,
-                in Vector!Certificate_Store certstores)
+                in Vector!CertificateStore certstores)
 {
     const RedBlackTree!string trusted_hashes = restrictions.trustedHashes();
     
@@ -396,7 +396,7 @@ Vector!( RedBlackTree!Certificate_Status_Code )
         
         const X509Certificate issuer = cert_path[at_self_signed_root ? (i) : (i + 1)];
         
-        const Certificate_Store trusted = certstores[0]; // fixme
+        const CertificateStore trusted = certstores[0]; // fixme
         
         if (i == 0 || restrictions.ocspAllIntermediates()) {
             version(Have_vibe_d)

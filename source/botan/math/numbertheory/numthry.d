@@ -250,7 +250,7 @@ BigInt powerMod(in BigInt base, in BigInt exp, in BigInt mod)
     auto pow_mod = scoped!PowerMod(mod);
 
     /*
-    * Calling set_base before set_exponent means we end up using a
+    * Calling setBase before setExponent means we end up using a
     * minimal window. This makes sense given that here we know that any
     * precomputation is wasted.
     */
@@ -439,12 +439,12 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng,
     const BigInt n_minus_1 = n - 1;
     const size_t s = lowZeroBits(n_minus_1);
     
-    Fixed_Exponent_Power_Mod pow_mod = Fixed_Exponent_Power_Mod(n_minus_1 >> s, n);
+    FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1 >> s, n);
     ModularReducer reducer = ModularReducer(n);
     
     foreach (size_t i; 0 .. test_iterations)
     {
-        const BigInt a = BigInt.random_integer(rng, 2, n_minus_1);
+        const BigInt a = BigInt.randomInteger(rng, 2, n_minus_1);
         
         BigInt y = pow_mod(a);
         

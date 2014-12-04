@@ -31,7 +31,7 @@ void dumpData(in Vector!ubyte output, in Vector!ubyte expected)
 
 size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
 {
-    string name = priv_key.algo_name();
+    string name = priv_key.algoName();
     
     size_t fails = 0;
     string pub_pem = x509_key.PEM_encode(priv_key);
@@ -138,7 +138,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     
     if (algo.canFind("/Raw") == -1)
     {
-        AutoSeeded_RNG rng;
+        AutoSeededRNG rng;
         
         for(size_t i = 0; i != ctext.length; ++i)
         {
@@ -168,7 +168,7 @@ size_t validateSignature(PKVerifier v, PKSigner s, string algo,
                           RandomNumberGenerator rng,
                           string exp)
 {
-    return validate_signature(v, s, algo, input, rng, rng, exp);
+    return validateSignature(v, s, algo, input, rng, rng, exp);
 }
 
 size_t validateSignature(PKVerifier v, PKSigner s, string algo,
@@ -190,11 +190,11 @@ size_t validateSignature(PKVerifier v, PKSigner s, string algo,
         ++fails;
     }
     
-    mixin( PK_TEST(` v.verify_message(message, sig) `, "Correct signature is valid") );
+    mixin( PKTEST(` v.verify_message(message, sig) `, "Correct signature is valid") );
     
     zero_mem(&sig[0], sig.length);
     
-    mixin( PK_TEST(` !v.verify_message(message, sig) `, "All-zero signature is invalid") );
+    mixin( PKTEST(` !v.verify_message(message, sig) `, "All-zero signature is invalid") );
     
     for(size_t i = 0; i != 3; ++i)
     {
@@ -203,7 +203,7 @@ size_t validateSignature(PKVerifier v, PKSigner s, string algo,
         const size_t idx = (test_rng.next_byte() * 256 + test_rng.next_byte()) % sig.length;
         bad_sig[idx] ^= nonzero_byte(test_rng);
         
-        mixin( PK_TEST(` !v.verify_message(message, bad_sig) `, "Incorrect signature is invalid") );
+        mixin( PKTEST(` !v.verify_message(message, bad_sig) `, "Incorrect signature is invalid") );
     }
     
     return fails;
@@ -217,7 +217,7 @@ size_t validateSignature(PKVerifier v, PKSigner s, string algo,
 {
     Fixed_Output_RNG fixed_rng = scoped!Fixed_Output_RNG(hexDecode(random));
     
-    return validate_signature(v, s, algo, input, fixed_rng, rng, exp);
+    return validateSignature(v, s, algo, input, fixed_rng, rng, exp);
 }
 
 size_t validateKas(PKKeyAgreement kas, string algo,

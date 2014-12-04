@@ -31,7 +31,7 @@ public:
             throw new InvalidArgument("SSL3_PRF: Requested key length is too large");
         
         auto md5 = scoped!MD5();
-        auto sha1 = scoped!SHA_160();
+        auto sha1 = scoped!SHA160();
         
         OctetString output;
         

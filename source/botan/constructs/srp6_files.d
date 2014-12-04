@@ -52,7 +52,7 @@ public:
             else
                 continue; // unknown group, ignored
             
-            m_entries[username] = SRP6_Data(v, salt, group_id);
+            m_entries[username] = SRP6Data(v, salt, group_id);
         }
     }
 
@@ -61,8 +61,8 @@ public:
                        ref Vector!ubyte salt,
                      ref string group_id) const
     {
-        SRP6_Data entry = m_entries.get(username);
-        if (entry == SRP6_Data.init)
+        SRP6Data entry = m_entries.get(username);
+        if (entry == SRP6Data.init)
             return false;
 
         v = entry.v;
@@ -90,5 +90,5 @@ private:
         string group_id;
     }
 
-    HashMap!(string, SRP6_Data) m_entries;
+    HashMap!(string, SRP6Data) m_entries;
 }

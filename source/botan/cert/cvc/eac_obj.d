@@ -33,7 +33,7 @@ public:
 
     bool checkSignature(ref PublicKey key) const
     {
-        return check_signature(key, m_sig.dEREncode());
+        return checkSignature(key, m_sig.DER_encode());
     }
 
 protected:
