@@ -243,12 +243,12 @@ void salsa20(ref ubyte[64] output, in uint[16] input)
     storeLittleEndian(x15 + input[15], output.ptr + 4 * 15);
 }
 
-string sALSA20QUARTERROUND(alias _x1, alias _x2, alias _x3, alias _x4)()
+string SALSA20_QUARTER_ROUND(alias _x1, alias _x2, alias _x3, alias _x4)()
 {
-    alias x1 = __traits(identifier, _x1).stringof;
-    alias x2 = __traits(identifier, _x2).stringof;
-    alias x3 = __traits(identifier, _x3).stringof;
-    alias x4 = __traits(identifier, _x4).stringof;
+    enum x1 = __traits(identifier, _x1).stringof;
+	enum x2 = __traits(identifier, _x2).stringof;
+	enum x3 = __traits(identifier, _x3).stringof;
+	enum x4 = __traits(identifier, _x4).stringof;
     
     return x2 ~ ` ^= rotateLeft(` ~ x1 ~ ` + ` ~ x4 ~ `,  7);
             ` ~ x3 ~ ` ^= rotateLeft(` ~ x2 ~ ` + ` ~ x1 ~ `,  9);

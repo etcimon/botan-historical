@@ -25,7 +25,7 @@ public import botan.tls.handshake_io;
 public import botan.tls.version_;
 public import botan.tls.handshake_hash;
 public import botan.tls.magic;
-public import botan.credentials.credentials_manager;
+public import botan.tls.credentials_manager;
 import botan.constructs.srp6;
 import botan.utils.loadstor;
 import botan.constructs.srp6;
@@ -81,8 +81,8 @@ public:
         TLSProtocolVersion format_version = TLSProtocolVersion(TLSProtocolVersion.DTLSV10);
         
         Vector!ubyte bits;
-		bits.pushBack(format_version.majorVersion());
-		bits.pushBack(format_version.minorVersion());
+        bits.pushBack(format_version.majorVersion());
+        bits.pushBack(format_version.minorVersion());
         bits.pushBack(cast(ubyte) m_cookie.length);
         bits ~= m_cookie;
         return bits;
@@ -1254,7 +1254,7 @@ public:
     {
         Unique!PublicKey key = cert.subjectPublicKey();
         
-        Pair!(string, Signature_Format) format = state.understandSigFormat(*key, m_hash_algo, m_sig_algo, true);
+        Pair!(string, SignatureFormat) format = state.understandSigFormat(*key, m_hash_algo, m_sig_algo, true);
         
         PKVerifier verifier = PKVerifier(*key, format.first, format.second);
         if (state.Version() == TLSProtocolVersion.SSL_V3)
@@ -1279,7 +1279,7 @@ public:
     {
         assert(priv_key, "No private key defined");
         
-        Pair!(string, Signature_Format) format = state.chooseSigFormat(priv_key, m_hash_algo, m_sig_algo, true, policy);
+        Pair!(string, SignatureFormat) format = state.chooseSigFormat(priv_key, m_hash_algo, m_sig_algo, true, policy);
         
         PKSigner signer = PKSigner(priv_key, format.first, format.second);
         
@@ -1442,7 +1442,7 @@ public:
     bool verify(in PublicKey server_key,
                 const HandshakeState state) const
     {
-        Pair!(string, Signature_Format) format = state.understandSigFormat(server_key, m_hash_algo, m_sig_algo, false);
+        Pair!(string, SignatureFormat) format = state.understandSigFormat(server_key, m_hash_algo, m_sig_algo, false);
         
         PKVerifier verifier = PKVerifier(server_key, format.first, format.second);
         verifier.update(state.clientHello().random());
@@ -1651,7 +1651,7 @@ public:
         {
             assert(signing_key, "Signing key was set");
             
-            Pair!(string, Signature_Format) format = state.chooseSigFormat(signing_key, m_hash_algo, m_sig_algo, false, policy);
+            Pair!(string, SignatureFormat) format = state.chooseSigFormat(signing_key, m_hash_algo, m_sig_algo, false, policy);
             
             PKSigner signer = PKSigner(signing_key, format.first, format.second);
             

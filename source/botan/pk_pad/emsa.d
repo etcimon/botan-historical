@@ -34,8 +34,8 @@ public:
     * @return encoded signature
     */
     abstract SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
-                                                        size_t output_bits,
-                                                        RandomNumberGenerator rng);
+                                           size_t output_bits,
+                                           RandomNumberGenerator rng);
 
     /**
     * Verify the encoding
@@ -45,7 +45,7 @@ public:
     * @return true if coded is a valid encoding of raw, otherwise false
     */
     abstract bool verify(in SecureVector!ubyte coded,
-                              in SecureVector!ubyte raw,
-                              size_t key_bits);
+                         in SecureVector!ubyte raw,
+                         size_t key_bits);
     ~this() {}
 }

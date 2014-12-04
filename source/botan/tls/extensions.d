@@ -21,7 +21,7 @@ import botan.tls.reader;
 import botan.tls.exceptn;
 import botan.utils.types : Unique;
 
-typedef ushort HandshakeExtensionType;
+alias ushort HandshakeExtensionType;
 enum : HandshakeExtensionType {
     TLSEXT_SERVER_NAME_INDICATION    = 0,
     TLSEXT_MAX_FRAGMENT_LENGTH       = 1,

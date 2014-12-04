@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 public import botan.tls.channel;
-public import botan.credentials.credentials_manager;
+public import botan.tls.credentials_manager;
 public import botan.tls.server_info;
 public import botan.rng.rng;
 import botan.tls.handshake_state;

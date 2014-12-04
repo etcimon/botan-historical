@@ -295,7 +295,7 @@ private:
 /*
 * DER encode a RelativeDistinguishedName
 */
-void doAva(DEREncoder encoder = DEREncoder(),
+void doAva(DEREncoder encoder,
             in MultiMap!(OID, string) dn_info,
             ASN1Tag string_type, in string oid_str,
             bool must_exist = false)

@@ -160,7 +160,7 @@ ulong F_SLOW(ulong v, ulong K)
     const ubyte y6 = t2 ^ t3 ^ t5 ^ t7 ^ t8;
     const ubyte y7 = t3 ^ t4 ^ t5 ^ t6 ^ t8;
     const ubyte y8 = t1 ^ t4 ^ t5 ^ t6 ^ t7;
-	return make_ulong(y1, y2, y3, y4, y5, y6, y7, y8);
+    return make_ulong(y1, y2, y3, y4, y5, y6, y7, y8);
 }
 
 ulong F(ulong v, ulong K)

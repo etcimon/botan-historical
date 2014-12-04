@@ -368,8 +368,8 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
 /*
 * cvc CHAT values
 */
-typedef ubyte CHAT_values;
-enum : CHATvalues {
+alias CHATValues = ubyte;
+enum : CHATValues {
     CVCA = 0xC0,
     DVCA_domestic = 0x80,
     DVCA_foreign =  0x40,

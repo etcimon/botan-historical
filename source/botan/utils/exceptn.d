@@ -47,7 +47,7 @@ final class LogicError : Exception
 /**
 * LookupError Exception
 */
-final class LookupError : Exception
+class LookupError : Exception
 {
     this(in string err)
     { super(err); }
@@ -189,6 +189,10 @@ final class SelfTestFailure : InternalError
 */
 final class MemoryExhaustion : Exception
 {
+	this(in string err) {
+		super("Memory Exhaustion: " ~ err);
+	}
+
     string what() const nothrow
     { return "Ran out of memory, allocation failed"; }
 }

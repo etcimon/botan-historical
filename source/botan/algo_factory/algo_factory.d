@@ -22,7 +22,7 @@ import std.algorithm;
 import botan.utils.types;
 // import string;
 import botan.utils.types;
-import botan.utils.memory : FreeListRef;
+import botan.utils.memory.memory : FreeListRef;
 
 
 alias AlgorithmFactory = FreeListRef!AlgorithmFactoryImpl;

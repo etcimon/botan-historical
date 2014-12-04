@@ -17,6 +17,7 @@ import std.conv;
 import std.exception : enforceEx;
 import std.traits;
 import std.algorithm;
+import botan.utils.containers.hashmap : HashMap;
 
 alias VulnerableAllocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 
@@ -101,7 +102,6 @@ final class LockAllocator(Base) : Allocator {
 }
 
 final class DebugAllocator(Base) : Allocator {
-    import botan.utils.hashmap : HashMap;
     private {
         Base m_baseAlloc;
         HashMap!(void*, size_t) m_blocks;
@@ -112,7 +112,7 @@ final class DebugAllocator(Base) : Allocator {
     this()
     {
         m_baseAlloc = getAllocator!Base();
-        m_blocks = HashMap!(void*, size_t)(get_allocator!VulnerableAllocator());
+        m_blocks = HashMap!(void*, size_t)(getAllocator!VulnerableAllocator());
     }
     
     @property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -165,7 +165,7 @@ final class AutoFreeListAllocator(Base) : Allocator {
     private {
         enum minExponent = 5;
         enum freeListCount = 14;
-        FreeListAlloc[freeListCount] m_freeLists;
+        FreeListAlloc!Base[freeListCount] m_freeLists;
         Base m_baseAlloc;
     }
     
@@ -173,7 +173,7 @@ final class AutoFreeListAllocator(Base) : Allocator {
     {
         m_baseAlloc = getAllocator!Base();
         foreach (i; iotaTuple!freeListCount)
-            m_freeLists[i] = new FreeListAlloc(nthFreeListSize!(i), m_baseAlloc);
+            m_freeLists[i] = new FreeListAlloc!Base(nthFreeListSize!(i), m_baseAlloc);
     }
     
     void[] alloc(size_t sz)
@@ -220,7 +220,7 @@ final class FreeListAlloc(Base) : Allocator
         size_t m_nfree = 0;
     }
     
-    this(size_t elem_size, Allocator base_allocator)
+    this(size_t elem_size, Base base_allocator)
     {
         assert(elem_size >= size_t.sizeof);
         m_elemSize = elem_size;
@@ -278,7 +278,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     TR alloc(ARGS...)(ARGS args)
     {
         //logInfo("alloc %s/%d", T.stringof, ElemSize);
-        auto mem = get_allocator!VulnerableAllocator().alloc(ElemSize);
+        auto mem = getAllocator!VulnerableAllocator().alloc(ElemSize);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) return emplace!T(mem, args);
         else return cast(TR)mem.ptr;
@@ -291,7 +291,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
             .destroy(objc);//typeid(T).destroy(cast(void*)obj);
         }
         static if( hasIndirections!T ) GC.removeRange(cast(void*)obj);
-        get_allocator!VulnerableAllocator().free((cast(void*)obj)[0 .. ElemSize]);
+        getAllocator!VulnerableAllocator().free((cast(void*)obj)[0 .. ElemSize]);
     }
 }
 
@@ -324,7 +324,7 @@ struct FreeListRef(T, bool INIT = true)
     {
         //logInfo("refalloc %s/%d", T.stringof, ElemSize);
         FreeListRef ret;
-        auto mem = get_allocator!VulnerableAllocator().alloc(ElemSize + int.sizeof);
+        auto mem = getAllocator!VulnerableAllocator().alloc(ElemSize + int.sizeof);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
         else ret.m_object = cast(TR)mem.ptr;
@@ -374,7 +374,7 @@ struct FreeListRef(T, bool INIT = true)
                     //logInfo("ref %s destroyed", T.stringof);
                 }
                 static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
-                get_allocator!VulnerableAllocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
+                getAllocator!VulnerableAllocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
             }
         }
         

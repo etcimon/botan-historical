@@ -29,7 +29,7 @@ public:
 class PowerMod
 {
 public:
-    typedef ushort Usage_Hints;
+	alias UsageHints = ushort;
     enum : UsageHints {
         NO_HINTS          = 0x0000,
 
@@ -191,7 +191,7 @@ public:
          in BigInt n,
          UsageHints hints = NO_HINTS)
     { 
-        super(n, Usage_Hints(hints | EXP_IS_FIXED | chooseExpHints(e, n)));
+        super(n, UsageHints(hints | EXP_IS_FIXED | chooseExpHints(e, n)));
         setExponent(e);
     }
     
@@ -213,7 +213,7 @@ public:
     */
     this(in BigInt b, in BigInt n, UsageHints hints = NO_HINTS)
     {
-        super(n, Usage_Hints(hints | BASE_IS_FIXED | chooseBaseHints(b, n)));
+        super(n, UsageHints(hints | BASE_IS_FIXED | chooseBaseHints(b, n)));
         setBase(b);
     }
 

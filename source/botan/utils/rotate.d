@@ -19,7 +19,7 @@ T rotateLeft(T)(T input, size_t rot)
 {
     if (rot == 0)
         return input;
-    return cast(T)((input << rot) | (input >> (8*T.sizeof-rot)));;
+    return cast(T)((input << rot) | (input >> (8*T.sizeof-rot)));
 }
 
 /**

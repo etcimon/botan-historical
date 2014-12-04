@@ -11,8 +11,6 @@ import botan.utils.parsing;
 import botan.codec.hex;
 import botan.utils.containers.multimap;
 import botan.utils.memory.zeroize;
-import functional;
-// import string;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 

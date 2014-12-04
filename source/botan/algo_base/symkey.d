@@ -198,9 +198,9 @@ private:
 /**
 * Alternate name for octet string showing intent to use as a key
 */
-typedef OctetString SymmetricKey;
+alias SymmetricKey = OctetString;
 
 /**
 * Alternate name for octet string showing intent to use as an IV
 */
-typedef OctetString InitializationVector;
+alias InitializationVector = OctetString;

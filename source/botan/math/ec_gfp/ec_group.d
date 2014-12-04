@@ -18,7 +18,7 @@ import botan.libstate.libstate;
 import botan.asn1.oids;
 import botan.codec.pem;
 
-typedef ubyte EC_Group_Encoding;
+alias EC_Group_Encoding = ubyte;
 /**
 * This class represents elliptic curce domain parameters
 */

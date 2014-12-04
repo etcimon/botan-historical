@@ -57,7 +57,7 @@ public:
         return m_g;
     }
 
-    typedef ubyte format;
+	alias Format = ubyte;
     /**
     * The DL group encoding format variants.
     */

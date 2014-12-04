@@ -228,7 +228,7 @@ bool isStringType(ASN1Tag tag)
 /*
 * DER encode an AlternativeName entry
 */
-void encodeEntries(DEREncoder encoder = DEREncoder(),
+void encodeEntries(DEREncoder encoder,
                     in MultiMap!(string, string) attr,
                     in string type, ASN1Tag tagging)
 {

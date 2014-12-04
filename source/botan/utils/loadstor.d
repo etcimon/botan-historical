@@ -11,7 +11,6 @@ import botan.utils.types;
 import botan.utils.bswap;
 import botan.utils.get_byte;
 import std.bitmanip;
-import cstring;
 
 nothrow:
 pure:

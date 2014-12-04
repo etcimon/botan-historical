@@ -102,7 +102,7 @@ private:
 struct PathValidationResult
 {
 public:
-    typedef Certificate_Status_Code Code;
+	alias Code = CertificateStatusCode;
 
     /**
     * @return the set of hash functions you are implicitly
@@ -135,8 +135,8 @@ public:
     */
     bool successfulValidation() const
     {
-        if (result() == Certificate_Status_Code.VERIFIED ||
-            result() == Certificate_Status_Code.OCSP_RESPONSE_GOOD)
+        if (result() == CertificateStatusCode.VERIFIED ||
+            result() == CertificateStatusCode.OCSP_RESPONSE_GOOD)
             return true;
         return false;
     }
@@ -149,7 +149,7 @@ public:
     /**
     * Return a set of status codes for each certificate in the chain
     */
-    Vector!(  RedBlackTree!Certificate_Status_Code ) allStatuses() const
+    Vector!(  RedBlackTree!CertificateStatusCode ) allStatuses() const
     { return m_all_status; }
 
     /**
@@ -165,65 +165,65 @@ public:
     {
         switch(code)
         {
-            case Certificate_Status_Code.VERIFIED:
+            case CertificateStatusCode.VERIFIED:
                 return "Verified";
-            case Certificate_Status_Code.OCSP_RESPONSE_GOOD:
+            case CertificateStatusCode.OCSP_RESPONSE_GOOD:
                 return "OCSP response good";
-            case Certificate_Status_Code.NO_REVOCATION_DATA:
+            case CertificateStatusCode.NO_REVOCATION_DATA:
                 return "No revocation data";
-            case Certificate_Status_Code.SIGNATURE_METHOD_TOO_WEAK:
+            case CertificateStatusCode.SIGNATURE_METHOD_TOO_WEAK:
                 return "Signature method too weak";
-            case Certificate_Status_Code.UNTRUSTED_HASH:
+            case CertificateStatusCode.UNTRUSTED_HASH:
                 return "Untrusted hash";
                 
-            case Certificate_Status_Code.CERT_NOT_YET_VALID:
+            case CertificateStatusCode.CERT_NOT_YET_VALID:
                 return "Certificate is not yet valid";
-            case Certificate_Status_Code.CERT_HAS_EXPIRED:
+            case CertificateStatusCode.CERT_HAS_EXPIRED:
                 return "Certificate has expired";
-            case Certificate_Status_Code.OCSP_NOT_YET_VALID:
+            case CertificateStatusCode.OCSP_NOT_YET_VALID:
                 return "OCSP is not yet valid";
-            case Certificate_Status_Code.OCSP_HAS_EXPIRED:
+            case CertificateStatusCode.OCSP_HAS_EXPIRED:
                 return "OCSP has expired";
-            case Certificate_Status_Code.CRL_NOT_YET_VALID:
+            case CertificateStatusCode.CRL_NOT_YET_VALID:
                 return "CRL is not yet valid";
-            case Certificate_Status_Code.CRL_HAS_EXPIRED:
+            case CertificateStatusCode.CRL_HAS_EXPIRED:
                 return "CRL has expired";
                 
-            case Certificate_Status_Code.CERT_ISSUER_NOT_FOUND:
+            case CertificateStatusCode.CERT_ISSUER_NOT_FOUND:
                 return "Certificate issuer not found";
-            case Certificate_Status_Code.CANNOT_ESTABLISH_TRUST:
+            case CertificateStatusCode.CANNOT_ESTABLISH_TRUST:
                 return "Cannot establish trust";
                 
-            case Certificate_Status_Code.POLICY_ERROR:
+            case CertificateStatusCode.POLICY_ERROR:
                 return "TLSPolicy error";
-            case Certificate_Status_Code.INVALID_USAGE:
+            case CertificateStatusCode.INVALID_USAGE:
                 return "Invalid usage";
-            case Certificate_Status_Code.CERT_CHAIN_TOO_LONG:
+            case CertificateStatusCode.CERT_CHAIN_TOO_LONG:
                 return "Certificate chain too long";
-            case Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER:
+            case CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER:
                 return "CA certificate not allowed to issue certs";
-            case Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER:
+            case CertificateStatusCode.CA_CERT_NOT_FOR_CRL_ISSUER:
                 return "CA certificate not allowed to issue CRLs";
-            case Certificate_Status_Code.OCSP_CERT_NOT_LISTED:
+            case CertificateStatusCode.OCSP_CERT_NOT_LISTED:
                 return "OCSP cert not listed";
-            case Certificate_Status_Code.OCSP_BAD_STATUS:
+            case CertificateStatusCode.OCSP_BAD_STATUS:
                 return "OCSP bad status";
                 
-            case Certificate_Status_Code.CERT_IS_REVOKED:
+            case CertificateStatusCode.CERT_IS_REVOKED:
                 return "Certificate is revoked";
-            case Certificate_Status_Code.CRL_BAD_SIGNATURE:
+            case CertificateStatusCode.CRL_BAD_SIGNATURE:
                 return "CRL bad signature";
-            case Certificate_Status_Code.SIGNATURE_ERROR:
+            case CertificateStatusCode.SIGNATURE_ERROR:
                 return "Signature error";
             default:
                 return "Unknown error";
         }
     }
 
-    this(Vector!(  RedBlackTree!Certificate_Status_Code ) status,
+    this(Vector!(  RedBlackTree!CertificateStatusCode ) status,
                            Vector!X509Certificate cert_chainput)
     {
-        m_overall = Certificate_Status_Code.VERIFIED;
+        m_overall = CertificateStatusCode.VERIFIED;
         m_all_status = status;
         m_cert_path = cert_chainput;
         // take the "worst" error as overall
@@ -233,7 +233,7 @@ public:
             {
                 auto worst = s.back;
                 // Leave OCSP confirmations on cert-level status only
-                if (worst != Certificate_Status_Code.OCSP_RESPONSE_GOOD)
+                if (worst != CertificateStatusCode.OCSP_RESPONSE_GOOD)
                     m_overall = worst;
             }
         }
@@ -243,8 +243,8 @@ public:
     this(CertificateStatusCode status)  { m_overall = status; }
 
 private:
-    Certificate_Status_Code m_overall;
-    Vector!( RedBlackTree!Certificate_Status_Code ) m_all_status;
+    CertificateStatusCode m_overall;
+    Vector!( RedBlackTree!CertificateStatusCode ) m_all_status;
     Vector!X509Certificate m_cert_path;
 }
 
@@ -269,7 +269,7 @@ PathValidationResult
     {
         const X509Certificate cert = findIssuingCert(cert_path.back(), extra, certstores);
         if (!cert)
-            return Path_Validation_Result(Certificate_Status_Code.CERT_ISSUER_NOT_FOUND);
+            return Path_Validation_Result(CertificateStatusCode.CERT_ISSUER_NOT_FOUND);
         
         cert_path.pushBack(*cert);
     }
@@ -371,7 +371,7 @@ X509CRL findCrlsFor(in X509Certificate cert,
     return null;
 }
 
-Vector!( RedBlackTree!Certificate_Status_Code )
+Vector!( RedBlackTree!CertificateStatusCode )
     checkChain(in Vector!X509Certificate cert_path,
                 in PathValidationRestrictions restrictions,
                 in Vector!CertificateStore certstores)
@@ -384,7 +384,7 @@ Vector!( RedBlackTree!Certificate_Status_Code )
     
     Vector!( Tid ) ocsp_responses;
     
-    Vector!( RedBlackTree!Certificate_Status_Code ) cert_status = Vector!( Vector!Certificate_Status_Code )( cert_path.length );
+    Vector!( RedBlackTree!CertificateStatusCode ) cert_status = Vector!( Vector!CertificateStatusCode )( cert_path.length );
     
     foreach (size_t i; 0 .. cert_path.length)
     {
@@ -407,33 +407,33 @@ Vector!( RedBlackTree!Certificate_Status_Code )
         }
         // Check all certs for valid time range
         if (current_time < X509Time(subject.startTime()))
-            status.insert(Certificate_Status_Code.CERT_NOT_YET_VALID);
+            status.insert(CertificateStatusCode.CERT_NOT_YET_VALID);
         
         if (current_time > X509Time(subject.endTime()))
-            status.insert(Certificate_Status_Code.CERT_HAS_EXPIRED);
+            status.insert(CertificateStatusCode.CERT_HAS_EXPIRED);
         
         // Check issuer constraints
         
         // Don't require CA bit set on self-signed end entity cert
         if (!issuer.isCACert() && !self_signed_ee_cert)
-            status.insert(Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER);
+            status.insert(CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER);
         
         if (issuer.pathLimit() < i)
-            status.insert(Certificate_Status_Code.CERT_CHAIN_TOO_LONG);
+            status.insert(CertificateStatusCode.CERT_CHAIN_TOO_LONG);
         
         Unique!PublicKey issuer_key = issuer.subjectPublicKey();
         
         if (subject.checkSignature(*issuer_key) == false)
-            status.insert(Certificate_Status_Code.SIGNATURE_ERROR);
+            status.insert(CertificateStatusCode.SIGNATURE_ERROR);
         
         if (issuer_key.estimatedStrength() < restrictions.minimumKeyStrength())
-            status.insert(Certificate_Status_Code.SIGNATURE_METHOD_TOO_WEAK);
+            status.insert(CertificateStatusCode.SIGNATURE_METHOD_TOO_WEAK);
         
         // Allow untrusted hashes on self-signed roots
         if (!trusted_hashes.empty && !at_self_signed_root)
         {
             if (subject.hashUsedForSignature() !in trusted_hashes)
-                status.insert(Certificate_Status_Code.UNTRUSTED_HASH);
+                status.insert(CertificateStatusCode.UNTRUSTED_HASH);
         }
     }
     
@@ -458,9 +458,9 @@ Vector!( RedBlackTree!Certificate_Status_Code )
                 //std::cout << "OCSP status: " << statusString(ocsp_status) << "\n";
                 
                 // Either way we have a definitive answer, no need to check CRLs
-                if (ocsp_status == Certificate_Status_Code.CERT_IS_REVOKED)
+                if (ocsp_status == CertificateStatusCode.CERT_IS_REVOKED)
                     return cert_status;
-                else if (ocsp_status == Certificate_Status_Code.OCSP_RESPONSE_GOOD)
+                else if (ocsp_status == CertificateStatusCode.OCSP_RESPONSE_GOOD)
                     continue;
             }
             catch(Exception e)
@@ -474,30 +474,30 @@ Vector!( RedBlackTree!Certificate_Status_Code )
         if (!crl_p)
         {
             if (restrictions.requireRevocationInformation())
-                status.insert(Certificate_Status_Code.NO_REVOCATION_DATA);
+                status.insert(CertificateStatusCode.NO_REVOCATION_DATA);
             continue;
         }
         
         const X509CRL crl = *crl_p;
         
         if (!ca.allowedUsage(CRL_SIGN))
-            status.insert(Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER);
+            status.insert(CertificateStatusCode.CA_CERT_NOT_FOR_CRL_ISSUER);
         
         if (current_time < X509Time(crl.thisUpdate()))
-            status.insert(Certificate_Status_Code.CRL_NOT_YET_VALID);
+            status.insert(CertificateStatusCode.CRL_NOT_YET_VALID);
         
         if (current_time > X509Time(crl.nextUpdate()))
-            status.insert(Certificate_Status_Code.CRL_HAS_EXPIRED);
+            status.insert(CertificateStatusCode.CRL_HAS_EXPIRED);
         
         if (crl.checkSignature(ca.subjectPublicKey()) == false)
-            status.insert(Certificate_Status_Code.CRL_BAD_SIGNATURE);
+            status.insert(CertificateStatusCode.CRL_BAD_SIGNATURE);
         
         if (crl.isRevoked(subject))
-            status.insert(Certificate_Status_Code.CERT_IS_REVOKED);
+            status.insert(CertificateStatusCode.CERT_IS_REVOKED);
     }
     
     if (self_signed_ee_cert)
-        cert_status.back().insert(Certificate_Status_Code.CANNOT_ESTABLISH_TRUST);
+        cert_status.back().insert(CertificateStatusCode.CANNOT_ESTABLISH_TRUST);
     
     return cert_status;
 }

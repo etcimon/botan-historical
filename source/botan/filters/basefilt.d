@@ -9,7 +9,7 @@ module botan.filters.basefilt;
 
 import botan.filters.filter;
 import std.concurrency;
-import botan.utils.memory : FreeListRef;
+import botan.utils.memory.memory : FreeListRef;
 import botan.filters.key_filt;
 
 import botan.utils.semaphore;

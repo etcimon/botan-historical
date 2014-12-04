@@ -22,7 +22,7 @@ alias AlgorithmIdentifier = FreeListRef!AlgorithmIdentifierImpl;
 final class AlgorithmIdentifierImpl : ASN1Object
 {
 public:
-    typedef bool EncodingOption;
+	alias EncodingOption = bool;
     enum : EncodingOption { USE_NULL_PARAM }
 
     /*

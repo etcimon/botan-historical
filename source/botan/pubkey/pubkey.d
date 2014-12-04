@@ -27,12 +27,13 @@ import botan.engine.engine;
 import botan.utils.bit_ops;
 import botan.utils.exceptn;
 
-typedef bool Signature_Format;
+alias SignatureFormat = bool;
 /**
 * The two types of signature format supported by Botan.
 */
 enum : SignatureFormat { IEEE_1363, DER_SEQUENCE }
-typedef bool Fault_Protection;
+
+alias FaultProtection = bool;
 /**
 * Enum marking if protection against fault attacks should be used
 */
@@ -287,7 +288,7 @@ private:
     Unique!Signature m_op;
     Unique!Verification m_verify_op;
     Unique!EMSA m_emsa;
-    Signature_Format m_sig_format;
+    SignatureFormat m_sig_format;
 }
 
 /**
@@ -456,7 +457,7 @@ private:
 
     Unique!Verification m_op;
     Unique!EMSA m_emsa;
-    Signature_Format m_sig_format;
+    SignatureFormat m_sig_format;
 }
 
 /**

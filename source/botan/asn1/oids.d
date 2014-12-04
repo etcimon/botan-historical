@@ -6,7 +6,6 @@
 */
 module botan.asn1.oids;
 
-public import botan.asn1.oid_lookup.deflt;
 public import botan.asn1.asn1_oid;
 
 auto globalOidMap()

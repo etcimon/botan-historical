@@ -182,10 +182,10 @@ private:
 
 string cHACHAQUARTERROUND(alias _a, alias _b, alias _c, alias _d)()
 {
-    alias a = __traits(identifier, _a).stringof;
-    alias b = __traits(identifier, _b).stringof;
-    alias c = __traits(identifier, _c).stringof;
-    alias d = __traits(identifier, _d).stringof;
+    enum a = __traits(identifier, _a).stringof;
+    enum b = __traits(identifier, _b).stringof;
+    enum c = __traits(identifier, _c).stringof;
+    enum d = __traits(identifier, _d).stringof;
 
     return a ~ ` += ` ~ b ~ `; ` ~ d ~ ` ^= ` ~ a ~ `; ` ~ d ~ ` = rotateLeft(` ~ d ~ `, 16);
                 ` ~ c ~ ` += ` ~ d ~ `; ` ~ b ~ ` ^= ` ~ c ~ `; ` ~ b ~ ` = rotateLeft(` ~ b ~ `, 12);

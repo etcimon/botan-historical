@@ -5,7 +5,7 @@ Botan is a D library for crypto and TLS intended for vibe.d development/native c
 library [Botan](http://botan.randombit.net/), although the code is now in D. The commits are mirrored manually from 
 C++ to D for any part that has not been rewritten.
 
-*This library does not currently compile. It is due for compilation testing on 14/dec/2014.*
+*This library does not currently compile, it is being tested thoroughly.*
 
 Usage
 -----

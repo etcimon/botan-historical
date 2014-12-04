@@ -14,7 +14,7 @@ import botan.utils.exceptn;
 import botan.utils.types;
 import std.conv : to;
 
-typedef ushort TLSAlertType;
+alias ushort TLSAlertType;
 /**
 * SSL/TLS TLSAlert Message
 */

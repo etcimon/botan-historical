@@ -139,8 +139,8 @@ size_t testCoordinates()
     if (!point_exp.onTheCurve())
         throw new InternalError("Point not on the curve");
     
-    mixin( CHECK_MESSAGE(  p1.getAffineX() == exp_affine_x, " p1_x = " ~ p1.getAffineX() " ~\n" ~ "exp_x = " ~ exp_affine_x " ~\n" ) );
-    mixin( CHECK_MESSAGE(  p1.getAffineY() == exp_affine_y, " p1_y = " ~ p1.getAffineY() " ~\n" ~ "exp_y = " ~ exp_affine_y " ~\n" ) );
+    mixin( CHECK_MESSAGE(  p1.getAffineX() == exp_affine_x, " p1_x = " ~ p1.getAffineX() ~ " \n" ~ "exp_x = " ~ exp_affine_x ~ " \n" ) );
+    mixin( CHECK_MESSAGE(  p1.getAffineY() == exp_affine_y, " p1_y = " ~ p1.getAffineY() ~ " \n" ~ "exp_y = " ~ exp_affine_y ~ " \n" ) );
     return fails;
 }
 
@@ -588,7 +588,7 @@ size_t testEncDecUncompressed521()
     string result = hexEncode(&sv_result[0], sv_result.length);
     string exp_result = hexEncode(&sv_G_secp_uncomp[0], sv_G_secp_uncomp.length);
     
-    mixin( CHECK_MESSAGE(  sv_result == sv_G_secp_uncomp, "\ncalc. result = " ~ result ~ "\nexp. result = " ~ exp_result " ~\n" ) );
+    mixin( CHECK_MESSAGE(  sv_result == sv_G_secp_uncomp, "\ncalc. result = " ~ result ~ "\nexp. result = " ~ exp_result ~ " \n" ) );
     return fails;
 }
 

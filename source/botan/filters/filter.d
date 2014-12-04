@@ -252,5 +252,5 @@ protected:
 * whitespaces, FULL_CHECK - perform checks, also complain
 * about white spaces.
 */
-typedef ubyte DecoderChecking;
+alias DecoderChecking = ubyte;
 enum : DecoderChecking { NONE, IGNORE_WS, FULL_CHECK }

@@ -43,46 +43,46 @@ CertificateStatusCode[size_t] getExpected();
 */
 CertificateStatusCode[size_t] getExpected()
 {
-    Certificate_Status_Code[size_t] expected_results;
+    CertificateStatusCode[size_t] expected_results;
     
     /* OK, not a super great way of doing this... */
-    expected_results[1] = Certificate_Status_Code.VERIFIED;
-    expected_results[2] = Certificate_Status_Code.SIGNATURE_ERROR;
-    expected_results[3] = Certificate_Status_Code.SIGNATURE_ERROR;
-    expected_results[4] = Certificate_Status_Code.VERIFIED;
-    expected_results[5] = Certificate_Status_Code.CERT_NOT_YET_VALID;
-    expected_results[6] = Certificate_Status_Code.CERT_NOT_YET_VALID;
-    expected_results[7] = Certificate_Status_Code.VERIFIED;
-    expected_results[8] = Certificate_Status_Code.CERT_NOT_YET_VALID;
-    expected_results[9] = Certificate_Status_Code.CERT_HAS_EXPIRED;
-    expected_results[10] = Certificate_Status_Code.CERT_HAS_EXPIRED;
-    expected_results[11] = Certificate_Status_Code.CERT_HAS_EXPIRED;
-    expected_results[12] = Certificate_Status_Code.VERIFIED;
-    expected_results[13] = Certificate_Status_Code.CERT_ISSUER_NOT_FOUND;
+    expected_results[1] = CertificateStatusCode.VERIFIED;
+    expected_results[2] = CertificateStatusCode.SIGNATURE_ERROR;
+    expected_results[3] = CertificateStatusCode.SIGNATURE_ERROR;
+    expected_results[4] = CertificateStatusCode.VERIFIED;
+    expected_results[5] = CertificateStatusCode.CERT_NOT_YET_VALID;
+    expected_results[6] = CertificateStatusCode.CERT_NOT_YET_VALID;
+    expected_results[7] = CertificateStatusCode.VERIFIED;
+    expected_results[8] = CertificateStatusCode.CERT_NOT_YET_VALID;
+    expected_results[9] = CertificateStatusCode.CERT_HAS_EXPIRED;
+    expected_results[10] = CertificateStatusCode.CERT_HAS_EXPIRED;
+    expected_results[11] = CertificateStatusCode.CERT_HAS_EXPIRED;
+    expected_results[12] = CertificateStatusCode.VERIFIED;
+    expected_results[13] = CertificateStatusCode.CERT_ISSUER_NOT_FOUND;
     
-    expected_results[14] = Certificate_Status_Code.CERT_ISSUER_NOT_FOUND;
-    expected_results[15] = Certificate_Status_Code.VERIFIED;
-    expected_results[16] = Certificate_Status_Code.VERIFIED;
-    expected_results[17] = Certificate_Status_Code.VERIFIED;
-    expected_results[18] = Certificate_Status_Code.VERIFIED;
+    expected_results[14] = CertificateStatusCode.CERT_ISSUER_NOT_FOUND;
+    expected_results[15] = CertificateStatusCode.VERIFIED;
+    expected_results[16] = CertificateStatusCode.VERIFIED;
+    expected_results[17] = CertificateStatusCode.VERIFIED;
+    expected_results[18] = CertificateStatusCode.VERIFIED;
     
-    expected_results[19] = Certificate_Status_Code.NO_REVOCATION_DATA;
-    expected_results[20] = Certificate_Status_Code.CERT_IS_REVOKED;
-    expected_results[21] = Certificate_Status_Code.CERT_IS_REVOKED;
+    expected_results[19] = CertificateStatusCode.NO_REVOCATION_DATA;
+    expected_results[20] = CertificateStatusCode.CERT_IS_REVOKED;
+    expected_results[21] = CertificateStatusCode.CERT_IS_REVOKED;
     
-    expected_results[22] = Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER;
-    expected_results[23] = Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER;
-    expected_results[24] = Certificate_Status_Code.VERIFIED;
-    expected_results[25] = Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER;
-    expected_results[26] = Certificate_Status_Code.VERIFIED;
-    expected_results[27] = Certificate_Status_Code.VERIFIED;
-    expected_results[28] = Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER;
-    expected_results[29] = Certificate_Status_Code.CA_CERT_NOT_FOR_CERT_ISSUER;
-    expected_results[30] = Certificate_Status_Code.VERIFIED;
+    expected_results[22] = CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER;
+    expected_results[23] = CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER;
+    expected_results[24] = CertificateStatusCode.VERIFIED;
+    expected_results[25] = CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER;
+    expected_results[26] = CertificateStatusCode.VERIFIED;
+    expected_results[27] = CertificateStatusCode.VERIFIED;
+    expected_results[28] = CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER;
+    expected_results[29] = CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER;
+    expected_results[30] = CertificateStatusCode.VERIFIED;
     
-    expected_results[31] = Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER;
-    expected_results[32] = Certificate_Status_Code.CA_CERT_NOT_FOR_CRL_ISSUER;
-    expected_results[33] = Certificate_Status_Code.VERIFIED;
+    expected_results[31] = CertificateStatusCode.CA_CERT_NOT_FOR_CRL_ISSUER;
+    expected_results[32] = CertificateStatusCode.CA_CERT_NOT_FOR_CRL_ISSUER;
+    expected_results[33] = CertificateStatusCode.VERIFIED;
     
     /*
      TLSPolicy tests: a little trickier because there are other inputs
@@ -104,54 +104,54 @@ CertificateStatusCode[size_t] getExpected()
       This provides reasonably good coverage of the possible outcomes.
     */
     
-    expected_results[34] = Certificate_Status_Code.VERIFIED;
-    expected_results[35] = Certificate_Status_Code.VERIFIED;
-    expected_results[36] = Certificate_Status_Code.VERIFIED;
-    expected_results[37] = Certificate_Status_Code.VERIFIED;
-    expected_results[38] = Certificate_Status_Code.VERIFIED;
-    expected_results[39] = Certificate_Status_Code.VERIFIED;
-    expected_results[40] = Certificate_Status_Code.VERIFIED;
-    expected_results[41] = Certificate_Status_Code.VERIFIED;
-    expected_results[42] = Certificate_Status_Code.VERIFIED;
-    expected_results[43] = Certificate_Status_Code.VERIFIED;
-    expected_results[44] = Certificate_Status_Code.VERIFIED;
+    expected_results[34] = CertificateStatusCode.VERIFIED;
+    expected_results[35] = CertificateStatusCode.VERIFIED;
+    expected_results[36] = CertificateStatusCode.VERIFIED;
+    expected_results[37] = CertificateStatusCode.VERIFIED;
+    expected_results[38] = CertificateStatusCode.VERIFIED;
+    expected_results[39] = CertificateStatusCode.VERIFIED;
+    expected_results[40] = CertificateStatusCode.VERIFIED;
+    expected_results[41] = CertificateStatusCode.VERIFIED;
+    expected_results[42] = CertificateStatusCode.VERIFIED;
+    expected_results[43] = CertificateStatusCode.VERIFIED;
+    expected_results[44] = CertificateStatusCode.VERIFIED;
     
-    //expected_results[45] = Certificate_Status_Code.EXPLICT_POLICY_REQUIRED;
-    //expected_results[46] = Certificate_Status_Code.ACCEPT;
-    //expected_results[47] = Certificate_Status_Code.EXPLICT_POLICY_REQUIRED;
+    //expected_results[45] = CertificateStatusCode.EXPLICT_POLICY_REQUIRED;
+    //expected_results[46] = CertificateStatusCode.ACCEPT;
+    //expected_results[47] = CertificateStatusCode.EXPLICT_POLICY_REQUIRED;
     
-    expected_results[48] = Certificate_Status_Code.VERIFIED;
-    expected_results[49] = Certificate_Status_Code.VERIFIED;
-    expected_results[50] = Certificate_Status_Code.VERIFIED;
-    expected_results[51] = Certificate_Status_Code.VERIFIED;
-    expected_results[52] = Certificate_Status_Code.VERIFIED;
-    expected_results[53] = Certificate_Status_Code.VERIFIED;
+    expected_results[48] = CertificateStatusCode.VERIFIED;
+    expected_results[49] = CertificateStatusCode.VERIFIED;
+    expected_results[50] = CertificateStatusCode.VERIFIED;
+    expected_results[51] = CertificateStatusCode.VERIFIED;
+    expected_results[52] = CertificateStatusCode.VERIFIED;
+    expected_results[53] = CertificateStatusCode.VERIFIED;
     
-    expected_results[54] = Certificate_Status_Code.CERT_CHAIN_TOO_LONG;
-    expected_results[55] = Certificate_Status_Code.CERT_CHAIN_TOO_LONG;
-    expected_results[56] = Certificate_Status_Code.VERIFIED;
-    expected_results[57] = Certificate_Status_Code.VERIFIED;
-    expected_results[58] = Certificate_Status_Code.CERT_CHAIN_TOO_LONG;
-    expected_results[59] = Certificate_Status_Code.CERT_CHAIN_TOO_LONG;
-    expected_results[60] = Certificate_Status_Code.CERT_CHAIN_TOO_LONG;
-    expected_results[61] = Certificate_Status_Code.CERT_CHAIN_TOO_LONG;
-    expected_results[62] = Certificate_Status_Code.VERIFIED;
-    expected_results[63] = Certificate_Status_Code.VERIFIED;
+    expected_results[54] = CertificateStatusCode.CERT_CHAIN_TOO_LONG;
+    expected_results[55] = CertificateStatusCode.CERT_CHAIN_TOO_LONG;
+    expected_results[56] = CertificateStatusCode.VERIFIED;
+    expected_results[57] = CertificateStatusCode.VERIFIED;
+    expected_results[58] = CertificateStatusCode.CERT_CHAIN_TOO_LONG;
+    expected_results[59] = CertificateStatusCode.CERT_CHAIN_TOO_LONG;
+    expected_results[60] = CertificateStatusCode.CERT_CHAIN_TOO_LONG;
+    expected_results[61] = CertificateStatusCode.CERT_CHAIN_TOO_LONG;
+    expected_results[62] = CertificateStatusCode.VERIFIED;
+    expected_results[63] = CertificateStatusCode.VERIFIED;
     
-    expected_results[64] = Certificate_Status_Code.CRL_BAD_SIGNATURE;
+    expected_results[64] = CertificateStatusCode.CRL_BAD_SIGNATURE;
     
-    expected_results[65] = Certificate_Status_Code.NO_REVOCATION_DATA;
-    expected_results[66] = Certificate_Status_Code.NO_REVOCATION_DATA;
+    expected_results[65] = CertificateStatusCode.NO_REVOCATION_DATA;
+    expected_results[66] = CertificateStatusCode.NO_REVOCATION_DATA;
     
-    expected_results[67] = Certificate_Status_Code.VERIFIED;
+    expected_results[67] = CertificateStatusCode.VERIFIED;
     
-    expected_results[68] = Certificate_Status_Code.CERT_IS_REVOKED;
-    expected_results[69] = Certificate_Status_Code.CERT_IS_REVOKED;
-    expected_results[70] = Certificate_Status_Code.CERT_IS_REVOKED;
-    expected_results[71] = Certificate_Status_Code.CERT_IS_REVOKED;
-    expected_results[72] = Certificate_Status_Code.CRL_HAS_EXPIRED;
-    expected_results[73] = Certificate_Status_Code.CRL_HAS_EXPIRED;
-    expected_results[74] = Certificate_Status_Code.VERIFIED;
+    expected_results[68] = CertificateStatusCode.CERT_IS_REVOKED;
+    expected_results[69] = CertificateStatusCode.CERT_IS_REVOKED;
+    expected_results[70] = CertificateStatusCode.CERT_IS_REVOKED;
+    expected_results[71] = CertificateStatusCode.CERT_IS_REVOKED;
+    expected_results[72] = CertificateStatusCode.CRL_HAS_EXPIRED;
+    expected_results[73] = CertificateStatusCode.CRL_HAS_EXPIRED;
+    expected_results[74] = CertificateStatusCode.VERIFIED;
     
     /* These tests use weird CRL extensions which aren't supported yet */
     //expected_results[75] = ;
@@ -228,16 +228,16 @@ unittest
             
             Path_Validation_Result validation_result = x509PathValidate(end_user,restrictions, store);
             auto expected = expected_results[test_no];
-            Certificate_Status_Code result = validation_result.result();
+            CertificateStatusCode result = validation_result.result();
             if (result != expected)
                 writeln("NIST X.509 test #" ~ test_no ~ " : ");
             const string result_str = Path_Validation_Result.statusString(result);
             const string exp_str = Path_Validation_Result.statusString(expected);
-            if (expected == Certificate_Status_Code.VERIFIED) {
+            if (expected == CertificateStatusCode.VERIFIED) {
                 writeln("unexpected failure: " ~ result_str);
                 unexp_failure++;
             }
-            else if (result == Certificate_Status_Code.VERIFIED) {
+            else if (result == CertificateStatusCode.VERIFIED) {
                 writeln("unexpected success, expected " ~ exp_str);
                 unexp_success++;
             } 

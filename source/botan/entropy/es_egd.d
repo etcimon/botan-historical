@@ -15,7 +15,6 @@ import botan.utils.types;
 
 import botan.utils.parsing;
 import botan.utils.exceptn;
-import cstring;
 import std.exception;
 
 import core.sys.posix.sys.types;

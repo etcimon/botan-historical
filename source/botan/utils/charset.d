@@ -13,7 +13,7 @@ import std.conv : to;
 /**
 * The different charsets (nominally) supported by Botan.
 */
-typedef ubyte Character_set;
+alias ubyte CharacterSet;
 enum : CharacterSet {
     LOCAL_CHARSET,
     UCS2_CHARSET,

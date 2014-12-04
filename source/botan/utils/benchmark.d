@@ -73,8 +73,8 @@ HashMap!(string, double)
             
             const SymmetricKey key = SymmetricKey(rng, sc.maximumKeylength());
             HashMap!(string, double) ret;
-            ret["key schedule"] = timeOp(runtime / 8, [&]() { sc.setKey(key); });
-            ret[""] = mb_mult * timeOp(runtime, [&]() { sc.encipher(buffer); });
+            ret["key schedule"] = timeOp(runtime / 8, { sc.setKey(key); });
+            ret[""] = mb_mult * timeOp(runtime, { sc.encipher(buffer); });
             return ret;
         }
     }
@@ -146,7 +146,7 @@ HashMap!(string, double)
         foreach (provider; providers)
         {
             auto results = timeAlgorithmOps(name, af, provider, rng, ns_per_provider, buf_size);
-            all_results[provider] = findFirstIn(results, { "", "update", "encrypt" });
+            all_results[provider] = findFirstIn(results, ["", "update", "encrypt"]);
         }
     }
     

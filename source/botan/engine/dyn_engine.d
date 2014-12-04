@@ -128,5 +128,5 @@ private:
 
 private nothrow @nogc extern(C):
 
-typedef Engine function() CreatorFunc;
-typedef uint function() ModuleVersionFunc;
+alias CreatorFunc = Engine function();
+alias ModuleVersionFunc = uint function();

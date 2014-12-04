@@ -656,9 +656,9 @@ public:
             if (algo_spec.algo_name == "PBKDF2" && algo_spec.argCount() == 1)
             {
                 if (const MessageAuthenticationCode mac_proto = af.prototypeMac(algo_spec.arg(0)))
-                    return new PKCS5PBKDF2(mac_proto.clone());
+                    return new PKCS5_PBKDF2(mac_proto.clone());
                 
-                return new PKCS5PBKDF2(af.makeMac("HMAC(" ~ algo_spec.arg(0) ~ ")"));
+                return new PKCS5_PBKDF2(af.makeMac("HMAC(" ~ algo_spec.arg(0) ~ ")"));
             }
         }
         

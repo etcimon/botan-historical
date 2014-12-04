@@ -583,7 +583,7 @@ size_t testCurveRegistry(RandomNumberGenerator rng)
         }
         catch(InvalidArgument e)
         {
-            writeln("Error testing curve " ~ oid_str " ~ - " ~ e.msg);
+            writeln("Error testing curve " ~ oid_str ~ " - " ~ e.msg);
             ++fails;
         }
     }
@@ -666,7 +666,7 @@ size_t testEccKeyWithRfc5915Extensions(RandomNumberGenerator rng)
     }
     catch(Exception e)
     {
-        writeln("Exception in " ~ __func__ " ~ - " ~ e.msg);
+        writeln("Exception in " ~ __PRETTY_FUNCTION__ ~ " - " ~ e.msg);
         ++fails;
     }
     

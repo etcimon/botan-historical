@@ -21,7 +21,7 @@ struct DefaultHashMapTraits(Key) {
     }
 }
 
-alias HashMap(Key, Value) = FreeListRef!(HashMap_Impl!(Key, Value));
+alias HashMap(Key, Value) = FreeListRef!(HashMapImpl!(Key, Value));
 
 struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
 {

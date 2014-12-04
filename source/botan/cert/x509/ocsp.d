@@ -145,22 +145,22 @@ public:
                 X509Time current_time = X509Time(Clock.currTime());
                 
                 if (response.certStatus() == 1)
-                    return Certificate_Status_Code.CERT_IS_REVOKED;
+                    return CertificateStatusCode.CERT_IS_REVOKED;
                 
                 if (response.thisUpdate() > current_time)
-                    return Certificate_Status_Code.OCSP_NOT_YET_VALID;
+                    return CertificateStatusCode.OCSP_NOT_YET_VALID;
                 
                 if (response.nextUpdate().timeIsSet() && current_time > response.nextUpdate())
-                    return Certificate_Status_Code.OCSP_HAS_EXPIRED;
+                    return CertificateStatusCode.OCSP_HAS_EXPIRED;
                 
                 if (response.certStatus() == 0)
-                    return Certificate_Status_Code.OCSP_RESPONSE_GOOD;
+                    return CertificateStatusCode.OCSP_RESPONSE_GOOD;
                 else
-                    return Certificate_Status_Code.OCSP_BAD_STATUS;
+                    return CertificateStatusCode.OCSP_BAD_STATUS;
             }
         }
         
-        return Certificate_Status_Code.OCSP_CERT_NOT_LISTED;
+        return CertificateStatusCode.OCSP_CERT_NOT_LISTED;
     }
 
 
@@ -206,7 +206,7 @@ void checkSignature(in Vector!ubyte tbs_response,
         throw new Exception("Information in OCSP response does not match cert");
 
     string padding = sig_info[1];
-    Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+    SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
     
     PKVerifier verifier = PKVerifier(*pub_key, padding, format);
     if (!verifier.verifyMessage(putInSequence(tbs_response), signature))

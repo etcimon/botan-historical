@@ -11,7 +11,6 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.charset;
 import botan.utils.parsing;
-import botan.calendar;
 import botan.utils.types;
 import std.conv : to;
 import std.array : Appender;

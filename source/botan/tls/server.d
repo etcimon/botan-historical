@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.tls.channel;
-import botan.credentials.credentials_manager;
+import botan.tls.credentials_manager;
 import botan.tls.handshake_state;
 import botan.tls.messages;
 import botan.tls.alert;
@@ -256,9 +256,9 @@ private:
                 
                 const string sni_hostname = state.clientHello().sniHostname();
                 
-				cert_chains = getServerCerts(sni_hostname, m_creds);
+                cert_chains = getServerCerts(sni_hostname, m_creds);
                 
-				if (sni_hostname != "" && cert_chains.empty)
+                if (sni_hostname != "" && cert_chains.empty)
                 {
                     cert_chains = getServerCerts("", m_creds);
                         
@@ -271,7 +271,7 @@ private:
                     */
                     if (!cert_chains.empty)
                         sendAlert(TLSAlert(TLSAlert.UNRECOGNIZED_NAME));
-               	}
+                   }
                 state.serverHello(
                     new ServerHello(    state.handshakeIo(),
                                         state.hash(),
@@ -279,10 +279,10 @@ private:
                                         makeHelloRandom(rng()), // new session ID
                                         state.Version(),
                                         chooseCiphersuite(m_policy,
-                                                              state.Version(),
-                                                               m_creds,
-                                                               cert_chains,
-                                                              state.clientHello()),
+                                                          state.Version(),
+                                                          m_creds,
+                                                          cert_chains,
+                                                          state.clientHello()),
                                         chooseCompression(m_policy, state.clientHello().compressionMethods()),
                                         state.clientHello().fragmentSize(),
                                         state.clientHello().secureRenegotiation(),
@@ -307,8 +307,8 @@ private:
                     
                     state.serverCerts(
                         new Certificate(state.handshakeIo(),
-                                    state.hash(),
-                                    cert_chains[sig_algo])
+                                        state.hash(),
+                                        cert_chains[sig_algo])
                     );
                 }
                 

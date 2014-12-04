@@ -137,7 +137,7 @@ public:
     /*
     * Return the GMP-based modular exponentiator
     */
-    ModularExponentiator modExp(in BigInt n, PowerMod.Usage_Hints) const
+    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints) const
     {
         return new GMPModularExponentiator(n);
     }

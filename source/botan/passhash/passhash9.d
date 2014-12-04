@@ -110,7 +110,7 @@ bool checkPasshash9(in string password, in string hash)
     if (!pbkdf_prf)
         return false; // unknown algorithm, reject
     
-    PKCS5PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
+    PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
     
     SecureVector!ubyte cmp = kdf.deriveKey(PASSHASH9_PBKDF_OUTPUT_LEN, password,
                                              &binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,

@@ -63,7 +63,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
             continue;
         }
         
-        Unique!HashFunction hash(proto.clone());
+        Unique!HashFunction hash = proto.clone();
         
         hash.update(hexDecode(in_hex));
         

@@ -24,7 +24,7 @@ public:
     /**
     * Whether to use uppercase or lowercase letters for the encoded string.
     */
-    typedef bool Case;
+	alias Case = bool;
     enum : Case { Uppercase, Lowercase }
 
     @property string name() const { return "HexEncoder"; }

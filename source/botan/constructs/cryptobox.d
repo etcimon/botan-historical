@@ -9,7 +9,6 @@ module botan.constructs.cryptobox;
 // import string;
 import botan.rng.rng;
 import botan.algo_base.symkey;
-import botan.cryptobox;
 import botan.filters.filters;
 import botan.filters.pipe;
 import botan.libstate.lookup;

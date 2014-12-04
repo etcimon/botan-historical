@@ -11,7 +11,7 @@ import botan.cert.x509.certstor;
 import botan.math.bigint.bigint;
 import botan.pubkey.pk_keys;
 import botan.algo_base.symkey;
-import botan.credentials.credentials_manager;
+import botan.tls.credentials_manager;
 import botan.cert.x509.x509path;
 import botan.utils.types;
 

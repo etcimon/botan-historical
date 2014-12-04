@@ -76,7 +76,7 @@ private:
     BigInt m_exp;
     size_t m_window_bits;
     Vector!BigInt m_g;
-    PowerMod.Usage_Hints m_hints;
+    PowerMod.UsageHints m_hints;
 }
 
 /**
@@ -206,7 +206,7 @@ private:
     BigInt m_exp, m_modulus, m_R_mod, m_R2_mod;
     word m_mod_prime;
     size_t m_mod_words, m_exp_bits, m_window_bits;
-    PowerMod.Usage_Hints m_hints;
+    PowerMod.UsageHints m_hints;
     Vector!BigInt m_g;
 }
 

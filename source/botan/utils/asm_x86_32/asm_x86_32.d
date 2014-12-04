@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.asm_x86_32.asm_x86_32;
-import std.conf : to;
+import std.conv : to;
 
 version(D_InlineAsm_X86) {
 
@@ -208,7 +208,7 @@ else {
     string ADD(string TO, string FROM) { return `"addl ` ~ FROM ~ `, ` ~ TO ~ `\n"`; }
     string ADD_IMM(string TO, int NUM) { return ADD(TO, IMM(NUM)); }
     string ADD_W_CARRY(string TO1, string TO2, string FROM) { return `"addl ` ~ FROM ~ `, ` ~ TO1 ~ `\n"
-																	  "adcl ` ~ IMM(0) ~ `, ` ~ TO2 ~ `\n"`; }
+                                                                      "adcl ` ~ IMM(0) ~ `, ` ~ TO2 ~ `\n"`; }
     string SUB_IMM(string TO, int NUM) { return `"subl ` ~ IMM(NUM) ~ `, ` ~ TO ~ `\n"`; }
     string ADD2_IMM(string TO, string FROM, int NUM) { return `"leal `  ~ NUM ~ `(` ~ FROM ~ `)` ~ `, ` ~ TO ~ `\n"`; }
     string ADD3_IMM(string TO, string FROM, int NUM) { return `"leal ` ~ NUM ~ `(` ~ TO ~ `, ` ~ FROM ~ `, 1), ` ~ TO ~ `\n"`; }

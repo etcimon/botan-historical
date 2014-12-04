@@ -21,7 +21,6 @@ import botan.pubkey.pubkey;
 import botan.kdf.kdf;
 import botan.tls.messages;
 import botan.tls.record;
-import functional;
 
 package:
 /**

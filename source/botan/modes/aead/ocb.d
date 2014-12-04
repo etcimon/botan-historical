@@ -584,7 +584,7 @@ Vector!ubyte ocbEncrypt(OCBEncryption ocb,
     
     ocb.start(&nonce[0], nonce.length);
     
-    SecureVector!ubyte buf(pt.begin(), pt.end());
+    SecureVector!ubyte buf = SecureVector!ubyte(pt.ptr[0 .. $]);
     ocb.finish(buf, 0);
     
     return unlock(buf);

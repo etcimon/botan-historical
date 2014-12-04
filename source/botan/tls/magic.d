@@ -13,7 +13,7 @@ package:
 /**
 * Protocol Constants for SSL/TLS
 */
-typedef ushort Size_Limits;
+alias ushort Size_Limits;
 enum : SizeLimits {
     TLS_HEADER_SIZE     = 5,
     DTLS_HEADER_SIZE    = TLS_HEADER_SIZE + 8,
@@ -23,10 +23,10 @@ enum : SizeLimits {
     MAX_CIPHERTEXT_SIZE = MAX_COMPRESSED_SIZE + 1024,
 }
 
-typedef ubyte Connection_Side;
+alias ubyte Connection_Side;
 enum : ConnectionSide { CLIENT = 1, SERVER = 2 }
 
-typedef ubyte RecordType;
+alias ubyte RecordType;
 enum : RecordType {
     NO_RECORD             = 0,
 
@@ -37,7 +37,7 @@ enum : RecordType {
     HEARTBEAT             = 24,
 }
 
-typedef ubyte HandshakeType;
+alias ubyte HandshakeType;
 enum : HandshakeType {
     HELLO_REQUEST         = 0,
     CLIENT_HELLO          = 1,
@@ -62,7 +62,7 @@ enum : HandshakeType {
     HANDSHAKE_NONE        = 255  // Null value
 }
 
-typedef ubyte Compression_Method;
+alias ubyte Compression_Method;
 enum : CompressionMethod {
     NO_COMPRESSION        = 0x00,
     DEFLATE_COMPRESSION   = 0x01

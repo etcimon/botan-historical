@@ -40,7 +40,7 @@ class IllegalPoint : Exception
 struct PointGFp
 {
 public:
-    typedef ubyte CompressionType;
+	alias CompressionType = ubyte;
     enum : CompressionType {
         UNCOMPRESSED      = 0,
         COMPRESSED        = 1,

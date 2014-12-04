@@ -8,12 +8,9 @@ module botan.utils.cpuid;
 
 import core.cpuid;
 import botan.utils.types;
-import iosfwd;
 import botan.utils.types;
 import botan.utils.get_byte;
 import botan.utils.mem_ops;
-import ostream;
-
 
 /**
 * A class handling runtime CPU feature detection
@@ -262,21 +259,25 @@ version(LDC) {
     {
         version(PreserveEBX)
         {
-            __asm { 
-                "xchg %1, %%ebx
-                cpuid 
-                xchg %1, %%ebx"
-                    : "=a" a, "=r" b, "=c" c, "=d" d 
-                        : "0" ain, "2" cin; 
-            }
+            mixin( q{
+				__asm { 
+	                "xchg %1, %%ebx
+	                cpuid 
+	                xchg %1, %%ebx"
+	                    : "=a" a, "=r" b, "=c" c, "=d" d 
+	                        : "0" ain, "2" cin; 
+	            }
+			} );
         }
         else
         {
-            __asm { 
-                "cpuid"
-                    : "=a" a, "=b" b, "=c" c, "=d" d 
-                        : "0" ain, "2" cin; 
-            }
+			mixin( q{
+	            __asm { 
+	                "cpuid"
+	                    : "=a" a, "=b" b, "=c" c, "=d" d 
+	                        : "0" ain, "2" cin; 
+	            }
+			});
 
         }
     }

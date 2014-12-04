@@ -7,7 +7,6 @@
 module botan.utils.dyn_load.dyn_load;
 // import string;
 //todo : Mac OSX
-import botan.build;
 import std.exception;
 
 version(linux)

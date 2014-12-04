@@ -130,7 +130,7 @@ public:
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_CAST) {
-            HANDLE_EVP_CIPHER_KEYLEN("cast(-128", EVP_cast5_ecb), 1, 16, 1);
+            HANDLE_EVP_CIPHER_KEYLEN("cast(-128", EVP_cast5_ecb, 1, 16, 1);
         }
 
         static if (!BOTAN_HAS_OPENSSL_NO_CAMELLIA) {

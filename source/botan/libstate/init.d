@@ -6,7 +6,6 @@
 */
 module botan.libstate.init;
 
-import botan.build;
 import botan.libstate.libstate;
 import botan.libstate.globalState;
 // import string;

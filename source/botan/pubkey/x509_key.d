@@ -295,14 +295,14 @@ unittest
     store.addCrl(crl2);
     
     result_u1 = x509PathValidate(user1_cert, restrictions, store);
-    if (result_u1.result() != Certificate_Status_Code.CERT_IS_REVOKED)
+    if (result_u1.result() != CertificateStatusCode.CERT_IS_REVOKED)
     {
         writeln("FAILED: User cert #1 was not revoked - " ~ result_u1.resultString());
         ++fails;
     }
     
     result_u2 = x509PathValidate(user2_cert, restrictions, store);
-    if (result_u2.result() != Certificate_Status_Code.CERT_IS_REVOKED)
+    if (result_u2.result() != CertificateStatusCode.CERT_IS_REVOKED)
     {
         writeln("FAILED: User cert #2 was not revoked - " ~ result_u2.resultString());
         ++fails;

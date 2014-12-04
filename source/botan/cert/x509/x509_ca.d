@@ -289,7 +289,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
     else
         throw new InvalidArgument("Unknown X.509 signing key type: " ~ algo_name);
     
-    Signature_Format format = (key.messageParts() > 1) ? DER_SEQUENCE : IEEE_1363;
+    SignatureFormat format = (key.messageParts() > 1) ? DER_SEQUENCE : IEEE_1363;
 
     padding ~= padding.data ~ '(' ~ proto_hash.name ~ ')';
     

@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-
+module botan.utils.parsing;
 import botan.utils.types;
 // import string;
 import botan.utils.types;
@@ -12,8 +12,6 @@ import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.charset;
 import botan.utils.get_byte;
-import istream;
-import functional;
 import botan.utils.containers.hashmap;
 /**
 * Parse a SCAN-style algorithm name

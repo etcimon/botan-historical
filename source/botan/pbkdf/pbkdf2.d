@@ -18,7 +18,7 @@ import botan.utils.rounding;
 /**
 * PKCS #5 PBKDF2
 */
-final class PKCS5PBKDF2 : PBKDF
+final class PKCS5_PBKDF2 : PBKDF
 {
 public:
     override @property string name() const
@@ -28,7 +28,7 @@ public:
 
     override PBKDF clone() const
     {
-        return new PKCS5PBKDF2(m_mac.clone());
+        return new PKCS5_PBKDF2(m_mac.clone());
     }
 
     /*

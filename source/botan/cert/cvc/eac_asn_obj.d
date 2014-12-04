@@ -417,7 +417,7 @@ public:
             throw new DecodingError(ss.data);
         }
         
-        Character_Set charset_is;
+        CharacterSet charset_is;
         charset_is = LATIN1_CHARSET;
         
         try

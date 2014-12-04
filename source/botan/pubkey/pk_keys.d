@@ -163,5 +163,5 @@ class PKKeyAgreementKey : PrivateKey
 /*
 * Typedefs
 */
-typedef PublicKey X509PublicKey;
-typedef PrivateKey PKCS8PrivateKey;
+alias X509PublicKey = PublicKey;
+alias PKCS8PrivateKey = PrivateKey;

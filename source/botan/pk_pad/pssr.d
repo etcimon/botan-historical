@@ -7,7 +7,7 @@
 module botan.pk_pad.pssr;
 
 import botan.pk_pad.emsa;
-import botan.m_hash.m_hash;
+import botan.hash.hash;
 import botan.utils.types;
 import botan.pk_pad.mgf1;
 import botan.utils.bit_ops;

@@ -84,7 +84,7 @@ public:
         
         foreach (fsname; fsnames[])
         {
-            fd_type fd = open(fsname.toStringz, flags);
+            FDType fd = open(fsname.toStringz, flags);
             
             if (fd >= 0 && fd < FD_SETSIZE)
                 m_devices.pushBack(fd);
@@ -99,7 +99,7 @@ public:
             close(device);
     }
 private:
-    typedef int fd_type;
+	alias FDType = int;
 
-    Vector!fd_type m_devices;
+    Vector!FDType m_devices;
 }

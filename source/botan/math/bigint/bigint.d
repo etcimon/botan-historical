@@ -36,13 +36,13 @@ public:
         return BigInt.encode(this, base).toString();
     }
 
-    typedef int Base;
+	alias Base = int;
     /**
     * Base enumerator for encoding and decoding
     */
     enum : Base { Decimal = 10, Hexadecimal = 16, Binary = 256 }
 
-    typedef bool Sign;
+	alias Sign = bool;
     /**
     * Sign symbol definitions for positive and negative numbers
     */
@@ -1086,7 +1086,7 @@ public:
         
         int relative_size = bigint_cmp(x.data(), x_sw, y.data(), y_sw);
         
-        BigInt z(BigInt.Positive, std.algorithm.max(x_sw, y_sw) + 1);
+        BigInt z = BigInt(BigInt.Positive, std.algorithm.max(x_sw, y_sw) + 1);
         
         if (relative_size < 0)
         {
@@ -1121,7 +1121,7 @@ public:
         const BigInt x = this;
         const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
-        BigInt z(BigInt.Positive, x.length + y.length);
+        BigInt z = BigInt(BigInt.Positive, x.length + y.length);
         
         if (x_sw == 1 && y_sw)
             bigint_linmul3(z.mutableData(), y.data(), y_sw, x.wordAt(0));
@@ -1209,7 +1209,7 @@ public:
         
         const size_t x_sw = x.sigWords();
         
-        BigInt y(x.sign(), x_sw + shift_words + (shift_bits ? 1 : 0));
+        BigInt y = BigInt(x.sign(), x_sw + shift_words + (shift_bits ? 1 : 0));
         bigint_shl2(y.mutableData(), x.data(), x_sw, shift_words, shift_bits);
         return y;
     }
@@ -1230,7 +1230,7 @@ public:
             shift_bits  = shift % MP_WORD_BITS,
             x_sw = x.sigWords();
         
-        BigInt y(x.sign(), x_sw - shift_words);
+        BigInt y = BigInt(x.sign(), x_sw - shift_words);
         bigint_shr2(y.mutableData(), x.data(), x_sw, shift_words, shift_bits);
         return y;
     }

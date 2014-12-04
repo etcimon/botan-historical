@@ -6,7 +6,6 @@
 */
 module botan.utils.types;
 
-import botan.build;
 public import botan.utils.memory.memory;
 public import botan.utils.memory.zeroize;
 public import botan.utils.containers.vector;
@@ -21,7 +20,7 @@ __gshared immutable size_t DEFAULT_BUFFERSIZE = 4096;
 * The two possible directions for cipher filters, determining whether they
 * actually perform encryption or decryption.
 */
-typedef Cipher_Dir = bool;
+alias CipherDir = bool;
 enum : CipherDir { ENCRYPTION, DECRYPTION }
 
 struct Pair(T, U) {

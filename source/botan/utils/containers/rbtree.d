@@ -603,7 +603,6 @@ struct RBNode(V)
 final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     if(is(typeof(binaryFun!less(T.init, T.init))))
 {
-    import std.range.constraints;
     import std.range : Take;
     import std.typetuple : allSatisfy;
     import std.traits;

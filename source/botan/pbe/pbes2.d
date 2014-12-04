@@ -161,11 +161,11 @@ public:
         if (m_salt.length < 8)
             throw new DecodingError("PBE-PKCS5 v2.0: Encoded salt is too small");
         
-        PKCS5_PBKDF2 pbkdf(m_prf.clone());
+        auto pbkdf = scoped!PKCS5_PBKDF2(m_prf.clone());
         
         m_key = pbkdf.deriveKey(m_key_length, passphrase,
-                                    m_salt.ptr, m_salt.length,
-                                 m_iterations).bitsOf();
+                                m_salt.ptr, m_salt.length,
+                                m_iterations).bitsOf();
     }
 
     /**
@@ -191,8 +191,8 @@ public:
         PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());
         
         m_key = pbkdf.deriveKey(m_key_length, passphrase,
-                                   m_salt.ptr, m_salt.length,
-                                 msec, m_iterations).bitsOf();
+                                m_salt.ptr, m_salt.length,
+                                msec, m_iterations).bitsOf();
     }
 
 private:
@@ -212,7 +212,7 @@ private:
         }
     }
 
-    Cipher_Dir m_direction;
+    CipherDir m_direction;
     Unique!BlockCipher m_block_cipher;
     Unique!MessageAuthenticationCode m_prf;
     SecureVector!ubyte m_salt, m_key, m_iv;

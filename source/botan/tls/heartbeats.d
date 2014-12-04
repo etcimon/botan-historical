@@ -22,7 +22,7 @@ import botan.utils.types;
 struct HeartbeatMessage
 {
 public:
-    typedef ubyte MessageType;
+    alias ubyte MessageType;
     enum MessageType { REQUEST = 1, RESPONSE = 2 }
 
     Vector!ubyte contents() const

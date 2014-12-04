@@ -66,8 +66,8 @@ else                          enum BOTAN_HAS_SIMD_SCALAR = false;
 
 version(No_SSE_Intrinsics){   enum BOTAN_NO_SSE_INTRINSICS = true;                                                       }
 else                          enum BOTAN_NO_SSE_INTRINSICS = false;
-version(Locking_Allocator){   enum BOTAN_HAS_LOCKING_ALLOCATOR = true;                                                   }
-else                          enum BOTAN_HAS_LOCKING_ALLOCATOR = false;
+//version(Locking_Allocator){   enum BOTAN_HAS_LOCKING_ALLOCATOR = true;                                                   }
+//else                          enum BOTAN_HAS_LOCKING_ALLOCATOR = false;
 
 version(Bench)           {    enum BOTAN_HAS_BENCHMARK = true;                                                           }
 else                          enum BOTAN_HAS_BENCHMARK = false;

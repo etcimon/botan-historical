@@ -13,7 +13,7 @@ import botan.codec.hex;
 import botan.utils.memory.memory;
 import botan.utils.types;
 
-class TLSCredentialsManagerTest : public TLSCredentialsManager
+class TLSCredentialsManagerTest : TLSCredentialsManager
 {
 public:
     this(in X509Certificate server_cert, in X509Certificate ca_cert, PrivateKey server_key) 

@@ -10,7 +10,19 @@
     "workingDirectory": "build",
     "configurations": [
         {
-            "name": "core"
+            "name": "all",
+			"versions": ["SIMD_Scalar", "Locking_Allocator", "RT_Test", "RT_Test_Priv", "RT_Test_Priv_Gen", "AES_NI", "Serpent_x86_32", 
+			"MD4_x86_32", "MD5_x86_32", "SHA1_x86_64", "SHA1_x86_32", "CFB", "ECB", "CBC", "XTS", "OFB", "CTR_BE", "AEAD_FILTER", 
+			"AEAD_CCM", "AEAD_EAX", "AEAD_OCB", "AEAD_GCM", "RFC6979", "RSA", "RW", "DLIES", "DSA", "ECDSA", "ElGamal", "GOST_3410", 
+			"Nyberg_Rueppel", "Diffie_Hellman", "ECDH", "AES", "Blowfish", "Camellia", "CAST", "Cascade", "DES", "GOST_28147", "IDEA", 
+			"KASUMI", "LION", "MARS", "MISTY1", "NOEKEON", "RC2", "RC5", "RC6", "SAFER", "SEED", "Serpent", "TEA", "Twofish", "Threefish", 
+			"XTEA", "Adler32", "CRC24", "CRC32", "GOST_3411", "HAS_160", "Keccak", "MD2", "MD4", "MD5", "RIPEMD_128", "RIPEMD_160", "SHA1", 
+			"SHA2_32", "SHA2_64", "Skein_512", "Tiger", "Whirlpool", "ParallelHash", "Comb4P", "CBC_MAC", "CMAC", "HMAC", "SSL3_MAC", 
+			"ANSI_X919_MAC", "PBKDF1", "PBKDF2", "RC4", "ChaCha", "Salsa20", "AES_SSSE3", "Serpent_SIMD", "Threefish_512_AVX2", 
+			"Noekeon_SIMD", "XTEA_SIMD", "IDEA_SSE2", "SHA1_SSE2", "Engine_ASM", "Engine_AES_ISA", "Engine_SIMD", "Engine_GNU_MP", 
+			"Entropy_HRTimer", "Entropy_Rdrand", "Entropy_DevRand", "Entropy_EGD", "Entropy_UnixProc", "Entropy_BEOS", "Entropy_CAPI", 
+			"Entropy_Win32", "Entropy_ProcWalk", "EMSA1", "EMSA1_BSI", "EMSA_X931", "EMSA_PKCS1", "EMSA_PSSR", "EMSA_RAW", "EME_OAEP", 
+			"EME_PKCS1v15", "PBE_PKCSv20", "GCM_CLMUL", "X931_RNG", "HMAC_DRBG"]
         },
         {
             "name": "openssl",

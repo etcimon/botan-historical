@@ -10,8 +10,6 @@ module botan.filters.pipe;
 import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.exceptn;
-import initializer_list;
-// import iosfwd; // std.stdio?
 static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
     import botan.fd_unix;
 
@@ -34,7 +32,7 @@ public:
     /**
     * An opaque type that identifies a message in this Pipe
     */
-    typedef size_t message_id;
+	alias message_id = size_t;
 
     /**
     * Exception if you use an invalid message as an argument to
@@ -47,8 +45,7 @@ public:
         * @param msg = the invalid message id that was used
         */
         this(in string where, message_id msg) {
-            super("Pipe::" ~ where ~ ": Invalid message number " ~
-                  to!string(msg));
+            super("Pipe::" ~ where ~ ": Invalid message number " ~ to!string(msg));
         }
     }
 

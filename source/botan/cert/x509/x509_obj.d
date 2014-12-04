@@ -113,7 +113,7 @@ public:
                 return false;
             
             string padding = sig_info[1];
-            Signature_Format format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
+            SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
             return verifier.verifyMessage(tbsData(), signature());

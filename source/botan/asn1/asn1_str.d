@@ -40,7 +40,7 @@ public:
     {
         BERObject obj = source.getNextObject();
         
-        Character_Set charset_is;
+        CharacterSet charset_is;
         
         if (obj.type_tag == ASN1Tag.BMP_STRING)
             charset_is = UCS2_CHARSET;
