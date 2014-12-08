@@ -191,7 +191,7 @@ public:
     { setExponent(e); return execute(); }
 
     /*
-    * Fixed_Base_Power_Mod Constructor
+    * FixedBasePowerMod Constructor
     */
     this(in BigInt b, in BigInt n, UsageHints hints = NO_HINTS)
     {

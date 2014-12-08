@@ -111,8 +111,8 @@ public:
     {
         const BigInt p = key.groupP();
         
-        m_powermod_g_p = Fixed_Base_Power_Mod(key.groupG(), p);
-        m_powermod_y_p = Fixed_Base_Power_Mod(key.getY(), p);
+        m_powermod_g_p = FixedBasePowerMod(key.groupG(), p);
+        m_powermod_y_p = FixedBasePowerMod(key.getY(), p);
         m_mod_p = ModularReducer(p);
     }
 
@@ -137,7 +137,7 @@ public:
     }
 
 private:
-    Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
+    FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
     ModularReducer m_mod_p;
 }
 

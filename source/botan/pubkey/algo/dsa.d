@@ -105,7 +105,7 @@ public:
     { 
         m_q = dsa.groupQ();
         m_x = dsa.getX();
-        m_powermod_g_p = Fixed_Base_Power_Mod(dsa.groupG(), dsa.groupP());
+        m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
         m_mod_q = dsa.groupQ();
     }
 
@@ -128,7 +128,7 @@ public:
                 k.randomize(rng, m_q.bits());
             while (k >= m_q);
             
-            auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt k2){ send(tid, m_mod_q.reduce(powermod_g_p2(k2))); }, thisTid, m_powermod_g_p, k);
+            auto tid = spawn((Tid tid, FixedBasePowerMod powermod_g_p2, BigInt k2){ send(tid, m_mod_q.reduce(powermod_g_p2(k2))); }, thisTid, m_powermod_g_p, k);
             
             s = inverseMod(k, m_q);
 
@@ -145,7 +145,7 @@ public:
 private:
     const BigInt m_q;
     const BigInt m_x;
-    Fixed_Base_Power_Mod m_powermod_g_p;
+    FixedBasePowerMod m_powermod_g_p;
     ModularReducer m_mod_q;
 }
 
@@ -160,8 +160,8 @@ public:
     {
         m_q = dsa.groupQ();
         m_y = dsa.getY();
-        m_powermod_g_p = Fixed_Base_Power_Mod(dsa.groupG(), dsa.groupP());
-        m_powermod_y_p = Fixed_Base_Power_Mod(y, dsa.groupP());
+        m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
+        m_powermod_y_p = FixedBasePowerMod(y, dsa.groupP());
         m_mod_p = ModularReducer(dsa.groupP());
         m_mod_q = ModularReducer(dsa.groupQ());
     }
@@ -190,7 +190,7 @@ public:
         
         s = inverseMod(s, q);
         
-        auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_g_p2, BigInt mod_q2, BigInt s2, BigInt i2) 
+        auto tid = spawn((Tid tid, FixedBasePowerMod powermod_g_p2, BigInt mod_q2, BigInt s2, BigInt i2) 
                          { send(tid, powermod_g_p2(mod_q2.multiply(s2, i2))); }, 
                             thisTid, m_powermod_g_p, m_mod_q, s, i);
         
@@ -206,7 +206,7 @@ private:
     const BigInt m_q;
     const BigInt m_y;
 
-    Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
+    FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
     ModularReducer m_mod_p, m_mod_q;
 }
 

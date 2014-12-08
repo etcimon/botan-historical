@@ -115,7 +115,7 @@ public:
     {
         m_q = nr.groupQ();
         m_x = nr.getX();
-        m_powermod_g_p = Fixed_Base_Power_Mod(nr.groupG(), nr.groupP());
+        m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ());
     }
 
@@ -149,7 +149,7 @@ public:
 private:
     const BigInt m_q;
     const BigInt m_x;
-    Fixed_Base_Power_Mod m_powermod_g_p;
+    FixedBasePowerMod m_powermod_g_p;
     ModularReducer m_mod_q;
 }
 
@@ -163,8 +163,8 @@ public:
     {
         m_q = nr.groupQ();
         m_y = nr.getY();
-        m_powermod_g_p = Fixed_Base_Power_Mod(nr.groupG(), nr.groupP());
-        m_powermod_y_p = Fixed_Base_Power_Mod(y, nr.groupP());
+        m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
+        m_powermod_y_p = FixedBasePowerMod(y, nr.groupP());
         m_mod_p = ModularReducer(nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ());
     }
@@ -189,7 +189,7 @@ public:
             throw new InvalidArgument("NR verification: Invalid signature");
         import std.concurrency : spawn, receiveOnly, send, thisTid;
 
-        auto tid = spawn((Tid tid, Fixed_Base_Power_Mod powermod_y_p2, BigInt c2) { send(tid, powermod_y_p2(c2)); }, thisTid, m_powermod_y_p, c );
+        auto tid = spawn((Tid tid, FixedBasePowerMod powermod_y_p2, BigInt c2) { send(tid, powermod_y_p2(c2)); }, thisTid, m_powermod_y_p, c );
         BigInt g_d = m_powermod_g_p(d);
         
         BigInt i = m_mod_p.multiply(g_d, receiveOnly!BigInt());
@@ -199,7 +199,7 @@ private:
     const BigInt m_q;
     const BigInt m_y;
 
-    Fixed_Base_Power_Mod m_powermod_g_p, m_powermod_y_p;
+    FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
     ModularReducer m_mod_p, m_mod_q;
 }
 
