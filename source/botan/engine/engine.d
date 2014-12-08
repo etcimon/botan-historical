@@ -6,7 +6,7 @@
 */
 module botan.engine.engine;
 
-public import botan.algo_base.scan_name;
+public import botan.algo_base.scan_token;
 public import botan.block.block_cipher;
 public import botan.stream.stream_cipher;
 public import botan.hash.hash;

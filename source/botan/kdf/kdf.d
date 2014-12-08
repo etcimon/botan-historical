@@ -9,12 +9,13 @@ import botan.utils.memory.zeroize;
 import botan.utils.types;
 // import string;
 import botan.libstate.libstate;
-import botan.algo_base.scan_name;
+import botan.algo_base.scan_token;
+import botan.constants;
 static if (BOTAN_HAS_KDF1)             import botan.kdf.kdf1;
 static if (BOTAN_HAS_KDF2)             import botan.kdf.kdf2;
 static if (BOTAN_HAS_X942_PRF)         import botan.kdf.prf_x942;
-static if (BOTAN_HAS_SSL_V3_PRF)     import botan.prf_ssl3;
-static if (BOTAN_HAS_TLS_V10_PRF)    import botan.kdf.prf_tls;
+static if (BOTAN_HAS_SSL_V3_PRF)       import botan.kdf.prf_ssl3;
+static if (BOTAN_HAS_TLS_V10_PRF)      import botan.kdf.prf_tls;
 
 /**
 * Key Derivation Function
@@ -109,7 +110,8 @@ public:
     }
 
     abstract KDF clone() const;
-private:
+
+protected:
     abstract SecureVector!ubyte
         derive(size_t key_len,
                  in ubyte* secret, size_t secret_len,
@@ -127,36 +129,36 @@ KDF getKdf(in string algo_spec)
     
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    if (request.algo_name == "Raw")
+    if (request.algoName == "Raw")
         return null; // No KDF
     
     static if (BOTAN_HAS_KDF1) {
-        if (request.algo_name == "KDF1" && request.argCount() == 1)
+        if (request.algoName == "KDF1" && request.argCount() == 1)
             return new KDF1(af.makeHashFunction(request.arg(0)));
     }
         
     static if (BOTAN_HAS_KDF2) {
-        if (request.algo_name == "KDF2" && request.argCount() == 1)
+        if (request.algoName == "KDF2" && request.argCount() == 1)
             return new KDF2(af.makeHashFunction(request.arg(0)));
     }
         
     static if (BOTAN_HAS_X942_PRF) { 
-        if (request.algo_name == "X9.42-PRF" && request.argCount() == 1)
+        if (request.algoName == "X9.42-PRF" && request.argCount() == 1)
             return new X942PRF(request.arg(0)); // OID
     }
         
     static if (BOTAN_HAS_SSL_V3_PRF) {
-        if (request.algo_name == "SSL3-PRF" && request.argCount() == 0)
+        if (request.algoName == "SSL3-PRF" && request.argCount() == 0)
             return new SSL3PRF;
     }
         
     static if (BOTAN_HAS_TLS_V10_PRF) {
-        if (request.algo_name == "TLS-PRF" && request.argCount() == 0)
+        if (request.algoName == "TLS-PRF" && request.argCount() == 0)
             return new TLSPRF;
     }
         
     static if (BOTAN_HAS_TLS_V12_PRF) {
-        if (request.algo_name == "TLS-12-PRF" && request.argCount() == 1)
+        if (request.algoName == "TLS-12-PRF" && request.argCount() == 1)
             return new TLS12PRF(af.makeMac("HMAC(" ~ request.arg(0) ~ ")"));
     }
     

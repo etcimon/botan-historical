@@ -6,6 +6,7 @@
 */
 module botan.stream.stream_cipher;
 
+import botan.constants;
 public import botan.algo_base.sym_algo;
 /**
 * Base class for all stream ciphers

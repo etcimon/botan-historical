@@ -6,11 +6,12 @@
 */
 module botan.pubkey.algo.dl_algo;
 
-import botan.pubkey.algo.dl_group;
+public import botan.pubkey.algo.dl_group;
 import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.workfactor;
+import botan.rng.rng;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 
@@ -109,7 +110,7 @@ class DLSchemePrivateKey : DLSchemePublicKey, PrivateKey
 {
 public:
 
-    bool checkKey(RandomNumberGenerator rng,
+	override bool checkKey(RandomNumberGenerator rng,
                   bool strong) const
     {
         const BigInt p = groupP();

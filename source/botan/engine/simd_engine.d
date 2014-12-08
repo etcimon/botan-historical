@@ -33,36 +33,36 @@ public:
                                   AlgorithmFactory) const
     {
         static if (BOTAN_HAS_AES_SSSE3) {
-            if (request.algo_name == "AES-128" && CPUID.hasSsse3())
+            if (request.algoName == "AES-128" && CPUID.hasSsse3())
                 return new AES128SSSE3;
-            if (request.algo_name == "AES-192" && CPUID.hasSsse3())
+            if (request.algoName == "AES-192" && CPUID.hasSsse3())
                 return new AES192SSSE3;
-            if (request.algo_name == "AES-256" && CPUID.hasSsse3())
+            if (request.algoName == "AES-256" && CPUID.hasSsse3())
                 return new AES256SSSE3;
         }
         
         static if (BOTAN_HAS_IDEA_SSE2) {
-            if (request.algo_name == "IDEA" && CPUID.hasSse2())
+            if (request.algoName == "IDEA" && CPUID.hasSse2())
                 return new IDEASSE2;
         }
         
         static if (BOTAN_HAS_NOEKEON_SIMD) {
-            if (request.algo_name == "Noekeon" && SIMD32.enabled())
+            if (request.algoName == "Noekeon" && SIMD32.enabled())
                 return new NoekeonSIMD;
         }
         
         static if (BOTAN_HAS_THREEFISH_512_AVX2) {
-            if (request.algo_name == "Threefish-512" && CPUID.hasAvx2())
+            if (request.algoName == "Threefish-512" && CPUID.hasAvx2())
                 return new Threefish512AVX2;
         }
         
         static if (BOTAN_HAS_SERPENT_SIMD) {
-            if (request.algo_name == "Serpent" && SIMD32.enabled())
+            if (request.algoName == "Serpent" && SIMD32.enabled())
                 return new SerpentSIMD;
         }
         
         static if (BOTAN_HAS_XTEA_SIMD) {
-            if (request.algo_name == "XTEA" && SIMD32.enabled())
+            if (request.algoName == "XTEA" && SIMD32.enabled())
                 return new XTEASIMD;
         }
         
@@ -73,7 +73,7 @@ public:
                            AlgorithmFactory) const
     {
         static if (BOTAN_HAS_SHA1_SSE2) {
-            if (request.algo_name == "SHA-160" && CPUID.hasSse2())
+            if (request.algoName == "SHA-160" && CPUID.hasSse2())
                 return new SHA160SSE2;
         }
 

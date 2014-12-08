@@ -20,7 +20,7 @@ import botan.utils.types;
 final class CTRBE : StreamCipher
 {
 public:
-    void cipher(in ubyte* input, ubyte* output, size_t length)
+	override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_pad.length - m_pad_pos)
         {
@@ -35,7 +35,7 @@ public:
     }
 
 
-    void setIv(in ubyte* iv, size_t iv_len)
+	override void setIv(in ubyte* iv, size_t iv_len)
     {
         if (!validIvLength(iv_len))
             throw new InvalidIVLength(name, iv_len);
@@ -60,7 +60,7 @@ public:
         m_pad_pos = 0;
     }
 
-    bool validIvLength(size_t iv_len) const
+	override bool validIvLength(size_t iv_len) const
     { return (iv_len <= m_cipher.blockSize()); }
 
     KeyLengthSpecification keySpec() const
@@ -73,7 +73,7 @@ public:
         return ("CTR-BE(" ~ m_cipher.name ~ ")");
     }
 
-    CTRBE clone() const
+	override CTRBE clone() const
     { return new CTRBE(m_cipher.clone()); }
 
     void clear()

@@ -18,7 +18,7 @@ import botan.utils.rounding;
 /**
 * IEEE P1619 XTS Mode
 */
-class XTSMode : CipherMode
+class XTSMode : CipherMode, Transformation
 {
 public:
     final override @property string name() const
@@ -98,7 +98,6 @@ protected:
             polyDouble(&m_tweak[i*BS], &m_tweak[(i-1)*BS], BS);
     }
 
-private:
     final override void keySchedule(in ubyte* key, size_t length)
     {
         const size_t key_half = length / 2;
@@ -110,6 +109,7 @@ private:
         m_tweak_cipher.setKey(&key[key_half], key_half);
     }
 
+private:
     Unique!BlockCipher m_cipher, m_tweak_cipher;
     SecureVector!ubyte m_tweak;
 }
@@ -117,7 +117,7 @@ private:
 /**
 * IEEE P1619 XTS Encryption
 */
-final class XTSEncryption : XTSMode
+final class XTSEncryption : XTSMode, Transformation
 {
 public:
     this(BlockCipher cipher) 
@@ -207,7 +207,7 @@ public:
 /**
 * IEEE P1619 XTS Decryption
 */
-final class XTSDecryption : XTSMode
+final class XTSDecryption : XTSMode, Transformation
 {
 public:
     this(BlockCipher cipher)

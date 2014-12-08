@@ -73,7 +73,7 @@ public:
     }
 
     ~this() {}
-private:
+protected:
     /**
     * Encode an input
     * @param input = the plaintext

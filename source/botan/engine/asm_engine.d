@@ -30,7 +30,7 @@ public:
                                 AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_SERPENT_X86_32) { 
-            if (request.algo_name == "Serpent")
+            if (request.algoName == "Serpent")
             {
                 
                 return new Serpent_X86_32;
@@ -43,16 +43,16 @@ public:
                           AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_MD4_X86_32) {
-            if (request.algo_name == "MD4")
+            if (request.algoName == "MD4")
                 return new MD4_X86_32;
         }
         
         static if (BOTAN_HAS_MD5_X86_32) {
-            if (request.algo_name == "MD5")
+            if (request.algoName == "MD5")
                 return new MD5_X86_32;
         }
         
-        if (request.algo_name == "SHA-160")
+        if (request.algoName == "SHA-160")
         {
             static if (BOTAN_HAS_SHA1_X86_64)
                 return new SHA160_X86_64;

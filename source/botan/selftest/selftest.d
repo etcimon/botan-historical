@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_SELFTESTS):
 
 import botan.algo_factory.algo_factory;
-import botan.algo_base.scan_name;
+import botan.algo_base.scan_token;
 import botan.utils.containers.hashmap;
 // import string;
 import botan.filters.filters;

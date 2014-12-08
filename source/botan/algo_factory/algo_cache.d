@@ -36,7 +36,7 @@ ubyte staticProviderWeight(in string prov_name)
 
 
 /**
-* Algorithm_Cache (used by AlgorithmFactory)
+* AlgorithmCache (used by AlgorithmFactory)
 */
 struct AlgorithmCache(T)
 {

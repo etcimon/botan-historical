@@ -21,7 +21,7 @@ import std.algorithm;
 * Base class for CCM encryption and decryption
 * @see RFC 3610
 */
-class CCMMode : AEADMode
+class CCMMode : AEADMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -101,10 +101,10 @@ public:
         m_ad_buf.clear();
     }
 
-    final size_t tagSize() const { return m_tag_size; }
+	override final size_t tagSize() const { return m_tag_size; }
 
 protected:
-    const size_t BS = 16; // intrinsic to CCM definition
+    __gshared immutable size_t BS = 16; // intrinsic to CCM definition
 
     /*
     * CCMMode Constructor
@@ -175,12 +175,13 @@ protected:
         
         return C;
     }
-private:
+
     final override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }
 
+protected:
     const size_t m_tag_size;
     const size_t m_L;
 
@@ -191,7 +192,7 @@ private:
 /**
 * CCM Encryption
 */
-final class CCMEncryption : CCMMode
+final class CCMEncryption : CCMMode, Transformation
 {
 public:
     /**
@@ -272,7 +273,7 @@ public:
 /**
 * CCM Decryption
 */
-final class CCMDecryption : CCMMode
+final class CCMDecryption : CCMMode, Transformation
 {
 public:
     /**

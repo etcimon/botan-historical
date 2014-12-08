@@ -8,11 +8,9 @@ public import botan.utils.types;
 /**
 * This class represents a symmetric algorithm object.
 */
-class SymmetricAlgorithm
+interface SymmetricAlgorithm
 {
 public:
-    ~this() {}
-    
     abstract void clear();
     
     /**
@@ -74,7 +72,7 @@ public:
     
     abstract @property string name() const;
     
-private:
+protected:
     /**
     * Run the key schedule
     * @param key = the key

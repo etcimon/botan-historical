@@ -10,6 +10,9 @@ import botan.math.bigint.bigint;
 import botan.libstate.libstate;
 import botan.engine.engine;
 
+alias FixedExponentPowerMod = FreeListRef!FixedExponentPowerModImpl;
+alias FixedBasePowerMod = FreeListRef!FixedBasePowerModImpl;
+
 /**
 * Modular Exponentiator Interface
 */
@@ -85,21 +88,19 @@ public:
     */
     void setModulus(in BigInt n, UsageHints hints = NO_HINTS)
     {
-        delete core;
-        core = null;
-        
+		m_core.clear();
         if (n != 0)
         {
             AlgorithmFactory af = globalState().algorithmFactory();
 
             foreach (Engine engine; af.engines) {
-                core = engine.modExp(n, hints);
+				m_core = engine.modExp(n, hints);
                 
-                if (core)
+				if (m_core)
                     break;
             }
             
-            if (!core)
+			if (!m_core)
                 throw new LookupError("PowerMod: Unable to find a working engine");
         }
     }
@@ -112,9 +113,9 @@ public:
         if (b.isZero() || b.isNegative())
             throw new InvalidArgument("PowerMod.setBase: arg must be > 0");
         
-        if (!core)
+		if (!m_core)
             throw new InternalError("PowerMod.setBase: core was NULL");
-        core.setBase(b);
+		m_core.setBase(b);
     }
 
     /*
@@ -125,9 +126,9 @@ public:
         if (e.isNegative())
             throw new InvalidArgument("PowerMod.setExponent: arg must be > 0");
         
-        if (!core)
+		if (!m_core)
             throw new InternalError("PowerMod.setExponent: core was NULL");
-        core.setExponent(e);
+		m_core.setExponent(e);
     }
 
     /*
@@ -135,48 +136,30 @@ public:
     */
     BigInt execute()
     {
-        if (!core)
+		if (!m_core)
             throw new InternalError("PowerMod.execute: core was NULL");
-        return core.execute();
-    }
-
-    /*
-    * PowerMod Assignment Operator
-    */
-    ref PowerMod opAssign(in PowerMod other)
-    {
-        delete core;
-        core = null;
-        if (other.core)
-            core = other.core.copy();
-        return this;
+		return m_core.execute();
     }
 
     this(in BigInt n, UsageHints hints = NO_HINTS)
     {
-        core = null;
         setModulus(n, hints);
     }
 
     this(in PowerMod other)
     {
-        core = null;
-        if (other.core)
-            core = other.core.copy();
+		if (other.m_core)
+			m_core = other.m_core.copy();
     }
 
-    ~this()
-    {
-        delete core;
-    }
 private:
-    ModularExponentiator core;
+    Unique!ModularExponentiator m_core;
 }
 
 /**
 * Fixed Exponent Modular Exponentiator Proxy
 */
-class FixedExponentPowerMod : PowerMod
+class FixedExponentPowerModImpl : PowerMod
 {
 public:
     BigInt opCall(in BigInt b) const
@@ -201,13 +184,12 @@ public:
 /**
 * Fixed Base Modular Exponentiator Proxy
 */
-class FixedBasePowerMod : PowerMod
+class FixedBasePowerModImpl : PowerMod
 {
 public:
     BigInt opCall(in BigInt e) const
     { setExponent(e); return execute(); }
 
-    this() {}
     /*
     * Fixed_Base_Power_Mod Constructor
     */

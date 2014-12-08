@@ -51,8 +51,7 @@ protected:
 /**
 * ElGamal Private Key
 */
-final class ElGamalPrivateKey : ElGamalPublicKey,
-                                 DLSchemePrivateKey
+final class ElGamalPrivateKey : ElGamalPublicKey, DLSchemePrivateKey
 {
 public:
     /*

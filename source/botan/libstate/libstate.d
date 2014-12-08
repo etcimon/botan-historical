@@ -9,7 +9,7 @@ module botan.libstate.libstate;
 public import botan.utils.types;
 public import botan.algo_factory.algo_factory;
 public import botan.libstate.lookup;
-import botan.libstate.globalState;
+import botan.libstate.global_state;
 import botan.rng.rng;
 import botan.utils.charset;
 import botan.engine.engine;
@@ -20,8 +20,10 @@ import botan.utils.containers.multimap;
 import std.algorithm;
 import core.sync.mutex;
 import std.typecons;
+import botan.entropy.entropy_src;
 import botan.utils.containers.hashmap;
 
+import botan.constants;
 static if (BOTAN_HAS_SELFTESTS)
     import botan.selftest.selftest;
 // Engines
@@ -195,7 +197,7 @@ private:
         return sources;
     }
 
-    shared Serialized_RNG m_global_prng;
+    shared SerializedRNG m_global_prng;
     __gshared Mutex m_entropy_src_mutex;
     __gshared Vector!( EntropySource ) m_sources;
 

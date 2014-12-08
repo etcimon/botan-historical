@@ -14,15 +14,15 @@ import std.algorithm;
 /**
 * A queue that knows how to zeroize itself
 */
-final class SecureQueue : FanoutFilter, DataSource
+final class SecureQueue : FanoutFilter, DataSource, Filterable
 {
 public:
-    @property string name() const { return "Queue"; }
+    override @property string name() const { return "Queue"; }
 
     /*
     * Add some bytes to the queue
     */
-    void write(in ubyte* input, size_t length)
+    override void write(in ubyte* input, size_t length)
     {
         if (!m_head)
             m_head = m_tail = new SecureQueueNode;
@@ -131,25 +131,7 @@ public:
         return count;
     }
 
-    bool attachable() { return false; }
-
-    /**
-    * SecureQueue assignment
-    * @param other = the queue to copy
-    */
-    SecureQueue opAssign(in SecureQueue input)
-    {
-        destroy();
-        m_head = m_tail = new SecureQueueNode;
-        SecureQueueNode temp = input.m_head;
-        while (temp)
-        {
-            write(&temp.buffer[temp.m_start], temp.m_end - temp.m_start);
-            temp = temp.m_next;
-        }
-        return this;
-    }
-
+    override bool attachable() { return false; }
 
     /**
     * SecureQueue default constructor (creates empty queue)

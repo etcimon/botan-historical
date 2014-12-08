@@ -6,6 +6,7 @@
 */
 module botan.utils.xorBuf;
 
+import botan.constants;
 import botan.utils.types;
 pure:
 /**

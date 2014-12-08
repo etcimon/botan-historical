@@ -18,7 +18,7 @@ public:
     /*
     * KDF2 Key Derivation Mechanism
     */
-    SecureVector!ubyte derive(size_t out_len,
+	override SecureVector!ubyte derive(size_t out_len,
                                in ubyte* secret, 
                                size_t secret_len,
                                in ubyte* P, 
@@ -45,8 +45,8 @@ public:
         return output;
     }
 
-    @property string name() const { return "KDF2(" ~ m_hash.name ~ ")"; }
-    KDF clone() const { return new KDF2(m_hash.clone()); }
+	override @property string name() const { return "KDF2(" ~ m_hash.name ~ ")"; }
+	override KDF clone() const { return new KDF2(m_hash.clone()); }
 
     this(HashFunction h) { m_hash = h; }
 private:

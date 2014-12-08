@@ -271,7 +271,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
     import std.array : Appender;
     Appender!string padding;
     
-    const string algo_name = key.algo_name;
+    const string algo_name = key.algoName;
     
     const HashFunction proto_hash = retrieveHash(hash_fn);
     if (!proto_hash)

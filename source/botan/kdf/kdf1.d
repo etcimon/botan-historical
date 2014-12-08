@@ -8,6 +8,7 @@ module botan.kdf.kdf1;
 
 import botan.kdf.kdf;
 import botan.hash.hash;
+import botan.utils.types;
 
 /**
 * KDF1, from IEEE 1363
@@ -18,7 +19,7 @@ public:
     /*
     * KDF1 Key Derivation Mechanism
     */
-    SecureVector!ubyte derive(size_t,
+	override SecureVector!ubyte derive(size_t,
                             in ubyte* secret, size_t secret_len,
                             in ubyte* P, size_t P_len) const
     {
@@ -28,8 +29,8 @@ public:
     }
 
 
-    @property string name() const { return "KDF1(" ~ m_hash.name ~ ")"; }
-    KDF clone() const { return new KDF1(m_hash.clone()); }
+	override @property string name() const { return "KDF1(" ~ m_hash.name ~ ")"; }
+	override KDF clone() const { return new KDF1(m_hash.clone()); }
 
     this(HashFunction h) 
     {

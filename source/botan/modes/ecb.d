@@ -20,10 +20,10 @@ import botan.utils.types;
 /**
 * ECB mode
 */
-class ECBMode : CipherMode
+class ECBMode : CipherMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const ubyte[], size_t nonce_len)
+    final override SecureVector!ubyte start(in ubyte*, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name(), nonce_len);
@@ -73,7 +73,7 @@ protected:
 
     final BlockCipherModePaddingMethod padding() const { return *m_padding; }
 
-private:
+protected:
     final override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, length);
@@ -86,7 +86,7 @@ private:
 /**
 * ECB Encryption
 */
-final class ECBEncryption : ECBMode
+final class ECBEncryption : ECBMode, Transformation
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding) 
@@ -139,7 +139,7 @@ public:
 /**
 * ECB Decryption
 */
-final class ECBDecryption : ECBMode
+final class ECBDecryption : ECBMode, Transformation
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)

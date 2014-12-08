@@ -11,15 +11,12 @@ static if (BOTAN_HAS_AEAD_OCB):
 
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
-import botan.filters.buf_filt;
 
 import botan.cmac.cmac;
 import botan.utils.xorBuf;
 import botan.utils.bit_ops;
 import botan.utils.types;
 import std.algorithm;
-
-class Lcomputer;
 
 /**
 * OCB Mode (base class for OCBEncryption and OCBDecryption). Note
@@ -30,7 +27,7 @@ class Lcomputer;
 * @see Free Licenses http://www.cs.ucdavis.edu/~rogaway/ocb/license.htm
 * @see OCB home page http://www.cs.ucdavis.edu/~rogaway/ocb
 */
-class OCBMode : AEADMode
+class OCBMode : AEADMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -108,12 +105,12 @@ protected:
     final override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, length);
-        m_L = new Lcomputer(*m_cipher);
+        m_L = new LComputer(*m_cipher);
     }
 
     // fixme make these private
     Unique!BlockCipher m_cipher;
-    Unique!L_computer m_L;
+    Unique!LComputer m_L;
 
     size_t m_block_index = 0;
 
@@ -170,7 +167,7 @@ private:
     SecureVector!ubyte m_stretch;
 }
 
-final class OCBEncryption : OCBMode
+final class OCBEncryption : OCBMode, Transformation
 {
 public:
     /**
@@ -253,7 +250,7 @@ public:
 private:
     void encrypt(ubyte* buffer, size_t blocks)
     {
-        const L_computer L = *m_L; // convenient name
+        const LComputer L = *m_L; // convenient name
         
         const size_t par_blocks = m_checksum.length / BS;
         
@@ -277,7 +274,7 @@ private:
     }
 }
 
-final class OCBDecryption : OCBMode
+final class OCBDecryption : OCBMode, Transformation
 {
 public:
     /**
@@ -376,7 +373,7 @@ public:
 private:
     void decrypt(ubyte* buffer, size_t blocks)
     {
-        const L_computer L = *m_L; // convenient name
+        const LComputer L = *m_L; // convenient name
         
         const size_t par_bytes = m_cipher.parallelBytes();
         
@@ -410,7 +407,7 @@ private:
 __gshared immutable size_t BS = 16; // intrinsic to OCB definition
 
 // Has to be in Botan namespace so unique_ptr can reference it
-final class Lcomputer
+final class LComputer
 {
 public:
     this(in BlockCipher cipher)
@@ -464,7 +461,7 @@ private:
 /*
 * OCB's HASH
 */
-SecureVector!ubyte ocbHash(in Lcomputer L,
+SecureVector!ubyte ocbHash(in LComputer L,
                           const BlockCipher cipher,
                           in ubyte* ad, size_t ad_len)
 {

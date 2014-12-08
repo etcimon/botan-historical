@@ -14,6 +14,7 @@ import botan.mac.mac;
 import botan.utils.get_byte;
 import botan.utils.xorBuf;
 import botan.utils.rounding;
+import std.datetime;
 
 /**
 * PKCS #5 PBKDF2

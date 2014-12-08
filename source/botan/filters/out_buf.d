@@ -103,7 +103,6 @@ public:
         return (m_offset + m_buffers.length);
     }
 
-    this() { m_offset = 0; }
     ~this()
     {
         for (size_t j = 0; j != m_buffers.length; ++j)

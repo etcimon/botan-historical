@@ -31,7 +31,7 @@ static if (BOTAN_HAS_GCM_CLMUL) {
 /**
 * GCM Mode
 */
-class GCMMode : AEADMode
+class GCMMode : AEADMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -134,7 +134,7 @@ protected:
 /**
 * GCM Encryption
 */
-final class GCMEncryption : GCMMode
+final class GCMEncryption : GCMMode, Transformation
 {
 public:
     /**
@@ -172,7 +172,7 @@ public:
 /**
 * GCM Decryption
 */
-final class GCMDecryption : GCMMode
+final class GCMDecryption : GCMMode, Transformation
 {
 public:
     /**
@@ -297,7 +297,7 @@ public:
     }
 
     @property string name() const { return "GHASH"; }
-private:
+
     override void keySchedule(in ubyte* key, size_t length)
     {
         m_H.replace(key[0 .. key+length]);
@@ -306,7 +306,7 @@ private:
         m_text_len = 0;
     }
 
-
+private:
     void gcmMultiply(SecureVector!ubyte x) const
     {
         static if (BOTAN_HAS_GCM_CLMUL) {

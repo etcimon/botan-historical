@@ -9,8 +9,9 @@ module botan.pubkey.pk_ops;
 import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
+public import botan.asn1.alg_id;
+public import botan.rng.rng;
 import botan.utils.memory.zeroize;
-import botan.rng.rng;
 
 /**
 * Public key encryption interface

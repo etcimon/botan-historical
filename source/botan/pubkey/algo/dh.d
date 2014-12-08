@@ -60,9 +60,7 @@ protected:
 /**
 * This class represents Diffie-Hellman private keys.
 */
-class DHPrivateKey : DHPublicKey,
-                      PKKeyAgreementKey,
-                      DLSchemePrivateKey
+class DHPrivateKey : DHPublicKey, PKKeyAgreementKey, DLSchemePrivateKey
 {
 public:
     /*

@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.libstate.globalState;
+module botan.libstate.global_state;
 import botan.libstate.libstate;
 
 /// Thread-Local, no locks needed.

@@ -145,7 +145,7 @@ public:
         
         static if (!BOTAN_HAS_OPENSSL_NO_RC5) {
             /*
-            if (request.algo_name == "RC5")
+            if (request.algoName == "RC5")
                 if (request.argAsInteger(0, 12) == 12)
                     return new EVP_BlockCipher(EVP_rc5_32_12_16_ecb,
                                                "RC5(12)", 1, 32, 1);
@@ -169,9 +169,9 @@ public:
     StreamCipher findStreamCipher(in SCANToken request,
                                     AlgorithmFactory) const
     {
-        if (request.algo_name == "RC4")
+        if (request.algoName == "RC4")
             return new RC4OpenSSL(request.argAsInteger(0, 0));
-        if (request.algo_name == "RC4_drop")
+        if (request.algoName == "RC4_drop")
             return new RC4OpenSSL(768);
         
         return 0;
@@ -185,41 +185,41 @@ public:
                            AlgorithmFactory af) const
     {
         static if (!BOTAN_HAS_OPENSSL_NO_SHA) {
-            if (request.algo_name == "SHA-160")
+            if (request.algoName == "SHA-160")
                 return new EVPHashFunction(EVP_sha1(), "SHA-160");
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_SHA256) {
-            if (request.algo_name == "SHA-224")
+            if (request.algoName == "SHA-224")
                 return new EVPHashFunction(EVP_sha224(), "SHA-224");
-            if (request.algo_name == "SHA-256")
+            if (request.algoName == "SHA-256")
                 return new EVPHashFunction(EVP_sha256(), "SHA-256");
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_SHA512) {
-            if (request.algo_name == "SHA-384")
+            if (request.algoName == "SHA-384")
                 return new EVPHashFunction(EVP_sha384(), "SHA-384");
-            if (request.algo_name == "SHA-512")
+            if (request.algoName == "SHA-512")
                 return new EVPHashFunction(EVP_sha512(), "SHA-512");
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_MD2) {
-            if (request.algo_name == "MD2")
+            if (request.algoName == "MD2")
                 return new EVPHashFunction(EVP_md2(), "MD2");
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_MD4) {
-            if (request.algo_name == "MD4")
+            if (request.algoName == "MD4")
                 return new EVPHashFunction(EVP_md4(), "MD4");
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_MD5) {
-            if (request.algo_name == "MD5")
+            if (request.algoName == "MD5")
                 return new EVPHashFunction(EVP_md5(), "MD5");
         }
         
         static if (!BOTAN_HAS_OPENSSL_NO_RIPEMD) {
-            if (request.algo_name == "RIPEMD-160")
+            if (request.algoName == "RIPEMD-160")
                 return new EVPHashFunction(EVP_ripemd160(), "RIPEMD-160");
         }
         
@@ -592,13 +592,13 @@ private:
 
 string hANDLEEVPCIPHER(string NAME, alias EVP)()
 {
-    return `if (request.algo_name == ` ~ NAME ~ ` && request.argCount() == 0)
+    return `if (request.algoName == ` ~ NAME ~ ` && request.argCount() == 0)
                 return new EVP_BlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ NAME ~ `);`;
 }
 
 
 string hANDLEEVPCIPHERKEYLEN(string NAME, alias EVP, ubyte MIN, ubyte MAX, ubyte MOD)() {
-    return `if (request.algo_name == ` ~ NAME ~ ` && request.argCount() == 0)
+    return `if (request.algoName == ` ~ NAME ~ ` && request.argCount() == 0)
                 return new EVP_BlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ 
         NAME ~ `, ` ~ MIN.stringof ~ `, ` ~ MAX.stringof ~ `, ` ~ MOD.stringof ~ `);`;
 }

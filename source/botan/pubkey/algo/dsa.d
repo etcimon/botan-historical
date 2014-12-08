@@ -24,13 +24,12 @@ class DSAPublicKey : DLSchemePublicKey
 public:
     @property string algoName() const { return "DSA"; }
 
-    DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_57; }
+    override DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_57; }
     size_t messageParts() const { return 2; }
     size_t messagePartSize() const { return groupQ().bytes(); }
     size_t maxInputBits() const { return groupQ().bits(); }
 
-    this(in AlgorithmIdentifier alg_id,
-                      in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
         super(alg_id, key_bits, DLGroup.ANSI_X9_57);
     }
@@ -50,8 +49,7 @@ protected:
 /**
 * DSA Private Key
 */
-final class DSAPrivateKey : DSAPublicKey,
-                             DLSchemePrivateKey
+final class DSAPrivateKey : DSAPublicKey, DLSchemePrivateKey, PrivateKey
 {
 public:
     /*

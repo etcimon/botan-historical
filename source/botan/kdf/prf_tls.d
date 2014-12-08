@@ -21,7 +21,7 @@ public:
     /*
     * TLS PRF
     */
-    SecureVector!ubyte derive(size_t key_len,
+    override SecureVector!ubyte derive(size_t key_len,
                             in ubyte* secret, size_t secret_len,
                             in ubyte* seed, size_t seed_len) const
     {
@@ -38,8 +38,8 @@ public:
         return output;
     }
 
-    @property string name() const { return "TLS-PRF"; }
-    KDF clone() const { return new TLSPRF; }
+	override @property string name() const { return "TLS-PRF"; }
+	override KDF clone() const { return new TLSPRF; }
 
     /*
     * TLS PRF Constructor and Destructor
@@ -61,7 +61,7 @@ private:
 class TLS12PRF : KDF
 {
 public:
-    SecureVector!ubyte derive(size_t key_len,
+	override SecureVector!ubyte derive(size_t key_len,
                                    in ubyte* secret, size_t secret_len,
                                    in ubyte* seed, size_t seed_len) const
     {
@@ -72,8 +72,8 @@ public:
         return output;
     }
 
-    @property string name() const { return "TLSv12-PRF(" ~ m_hmac.name ~ ")"; }
-    KDF clone() const { return new TLS12PRF(m_hmac.clone()); }
+	override @property string name() const { return "TLSv12-PRF(" ~ m_hmac.name ~ ")"; }
+	override KDF clone() const { return new TLS12PRF(m_hmac.clone()); }
 
     /*
     * TLS v1.2 PRF Constructor and Destructor

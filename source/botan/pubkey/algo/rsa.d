@@ -17,7 +17,6 @@ import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;
-import future;
 
 /**
 * RSA Public Key

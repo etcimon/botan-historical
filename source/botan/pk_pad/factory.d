@@ -9,7 +9,7 @@ module botan.pk_pad.factory;
 import botan.pk_pad.emsa;
 import botan.pk_pad.eme;
 import botan.libstate.libstate;
-import botan.algo_base.scan_name;
+import botan.algo_base.scan_token;
 import botan.utils.exceptn;
 
 static if (BOTAN_HAS_EMSA1)          import botan.pk_pad.emsa1;
@@ -34,11 +34,11 @@ EMSA getEmsa(in string algo_spec)
     AlgorithmFactory af = globalState().algorithmFactory();
     
     static if (BOTAN_HAS_EMSA_RAW) {
-        if (request.algo_name == "Raw" && request.argCount() == 0)
+        if (request.algoName == "Raw" && request.argCount() == 0)
             return new EMSARaw;
     }
     
-    if (request.algo_name == "EMSA1" && request.argCount() == 1)
+    if (request.algoName == "EMSA1" && request.argCount() == 1)
     {
         static if (BOTAN_HAS_EMSA_RAW) {
             if (request.arg(0) == "Raw")
@@ -51,17 +51,17 @@ EMSA getEmsa(in string algo_spec)
     }
     
     static if (BOTAN_HAS_EMSA1_BSI) {
-        if (request.algo_name == "EMSA1_BSI" && request.argCount() == 1)
+        if (request.algoName == "EMSA1_BSI" && request.argCount() == 1)
             return new EMSA1BSI(af.makeHashFunction(request.arg(0)));
     }
     
     static if (BOTAN_HAS_EMSA_X931) {
-        if (request.algo_name == "EMSA_X931" && request.argCount() == 1)
+        if (request.algoName == "EMSA_X931" && request.argCount() == 1)
             return new EMSAX931(af.makeHashFunction(request.arg(0)));
     }
     
     static if (BOTAN_HAS_EMSA_PKCS1) {
-        if (request.algo_name == "EMSA_PKCS1" && request.argCount() == 1)
+        if (request.algoName == "EMSA_PKCS1" && request.argCount() == 1)
         {
             if (request.arg(0) == "Raw")
                 return new EMSAPKCS1v15Raw;
@@ -70,7 +70,7 @@ EMSA getEmsa(in string algo_spec)
     }
     
     static if (BOTAN_HAS_EMSA_PSSR) {
-        if (request.algo_name == "PSSR" && request.argCountBetween(1, 3))
+        if (request.algoName == "PSSR" && request.argCountBetween(1, 3))
         {
             // 3 args: Hash, MGF, salt size (MGF is hardcoded MGF1 in Botan)
             if (request.argCount() == 1)
@@ -96,18 +96,18 @@ EME getEme(in string algo_spec)
 {
     SCANToken request = SCANToken(algo_spec);
     
-    if (request.algo_name == "Raw")
+    if (request.algoName == "Raw")
         return null; // No padding
     
     static if (BOTAN_HAS_EME_PKCS1v15) {
-        if (request.algo_name == "PKCS1v15" && request.argCount() == 0)
+        if (request.algoName == "PKCS1v15" && request.argCount() == 0)
             return new EMEPKCS1v15;
     }
     
     static if (BOTAN_HAS_EME_OAEP) {
         AlgorithmFactory af = globalState().algorithmFactory();
         
-        if (request.algo_name == "OAEP" && request.argCountBetween(1, 2))
+        if (request.algoName == "OAEP" && request.argCountBetween(1, 2))
         {
             if (request.argCount() == 1 ||
                 (request.argCount() == 2 && request.arg(1) == "MGF1"))

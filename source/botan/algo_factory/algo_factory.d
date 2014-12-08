@@ -304,11 +304,11 @@ private:
     
     Vector!Engine m_engines;
     
-    Algorithm_Cache!BlockCipher m_block_cipher_cache;
-    Algorithm_Cache!StreamCipher m_stream_cipher_cache;
-    Algorithm_Cache!HashFunction m_hash_cache;
-    Algorithm_Cache!MessageAuthenticationCode m_mac_cache;
-    Algorithm_Cache!PBKDF m_pbkdf_cache;
+    AlgorithmCache!BlockCipher m_block_cipher_cache;
+    AlgorithmCache!StreamCipher m_stream_cipher_cache;
+    AlgorithmCache!HashFunction m_hash_cache;
+    AlgorithmCache!MessageAuthenticationCode m_mac_cache;
+    AlgorithmCache!PBKDF m_pbkdf_cache;
 }
 
 private:
@@ -348,7 +348,7 @@ T factoryPrototype(T)(in string algo_spec,
                              in string provider,
                              in Vector!( Engine ) engines,
                              AlgorithmFactory af,
-                             Algorithm_Cache!T cache) const {
+                             AlgorithmCache!T cache) const {
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
 

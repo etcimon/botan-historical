@@ -14,7 +14,7 @@ public import botan.pubkey.pk_keys;
 public import botan.pubkey.pk_ops;
 public import botan.algo_base.symkey;
 public import botan.utils.types;
-import botan.rng.rng;
+public import botan.rng.rng;
 import botan.pk_pad.eme;
 import botan.pk_pad.emsa;
 import botan.kdf.kdf;
@@ -81,7 +81,7 @@ public:
     this() {}
     ~this() {}
 
-private:
+protected:
     abstract Vector!ubyte enc(in ubyte*, size_t, RandomNumberGenerator) const;
 }
 
@@ -115,7 +115,7 @@ public:
     this() {}
     ~this() {}
 
-private:
+protected:
     abstract SecureVector!ubyte dec(in ubyte*, size_t) const;
 }
 
@@ -250,7 +250,7 @@ public:
         }
         
         if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
-            throw new LookupError("Signing with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Signing with " ~ key.algoName ~ " not supported");
         
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
@@ -431,7 +431,7 @@ public:
         }
         
         if (!m_op)
-            throw new LookupError("Verification with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Verification with " ~ key.algoName ~ " not supported");
         
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
@@ -545,7 +545,7 @@ public:
         }
         
         if (!m_op)
-            throw new LookupError("Key agreement with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Key agreement with " ~ key.algoName ~ " not supported");
         
         m_kdf = getKdf(kdf_name);
     }
@@ -563,7 +563,7 @@ public:
     /*
     * Return the max size, in bytes, of a message
     */
-    size_t maximumInputSize() const
+    override size_t maximumInputSize() const
     {
         if (!m_eme)
             return (m_op.maxInputBits() / 8);
@@ -589,7 +589,7 @@ public:
         }
         
         if (!m_op)
-            throw new LookupError("Encryption with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Encryption with " ~ key.algoName ~ " not supported");
         
         m_eme = getEme(eme_name);
     }
@@ -643,7 +643,7 @@ public:
         }
         
         if (!m_op)
-            throw new LookupError("Decryption with " ~ key.algo_name ~ " not supported");
+            throw new LookupError("Decryption with " ~ key.algoName ~ " not supported");
         
         m_eme = getEme(eme_name);
     }

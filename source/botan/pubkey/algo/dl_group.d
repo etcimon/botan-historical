@@ -226,16 +226,6 @@ public:
     }
 
     /**
-    * Construct a DL group with uninitialized internal value.
-    * Use this constructor is you wish to set the groups values
-    * from a DER or PEM encoded group.
-    */
-    this()
-    {
-        m_initialized = false;
-    }
-
-    /**
     * Construct a DL group that is registered in the configuration.
     * @param name = the name that is configured in the global configuration
     * for the desired group. If no configuration file is specified,

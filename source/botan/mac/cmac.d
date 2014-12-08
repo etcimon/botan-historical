@@ -24,16 +24,16 @@ public:
     /*
     * Return the name of this type
     */
-    @property string name() const
+	override @property string name() const
     {
         return "CMAC(" ~ m_cipher.name ~ ")";
     }
 
-    @property size_t outputLength() const { return m_cipher.blockSize(); }
+	override @property size_t outputLength() const { return m_cipher.blockSize(); }
     /*
     * Return a clone of this object
     */
-    MessageAuthenticationCode clone() const
+	override MessageAuthenticationCode clone() const
     {
         return new CMAC(m_cipher.clone());
     }

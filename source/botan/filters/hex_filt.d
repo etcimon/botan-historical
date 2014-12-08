@@ -18,7 +18,7 @@ import std.algorithm;
 * Converts arbitrary binary data to hex strings, optionally with
 * newlines inserted
 */
-final class HexEncoder : Filter
+final class HexEncoder : Filter, Filterable
 {
 public:
     /**
@@ -27,12 +27,12 @@ public:
 	alias Case = bool;
     enum : Case { Uppercase, Lowercase }
 
-    @property string name() const { return "HexEncoder"; }
+	override @property string name() const { return "HexEncoder"; }
 
     /*
     * Convert some data into hex format
     */
-    void write(in ubyte* input, size_t length)
+	override void write(in ubyte* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -55,7 +55,7 @@ public:
     /*
     * Flush buffers
     */
-    void endMsg()
+	override void endMsg()
     {
         encodeAndSend(m_input.ptr, m_position);
         if (m_counter && m_line_length)
@@ -131,15 +131,15 @@ private:
 /**
 * Converts hex strings to bytes
 */
-final class HexDecoder : Filter
+final class HexDecoder : Filter, Filterable
 {
 public:
-    @property string name() const { return "HexDecoder"; }
+	override @property string name() const { return "HexDecoder"; }
 
     /*
     * Convert some data from hex format
     */
-    void write(in ubyte* input, size_t length)
+	override void write(in ubyte* input, size_t length)
     {
         while (length)
         {
@@ -172,7 +172,7 @@ public:
     /*
     * Flush buffers
     */
-    void endMsg()
+	override void endMsg()
     {
         size_t consumed = 0;
         size_t written = hexDecode(m_output.ptr,

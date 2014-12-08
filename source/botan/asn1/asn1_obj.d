@@ -15,6 +15,7 @@ import botan.utils.parsing;
 import botan.utils.memory.zeroize;
 import botan.utils.exceptn;
 import std.conv : to;
+import botan.utils.types;
 
 /**
 * ASN.1 Type and Class Tags

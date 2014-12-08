@@ -11,6 +11,9 @@ import botan.filters.data_src;
 import botan.math.bigint.bigint;
 import botan.utils.get_byte;
 import botan.utils.types;
+import botan.utils.memory.memory;
+
+public:
 
 alias BERDecoder = FreeListRef!BERDecoderImpl;
 
@@ -576,8 +579,8 @@ public:
         else
             m_source.drop();
     }
-private:
-    BERDecoder m_parent;
+protected:
+    BERDecoderImpl m_parent;
     Unique!DataSource m_source;
     BERObject m_pushed;
     bool m_owns;
@@ -699,3 +702,5 @@ size_t findEoc(DataSource ber)
     }
     return length;
 }
+
+

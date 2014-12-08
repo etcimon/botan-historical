@@ -665,7 +665,7 @@ public:
                 throw new InternalError("Expected RSA kex but no server kex key set");
             
             if (!cast(const RSAPrivateKey)(server_rsa_kex_key))
-                throw new InternalError("Expected RSA key but got " ~ server_rsa_kex_key.algo_name);
+                throw new InternalError("Expected RSA key but got " ~ server_rsa_kex_key.algoName);
             
             auto decryptor = scoped!PKDecryptorEME(*server_rsa_kex_key, "PKCS1v15");
             
@@ -755,7 +755,7 @@ public:
                 
                 if (!ka_key)
                     throw new InternalError("Expected key agreement key type but got " ~
-                                             private_key.algo_name);
+                                             private_key.algoName);
                 
                 try
                 {
@@ -763,14 +763,14 @@ public:
                     
                     Vector!ubyte client_pubkey;
                     
-                    if (ka_key.algo_name == "DH")
+                    if (ka_key.algoName == "DH")
                         client_pubkey = reader.getRange!ubyte(2, 0, 65535);
                     else
                         client_pubkey = reader.getRange!ubyte(1, 0, 255);
                     
                     SecureVector!ubyte shared_secret = ka.deriveKey(0, client_pubkey).bitsOf();
                     
-                    if (ka_key.algo_name == "DH")
+                    if (ka_key.algoName == "DH")
                         shared_secret = stripLeadingZeros(shared_secret);
                     
                     if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
@@ -1004,7 +1004,7 @@ public:
             else
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
                                         "Expected a RSA key in server cert but got " ~
-                                        server_public_key.algo_name);
+                                        server_public_key.algoName);
         }
         
         state.hash().update(io.send(this));
@@ -1287,7 +1287,7 @@ public:
         {
             SecureVector!ubyte md5_sha = state.hash().finalSSL3(state.sessionKeys().masterSecret());
             
-            if (priv_key.algo_name == "DSA")
+            if (priv_key.algoName == "DSA")
                 m_signature = signer.signMessage(&md5_sha[16], md5_sha.length-16, rng);
             else
                 m_signature = signer.signMessage(md5_sha, rng);

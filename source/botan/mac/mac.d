@@ -5,10 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.mac.mac;
-import botan.algo_base.buf_comp;
-import botan.algo_base.sym_algo;
-// import string;
 
+import botan.constants;
+public import botan.algo_base.sym_algo;
+import botan.algo_base.buf_comp;
 import botan.utils.mem_ops;
 
 /**

@@ -22,7 +22,7 @@ import std.algorithm;
 /**
 * EAX base class
 */
-class EAXMode : AEADMode
+class EAXMode : AEADMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -119,7 +119,7 @@ protected:
 /**
 * EAX Encryption
 */
-final class EAXEncryption : EAXMode
+final class EAXEncryption : EAXMode, Transformation
 {
 public:
     /**
@@ -161,7 +161,7 @@ public:
 /**
 * EAX Decryption
 */
-final class EAXDecryption : EAXMode
+final class EAXDecryption : EAXMode, Transformation
 {
 public:
     /**

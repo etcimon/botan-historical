@@ -19,7 +19,7 @@ import botan.utils.rounding;
 /**
 * CBC Mode
 */
-class CBCMode : CipherMode
+class CBCMode : CipherMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -61,7 +61,7 @@ public:
         return cipher().blockSize();
     }
 
-    final override bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return (n == 0 || n == cipher().blockSize());
     }
@@ -93,12 +93,12 @@ protected:
 
     final ubyte* statePtr() { return m_state.ptr; }
 
-private:
     final override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }
 
+private:
     Unique!BlockCipher m_cipher;
     Unique!BlockCipherModePaddingMethod m_padding;
     SecureVector!ubyte m_state;
@@ -107,7 +107,7 @@ private:
 /**
 * CBC Encryption
 */
-class CBCEncryption : CBCMode
+class CBCEncryption : CBCMode, Transformation
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)
@@ -234,7 +234,7 @@ public:
         return cipher().blockSize() + 1;
     }
 
-    bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return (n == cipher().blockSize());
     }
@@ -244,7 +244,7 @@ public:
 /**
 * CBC Decryption
 */
-class CBCDecryption : CBCMode
+class CBCDecryption : CBCMode, Transformation
 {
 public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)  
@@ -313,7 +313,7 @@ private:
 /**
 * CBC Decryption with ciphertext stealing (CBC-CS3 variant)
 */
-final class CTSDecryption : CBCDecryption
+final class CTSDecryption : CBCDecryption, Transformation
 {
 public:
     this(BlockCipher cipher)
@@ -371,7 +371,7 @@ public:
         return cipher().blockSize() + 1;
     }
 
-    bool validNonceLength(size_t n) const
+	override bool validNonceLength(size_t n) const
     {
         return (n == cipher().blockSize());
     }

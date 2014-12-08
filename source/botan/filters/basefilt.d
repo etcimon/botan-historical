@@ -11,17 +11,17 @@ import botan.filters.filter;
 import std.concurrency;
 import botan.utils.memory.memory : FreeListRef;
 import botan.filters.key_filt;
-
+import botan.utils.types;
 import botan.utils.semaphore;
 
 /**
 * BitBucket is a filter which simply discards all inputs
 */
-final class BitBucket : Filter
+final class BitBucket : Filter, Filterable
 {
-    void write(in ubyte*, size_t) {}
+    override void write(in ubyte*, size_t) {}
 
-    @property string name() const { return "BitBucket"; }
+    override @property string name() const { return "BitBucket"; }
 }
 
 /**
@@ -30,12 +30,12 @@ final class BitBucket : Filter
 * through all the Filters contained in the Chain.
 */
 
-final class Chain : FanoutFilter
+final class Chain : FanoutFilter, Filterable
 {
 public:
-    void write(in ubyte* input, size_t length) { send(input, length); }
+    override void write(in ubyte* input, size_t length) { send(input, length); }
 
-    @property string name() const
+	override @property string name() const
     {
         return "Chain";
     }
@@ -76,13 +76,13 @@ public:
 * flow of data. It causes an input message to result in n messages at
 * the end of the filter, where n is the number of forks.
 */
-class Fork : FanoutFilter
+class Fork : FanoutFilter, Filterable
 {
 public:
-    final void write(in ubyte* input, size_t length) { send(input, length); }
-    final void setPort(size_t n) { super.setPort(n); }
+	override final void write(in ubyte* input, size_t length) { send(input, length); }
+	override final void setPort(size_t n) { super.setPort(n); }
 
-    @property string name() const
+	override @property string name() const
     {
         return "Fork";
     }
@@ -115,7 +115,7 @@ public:
 class ThreadedFork : Fork
 {
 public:
-    @property string name() const
+	override @property string name() const
     {
         return "Threaded Fork";
     }
@@ -175,7 +175,7 @@ protected:
         }
     }
 
-    void send(in ubyte* input, size_t length)
+	override void send(in ubyte* input, size_t length)
     {
         if (m_write_queue.length)
             threadDelegateWork(m_write_queue.ptr, m_write_queue.length);
@@ -226,7 +226,7 @@ private:
     }
 
     Vector!(FreeListRef!Tid) m_threads;
-    Unique!Threaded_Fork_Data m_thread_data;
+    Unique!ThreadedForkData m_thread_data;
 }
 
 struct ThreadedForkData

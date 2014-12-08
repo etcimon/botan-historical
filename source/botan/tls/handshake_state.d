@@ -106,7 +106,7 @@ public:
     Pair!(string, SignatureFormat)
         understandSigFormat(in PublicKey key, string hash_algo, string sig_algo, bool for_client_auth) const
     {
-        const string algo_name = key.algo_name;
+        const string algo_name = key.algoName;
         
         /*
         FIXME: This should check what was sent against the client hello
@@ -170,7 +170,7 @@ public:
                           bool for_client_auth,
                           in TLSPolicy policy) const
     {
-        const string sig_algo = key.algo_name;
+        const string sig_algo = key.algoName;
         
         const string hash_algo = chooseHash(sig_algo,
                                              this.Version(),

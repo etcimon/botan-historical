@@ -19,7 +19,7 @@ import std.algorithm;
 /**
 * Base class for SIV encryption and decryption (@see RFC 5297)
 */
-class SIVMode : AEADMode
+class SIVMode : AEADMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -148,7 +148,7 @@ protected:
         
         return cmac().finished();
     }
-private:
+protected:
     final MessageAuthenticationCode cmac() { return *m_cmac; }
 
     final override void keySchedule(in ubyte* key, size_t length)
@@ -158,6 +158,8 @@ private:
         m_ctr.setKey(key + keylen, keylen);
         m_ad_macs.clear();
     }
+
+private:
 
     const string m_name;
 
@@ -170,7 +172,7 @@ private:
 /**
 * SIV Encryption
 */
-final class SIVEncryption : SIVMode
+final class SIVEncryption : SIVMode, Transformation
 {
 public:
     /**
@@ -204,7 +206,7 @@ public:
 /**
 * SIV Decryption
 */
-final class SIVDecryption : SIVMode
+final class SIVDecryption : SIVMode, Transformation
 {
 public:
     /**

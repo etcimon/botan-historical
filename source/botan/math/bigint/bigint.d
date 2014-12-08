@@ -8,6 +8,8 @@
 module botan.math.bigint.bigint;
 
 public import botan.botan.math.mp.mp_types;
+public import botan.utils.types;
+
 import botan.rng.rng;
 import botan.utils.memory.zeroize;
 import botan.utils.charset;
@@ -57,11 +59,6 @@ public:
             super("BigInt divide by zero");
         }
     }
-
-    /**
-    * Create empty BigInt
-    */
-    this() { m_signedness = Positive; }
 
     /**
     * Create BigInt from 64 bit integer

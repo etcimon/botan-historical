@@ -11,15 +11,16 @@ static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 import botan.utils.memory.zeroize;
 import botan.asn1.asn1_oid;
-import botan.asn1.alg_id;
+public import botan.asn1.alg_id;
 import botan.rng.rng;
 import botan.asn1.der_enc;
 import botan.asn1.oids;
+import botan.utils.types;
 
 /**
 * Public Key Base Class.
 */
-class PublicKey
+interface PublicKey
 {
 public:
     /**
@@ -46,11 +47,11 @@ public:
     final OID getOid() const
     {
         try {
-            return OIDS.lookup(algo_name);
+            return OIDS.lookup(algoName);
         }
         catch(LookupError)
         {
-            throw new LookupError("PK algo " ~ algo_name ~ " has no defined OIDs");
+            throw new LookupError("PK algo " ~ algoName ~ " has no defined OIDs");
         }
     }
 
@@ -62,20 +63,19 @@ public:
     * of the test
     * @return true if the test is passed
     */
-    abstract bool checkKey(RandomNumberGenerator rng,
-                                  bool strong) const;
+    abstract bool checkKey(RandomNumberGenerator rng, bool strong) const;
 
     /**
     * Find out the number of message parts supported by this scheme.
     * @return number of message parts
     */
-    abstract size_t messageParts() const { return 1; }
+	abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
     * @return size of the message parts in bits
     */
-    abstract size_t messagePartSize() const { return 0; }
+	abstract size_t messagePartSize() const; 
 
     /**
     * Get the maximum message size in bits supported by this public key.
@@ -93,23 +93,22 @@ public:
     */
     abstract Vector!ubyte x509SubjectPublicKey() const;
 
-    ~this() {}
 protected:
     /**
     * Self-test after loading a key
     * @param rng = a random number generator
     */
-    abstract void loadCheck(RandomNumberGenerator rng) const
-    {
+	abstract void loadCheck(RandomNumberGenerator rng) const;
+    /*{
         if (!checkKey(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
             throw new InvalidArgument(algo_name ~ ": Invalid public key");
-    }
+    }*/
 }
 
 /**
 * Private Key Base Class
 */
-class PrivateKey : PublicKey
+interface PrivateKey : PublicKey
 {
 public:
     /**
@@ -121,18 +120,17 @@ public:
     * @return PKCS #8 AlgorithmIdentifier for this key
     * Might be different from the X.509 identifier, but normally is not
     */
-    abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const
-    { return algorithmIdentifier(); }
+	abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const;
 
 protected:
     /**
     * Self-test after loading a key
     * @param rng = a random number generator
     */
-    final override void loadCheck(RandomNumberGenerator rng) const
+    final void loadCheck(RandomNumberGenerator rng) const
     {
         if (!checkKey(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD))
-            throw new InvalidArgument(algo_name ~ ": Invalid private key");
+            throw new InvalidArgument(algoName ~ ": Invalid private key");
     }
 
     /**
@@ -142,22 +140,21 @@ protected:
     final void genCheck(RandomNumberGenerator rng) const
     {
         if (!checkKey(rng, BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE))
-            throw new SelfTestFailure(algo_name ~ " private key generation failed");
+            throw new SelfTestFailure(algoName ~ " private key generation failed");
     }
 }
 
 /**
 * PK Secret Value Derivation Key
 */
-class PKKeyAgreementKey : PrivateKey
+interface PKKeyAgreementKey : PrivateKey
 {
-    public:
-        /*
-        * @return public component of this key
-        */
-        abstract Vector!ubyte publicValue() const;
+public:
+    /*
+    * @return public component of this key
+    */
+    abstract Vector!ubyte publicValue() const;
 
-        ~this() {}
 }
 
 /*

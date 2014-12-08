@@ -6,10 +6,10 @@
 */
 module botan.hash.mdx_hash;
 
-import botan.hash.hash;
-import botan.hash.mdx_hash;
+public import botan.hash.hash;
 import botan.utils.exceptn;
 import botan.utils.loadstor;
+import botan.utils.types;
 
 /**
 * MDx Hash Function Base Class
@@ -37,7 +37,7 @@ protected:
     /*
     * Update the hash
     */
-    final void addData(in ubyte* input, size_t length)
+	override final void addData(in ubyte* input, size_t length)
     {
         m_count += length;
         
@@ -68,7 +68,7 @@ protected:
     /*
     * Finalize a hash
     */
-    final void finalResult(ubyte* output)
+	override final void finalResult(ubyte* output)
     {
         m_buffer[m_position] = (m_BIG_BIT_ENDIAN ? 0x80 : 0x01);
         foreach (size_t i; (m_position+1) .. m_buffer.length)
@@ -97,7 +97,7 @@ protected:
     /*
     * Clear memory of sensitive data
     */
-    final void clear()
+    override void clear()
     {
         zeroise(m_buffer);
         m_count = m_position = 0;

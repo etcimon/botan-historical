@@ -16,17 +16,17 @@ import std.algorithm;
 /**
 * This class represents a Base64 encoder.
 */
-final class Base64Encoder : Filter
+final class Base64Encoder : Filter, Filterable
 {
 public:
-    @property string name() const { return "Base64Encoder"; }
+	override @property string name() const { return "Base64Encoder"; }
 
     /**
     * Input a part of a message to the encoder.
     * @param input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    void write(in ubyte* input, size_t length)
+	override void write(in ubyte* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -50,7 +50,7 @@ public:
     /**
     * Inform the Encoder that the current message shall be closed.
     */
-    void endMsg()
+	override void endMsg()
     {
         encodeAndSend(m_input.ptr, m_position, true);
         
@@ -135,17 +135,17 @@ private:
 /**
 * This object represents a Base64 decoder.
 */
-final class Base64Decoder : Filter
+final class Base64Decoder : Filter, Filterable
 {
 public:
-    @property string name() const { return "Base64Decoder"; }
+	override @property string name() const { return "Base64Decoder"; }
 
     /**
     * Input a part of a message to the decoder.
     * @param input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    void write(in ubyte* input, size_t length)
+	override void write(in ubyte* input, size_t length)
     {
         while (length)
         {
@@ -179,7 +179,7 @@ public:
     /**
     * Finish up the current message
     */
-    void endMsg()
+	override void endMsg()
     {
         size_t consumed = 0;
         size_t written = base64Decode(m_output.ptr,

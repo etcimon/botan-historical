@@ -9,7 +9,7 @@ module botan.utils.simd.immintrin;
 
 import botan.constants;
 
-static if (Threefish_512_AVX2):
+static if (BOTAN_HAS_THREEFISH_512_AVX2):
 
 import core.simd;
 

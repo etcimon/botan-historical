@@ -334,7 +334,7 @@ private:
             
             Unique!PublicKey peer_key = server_certs[0].subjectPublicKey();
             
-            if (peer_key.algo_name != state.ciphersuite().sigAlgo())
+            if (peer_key.algoName != state.ciphersuite().sigAlgo())
                 throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Certificate key type did not match ciphersuite");
             
             state.server_public_key = peer_key;

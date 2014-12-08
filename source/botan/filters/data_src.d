@@ -7,7 +7,7 @@
 */
 module botan.filters.data_src;
 import botan.utils.memory.zeroize;
-// import string;
+import botan.utils.types;
 import std.stdio;
 import botan.utils.exceptn;
 import std.algorithm;
@@ -15,7 +15,7 @@ import std.algorithm;
 /**
 * This class represents an abstract data source object.
 */
-class DataSource
+interface DataSource
 {
 public:
     /**
@@ -51,7 +51,7 @@ public:
     * return the id of this data source
     * @return string representing the id of this data source
     */
-    abstract string id() const { return ""; }
+    abstract string id() const;
 
     /**
     * Read one ubyte.
@@ -97,9 +97,6 @@ public:
     */
     abstract size_t getBytesRead() const;
 
-    this() {}
-    ~this() {}
-
 }
 
 /**
@@ -132,7 +129,7 @@ public:
     /*
     * Check if the memory buffer is empty
     */
-    bool endOfData() const
+    override bool endOfData() const
     {
         return (offset == m_source.length);
     }
@@ -179,7 +176,7 @@ public:
         offset = 0;
     }
 
-    abstract size_t getBytesRead() const { return offset; }
+    override size_t getBytesRead() const { return offset; }
 private:
     SecureVector!ubyte m_source;
     size_t m_offset;
@@ -248,7 +245,7 @@ public:
     /*
     * Check if the stream is empty or in error
     */
-    bool endOfData() const
+    override bool endOfData() const
     {
         return (!m_source.eof && !m_source.error());
     }
@@ -256,7 +253,7 @@ public:
     /*
     * Return a human-readable ID for this stream
     */
-    string id() const
+    override string id() const
     {
         return m_identifier;
     }
@@ -297,7 +294,7 @@ public:
 
     }
 
-    size_t getBytesRead() const { return m_total_read; }
+    override size_t getBytesRead() const { return m_total_read; }
 private:
     const string m_identifier;
 

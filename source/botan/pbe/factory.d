@@ -8,15 +8,14 @@ module botan.pbe.factory;
 
 import botan.pbe.pbe;
 import botan.utils.types;
-// import string;
-import std.datetime;
 import botan.asn1.oids;
-import botan.algo_base.scan_name;
+import botan.algo_base.scan_token;
 import botan.rng.rng;
 import botan.utils.parsing;
 import botan.libstate.libstate;
 import std.datetime;
 
+import botan.constants;
 static if (BOTAN_HAS_PBE_PKCS_V20) {
     import botan.pbe.pbes2;
     import botan.mac.hmac;
@@ -37,7 +36,7 @@ PBE getPbe(in string algo_spec,
 {
     SCANToken request = SCANToken(algo_spec);
     
-    const string pbe = request.algo_name;
+    const string pbe = request.algoName;
     string digest_name = request.arg(0);
     const string cipher = request.arg(1);
     
@@ -88,7 +87,7 @@ PBE getPbe(in OID pbe_oid, in Vector!ubyte params, in string passphrase)
 {
     SCANToken request = SCANToken(OIDS.lookup(pbe_oid));
     
-    const string pbe = request.algo_name;
+    const string pbe = request.algoName;
     
     static if (BOTAN_HAS_PBE_PKCS_V20) {
         if (pbe == "PBE-PKCS5v20")

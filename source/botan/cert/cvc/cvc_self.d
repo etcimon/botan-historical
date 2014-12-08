@@ -67,7 +67,7 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
     
     AlgorithmIdentifier sig_algo;
     string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
-    sig_algo.oid = OIDS.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
+    sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
     sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
     
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
@@ -105,7 +105,7 @@ EAC11Req createCvcReq(in PrivateKey key,
     }
     AlgorithmIdentifier sig_algo;
     string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
-    sig_algo.oid = OIDS.lookup(priv_key.algo_name ~ "/" ~ padding_and_hash);
+    sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
     sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifier.USE_NULL_PARAM);
     
     PKSigner signer = PKSigner(priv_key, padding_and_hash);

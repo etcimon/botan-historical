@@ -10,13 +10,13 @@ import botan.utils.memory.zeroize;
 import botan.algo_base.key_spec;
 import botan.utils.exceptn;
 import botan.algo_base.symkey;
-// import string;
 import botan.utils.types;
+import botan.constants;
 
 /**
 * Interface for general transformations on data
 */
-class Transformation
+interface Transformation
 {
 public:
     /**
@@ -85,13 +85,11 @@ public:
     * different implementations of AES). Default "core" is used for the
     * 'standard' implementation included in the library.
     */
-    abstract string provider() const { return "core"; }
+	abstract string provider() const;
 
     abstract @property string name() const;
 
     abstract void clear();
-
-    ~this() {}
 }
 
 class KeyedTransform : Transformation
@@ -134,7 +132,8 @@ public:
         keySchedule(key, length);
     }
 
-private:
+protected:
+
     abstract void keySchedule(in ubyte* key, size_t length);
 }
 

@@ -12,6 +12,7 @@ import botan.asn1.oids;
 import botan.hash.sha160;
 import botan.utils.loadstor;
 import std.algorithm;
+import botan.utils.types;
 
 /**
 * PRF from ANSI X9.42
@@ -22,7 +23,7 @@ public:
     /*
     * X9.42 PRF
     */
-    SecureVector!ubyte derive(size_t key_len,
+	override SecureVector!ubyte derive(size_t key_len,
                             in ubyte* secret, size_t secret_len,
                             in ubyte* salt, size_t salt_len) const
     {
@@ -68,8 +69,8 @@ public:
     }
 
 
-    @property string name() const { return "X942_PRF(" ~ m_key_wrap_oid ~ ")"; }
-    KDF clone() const { return new X942PRF(m_key_wrap_oid); }
+	override @property string name() const { return "X942_PRF(" ~ m_key_wrap_oid ~ ")"; }
+	override KDF clone() const { return new X942PRF(m_key_wrap_oid); }
     /*
     * X9.42 Constructor
     */

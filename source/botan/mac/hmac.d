@@ -32,7 +32,7 @@ public:
     /*
     * Return the name of this type
     */
-    @property string name() const
+	override @property string name() const
     {
         return "HMAC(" ~ m_hash.name ~ ")";
     }
@@ -40,12 +40,12 @@ public:
     /*
     * Return a clone of this object
     */
-    MessageAuthenticationCode clone() const
+	override MessageAuthenticationCode clone() const
     {
         return new HMAC(m_hash.clone());
     }
 
-    @property size_t outputLength() const { return m_hash.output_length; }
+	override @property size_t outputLength() const { return m_hash.output_length; }
 
     KeyLengthSpecification keySpec() const
     {

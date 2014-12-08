@@ -7,6 +7,7 @@
 module botan.asn1.oids;
 
 public import botan.asn1.asn1_oid;
+import botan.utils.types;
 
 auto globalOidMap()
 {

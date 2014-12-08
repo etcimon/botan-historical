@@ -20,7 +20,7 @@ public:
     /*
     * Set the exponent
     */
-    void setExponent(in BigInt e)
+    override void setExponent(in BigInt e)
     {
         m_exp = e;
     }
@@ -28,7 +28,7 @@ public:
     /*
     * Set the base
     */
-    void setBase(in BigInt base)
+	override void setBase(in BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
@@ -43,7 +43,7 @@ public:
     /*
     * Compute the result
     */
-    BigInt execute() const
+	override BigInt execute() const
     {
         const size_t exp_nibbles = (m_exp.bits() + m_window_bits - 1) / m_window_bits;
         
@@ -61,7 +61,7 @@ public:
         return x;
     }
 
-    ModularExponentiator copy() const
+	override ModularExponentiator copy() const
     { return new FixedWindowExponentiator(this); }
 
     this(in BigInt n, PowerMod.UsageHints _hints)
@@ -88,7 +88,7 @@ public:
     /*
     * Set the exponent
     */
-    void setExponent(in BigInt exp)
+	override void setExponent(in BigInt exp)
     {
         m_exp = exp;
         m_exp_bits = exp.bits();
@@ -97,7 +97,7 @@ public:
     /*
     * Set the base
     */
-    void setBase(in BigInt base)
+	override void setBase(in BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
@@ -141,7 +141,7 @@ public:
     /*
     * Compute the result
     */
-    BigInt execute() const
+	override BigInt execute() const
     {
         const size_t exp_nibbles = (m_exp_bits + m_window_bits - 1) / m_window_bits;
         
@@ -179,7 +179,7 @@ public:
         return x;
     }
 
-    ModularExponentiator copy() const
+	override ModularExponentiator copy() const
     { return new MontgomeryExponentiator(this); }
 
     /*

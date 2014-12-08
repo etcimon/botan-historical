@@ -13,6 +13,7 @@ static if (BOTAN_HAS_MD5):
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
 
 /**
 * MD5
@@ -21,13 +22,13 @@ class MD5 : MDxHashFunction
 {
 public:
     final override @property string name() const { return "MD5"; }
-    final @property size_t outputLength() const { return 16; }
+	override final @property size_t outputLength() const { return 16; }
     override HashFunction clone() const { return new MD5; }
 
     /*
     * Clear memory of sensitive data
     */
-    final void clear()
+	override final void clear()
     {
         super.clear();
         zeroise(m_M);
@@ -49,7 +50,7 @@ protected:
     /*
     * MD5 Compression Function
     */
-    void compressN(in ubyte* input, size_t blocks)
+	override void compressN(in ubyte* input, size_t blocks)
     {
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2], D = m_digest[3];
         
@@ -105,7 +106,7 @@ protected:
     /*
     * Copy out the digest
     */
-    final void copyOut(ubyte* output)
+	override final void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != output_length; i += 4)
             storeLittleEndian(m_digest[i/4], output + i);

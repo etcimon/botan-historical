@@ -14,10 +14,11 @@ import botan.algo_factory.algo_factory;
 import botan.modes.mode_pad;
 import botan.filters.transform_filter;
 import botan.math.numbertheory.def_powm;
-import botan.algo_base.scan_name;
+import botan.algo_base.scan_token;
 import botan.algo_factory.algo_factory;
 import std.conv : to;
 
+import botan.constants;
 static if (BOTAN_HAS_MODE_CFB)        import botan.modes.cfb;
 static if (BOTAN_HAS_MODE_ECB)        import botan.modes.ecb;
 static if (BOTAN_HAS_MODE_CBC)         import botan.modes.cbc;
@@ -293,126 +294,126 @@ public:
     {
         
         static if (BOTAN_HAS_AES) {
-            if (request.algo_name == "AES-128")
+            if (request.algoName == "AES-128")
                 return new AES128;
-            if (request.algo_name == "AES-192")
+            if (request.algoName == "AES-192")
                 return new AES192;
-            if (request.algo_name == "AES-256")
+            if (request.algoName == "AES-256")
                 return new AES256;
         }
         
         static if (BOTAN_HAS_BLOWFISH) {
-            if (request.algo_name == "Blowfish")
+            if (request.algoName == "Blowfish")
                 return new Blowfish;
         }
         
         static if (BOTAN_HAS_CAMELLIA) {
-            if (request.algo_name == "Camellia-128")
+            if (request.algoName == "Camellia-128")
                 return new Camellia128;
-            if (request.algo_name == "Camellia-192")
+            if (request.algoName == "Camellia-192")
                 return new Camellia192;
-            if (request.algo_name == "Camellia-256")
+            if (request.algoName == "Camellia-256")
                 return new Camellia256;
         }
         
         static if (BOTAN_HAS_CAST) {
-            if (request.algo_name == "CAST-128")
+            if (request.algoName == "CAST-128")
                 return new CAST128;
-            if (request.algo_name == "CAST-256")
+            if (request.algoName == "CAST-256")
                 return new CAST256;
         }
         
         static if (BOTAN_HAS_DES) {
-            if (request.algo_name == "DES")
+            if (request.algoName == "DES")
                 return new DES;
-            if (request.algo_name == "DESX")
+            if (request.algoName == "DESX")
                 return new DESX;
-            if (request.algo_name == "TripleDES")
+            if (request.algoName == "TripleDES")
                 return new TripleDES;
         }
         
         static if (BOTAN_HAS_GOST_28147_89) {
-            if (request.algo_name == "GOST-28147-89")
+            if (request.algoName == "GOST-28147-89")
                 return new GOST2814789(request.arg(0, "R3411_94_TestParam"));
         }
         
         static if (BOTAN_HAS_IDEA) {
-            if (request.algo_name == "IDEA")
+            if (request.algoName == "IDEA")
                 return new IDEA;
         }
         
         static if (BOTAN_HAS_KASUMI) {
-            if (request.algo_name == "KASUMI")
+            if (request.algoName == "KASUMI")
                 return new KASUMI;
         }
         
         static if (BOTAN_HAS_MARS) {
-            if (request.algo_name == "MARS")
+            if (request.algoName == "MARS")
                     return new MARS;
         }
         
         static if (BOTAN_HAS_MISTY1) {
-            if (request.algo_name == "MISTY1")
+            if (request.algoName == "MISTY1")
                 return new MISTY1(request.argAsInteger(0, 8));
         }
         
         static if (BOTAN_HAS_NOEKEON) {
-            if (request.algo_name == "Noekeon")
+            if (request.algoName == "Noekeon")
                 return new Noekeon;
         }
         
         static if (BOTAN_HAS_RC2) {
-            if (request.algo_name == "RC2")
+            if (request.algoName == "RC2")
                 return new RC2;
         }
         
         static if (BOTAN_HAS_RC5) {
-            if (request.algo_name == "RC5")
+            if (request.algoName == "RC5")
                 return new RC5(request.argAsInteger(0, 12));
         }
         
         static if (BOTAN_HAS_RC6) {
-            if (request.algo_name == "RC6")
+            if (request.algoName == "RC6")
                 return new RC6;
         }
         
         static if (BOTAN_HAS_SAFER) {
-            if (request.algo_name == "SAFER-SK")
+            if (request.algoName == "SAFER-SK")
                 return new SAFERSK(request.argAsInteger(0, 10));
         }
         
         static if (BOTAN_HAS_SEED) {
-            if (request.algo_name == "SEED")
+            if (request.algoName == "SEED")
                 return new SEED;
         }
         
         static if (BOTAN_HAS_SERPENT) {
-            if (request.algo_name == "Serpent")
+            if (request.algoName == "Serpent")
                 return new Serpent;
         }
         
         static if (BOTAN_HAS_TEA) {
-            if (request.algo_name == "TEA")
+            if (request.algoName == "TEA")
                 return new TEA;
         }
         
         static if (BOTAN_HAS_TWOFISH) {
-            if (request.algo_name == "Twofish")
+            if (request.algoName == "Twofish")
                 return new Twofish;
         }
         
         static if (BOTAN_HAS_TWOFISH) {
-            if (request.algo_name == "Threefish-512")
+            if (request.algoName == "Threefish-512")
                 return new Threefish512;
         }
         
         static if (BOTAN_HAS_XTEA) {
-            if (request.algo_name == "XTEA")
+            if (request.algoName == "XTEA")
                 return new XTEA;
         }
         
         static if (BOTAN_HAS_CASCADE) {
-            if (request.algo_name == "Cascade" && request.argCount() == 2)
+            if (request.algoName == "Cascade" && request.argCount() == 2)
             {
                 const BlockCipher c1 = af.prototypeBlockCipher(request.arg(0));
                 const BlockCipher c2 = af.prototypeBlockCipher(request.arg(1));
@@ -423,7 +424,7 @@ public:
         }
         
         static if (BOTAN_HAS_LION) {
-            if (request.algo_name == "Lion" && request.argCountBetween(2, 3))
+            if (request.algoName == "Lion" && request.argCountBetween(2, 3))
             {
                 const size_t block_size = request.argAsInteger(2, 1024);
                 
@@ -444,7 +445,7 @@ public:
     StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_OFB) {
-            if (request.algo_name == "OFB" && request.argCount() == 1)
+            if (request.algoName == "OFB" && request.argCount() == 1)
             {
                 if (auto proto = af.prototypeBlockCipher(request.arg(0)))
                     return new OFB(proto.clone());
@@ -452,7 +453,7 @@ public:
         }
         
         static if (BOTAN_HAS_CTR_BE) {
-            if (request.algo_name == "CTR-BE" && request.argCount() == 1)
+            if (request.algoName == "CTR-BE" && request.argCount() == 1)
             {
                 if (auto proto = af.prototypeBlockCipher(request.arg(0)))
                     return new CTRBE(proto.clone());
@@ -460,19 +461,19 @@ public:
         }
         
         static if (BOTAN_HAS_RC4) {
-            if (request.algo_name == "RC4")
+            if (request.algoName == "RC4")
                 return new RC4(request.argAsInteger(0, 0));
-            if (request.algo_name == "RC4_drop")
+            if (request.algoName == "RC4_drop")
                 return new RC4(768);
         }
         
         static if (BOTAN_HAS_CHACHA) {
-            if (request.algo_name == "ChaCha")
+            if (request.algoName == "ChaCha")
                 return new ChaCha;
         }
         
         static if (BOTAN_HAS_SALSA20) {
-            if (request.algo_name == "Salsa20")
+            if (request.algoName == "Salsa20")
                 return new Salsa20;
         }
         
@@ -482,98 +483,98 @@ public:
     HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_ADLER32) {
-            if (request.algo_name == "Adler32")
+            if (request.algoName == "Adler32")
                 return new Adler32;
         }
         
         static if (BOTAN_HAS_CRC24) {
-            if (request.algo_name == "CRC24")
+            if (request.algoName == "CRC24")
                 return new CRC24;
         }
         
         static if (BOTAN_HAS_CRC32) {
-            if (request.algo_name == "CRC32")
+            if (request.algoName == "CRC32")
                 return new CRC32;
         }
         
         static if (BOTAN_HAS_GOST_34_11) {
-            if (request.algo_name == "GOST-R-34.11-94")
+            if (request.algoName == "GOST-R-34.11-94")
                 return new GOST3411;
         }
         
         static if (BOTAN_HAS_HAS_160) {
-            if (request.algo_name == "HAS-160")
+            if (request.algoName == "HAS-160")
                 return new HAS160;
         }
         
         static if (BOTAN_HAS_KECCAK) {
-            if (request.algo_name == "Keccak-1600")
+            if (request.algoName == "Keccak-1600")
                 return new Keccak1600(request.argAsInteger(0, 512));
         }
         
         static if (BOTAN_HAS_MD2) {
-            if (request.algo_name == "MD2")
+            if (request.algoName == "MD2")
                 return new MD2;
         }
         
         static if (BOTAN_HAS_MD4) {
-            if (request.algo_name == "MD4")
+            if (request.algoName == "MD4")
                 return new MD4;
         }
         
         static if (BOTAN_HAS_MD5) {
-            if (request.algo_name == "MD5")
+            if (request.algoName == "MD5")
                 return new MD5;
         }
         
         static if (BOTAN_HAS_RIPEMD_128) {
-            if (request.algo_name == "RIPEMD-128")
+            if (request.algoName == "RIPEMD-128")
                 return new RIPEMD128;
         }
         
         static if (BOTAN_HAS_RIPEMD_160) {
-            if (request.algo_name == "RIPEMD-160")
+            if (request.algoName == "RIPEMD-160")
                 return new RIPEMD160;
         }
         
         static if (BOTAN_HAS_SHA1) {
-            if (request.algo_name == "SHA-160")
+            if (request.algoName == "SHA-160")
                 return new SHA160;
         }
         
         static if (BOTAN_HAS_SHA2_32) {
-            if (request.algo_name == "SHA-224")
+            if (request.algoName == "SHA-224")
                 return new SHA224;
-            if (request.algo_name == "SHA-256")
+            if (request.algoName == "SHA-256")
                 return new SHA256;
         }
         
         static if (BOTAN_HAS_SHA2_64) {
-            if (request.algo_name == "SHA-384")
+            if (request.algoName == "SHA-384")
                 return new SHA384;
-            if (request.algo_name == "SHA-512")
+            if (request.algoName == "SHA-512")
                 return new SHA512;
         }
         
         static if (BOTAN_HAS_TIGER) {
-            if (request.algo_name == "Tiger")
+            if (request.algoName == "Tiger")
                 return new Tiger(request.argAsInteger(0, 24), // hash output
                                  request.argAsInteger(1, 3)); // # passes
         }
         
         static if (BOTAN_HAS_SKEIN_512) {
-            if (request.algo_name == "Skein-512")
+            if (request.algoName == "Skein-512")
                 return new Skein512(request.argAsInteger(0, 512),
                                      request.arg(1, ""));
         }
         
         static if (BOTAN_HAS_WHIRLPOOL) {
-            if (request.algo_name == "Whirlpool")
+            if (request.algoName == "Whirlpool")
                 return new Whirlpool;
         }
         
         static if (BOTAN_HAS_COMB4P) {
-            if (request.algo_name == "Comb4P" && request.argCount() == 2)
+            if (request.algoName == "Comb4P" && request.argCount() == 2)
             {
                 const HashFunction h1 = af.prototypeHashFunction(request.arg(0));
                 const HashFunction h2 = af.prototypeHashFunction(request.arg(1));
@@ -585,7 +586,7 @@ public:
         
         static if (BOTAN_HAS_PARALLEL_HASH) {
             
-            if (request.algo_name == "Parallel")
+            if (request.algoName == "Parallel")
             {
                 Vector!( const HashFunction ) hash_prototypes;
                 
@@ -617,27 +618,27 @@ public:
     {
         
         static if (BOTAN_HAS_CBC_MAC) {
-            if (request.algo_name == "CBC-MAC" && request.argCount() == 1)
+            if (request.algoName == "CBC-MAC" && request.argCount() == 1)
                 return new CBCMAC(af.makeBlockCipher(request.arg(0)));
         }
         
         static if (BOTAN_HAS_CMAC) {
-            if (request.algo_name == "CMAC" && request.argCount() == 1)
+            if (request.algoName == "CMAC" && request.argCount() == 1)
                 return new CMAC(af.makeBlockCipher(request.arg(0)));
         }
         
         static if (BOTAN_HAS_HMAC) {
-            if (request.algo_name == "HMAC" && request.argCount() == 1)
+            if (request.algoName == "HMAC" && request.argCount() == 1)
                 return new HMAC(af.makeHashFunction(request.arg(0)));
         }
         
         static if (BOTAN_HAS_SSL3_MAC) {
-            if (request.algo_name == "SSL3-MAC" && request.argCount() == 1)
+            if (request.algoName == "SSL3-MAC" && request.argCount() == 1)
                 return new SSL3MAC(af.makeHashFunction(request.arg(0)));
         }
         
         static if (BOTAN_HAS_ANSI_X919_MAC) {
-            if (request.algo_name == "X9.19-MAC" && request.argCount() == 0)
+            if (request.algoName == "X9.19-MAC" && request.argCount() == 0)
                 return new ANSIX919MAC(af.makeBlockCipher("DES"));
         }
         
@@ -648,12 +649,12 @@ public:
     PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         static if (BOTAN_HAS_PBKDF1) {
-            if (algo_spec.algo_name == "PBKDF1" && algo_spec.argCount() == 1)
+            if (algo_spec.algoName == "PBKDF1" && algo_spec.argCount() == 1)
                 return new PKCS5PBKDF1(af.makeHashFunction(algo_spec.arg(0)));
         }
         
         static if (BOTAN_HAS_PBKDF2) {
-            if (algo_spec.algo_name == "PBKDF2" && algo_spec.argCount() == 1)
+            if (algo_spec.algoName == "PBKDF2" && algo_spec.argCount() == 1)
             {
                 if (const MessageAuthenticationCode mac_proto = af.prototypeMac(algo_spec.arg(0)))
                     return new PKCS5_PBKDF2(mac_proto.clone());

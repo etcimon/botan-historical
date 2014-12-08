@@ -10,6 +10,7 @@ import botan.asn1.asn1_oid;
 import botan.filters.data_src;
 import botan.filters.filter;
 import botan.rng.rng;
+import botan.utils.types;
 
 /**
 * Password Based Encryption (PBE) Filter.

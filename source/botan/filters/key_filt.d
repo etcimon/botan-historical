@@ -5,13 +5,13 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.key_filt;
-import botan.filters.filter;
+public import botan.filters.filter;
 import botan.algo_base.sym_algo;
 /**
 * This class represents keyed filters, i.e. filters that have to be
 * fed with a key in order to function.
 */
-final class KeyedFilter : Filter
+class KeyedFilter : Filter
 {
 public:
     /**
@@ -51,6 +51,5 @@ public:
     * @param length = the IV length to be checked for validity
     * @return true if the IV length is valid, false otherwise
     */
-    abstract bool validIvLength(size_t length) const
-    { return (length == 0); }
+    abstract bool validIvLength(size_t length) const;
 }

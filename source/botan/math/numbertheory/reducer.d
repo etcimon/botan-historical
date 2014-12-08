@@ -95,8 +95,6 @@ public:
     { return multiply(x, this.square(x)); }
 
     bool initialized() const { return (m_mod_words != 0); }
-
-    this() { m_mod_words = 0; }
     /*
     * ModularReducer Constructor
     */

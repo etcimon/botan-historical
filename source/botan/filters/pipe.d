@@ -10,12 +10,13 @@ module botan.filters.pipe;
 import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.exceptn;
-static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
-    import botan.fd_unix;
+//static if (BOTAN_HAS_PIPE_UNIXFD_IO && false)
+ //   import botan.fd_unix;
 
 import botan.filters.out_buf;
 import botan.filters.secqueue;
 import botan.utils.parsing;
+import botan.utils.types;
 
 
 /**
@@ -512,13 +513,13 @@ public:
         
         Filter f = m_pipe_to;
         size_t owns = f.owns();
-        m_pipe_to = m_pipe_to.next[0];
+        m_pipe_to = m_pipe_to.m_next[0];
         delete f;
         
         while (owns--)
         {
             f = m_pipe_to;
-            m_pipe_to = m_pipe_to.next[0];
+            m_pipe_to = m_pipe_to.m_next[0];
             delete f;
         }
     }
@@ -584,7 +585,7 @@ private:
         if (!to_kill || cast(SecureQueue)(to_kill))
             return;
         for (size_t j = 0; j != to_kill.totalPorts(); ++j)
-            destruct(to_kill.next[j]);
+            destruct(to_kill.m_next[j]);
         delete to_kill;
     }
 
@@ -594,12 +595,12 @@ private:
     void findEndpoints(Filter f)
     {
         for (size_t j = 0; j != f.totalPorts(); ++j)
-            if (f.next[j] && !cast(SecureQueue)(f.next[j]))
-                findEndpoints(f.next[j]);
+            if (f.m_next[j] && !cast(SecureQueue)(f.m_next[j]))
+                findEndpoints(f.m_next[j]);
             else
         {
             SecureQueue q = new SecureQueue;
-            f.next[j] = q;
+            f.m_next[j] = q;
             m_outputs.add(q);
         }
     }
@@ -612,9 +613,9 @@ private:
         if (!f) return;
         for (size_t j = 0; j != f.totalPorts(); ++j)
         {
-            if (f.next[j] && cast(SecureQueue)(f.next[j]))
-                f.next[j] = null;
-            clearEndpoints(f.next[j]);
+            if (f.m_next[j] && cast(SecureQueue)(f.m_next[j]))
+                f.m_next[j] = null;
+            clearEndpoints(f.m_next[j]);
         }
     }
 
@@ -636,7 +637,7 @@ private:
     }
 
     Filter m_pipe_to;
-    Output_Buffers m_outputs;
+    OutputBuffers m_outputs;
     message_id m_default_read;
     bool m_inside_msg;
 }
@@ -644,11 +645,11 @@ private:
 /*
 * A Filter that does nothing
 */
-final class NullFilter : Filter
+final class NullFilter : Filter, Filterable
 {
 public:
-    void write(in ubyte* input, size_t length)
+    override void write(in ubyte* input, size_t length)
     { send(input, length); }
     
-    @property string name() const { return "Null"; }
+    override @property string name() const { return "Null"; }
 }

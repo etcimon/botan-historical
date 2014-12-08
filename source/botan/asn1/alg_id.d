@@ -28,7 +28,7 @@ public:
     /*
     * DER encode an AlgorithmIdentifier
     */
-    void encodeInto(DEREncoder codec) const
+    override void encodeInto(DEREncoder codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)
@@ -39,7 +39,7 @@ public:
     /*
     * Decode a BER encoded AlgorithmIdentifier
     */
-    void decodeFrom(BERDecoder codec)
+    override void decodeFrom(BERDecoder codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_oid)

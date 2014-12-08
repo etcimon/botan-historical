@@ -6,12 +6,12 @@
 */
 module botan.modes.cipher_mode;
 
-import botan.algo_base.transform;
-
+public import botan.algo_base.transform;
+import botan.constants; 
 /**
 * Interface for cipher modes
 */
-class CipherMode : KeyedTransform
+class CipherMode : KeyedTransform, Transformation
 {
 public:
     /**

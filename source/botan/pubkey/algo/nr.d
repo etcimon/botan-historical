@@ -54,8 +54,7 @@ protected:
 /**
 * Nyberg-Rueppel Private Key
 */
-final class NRPrivateKey : NRPublicKey,
-                             DLSchemePrivateKey
+final class NRPrivateKey : NRPublicKey, DLSchemePrivateKey
 {
 public:
     /*

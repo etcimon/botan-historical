@@ -27,7 +27,7 @@ public:
     /*
     * DER encode an OBJECT IDENTIFIER
     */
-    void encodeInto(DEREncoder der) const
+    override void encodeInto(DEREncoder der) const
     {
         if (m_id.length < 2)
             throw new InvalidArgument("encodeInto: OID is invalid");
@@ -56,7 +56,7 @@ public:
     /*
     * Decode a BER encoded OBJECT IDENTIFIER
     */
-    void decodeFrom(BERDecoder decoder)
+    override void decodeFrom(BERDecoder decoder)
     {
         BERObject obj = decoder.getNextObject();
         if (obj.type_tag != ASN1Tag.OBJECT_ID || obj.class_tag != ASN1Tag.UNIVERSAL)
@@ -105,7 +105,7 @@ public:
     * Get this OID as a string
     * @return string representing this OID
     */
-    string toString() const
+    override string toString() const
     {
         Appender!string oid_str;
         foreach (size_t i; 0 .. m_id.length)

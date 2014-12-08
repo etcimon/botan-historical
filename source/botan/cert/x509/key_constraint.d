@@ -41,7 +41,7 @@ enum KeyConstraints {
 KeyConstraints findConstraints(in PublicKey pub_key,
                                  KeyConstraints limits)
 {
-    const string name = pub_key.algo_name;
+    const string name = pub_key.algoName;
     
     size_t constraints = 0;
     

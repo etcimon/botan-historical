@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the Botan license
 */
-module botan.algo_base.scan_name;
+module botan.algo_base.scan_token;
 
 import botan.utils.parsing;
 import botan.utils.exceptn;

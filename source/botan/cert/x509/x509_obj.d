@@ -109,7 +109,7 @@ public:
         try {
             Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
             
-            if (sig_info.length != 2 || sig_info[0] != pub_key.algo_name)
+            if (sig_info.length != 2 || sig_info[0] != pub_key.algoName)
                 return false;
             
             string padding = sig_info[1];

@@ -6,7 +6,9 @@
 */
 module botan.block.block_cipher;
 
-import botan.algo_base.sym_algo;
+import botan.constants;
+public import botan.algo_base.transform;
+public import botan.algo_base.sym_algo;
 
 /**
 * This class represents a block cipher object.

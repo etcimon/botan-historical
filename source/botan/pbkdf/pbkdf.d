@@ -9,6 +9,7 @@ module botan.pbkdf.pbkdf;
 import botan.algo_base.symkey;
 import std.datetime;
 import std.exception;
+import botan.utils.types;
 
 /**
 * Base class for PBKDF (password based key derivation function)

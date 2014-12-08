@@ -9,6 +9,7 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.libstate.libstate;
 
+import botan.constants;
 static if (BOTAN_HAS_AEAD_CCM) import botan.modes.aead.ccm;
 static if (BOTAN_HAS_AEAD_EAX) import botan.modes.aead.eax;
 static if (BOTAN_HAS_AEAD_GCM) import botan.modes.aead.gcm;
@@ -22,7 +23,7 @@ static if (BOTAN_HAS_AEAD_OCB) import botan.modes.aead.ocb;
 * which is not included in the ciphertext (for instance a sequence
 * number).
 */
-class AEADMode : CipherMode
+class AEADMode : CipherMode, Transformation
 {
 public:
     final override bool authenticated() const { return true; }
@@ -50,7 +51,7 @@ public:
     * Default AEAD nonce size (a commonly supported value among AEAD
     * modes, and large enough that random collisions are unlikely).
     */
-    final override size_t defaultNonceLength() const { return 12; }
+    override size_t defaultNonceLength() const { return 12; }
 
     /**
     * Return the size of the authentication tag used (in bytes)

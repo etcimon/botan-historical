@@ -24,6 +24,7 @@ enum BOTAN_KARAT_SQR_THRESHOLD = 32;
 enum BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED = 512;
 enum BOTAN_RNG_RESEED_POLL_BITS = 128;
 
+enum BOTAN_HAS_CODEC_FILTERS = true;
 enum BOTAN_HAS_TLS = true;
 enum BOTAN_HAS_PUBLIC_KEY_CRYPTO = true;
 enum BOTAN_HAS_X509_CERTIFICATES = true;
@@ -79,6 +80,17 @@ else                          enum BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD = fal
 version(RT_Test_Priv_Gen){    enum BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE = true;                                   }
 else                          enum BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE = false;
 
+version(KDF1)            {    enum BOTAN_HAS_KDF1 = true;                                                                }
+else                          enum BOTAN_HAS_KDF1 = false;
+version(KDF2)            {    enum BOTAN_HAS_KDF2 = true;                                                                }
+else                          enum BOTAN_HAS_KDF2 = false;
+version(X942_PRF)        {    enum BOTAN_HAS_X942_PRF = true;                                                            }
+else                          enum BOTAN_HAS_X942_PRF = false;
+version(SSL_V3_PRF)      {    enum BOTAN_HAS_SSL_V3_PRF = true;                                                          }
+else                          enum BOTAN_HAS_SSL_V3_PRF = false;
+version(TLS_V10_PRF)     {    enum BOTAN_HAS_TLS_V10_PRF = true;                                                         }
+else                          enum BOTAN_HAS_TLS_V10_PRF = false;
+
 version(AES_NI)          {    enum BOTAN_HAS_AES_NI = true;                                                              }
 else                          enum BOTAN_HASH_AES_NI = false;
 version(Serpent_x86_32)  {    enum BOTAN_HAS_SERPENT_X86_32 = true;        version(X86){} else static assert(false);     }
@@ -113,6 +125,8 @@ version(AEAD_OCB)        {    enum BOTAN_HAS_AEAD_OCB = true;                   
 else                          enum BOTAN_HAS_AEAD_OCB = false;
 version(AEAD_GCM)        {    enum BOTAN_HAS_AEAD_GCM = true;                                                            }
 else                          enum BOTAN_HAS_AEAD_GCM = false;
+version(AEAD_SIV)        {    enum BOTAN_HAS_AEAD_SIV = true;                                                            }
+else                          enum BOTAN_HAS_AEAD_SIV = false;
 
 version(RFC6979)         {    enum BOTAN_HAS_RFC6979_GENERATOR = true;                                                   }
 else                          enum BOTAN_HAS_RFC6979_GENERATOR = false;
@@ -204,8 +218,8 @@ version(RIPEMD_128)      {    enum BOTAN_HAS_RIPEMD_128 = true;                 
 else                          enum BOTAN_HAS_RIPEMD_128 = false;
 version(RIPEMD_160)      {    enum BOTAN_HAS_RIPEMD_160 = true;                                                          }
 else                          enum BOTAN_HAS_RIPEMD_160 = false;
-version(SHA1)            {    enum BOTAN_HAS_SHA160 = true;                                                              }
-else                          enum BOTAN_HAS_SHA160 = false;
+version(SHA1)            {    enum BOTAN_HAS_SHA1 = true;                                                                }
+else                          enum BOTAN_HAS_SHA1 = false;  
 version(SHA2_32)         {    enum BOTAN_HAS_SHA2_32 = true;                                                             }
 else                          enum BOTAN_HAS_SHA2_32 = false;
 version(SHA2_64)         {    enum BOTAN_HAS_SHA2_64 = true;                                                             }

@@ -14,10 +14,12 @@ import botan.block.block_cipher;
 import botan.modes.mode_pad;
 import botan.utils.parsing;
 import botan.utils.xorBuf;
+import botan.utils.types;
+
 /**
 * CFB Mode
 */
-class CFBMode : CipherMode
+class CFBMode : CipherMode, Transformation
 {
 public:
     final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
@@ -93,7 +95,7 @@ protected:
 
     final SecureVector!ubyte keystreamBuf() { return m_keystream_buf; }
 
-private:
+protected:
     final override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, length);
@@ -108,7 +110,7 @@ private:
 /**
 * CFB Encryption
 */
-final class CFBEncryption : CFBMode
+final class CFBEncryption : CFBMode, Transformation
 {
 public:
     this(BlockCipher cipher, size_t feedback_bits)
@@ -152,7 +154,7 @@ public:
 /**
 * CFB Decryption
 */
-final class CFBDecryption : CFBMode
+final class CFBDecryption : CFBMode, Transformation
 {
 public:
     this(BlockCipher cipher, size_t feedback_bits) 

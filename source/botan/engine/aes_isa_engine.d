@@ -28,11 +28,11 @@ public:
         static if (BOTAN_HAS_AES_NI) {
             if (CPUID.hasAesNi())
             {
-                if (request.algo_name == "AES-128")
+                if (request.algoName == "AES-128")
                     return new AES128NI;
-                if (request.algo_name == "AES-192")
+                if (request.algoName == "AES-192")
                     return new AES192NI;
-                if (request.algo_name == "AES-256")
+                if (request.algoName == "AES-256")
                     return new AES256NI;
             }
         }

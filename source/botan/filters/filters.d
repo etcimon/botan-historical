@@ -17,8 +17,9 @@ public import botan.filters.pipe;
 import botan.filters.basefilt;
 import botan.filters.key_filt;
 import botan.libstate.libstate;
-import botan.algo_base.scan_name;
+import botan.algo_base.scan_token;
 
+import botan.constants;
 static if (BOTAN_HAS_CODEC_FILTERS) {
   import botan.filters.b64_filt;
   import botan.filters.hex_filt;
@@ -29,18 +30,18 @@ import std.algorithm;
 /**
 * Stream Cipher Filter
 */
-final class StreamCipherFilter : KeyedFilter
+final class StreamCipherFilter : KeyedFilter, Filterable
 {
 public:
 
-    @property string name() const { return m_cipher.name; }
+    override @property string name() const { return m_cipher.name; }
 
     /**
     * Write input data
     * @param input = data
     * @param input_len = length of input in bytes
     */
-    void write(in ubyte* input, size_t length)
+    override void write(in ubyte* input, size_t length)
     {
         while (length)
         {
@@ -52,14 +53,14 @@ public:
         }
     }
 
-    bool validIvLength(size_t iv_len) const
+    override bool validIvLength(size_t iv_len) const
     { return m_cipher.validIvLength(iv_len); }
 
     /**
     * Set the initialization vector for this filter.
     * @param iv = the initialization vector to set
     */
-    void setIv(in InitializationVector iv)
+    override void setIv(in InitializationVector iv)
     {
         m_cipher.setIv(iv.ptr, iv.length);
     }
@@ -69,7 +70,7 @@ public:
     * Set the key of this filter.
     * @param key = the key to set
     */
-    void setKey(in SymmetricKey key) { m_cipher.setKey(key); }
+    override void setKey(in SymmetricKey key) { m_cipher.setKey(key); }
 
     override KeyLengthSpecification keySpec() const { return m_cipher.keySpec(); }
 
@@ -130,15 +131,15 @@ private:
 /**
 * Hash Filter.
 */
-final class HashFilter : Filter
+final class HashFilter : Filter, Filterable
 {
 public:
-    void write(in ubyte* input, size_t len) { m_hash.update(input, len); }
+    override void write(in ubyte* input, size_t len) { m_hash.update(input, len); }
 
     /*
     * Complete a calculation by a HashFilter
     */
-    void endMsg()
+    override void endMsg()
     {
         SecureVector!ubyte output = m_hash.finished();
         if (m_OUTPUT_LENGTH)
@@ -147,7 +148,7 @@ public:
             send(output);
     }
 
-    @property string name() const { return m_hash.name; }
+    override @property string name() const { return m_hash.name; }
 
     /**
     * Construct a hash filter.
@@ -187,15 +188,15 @@ private:
 /**
 * MessageAuthenticationCode Filter.
 */
-final class MACFilter : KeyedFilter
+final class MACFilter : KeyedFilter, Filterable
 {
 public:
-    void write(in ubyte* input, size_t len) { m_mac.update(input, len); }
+    override void write(in ubyte* input, size_t len) { m_mac.update(input, len); }
 
     /*
     * Complete a calculation by a MACFilter
     */
-    void endMsg()
+    override void endMsg()
     {
         SecureVector!ubyte output = m_mac.finished();
         if (m_OUTPUT_LENGTH)
@@ -204,13 +205,13 @@ public:
             send(output);
     }
 
-    @property string name() const { return m_mac.name; }
+    override @property string name() const { return m_mac.name; }
 
     /**
     * Set the key of this filter.
     * @param key = the key to set
     */
-    void setKey(in SymmetricKey key) { m_mac.setKey(key); }
+    override void setKey(in SymmetricKey key) { m_mac.setKey(key); }
 
     override KeyLengthSpecification keySpec() const { return m_mac.keySpec(); }
 

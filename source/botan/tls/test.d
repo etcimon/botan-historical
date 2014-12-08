@@ -39,7 +39,7 @@ public:
         {
             bool have_match = false;
             foreach (cert_key_type; cert_key_types[])
-                if (cert_key_type == m_key.algo_name)
+                if (cert_key_type == m_key.algoName)
                     have_match = true;
             
             if (have_match)

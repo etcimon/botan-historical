@@ -7,7 +7,7 @@
 module botan.libstate.init;
 
 import botan.libstate.libstate;
-import botan.libstate.globalState;
+import botan.libstate.global_state;
 // import string;
 /**
 * This class represents the Library Initialization/Shutdown Object. It

@@ -7,7 +7,7 @@
 */
 module botan.math.mp.mp_core;
 
-
+import botan.constants;
 public import botan.botan.math.mp.mp_types;
 
 pure nothrow @nogc:

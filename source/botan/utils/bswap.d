@@ -10,6 +10,7 @@ module botan.utils.bswap;
 import botan.utils.types;
 import botan.utils.rotate;
 
+import botan.constants;
 static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
   import botan.utils.simd.emmintrin;
 }
