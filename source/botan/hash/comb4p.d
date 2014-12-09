@@ -10,7 +10,8 @@ import botan.constants;
 static if (BOTAN_HAS_COMB4P):
 
 import botan.hash.hash;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
+import botan.utils.types;
 import std.exception;
 
 /**
@@ -40,7 +41,7 @@ public:
     }
 
 
-    @property size_t hashBlockSize() const
+	override @property size_t hashBlockSize() const
     {
         if (m_hash1.hashBlockSize == m_hash2.hashBlockSize)
             return m_hash1.hashBlockSize;
@@ -52,22 +53,22 @@ public:
         return 0;
     }
 
-    @property size_t outputLength() const
+	override @property size_t outputLength() const
     {
         return m_hash1.output_length + m_hash2.output_length;
     }
 
-    HashFunction clone() const
+	override HashFunction clone() const
     {
         return new Comb4P(m_hash1.clone(), m_hash2.clone());
     }
 
-    @property string name() const
+	override @property string name() const
     {
         return "Comb4P(" ~ m_hash1.name ~ "," ~ m_hash2.name ~ ")";
     }
 
-    void clear()
+	override void clear()
     {
         m_hash1.clear();
         m_hash2.clear();

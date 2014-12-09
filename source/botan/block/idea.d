@@ -16,13 +16,13 @@ import botan.utils.types;
 /**
 * IDEA
 */
-class IDEA : BlockCipherFixedParams!(8, 16)
+class IDEA : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
 {
 public:
     /*
     * IDEA Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         idea_op(input, output, blocks, m_EK.ptr);
     }
@@ -30,7 +30,7 @@ public:
     /*
     * IDEA Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         idea_op(input, output, blocks, m_DK.ptr);
     }
@@ -42,7 +42,7 @@ public:
     }
 
     @property string name() const { return "IDEA"; }
-    BlockCipher clone() const { return new IDEA; }
+	override BlockCipher clone() const { return new IDEA; }
 protected:
     /**
     * @return const reference to encryption subkeys

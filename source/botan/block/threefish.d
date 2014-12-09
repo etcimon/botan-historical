@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * Threefish-512
 */
-class Threefish512 : BlockCipherFixedParams!(64, 64)
+class Threefish512 : BlockCipherFixedParams!(64, 64), SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
@@ -115,7 +115,6 @@ public:
 protected:
     final SecureVector!ulong getT() const { return m_T; }
     final SecureVector!ulong getK() const { return m_K; }
-private:
     override void keySchedule(in ubyte* key, size_t)
     {
         // todo: define key schedule for smaller keys
@@ -128,6 +127,7 @@ private:
                  m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
     }
 
+private:
 
     final void skeinFeedfwd(in SecureVector!ulong M, in SecureVector!ulong T)
     {

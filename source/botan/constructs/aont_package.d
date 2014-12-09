@@ -11,7 +11,7 @@ import botan.rng.rng;
 import botan.filters.filters;
 import botan.stream.ctr;
 import botan.utils.get_byte;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.algo_base.symkey;
 
 /**

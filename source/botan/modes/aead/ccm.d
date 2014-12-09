@@ -14,7 +14,7 @@ import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.utils.parsing;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import std.algorithm;
 
 /**

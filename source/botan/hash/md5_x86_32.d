@@ -20,7 +20,8 @@ final class MD5_X86_32 : MD5
 {
 public:
     override HashFunction clone() const { return new MD5_X86_32; }
-private:
+
+protected:
     override void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)

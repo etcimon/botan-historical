@@ -15,13 +15,13 @@ import botan.utils.loadstor;
 /**
 * XTEA
 */
-class XTEA : BlockCipherFixedParams!(8, 16)
+class XTEA : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
 {
 public:
     /*
     * XTEA Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         while (blocks >= 4)
         {
@@ -52,7 +52,7 @@ public:
     /*
     * XTEA Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         while (blocks >= 4)
         {
@@ -86,7 +86,7 @@ public:
     }
 
     override @property string name() const { return "XTEA"; }
-    BlockCipher clone() const { return new XTEA; }
+	override BlockCipher clone() const { return new XTEA; }
 protected:
     /**
     * @return const reference to the key schedule

@@ -9,7 +9,7 @@ module botan.pubkey.algo.dsa;
 import botan.constants;
 static if (BOTAN_HAS_DSA):
 
-import botan.pubkey.algo.dl_algo;
+public import botan.pubkey.algo.dl_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.pow_mod;
@@ -19,19 +19,16 @@ import botan.pubkey.algo.keypair;
 /**
 * DSA Public Key
 */
-class DSAPublicKey : DLSchemePublicKey
+class DSAPublicKey
 {
 public:
-    @property string algoName() const { return "DSA"; }
-
-    override DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_57; }
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return groupQ().bytes(); }
-    size_t maxInputBits() const { return groupQ().bits(); }
+    __gshared immutable string algoName = "DSA";
+    size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
+    size_t maxInputBits() const { return m_pub.groupQ().bits(); }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-        super(alg_id, key_bits, DLGroup.ANSI_X9_57);
+		m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
 
     /*
@@ -39,60 +36,69 @@ public:
     */
     this(in DLGroup grp, in BigInt y1)
     {
-        m_group = grp;
-        m_y = y1;
+		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
-protected:
-    this() {}
+
+	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+
+	alias m_pub this;
+private:
+	DLSchemePublicKey m_pub;
 }
 
 /**
 * DSA Private Key
 */
-final class DSAPrivateKey : DSAPublicKey, DLSchemePrivateKey, PrivateKey
+final class DSAPrivateKey : DSAPublicKey, PrivateKey
 {
 public:
     /*
     * Create a DSA private key
     */
-    this(RandomNumberGenerator rng, in DLGroup dl_group, in BigInt private_key = 0)
+    this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
     {
-        m_group = dl_group;
-        m_x = private_key;
         
-        if (m_x == 0)
-            m_x = BigInt.randomInteger(rng, 2, groupQ() - 1);
+        if (x_arg == 0)
+            x_arg = BigInt.randomInteger(rng, 2, dl_group.getQ() - 1);
         
-        m_y = powerMod(groupG(), m_x, groupP());
+        BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         
-        if (private_key == 0)
-            genCheck(rng);
+		m_priv = new DLSchemePrivateKey(dl_group, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+
+        if (x_arg == 0)
+            m_priv.genCheck(rng);
         else
-            loadCheck(rng);
+            m_priv.loadCheck(rng);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     {
-        super(alg_id, key_bits, DLGroup.ANSI_X9_57);
-        m_y = powerMod(groupG(), m_x, groupP());
+		m_priv = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+		m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
         
-        loadCheck(rng);
+		m_priv.loadCheck(rng);
     }
+
+	this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
     /*
     * Check Private DSA Parameters
     */
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.checkKey(rng, strong) || m_x >= groupQ())
+        if (!m_priv.checkKey(rng, strong, true) || m_priv.m_x >= m_priv.groupQ())
             return false;
         
         if (!strong)
             return true;
         
-        return signatureConsistencyCheck(rng, this, "EMSA1(SHA-1)");
+        return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
     }
 
+	alias m_priv this;
+private:
+	DLSchemePrivateKey m_priv;
 }
 
 /**
@@ -101,19 +107,28 @@ public:
 final class DSASignatureOperation : Signature
 {
 public:
-    this(in DSAPrivateKey dsa)
+	this(in PrivateKey pkey) {
+		this(cast(DLSchemePrivateKey) pkey);
+	}
+
+	this(in DSAPrivateKey pkey) {
+		this(pkey.m_priv);
+	}
+
+    this(in DLSchemePrivateKey dsa)
     { 
+		assert(nr.algoName == DSAPublicKey.algoName);
         m_q = dsa.groupQ();
         m_x = dsa.getX();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
         m_mod_q = dsa.groupQ();
     }
 
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return m_q.bytes(); }
-    size_t maxInputBits() const { return m_q.bits(); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_q.bytes(); }
+	override size_t maxInputBits() const { return m_q.bits(); }
 
-    SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         import std.concurrency : spawn, receiveOnly, thisTid, send;
         rng.addEntropy(msg, msg_len);
@@ -155,9 +170,17 @@ private:
 final class DSAVerificationOperation : Verification
 {
 public:
+	this(in PublicKey pkey) {
+		this(cast(DLSchemePublicKey) pkey);
+	}
 
-    this(in DSAPublicKey dsa) 
+	this(in DSAPublicKey pkey) {
+		this(pkey.m_pub);
+	}
+
+    this(in DLSchemePublicKey dsa) 
     {
+		assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = dsa.groupQ();
         m_y = dsa.getY();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
@@ -166,13 +189,13 @@ public:
         m_mod_q = ModularReducer(dsa.groupQ());
     }
 
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return m_q.bytes(); }
-    size_t maxInputBits() const { return m_q.bits(); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_q.bytes(); }
+	override size_t maxInputBits() const { return m_q.bits(); }
 
-    bool withRecovery() const { return false; }
+	override bool withRecovery() const { return false; }
 
-    bool verify(in ubyte* msg, size_t msg_len,
+	override bool verify(in ubyte* msg, size_t msg_len,
                 in ubyte* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;

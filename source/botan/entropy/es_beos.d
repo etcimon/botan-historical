@@ -8,6 +8,7 @@ module botan.entropy.es_beos;
 
 import botan.constants;
 static if (BOTAN_HAS_ENTROPY_SRC_BEOS):
+import botan.entropy.entropy_src;
 
 /**
 * BeOS Entropy Source

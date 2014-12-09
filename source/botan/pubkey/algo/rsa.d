@@ -9,7 +9,7 @@ module botan.pubkey.algo.rsa;
 import botan.constants;
 static if (BOTAN_HAS_RSA):
 
-import botan.pubkey.algo.if_algo;
+public import botan.pubkey.algo.if_algo;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;
 import botan.pubkey.blinding;
@@ -21,15 +21,14 @@ import botan.rng.rng;
 /**
 * RSA Public Key
 */
-class RSAPublicKey : IF_SchemePublicKey
+class RSAPublicKey
 {
 public:
-    @property string algoName() const { return "RSA"; }
+    __gshared immutable string algoName = "RSA";
 
-    this(in AlgorithmIdentifier alg_id,
-         in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-        super(alg_id, key_bits);
+        m_pub = new IFSchemePublicKey(alg_id, key_bits);
     }
 
     /**
@@ -39,18 +38,21 @@ public:
     */
     this(in BigInt n, in BigInt e)
     {
-        super(n, e);
+        m_pub = new IFSchemePublicKey(n, e);
     }
 
-protected:
-    this() {}
+	this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
+	this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
+
+	alias m_pub this;
+private:
+	IFSchemePublicKey m_pub;
 }
 
 /**
 * RSA Private Key
 */
-final class RSAPrivateKey : RSAPublicKey,
-                               IF_SchemePrivateKey
+final class RSAPrivateKey : RSAPublicKey
 {
 public:
     /*
@@ -58,7 +60,7 @@ public:
     */
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.checkKey(rng, strong))
+        if (!m_priv.checkKey(rng, strong))
             return false;
         
         if (!strong)
@@ -67,12 +69,12 @@ public:
         if ((m_e * m_d) % lcm(m_p - 1, m_q - 1) != 1)
             return false;
         
-        return signatureConsistencyCheck(rng, this, "EMSA4(SHA-1)");
+        return signatureConsistencyCheck(rng, m_priv, "EMSA4(SHA-1)");
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
     {
-        super(rng, alg_id, key_bits);
+		m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, &checkKey);
     }
 
     /**
@@ -89,7 +91,7 @@ public:
     */
     this(RandomNumberGenerator rng, in BigInt p, in BigInt q, in BigInt e, in BigInt d = 0, in BigInt n = 0)
     {
-        super(rng, p, q, e, d, n);
+		m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, &checkKey);
     }
 
     /**
@@ -101,10 +103,10 @@ public:
     this(RandomNumberGenerator rng, size_t bits, size_t exp = 65537)
     {
         if (bits < 1024)
-            throw new InvalidArgument(algo_name ~ ": Can't make a key that is only " ~ to!string(bits) ~ " bits long");
+            throw new InvalidArgument(algoName ~ ": Can't make a key that is only " ~ to!string(bits) ~ " bits long");
         if (exp < 3 || exp % 2 == 0)
-            throw new InvalidArgument(algo_name ~ ": Invalid encryption exponent");
-        
+            throw new InvalidArgument(algoName ~ ": Invalid encryption exponent");
+		m_priv = new IFSchemePrivateKey(&checkKey);
         m_e = exp;
         
         do
@@ -121,6 +123,12 @@ public:
         
         genCheck(rng);
     }
+
+	this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
+
+	alias m_priv this;
+private:
+	IFSchemePrivateKey m_priv;
 }
 
 /**
@@ -129,8 +137,17 @@ public:
 final class RSAPrivateOperation : Signature, Decryption
 {
 public:
-    this(in RSAPrivateKey rsa, RandomNumberGenerator rng) 
+	this(in PrivateKey pkey, RandomNumberGenerator rng) {
+		this(cast(IFSchemePrivateKey) pkey, rng);
+	}
+
+	this(in RSAPrivateKey pkey, RandomNumberGenerator rng) {
+		this(pkey.m_priv, rng);
+	}
+
+    this(in IFSchemePrivateKey rsa, RandomNumberGenerator rng) 
     {
+		assert(rsa.algoName == RSAPublicKey.algoName);
         m_n = rsa.getN();
         m_q = rsa.getQ();
         m_c = rsa.getC();
@@ -202,8 +219,17 @@ private:
 final class RSAPublicOperation : Verification, Encryption
 {
 public:
-    this(in RSAPublicKey rsa)
+	this(in PublicKey pkey) {
+		this(cast(IFSchemePublicKey) pkey);
+	}
+
+	this(in RSAPublicKey pkey) {
+		this(pkey.m_pub);
+	}
+
+    this(in IFSchemePublicKey rsa)
     {
+		assert(rsa.algoName == RSAPublicKey.algoName);
         m_n = rsa.getN();
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
     }

@@ -11,7 +11,6 @@ import botan.constants;
 static if (BOTAN_HAS_ENGINE_GNU_MP):
 
 import botan.engine.engine;
-import cstring;
 import core.atomic;
 import std.c.string;
 import botan.math.bigint.bigint;
@@ -20,8 +19,8 @@ import std.c.stdio;
 
 /* GnuMP 5.0 and later have a side-channel resistent powm */
 version(HAVE_MPZ_POWM_SEC)    alias mpz_powm = mpz_powm_sec;
-static if (BOTAN_HAS_RSA)    import botan.pubkey.algo.rsa;
-static if (BOTAN_HAS_DSA)    import botan.pubkey.algo.dsa;
+static if (BOTAN_HAS_RSA)               import botan.pubkey.algo.rsa;
+static if (BOTAN_HAS_DSA)               import botan.pubkey.algo.dsa;
 static if (BOTAN_HAS_DIFFIE_HELLMAN)    import botan.pubkey.algo.dh;
 
 size_t GNU_MP_VERSION_CODE_FOR(size_t a, size_t b, size_t c) {
@@ -77,8 +76,8 @@ public:
     KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-            if (const DHPrivateKey dh = cast(const DHPrivateKey)(key))
-                return new GMP_DH_KA_Operation(dh);
+            if (DHPrivateKey.algoName == key.algoName)
+                return new GMP_DH_KA_Operation(key);
         }
         
         return null;
@@ -87,13 +86,13 @@ public:
     Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new GMPRSAPrivateOperation(s);
+			if (RSAPrivateKey.algoName == key.algoName)
+                return new GMPRSAPrivateOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSAPrivateKey s = cast(const DSAPrivateKey)(key))
-                return new GMPDSASignatureOperation(s);
+			if (DSAPrivateKey.algoName == key.algoName)
+                return new GMPDSASignatureOperation(key);
         }
         
         return null;
@@ -102,13 +101,13 @@ public:
     Verification getVerifyOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new GMPRSAPublicOperation(s);
+			if (RSAPublicKey.algoName == key.algoName)
+                return new GMPRSAPublicOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSAPublicKey s = cast(const DSAPublicKey)(key))
-                return new GMPDSAVerificationOperation(s);
+			if (DSAPublicKey.algoName == key.algoName)
+                return new GMPDSAVerificationOperation(key);
         }
         
         return null;
@@ -117,8 +116,8 @@ public:
     Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new GMPRSAPublicOperation(s);
+			if (RSAPublicKey.algoName == key.algoName)
+                return new GMPRSAPublicOperation(key);
         }
         
         return null;
@@ -127,8 +126,8 @@ public:
     Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new GMPRSAPrivateOperation(s);
+			if (RSAPrivateKey.algoName == key.algoName)
+                return new GMPRSAPrivateOperation(key);
         }
         
         return null;
@@ -151,16 +150,16 @@ public:
 final class GMPModularExponentiator : ModularExponentiator
 {
 public:
-    void setBase(in BigInt b) { m_base = b; }
-    void setExponent(in BigInt e) { m_exp = e; }
-    BigInt execute() const
+	override void setBase(in BigInt b) { m_base = b; }
+	override void setExponent(in BigInt e) { m_exp = e; }
+	override BigInt execute() const
     {
         GMP_MPZ r;
         mpz_powm(r.value, m_base.value, m_exp.value, mod.value);
         return r.toBigint();
     }
     
-    ModularExponentiator copy() const
+	override ModularExponentiator copy() const
     { return new GMPModularExponentiator(this); }
     
     this(in BigInt n) { m_mod = n; }
@@ -285,8 +284,17 @@ static if (BOTAN_HAS_DSA) {
     final class GMPDSASignatureOperation : Signature
     {
     public:
-        this(in DSAPrivateKey dsa) 
+		this(in PrivateKey pkey) {
+			this(cast(DLSchemePrivateKey) pkey);
+		}
+
+		this(in DSAPrivateKey pkey) {
+			this(pkey);
+		}
+
+        this(in DLSchemePrivateKey dsa) 
         {
+			assert(dsa.algoName == DSAPublicKey.algoName);
             m_x = dsa.getX();
             m_p = dsa.groupP();
             m_q = dsa.groupQ();
@@ -342,8 +350,17 @@ static if (BOTAN_HAS_DSA) {
     final class GMPDSAVerificationOperation : Verification
     {
     public:
-        this(in DSAPublicKey dsa) 
+		this(in PublicKey pkey) {
+			this(cast(DLSchemePublicKey) pkey);
+		}
+
+		this(in DSAPublicKey pkey) {
+			this(pkey);
+		}
+
+		this(in DLSchemePublicKey dsa) 
         {
+			assert(dsa.algoName == DSAPublicKey.algoName);
             m_y = dsa.getY();
             m_p = dsa.groupP();
             m_q = dsa.groupQ();
@@ -407,8 +424,17 @@ static if (BOTAN_HAS_DSA) {
         final class GMPRSAPrivateOperation : Signature, Decryption
         {
         public:
-            this(in RSAPrivateKey rsa)
+			this(in PrivateKey pkey) {
+				this(cast(IFSchemePrivateKey) pkey);
+			}
+
+			this(in RSAPrivateKey pkey) {
+				this(pkey);
+			}
+
+            this(in IFSchemePrivateKey rsa)
             {
+				assert(rsa.algoName == RSAPublicKey.algoName);
                 m_mod = rsa.getN();
                 m_p = rsa.getP();
                 m_q = rsa.getQ();
@@ -457,8 +483,17 @@ static if (BOTAN_HAS_DSA) {
         final class GMPRSAPublicOperation : Verification, Encryption
         {
         public:
-            this(in RSAPublicKey rsa)
+			this(in PublicKey pkey) {
+				this(cast(IFSchemePublicKey) pkey);
+			}
+
+			this(in RSAPublicKey pkey) {
+				this(pkey);
+			}
+
+            this(in IFSchemePublicKey rsa)
             {
+				assert(rsa.algoName == RSAPublicKey.algoName);
                 m_n = rsa.getN();
                 m_e = rsa.getE();
                 m_mod = rsa.getN();

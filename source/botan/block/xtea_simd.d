@@ -14,6 +14,7 @@ import botan.block.xtea;
 import botan.utils.loadstor;
 import botan.simd.simd_32;
 import std.range : iota;
+import botan.block.block_cipher;
 
 /**
 * XTEA implemented using SIMD operations
@@ -26,7 +27,7 @@ public:
     /*
     * XTEA Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* KS = this.getEK().ptr;
         
@@ -45,7 +46,7 @@ public:
     /*
     * XTEA Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* KS = this.getEK().ptr;
         
@@ -61,7 +62,7 @@ public:
             super.decryptN(input, output, blocks);
     }
 
-    BlockCipher clone() const { return new XTEASIMD; }
+	override BlockCipher clone() const { return new XTEASIMD; }
 }
 
 package:

@@ -14,7 +14,7 @@ import botan.algo_factory.algo_factory;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.exceptn;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.algo_factory.algo_factory;
 import botan.utils.types;
 

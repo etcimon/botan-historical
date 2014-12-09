@@ -17,13 +17,13 @@ import botan.utils.rotate;
 /**
 * MARS, IBM's candidate for AES
 */
-final class MARS : BlockCipherFixedParams!(16, 16, 32, 4)
+final class MARS : BlockCipherFixedParams!(16, 16, 32, 4), SymmetricAlgorithm
 {
 public:
     /*
     * MARS Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -66,7 +66,7 @@ public:
     /*
     * MARS Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -112,7 +112,7 @@ public:
     }
 
     @property string name() const { return "MARS"; }
-    BlockCipher clone() const { return new MARS; }
+	override BlockCipher clone() const { return new MARS; }
 
 protected:
     /*

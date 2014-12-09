@@ -37,8 +37,21 @@ import botan.utils.exceptn;
 class ECPublicKey : PublicKey
 {
 public:
-    this(in ECGroup dom_par, in PointGFp pub_point) 
+    this(in ECGroup dom_par, 
+	     in PointGFp pub_point, 
+	     in string algo_name, 
+	     in bool msg_compat, 
+	     in short msg_parts = 1,
+	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+	     in Vector!ubyte delegate() const subject_public_key = null,
+	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
     {
+		m_check_key = check_key;
+		m_algorithm_identifier = algorithm_identifier;
+		m_subject_public_key = subject_public_key;
+		m_msg_compat = msg_compat;
+		m_algo_name = algo_name;
+		m_msg_parts = msg_parts;
         m_domain_params = dom_par;
         m_public_key = pub_point;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -46,8 +59,19 @@ public:
             throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
     }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
-    {
+	this(in AlgorithmIdentifier alg_id, 
+	     in SecureVector!ubyte key_bits, 
+	     in string algo_name, in bool msg_compat, in short msg_parts = 1,
+	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+	     in Vector!ubyte delegate() const subject_public_key = null,
+	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+	{
+		m_check_key = check_key;
+		m_algorithm_identifier = algorithm_identifier;
+		m_subject_public_key = subject_public_key;
+		m_msg_compat = msg_compat;
+		m_algo_name = algo_name;
+		m_msg_parts = msg_parts;
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
@@ -60,20 +84,33 @@ public:
     * domain parameters of this point are not set
     * @result the public point of this key
     */
-    ref PointGFp publicPoint() const { return m_public_key; }
+    final ref PointGFp publicPoint() const { return m_public_key; }
 
-    AlgorithmIdentifier algorithmIdentifier() const
+	final size_t maxInputBits() const { return domain().getOrder().bits(); }
+
+	final size_t messagePartSize() const { if (!m_msg_compat) return 0; return domain().getOrder().bytes(); }
+
+	final size_t messageParts() const { return m_msg_parts; }
+
+    final AlgorithmIdentifier algorithmIdentifier() const
     {
+		if (m_algorithm_identifier)
+			return m_algorithm_identifier();
         return AlgorithmIdentifier(getOid(), DER_domain());
     }
 
-    Vector!ubyte x509SubjectPublicKey() const
+    final Vector!ubyte x509SubjectPublicKey() const
     {
+		if (m_subject_public_key)
+			return m_subject_public_key();
         return unlock(EC2OSP(publicPoint(), PointGFp.COMPRESSED));
     }
 
-    bool checkKey(RandomNumberGenerator, bool) const
+    final bool checkKey(RandomNumberGenerator rng, bool b) const
     {
+		if (m_check_key) {
+			return m_check_key(rng, b);
+		}
         return publicPoint().onTheCurve();
     }
 
@@ -83,13 +120,13 @@ public:
     * domain parameters of this point are not set
     * @result the domain parameters of this key
     */
-    ECGroup domain() const { return m_domain_params; }
+    final ECGroup domain() const { return m_domain_params; }
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
     * @param enc = the encoding to use
     */
-    void setParameterEncoding(ECGroupEncoding form)
+    final void setParameterEncoding(ECGroupEncoding form)
     {
         if (form != EC_DOMPAR_ENC_EXPLICIT && form != EC_DOMPAR_ENC_IMPLICITCA && form != EC_DOMPAR_ENC_OID)
             throw new InvalidArgument("Invalid encoding form for EC-key object specified");
@@ -106,46 +143,60 @@ public:
     * Return the DER encoding of this keys domain in whatever format
     * is preset for this particular key
     */
-    Vector!ubyte dERDomain() const
-    { return domain().DER_encode(domainFormat()); }
+    Vector!ubyte DER_domain() const { return domain().DER_encode(domainFormat()); }
 
     /**
     * Get the domain parameter encoding to be used when encoding this key.
     * @result the encoding to use
     */
-    ECGroupEncoding domainFormat() const
-    { return m_domain_encoding; }
+    ECGroupEncoding domainFormat() const { return m_domain_encoding; }
 
     override size_t estimatedStrength() const
     {
         return domain().getCurve().getP().bits() / 2;
-    }
+	}
 
 
 protected:
-    this() 
-    {        m_public_key = pub_point;
+	this(in PointGFp pub_point) 
+    {
+		m_public_key = pub_point;
         
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
     }
 
     ECGroup m_domain_params;
     PointGFp m_public_key;
-    EC_Group_Encoding m_domain_encoding;
+    ECGroupEncoding m_domain_encoding;
+	const string m_algo_name;
+	const bool m_msg_compat;
+	const short m_msg_parts;
+	const bool delegate(RandomNumberGenerator, bool) const m_check_key;
+	const Vector!ubyte delegate() const m_subject_public_key;
+	const AlgorithmIdentifier delegate() const m_algorithm_identifier;
 }
 
 /**
 * This abstract class represents ECC private keys
 */
-final class ECPrivateKey : ECPublicKey,
-                            PrivateKey
+final class ECPrivateKey : ECPublicKey, PrivateKey
 {
 public:
     /**
     * ECPrivateKey constructor
     */
-    this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key)
-    {
+	this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key, 
+	     in string algo_name, in bool msg_compat, in short msg_parts = 1,
+	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+	     in Vector!ubyte delegate() const subject_public_key = null,
+	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+	{
+		m_check_key = check_key;
+		m_algorithm_identifier = algorithm_identifier;
+		m_subject_public_key = subject_public_key;
+		m_msg_compat = msg_compat;
+		m_algo_name = algo_name;
+		m_msg_parts = msg_parts;
         m_domain_params = ec_group;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
@@ -159,8 +210,18 @@ public:
         assert(m_public_key.onTheCurve(), "Generated public key point was on the curve");
     }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
-    {
+	this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, 
+	     in string algo_name, in bool msg_compat, in short msg_parts = 1,
+	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+	     in Vector!ubyte delegate() const subject_public_key = null,
+	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+	{
+		m_check_key = check_key;
+		m_algorithm_identifier = algorithm_identifier;
+		m_subject_public_key = subject_public_key;
+		m_msg_compat = msg_compat;
+		m_algo_name = algo_name;
+		m_msg_parts = msg_parts;
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
@@ -186,7 +247,7 @@ public:
         }
         else
         {
-            public_key = OS2ECP(public_key_bits, domain().getCurve());
+            m_public_key = OS2ECP(public_key_bits, domain().getCurve());
             // OS2ECP verifies that the point is on the curve
         }
     }
@@ -202,6 +263,8 @@ public:
                 .getContents();
     }
 
+	AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
+
     /**
     * Get the private key value of this key object.
     * @result the private key value of this key object
@@ -209,12 +272,12 @@ public:
     BigInt privateValue() const
     {
         if (m_private_key == 0)
-            throw new InvalidState("ECPrivateKey::private_value - uninitialized");
+            throw new InvalidState("ECPrivateKey.private_value - uninitialized");
         
         return m_private_key;
     }
-protected:
-    this() {}
+
+private:
 
     BigInt m_private_key;
 }

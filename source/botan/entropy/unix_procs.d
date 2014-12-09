@@ -282,7 +282,7 @@ private:
     Vector!(string[]) m_sources;
     size_t m_sources_idx = 0;
 
-    Vector!Unix_Process m_procs;
+    Vector!UnixProcess m_procs;
 }
 
 final class UnixProcessInfoEntropySource : EntropySource

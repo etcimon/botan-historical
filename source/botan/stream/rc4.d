@@ -11,7 +11,7 @@ static if (BOTAN_HAS_RC4):
 
 import botan.stream.stream_cipher;
 import botan.utils.types;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.rounding;
 
 /**
@@ -23,7 +23,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-    void cipher(in ubyte* input, ubyte* output, size_t length)
+	override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -57,7 +57,7 @@ public:
         else                return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
     }
 
-    RC4 clone() const { return new RC4(m_SKIP); }
+	override RC4 clone() const { return new RC4(m_SKIP); }
 
     KeyLengthSpecification keySpec() const
     {

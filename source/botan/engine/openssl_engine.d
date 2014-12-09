@@ -13,7 +13,6 @@ import botan.engine.engine;
 import botan.pubkey.pk_keys;
 import botan.rng.rng;
 import botan.block.block_cipher;
-import botan.internal.bn_wrap;
 import botan.math.bigint.bigint;
 import botan.utils.parsing;
 import deimos.openssl.rc4;
@@ -38,8 +37,8 @@ public:
     KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-            if (const DHPrivateKey dh = cast(const DHPrivateKey)(key))
-                return new OSSLDHKAOperation(dh);
+            if (DHPrivateKey.algoName == key.algoName)
+                return new OSSLDHKAOperation(key);
         }
         
         return 0;
@@ -48,13 +47,13 @@ public:
     Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new OSSLRSAPrivateOperation(s);
+			if (RSAPrivateKey.algoName == key.algoName)
+				return new OSSLRSAPrivateOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSAPrivateKey s = cast(const DSAPrivateKey)(key))
-                return new OSSLDSASignatureOperation(s);
+			if (DSAPrivateKey.algoName == key.algoName)
+				return new OSSLDSASignatureOperation(key);
         }
         
         return 0;
@@ -63,13 +62,13 @@ public:
     Verification getVerifyOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new OSSLRSAPublicOperation(s);
+			if (RSAPublicKey.algoName == key.algoName)
+				return new OSSLRSAPublicOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSAPublicKey s = cast(const DSAPublicKey)(key))
-                return new OSSLDSAVerificationOperation(s);
+			if (DSAPublicKey.algoName == key.algoName)
+				return new OSSLDSAVerificationOperation(key);
         }
         
         return 0;
@@ -78,8 +77,8 @@ public:
     Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new OSSLRSAPublicOperation(s);
+			if (RSAPublicKey.algoName == key.algoName)
+				return new OSSLRSAPublicOperation(key);
         }
         
         return 0;
@@ -88,8 +87,8 @@ public:
     Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new OSSLRSAPrivateOperation(s);
+			if (RSAPrivateKey.algoName == key.algoName)
+				return new OSSLRSAPrivateOperation(key);
         }
         
         return 0;
@@ -443,7 +442,7 @@ private:
 /*
 * EVP Block Cipher
 */
-final class EVPBlockCipher : BlockCipher
+final class EVPBlockCipher : BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -590,16 +589,16 @@ private:
 }
 
 
-string hANDLEEVPCIPHER(string NAME, alias EVP)()
+string HANDLE_EVP_CIPHER(string NAME, alias EVP)()
 {
     return `if (request.algoName == ` ~ NAME ~ ` && request.argCount() == 0)
-                return new EVP_BlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ NAME ~ `);`;
+                return new EVPBlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ NAME ~ `);`;
 }
 
 
-string hANDLEEVPCIPHERKEYLEN(string NAME, alias EVP, ubyte MIN, ubyte MAX, ubyte MOD)() {
+string HANDLE_EVP_CIPHER_KEYLEN(string NAME, alias EVP, ubyte MIN, ubyte MAX, ubyte MOD)() {
     return `if (request.algoName == ` ~ NAME ~ ` && request.argCount() == 0)
-                return new EVP_BlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ 
+                return new EVPBlockCipher(` ~ __traits(identifier, EVP).stringof ~ `(), ` ~ 
         NAME ~ `, ` ~ MIN.stringof ~ `, ` ~ MAX.stringof ~ `, ` ~ MOD.stringof ~ `);`;
 }
 
@@ -686,8 +685,17 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
     final class OSSLDHKAOperation : KeyAgreement
     {
     public:
-        this(in DHPrivateKey dh) 
+		this(in PrivateKey pkey) {
+			this(cast(DLSchemePrivateKey) pkey);
+		}
+
+		this(in DHPrivateKey pkey) {
+			this(pkey);
+		}
+
+		this(in DLSchemePrivateKey dh) 
         {
+			assert(dh.algoName == DHPublicKey.algoName);
             m_x = dh.getX();
             m_p = dh.groupP();
         }
@@ -711,8 +719,17 @@ static if (BOTAN_HAS_DSA) {
     final class OSSLDSASignatureOperation : Signature
     {
     public:
-        this(in DSAPrivateKey dsa) 
+		this(in PrivateKey pkey) {
+			this(cast(DLSchemePrivateKey) pkey);
+		}
+
+		this(in DSAPrivateKey pkey) {
+			this(pkey);
+		}
+
+        this(in DLSchemePrivateKey dsa) 
         {
+			assert(dsa.algoName == DSAPublicKey.algoName);
             m_x = dsa.getX();
             m_p = dsa.groupP();
             m_q = dsa.groupQ();
@@ -768,8 +785,17 @@ static if (BOTAN_HAS_DSA) {
     final class OSSLDSAVerificationOperation : Verification
     {
     public:
-        this(in DSAPublicKey dsa)
+		this(in PublicKey pkey) {
+			this(cast(DLSchemePublicKey) pkey);
+		}
+
+		this(in DSAPublicKey pkey) {
+			this(pkey);
+		}
+
+		this(in DLSchemePublicKey dsa)
         {
+			assert(dsa.algoName == DSAPublicKey.algoName);
             m_y = dsa.getY();
             m_p = dsa.groupP();
             m_q = dsa.groupQ();
@@ -831,8 +857,17 @@ static if (BOTAN_HAS_DSA) {
         final class OSSLRSAPrivateOperation : Signature, Decryption
         {
         public:
-            this(in RSAPrivateKey rsa)
+			this(in PrivateKey pkey) {
+				this(cast(IFSchemePrivateKey) pkey);
+			}
+
+			this(in RSAPrivateKey pkey) {
+				this(pkey);
+			}
+
+            this(in IFSchemePrivateKey rsa)
             {
+				assert(rsa.algoName == RSAPublicKey.algoName);
                 m_mod = rsa.getN();
                 m_p = rsa.getP();
                 m_q = rsa.getQ();
@@ -844,8 +879,7 @@ static if (BOTAN_HAS_DSA) {
             
             size_t maxInputBits() const { return (m_n_bits - 1); }
             
-            SecureVector!ubyte sign(in ubyte* msg, size_t msg_len,
-                                  RandomNumberGenerator)
+            SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 BigInt x = privateOp(m);
@@ -882,8 +916,17 @@ static if (BOTAN_HAS_DSA) {
         final class OSSLRSAPublicOperation : Verification, Encryption
         {
         public:
-            this(in RSAPublicKey rsa) 
+			this(in PublicKey pkey) {
+				this(cast(IFSchemePublicKey) pkey);
+			}
+
+			this(in RSAPublicKey pkey) {
+				this(pkey);
+			}
+
+            this(in IFSchemePublicKey rsa) 
             {
+				assert(rsa.algoName == RSAPublicKey.algoName);
                 m_n = rsa.getN();
                 m_e = rsa.getE();
                 m_mod = rsa.getN();
@@ -892,8 +935,7 @@ static if (BOTAN_HAS_DSA) {
             size_t maxInputBits() const { return (m_n.bits() - 1); }
             bool withRecovery() const { return true; }
             
-            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len,
-                                     RandomNumberGenerator)
+            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encode1363(publicOp(m), m_n.bytes());

@@ -10,22 +10,23 @@ import botan.constants;
 static if (BOTAN_HAS_MD2):
 
 import botan.hash.hash;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
+import botan.utils.types;
 /**
 * MD2
 */
 class MD2 : HashFunction
 {
 public:
-    @property string name() const { return "MD2"; }
-    @property size_t outputLength() const { return 16; }
+	override @property string name() const { return "MD2"; }
+	override @property size_t outputLength() const { return 16; }
     override @property size_t hashBlockSize() const { return 16; }
-    HashFunction clone() const { return new MD2; }
+	override HashFunction clone() const { return new MD2; }
 
     /**
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         zeroise(m_X);
         zeroise(m_checksum);

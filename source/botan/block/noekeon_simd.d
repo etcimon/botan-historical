@@ -25,7 +25,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const SecureVector!uint EK = this.getEK();
         
@@ -82,7 +82,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const SecureVector!uint DK = this.getDK();
         
@@ -136,7 +136,7 @@ public:
             super.decryptN(input, output, blocks);
     }
 
-    BlockCipher clone() const { return new NoekeonSIMD; }
+	override BlockCipher clone() const { return new NoekeonSIMD; }
 }
 
 /*

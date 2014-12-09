@@ -22,7 +22,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         foreach (hash; m_hashes)
             hash.clear();
@@ -31,7 +31,7 @@ public:
     /*
     * Return the name of this type
     */
-    @property string name() const
+	override @property string name() const
     {
         Vector!string names;
         
@@ -44,7 +44,7 @@ public:
     /*
     * Return a clone of this object
     */
-    HashFunction clone() const
+	override HashFunction clone() const
     {
         Vector!HashFunction hash_copies;
         
@@ -57,7 +57,7 @@ public:
     /*
     * Return output size
     */
-    @property size_t outputLength() const
+	override @property size_t outputLength() const
     {
         size_t sum = 0;
         

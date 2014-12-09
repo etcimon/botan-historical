@@ -13,7 +13,7 @@ import botan.mac.mac;
 import botan.cmac.cmac;
 import botan.stream.ctr;
 import botan.utils.parsing;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import std.algorithm;
 
 /**

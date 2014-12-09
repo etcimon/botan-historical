@@ -11,20 +11,22 @@ static if (BOTAN_HAS_WHIRLPOOL):
 
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
+import botan.utils.types;
+
 /**
 * Whirlpool
 */
 final class Whirlpool : MDxHashFunction
 {
 public:
-    @property string name() const { return "Whirlpool"; }
-    @property size_t outputLength() const { return 64; }
-    HashFunction clone() const { return new Whirlpool; }
+	override @property string name() const { return "Whirlpool"; }
+	override @property size_t outputLength() const { return 64; }
+	override HashFunction clone() const { return new Whirlpool; }
 
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         super.clear();
         zeroise(m_M);

@@ -11,7 +11,7 @@ static if (BOTAN_HAS_CBC_MAC):
 
 import botan.mac.mac;
 import botan.block.block_cipher;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import std.algorithm;
 
 /**
@@ -23,7 +23,7 @@ public:
     /*
     * Return the name of this type
     */
-    @property string name() const
+	override @property string name() const
     {
         return "CBC-MAC(" ~ m_cipher.name ~ ")";
     }
@@ -31,12 +31,12 @@ public:
     /*
     * Return a clone of this object
     */
-    MessageAuthenticationCode clone() const
+	override MessageAuthenticationCode clone() const
     {
         return new CBCMAC(m_cipher.clone());
     }
 
-    @property size_t outputLength() const { return m_cipher.blockSize(); }
+	override @property size_t outputLength() const { return m_cipher.blockSize(); }
 
     /*
     * Clear memory of sensitive data

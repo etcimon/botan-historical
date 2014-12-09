@@ -45,7 +45,7 @@ enum : FaultProtection {
 /**
 * Public Key Encryptor
 */
-class PKEncryptor
+interface PKEncryptor
 {
 public:
 
@@ -56,7 +56,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    Vector!ubyte encrypt(in ubyte* input, size_t length, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(in ubyte* input, size_t length, RandomNumberGenerator rng) const
     {
         return enc(input, length, rng);
     }
@@ -67,7 +67,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
     {
         return enc(input.ptr, input.length, rng);
     }
@@ -78,9 +78,6 @@ public:
     */
     abstract size_t maximumInputSize() const;
 
-    this() {}
-    ~this() {}
-
 protected:
     abstract Vector!ubyte enc(in ubyte*, size_t, RandomNumberGenerator) const;
 }
@@ -88,7 +85,7 @@ protected:
 /**
 * Public Key Decryptor
 */
-class PKDecryptor
+interface PKDecryptor
 {
 public:
     /**
@@ -97,7 +94,7 @@ public:
     * @param length = the length of the above ubyte array
     * @return decrypted message
     */
-    SecureVector!ubyte decrypt(in ubyte* input, size_t length) const
+    final SecureVector!ubyte decrypt(in ubyte* input, size_t length) const
     {
         return dec(input, length);
     }
@@ -107,13 +104,10 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    SecureVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
+    final SecureVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
     {
         return dec(input.ptr, input.length);
     }
-
-    this() {}
-    ~this() {}
 
 protected:
     abstract SecureVector!ubyte dec(in ubyte*, size_t) const;

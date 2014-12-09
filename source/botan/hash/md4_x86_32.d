@@ -11,18 +11,21 @@ static if (BOTAN_HAS_MD4_X86_32):
 
 import botan.utils.asm_x86_32.asm_x86_32;
 import botan.hash.md4;
+import botan.hash.hash;
+
 /**
 * MD4 using x86 assembly
 */
 class MD4_X86_32 : MD4
 {
 public:
-    HashFunction clone() const { return new MD4_X86_32; }
-private:
+	override HashFunction clone() const { return new MD4_X86_32; }
+
+protected:
     /*
     * MD4 Compression Function
     */
-    void compressN(in ubyte* input, size_t blocks)
+	override void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -39,7 +42,7 @@ private:
 * @param input = the input block
 * @param M = the message buffer
 */
-void botanMd4_X86_32Compress(uint* digest, in ubyte* input, uint* M)
+void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 

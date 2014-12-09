@@ -17,14 +17,14 @@ public import botan.block.block_cipher;
 /**
 * DES
 */
-final class DES : BlockCipherFixedParams!(8, 8)
+final class DES : BlockCipherFixedParams!(8, 8), SymmetricAlgorithm
 {
 public:
 
     /*
     * DES Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -55,7 +55,7 @@ public:
     /*
     * DES Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -89,7 +89,7 @@ public:
     }
 
     @property string name() const { return "DES"; }
-    BlockCipher clone() const { return new DES; }
+	override BlockCipher clone() const { return new DES; }
 protected:
     /*
     * DES Key Schedule
@@ -106,13 +106,13 @@ protected:
 /**
 * Triple DES
 */
-class TripleDES : BlockCipherFixedParams!(8, 16, 24, 8)
+class TripleDES : BlockCipherFixedParams!(8, 16, 24, 8), SymmetricAlgorithm
 {
 public:
     /*
     * TripleDES Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -144,7 +144,7 @@ public:
     /*
     * TripleDES Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -180,7 +180,7 @@ public:
     }
 
     @property string name() const { return "TripleDES"; }
-    BlockCipher clone() const { return new TripleDES; }
+	override BlockCipher clone() const { return new TripleDES; }
 protected:
     /*
     * TripleDES Key Schedule

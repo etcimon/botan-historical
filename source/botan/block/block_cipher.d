@@ -180,17 +180,17 @@ public:
 
 /**
 * Represents a block cipher with a single fixed block size
-*/
+*/ 
 class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
 {
-    public:
-        enum { BLOCK_SIZE = BS }
-        size_t blockSize() const { return BS; }
+public:
+    enum { BLOCK_SIZE = BS }
+	override size_t blockSize() const { return BS; }
 
-        KeyLengthSpecification keySpec() const
-        {
-            return KeyLengthSpecification(KMIN, KMAX, KMOD);
-        }
+    KeyLengthSpecification keySpec() const
+    {
+        return KeyLengthSpecification(KMIN, KMAX, KMOD);
+    }
 }
 
 static if (BOTAN_TEST):

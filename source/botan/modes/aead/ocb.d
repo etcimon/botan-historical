@@ -13,7 +13,7 @@ import botan.modes.aead.aead;
 import botan.block.block_cipher;
 
 import botan.cmac.cmac;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.bit_ops;
 import botan.utils.types;
 import std.algorithm;

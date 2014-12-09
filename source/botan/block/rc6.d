@@ -17,13 +17,13 @@ import std.algorithm;
 /**
 * RC6, Ron Rivest's AES candidate
 */
-final class RC6 : BlockCipherFixedParams!(16, 1, 32)
+final class RC6 : BlockCipherFixedParams!(16, 1, 32), SymmetricAlgorithm
 {
 public:
     /*
     * RC6 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -70,7 +70,7 @@ public:
     /*
     * RC6 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -121,7 +121,7 @@ public:
     }
 
     override @property string name() const { return "RC6"; }
-    BlockCipher clone() const { return new RC6; }
+	override BlockCipher clone() const { return new RC6; }
 protected:
     /*
     * RC6 Key Schedule

@@ -18,13 +18,13 @@ import botan.block.block_cipher;
 /**
 * RC5
 */
-final class RC5 : BlockCipherFixedParams!(8, 1, 32)
+final class RC5 : BlockCipherFixedParams!(8, 1, 32), SymmetricAlgorithm
 {
 public:
     /*
     * RC5 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -57,7 +57,7 @@ public:
     /*
     * RC5 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -100,7 +100,7 @@ public:
         return "RC5(" ~ to!string(m_rounds) ~ ")";
     }
 
-    BlockCipher clone() const { return new RC5(m_rounds); }
+	override BlockCipher clone() const { return new RC5(m_rounds); }
 
     /**
     * RC5 Constructor

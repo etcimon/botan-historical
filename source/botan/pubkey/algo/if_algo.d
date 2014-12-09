@@ -16,6 +16,7 @@ import botan.math.numbertheory.numthry;
 import botan.pubkey.workfactor;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
+
 /**
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
@@ -24,8 +25,9 @@ class IFSchemePublicKey : PublicKey
 {
 public:
 
-    this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits)
+	this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
+		m_check_key = check_key;
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decode(m_n)
@@ -34,8 +36,9 @@ public:
                 .endCons();
     }
 
-    this(in BigInt n, in BigInt e)
+	this(in BigInt n, in BigInt e, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
+		m_check_key = check_key;
         m_n = n;
         m_e = e; 
     }
@@ -43,21 +46,27 @@ public:
     /*
     * Check IF Scheme Public Parameters
     */
-    bool checkKey(RandomNumberGenerator, bool) const
+    override bool checkKey(RandomNumberGenerator rng, bool b) const
     {
+		if (m_check_key) {
+			auto tmp = m_check_key;
+			m_check_key = null;
+			scope(exit) m_check_key = tmp;
+			return m_check_key(rng, strong);
+		}
+
         if (m_n < 35 || m_n.isEven() || m_e < 2)
             return false;
         return true;
     }
 
 
-    AlgorithmIdentifier algorithmIdentifier() const
+    final AlgorithmIdentifier algorithmIdentifier() const
     {
-        return AlgorithmIdentifier(getOid(),
-                                   AlgorithmIdentifier.USE_NULL_PARAM);
+        return AlgorithmIdentifier(getOid(), AlgorithmIdentifier.USE_NULL_PARAM);
     }
 
-    Vector!ubyte x509SubjectPublicKey() const
+    final Vector!ubyte x509SubjectPublicKey() const
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
@@ -70,36 +79,46 @@ public:
     /**
     * @return public modulus
     */
-    BigInt getN() const { return m_n; }
+    final BigInt getN() const { return m_n; }
 
     /**
     * @return public exponent
     */
-    BigInt getE() const { return m_e; }
+    final BigInt getE() const { return m_e; }
 
-    size_t maxInputBits() const { return (m_n.bits() - 1); }
+    final size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-    override size_t estimatedStrength() const
+	final override size_t messagePartSize() const {
+		return 0;
+	}
+
+	final override size_t messageParts() const {
+		return 1;
+	}
+
+    override final size_t estimatedStrength() const
     {
         return dlWorkFactor(m_n.bits());
     }
 
-protected:
-    this() {}
+package:
 
     BigInt m_n, m_e;
+
+	bool delegate(RandomNumberGenerator, bool) const m_check_key;
 }
 
 /**
 * This class represents public keys
 * of integer factorization based (IF) public key schemes.
 */
-final class IFSchemePrivateKey : IF_SchemePublicKey,
-                             PrivateKey
+final class IFSchemePrivateKey : IFSchemePublicKey, PrivateKey
 {
 public:
-    this(RandomNumberGenerator rng, in AlgorithmIdentifier, in SecureVector!ubyte key_bits)
-    {
+	this(RandomNumberGenerator rng, in AlgorithmIdentifier, in SecureVector!ubyte key_bits,
+	     bool delegate(RandomNumberGenerator, bool) const check_key = null)
+	{
+		m_check_key = check_key;
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
@@ -111,7 +130,7 @@ public:
                 .decode(m_d1)
                 .decode(m_d2)
                 .decode(m_c)
-                .endCons();BOTANHASPUBKEYCRYPTO
+                .endCons();
         
         loadCheck(rng);
     }
@@ -121,8 +140,10 @@ public:
          in BigInt prime2,
          in BigInt exp,
          in BigInt d_exp,
-         in BigInt mod)
-    {
+	     in BigInt mod, 
+	     bool delegate(RandomNumberGenerator, bool) const check_key = null)
+	{
+		m_check_key = check_key;
         m_p = prime1;
         m_q = prime2;
         e = exp;
@@ -149,8 +170,15 @@ public:
     /*
     * Check IF Scheme Private Parameters
     */
-    bool  checkKey(RandomNumberGenerator rng, bool strong) const
-    {
+	override bool checkKey(RandomNumberGenerator rng, bool strong) const
+	{
+		if (m_check_key) {
+			auto tmp = m_check_key;
+			m_check_key = null;
+			scope(exit) m_check_key = tmp;
+			return m_check_key(rng, strong);
+		}
+
         if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
             return false;
         
@@ -186,7 +214,7 @@ public:
     BigInt getD1() const { return m_d1; }
     BigInt getD2() const { return m_d2; }
 
-    SecureVector!ubyte  pkcs8PrivateKey() const
+    SecureVector!ubyte pkcs8PrivateKey() const
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
@@ -203,8 +231,10 @@ public:
                 .getContents();
     }
 
-protected:
-    this() {}
-
+package:
+	this(bool delegate(RandomNumberGenerator, bool) const check_key = null)
+	{
+		m_check_key = check_key;
+	}
     BigInt m_d, m_p, m_q, m_d1, m_d2, m_c;
 }

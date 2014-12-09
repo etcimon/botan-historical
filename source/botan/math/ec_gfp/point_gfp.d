@@ -48,9 +48,9 @@ public:
     }
 
     /**
-    * Construct an uninitialized PointGFp
+    * Disable an uninitialized PointGFp
     */
-    this() {}
+	@disable this();
 
     /**
     * Construct the zero point
@@ -66,22 +66,12 @@ public:
     }
 
     /**
-    * Copy constructor
-    */
-    //PointGFp(in PointGFp) = default;
-
-    /**
     * Move Constructor
     */
     this(ref PointGFp other)
     {
         this.swap(other);
     }
-
-    /**
-    * Standard Assignment
-    */
-    //ref PointGFp operator=(in PointGFp) = default;
 
     /**
     * Move Assignment

@@ -16,13 +16,13 @@ import botan.utils.parsing;
 /**
 * MISTY1
 */
-final class MISTY1 : BlockCipherFixedParams!(8, 16)
+final class MISTY1 : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
 {
 public:
     /*
     * MISTY1 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -72,7 +72,7 @@ public:
     /*
     * MISTY1 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -126,7 +126,7 @@ public:
     }
 
     @property string name() const { return "MISTY1"; }
-    BlockCipher clone() const { return new MISTY1; }
+	override BlockCipher clone() const { return new MISTY1; }
 
     /**
     * @param rounds = the number of rounds. Must be 8 with the current

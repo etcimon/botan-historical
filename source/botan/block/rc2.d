@@ -16,13 +16,13 @@ import botan.utils.rotate;
 /**
 * RC2
 */
-final class RC2 : BlockCipherFixedParams!(8, 1, 32)
+final class RC2 : BlockCipherFixedParams!(8, 1, 32), SymmetricAlgorithm
 {
 public:
     /*
     * RC2 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -64,7 +64,7 @@ public:
     /*
     * RC2 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -146,7 +146,7 @@ public:
     }
 
     override @property string name() const { return "RC2"; }
-    BlockCipher clone() const { return new RC2; }
+	override BlockCipher clone() const { return new RC2; }
 protected:
     /*
     * RC2 Key Schedule

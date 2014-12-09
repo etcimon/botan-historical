@@ -17,13 +17,13 @@ import botan.utils.types;
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
-final class KASUMI : BlockCipherFixedParams!(8, 16)
+final class KASUMI : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
 {
 public:
     /*
     * KASUMI Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -68,7 +68,7 @@ public:
     /*
     * KASUMI Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -117,7 +117,7 @@ public:
         zap(m_EK);
     }
     @property string name() const { return "KASUMI"; }
-    BlockCipher clone() const { return new KASUMI; }
+	override BlockCipher clone() const { return new KASUMI; }
 protected:
     /*
     * KASUMI Key Schedule

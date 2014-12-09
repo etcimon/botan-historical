@@ -4,28 +4,30 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.m_hash.gost_3411;
+module botan.hash.gost_3411;
 
 import botan.constants;
 static if (BOTAN_HAS_GOST_34_11):
 
-import botan.m_hash.m_hash;
+import botan.hash.hash;
 import botan.block.gost_28147;
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
+import botan.utils.types;
+
 /**
 * GOST 34.11
 */
 class GOST3411 : HashFunction
 {
 public:
-    @property string name() const { return "GOST-R-34.11-94" ; }
-    @property size_t outputLength() const { return 32; }
-    @property size_t hashBlockSize() const { return 32; }
-    HashFunction clone() const { return new GOST3411; }
+	override @property string name() const { return "GOST-R-34.11-94" ; }
+	override @property size_t outputLength() const { return 32; }
+	override @property size_t hashBlockSize() const { return 32; }
+	override HashFunction clone() const { return new GOST3411; }
 
-    void clear()
+	override void clear()
     {
         m_cipher.clear();
         zeroise(m_sum);
@@ -252,7 +254,7 @@ private:
         clear();
     }
 
-    GOST_28147_89 m_cipher;
+    GOST2814789 m_cipher;
     SecureVector!ubyte m_buffer, m_sum, m_hash;
     size_t m_position;
     ulong m_count;

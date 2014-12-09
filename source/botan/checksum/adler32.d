@@ -17,11 +17,11 @@ import botan.hash.hash;
 final class Adler32 : HashFunction
 {
 public:
-    @property string name() const { return "Adler32"; }
-    @property size_t outputLength() const { return 4; }
-    HashFunction clone() const { return new Adler32; }
+	override @property string name() const { return "Adler32"; }
+	override @property size_t outputLength() const { return 4; }
+	override HashFunction clone() const { return new Adler32; }
 
-    void clear() { m_S1 = 1; m_S2 = 0; }
+	override void clear() { m_S1 = 1; m_S2 = 0; }
 
     this() { clear(); }
     ~this() { clear(); }
@@ -29,7 +29,7 @@ protected:
     /*
     * Update an Adler32 Checksum
     */
-    void addData(in ubyte* input, size_t length)
+	override void addData(in ubyte* input, size_t length)
     {
         __gshared immutable size_t PROCESS_AMOUNT = 5552;
         
@@ -46,7 +46,7 @@ protected:
     /*
     * Finalize an Adler32 Checksum
     */
-    void finalResult(ubyte* output)
+	override void finalResult(ubyte* output)
     {
         storeBigEndian(output, m_S2, m_S1);
         clear();

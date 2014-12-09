@@ -12,6 +12,7 @@ static if (BOTAN_HAS_SHA2_64):
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
 
 /**
 * SHA-384
@@ -19,14 +20,14 @@ import botan.utils.rotate;
 final class SHA384 : MDxHashFunction
 {
 public:
-    @property string name() const { return "SHA-384"; }
-    @property size_t outputLength() const { return 48; }
-    HashFunction clone() const { return new SHA384; }
+	override @property string name() const { return "SHA-384"; }
+	override @property size_t outputLength() const { return 48; }
+	override HashFunction clone() const { return new SHA384; }
 
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         super.clear();
         m_digest[0] = 0xCBBB9D5DC1059ED8;
@@ -72,14 +73,14 @@ private:
 final class SHA512 : MDxHashFunction
 {
 public:
-    @property string name() const { return "SHA-512"; }
-    @property size_t outputLength() const { return 64; }
-    HashFunction clone() const { return new SHA512; }
+	override @property string name() const { return "SHA-512"; }
+	override @property size_t outputLength() const { return 64; }
+	override HashFunction clone() const { return new SHA512; }
 
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         super.clear();
         m_digest[0] = 0x6A09E667F3BCC908;

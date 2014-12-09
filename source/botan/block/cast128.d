@@ -18,13 +18,13 @@ import botan.utils.types;
 /**
 * CAST-128
 */
-final class CAST128 : BlockCipherFixedParams!(8, 11, 16)
+final class CAST128 : BlockCipherFixedParams!(8, 11, 16), SymmetricAlgorithm
 {
 public:
     /*
     * CAST-128 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -58,7 +58,7 @@ public:
     /*
     * CAST-128 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -97,7 +97,7 @@ public:
     }
 
     @property string name() const { return "CAST-128"; }
-    BlockCipher clone() const { return new CAST128; }
+	override BlockCipher clone() const { return new CAST128; }
 
 protected:
     /*
@@ -356,7 +356,7 @@ private:
     }
 
     SecureVector!uint m_MK;
-    SecureVector!ube m_RK;
+    SecureVector!ubyte m_RK;
 }
 
 private:

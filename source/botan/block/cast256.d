@@ -19,13 +19,13 @@ import botan.utils.rotate;
 /**
 * CAST-256
 */
-final class CAST256 : BlockCipherFixedParams!(16, 4, 32, 4)
+final class CAST256 : BlockCipherFixedParams!(16, 4, 32, 4), SymmetricAlgorithm
 {
 public:
     /*
 * CAST-256 Encryption
 */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -69,7 +69,7 @@ public:
     /*
     * CAST-256 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -117,7 +117,7 @@ public:
     }
 
     @property string name() const { return "CAST-256"; }
-    BlockCipher clone() const { return new CAST256; }
+	override BlockCipher clone() const { return new CAST256; }
 protected:
 
     /*

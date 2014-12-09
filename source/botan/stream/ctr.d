@@ -11,7 +11,7 @@ static if (BOTAN_HAS_CTR_BE):
 
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.types;
 
 /**

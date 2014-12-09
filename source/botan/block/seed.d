@@ -16,13 +16,13 @@ import botan.utils.loadstor;
 /**
 * SEED, a Korean block cipher
 */
-final class SEED : BlockCipherFixedParams!(16, 16)
+final class SEED : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
     /*
     * SEED Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -61,7 +61,7 @@ public:
     /*
     * SEED Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -104,7 +104,7 @@ public:
     }
 
     override @property string name() const { return "SEED"; }
-    BlockCipher clone() const { return new SEED; }
+	override BlockCipher clone() const { return new SEED; }
 protected:
 
     /*

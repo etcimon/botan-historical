@@ -11,12 +11,10 @@ static if (BOTAN_HAS_SKEIN_512):
 
 import botan.hash.hash;
 import botan.block.threefish;
-// import string;
-import memory;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.types;
 import std.algorithm;
 
@@ -48,14 +46,14 @@ public:
     }
 
     override @property size_t hashBlockSize() const { return 64; }
-    @property size_t outputLength() const { return m_output_bits / 8; }
+	override @property size_t outputLength() const { return m_output_bits / 8; }
 
-    HashFunction clone() const
+	override HashFunction clone() const
     {
         return new Skein512(m_output_bits, m_personalization);
     }
 
-    @property string name() const
+	override @property string name() const
     {
         if (m_personalization != "")
             return "Skein-512(" ~ to!string(m_output_bits) ~ "," ~
@@ -63,7 +61,7 @@ public:
         return "Skein-512(" ~ to!string(m_output_bits) ~ ")";
     }
 
-    void clear()
+	override void clear()
     {
         zeroise(m_buffer);
         m_buf_pos = 0;
@@ -206,7 +204,7 @@ private:
     string m_personalization;
     size_t m_output_bits;
 
-    Unique!Threefish_512 m_threefish;
+    Unique!Threefish512 m_threefish;
     SecureVector!ulong m_T;
     SecureVector!ubyte m_buffer;
     size_t m_buf_pos;

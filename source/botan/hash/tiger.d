@@ -25,14 +25,14 @@ public:
     /*
     * Return the name of this type
     */
-    @property string name() const
+	override @property string name() const
     {
         return "Tiger(" ~ to!string(outputLength()) ~ "," ~ to!string(m_passes) ~ ")";
     }
 
-    @property size_t outputLength() const { return m_hash_len; }
+	override @property size_t outputLength() const { return m_hash_len; }
 
-    HashFunction clone() const
+	override HashFunction clone() const
     {
         return new Tiger(outputLength(), m_passes);
     }
@@ -41,7 +41,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         MDxHashFunction.clear();
         zeroise(m_X);

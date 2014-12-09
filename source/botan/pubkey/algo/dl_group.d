@@ -72,10 +72,11 @@ public:
         PKCS3_DH_PARAMETERS = PKCS_3
     }
 
+	alias PrimeType = ubyte;
     /**
     * Determine the prime creation for DL groups.
     */
-    enum PrimeType { Strong, Prime_Subgroup, DSA_Kosherizer }
+    enum : PrimeType { Strong, Prime_Subgroup, DSA_Kosherizer }
 
     /**
     * Perform validity checks on the group.
@@ -83,8 +84,7 @@ public:
     * @param strong = whether to perform stronger by lengthier tests
     * @return true if the object is consistent, false otherwise
     */
-    bool verifyGroup(RandomNumberGenerator rng,
-                      bool strong) const
+    bool verifyGroup(RandomNumberGenerator rng, bool strong) const
     {
         initCheck();
         
@@ -335,8 +335,6 @@ public:
         initialize(p1, q1, g1);
     }
 
-
-    static string pEMForNamedGroup(in string name);
 private:
     /*
     * Create generator of the q-sized subgroup (DSA style generator)

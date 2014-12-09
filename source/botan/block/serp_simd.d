@@ -12,6 +12,8 @@ static if (BOTAN_HAS_SERPENT_SIMD):
 import botan.simd.simd_32;
 import botan.utils.loadstor;
 import botan.block.serpent;
+import botan.block.block_cipher;
+
 /**
 * Serpent implementation using SIMD
 */
@@ -23,7 +25,7 @@ public:
     /*
     * Serpent Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* KS = this.get_round_keys().ptr;
         
@@ -42,7 +44,7 @@ public:
     /*
     * Serpent Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* KS = this.get_round_keys().ptr;
         
@@ -58,7 +60,7 @@ public:
             super.decryptN(input, output, blocks);
     }
 
-    BlockCipher clone() const { return new SerpentSIMD; }
+	override BlockCipher clone() const { return new SerpentSIMD; }
 }
 
 package:

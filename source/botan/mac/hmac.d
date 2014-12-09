@@ -12,7 +12,7 @@ static if (BOTAN_HAS_HMAC || BOTAN_HAS_PBE_PKCS_V20):
 public import botan.mac.mac;
 import botan.hash.hash;
 import std.algorithm : fill;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 /**
 * HMAC
 */

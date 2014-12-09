@@ -120,13 +120,13 @@ public:
     KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-            if (const DHPrivateKey dh = cast(const DHPrivateKey)(key))
-                return new DHKAOperation(dh, rng);
+            if (DHPrivateKey.algoName == key.algoName)
+                return new DHKAOperation(key, rng);
         }
         
         static if (BOTAN_HAS_ECDH) {
-            if (const ECDHPrivateKey ecdh = cast(const ECDHPrivateKey)(key))
-                return new ECDHKAOperation(ecdh);
+			if (ECDHPrivateKey.algoName == key.algoName)
+                return new ECDHKAOperation(key);
         }
         
         return null;
@@ -135,33 +135,33 @@ public:
     Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new RSAPrivateOperation(s, rng);
+			if (RSAPrivateKey.algoName == key.algoName)
+                return new RSAPrivateOperation(key, rng);
         }
         
         static if (BOTAN_HAS_RW) {
-            if (const RWPrivateKey s = cast(const RWPrivateKey)(key))
-                return new RWSignatureOperation(s);
+			if (RWPrivateKey.algoName == key.algoName)
+                return new RWSignatureOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSAPrivateKey s = cast(const DSAPrivateKey)(key))
-                return new DSASignatureOperation(s);
+			if (DSAPrivateKey.algoName == key.algoName)
+                return new DSASignatureOperation(key);
         }
         
         static if (BOTAN_HAS_ECDSA) {
-            if (const ECDSAPrivateKey s = cast(const ECDSAPrivateKey)(key))
-                return new ECDSASignatureOperation(s);
+			if (ECDSAPrivateKey.algoName == key.algoName)
+                return new ECDSASignatureOperation(key);
         }
         
         static if (BOTAN_HAS_GOST_34_10_2001) {
-            if (const GOST3410PrivateKey s = cast(const GOST3410PrivateKey)(key))
-                return new GOST3410SignatureOperation(s);
+			if (GOST3410PrivateKey.algoName == key.algoName)
+                return new GOST3410SignatureOperation(key);
         }
         
         static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-            if (const NRPrivateKey s = cast(const NRPrivateKey)(key))
-                return new NRSignatureOperation(s);
+			if (NRPrivateKey.algoName == key.algoName)
+                return new NRSignatureOperation(key);
         }
         
         return null;
@@ -170,33 +170,33 @@ public:
     Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new RSAPublicOperation(s);
+			if (RSAPublicKey.algoName == key.algoName)
+                return new RSAPublicOperation(key);
         }
         
         static if (BOTAN_HAS_RW) {
-            if (const RWPublicKey s = cast(const RWPublicKey)(key))
-                return new RWVerificationOperation(s);
+			if (RWPublicKey.algoName == key.algoName)
+                return new RWVerificationOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-            if (const DSAPublicKey s = cast(const DSAPublicKey)(key))
-                return new DSAVerificationOperation(s);
+			if (DSAPublicKey.algoName == key.algoName)
+                return new DSAVerificationOperation(key);
         }
         
         static if (BOTAN_HAS_ECDSA) {
-            if (const ECDSAPublicKey s = cast(const ECDSAPublicKey)(key))
-                return new ECDSAVerificationOperation(s);
+			if (ECDSAPublicKey.algoName == key.algoName)
+                return new ECDSAVerificationOperation(key);
         }
         
         static if (BOTAN_HAS_GOST_34_10_2001) {
-            if (const GOST3410PublicKey s = cast(const GOST3410PublicKey)(key))
-                return new GOST3410VerificationOperation(s);
+			if (GOST3410PublicKey.algoName == key.algoName)
+                return new GOST3410VerificationOperation(key);
         }
         
         static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-            if (const NRPublicKey s = cast(const NRPublicKey)(key))
-                return new NRVerificationOperation(s);
+			if (NRPublicKey.algoName == key.algoName)
+                return new NRVerificationOperation(key);
         }
         
         return null;
@@ -206,13 +206,13 @@ public:
     Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPublicKey s = cast(const RSAPublicKey)(key))
-                return new RSAPublicOperation(s);
+			if (RSAPublicKey.algoName == key.algoName)
+                return new RSAPublicOperation(key);
         }
         
         static if (BOTAN_HAS_ELGAMAL) {
-            if (const ElGamalPublicKey s = cast(const ElGamalPublicKey)(key))
-                return new ElGamalEncryptionOperation(s);
+			if (ElGamalPublicKey.algoName == key.algoName)
+                return new ElGamalEncryptionOperation(key);
         }
         
         return null;
@@ -221,13 +221,13 @@ public:
     Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (const RSAPrivateKey s = cast(const RSAPrivateKey)(key))
-                return new RSAPrivateOperation(s, rng);
+			if (RSAPrivateKey.algoName == key.algoName)
+                return new RSAPrivateOperation(key, rng);
         }
         
         static if (BOTAN_HAS_ELGAMAL) {
-            if (const ElGamalPrivateKey s = cast(const ElGamalPrivateKey)(key))
-                return new ElGamalDecryptionOperation(s, rng);
+			if (ElGamalPrivateKey.algoName == key.algoName)
+                return new ElGamalDecryptionOperation(key, rng);
         }
         
         return null;

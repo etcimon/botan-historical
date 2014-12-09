@@ -9,9 +9,9 @@ module botan.pubkey.pk_keys;
 import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
+public import botan.asn1.alg_id;
 import botan.utils.memory.zeroize;
 import botan.asn1.asn1_oid;
-public import botan.asn1.alg_id;
 import botan.rng.rng;
 import botan.asn1.der_enc;
 import botan.asn1.oids;

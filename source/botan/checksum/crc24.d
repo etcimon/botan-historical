@@ -17,11 +17,11 @@ import botan.hash.hash;
 final class CRC24 : HashFunction
 {
 public:
-    @property string name() const { return "CRC24"; }
-    @property size_t outputLength() const { return 3; }
-    HashFunction clone() const { return new CRC24; }
+	override @property string name() const { return "CRC24"; }
+	override @property size_t outputLength() const { return 3; }
+	override HashFunction clone() const { return new CRC24; }
 
-    void clear() { m_crc = 0xB704CE; }
+	override void clear() { m_crc = 0xB704CE; }
 
     this() { clear(); }
     ~this() { clear(); }

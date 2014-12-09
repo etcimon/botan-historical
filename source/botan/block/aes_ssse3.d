@@ -7,7 +7,7 @@
 module botan.block.aes_ssse3;
 
 import botan.constants;
-static if (BOTAN_HAS_AES_SSSE3):
+static if (BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
 
 import std.range : iota;
 import botan.block.block_cipher;
@@ -19,13 +19,13 @@ import botan.utils.simd.tmmintrin;
 /**
 * AES-128 using SSSE3
 */
-final class AES128SSSE3 : BlockCipherFixedParams!(16, 16)
+final class AES128SSSE3 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
     /*
     * AES-128 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -42,7 +42,7 @@ public:
     /*
     * AES-128 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -63,7 +63,7 @@ public:
     }
 
     @property string name() const { return "AES-128"; }
-    BlockCipher clone() const { return new AES128SSSE3; }
+	override BlockCipher clone() const { return new AES128SSSE3; }
 protected:
 
     /*
@@ -108,13 +108,13 @@ protected:
 /**
 * AES-192 using SSSE3
 */
-final class AES192SSSE3 : BlockCipherFixedParams!(16, 24)
+final class AES192SSSE3 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
 {
 public:
     /*
     * AES-192 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -131,7 +131,7 @@ public:
     /*
     * AES-192 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -152,7 +152,7 @@ public:
     }
 
     @property string name() const { return "AES-192"; }
-    BlockCipher clone() const { return new AES192SSSE3; }
+	override BlockCipher clone() const { return new AES192SSSE3; }
 protected:
     /*
     * AES-192 Key Schedule
@@ -218,13 +218,13 @@ protected:
 /**
 * AES-256 using SSSE3
 */
-final class AES256SSSE3 : BlockCipherFixedParams!(16, 32)
+final class AES256SSSE3 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
 {
 public:
     /*
     * AES-256 Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -241,7 +241,7 @@ public:
     /*
     * AES-256 Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -262,7 +262,7 @@ public:
     }
 
     @property string name() const { return "AES-256"; }
-    BlockCipher clone() const { return new AES256SSSE3; }
+	override BlockCipher clone() const { return new AES256SSSE3; }
 protected:
     /*
     * AES-256 Key Schedule

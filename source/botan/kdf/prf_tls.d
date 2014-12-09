@@ -7,7 +7,7 @@
 module botan.kdf.prf_tls;
 import botan.kdf.kdf;
 import botan.mac.mac;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.mac.hmac;
 import botan.hash.md5;
 import botan.hash.sha160;

@@ -34,9 +34,9 @@ enum BOTAN_HAS_RFC3394_KEYWRAP = true;
 enum BOTAN_HAS_PASSHASH9 = true;
 enum BOTAN_HAS_BCRYPT = true;
 enum BOTAN_HAS_THRESHOLD_SECRET_SHARING = true;
-
+enum BOTAN_HAS_SELFTESTS = true;
 version (unittest)     enum BOTAN_TEST = true;
-else                enum BOTAN_TEST = false;
+else                   enum BOTAN_TEST = false;
 
 version(D_InlineAsm_X86) {    enum BOTAN_USE_GCC_INLINE_ASM = true;                                                      }
 version(D_InlineAsm_X86_64){enum BOTAN_USE_GCC_INLINE_ASM = true;                                                        }
@@ -278,6 +278,8 @@ version(Engine_SIMD)     {    enum BOTAN_HAS_ENGINE_SIMD = true;                
 else                          enum BOTAN_HAS_ENGINE_SIMD = false;
 version(Engine_GNU_MP)   {    enum BOTAN_HAS_ENGINE_GNU_MP = true;                                                       }
 else                          enum BOTAN_HAS_ENGINE_GNU_MP = false;
+version(Engine_OPENSSL)  {    enum BOTAN_HAS_ENGINE_OPENSSL = true;                                                      }
+else                          enum BOTAN_HAS_ENGINE_OPENSSL = false;
 version(Entropy_HRTimer) {    enum BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER = true;                                   }
 else                          enum BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER = false;
 version(Entropy_Rdrand)  {    enum BOTAN_HAS_ENTROPY_SRC_RDRAND = true;                                                  }

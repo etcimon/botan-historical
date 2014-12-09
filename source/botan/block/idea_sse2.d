@@ -7,7 +7,7 @@
 module botan.block.idea_sse2;
 
 import botan.constants;
-static if (BOTAN_HAS_IDEA_SSE2):
+static if (BOTAN_HAS_IDEA_SSE2 && BOTAN_HAS_SIMD_SSE2):
 
 import botan.block.idea;
 import botan.utils.simd.emmintrin;
@@ -23,7 +23,7 @@ public:
     /*
     * IDEA Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const ushort* KS = super.getEK().ptr;
         
@@ -42,7 +42,7 @@ public:
     /*
     * IDEA Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const ushort* KS = this.getDK().ptr;
         
@@ -58,12 +58,12 @@ public:
             super.decryptN(input, output, blocks);
     }
 
-    BlockCipher clone() const { return new IDEASSE2; }
+	override BlockCipher clone() const { return new IDEASSE2; }
 }
 
 package:
 
-m128i mul(m128i X, ushort K_16) pure
+__m128i mul(__m128i X, ushort K_16) pure
 {
     const(__m128i) zeros = _mm_set1_epi16!(0)();
     const(__m128i) ones = _mm_set1_epi16!(1)();
@@ -110,7 +110,7 @@ m128i mul(m128i X, ushort K_16) pure
 * that extra unpack could easily save 3-4 cycles per block, and would
 * also help a lot with register pressure on 32-bit x86
 */
-void transpose_in(ref m128i B0, ref m128i B1, ref m128i B2, ref m128i B3) pure
+void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3) pure
 {
     __m128i T0 = _mm_unpackhi_epi32(B0, B1);
     __m128i T1 = _mm_unpacklo_epi32(B0, B1);
@@ -146,7 +146,7 @@ void transpose_in(ref m128i B0, ref m128i B1, ref m128i B2, ref m128i B3) pure
 /*
 * 4x8 matrix transpose (reverse)
 */
-void transpose_out(ref m128i B0, ref m128i B1, ref m128i B2, ref m128i B3) pure
+void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3) pure
 {
     __m128i T0 = _mm_unpacklo_epi64(B0, B1);
     __m128i T1 = _mm_unpacklo_epi64(B2, B3);

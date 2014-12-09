@@ -27,7 +27,7 @@ import core.sys.posix.sys.un;
 
 import std.c.string;
 
-enum PF_LOCAL = PF_UNIX;
+enum PF_LOCAL = AF_UNIX;
 
 /**
 * EGD Entropy Source
@@ -174,5 +174,5 @@ private:
         int m_fd; // cached fd
     }
 
-    Vector!( EGD_Socket ) m_sockets;
+    Vector!( EGDSocket ) m_sockets;
 }

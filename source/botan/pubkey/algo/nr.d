@@ -20,22 +20,18 @@ import botan.rng.rng;
 /**
 * Nyberg-Rueppel Public Key
 */
-class NRPublicKey : DLSchemePublicKey
+class NRPublicKey
 {
 public:
-    @property string algoName() const { return "NR"; }
+    __gshared immutable string algoName = "NR";
 
-    DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_57; }
-
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return groupQ().bytes(); }
-    size_t maxInputBits() const { return (groupQ().bits() - 1); }
+	size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
+    size_t maxInputBits() const { return (m_pub.groupQ().bits() - 1); }
 
 
-    this(in AlgorithmIdentifier alg_id,
-         in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-        super(alg_id, key_bits, DLGroup.ANSI_X9_57);
+		m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
 
     /*
@@ -47,57 +43,62 @@ public:
         m_y = y1;
     }
 
-protected:
-    this() {}
+	alias m_pub this;
+private:
+	DLSchemePublicKey m_pub;
 }
 
 /**
 * Nyberg-Rueppel Private Key
 */
-final class NRPrivateKey : NRPublicKey, DLSchemePrivateKey
+final class NRPrivateKey : NRPublicKey
 {
 public:
     /*
-* Check Private Nyberg-Rueppel Parameters
-*/
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
+	* Check Private Nyberg-Rueppel Parameters
+	*/
+	bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.checkKey(rng, strong) || m_x >= groupQ())
+        if (!m_priv.checkKey(rng, strong) || m_priv.m_x >= m_priv.groupQ())
             return false;
         
         if (!strong)
             return true;
         
-        return signatureConsistencyCheck(rng, this, "EMSA1(SHA-1)");
+        return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
     }
 
 
     /*
     * Create a NR private key
     */
-    this(RandomNumberGenerator rng, in DLGroup grp, in BigInt x_arg)
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg)
     {
-        m_group = grp;
-        m_x = x_arg;
-        
-        if (m_x == 0)
-            m_x = BigInt.randomInteger(rng, 2, groupQ() - 1);
-        
-        m_y = powerMod(groupG(), m_x, groupP());
-        
         if (x_arg == 0)
-            genCheck(rng);
+            x_arg = BigInt.randomInteger(rng, 2, grp.getQ() - 1);
+        
+        BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
+        
+		m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+
+        if (x_arg == 0)
+            m_priv.genCheck(rng);
         else
-            loadCheck(rng);
+            m_priv.loadCheck(rng);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     { 
-        super(alg_id, key_bits, DLGroup.ANSI_X9_57);
-        m_y = powerMod(groupG(), m_x, groupP());
+        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+        m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
         
-        loadCheck(rng);
+        m_priv.loadCheck(rng);
     }
+
+	alias m_priv this;
+
+private:
+	DLSchemePrivateKey m_priv;
 
 }
 
@@ -107,19 +108,28 @@ public:
 final class NRSignatureOperation : Signature
 {
 public:
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return m_q.bytes(); }
-    size_t maxInputBits() const { return (m_q.bits() - 1); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_q.bytes(); }
+	override size_t maxInputBits() const { return (m_q.bits() - 1); }
 
-    this(in NRPrivateKey nr)
+	this(in PrivateKey pkey) {
+		this(cast(DLSchemePrivateKey) pkey);
+	}
+
+	this(in NRPrivateKey pkey) {
+		this(pkey.m_priv);
+	}
+
+    this(in DLSchemePrivateKey nr)
     {
+		assert(nr.algoName == NRPublicKey.algoName);
         m_q = nr.groupQ();
         m_x = nr.getX();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ());
     }
 
-    SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -159,8 +169,17 @@ private:
 final class NRVerificationOperation : Verification
 {
 public:
-    this(in NRPublicKey nr) 
+	this(in PublicKey pkey) {
+		this(cast(DLSchemePublicKey) pkey);
+	}
+
+	this(in NRPublicKey pkey) {
+		this(pkey.m_pub);
+	}
+
+    this(in DLSchemePublicKey nr) 
     {
+		assert(nr.algoName == NRPublicKey.algoName);
         m_q = nr.groupQ();
         m_y = nr.getY();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
@@ -169,13 +188,13 @@ public:
         m_mod_q = ModularReducer(nr.groupQ());
     }
 
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return m_q.bytes(); }
-    size_t maxInputBits() const { return (m_q.bits() - 1); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_q.bytes(); }
+	override size_t maxInputBits() const { return (m_q.bits() - 1); }
 
-    bool withRecovery() const { return true; }
+	override bool withRecovery() const { return true; }
 
-    SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+	override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
         const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?
         size_t msg_len = msg.length;

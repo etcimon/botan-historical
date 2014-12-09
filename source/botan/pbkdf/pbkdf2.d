@@ -12,7 +12,7 @@ static if (BOTAN_HAS_PBKDF2):
 import botan.pbkdf.pbkdf;
 import botan.mac.mac;
 import botan.utils.get_byte;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.rounding;
 import std.datetime;
 

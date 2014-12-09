@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.utils.xorBuf;
+module botan.utils.xor_buf;
 
 import botan.constants;
 import botan.utils.types;

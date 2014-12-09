@@ -14,13 +14,13 @@ import botan.utils.loadstor;
 /**
 * TEA
 */
-final class TEA : BlockCipherFixedParams!(8, 16)
+final class TEA : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
 {
 public:
     /*
     * TEA Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -44,7 +44,7 @@ public:
     /*
     * TEA Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -72,7 +72,7 @@ public:
     }
 
     override @property string name() const { return "TEA"; }
-    BlockCipher clone() const { return new TEA; }
+	override BlockCipher clone() const { return new TEA; }
 
 protected:
     /*

@@ -24,41 +24,43 @@ import botan.utils.types;
 /**
 * ElGamal Public Key
 */
-class ElGamalPublicKey : DLSchemePublicKey
+class ElGamalPublicKey
 {
 public:
-    @property string algoName() const { return "ElGamal"; }
-    DLGroup.Format groupFormat() const { return DLGroup.ANSI_X9_42; }
+    __gshared immutable string algoName = "ElGamal";
 
-    size_t maxInputBits() const { return (groupP().bits() - 1); }
+    size_t maxInputBits() const { return (m_pub.groupP().bits() - 1); }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        super(alg_id, key_bits, DLGroup.ANSI_X9_42);
+        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
     /*
     * ElGamalPublicKey Constructor
     */
     this(in DLGroup grp, in BigInt y1)
     {
-        m_group = grp;
-        m_y = y1;
+		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
-protected:
-    this() {}
+
+	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+
+	alias m_pub this;
+private:
+	DLSchemePublicKey m_pub;
 }
 
 /**
 * ElGamal Private Key
 */
-final class ElGamalPrivateKey : ElGamalPublicKey, DLSchemePrivateKey
+final class ElGamalPrivateKey : ElGamalPublicKey
 {
 public:
     /*
     * Check Private ElGamal Parameters
     */
-    bool checkKey(RandomNumberGenerator rng,
-                   bool strong) const
+	bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (!super.checkKey(rng, strong))
             return false;
@@ -72,30 +74,36 @@ public:
     /*
     * ElGamalPrivateKey Constructor
     */
-    this(RandomNumberGenerator rng, in DLGroup grp, in BigInt x_arg = 0)
-    {
-        m_group = grp;
-        m_x = x_arg;
-        
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
+    {        
         if (x == 0)
-            m_x.randomize(rng, 2 * dlWorkFactor(groupP().bits()));
+            x_arg.randomize(rng, 2 * dlWorkFactor(grp.getP().bits()));
         
-        m_y = powerMod(groupG(), m_x, groupP());
+		BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
+		m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
+
         if (x_arg == 0)
-            genCheck(rng);
+            m_priv.genCheck(rng);
         else
-            loadCheck(rng);
+            m_priv.loadCheck(rng);
+
     }
 
     this(in AlgorithmIdentifier alg_id,
          in SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        super(alg_id, key_bits, DLGroup.ANSI_X9_42);
-        m_y = powerMod(groupG(), m_x, groupP());
-        loadCheck(rng);
+		m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
+        m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
+        m_priv.loadCheck(rng);
     }
+
+	this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+
+	alias m_priv this;
+private:
+	DLSchemePrivateKey m_priv;
 }
 
 /**
@@ -104,11 +112,19 @@ public:
 final class ElGamalEncryptionOperation : Encryption
 {
 public:
-    size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
+	override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
 
+	this(in PublicKey pkey) {
+		this(cast(DLSchemePublicKey) pkey);
+	}
 
-    this(in ElGamalPublicKey key)
+	this(in ElGamalPublicKey pkey) {
+		this(pkey.m_pub);
+	}
+
+    this(in DLSchemePublicKey key)
     {
+		assert(key.algoName == ElGamalPublicKey.algoName);
         const BigInt p = key.groupP();
         
         m_powermod_g_p = FixedBasePowerMod(key.groupG(), p);
@@ -116,7 +132,7 @@ public:
         m_mod_p = ModularReducer(p);
     }
 
-    SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+	override SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         const BigInt p = mod_p.getModulus();
         
@@ -147,11 +163,20 @@ private:
 final class ElGamalDecryptionOperation : Decryption
 {
 public:
-    size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
+	override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
 
-    this(in ElGamalPrivateKey key,
-         RandomNumberGenerator rng)
+	this(PrivateKey pkey, RandomNumberGenerator rng) {
+		this(cast(DLSchemePrivateKey) pkey, rng);
+	}
+
+	this(in ElGamalPrivateKey key, RandomNumberGenerator rng)
+	{
+		this(key.m_priv, rng);
+	}
+
+	this(in DLSchemePrivateKey key, RandomNumberGenerator rng)
     {
+		assert(key.algoName == ElGamalPublicKey.algoName);
         const BigInt p = key.groupP();
         
         m_powermod_x_p = FixedExponentPowerMod(key.getX(), p);
@@ -161,7 +186,7 @@ public:
         m_blinder = Blinder(k, m_powermod_x_p(k), p);
     }
 
-    SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+	override SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
     {
         const BigInt p = m_mod_p.getModulus();
         

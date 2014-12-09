@@ -17,13 +17,13 @@ import botan.utils.types;
 /**
 * Serpent, an AES finalist
 */
-class Serpent : BlockCipherFixedParams!(16, 16, 32, 8)
+class Serpent : BlockCipherFixedParams!(16, 16, 32, 8), SymmetricAlgorithm
 {
 public:
     /*
     * Serpent Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -75,7 +75,7 @@ public:
     /*
     * Serpent Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -130,7 +130,7 @@ public:
     }
 
     override @property string name() const { return "Serpent"; }
-    BlockCipher clone() const { return new Serpent; }
+	override BlockCipher clone() const { return new Serpent; }
 protected:
     /**
     * For use by subclasses using SIMD, asm, etc

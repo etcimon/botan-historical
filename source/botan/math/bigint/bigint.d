@@ -761,8 +761,7 @@ public:
     * @param rng = the random number generator to use
     * @param bitsize = number of bits the created random value should have
     */
-    void randomize(RandomNumberGenerator rng,
-                   size_t bitsize = 0)
+    void randomize(RandomNumberGenerator rng, size_t bitsize = 0)
     {
         setSign(Positive);
         

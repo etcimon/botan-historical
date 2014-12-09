@@ -14,11 +14,10 @@ import botan.math.numbertheory.numthry;
 struct CurveGFp
 {
 public:
-
     /**
-    * Create an uninitialized CurveGFp
+    * Disallow an uninitialized CurveGFp
     */
-    this() {}
+	@disable this();
 
     /**
     * Construct the elliptic curve E: y^2 = x^3 + ax + b over GF(p)
@@ -39,10 +38,6 @@ public:
         m_a_r = (a * r) % p;
         m_b_r = (b * r) % p;
     }
-
-    //this(in CurveGFp) = default;
-
-    //CurveGFp operator=(in CurveGFp) = default;
 
     /**
     * @return curve coefficient a

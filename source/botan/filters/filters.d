@@ -6,14 +6,14 @@
 */
 module botan.filters.filters;
 
+public import botan.filters.filter;
+public import botan.filters.pipe;
 import botan.algo_factory.algo_factory;
-import botan.filters.filter;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.mac.mac;
 
-public import botan.filters.pipe;
 import botan.filters.basefilt;
 import botan.filters.key_filt;
 import botan.libstate.libstate;

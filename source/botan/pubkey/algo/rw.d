@@ -22,38 +22,40 @@ import std.algorithm;
 /**
 * Rabin-Williams Public Key
 */
-class RWPublicKey : IF_SchemePublicKey
+class RWPublicKey
 {
 public:
-    @property string algoName() const { return "RW"; }
+    __gshared immutable string algoName = "RW";
 
-    this(in AlgorithmIdentifier alg_id,
-                     in SecureVector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        super(alg_id, key_bits);
+        m_pub = new IFSchemePublicKey(alg_id, key_bits);
     }
 
     this(in BigInt mod, in BigInt exponent)
     {
-        super(mod, exponent);
+        m_pub = new IFSchemePublicKey(mod, exponent);
     }
 
-protected:
-    this() {}
+	this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
+	this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
+
+	alias m_pub this;
+private:
+	IFSchemePublicKey m_pub;
 }
 
 /**
 * Rabin-Williams Private Key
 */
-final class RWPrivateKey : RWPublicKey,
-                              IF_SchemePrivateKey
+final class RWPrivateKey : RWPublicKey
 {
 public:
     this(in AlgorithmIdentifier alg_id,
          in SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        super(rng, alg_id, key_bits);
+        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, &checkKey);
     }
 
     this(RandomNumberGenerator rng,
@@ -61,7 +63,7 @@ public:
          in BigInt e, in BigInt d = 0,
          in BigInt n = 0)
     {
-        super(rng, p, q, e, d, n);
+        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, &checkKey);
     }
 
     /*
@@ -75,6 +77,8 @@ public:
         if (exp < 2 || exp % 2 == 1)
             throw new InvalidArgument(algo_name ~ ": Invalid encryption exponent");
         
+		m_priv = new IFSchemePrivateKey(&checkKey);
+
         m_e = exp;
         
         do
@@ -97,7 +101,7 @@ public:
     */
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.checkKey(rng, strong))
+        if (!m_priv.checkKey(rng, strong))
             return false;
         
         if (!strong)
@@ -106,8 +110,15 @@ public:
         if ((m_e * m_d) % (lcm(m_p - 1, m_q - 1) / 2) != 1)
             return false;
         
-        return signatureConsistencyCheck(rng, this, "EMSA2(SHA-1)");
+        return signatureConsistencyCheck(rng, m_priv, "EMSA2(SHA-1)");
     }
+
+	alias m_priv this;
+
+	this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
+
+private:
+	IFSchemePrivateKey m_priv;
 }
 
 /**
@@ -116,8 +127,17 @@ public:
 final class RWSignatureOperation : Signature
 {
 public:
-    this(in RWPrivateKey rw) 
+	this(in RWPrivateKey pkey) {
+		this(pkey.m_priv);
+	}
+
+	this(in PrivateKey pkey) {
+		this(cast(IFSchemePrivateKey) pkey);
+	}
+
+    this(in IFSchemePrivateKey rw) 
     {
+		assert(rw.algoName == RWPublicKey.algoName);
         m_n = rw.getN();
         m_e = rw.getE();
         m_q = rw.getQ();
@@ -127,9 +147,9 @@ public:
         m_mod_p = FixedExponentPowerMod(rw.getP());
     }
 
-    size_t maxInputBits() const { return (m_n.bits() - 1); }
+	override size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-    SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -168,7 +188,7 @@ private:
     const BigInt m_q;
     const BigInt m_c;
 
-    Unique!FixedExponentPowerMod m_powermod_d1_p, m_powermod_d2_q;
+    FixedExponentPowerMod m_powermod_d1_p, m_powermod_d2_q;
     ModularReducer m_mod_p;
     Blinder m_blinder;
 }
@@ -179,16 +199,25 @@ private:
 final class RWVerificationOperation : Verification
 {
 public:
-    this(in RWPublicKey rw)
+	this(in PublicKey pkey) {
+		this(cast(IFSchemePublicKey) pkey);
+	}
+
+	this(in RWPublicKey pkey) {
+		this(pkey.m_pub);
+	}
+
+    this(in IFSchemePublicKey rw)
     {
+		assert(rw.algoName == RWPublicKey.algoName);
         m_n = rw.getN();
         m_powermod_e_n = FixedExponentPowerMod(rw.getE(), rw.getN());
     }
 
-    size_t maxInputBits() const { return (m_n.bits() - 1); }
-    bool withRecovery() const { return true; }
+	override size_t maxInputBits() const { return (m_n.bits() - 1); }
+	override bool withRecovery() const { return true; }
 
-    SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+	override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
         

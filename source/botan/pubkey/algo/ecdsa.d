@@ -23,10 +23,10 @@ import botan.utils.types;
 /**
 * This class represents ECDSA Public Keys.
 */
-class ECDSAPublicKey : ECPublicKey
+class ECDSAPublicKey
 {
 public:
-
+	__gshared immutable string algoName = "ECDSA";
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -34,44 +34,33 @@ public:
     */
     this(in ECGroup dom_par, in PointGFp public_point) 
     {
-        super(dom_par, public_point);
+        m_pub = new ECPublicKey(dom_par, public_point, algoName, true);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        super(alg_id, key_bits);
+		m_pub = new ECPublicKey(alg_id, key_bits, algoName, true);
     }
 
-    /**
-    * Get this keys algorithm name.
-    * @result this keys algorithm name ("ECDSA")
-    */
-    @property string algoName() const { return "ECDSA"; }
+	this(PublicKey pkey) {
+		m_pub = cast(ECPublicKey) pkey;
+	}
 
-    /**
-    * Get the maximum number of bits allowed to be fed to this key.
-    * This is the bitlength of the order of the base point.
-    * @result the maximum number of input bits
-    */
-    size_t maxInputBits() const { return domain().getOrder().bits(); }
+	this(PrivateKey pkey) {
+		m_pub = cast(ECPublicKey) pkey;
+	}
 
-    size_t messageParts() const { return 2; }
-
-    size_t messagePartSize() const
-    { return domain().getOrder().bytes(); }
-
-protected:
-    this() {}
+	alias m_pub this;
+private:
+	ECPublicKey m_pub;
 }
 
 /**
 * This class represents ECDSA Private Keys
 */
-final class ECDSAPrivateKey : ECDSAPublicKey,
-                               ECPrivateKey
+final class ECDSAPrivateKey : ECDSAPublicKey
 {
 public:
-
     /**
     * Load a private key
     * @param alg_id = the X.509 algorithm identifier
@@ -79,7 +68,7 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        super(alg_id, key_bits);
+		m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1, &checkKey);
     }
 
     /**
@@ -90,10 +79,12 @@ public:
     */
     this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0)
     {
-        super(rng, domain, x);
+		m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1, &checkKey); 
     }
 
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
+	this(PrivateKey pkey) { m_priv = pkey; }
+
+	bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (!publicPoint().onTheCurve())
             return false;
@@ -101,8 +92,13 @@ public:
         if (!strong)
             return true;
         
-        return signatureConsistencyCheck(rng, this, "EMSA1(SHA-1)");
+        return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
     }
+
+
+	alias m_priv this;
+private:
+	ECPrivateKey m_priv;
 }
 
 /**
@@ -111,15 +107,24 @@ public:
 final class ECDSASignatureOperation : Signature
 {
 public:
-    this(in ECDSAPrivateKey ecdsa)
+	this(in PrivateKey pkey) {
+		this(cast(ECPrivateKey) pkey);
+	}
+
+	this(in ECDSAPrivateKey pkey) {
+		this(pkey.m_priv);
+	}
+
+    this(in ECPrivateKey ecdsa)
     {
+		assert(ecdsa.algoName == ECDSAPublicKey.algoName);
         m_base_point = ecdsa.domain().getBasePoint();
         m_order = ecdsa.domain().getOrder();
         m_x = ecdsa.privateValue();
         m_mod_order = order;
     }
 
-    SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -147,9 +152,9 @@ public:
         return output;
     }
 
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return m_order.bytes(); }
-    size_t maxInputBits() const { return m_order.bits(); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_order.bytes(); }
+	override size_t maxInputBits() const { return m_order.bits(); }
 
 private:
     const PointGFp m_base_point;
@@ -164,20 +169,29 @@ private:
 final class ECDSAVerificationOperation : Verification
 {
 public:
-    this(in ECDSAPublicKey ecdsa) 
+	this(in PublicKey pkey) {
+		this(cast(ECPublicKey) pkey);
+	}
+
+	this(in ECDSAPublicKey pkey) {
+		this(pkey.m_pub);
+	}
+
+    this(in ECPublicKey ecdsa) 
     {
+		assert(ecdsa.algoName == ECDSAPublicKey.algoName);
         m_base_point = ecdsa.domain().getBasePoint();
         m_public_point = ecdsa.publicPoint();
         m_order = ecdsa.domain().getOrder();
     }
 
-    size_t messageParts() const { return 2; }
-    size_t messagePartSize() const { return m_order.bytes(); }
-    size_t maxInputBits() const { return m_order.bits(); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_order.bytes(); }
+	override size_t maxInputBits() const { return m_order.bits(); }
 
-    bool withRecovery() const { return false; }
+	override bool withRecovery() const { return false; }
 
-    bool verify(in ubyte* msg, size_t msg_len,
+	override bool verify(in ubyte* msg, size_t msg_len,
                 in ubyte* sig, size_t sig_len)
     {
         if (sig_len != m_order.bytes()*2)

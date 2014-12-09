@@ -13,7 +13,7 @@ static if (BOTAN_HAS_DLIES):
 import botan.pubkey.pubkey;
 import botan.mac.mac;
 import botan.kdf.kdf;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 
 /**
 * DLIES Encryption
@@ -44,8 +44,7 @@ private:
     /*
     * DLIES Encryption
     */
-    Vector!ubyte enc(in ubyte* input, size_t length,
-                     RandomNumberGenerator) const
+    Vector!ubyte enc(in ubyte* input, size_t length, RandomNumberGenerator rng) const
     {
         if (length > maximumInputSize())
             throw new InvalidArgument("DLIES: Plaintext too large");

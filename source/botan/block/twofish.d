@@ -15,13 +15,13 @@ import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist
 */
-final class Twofish : BlockCipherFixedParams!(16, 16, 32, 8)
+final class Twofish : BlockCipherFixedParams!(16, 16, 32, 8), SymmetricAlgorithm
 {
 public:
     /*
     * Twofish Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -72,7 +72,7 @@ public:
     /*
     * Twofish Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -130,7 +130,7 @@ public:
     }
 
     override @property string name() const { return "Twofish"; }
-    BlockCipher clone() const { return new Twofish; }
+	override BlockCipher clone() const { return new Twofish; }
 
 protected:
 

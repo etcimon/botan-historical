@@ -15,7 +15,6 @@ import botan.utils.cpuid;
 import std.datetime;
 
 version(Windows) import core.sys.windows.windows;
-else version(linux) import core.sys.linux.time;
 else version(Posix) import core.sys.posix.time;
 
 

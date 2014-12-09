@@ -12,6 +12,8 @@ static if (BOTAN_HAS_HAS_160):
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
+
 /**
 * HAS-160, a Korean hash function standardized in
 * TTAS.KO-12.0011/R1. Used in conjuction with KCDSA
@@ -19,14 +21,14 @@ import botan.utils.rotate;
 class HAS160 : MDxHashFunction
 {
 public:
-    @property string name() const { return "HAS-160"; }
-    @property size_t outputLength() const { return 20; }
-    HashFunction clone() const { return new HAS160; }
+	override @property string name() const { return "HAS-160"; }
+	override @property size_t outputLength() const { return 20; }
+	override HashFunction clone() const { return new HAS160; }
 
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         super.clear();
         zeroise(m_X);

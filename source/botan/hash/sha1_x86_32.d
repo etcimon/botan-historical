@@ -11,6 +11,8 @@ static if (BOTAN_HAS_SHA1_X86_32):
 
 import botan.hash.sha160;
 import botan.utils.asm_x86_32.asm_x86_32;
+import botan.hash.hash;
+
 /**
 * SHA-160 in x86 assembly
 */
@@ -24,7 +26,8 @@ public:
     {
         super(81);
     }
-private:
+
+protected:
     /*
     * SHA-160 Compression Function
     */

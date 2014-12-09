@@ -17,15 +17,15 @@ import botan.utils.types;
 /**
 * AES-128
 */
-final class AES128 : BlockCipherFixedParams!(16, 16)
+final class AES128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_encrypt_n(input, output, blocks, m_EK, ME);
     }
     
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -38,8 +38,8 @@ public:
         zap(m_MD);
     }
 
-    @property string name() const { return "AES-128"; }
-    BlockCipher clone() const { return new AES128; }
+    override @property string name() const { return "AES-128"; }
+	override BlockCipher clone() const { return new AES128; }
 private:
     void keySchedule(in ubyte* key, size_t length)
     {
@@ -53,15 +53,15 @@ private:
 /**
 * AES-192
 */
-final class AES192 : BlockCipherFixedParams!(16, 24)
+final class AES192 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
 {
 public:
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -74,8 +74,8 @@ public:
         zap(m_MD);
     }
 
-    @property string name() const { return "AES-192"; }
-    BlockCipher clone() const { return new AES192; }
+    override @property string name() const { return "AES-192"; }
+	override BlockCipher clone() const { return new AES192; }
 private:    
     void keySchedule(in ubyte* key, size_t length)
     {
@@ -89,15 +89,15 @@ private:
 /**
 * AES-256
 */
-final class AES256 : BlockCipherFixedParams!(16, 32)
+final class AES256 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
 {
 public:
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -110,8 +110,8 @@ public:
         zap(m_MD);
     }
 
-    @property string name() const { return "AES-256"; }
-    BlockCipher clone() const { return new AES256; }
+    override @property string name() const { return "AES-256"; }
+	override BlockCipher clone() const { return new AES256; }
 private:
     void keySchedule(in ubyte* key, size_t length)
     {

@@ -72,7 +72,7 @@ private:
 }
 
 
-final class FileDescriptorSource
+class FileDescriptorSource
 {
 public:
     int nextFd()

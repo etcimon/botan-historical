@@ -16,13 +16,13 @@ import botan.utils.rotate;
 /**
 * Noekeon
 */
-class Noekeon : BlockCipherFixedParams!(16, 16)
+class Noekeon : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
     /*
     * Noekeon Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -60,7 +60,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -107,7 +107,7 @@ public:
     
 
     @property string name() const { return "Noekeon"; }
-    BlockCipher clone() const { return new Noekeon; }
+	override BlockCipher clone() const { return new Noekeon; }
 
 protected:
     /**

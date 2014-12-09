@@ -13,7 +13,7 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.modes.mode_pad;
 import botan.utils.loadstor;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.rounding;
 
 /**

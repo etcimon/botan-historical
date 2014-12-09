@@ -11,6 +11,8 @@ static if (BOTAN_HAS_SHA1_X86_64):
 
 import botan.utils.asm_x86_64.asm_x86_64;
 import botan.hash.sha160;
+import botan.hash.hash;
+
 /**
 * SHA-160 in x86-64 assembly
 */
@@ -18,7 +20,8 @@ class SHA160_X86_64 : SHA160
 {
 public:
     override HashFunction clone() const { return new SHA160_X86_64; }
-private:
+
+protected:
     /*
     * SHA-160 Compression Function
     */
@@ -44,7 +47,7 @@ void botan_sha160_x86_64_compress(uint* arg1, in ubyte* arg2, uint* arg3)
         enum D = "R11D";
         enum E = "ECX";
     */
-    mixin(`asm { ` ~
+    mixin(START_ASM ~
             ZEROIZE(LOOP_CTR) ~
 
             ALIGN ~ `;` ~
@@ -222,7 +225,7 @@ void botan_sha160_x86_64_compress(uint* arg1, in ubyte* arg2, uint* arg3)
             ADD(ARRAY4(DIGEST_ARR, 2), A) ~
             ADD(ARRAY4(DIGEST_ARR, 3), B) ~
             ADD(ARRAY4(DIGEST_ARR, 4), C) ~
-      `}`);
+      END_ASM);
 
 
 }

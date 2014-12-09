@@ -12,7 +12,7 @@ static if (BOTAN_HAS_CHACHA):
 import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.types;
 
 /**
@@ -24,7 +24,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-    void cipher(in ubyte* input, ubyte* output, size_t length)
+	override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -48,7 +48,7 @@ public:
     /*
     * Return the name of this type
     */
-    void setIv(in ubyte* iv, size_t length)
+	override void setIv(in ubyte* iv, size_t length)
     {
         if (!validIvLength(length))
             throw new InvalidIVLength(name, length);
@@ -66,7 +66,7 @@ public:
         m_position = 0;
     }
 
-    bool validIvLength(size_t iv_len) const
+	override bool validIvLength(size_t iv_len) const
     { return (iv_len == 8); }
 
     KeyLengthSpecification keySpec() const
@@ -92,7 +92,7 @@ public:
         return "ChaCha";
     }
 
-    StreamCipher clone() const { return new ChaCha; }
+	override StreamCipher clone() const { return new ChaCha; }
 protected:
 
     void chacha(ref ubyte[64] output, in uint[16] input)
@@ -180,7 +180,7 @@ private:
     size_t m_position = 0;
 }
 
-string cHACHAQUARTERROUND(alias _a, alias _b, alias _c, alias _d)()
+string CHACHA_QUARTER_ROUND(alias _a, alias _b, alias _c, alias _d)()
 {
     enum a = __traits(identifier, _a).stringof;
     enum b = __traits(identifier, _b).stringof;

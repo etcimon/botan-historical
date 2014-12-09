@@ -13,6 +13,8 @@ import botan.pbkdf.pbkdf;
 import botan.hash.hash;
 import std.datetime;
 import botan.utils.exceptn;
+import botan.utils.types;
+import botan.algo_base.symkey;
 
 /**
 * PKCS #5 v1 PBKDF, aka PBKDF1
@@ -31,12 +33,12 @@ public:
         m_hash = hash_input;
     }
 
-    @property string name() const
+	override @property string name() const
     {
         return "PBKDF1(" ~ m_hash.name ~ ")";
     }
 
-    PBKDF clone() const
+	override PBKDF clone() const
     {
         return new PKCS5PBKDF1(m_hash.clone());
     }
@@ -44,7 +46,7 @@ public:
     /*
     * Return a PKCS#5 PBKDF1 derived key
     */
-    Pair!(size_t, OctetString) keyDerivation(size_t key_len,
+	override Pair!(size_t, OctetString) keyDerivation(size_t key_len,
                                               in string passphrase,
                                               in ubyte* salt, size_t salt_len,
                                               size_t iterations,

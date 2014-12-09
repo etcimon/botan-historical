@@ -21,13 +21,13 @@ final class RIPEMD128 : MDxHashFunction
 {
 public:
     override @property string name() const { return "RIPEMD-128"; }
-    @property size_t outputLength() const { return 16; }
-    HashFunction clone() const { return new RIPEMD128; }
+	override @property size_t outputLength() const { return 16; }
+	override HashFunction clone() const { return new RIPEMD128; }
 
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         super.clear();
         zeroise(m_M);
@@ -161,7 +161,7 @@ private:
 /*
 * RIPEMD-128 F1 Function
 */
-void f1(ref uint A, uint B, uint C, uint D,
+void F1(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift) pure
 {
     A += (B ^ C ^ D) + msg;
@@ -171,7 +171,7 @@ void f1(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 F2 Function
 */
-void f2(ref uint A, uint B, uint C, uint D,
+void F2(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift, uint magic) pure
 {
     A += (D ^ (B & (C ^ D))) + msg + magic;
@@ -181,7 +181,7 @@ void f2(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 F3 Function
 */
-void f3(ref uint A, uint B, uint C, uint D,
+void F3(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift, uint magic) pure
 {
     A += (D ^ (B | ~C)) + msg + magic;
@@ -191,7 +191,7 @@ void f3(ref uint A, uint B, uint C, uint D,
 /*
 * RIPEMD-128 F4 Function
 */
-void f4(ref uint A, uint B, uint C, uint D,
+void F4(ref uint A, uint B, uint C, uint D,
         uint msg, uint shift, uint magic) pure
 {
     A += (C ^ (D & (B ^ C))) + msg + magic;

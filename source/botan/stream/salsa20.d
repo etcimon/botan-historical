@@ -12,7 +12,7 @@ static if (BOTAN_HAS_SALSA20):
 import botan.stream.stream_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.types;
 
 /**
@@ -24,7 +24,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-    void cipher(in ubyte* input, ubyte* output, size_t length)
+	override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -49,7 +49,7 @@ public:
     /*
     * Return the name of this type
     */
-    void setIv(in ubyte* iv, size_t length)
+	override void setIv(in ubyte* iv, size_t length)
     {
         if (!validIvLength(length))
             throw new InvalidIVLength(name(), length);
@@ -93,7 +93,7 @@ public:
         m_position = 0;
     }
 
-    bool validIvLength(size_t iv_len) const
+	override bool validIvLength(size_t iv_len) const
     { return (iv_len == 8 || iv_len == 24); }
 
     KeyLengthSpecification keySpec() const
@@ -119,7 +119,7 @@ public:
         return "Salsa20";
     }
 
-    Salsa20 clone() const { return new Salsa20; }
+	override Salsa20 clone() const { return new Salsa20; }
 private:
     /*
     * Salsa20 Key Schedule

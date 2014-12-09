@@ -41,7 +41,7 @@ public:
 
     bool initialized() const { return m_reducer.initialized(); }
 
-    this() {}
+	@disable this();
 
     /**
     * Construct a blinder

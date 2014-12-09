@@ -18,13 +18,14 @@ import botan.math.bigint.bigint;
 /**
 * This class represents ECDH Public Keys.
 */
-class ECDHPublicKey : ECPublicKey
+class ECDHPublicKey
 {
 public:
+	__gshared immutable string algoName = "ECDH";
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     { 
-        super(alg_id, key_bits);
+		m_pub = new ECPublicKey(alg_id, key_bits, algoName, false);
     }
 
     /**
@@ -34,45 +35,33 @@ public:
     */
     this(in ECGroup dom_par, in PointGFp public_point) 
     {
-        super(dom_par, public_point);
+		m_pub = new ECPublicKey(dom_par, public_point, algoName, false);
     }
-
-    /**
-    * Get this keys algorithm name.
-    * @return this keys algorithm name
-    */
-    @property string algoName() const { return "ECDH"; }
-
-    /**
-    * Get the maximum number of bits allowed to be fed to this key.
-    * This is the bitlength of the order of the base point.
-
-    * @return maximum number of input bits
-    */
-    size_t maxInputBits() const { return domain().getOrder().bits(); }
 
     /**
     * @return public point value
     */
     Vector!ubyte publicValue() const
-    { return unlock(EC2OSP(publicPoint(), PointGFp.UNCOMPRESSED)); }
+    { return unlock(EC2OSP(m_pub.publicPoint(), PointGFp.UNCOMPRESSED)); }
 
-protected:
-    this() {}
+	this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
+	this(PublicKey pkey) { m_pub = cast(ECPublicKey) pkey; }
+
+	alias m_pub this;
+
+private:
+	ECPublicKey m_pub;
 }
 
 /**
 * This class represents ECDH Private Keys.
 */
-final class ECDHPrivateKey : ECDHPublicKey,
-                              ECPrivateKey,
-                              PKKeyAgreementKey
+final class ECDHPrivateKey : ECDHPublicKey, PKKeyAgreementKey
 {
 public:
-
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-        super(alg_id, key_bits);
+		m_priv = new ECPrivateKey(alg_id, key_bits, algoName, false);
     }
 
     /**
@@ -81,14 +70,19 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-    this(RandomNumberGenerator rng, in ECGroup domain,
-        in BigInt x = 0) 
+    this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0) 
     {
-        super(rng, domain, x);
+		m_priv = new ECPrivateKey(rng, domain, x, algoName, false);
     }
 
-    Vector!ubyte publicValue() const
-    { return super.publicValue(); }
+	override Vector!ubyte publicValue() const { return super.publicValue(); }
+
+	this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
+
+	alias m_priv this;
+private:
+	ECPrivateKey m_priv;
+
 }
 
 /**
@@ -97,14 +91,22 @@ public:
 final class ECDHKAOperation : KeyAgreement
 {
 public:
-    this(in ECDHPrivateKey key) 
+	this(in PrivateKey pkey) {
+		this(cast(ECPrivateKey) pkey);
+	}
+
+	this(in ECDHPrivateKey pkey) {
+		this(pkey.m_priv);
+	}
+
+    this(in ECPrivateKey key) 
     {
         m_curve = key.domain().getCurve();
         m_cofactor = key.domain().getCofactor();
         l_times_priv = inverseMod(m_cofactor, key.domain().getOrder()) * key.privateValue();
     }
 
-    SecureVector!ubyte agree(in ubyte* w, size_t w_len)
+	override SecureVector!ubyte agree(in ubyte* w, size_t w_len)
     {
         PointGFp point = OS2ECP(w, w_len, m_curve);
         

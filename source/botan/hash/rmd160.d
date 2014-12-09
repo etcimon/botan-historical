@@ -12,6 +12,7 @@ static if (BOTAN_HAS_RIPEMD_160):
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.types;
 
 /**
 * RIPEMD-160
@@ -20,13 +21,13 @@ final class RIPEMD160 : MDxHashFunction
 {
 public:
     override @property string name() const { return "RIPEMD-160"; }
-    @property size_t outputLength() const { return 20; }
-    HashFunction clone() const { return new RIPEMD160; }
+	override @property size_t outputLength() const { return 20; }
+	override HashFunction clone() const { return new RIPEMD160; }
 
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         super.clear();
         zeroise(m_M);
@@ -177,7 +178,7 @@ private:
 /*
 * RIPEMD-160 F1 Function
 */
-void f1(ref uint A, uint B, ref uint C, uint D, uint E,
+void F1(ref uint A, uint B, ref uint C, uint D, uint E,
         uint msg, uint shift) pure
 {
     A += (B ^ C ^ D) + msg;
@@ -188,7 +189,7 @@ void f1(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F2 Function
 */
-void f2(ref uint A, uint B, ref uint C, uint D, uint E,
+void F2(ref uint A, uint B, ref uint C, uint D, uint E,
         uint msg, uint shift, uint magic) pure
 {
     A += (D ^ (B & (C ^ D))) + msg + magic;
@@ -199,7 +200,7 @@ void f2(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F3 Function
 */
-void f3(ref uint A, uint B, ref uint C, uint D, uint E,
+void F3(ref uint A, uint B, ref uint C, uint D, uint E,
         uint msg, uint shift, uint magic) pure
 {
     A += (D ^ (B | ~C)) + msg + magic;
@@ -210,7 +211,7 @@ void f3(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F4 Function
 */
-void f4(ref uint A, uint B, ref uint C, uint D, uint E,
+void F4(ref uint A, uint B, ref uint C, uint D, uint E,
         uint msg, uint shift, uint magic) pure
 {
     A += (C ^ (D & (B ^ C))) + msg + magic;
@@ -221,7 +222,7 @@ void f4(ref uint A, uint B, ref uint C, uint D, uint E,
 /*
 * RIPEMD-160 F5 Function
 */
-void f5(ref uint A, uint B, ref uint C, uint D, uint E,
+void F5(ref uint A, uint B, ref uint C, uint D, uint E,
         uint msg, uint shift, uint magic) pure
 {
     A += (B ^ (C | ~D)) + msg + magic;

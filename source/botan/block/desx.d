@@ -10,18 +10,18 @@ import botan.constants;
 static if (BOTAN_HAS_DES):
 
 import botan.block.des;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 
 /**
 * DESX
 */
-final class DESX : BlockCipherFixedParams!(8, 24)
+final class DESX : BlockCipherFixedParams!(8, 24), SymmetricAlgorithm
 {
 public:
     /*
     * DESX Encryption
     */
-    void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -37,7 +37,7 @@ public:
     /*
     * DESX Decryption
     */
-    void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {    
         foreach (size_t i; 0 .. blocks)
         {
@@ -57,7 +57,7 @@ public:
     }
 
     @property string name() const { return "DESX"; }
-    BlockCipher clone() const { return new DESX; }
+	override BlockCipher clone() const { return new DESX; }
 
 protected:
     /*

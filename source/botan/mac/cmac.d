@@ -14,7 +14,7 @@ import botan.utils.types;
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 /**
 * CMAC, also known as OMAC1
 */

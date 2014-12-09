@@ -12,7 +12,7 @@ static if (BOTAN_HAS_LION):
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.utils.parsing;
 
 /**
@@ -23,7 +23,7 @@ import botan.utils.parsing;
 
 * http://www.cl.cam.ac.uk/~rja14/Papers/bear-lion.pdf
 */
-final class Lion : BlockCipher
+final class Lion : BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -86,7 +86,7 @@ public:
         }
     }
 
-    size_t blockSize() const { return m_block_size; }
+	override size_t blockSize() const { return m_block_size; }
 
     override KeyLengthSpecification keySpec() const
     {

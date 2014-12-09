@@ -6,7 +6,7 @@
 */
 module botan.algo_base.symkey;
 
-import botan.utils.xorBuf;
+import botan.utils.xor_buf;
 import botan.rng.rng;
 import botan.filters.pipe;
 import botan.codec.hex;

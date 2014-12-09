@@ -7,11 +7,12 @@
 module botan.hash.sha1_sse2;
 
 import botan.constants;
-static if (BOTAN_HAS_SHA1_SSE2):
+static if (BOTAN_HAS_SHA1_SSE2 && BOTAN_HAS_SIMD_SSE2):
 
 import botan.hash.sha160;
 import botan.utils.rotate;
 import botan.utils.simd.emmintrin;
+import botan.hash.hash;
 
 /**
 * SHA-160 using SSE2 for the message expansion
@@ -19,7 +20,7 @@ import botan.utils.simd.emmintrin;
 class SHA160SSE2 : SHA160
 {
 public:
-    HashFunction clone() const { return new SHA160SSE2; }
+    override HashFunction clone() const { return new SHA160SSE2; }
     this() 
     {
         super(0);
