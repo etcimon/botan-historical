@@ -19,12 +19,12 @@ import botan.utils.types;
 final class Camellia128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         encrypt(input, output, blocks, m_SK, 9);
     }
 
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         decrypt(input, output, blocks, m_SK, 9);
     }
@@ -34,7 +34,7 @@ public:
         zap(m_SK);
     }
     @property string name() const { return "Camellia-128"; }
-	override BlockCipher clone() const { return new Camellia128; }
+    override BlockCipher clone() const { return new Camellia128; }
 protected:
     void keySchedule(in ubyte* key, size_t length)
     {
@@ -50,12 +50,12 @@ protected:
 final class Camellia192 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
 {
 public:
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         encrypt(input, output, blocks, m_SK, 12);
     }
 
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         decrypt(input, output, blocks, m_SK, 12);
     }
@@ -65,7 +65,7 @@ public:
         zap(m_SK);
     }
     @property string name() const { return "Camellia-192"; }
-	override BlockCipher clone() const { return new Camellia192; }
+    override BlockCipher clone() const { return new Camellia192; }
 protected:
     void keySchedule(in ubyte* key, size_t length)
     {
@@ -81,12 +81,12 @@ protected:
 final class Camellia256 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
 {
 public:
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         encrypt(input, output, blocks, m_SK, 12);
     }
 
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         decrypt(input, output, blocks, m_SK, 12);
     }
@@ -96,7 +96,7 @@ public:
         zap(m_SK);
     }
     @property string name() const { return "Camellia-256"; }
-	override BlockCipher clone() const { return new Camellia256; }
+    override BlockCipher clone() const { return new Camellia256; }
 protected:
     void keySchedule(in ubyte* key, size_t length)
     {

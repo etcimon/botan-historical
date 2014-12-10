@@ -26,7 +26,7 @@ import botan.utils.types;
 class ECDSAPublicKey
 {
 public:
-	__gshared immutable string algoName = "ECDSA";
+    __gshared immutable string algoName = "ECDSA";
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -39,20 +39,20 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-		m_pub = new ECPublicKey(alg_id, key_bits, algoName, true);
+        m_pub = new ECPublicKey(alg_id, key_bits, algoName, true);
     }
 
-	this(PublicKey pkey) {
-		m_pub = cast(ECPublicKey) pkey;
-	}
+    this(PublicKey pkey) {
+        m_pub = cast(ECPublicKey) pkey;
+    }
 
-	this(PrivateKey pkey) {
-		m_pub = cast(ECPublicKey) pkey;
-	}
+    this(PrivateKey pkey) {
+        m_pub = cast(ECPublicKey) pkey;
+    }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	ECPublicKey m_pub;
+    ECPublicKey m_pub;
 }
 
 /**
@@ -68,7 +68,7 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-		m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1, &checkKey);
+        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1, &checkKey);
     }
 
     /**
@@ -79,12 +79,12 @@ public:
     */
     this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0)
     {
-		m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1, &checkKey); 
+        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1, &checkKey); 
     }
 
-	this(PrivateKey pkey) { m_priv = pkey; }
+    this(PrivateKey pkey) { m_priv = pkey; }
 
-	bool checkKey(RandomNumberGenerator rng, bool strong) const
+    bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (!publicPoint().onTheCurve())
             return false;
@@ -96,9 +96,9 @@ public:
     }
 
 
-	alias m_priv this;
+    alias m_priv this;
 private:
-	ECPrivateKey m_priv;
+    ECPrivateKey m_priv;
 }
 
 /**
@@ -107,24 +107,24 @@ private:
 final class ECDSASignatureOperation : Signature
 {
 public:
-	this(in PrivateKey pkey) {
-		this(cast(ECPrivateKey) pkey);
-	}
+    this(in PrivateKey pkey) {
+        this(cast(ECPrivateKey) pkey);
+    }
 
-	this(in ECDSAPrivateKey pkey) {
-		this(pkey.m_priv);
-	}
+    this(in ECDSAPrivateKey pkey) {
+        this(pkey.m_priv);
+    }
 
     this(in ECPrivateKey ecdsa)
     {
-		assert(ecdsa.algoName == ECDSAPublicKey.algoName);
+        assert(ecdsa.algoName == ECDSAPublicKey.algoName);
         m_base_point = ecdsa.domain().getBasePoint();
         m_order = ecdsa.domain().getOrder();
         m_x = ecdsa.privateValue();
         m_mod_order = order;
     }
 
-	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -152,9 +152,9 @@ public:
         return output;
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_order.bytes(); }
-	override size_t maxInputBits() const { return m_order.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_order.bytes(); }
+    override size_t maxInputBits() const { return m_order.bits(); }
 
 private:
     const PointGFp m_base_point;
@@ -169,29 +169,29 @@ private:
 final class ECDSAVerificationOperation : Verification
 {
 public:
-	this(in PublicKey pkey) {
-		this(cast(ECPublicKey) pkey);
-	}
+    this(in PublicKey pkey) {
+        this(cast(ECPublicKey) pkey);
+    }
 
-	this(in ECDSAPublicKey pkey) {
-		this(pkey.m_pub);
-	}
+    this(in ECDSAPublicKey pkey) {
+        this(pkey.m_pub);
+    }
 
     this(in ECPublicKey ecdsa) 
     {
-		assert(ecdsa.algoName == ECDSAPublicKey.algoName);
+        assert(ecdsa.algoName == ECDSAPublicKey.algoName);
         m_base_point = ecdsa.domain().getBasePoint();
         m_public_point = ecdsa.publicPoint();
         m_order = ecdsa.domain().getOrder();
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_order.bytes(); }
-	override size_t maxInputBits() const { return m_order.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_order.bytes(); }
+    override size_t maxInputBits() const { return m_order.bits(); }
 
-	override bool withRecovery() const { return false; }
+    override bool withRecovery() const { return false; }
 
-	override bool verify(in ubyte* msg, size_t msg_len,
+    override bool verify(in ubyte* msg, size_t msg_len,
                 in ubyte* sig, size_t sig_len)
     {
         if (sig_len != m_order.bytes()*2)

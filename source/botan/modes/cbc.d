@@ -371,7 +371,7 @@ public:
         return cipher().blockSize() + 1;
     }
 
-	override bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return (n == cipher().blockSize());
     }

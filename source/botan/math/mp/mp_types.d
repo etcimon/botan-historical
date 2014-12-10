@@ -10,22 +10,22 @@ import botan.utils.mul128;
 import botan.constants;
 
 static if (BOTAN_MP_WORD_BITS == 8) {
-	alias word = ubyte;
-	alias dword = ushort;
+    alias word = ubyte;
+    alias dword = ushort;
     enum BOTAN_HAS_MP_DWORD = 1;
 }
 else static if (BOTAN_MP_WORD_BITS == 16) {
-	alias word = ushort;
-	alias dword = uint;
+    alias word = ushort;
+    alias dword = uint;
     enum BOTAN_HAS_MP_DWORD = 1;
 }
 else static if (BOTAN_MP_WORD_BITS == 32) {
-	alias word = uint;
-	alias dword = ulong;
+    alias word = uint;
+    alias dword = ulong;
     enum BOTAN_HAS_MP_DWORD = 1;
 }
 else static if (BOTAN_MP_WORD_BITS == 64) {
-	alias word = ulong;
+    alias word = ulong;
 
     static if (BOTAN_TARGET_HAS_NATIVE_UINT128) {
         static assert(false);

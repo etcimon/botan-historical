@@ -25,9 +25,9 @@ class IFSchemePublicKey : PublicKey
 {
 public:
 
-	this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits, bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-		m_check_key = check_key;
+        m_check_key = check_key;
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decode(m_n)
@@ -36,9 +36,9 @@ public:
                 .endCons();
     }
 
-	this(in BigInt n, in BigInt e, bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(in BigInt n, in BigInt e, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-		m_check_key = check_key;
+        m_check_key = check_key;
         m_n = n;
         m_e = e; 
     }
@@ -48,12 +48,12 @@ public:
     */
     override bool checkKey(RandomNumberGenerator rng, bool b) const
     {
-		if (m_check_key) {
-			auto tmp = m_check_key;
-			m_check_key = null;
-			scope(exit) m_check_key = tmp;
-			return m_check_key(rng, strong);
-		}
+        if (m_check_key) {
+            auto tmp = m_check_key;
+            m_check_key = null;
+            scope(exit) m_check_key = tmp;
+            return m_check_key(rng, strong);
+        }
 
         if (m_n < 35 || m_n.isEven() || m_e < 2)
             return false;
@@ -88,13 +88,13 @@ public:
 
     final size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-	final override size_t messagePartSize() const {
-		return 0;
-	}
+    final override size_t messagePartSize() const {
+        return 0;
+    }
 
-	final override size_t messageParts() const {
-		return 1;
-	}
+    final override size_t messageParts() const {
+        return 1;
+    }
 
     override final size_t estimatedStrength() const
     {
@@ -105,7 +105,7 @@ package:
 
     BigInt m_n, m_e;
 
-	bool delegate(RandomNumberGenerator, bool) const m_check_key;
+    bool delegate(RandomNumberGenerator, bool) const m_check_key;
 }
 
 /**
@@ -115,10 +115,10 @@ package:
 final class IFSchemePrivateKey : IFSchemePublicKey, PrivateKey
 {
 public:
-	this(RandomNumberGenerator rng, in AlgorithmIdentifier, in SecureVector!ubyte key_bits,
-	     bool delegate(RandomNumberGenerator, bool) const check_key = null)
-	{
-		m_check_key = check_key;
+    this(RandomNumberGenerator rng, in AlgorithmIdentifier, in SecureVector!ubyte key_bits,
+         bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    {
+        m_check_key = check_key;
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
@@ -140,10 +140,10 @@ public:
          in BigInt prime2,
          in BigInt exp,
          in BigInt d_exp,
-	     in BigInt mod, 
-	     bool delegate(RandomNumberGenerator, bool) const check_key = null)
-	{
-		m_check_key = check_key;
+         in BigInt mod, 
+         bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    {
+        m_check_key = check_key;
         m_p = prime1;
         m_q = prime2;
         e = exp;
@@ -170,14 +170,14 @@ public:
     /*
     * Check IF Scheme Private Parameters
     */
-	override bool checkKey(RandomNumberGenerator rng, bool strong) const
-	{
-		if (m_check_key) {
-			auto tmp = m_check_key;
-			m_check_key = null;
-			scope(exit) m_check_key = tmp;
-			return m_check_key(rng, strong);
-		}
+    override bool checkKey(RandomNumberGenerator rng, bool strong) const
+    {
+        if (m_check_key) {
+            auto tmp = m_check_key;
+            m_check_key = null;
+            scope(exit) m_check_key = tmp;
+            return m_check_key(rng, strong);
+        }
 
         if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
             return false;
@@ -232,9 +232,9 @@ public:
     }
 
 package:
-	this(bool delegate(RandomNumberGenerator, bool) const check_key = null)
-	{
-		m_check_key = check_key;
-	}
+    this(bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    {
+        m_check_key = check_key;
+    }
     BigInt m_d, m_p, m_q, m_d1, m_d2, m_c;
 }

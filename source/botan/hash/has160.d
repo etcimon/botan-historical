@@ -21,14 +21,14 @@ import botan.utils.types;
 class HAS160 : MDxHashFunction
 {
 public:
-	override @property string name() const { return "HAS-160"; }
-	override @property size_t outputLength() const { return 20; }
-	override HashFunction clone() const { return new HAS160; }
+    override @property string name() const { return "HAS-160"; }
+    override @property size_t outputLength() const { return 20; }
+    override HashFunction clone() const { return new HAS160; }
 
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         super.clear();
         zeroise(m_X);

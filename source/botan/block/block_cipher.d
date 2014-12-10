@@ -185,7 +185,7 @@ class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMO
 {
 public:
     enum { BLOCK_SIZE = BS }
-	override size_t blockSize() const { return BS; }
+    override size_t blockSize() const { return BS; }
 
     KeyLengthSpecification keySpec() const
     {

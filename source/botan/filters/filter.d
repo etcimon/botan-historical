@@ -13,35 +13,35 @@ import botan.filters.secqueue;
 import botan.utils.exceptn;
 
 interface Filterable {
-	/**
+    /**
     * @return descriptive name for this filter
     */
-	abstract @property string name() const;
-	
-	/**
+    abstract @property string name() const;
+    
+    /**
     * Write a portion of a message to this filter.
     * @param input = the input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-	abstract void write(in ubyte* input, size_t length);
-	
-	/**
+    abstract void write(in ubyte* input, size_t length);
+    
+    /**
     * Start a new message. Must be closed by endMsg() before another
     * message can be started.
     */
-	abstract void startMsg();
-	
-	/**
+    abstract void startMsg();
+    
+    /**
     * Notify that the current message is finished; flush buffers and
     * do end-of-message processing (if any).
     */
-	abstract void endMsg();
-	
-	/**
+    abstract void endMsg();
+    
+    /**
     * Check whether this filter is an attachable filter.
     * @return true if this filter is attachable, false otherwise
     */
-	abstract bool attachable();
+    abstract bool attachable();
 }
 
 /**
@@ -50,11 +50,11 @@ interface Filterable {
 class Filter : Filterable
 {
 public:
-	/**
+    /**
     * Write a portion of a message to this filter.
     * @param input = the input as a ubyte array
     */
-	final void write(in ubyte[] input) { write(input.ptr, input.length); }
+    final void write(in ubyte[] input) { write(input.ptr, input.length); }
 
 protected:
     /**
@@ -86,23 +86,23 @@ protected:
     /**
     * @param input = some input for the filter
     */
-	final void send(ubyte input) { send(&input, 1); }
+    final void send(ubyte input) { send(&input, 1); }
 
     /**
     * @param input = some input for the filter
     */
-	final void send(in SecureVector!ubyte input) { send(input.ptr, input.length); }
+    final void send(in SecureVector!ubyte input) { send(input.ptr, input.length); }
 
     /**
     * @param input = some input for the filter
     */
-	final void send(in Vector!ubyte input) { send(input.ptr, input.length); }
+    final void send(in Vector!ubyte input) { send(input.ptr, input.length); }
 
     /**
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-	final void send(in SecureVector!ubyte input)
+    final void send(in SecureVector!ubyte input)
     {
         send(input.ptr, length);
     }
@@ -111,7 +111,7 @@ protected:
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-	final void send(in Vector!ubyte input)
+    final void send(in Vector!ubyte input)
     {
         send(input.ptr, length);
     }

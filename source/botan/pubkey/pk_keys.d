@@ -69,13 +69,13 @@ public:
     * Find out the number of message parts supported by this scheme.
     * @return number of message parts
     */
-	abstract size_t messageParts() const;
+    abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
     * @return size of the message parts in bits
     */
-	abstract size_t messagePartSize() const; 
+    abstract size_t messagePartSize() const; 
 
     /**
     * Get the maximum message size in bits supported by this public key.
@@ -98,7 +98,7 @@ protected:
     * Self-test after loading a key
     * @param rng = a random number generator
     */
-	abstract void loadCheck(RandomNumberGenerator rng) const;
+    abstract void loadCheck(RandomNumberGenerator rng) const;
     /*{
         if (!checkKey(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
             throw new InvalidArgument(algo_name ~ ": Invalid public key");
@@ -120,7 +120,7 @@ public:
     * @return PKCS #8 AlgorithmIdentifier for this key
     * Might be different from the X.509 identifier, but normally is not
     */
-	abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const;
+    abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const;
 
 protected:
     /**

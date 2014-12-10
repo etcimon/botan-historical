@@ -38,20 +38,20 @@ class ECPublicKey : PublicKey
 {
 public:
     this(in ECGroup dom_par, 
-	     in PointGFp pub_point, 
-	     in string algo_name, 
-	     in bool msg_compat, 
-	     in short msg_parts = 1,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in Vector!ubyte delegate() const subject_public_key = null,
-	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+         in PointGFp pub_point, 
+         in string algo_name, 
+         in bool msg_compat, 
+         in short msg_parts = 1,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in Vector!ubyte delegate() const subject_public_key = null,
+         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
     {
-		m_check_key = check_key;
-		m_algorithm_identifier = algorithm_identifier;
-		m_subject_public_key = subject_public_key;
-		m_msg_compat = msg_compat;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
+        m_check_key = check_key;
+        m_algorithm_identifier = algorithm_identifier;
+        m_subject_public_key = subject_public_key;
+        m_msg_compat = msg_compat;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
         m_domain_params = dom_par;
         m_public_key = pub_point;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
@@ -59,19 +59,19 @@ public:
             throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
     }
 
-	this(in AlgorithmIdentifier alg_id, 
-	     in SecureVector!ubyte key_bits, 
-	     in string algo_name, in bool msg_compat, in short msg_parts = 1,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in Vector!ubyte delegate() const subject_public_key = null,
-	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
-	{
-		m_check_key = check_key;
-		m_algorithm_identifier = algorithm_identifier;
-		m_subject_public_key = subject_public_key;
-		m_msg_compat = msg_compat;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
+    this(in AlgorithmIdentifier alg_id, 
+         in SecureVector!ubyte key_bits, 
+         in string algo_name, in bool msg_compat, in short msg_parts = 1,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in Vector!ubyte delegate() const subject_public_key = null,
+         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+    {
+        m_check_key = check_key;
+        m_algorithm_identifier = algorithm_identifier;
+        m_subject_public_key = subject_public_key;
+        m_msg_compat = msg_compat;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
@@ -86,31 +86,31 @@ public:
     */
     final ref PointGFp publicPoint() const { return m_public_key; }
 
-	final size_t maxInputBits() const { return domain().getOrder().bits(); }
+    final size_t maxInputBits() const { return domain().getOrder().bits(); }
 
-	final size_t messagePartSize() const { if (!m_msg_compat) return 0; return domain().getOrder().bytes(); }
+    final size_t messagePartSize() const { if (!m_msg_compat) return 0; return domain().getOrder().bytes(); }
 
-	final size_t messageParts() const { return m_msg_parts; }
+    final size_t messageParts() const { return m_msg_parts; }
 
     final AlgorithmIdentifier algorithmIdentifier() const
     {
-		if (m_algorithm_identifier)
-			return m_algorithm_identifier();
+        if (m_algorithm_identifier)
+            return m_algorithm_identifier();
         return AlgorithmIdentifier(getOid(), DER_domain());
     }
 
     final Vector!ubyte x509SubjectPublicKey() const
     {
-		if (m_subject_public_key)
-			return m_subject_public_key();
+        if (m_subject_public_key)
+            return m_subject_public_key();
         return unlock(EC2OSP(publicPoint(), PointGFp.COMPRESSED));
     }
 
     final bool checkKey(RandomNumberGenerator rng, bool b) const
     {
-		if (m_check_key) {
-			return m_check_key(rng, b);
-		}
+        if (m_check_key) {
+            return m_check_key(rng, b);
+        }
         return publicPoint().onTheCurve();
     }
 
@@ -154,13 +154,13 @@ public:
     override size_t estimatedStrength() const
     {
         return domain().getCurve().getP().bits() / 2;
-	}
+    }
 
 
 protected:
-	this(in PointGFp pub_point) 
+    this(in PointGFp pub_point) 
     {
-		m_public_key = pub_point;
+        m_public_key = pub_point;
         
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
     }
@@ -168,12 +168,12 @@ protected:
     ECGroup m_domain_params;
     PointGFp m_public_key;
     ECGroupEncoding m_domain_encoding;
-	const string m_algo_name;
-	const bool m_msg_compat;
-	const short m_msg_parts;
-	const bool delegate(RandomNumberGenerator, bool) const m_check_key;
-	const Vector!ubyte delegate() const m_subject_public_key;
-	const AlgorithmIdentifier delegate() const m_algorithm_identifier;
+    const string m_algo_name;
+    const bool m_msg_compat;
+    const short m_msg_parts;
+    const bool delegate(RandomNumberGenerator, bool) const m_check_key;
+    const Vector!ubyte delegate() const m_subject_public_key;
+    const AlgorithmIdentifier delegate() const m_algorithm_identifier;
 }
 
 /**
@@ -185,18 +185,18 @@ public:
     /**
     * ECPrivateKey constructor
     */
-	this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key, 
-	     in string algo_name, in bool msg_compat, in short msg_parts = 1,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in Vector!ubyte delegate() const subject_public_key = null,
-	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
-	{
-		m_check_key = check_key;
-		m_algorithm_identifier = algorithm_identifier;
-		m_subject_public_key = subject_public_key;
-		m_msg_compat = msg_compat;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
+    this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key, 
+         in string algo_name, in bool msg_compat, in short msg_parts = 1,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in Vector!ubyte delegate() const subject_public_key = null,
+         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+    {
+        m_check_key = check_key;
+        m_algorithm_identifier = algorithm_identifier;
+        m_subject_public_key = subject_public_key;
+        m_msg_compat = msg_compat;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
         m_domain_params = ec_group;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
@@ -210,18 +210,18 @@ public:
         assert(m_public_key.onTheCurve(), "Generated public key point was on the curve");
     }
 
-	this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, 
-	     in string algo_name, in bool msg_compat, in short msg_parts = 1,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in Vector!ubyte delegate() const subject_public_key = null,
-	     in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
-	{
-		m_check_key = check_key;
-		m_algorithm_identifier = algorithm_identifier;
-		m_subject_public_key = subject_public_key;
-		m_msg_compat = msg_compat;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
+    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, 
+         in string algo_name, in bool msg_compat, in short msg_parts = 1,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in Vector!ubyte delegate() const subject_public_key = null,
+         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+    {
+        m_check_key = check_key;
+        m_algorithm_identifier = algorithm_identifier;
+        m_subject_public_key = subject_public_key;
+        m_msg_compat = msg_compat;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
@@ -263,7 +263,7 @@ public:
                 .getContents();
     }
 
-	AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
+    AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
 
     /**
     * Get the private key value of this key object.

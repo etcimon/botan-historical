@@ -260,24 +260,24 @@ version(LDC) {
         version(PreserveEBX)
         {
             mixin( q{
-				__asm { 
-	                "xchg %1, %%ebx
-	                cpuid 
-	                xchg %1, %%ebx"
-	                    : "=a" a, "=r" b, "=c" c, "=d" d 
-	                        : "0" ain, "2" cin; 
-	            }
-			} );
+                __asm { 
+                    "xchg %1, %%ebx
+                    cpuid 
+                    xchg %1, %%ebx"
+                        : "=a" a, "=r" b, "=c" c, "=d" d 
+                            : "0" ain, "2" cin; 
+                }
+            } );
         }
         else
         {
-			mixin( q{
-	            __asm { 
-	                "cpuid"
-	                    : "=a" a, "=b" b, "=c" c, "=d" d 
-	                        : "0" ain, "2" cin; 
-	            }
-			});
+            mixin( q{
+                __asm { 
+                    "cpuid"
+                        : "=a" a, "=b" b, "=c" c, "=d" d 
+                            : "0" ain, "2" cin; 
+                }
+            });
 
         }
     }

@@ -22,7 +22,7 @@ public:
     /*
     * SEED Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -61,7 +61,7 @@ public:
     /*
     * SEED Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -104,7 +104,7 @@ public:
     }
 
     override @property string name() const { return "SEED"; }
-	override BlockCipher clone() const { return new SEED; }
+    override BlockCipher clone() const { return new SEED; }
 protected:
 
     /*

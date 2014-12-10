@@ -101,7 +101,7 @@ public:
         m_ad_buf.clear();
     }
 
-	override final size_t tagSize() const { return m_tag_size; }
+    override final size_t tagSize() const { return m_tag_size; }
 
 protected:
     __gshared immutable size_t BS = 16; // intrinsic to CCM definition

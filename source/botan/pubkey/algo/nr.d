@@ -25,13 +25,13 @@ class NRPublicKey
 public:
     __gshared immutable string algoName = "NR";
 
-	size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
+    size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
     size_t maxInputBits() const { return (m_pub.groupQ().bits() - 1); }
 
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-		m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
 
     /*
@@ -43,9 +43,9 @@ public:
         m_y = y1;
     }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	DLSchemePublicKey m_pub;
+    DLSchemePublicKey m_pub;
 }
 
 /**
@@ -55,9 +55,9 @@ final class NRPrivateKey : NRPublicKey
 {
 public:
     /*
-	* Check Private Nyberg-Rueppel Parameters
-	*/
-	bool checkKey(RandomNumberGenerator rng, bool strong) const
+    * Check Private Nyberg-Rueppel Parameters
+    */
+    bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (!m_priv.checkKey(rng, strong) || m_priv.m_x >= m_priv.groupQ())
             return false;
@@ -79,7 +79,7 @@ public:
         
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-		m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
@@ -95,10 +95,10 @@ public:
         m_priv.loadCheck(rng);
     }
 
-	alias m_priv this;
+    alias m_priv this;
 
 private:
-	DLSchemePrivateKey m_priv;
+    DLSchemePrivateKey m_priv;
 
 }
 
@@ -108,28 +108,28 @@ private:
 final class NRSignatureOperation : Signature
 {
 public:
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_q.bytes(); }
-	override size_t maxInputBits() const { return (m_q.bits() - 1); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_q.bytes(); }
+    override size_t maxInputBits() const { return (m_q.bits() - 1); }
 
-	this(in PrivateKey pkey) {
-		this(cast(DLSchemePrivateKey) pkey);
-	}
+    this(in PrivateKey pkey) {
+        this(cast(DLSchemePrivateKey) pkey);
+    }
 
-	this(in NRPrivateKey pkey) {
-		this(pkey.m_priv);
-	}
+    this(in NRPrivateKey pkey) {
+        this(pkey.m_priv);
+    }
 
     this(in DLSchemePrivateKey nr)
     {
-		assert(nr.algoName == NRPublicKey.algoName);
+        assert(nr.algoName == NRPublicKey.algoName);
         m_q = nr.groupQ();
         m_x = nr.getX();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ());
     }
 
-	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -169,17 +169,17 @@ private:
 final class NRVerificationOperation : Verification
 {
 public:
-	this(in PublicKey pkey) {
-		this(cast(DLSchemePublicKey) pkey);
-	}
+    this(in PublicKey pkey) {
+        this(cast(DLSchemePublicKey) pkey);
+    }
 
-	this(in NRPublicKey pkey) {
-		this(pkey.m_pub);
-	}
+    this(in NRPublicKey pkey) {
+        this(pkey.m_pub);
+    }
 
     this(in DLSchemePublicKey nr) 
     {
-		assert(nr.algoName == NRPublicKey.algoName);
+        assert(nr.algoName == NRPublicKey.algoName);
         m_q = nr.groupQ();
         m_y = nr.getY();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
@@ -188,13 +188,13 @@ public:
         m_mod_q = ModularReducer(nr.groupQ());
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_q.bytes(); }
-	override size_t maxInputBits() const { return (m_q.bits() - 1); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_q.bytes(); }
+    override size_t maxInputBits() const { return (m_q.bits() - 1); }
 
-	override bool withRecovery() const { return true; }
+    override bool withRecovery() const { return true; }
 
-	override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+    override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
         const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?
         size_t msg_len = msg.length;

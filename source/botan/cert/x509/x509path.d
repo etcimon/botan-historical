@@ -102,7 +102,7 @@ private:
 struct PathValidationResult
 {
 public:
-	alias Code = CertificateStatusCode;
+    alias Code = CertificateStatusCode;
 
     /**
     * @return the set of hash functions you are implicitly

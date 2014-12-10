@@ -23,7 +23,7 @@ public:
     /*
     * MARS Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -66,7 +66,7 @@ public:
     /*
     * MARS Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -112,7 +112,7 @@ public:
     }
 
     @property string name() const { return "MARS"; }
-	override BlockCipher clone() const { return new MARS; }
+    override BlockCipher clone() const { return new MARS; }
 
 protected:
     /*

@@ -125,7 +125,7 @@ public:
         }
         
         static if (BOTAN_HAS_ECDH) {
-			if (ECDHPrivateKey.algoName == key.algoName)
+            if (ECDHPrivateKey.algoName == key.algoName)
                 return new ECDHKAOperation(key);
         }
         
@@ -135,32 +135,32 @@ public:
     Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-			if (RSAPrivateKey.algoName == key.algoName)
+            if (RSAPrivateKey.algoName == key.algoName)
                 return new RSAPrivateOperation(key, rng);
         }
         
         static if (BOTAN_HAS_RW) {
-			if (RWPrivateKey.algoName == key.algoName)
+            if (RWPrivateKey.algoName == key.algoName)
                 return new RWSignatureOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-			if (DSAPrivateKey.algoName == key.algoName)
+            if (DSAPrivateKey.algoName == key.algoName)
                 return new DSASignatureOperation(key);
         }
         
         static if (BOTAN_HAS_ECDSA) {
-			if (ECDSAPrivateKey.algoName == key.algoName)
+            if (ECDSAPrivateKey.algoName == key.algoName)
                 return new ECDSASignatureOperation(key);
         }
         
         static if (BOTAN_HAS_GOST_34_10_2001) {
-			if (GOST3410PrivateKey.algoName == key.algoName)
+            if (GOST3410PrivateKey.algoName == key.algoName)
                 return new GOST3410SignatureOperation(key);
         }
         
         static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-			if (NRPrivateKey.algoName == key.algoName)
+            if (NRPrivateKey.algoName == key.algoName)
                 return new NRSignatureOperation(key);
         }
         
@@ -170,32 +170,32 @@ public:
     Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-			if (RSAPublicKey.algoName == key.algoName)
+            if (RSAPublicKey.algoName == key.algoName)
                 return new RSAPublicOperation(key);
         }
         
         static if (BOTAN_HAS_RW) {
-			if (RWPublicKey.algoName == key.algoName)
+            if (RWPublicKey.algoName == key.algoName)
                 return new RWVerificationOperation(key);
         }
         
         static if (BOTAN_HAS_DSA) {
-			if (DSAPublicKey.algoName == key.algoName)
+            if (DSAPublicKey.algoName == key.algoName)
                 return new DSAVerificationOperation(key);
         }
         
         static if (BOTAN_HAS_ECDSA) {
-			if (ECDSAPublicKey.algoName == key.algoName)
+            if (ECDSAPublicKey.algoName == key.algoName)
                 return new ECDSAVerificationOperation(key);
         }
         
         static if (BOTAN_HAS_GOST_34_10_2001) {
-			if (GOST3410PublicKey.algoName == key.algoName)
+            if (GOST3410PublicKey.algoName == key.algoName)
                 return new GOST3410VerificationOperation(key);
         }
         
         static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-			if (NRPublicKey.algoName == key.algoName)
+            if (NRPublicKey.algoName == key.algoName)
                 return new NRVerificationOperation(key);
         }
         
@@ -206,12 +206,12 @@ public:
     Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
     {
         static if (BOTAN_HAS_RSA) {
-			if (RSAPublicKey.algoName == key.algoName)
+            if (RSAPublicKey.algoName == key.algoName)
                 return new RSAPublicOperation(key);
         }
         
         static if (BOTAN_HAS_ELGAMAL) {
-			if (ElGamalPublicKey.algoName == key.algoName)
+            if (ElGamalPublicKey.algoName == key.algoName)
                 return new ElGamalEncryptionOperation(key);
         }
         
@@ -221,12 +221,12 @@ public:
     Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-			if (RSAPrivateKey.algoName == key.algoName)
+            if (RSAPrivateKey.algoName == key.algoName)
                 return new RSAPrivateOperation(key, rng);
         }
         
         static if (BOTAN_HAS_ELGAMAL) {
-			if (ElGamalPrivateKey.algoName == key.algoName)
+            if (ElGamalPrivateKey.algoName == key.algoName)
                 return new ElGamalDecryptionOperation(key, rng);
         }
         

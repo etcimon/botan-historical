@@ -115,7 +115,7 @@ final class CFBEncryption : CFBMode, Transformation
 public:
     this(BlockCipher cipher, size_t feedback_bits)
     {
-		super(cipher, feedback_bits);
+        super(cipher, feedback_bits);
     }
 
     override void update(SecureVector!ubyte buffer, size_t offset = 0)

@@ -21,13 +21,13 @@ final class RIPEMD128 : MDxHashFunction
 {
 public:
     override @property string name() const { return "RIPEMD-128"; }
-	override @property size_t outputLength() const { return 16; }
-	override HashFunction clone() const { return new RIPEMD128; }
+    override @property size_t outputLength() const { return 16; }
+    override HashFunction clone() const { return new RIPEMD128; }
 
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         super.clear();
         zeroise(m_M);

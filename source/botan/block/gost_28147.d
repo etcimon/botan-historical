@@ -92,7 +92,7 @@ public:
     /*
     * GOST Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -122,7 +122,7 @@ public:
     /*
     * GOST Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -172,7 +172,7 @@ public:
         return "GOST-28147-89(" ~ sbox_name ~ ")";
     }
 
-	override BlockCipher clone() const { return new GOST2814789(m_SBOX); }
+    override BlockCipher clone() const { return new GOST2814789(m_SBOX); }
 
     /**
     * @param params = the sbox parameters to use

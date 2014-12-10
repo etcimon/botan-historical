@@ -33,7 +33,7 @@ public:
     /**
     * An opaque type that identifies a message in this Pipe
     */
-	alias message_id = size_t;
+    alias message_id = size_t;
 
     /**
     * Exception if you use an invalid message as an argument to

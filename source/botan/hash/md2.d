@@ -18,15 +18,15 @@ import botan.utils.types;
 class MD2 : HashFunction
 {
 public:
-	override @property string name() const { return "MD2"; }
-	override @property size_t outputLength() const { return 16; }
+    override @property string name() const { return "MD2"; }
+    override @property size_t outputLength() const { return 16; }
     override @property size_t hashBlockSize() const { return 16; }
-	override HashFunction clone() const { return new MD2; }
+    override HashFunction clone() const { return new MD2; }
 
     /**
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zeroise(m_X);
         zeroise(m_checksum);

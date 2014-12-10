@@ -46,14 +46,14 @@ public:
     }
 
     override @property size_t hashBlockSize() const { return 64; }
-	override @property size_t outputLength() const { return m_output_bits / 8; }
+    override @property size_t outputLength() const { return m_output_bits / 8; }
 
-	override HashFunction clone() const
+    override HashFunction clone() const
     {
         return new Skein512(m_output_bits, m_personalization);
     }
 
-	override @property string name() const
+    override @property string name() const
     {
         if (m_personalization != "")
             return "Skein-512(" ~ to!string(m_output_bits) ~ "," ~
@@ -61,7 +61,7 @@ public:
         return "Skein-512(" ~ to!string(m_output_bits) ~ ")";
     }
 
-	override void clear()
+    override void clear()
     {
         zeroise(m_buffer);
         m_buf_pos = 0;

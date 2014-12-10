@@ -28,7 +28,7 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-		m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
 
     /*
@@ -36,15 +36,15 @@ public:
     */
     this(in DLGroup grp, in BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
 
-	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
-	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	DLSchemePublicKey m_pub;
+    DLSchemePublicKey m_pub;
 }
 
 /**
@@ -64,7 +64,7 @@ public:
         
         BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         
-		m_priv = new DLSchemePrivateKey(dl_group, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+        m_priv = new DLSchemePrivateKey(dl_group, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
@@ -74,13 +74,13 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     {
-		m_priv = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
-		m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
+        m_priv = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+        m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
         
-		m_priv.loadCheck(rng);
+        m_priv.loadCheck(rng);
     }
 
-	this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
     /*
     * Check Private DSA Parameters
@@ -96,9 +96,9 @@ public:
         return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
     }
 
-	alias m_priv this;
+    alias m_priv this;
 private:
-	DLSchemePrivateKey m_priv;
+    DLSchemePrivateKey m_priv;
 }
 
 /**
@@ -107,28 +107,28 @@ private:
 final class DSASignatureOperation : Signature
 {
 public:
-	this(in PrivateKey pkey) {
-		this(cast(DLSchemePrivateKey) pkey);
-	}
+    this(in PrivateKey pkey) {
+        this(cast(DLSchemePrivateKey) pkey);
+    }
 
-	this(in DSAPrivateKey pkey) {
-		this(pkey.m_priv);
-	}
+    this(in DSAPrivateKey pkey) {
+        this(pkey.m_priv);
+    }
 
     this(in DLSchemePrivateKey dsa)
     { 
-		assert(nr.algoName == DSAPublicKey.algoName);
+        assert(nr.algoName == DSAPublicKey.algoName);
         m_q = dsa.groupQ();
         m_x = dsa.getX();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
         m_mod_q = dsa.groupQ();
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_q.bytes(); }
-	override size_t maxInputBits() const { return m_q.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_q.bytes(); }
+    override size_t maxInputBits() const { return m_q.bits(); }
 
-	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         import std.concurrency : spawn, receiveOnly, thisTid, send;
         rng.addEntropy(msg, msg_len);
@@ -170,17 +170,17 @@ private:
 final class DSAVerificationOperation : Verification
 {
 public:
-	this(in PublicKey pkey) {
-		this(cast(DLSchemePublicKey) pkey);
-	}
+    this(in PublicKey pkey) {
+        this(cast(DLSchemePublicKey) pkey);
+    }
 
-	this(in DSAPublicKey pkey) {
-		this(pkey.m_pub);
-	}
+    this(in DSAPublicKey pkey) {
+        this(pkey.m_pub);
+    }
 
     this(in DLSchemePublicKey dsa) 
     {
-		assert(dsa.algoName == DSAPublicKey.algoName);
+        assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = dsa.groupQ();
         m_y = dsa.getY();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
@@ -189,13 +189,13 @@ public:
         m_mod_q = ModularReducer(dsa.groupQ());
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_q.bytes(); }
-	override size_t maxInputBits() const { return m_q.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_q.bytes(); }
+    override size_t maxInputBits() const { return m_q.bits(); }
 
-	override bool withRecovery() const { return false; }
+    override bool withRecovery() const { return false; }
 
-	override bool verify(in ubyte* msg, size_t msg_len,
+    override bool verify(in ubyte* msg, size_t msg_len,
                 in ubyte* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;

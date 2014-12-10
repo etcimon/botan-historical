@@ -24,7 +24,7 @@ public:
     /*
     * SAFER-SK Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -60,7 +60,7 @@ public:
     /*
     * SAFER-SK Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -111,7 +111,7 @@ public:
     /*
     * Return a clone of this object
     */
-	override BlockCipher clone() const
+    override BlockCipher clone() const
     {
         return new SAFERSK(m_rounds);
     }

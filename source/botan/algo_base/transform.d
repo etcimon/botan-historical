@@ -85,7 +85,7 @@ public:
     * different implementations of AES). Default "core" is used for the
     * 'standard' implementation included in the library.
     */
-	abstract string provider() const;
+    abstract string provider() const;
 
     abstract @property string name() const;
 

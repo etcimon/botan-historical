@@ -48,13 +48,13 @@ public:
     * Find out the number of message parts supported by this scheme.
     * @return number of message parts
     */
-	abstract size_t messageParts() const;
+    abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
     * @return size of the message parts
     */
-	abstract size_t messagePartSize() const;
+    abstract size_t messagePartSize() const;
 
     /**
     * Get the maximum message size in bits supported by this public key.
@@ -88,13 +88,13 @@ public:
     * Find out the number of message parts supported by this scheme.
     * @return number of message parts
     */
-	abstract size_t messageParts() const;
+    abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
     * @return size of the message parts
     */
-	abstract size_t messagePartSize() const;
+    abstract size_t messagePartSize() const;
 
     /**
     * @return boolean specifying if this key type supports message
@@ -119,7 +119,7 @@ public:
     * @param msg_len = the length of msg in bytes
     * @returns recovered message
     */
-	abstract SecureVector!ubyte verifyMr(const ubyte*, size_t);
+    abstract SecureVector!ubyte verifyMr(const ubyte*, size_t);
 
 }
 

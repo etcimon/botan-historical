@@ -86,7 +86,7 @@ public:
         }
     }
 
-	override size_t blockSize() const { return m_block_size; }
+    override size_t blockSize() const { return m_block_size; }
 
     override KeyLengthSpecification keySpec() const
     {

@@ -57,7 +57,7 @@ public:
         return m_g;
     }
 
-	alias Format = ubyte;
+    alias Format = ubyte;
     /**
     * The DL group encoding format variants.
     */
@@ -72,7 +72,7 @@ public:
         PKCS3_DH_PARAMETERS = PKCS_3
     }
 
-	alias PrimeType = ubyte;
+    alias PrimeType = ubyte;
     /**
     * Determine the prime creation for DL groups.
     */

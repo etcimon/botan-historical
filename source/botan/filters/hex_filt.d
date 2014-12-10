@@ -24,15 +24,15 @@ public:
     /**
     * Whether to use uppercase or lowercase letters for the encoded string.
     */
-	alias Case = bool;
+    alias Case = bool;
     enum : Case { Uppercase, Lowercase }
 
-	override @property string name() const { return "HexEncoder"; }
+    override @property string name() const { return "HexEncoder"; }
 
     /*
     * Convert some data into hex format
     */
-	override void write(in ubyte* input, size_t length)
+    override void write(in ubyte* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -55,7 +55,7 @@ public:
     /*
     * Flush buffers
     */
-	override void endMsg()
+    override void endMsg()
     {
         encodeAndSend(m_input.ptr, m_position);
         if (m_counter && m_line_length)
@@ -134,12 +134,12 @@ private:
 final class HexDecoder : Filter, Filterable
 {
 public:
-	override @property string name() const { return "HexDecoder"; }
+    override @property string name() const { return "HexDecoder"; }
 
     /*
     * Convert some data from hex format
     */
-	override void write(in ubyte* input, size_t length)
+    override void write(in ubyte* input, size_t length)
     {
         while (length)
         {
@@ -172,7 +172,7 @@ public:
     /*
     * Flush buffers
     */
-	override void endMsg()
+    override void endMsg()
     {
         size_t consumed = 0;
         size_t written = hexDecode(m_output.ptr,

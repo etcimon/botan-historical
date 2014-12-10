@@ -38,13 +38,13 @@ public:
         return BigInt.encode(this, base).toString();
     }
 
-	alias Base = int;
+    alias Base = int;
     /**
     * Base enumerator for encoding and decoding
     */
     enum : Base { Decimal = 10, Hexadecimal = 16, Binary = 256 }
 
-	alias Sign = bool;
+    alias Sign = bool;
     /**
     * Sign symbol definitions for positive and negative numbers
     */

@@ -40,7 +40,7 @@ class IllegalPoint : Exception
 struct PointGFp
 {
 public:
-	alias CompressionType = ubyte;
+    alias CompressionType = ubyte;
     enum : CompressionType {
         UNCOMPRESSED      = 0,
         COMPRESSED        = 1,
@@ -50,7 +50,7 @@ public:
     /**
     * Disable an uninitialized PointGFp
     */
-	@disable this();
+    @disable this();
 
     /**
     * Construct the zero point

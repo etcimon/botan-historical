@@ -68,7 +68,7 @@ public:
     /*
     * Unpad with PKCS #7 Method
     */
-	override size_t unpad(in ubyte* block, size_t size) const
+    override size_t unpad(in ubyte* block, size_t size) const
     {
         size_t position = block[size-1];
         
@@ -82,9 +82,9 @@ public:
         return (size-position);
     }
 
-	override bool validBlocksize(size_t bs) const { return (bs > 0 && bs < 256); }
+    override bool validBlocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
-	override @property string name() const { return "PKCS7"; }
+    override @property string name() const { return "PKCS7"; }
 }
 
 /**
@@ -110,7 +110,7 @@ public:
     /*
     * Unpad with ANSI X9.23 Method
     */
-	override size_t unpad(in ubyte* block, size_t size) const
+    override size_t unpad(in ubyte* block, size_t size) const
     {
         size_t position = block[size-1];
         if (position > size)
@@ -121,9 +121,9 @@ public:
         return (size-position);
     }
 
-	override bool validBlocksize(size_t bs) const { return (bs > 0 && bs < 256); }
+    override bool validBlocksize(size_t bs) const { return (bs > 0 && bs < 256); }
 
-	override @property string name() const { return "X9.23"; }
+    override @property string name() const { return "X9.23"; }
 }
 
 /**
@@ -146,7 +146,7 @@ public:
     /*
     * Unpad with One and Zeros Method
     */
-	override size_t unpad(in ubyte* block, size_t size) const
+    override size_t unpad(in ubyte* block, size_t size) const
     {
         while (size)
         {
@@ -161,9 +161,9 @@ public:
         return (size-1);
     }
 
-	override bool validBlocksize(size_t bs) const { return (bs > 0); }
+    override bool validBlocksize(size_t bs) const { return (bs > 0); }
 
-	override @property string name() const { return "OneAndZeros"; }
+    override @property string name() const { return "OneAndZeros"; }
 }
 
 /**
@@ -176,7 +176,7 @@ public:
 
     size_t unpad(in ubyte[], size_t size) const { return size; }
 
-	override bool validBlocksize(size_t) const { return true; }
+    override bool validBlocksize(size_t) const { return true; }
 
-	override @property string name() const { return "NoPadding"; }
+    override @property string name() const { return "NoPadding"; }
 }

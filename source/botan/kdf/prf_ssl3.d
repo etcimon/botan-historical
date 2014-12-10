@@ -23,7 +23,7 @@ public:
     /*
     * SSL3 PRF
     */
-	override SecureVector!ubyte derive(size_t key_len,
+    override SecureVector!ubyte derive(size_t key_len,
                             in ubyte* secret, size_t secret_len,
                             in ubyte* seed, size_t seed_len) const
     {
@@ -49,8 +49,8 @@ public:
         return output.bitsOf();
     }
 
-	override @property string name() const { return "SSL3-PRF"; }
-	override KDF clone() const { return new SSL3PRF; }
+    override @property string name() const { return "SSL3-PRF"; }
+    override KDF clone() const { return new SSL3PRF; }
 }
 
 private:

@@ -37,7 +37,7 @@ public:
         m_cipher1.decryptN(output, output, c1_blocks);
     }
 
-	override size_t blockSize() const { return m_block; }
+    override size_t blockSize() const { return m_block; }
 
     KeyLengthSpecification keySpec() const
     {
@@ -56,7 +56,7 @@ public:
         return "Cascade(" ~ m_cipher1.name ~ "," ~ m_cipher2.name ~ ")";
     }
 
-	override BlockCipher clone() const
+    override BlockCipher clone() const
     {
         return new CascadeCipher(m_cipher1.clone(),
                                   m_cipher2.clone());

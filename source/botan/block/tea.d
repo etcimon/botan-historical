@@ -20,7 +20,7 @@ public:
     /*
     * TEA Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -44,7 +44,7 @@ public:
     /*
     * TEA Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -72,7 +72,7 @@ public:
     }
 
     override @property string name() const { return "TEA"; }
-	override BlockCipher clone() const { return new TEA; }
+    override BlockCipher clone() const { return new TEA; }
 
 protected:
     /*

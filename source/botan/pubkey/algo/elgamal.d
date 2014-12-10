@@ -40,15 +40,15 @@ public:
     */
     this(in DLGroup grp, in BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
 
-	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
-	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	DLSchemePublicKey m_pub;
+    DLSchemePublicKey m_pub;
 }
 
 /**
@@ -60,7 +60,7 @@ public:
     /*
     * Check Private ElGamal Parameters
     */
-	bool checkKey(RandomNumberGenerator rng, bool strong) const
+    bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (!super.checkKey(rng, strong))
             return false;
@@ -79,9 +79,9 @@ public:
         if (x == 0)
             x_arg.randomize(rng, 2 * dlWorkFactor(grp.getP().bits()));
         
-		BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
+        BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-		m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
+        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
@@ -94,16 +94,16 @@ public:
          in SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-		m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
+        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
         m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
         m_priv.loadCheck(rng);
     }
 
-	this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-	alias m_priv this;
+    alias m_priv this;
 private:
-	DLSchemePrivateKey m_priv;
+    DLSchemePrivateKey m_priv;
 }
 
 /**
@@ -112,19 +112,19 @@ private:
 final class ElGamalEncryptionOperation : Encryption
 {
 public:
-	override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
+    override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
 
-	this(in PublicKey pkey) {
-		this(cast(DLSchemePublicKey) pkey);
-	}
+    this(in PublicKey pkey) {
+        this(cast(DLSchemePublicKey) pkey);
+    }
 
-	this(in ElGamalPublicKey pkey) {
-		this(pkey.m_pub);
-	}
+    this(in ElGamalPublicKey pkey) {
+        this(pkey.m_pub);
+    }
 
     this(in DLSchemePublicKey key)
     {
-		assert(key.algoName == ElGamalPublicKey.algoName);
+        assert(key.algoName == ElGamalPublicKey.algoName);
         const BigInt p = key.groupP();
         
         m_powermod_g_p = FixedBasePowerMod(key.groupG(), p);
@@ -132,7 +132,7 @@ public:
         m_mod_p = ModularReducer(p);
     }
 
-	override SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         const BigInt p = mod_p.getModulus();
         
@@ -163,20 +163,20 @@ private:
 final class ElGamalDecryptionOperation : Decryption
 {
 public:
-	override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
+    override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
 
-	this(PrivateKey pkey, RandomNumberGenerator rng) {
-		this(cast(DLSchemePrivateKey) pkey, rng);
-	}
+    this(PrivateKey pkey, RandomNumberGenerator rng) {
+        this(cast(DLSchemePrivateKey) pkey, rng);
+    }
 
-	this(in ElGamalPrivateKey key, RandomNumberGenerator rng)
-	{
-		this(key.m_priv, rng);
-	}
-
-	this(in DLSchemePrivateKey key, RandomNumberGenerator rng)
+    this(in ElGamalPrivateKey key, RandomNumberGenerator rng)
     {
-		assert(key.algoName == ElGamalPublicKey.algoName);
+        this(key.m_priv, rng);
+    }
+
+    this(in DLSchemePrivateKey key, RandomNumberGenerator rng)
+    {
+        assert(key.algoName == ElGamalPublicKey.algoName);
         const BigInt p = key.groupP();
         
         m_powermod_x_p = FixedExponentPowerMod(key.getX(), p);
@@ -186,7 +186,7 @@ public:
         m_blinder = Blinder(k, m_powermod_x_p(k), p);
     }
 
-	override SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+    override SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
     {
         const BigInt p = m_mod_p.getModulus();
         

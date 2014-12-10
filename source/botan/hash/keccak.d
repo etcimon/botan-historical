@@ -46,17 +46,17 @@ public:
     override @property size_t hashBlockSize() const { return m_bitrate / 8; }
     override @property size_t outputLength() const { return m_output_bits / 8; }
 
-	override HashFunction clone() const
+    override HashFunction clone() const
     {
         return new Keccak1600(m_output_bits);
     }
 
-	override @property string name() const
+    override @property string name() const
     {
         return "Keccak-1600(" ~ to!string(m_output_bits) ~ ")";
     }
 
-	override void clear()
+    override void clear()
     {
         zeroise(m_S);
         m_S_pos = 0;

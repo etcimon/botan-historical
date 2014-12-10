@@ -21,14 +21,14 @@ import botan.utils.types;
 class SHA160 : MDxHashFunction
 {
 public:
-	override final @property string name() const { return "SHA-160"; }
+    override final @property string name() const { return "SHA-160"; }
     override final @property size_t outputLength() const { return 20; }
     override HashFunction clone() const { return new SHA160; }
 
     /*
     * Clear memory of sensitive data
     */
-	override final void clear()
+    override final void clear()
     {
         super.clear();
         zeroise(m_W);
@@ -64,7 +64,7 @@ protected:
     /*
     * SHA-160 Compression Function
     */
-	override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
             D = m_digest[3], E = m_digest[4];
@@ -142,7 +142,7 @@ protected:
     /*
     * Copy out the digest
     */
-	override final void copyOut(ubyte* output)
+    override final void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != outputLength(); i += 4)
             storeBigEndian(m_digest[i/4], output + i);

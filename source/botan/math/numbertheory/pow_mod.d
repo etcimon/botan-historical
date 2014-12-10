@@ -32,7 +32,7 @@ public:
 class PowerMod
 {
 public:
-	alias UsageHints = ushort;
+    alias UsageHints = ushort;
     enum : UsageHints {
         NO_HINTS          = 0x0000,
 
@@ -88,19 +88,19 @@ public:
     */
     void setModulus(in BigInt n, UsageHints hints = NO_HINTS)
     {
-		m_core.clear();
+        m_core.clear();
         if (n != 0)
         {
             AlgorithmFactory af = globalState().algorithmFactory();
 
             foreach (Engine engine; af.engines) {
-				m_core = engine.modExp(n, hints);
+                m_core = engine.modExp(n, hints);
                 
-				if (m_core)
+                if (m_core)
                     break;
             }
             
-			if (!m_core)
+            if (!m_core)
                 throw new LookupError("PowerMod: Unable to find a working engine");
         }
     }
@@ -113,9 +113,9 @@ public:
         if (b.isZero() || b.isNegative())
             throw new InvalidArgument("PowerMod.setBase: arg must be > 0");
         
-		if (!m_core)
+        if (!m_core)
             throw new InternalError("PowerMod.setBase: core was NULL");
-		m_core.setBase(b);
+        m_core.setBase(b);
     }
 
     /*
@@ -126,9 +126,9 @@ public:
         if (e.isNegative())
             throw new InvalidArgument("PowerMod.setExponent: arg must be > 0");
         
-		if (!m_core)
+        if (!m_core)
             throw new InternalError("PowerMod.setExponent: core was NULL");
-		m_core.setExponent(e);
+        m_core.setExponent(e);
     }
 
     /*
@@ -136,9 +136,9 @@ public:
     */
     BigInt execute()
     {
-		if (!m_core)
+        if (!m_core)
             throw new InternalError("PowerMod.execute: core was NULL");
-		return m_core.execute();
+        return m_core.execute();
     }
 
     this(in BigInt n, UsageHints hints = NO_HINTS)
@@ -148,8 +148,8 @@ public:
 
     this(in PowerMod other)
     {
-		if (other.m_core)
-			m_core = other.m_core.copy();
+        if (other.m_core)
+            m_core = other.m_core.copy();
     }
 
 private:

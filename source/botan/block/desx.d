@@ -21,7 +21,7 @@ public:
     /*
     * DESX Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -37,7 +37,7 @@ public:
     /*
     * DESX Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {    
         foreach (size_t i; 0 .. blocks)
         {
@@ -57,7 +57,7 @@ public:
     }
 
     @property string name() const { return "DESX"; }
-	override BlockCipher clone() const { return new DESX; }
+    override BlockCipher clone() const { return new DESX; }
 
 protected:
     /*

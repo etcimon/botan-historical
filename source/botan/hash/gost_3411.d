@@ -22,12 +22,12 @@ import botan.utils.types;
 class GOST3411 : HashFunction
 {
 public:
-	override @property string name() const { return "GOST-R-34.11-94" ; }
-	override @property size_t outputLength() const { return 32; }
-	override @property size_t hashBlockSize() const { return 32; }
-	override HashFunction clone() const { return new GOST3411; }
+    override @property string name() const { return "GOST-R-34.11-94" ; }
+    override @property size_t outputLength() const { return 32; }
+    override @property size_t hashBlockSize() const { return 32; }
+    override HashFunction clone() const { return new GOST3411; }
 
-	override void clear()
+    override void clear()
     {
         m_cipher.clear();
         zeroise(m_sum);

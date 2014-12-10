@@ -23,12 +23,12 @@ class DLSchemePublicKey : PublicKey
 public:
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-		if (m_check_key) {
-			auto tmp = m_check_key;
-			m_check_key = null;
-			scope(exit) m_check_key = tmp;
-			return m_check_key(rng, strong);
-		}
+        if (m_check_key) {
+            auto tmp = m_check_key;
+            m_check_key = null;
+            scope(exit) m_check_key = tmp;
+            return m_check_key(rng, strong);
+        }
         if (m_y < 2 || m_y >= groupP())
             return false;
         if (!m_group.verifyGroup(rng, strong))
@@ -36,18 +36,18 @@ public:
         return true;
     }
 
-	final override size_t messageParts() const {
-		return m_msg_parts;
-	}
+    final override size_t messageParts() const {
+        return m_msg_parts;
+    }
 
-	final override size_t maxInputBits() const {
-		return m_max_input_bits;
-	}
+    final override size_t maxInputBits() const {
+        return m_max_input_bits;
+    }
 
-	final size_t messagePartSize() const { 
-		if (m_msg_part_size) return m_msg_part_size(); 
-		return groupQ().bytes(); 
-	}
+    final size_t messagePartSize() const { 
+        if (m_msg_part_size) return m_msg_part_size(); 
+        return groupQ().bytes(); 
+    }
 
     final AlgorithmIdentifier algorithmIdentifier() const
     {
@@ -93,43 +93,43 @@ public:
         return dlWorkFactor(m_group.getP().bits());
     }
 
-	this(in AlgorithmIdentifier alg_id, 
-	     in SecureVector!ubyte key_bits, 
-	     in DLGroup.Format format,
-	     in string algo_name,
-	     in short msg_parts = 0,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in size_t delegate() const max_input_bits = null,
-	     in size_t delegate() const msg_part_size = null)
-	{
-		m_format = format;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
-		m_max_input_bits = max_input_bits;
-		m_msg_part_size = msg_part_size;
-		m_check_key = check_key;
-		m_group.BER_decode(alg_id.parameters, format);
-		
-		BERDecoder(key_bits).decode(m_y);
-	}
+    this(in AlgorithmIdentifier alg_id, 
+         in SecureVector!ubyte key_bits, 
+         in DLGroup.Format format,
+         in string algo_name,
+         in short msg_parts = 0,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in size_t delegate() const max_input_bits = null,
+         in size_t delegate() const msg_part_size = null)
+    {
+        m_format = format;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
+        m_max_input_bits = max_input_bits;
+        m_msg_part_size = msg_part_size;
+        m_check_key = check_key;
+        m_group.BER_decode(alg_id.parameters, format);
+        
+        BERDecoder(key_bits).decode(m_y);
+    }
 
-	this(DLGroup grp, BigInt y1,
-	     in DLGroup.Format format,
-	     in string algo_name,
-	     in short msg_parts = 0,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in size_t delegate() const max_input_bits = null,
-	     in size_t delegate() const msg_part_size = null)
-	{
-		m_format = format;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
-		m_max_input_bits = max_input_bits;
-		m_msg_part_size = msg_part_size;
-		m_check_key = check_key;
-		m_group = grp;
-		m_y = y1;
-	}
+    this(DLGroup grp, BigInt y1,
+         in DLGroup.Format format,
+         in string algo_name,
+         in short msg_parts = 0,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in size_t delegate() const max_input_bits = null,
+         in size_t delegate() const msg_part_size = null)
+    {
+        m_format = format;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
+        m_max_input_bits = max_input_bits;
+        m_msg_part_size = msg_part_size;
+        m_check_key = check_key;
+        m_group = grp;
+        m_y = y1;
+    }
 
 package:
     /**
@@ -142,12 +142,12 @@ package:
     */
     DLGroup m_group;
 
-	const DLGroup.Format m_format;
-	const string m_algo_name;
-	const short m_msg_parts;
-	const size_t delegate() const m_max_input_bits;
-	const size_t delegate() const m_msg_part_size;
-	bool delegate(RandomNumberGenerator, bool) const m_check_key;
+    const DLGroup.Format m_format;
+    const string m_algo_name;
+    const short m_msg_parts;
+    const size_t delegate() const m_max_input_bits;
+    const size_t delegate() const m_msg_part_size;
+    bool delegate(RandomNumberGenerator, bool) const m_check_key;
 }
 
 /**
@@ -157,7 +157,7 @@ final class DLSchemePrivateKey : DLSchemePublicKey, PrivateKey
 {
 public:
 
-	override bool checkKey(RandomNumberGenerator rng, bool strong) const
+    override bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         const BigInt p = groupP();
         const BigInt g = groupG();
@@ -189,42 +189,42 @@ public:
 
     this(in AlgorithmIdentifier alg_id,
          in SecureVector!ubyte key_bits,
-	     DLGroup.Format format,
-	     in string algo_name,
-	     in short msg_parts = 0,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in size_t delegate() const max_input_bits = null,
-	     in size_t delegate() const msg_part_size = null)
+         DLGroup.Format format,
+         in string algo_name,
+         in short msg_parts = 0,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in size_t delegate() const max_input_bits = null,
+         in size_t delegate() const msg_part_size = null)
     {
-		m_format = format;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
-		m_max_input_bits = max_input_bits;
-		m_msg_part_size = msg_part_size;
-		m_check_key = check_key;
+        m_format = format;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
+        m_max_input_bits = max_input_bits;
+        m_msg_part_size = msg_part_size;
+        m_check_key = check_key;
         m_group.BER_decode(alg_id.parameters, format);
         
         BERDecoder(key_bits).decode(m_x);
     }
 
-	this(DLGroup grp, BigInt y1, BigInt x_arg,
-	     in DLGroup.Format format,
-	     in string algo_name,
-	     in short msg_parts = 0,
-	     in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	     in size_t delegate() const max_input_bits = null,
-	     in size_t delegate() const msg_part_size = null)
-	{
-		m_format = format;
-		m_algo_name = algo_name;
-		m_msg_parts = msg_parts;
-		m_max_input_bits = max_input_bits;
-		m_msg_part_size = msg_part_size;
-		m_check_key = check_key;
-		m_group = grp;
-		m_y = y1;
-		m_x = x_arg;
-	}
+    this(DLGroup grp, BigInt y1, BigInt x_arg,
+         in DLGroup.Format format,
+         in string algo_name,
+         in short msg_parts = 0,
+         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         in size_t delegate() const max_input_bits = null,
+         in size_t delegate() const msg_part_size = null)
+    {
+        m_format = format;
+        m_algo_name = algo_name;
+        m_msg_parts = msg_parts;
+        m_max_input_bits = max_input_bits;
+        m_msg_part_size = msg_part_size;
+        m_check_key = check_key;
+        m_group = grp;
+        m_y = y1;
+        m_x = x_arg;
+    }
 
 package:
     /**

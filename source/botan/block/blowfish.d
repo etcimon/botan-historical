@@ -24,7 +24,7 @@ public:
     /*
     * Blowfish Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
@@ -60,7 +60,7 @@ public:
     /*
     * Blowfish Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
@@ -142,7 +142,7 @@ public:
     }
 
     override @property string name() const { return "Blowfish"; }
-	override BlockCipher clone() const { return new Blowfish; }
+    override BlockCipher clone() const { return new Blowfish; }
 protected:
     /*
     * Blowfish Key Schedule

@@ -25,7 +25,7 @@ import botan.rng.rng;
 class GOST3410PublicKey
 {
 public:
-	__gshared immutable string algoName = "GOST-34.10";
+    __gshared immutable string algoName = "GOST-34.10";
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -64,11 +64,11 @@ public:
         BigInt y = BigInt(&bits[part_size], part_size);
         
         PointFGp public_point = PointGFp(domain().getCurve(), x, y);
-		m_pub = new ECPublicKey(domain_params, public_point, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
+        m_pub = new ECPublicKey(domain_params, public_point, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
         assert(m_public_key.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
     }
 
-	AlgorithmIdentifier algorithmIdentifier() const
+    AlgorithmIdentifier algorithmIdentifier() const
     {
         Vector!ubyte params = DEREncoder().startCons(ASN1Tag.SEQUENCE)
                                             .encode(OID(domain().getOid()))
@@ -78,7 +78,7 @@ public:
         return AlgorithmIdentifier(getOid(), params);
     }
 
-	Vector!ubyte x509SubjectPublicKey() const
+    Vector!ubyte x509SubjectPublicKey() const
     {
         // Trust CryptoPro to come up with something obnoxious
         const BigInt x = publicPoint().getAffineX();
@@ -101,13 +101,13 @@ public:
         return DEREncoder().encode(bits, ASN1Tag.OCTET_STRING).getContentsUnlocked();
     }
 
-	this(PublicKey pkey) { m_pub = cast(ECPublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = cast(ECPublicKey) pkey; }
 
-	this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	ECPublicKey m_pub;
+    ECPublicKey m_pub;
 }
 
 /**
@@ -119,7 +119,7 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-		m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
+        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
     }
 
     /**
@@ -130,14 +130,14 @@ public:
     */
     this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0)
     {
-		m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
+        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
     }
 
-	this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
 
-	alias m_priv this;
+    alias m_priv this;
 private:
-	ECPrivateKey m_priv;
+    ECPrivateKey m_priv;
 }
 
 /**
@@ -146,27 +146,27 @@ private:
 final class GOST3410SignatureOperation : Signature
 {
 public:    
-	this(in PrivateKey pkey) {
-		this(cast(ECPrivateKey) pkey);
-	}
+    this(in PrivateKey pkey) {
+        this(cast(ECPrivateKey) pkey);
+    }
 
-	this(in GOST3410PrivateKey pkey) {
-		this(pkey.m_priv);
-	}
+    this(in GOST3410PrivateKey pkey) {
+        this(pkey.m_priv);
+    }
 
     this(in ECPrivateKey gost_3410)
     {
-		assert(gost_3410.algoName == GOST3410PublicKey.algoName);
+        assert(gost_3410.algoName == GOST3410PublicKey.algoName);
         m_base_point = gost_3410.domain().getBasePoint();
         m_order = gost_3410.domain().getOrder();
         m_x = gost_3410.privateValue();
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_order.bytes(); }
-	override size_t maxInputBits() const { return m_order.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_order.bytes(); }
+    override size_t maxInputBits() const { return m_order.bits(); }
 
-	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len,
+    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len,
                           RandomNumberGenerator rng)
     {
         BigInt k;
@@ -210,29 +210,29 @@ private:
 final class GOST3410VerificationOperation : Verification
 {
 public:
-	this(in PublicKey pkey) {
-		this(cast(ECPublicKey) pkey);
-	}
+    this(in PublicKey pkey) {
+        this(cast(ECPublicKey) pkey);
+    }
 
-	this(in GOST3410PublicKey pkey) {
-		this(pkey.m_pub);
-	}
+    this(in GOST3410PublicKey pkey) {
+        this(pkey.m_pub);
+    }
 
     this(in ECPublicKey gost) 
     {
-		assert(gost.algoName == GOST3410PublicKey.algoName);
+        assert(gost.algoName == GOST3410PublicKey.algoName);
         m_base_point = gost.domain().getBasePoint();
         m_public_point = gost.publicPoint();
         m_order = gost.domain().getOrder();
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_order.bytes(); }
-	override size_t maxInputBits() const { return m_order.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_order.bytes(); }
+    override size_t maxInputBits() const { return m_order.bits(); }
 
-	override bool withRecovery() const { return false; }
+    override bool withRecovery() const { return false; }
 
-	override bool verify(in ubyte* msg, size_t msg_len,
+    override bool verify(in ubyte* msg, size_t msg_len,
                 in ubyte* sig, size_t sig_len)
     {
         if (sig_len != m_order.bytes()*2)

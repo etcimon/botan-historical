@@ -22,7 +22,7 @@ public:
     /*
     * MISTY1 Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -72,7 +72,7 @@ public:
     /*
     * MISTY1 Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -126,7 +126,7 @@ public:
     }
 
     @property string name() const { return "MISTY1"; }
-	override BlockCipher clone() const { return new MISTY1; }
+    override BlockCipher clone() const { return new MISTY1; }
 
     /**
     * @param rounds = the number of rounds. Must be 8 with the current

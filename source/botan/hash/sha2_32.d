@@ -23,14 +23,14 @@ import botan.utils.types;
 final class SHA224 : MDxHashFunction
 {
 public:
-	override @property string name() const { return "SHA-224"; }
-	override @property size_t outputLength() const { return 28; }
-	override HashFunction clone() const { return new SHA224; }
+    override @property string name() const { return "SHA-224"; }
+    override @property size_t outputLength() const { return 28; }
+    override HashFunction clone() const { return new SHA224; }
 
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         super.clear();
         m_digest[0] = 0xC1059ED8;
@@ -78,14 +78,14 @@ private:
 class SHA256 : MDxHashFunction
 {
 public:
-	override @property string name() const { return "SHA-256"; }
-	override @property size_t outputLength() const { return 32; }
-	override HashFunction clone() const { return new SHA256; }
+    override @property string name() const { return "SHA-256"; }
+    override @property size_t outputLength() const { return 32; }
+    override HashFunction clone() const { return new SHA256; }
 
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         super.clear();
         m_digest[0] = 0x6A09E667;

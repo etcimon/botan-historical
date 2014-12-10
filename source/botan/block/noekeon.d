@@ -22,7 +22,7 @@ public:
     /*
     * Noekeon Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -60,7 +60,7 @@ public:
     /*
     * Noekeon Encryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -107,7 +107,7 @@ public:
     
 
     @property string name() const { return "Noekeon"; }
-	override BlockCipher clone() const { return new Noekeon; }
+    override BlockCipher clone() const { return new Noekeon; }
 
 protected:
     /**

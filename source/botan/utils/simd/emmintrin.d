@@ -62,13 +62,13 @@ version(GDC) {
         __m128i b;
         short[8]* _a = &a;
         __m128i* _b = &b;
-		mixin( q{
-	        asm {
-	            "movdqu (%0), %xmm0\n"
-	            "movdqu %xmm0, (%1)\n"
-	            : : "0" (_a), "1" (_b) : "xmm0"
-	        }
-		});
+        mixin( q{
+            asm {
+                "movdqu (%0), %xmm0\n"
+                "movdqu %xmm0, (%1)\n"
+                : : "0" (_a), "1" (_b) : "xmm0"
+            }
+        });
         return b;
     }
 
@@ -128,7 +128,7 @@ version(GDC) {
 
     // _mm_shufflehi_epi16 ; PSHUFHW
     __m128i _mm_shufflehi_epi16 (__m128i a, in int imm) {
-		return cast(__m128i) __builtin_ia32_pshufhw(cast(short8) a, imm);
+        return cast(__m128i) __builtin_ia32_pshufhw(cast(short8) a, imm);
     }
 
     // _mm_shufflelo_epi16 ; PSHUFLW
@@ -238,13 +238,13 @@ version(LDC) {
         __m128i b;
         short[8]* _a = &a;
         __m128i* _b = &b;
-		mixin( q{
-	        __asm {
-	            "movdqu (%0), %xmm0\n"
-	            ~ "movdqu %xmm0, (%1)\n"
-	            : : "0" (_a), "1" (_b) : "xmm0"
-	        }
-		});
+        mixin( q{
+            __asm {
+                "movdqu (%0), %xmm0\n"
+                ~ "movdqu %xmm0, (%1)\n"
+                : : "0" (_a), "1" (_b) : "xmm0"
+            }
+        });
         return b;
     }
 
@@ -309,7 +309,7 @@ version(LDC) {
     
     // _mm_shufflehi_epi16 ; PSHUFHW
     __m128i _mm_shufflehi_epi16 (__m128i a, in int imm) {
-		return cast(__m128i) __builtin_ia32_pshufhw(cast(short8) a, imm);
+        return cast(__m128i) __builtin_ia32_pshufhw(cast(short8) a, imm);
     }
     
     // _mm_shufflelo_epi16 ; PSHUFLW

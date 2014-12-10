@@ -21,7 +21,7 @@ public:
     /*
     * Twofish Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -72,7 +72,7 @@ public:
     /*
     * Twofish Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -130,7 +130,7 @@ public:
     }
 
     override @property string name() const { return "Twofish"; }
-	override BlockCipher clone() const { return new Twofish; }
+    override BlockCipher clone() const { return new Twofish; }
 
 protected:
 

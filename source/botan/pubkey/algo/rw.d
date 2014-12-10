@@ -37,12 +37,12 @@ public:
         m_pub = new IFSchemePublicKey(mod, exponent);
     }
 
-	this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
-	this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	IFSchemePublicKey m_pub;
+    IFSchemePublicKey m_pub;
 }
 
 /**
@@ -77,7 +77,7 @@ public:
         if (exp < 2 || exp % 2 == 1)
             throw new InvalidArgument(algo_name ~ ": Invalid encryption exponent");
         
-		m_priv = new IFSchemePrivateKey(&checkKey);
+        m_priv = new IFSchemePrivateKey(&checkKey);
 
         m_e = exp;
         
@@ -113,12 +113,12 @@ public:
         return signatureConsistencyCheck(rng, m_priv, "EMSA2(SHA-1)");
     }
 
-	alias m_priv this;
+    alias m_priv this;
 
-	this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
 
 private:
-	IFSchemePrivateKey m_priv;
+    IFSchemePrivateKey m_priv;
 }
 
 /**
@@ -127,17 +127,17 @@ private:
 final class RWSignatureOperation : Signature
 {
 public:
-	this(in RWPrivateKey pkey) {
-		this(pkey.m_priv);
-	}
+    this(in RWPrivateKey pkey) {
+        this(pkey.m_priv);
+    }
 
-	this(in PrivateKey pkey) {
-		this(cast(IFSchemePrivateKey) pkey);
-	}
+    this(in PrivateKey pkey) {
+        this(cast(IFSchemePrivateKey) pkey);
+    }
 
     this(in IFSchemePrivateKey rw) 
     {
-		assert(rw.algoName == RWPublicKey.algoName);
+        assert(rw.algoName == RWPublicKey.algoName);
         m_n = rw.getN();
         m_e = rw.getE();
         m_q = rw.getQ();
@@ -147,9 +147,9 @@ public:
         m_mod_p = FixedExponentPowerMod(rw.getP());
     }
 
-	override size_t maxInputBits() const { return (m_n.bits() - 1); }
+    override size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-	override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -199,25 +199,25 @@ private:
 final class RWVerificationOperation : Verification
 {
 public:
-	this(in PublicKey pkey) {
-		this(cast(IFSchemePublicKey) pkey);
-	}
+    this(in PublicKey pkey) {
+        this(cast(IFSchemePublicKey) pkey);
+    }
 
-	this(in RWPublicKey pkey) {
-		this(pkey.m_pub);
-	}
+    this(in RWPublicKey pkey) {
+        this(pkey.m_pub);
+    }
 
     this(in IFSchemePublicKey rw)
     {
-		assert(rw.algoName == RWPublicKey.algoName);
+        assert(rw.algoName == RWPublicKey.algoName);
         m_n = rw.getN();
         m_powermod_e_n = FixedExponentPowerMod(rw.getE(), rw.getN());
     }
 
-	override size_t maxInputBits() const { return (m_n.bits() - 1); }
-	override bool withRecovery() const { return true; }
+    override size_t maxInputBits() const { return (m_n.bits() - 1); }
+    override bool withRecovery() const { return true; }
 
-	override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+    override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
         

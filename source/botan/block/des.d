@@ -24,7 +24,7 @@ public:
     /*
     * DES Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -55,7 +55,7 @@ public:
     /*
     * DES Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -89,7 +89,7 @@ public:
     }
 
     @property string name() const { return "DES"; }
-	override BlockCipher clone() const { return new DES; }
+    override BlockCipher clone() const { return new DES; }
 protected:
     /*
     * DES Key Schedule
@@ -112,7 +112,7 @@ public:
     /*
     * TripleDES Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -144,7 +144,7 @@ public:
     /*
     * TripleDES Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -180,7 +180,7 @@ public:
     }
 
     @property string name() const { return "TripleDES"; }
-	override BlockCipher clone() const { return new TripleDES; }
+    override BlockCipher clone() const { return new TripleDES; }
 protected:
     /*
     * TripleDES Key Schedule

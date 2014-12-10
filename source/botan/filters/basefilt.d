@@ -35,7 +35,7 @@ final class Chain : FanoutFilter, Filterable
 public:
     override void write(in ubyte* input, size_t length) { send(input, length); }
 
-	override @property string name() const
+    override @property string name() const
     {
         return "Chain";
     }
@@ -79,10 +79,10 @@ public:
 class Fork : FanoutFilter, Filterable
 {
 public:
-	override final void write(in ubyte* input, size_t length) { send(input, length); }
-	override final void setPort(size_t n) { super.setPort(n); }
+    override final void write(in ubyte* input, size_t length) { send(input, length); }
+    override final void setPort(size_t n) { super.setPort(n); }
 
-	override @property string name() const
+    override @property string name() const
     {
         return "Fork";
     }
@@ -115,7 +115,7 @@ public:
 class ThreadedFork : Fork
 {
 public:
-	override @property string name() const
+    override @property string name() const
     {
         return "Threaded Fork";
     }
@@ -175,7 +175,7 @@ protected:
         }
     }
 
-	override void send(in ubyte* input, size_t length)
+    override void send(in ubyte* input, size_t length)
     {
         if (m_write_queue.length)
             threadDelegateWork(m_write_queue.ptr, m_write_queue.length);

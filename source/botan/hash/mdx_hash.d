@@ -37,7 +37,7 @@ protected:
     /*
     * Update the hash
     */
-	override final void addData(in ubyte* input, size_t length)
+    override final void addData(in ubyte* input, size_t length)
     {
         m_count += length;
         
@@ -68,7 +68,7 @@ protected:
     /*
     * Finalize a hash
     */
-	override final void finalResult(ubyte* output)
+    override final void finalResult(ubyte* output)
     {
         m_buffer[m_position] = (m_BIG_BIT_ENDIAN ? 0x80 : 0x01);
         foreach (size_t i; (m_position+1) .. m_buffer.length)

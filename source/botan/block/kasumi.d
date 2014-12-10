@@ -23,7 +23,7 @@ public:
     /*
     * KASUMI Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -68,7 +68,7 @@ public:
     /*
     * KASUMI Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -117,7 +117,7 @@ public:
         zap(m_EK);
     }
     @property string name() const { return "KASUMI"; }
-	override BlockCipher clone() const { return new KASUMI; }
+    override BlockCipher clone() const { return new KASUMI; }
 protected:
     /*
     * KASUMI Key Schedule

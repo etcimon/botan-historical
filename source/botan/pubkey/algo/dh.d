@@ -47,15 +47,15 @@ public:
     */
     this(in DLGroup grp, in BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
 
-	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
-	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	alias m_pub this;
+    alias m_pub this;
 private:
-	DLSchemePublicKey m_pub;
+    DLSchemePublicKey m_pub;
 }
 
 /**
@@ -67,7 +67,7 @@ public:
     /*
     * Return the public value for key agreement
     */
-	override Vector!ubyte publicValue() const
+    override Vector!ubyte publicValue() const
     {
         return super.publicValue();
     }
@@ -106,7 +106,7 @@ public:
 
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-		m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, null, &maxInputBits);
+        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, null, &maxInputBits);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
@@ -114,11 +114,11 @@ public:
             m_priv.loadCheck(rng);
     }
 
-	this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-	alias m_priv this;
+    alias m_priv this;
 private:
-	DLSchemePrivateKey m_priv;
+    DLSchemePrivateKey m_priv;
 }
 
 /**
@@ -127,24 +127,24 @@ private:
 class DHKAOperation : KeyAgreement
 {
 public:
-	this(in PrivateKey pkey, RandomNumberGenerator rng) {
-		this(cast(DLSchemePrivateKey) pkey, rng);
-	}
+    this(in PrivateKey pkey, RandomNumberGenerator rng) {
+        this(cast(DLSchemePrivateKey) pkey, rng);
+    }
 
-	this(in DHPrivateKey pkey, RandomNumberGenerator rng) {
-		this(pkey.m_priv, rng);
-	}
+    this(in DHPrivateKey pkey, RandomNumberGenerator rng) {
+        this(pkey.m_priv, rng);
+    }
 
-	this(in DLSchemePrivateKey dh, RandomNumberGenerator rng) 
+    this(in DLSchemePrivateKey dh, RandomNumberGenerator rng) 
     {
-		assert(dh.algoName == DHPublicKey.algoName);
+        assert(dh.algoName == DHPublicKey.algoName);
         m_p = dh.groupP();
         m_powermod_x_p = FixedExponentPowerMod(dh.getX(), m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
         m_blinder = Blinder(k, m_powermod_x_p(inverseMod(k, m_p)), m_p);
     }
 
-	override SecureVector!ubyte agree(in ubyte* w, size_t w_len)
+    override SecureVector!ubyte agree(in ubyte* w, size_t w_len)
     {
         BigInt input = BigInt.decode(w, w_len);
         

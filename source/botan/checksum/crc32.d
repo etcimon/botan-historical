@@ -18,11 +18,11 @@ import botan.utils.loadstor;
 final class CRC32 : HashFunction
 {
 public:
-	override @property string name() const { return "CRC32"; }
-	override @property size_t outputLength() const { return 4; }
-	override HashFunction clone() const { return new CRC32; }
+    override @property string name() const { return "CRC32"; }
+    override @property size_t outputLength() const { return 4; }
+    override HashFunction clone() const { return new CRC32; }
 
-	override void clear() { m_crc = 0xFFFFFFFF; }
+    override void clear() { m_crc = 0xFFFFFFFF; }
 
     this() { clear(); }
     ~this() { clear(); }
