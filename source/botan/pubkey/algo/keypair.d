@@ -22,8 +22,8 @@ import botan.utils.types;
 * @return true if consistent otherwise false
 */
 bool encryptionConsistencyCheck(RandomNumberGenerator rng,
-                                  in PrivateKey key,
-                                  in string padding)
+                                in PrivateKey key,
+                                in string padding)
 {
     auto encryptor = scoped!PKEncryptorEME(key, padding);
     auto decryptor = scoped!PKDecryptorEME(key, padding);
@@ -55,8 +55,8 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
 * @return true if consistent otherwise false
 */
 bool signatureConsistencyCheck(RandomNumberGenerator rng,
-                                 in PrivateKey key,
-                                 in string padding)
+                               in PrivateKey key,
+                               in string padding)
 {
     auto signer = PKSigner(key, padding);
     auto verifier = PKVerifier(key, padding);

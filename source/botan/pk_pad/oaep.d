@@ -23,7 +23,7 @@ public:
     /*
     * Return the max input size for a given key size
     */
-    size_t maximumInputSize(size_t keybits) const
+    override size_t maximumInputSize(size_t keybits) const
     {
         if (keybits / 8 > 2*m_Phash.length + 1)
             return ((keybits / 8) - 2*m_Phash.length - 1);

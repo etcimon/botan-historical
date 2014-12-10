@@ -105,7 +105,7 @@ T loadLittleEndian(T)(in ubyte* input, size_t off)
 */
 ushort loadBigEndian(T : ushort)(in ubyte* input, size_t off)
 {
-    return nativeToBigEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
+    return *cast(ushort*) nativeToBigEndian!ushort(*( (cast(const ushort*) input) + off));
 }
 
 /**
@@ -116,7 +116,7 @@ ushort loadBigEndian(T : ushort)(in ubyte* input, size_t off)
 */
 ushort loadLittleEndian(T : ushort)(in ubyte* input, size_t off)
 {
-    return nativeToLittleEndian!ushort(*cast(ubyte[2]*)( (cast(const ushort*) input) + off));
+    return *cast(ushort*) nativeToLittleEndian!ushort(*((cast(const ushort*) input) + off));
 }
 
 /**
@@ -127,7 +127,7 @@ ushort loadLittleEndian(T : ushort)(in ubyte* input, size_t off)
 */
 uint loadBigEndian(T : uint)(in ubyte* input, size_t off)
 {
-    return nativeToBigEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
+    return *cast(uint*) nativeToBigEndian!uint(*((cast(const uint*) input) + off));
 }
 
 /**
@@ -150,7 +150,7 @@ uint loadLittleEndian(T : uint)(in ubyte* input, size_t off)
 */
 ulong loadBigEndian(T : ulong)(in ubyte* input, size_t off)
 {
-    return nativeToBigEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
+    return *cast(ulong*) nativeToBigEndian!ulong(*( (cast(const ulong*) input) + off));
     
 }
 
@@ -162,7 +162,7 @@ ulong loadBigEndian(T : ulong)(in ubyte* input, size_t off)
 */
 ulong loadLittleEndian(T : ulong)(in ubyte* input, size_t off)
 {
-    return nativeToLittleEndian!ulong(*cast(ubyte[8]*)( (cast(const ulong*) input) + off));
+    return *cast(ulong*) nativeToLittleEndian!ulong(*( (cast(const ulong*) input) + off));
 }
 
 /**

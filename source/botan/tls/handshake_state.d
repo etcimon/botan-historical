@@ -15,7 +15,7 @@ import botan.tls.handshake_io;
 import botan.tls.session_key;
 import botan.tls.ciphersuite;
 import botan.tls.exceptn;
-import botan.tls.tls_handshake_msg;
+import botan.tls.messages;
 import botan.pubkey.pk_keys;
 import botan.pubkey.pubkey;
 import botan.kdf.kdf;
@@ -404,19 +404,19 @@ private:
     TLSProtocolVersion m_version;
     TLSCiphersuite m_ciphersuite;
     TLSSessionKeys m_session_keys;
-    Handshake_Hash m_handshake_hash;
+    HandshakeHash m_handshake_hash;
 
     Unique!ClientHello m_client_hello;
     Unique!ServerHello m_server_hello;
     Unique!Certificate m_server_certs;
     Unique!ServerKeyExchange m_server_kex;
-    Unique!Certificate_Req m_cert_req;
-    Unique!ServerHello_Done m_server_hello_done;
+    Unique!CertificateReq m_cert_req;
+    Unique!ServerHelloDone m_server_hello_done;
     Unique!Certificate m_client_certs;
     Unique!ClientKeyExchange m_client_kex;
-    Unique!Certificate_Verify m_client_verify;
-    Unique!Next_Protocol m_next_protocol;
-    Unique!New_SessionTicket m_new_session_ticket;
+    Unique!CertificateVerify m_client_verify;
+    Unique!NextProtocol m_next_protocol;
+    Unique!NewSessionTicket m_new_session_ticket;
     Unique!Finished m_server_finished;
     Unique!Finished m_client_finished;
 }

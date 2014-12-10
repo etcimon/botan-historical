@@ -12,14 +12,15 @@ import botan.libstate.libstate;
 import botan.algo_base.scan_token;
 import botan.utils.exceptn;
 
+import botan.constants;
 static if (BOTAN_HAS_EMSA1)          import botan.pk_pad.emsa1;
 static if (BOTAN_HAS_EMSA1_BSI)      import botan.pk_pad.emsa1_bsi;
 static if (BOTAN_HAS_EMSA_X931)      import botan.pk_pad.emsa_x931;
-static if (BOTAN_HAS_EMSA_PKCS1)      import botan.pk_pad.emsa_pkcs1;
+static if (BOTAN_HAS_EMSA_PKCS1)     import botan.pk_pad.emsa_pkcs1;
 static if (BOTAN_HAS_EMSA_PSSR)      import botan.pk_pad.pssr;
-static if (BOTAN_HAS_EMSA_RAW)      import botan.pk_pad.emsa_raw;
-static if (BOTAN_HAS_EME_OAEP)      import botan.pk_pad.oaep;
-static if (BOTAN_HAS_EME_PKCS1v15)  import botan.pk_pad.eme_pkcs;
+static if (BOTAN_HAS_EMSA_RAW)       import botan.pk_pad.emsa_raw;
+static if (BOTAN_HAS_EME_OAEP)       import botan.pk_pad.oaep;
+static if (BOTAN_HAS_EME_PKCS1_V15)  import botan.pk_pad.eme_pkcs;
 
 /**
 * Factory method for EMSA (message-encoding methods for signatures

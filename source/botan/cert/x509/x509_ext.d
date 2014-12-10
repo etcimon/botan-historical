@@ -18,6 +18,7 @@ import botan.hash.sha160;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oids;
+import botan.asn1.asn1_alt_name;
 import botan.utils.charset;
 import botan.utils.bit_ops;
 import std.algorithm;
@@ -74,7 +75,7 @@ final class X509ExtensionsImpl : ASN1Object
 {
 public:
 
-    void encodeInto(DEREncoder to) const
+    override void decodeFrom(DEREncoderImpl to) const
     {
         foreach (const extension; m_extensions)
         {
@@ -94,7 +95,7 @@ public:
         }
     }
 
-    void decodeFrom(BERDecoder from_source)
+    override void decodeFrom(BERDecoderImpl from_source)
     {
         foreach (extension; m_extensions)
             delete extension.first;
@@ -216,7 +217,7 @@ __gshared immutable size_t NO_CERT_PATH_LIMIT = 0xFFFFFFF0;
 final class BasicConstraints : CertificateExtension
 {
 public:
-    BasicConstraints copy() const
+    override BasicConstraints copy() const
     { return new BasicConstraints(m_is_ca, path_limit); }
 
     this(bool ca = false, size_t limit = 0)
@@ -290,7 +291,7 @@ private:
 final class KeyUsage : CertificateExtension
 {
 public:
-    KeyUsage copy() const { return new KeyUsage(m_constraints); }
+    override KeyUsage copy() const { return new KeyUsage(m_constraints); }
 
     this(KeyConstraints c = KeyConstraints.NO_CONSTRAINTS) { constraints = c; }
 
@@ -366,7 +367,7 @@ private:
 final class SubjectKeyID : CertificateExtension
 {
 public:
-    SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
+    override SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
 
     this() {}
     this(in Vector!ubyte pub_key)
@@ -415,7 +416,7 @@ private:
 class AuthorityKeyID : CertificateExtension
 {
 public:
-    AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
+    override AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
 
     this() {}
     this(in Vector!ubyte k) { m_key_id = k; }
@@ -433,7 +434,7 @@ private:
     {
         return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
-                .encode(m_key_id, ASN1Tag.OCTET_STRING, ASN1Tag(0), ASN1Tag.CONTEXT_SPECIFIC)
+                .encode(m_key_id, ASN1Tag.OCTET_STRING, (cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC)
                 .endCons()
                 .getContentsUnlocked();
     }
@@ -464,15 +465,14 @@ private:
 /**
 * Alternative Name Extension Base Class
 */
-class AlternativeName : CertificateExtension
+class AlternativeNameExt : CertificateExtension
 {
 public:
     AlternativeName getAltName() const { return m_alt_name; }
 
 protected:
 
-    this(in AlternativeName alt_name,
-         in string oid_name_str)
+    this(in AlternativeName alt_name = AlternativeName(), in string oid_name_str = null)
     {
         m_alt_name = alt_name;
         m_oid_name_str = oid_name_str;
@@ -503,7 +503,7 @@ private:
     * Return a textual representation
     */
     void contentsTo(ref DataStore subject_info,
-                     ref DataStore issuer_info) const
+                    ref DataStore issuer_info) const
     {
         MultiMap!(string, string) contents = getAltName().contents();
         
@@ -512,8 +512,7 @@ private:
         else if (m_oid_name_str == "X509v3.IssuerAlternativeName")
             issuer_info.add(contents);
         else
-            throw new InternalError("In AlternativeName, unknown type " ~
-                                     m_oid_name_str);
+            throw new InternalError("In AlternativeName, unknown type " ~ m_oid_name_str);
     }
 
     string m_oid_name_str;
@@ -526,14 +525,13 @@ private:
 /**
 * Subject Alternative Name Extension
 */
-final class SubjectAlternativeName : AlternativeName
+final class SubjectAlternativeName : AlternativeNameExt
 {
 public:
-    SubjectAlternativeName copy() const
+    override SubjectAlternativeName copy() const
     { return new SubjectAlternativeName(getAltName()); }
 
-    this() {}
-    this(in AlternativeName name = new SubjectAlternativeName()) {
+    this(in AlternativeName name = AlternativeName()) {
         super(name, "X509v3.SubjectAlternativeName");
     }
 }
@@ -541,13 +539,13 @@ public:
 /**
 * Issuer Alternative Name Extension
 */
-final class IssuerAlternativeName : AlternativeName
+final class IssuerAlternativeName : AlternativeNameExt
 {
 public:
-    IssuerAlternativeName copy() const
+    override IssuerAlternativeName copy() const
     { return new IssuerAlternativeName(getAltName()); }
 
-    this(in AlternativeName name = new IssuerAlternativeName()) {
+    this(in AlternativeName name = AlternativeName()) {
         super(name, "X509v3.IssuerAlternativeName");
     }
 }
@@ -558,7 +556,7 @@ public:
 final class ExtendedKeyUsage : CertificateExtension
 {
 public:
-    ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids); }
+    override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids); }
 
     this() {}
     this(in Vector!OID o) 
@@ -609,7 +607,7 @@ private:
 final class CertificatePolicies : CertificateExtension
 {
 public:
-    CertificatePolicies copy() const
+    override CertificatePolicies copy() const
     { return new CertificatePolicies(m_oids); }
 
     this() {}
@@ -666,7 +664,7 @@ private:
 final class AuthorityInformationAccess : CertificateExtension
 {
 public:
-    AuthorityInformationAccess copy() const
+    override AuthorityInformationAccess copy() const
     { return new AuthorityInformationAccess(m_ocsp_responder); }
 
     this() {}
@@ -686,7 +684,7 @@ private:
             .startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .encode(OIDS.lookup("PKIX.OCSP"))
-                .addObject(ASN1Tag(6), ASN1Tag.CONTEXT_SPECIFIC, url.iso8859())
+                .addObject((cast(ASN1Tag)6), ASN1Tag.CONTEXT_SPECIFIC, url.iso8859())
                 .endCons()
                 .endCons().getContentsUnlocked();
     }
@@ -739,7 +737,7 @@ public:
     /*
     * Copy a CRL_Number extension
     */
-    CRLNumber copy() const
+    override CRLNumber copy() const
     {
         if (!m_has_value)
             throw new InvalidState("CRL_Number::copy: Not set");
@@ -797,15 +795,15 @@ private:
 final class CRLReasonCode : CertificateExtension
 {
 public:
-    CRLReasonCode copy() const { return new CRLReasonCode(m_reason); }
+    override CRLReasonCode copy() const { return new CRLReasonCode(m_reason); }
 
-    this(CRLCode r = CRL_Code.UNSPECIFIED) { m_reason = r; }
+    this(CRLCode r = CRLCode.UNSPECIFIED) { m_reason = r; }
 
     CRLCode getReason() const { return m_reason; }
 private:
     string oidName() const { return "X509v3.ReasonCode"; }
 
-    bool shouldEncode() const { return (m_reason != CRL_Code.UNSPECIFIED); }
+    bool shouldEncode() const { return (m_reason != CRLCode.UNSPECIFIED); }
     /*
     * Encode the extension
     */
@@ -834,7 +832,7 @@ private:
         info.add("X509v3.CRLReasonCode", m_reason);
     }
 
-    CRL_Code m_reason;
+    CRLCode m_reason;
 }
 
 
@@ -848,16 +846,16 @@ public:
     final class DistributionPointImpl : ASN1Object
     {
     public:
-        void encodeInto(DEREncoder) const
+        override void decodeFrom(DEREncoderImpl) const
         {
             throw new Exception("CRLDistributionPoints encoding not implemented");
         }
 
-        void decodeFrom(BERDecoder ber)
+        override void decodeFrom(BERDecoderImpl ber)
         {
             ber.startCons(ASN1Tag.SEQUENCE)
-                .startCons(ASN1Tag(0), ASN1Tag.CONTEXT_SPECIFIC)
-                    .decodeOptionalImplicit(m_point, ASN1Tag(0),
+                    .startCons((cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC)
+                    .decodeOptionalImplicit(m_point, (cast(ASN1Tag) 0),
                                               ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED),
                                               ASN1Tag.SEQUENCE, ASN1Tag.CONSTRUCTED)
                     .endCons().endCons();
@@ -869,7 +867,7 @@ public:
         AlternativeName m_point;
     }
 
-    CRLDistributionPoints copy() const
+    override CRLDistributionPoints copy() const
     { return new CRLDistributionPoints(m_distribution_points); }
 
     this() {}
@@ -924,14 +922,14 @@ public:
     this() {}
     this(in OID oid_) { oid = oid_; }
     
-    void encodeInto(DEREncoder codec) const
+    override void decodeFrom(DEREncoderImpl codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
             .encode(oid)
                 .endCons();
     }
     
-    void decodeFrom(BERDecoder codec)
+    override void decodeFrom(BERDecoderImpl codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
             .decode(oid)

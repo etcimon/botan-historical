@@ -8,7 +8,7 @@
 module botan.cert.cvc.ecdsa_sig;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.math.bigint.bigint;
 import botan.asn1.der_enc;
@@ -91,5 +91,5 @@ ECDSASignature decodeConcatenation(in Vector!ubyte concat)
     BigInt r = BigInt.decode(concat.ptr, rs_len);
     BigInt s = BigInt.decode(&concat[rs_len], rs_len);
     
-    return ECDSA_Signature(r, s);
+    return ECDSASignature(r, s);
 }

@@ -25,7 +25,7 @@ public:
     /*
     * Create an Attribute
     */
-    this(in OID attr_oid, in Vector!ubyte attr_value)
+    this(OID attr_oid, Vector!ubyte attr_value)
     {
         oid = attr_oid;
         parameters = attr_value;
@@ -34,8 +34,7 @@ public:
     /*
     * Create an Attribute
     */
-    this(in string attr_oid,
-         in Vector!ubyte attr_value)
+    this(in string attr_oid, Vector!ubyte attr_value)
     {
         oid = OIDS.lookup(attr_oid);
         parameters = attr_value;
@@ -44,10 +43,10 @@ public:
     /*
     * DER encode a Attribute
     */
-    void encodeInto(DEREncoder codec) const
+	override void decodeFrom(DEREncoderImpl codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
-            .encode(oid)
+                .encode(oid)
                 .startCons(ASN1Tag.SET)
                 .rawBytes(parameters)
                 .endCons()
@@ -57,7 +56,7 @@ public:
     /*
     * Decode a BER encoded Attribute
     */
-    void decodeFrom(BERDecoder codec)
+	override void decodeFrom(BERDecoderImpl codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
             .decode(oid)
@@ -70,7 +69,6 @@ public:
     OID oid;
     Vector!ubyte parameters;
 
-    this() {}
 }
 
 

@@ -26,8 +26,8 @@ import botan.asn1.oids;
 import botan.codec.pem;
 import botan.codec.hex;
 import botan.utils.types;
+import botan.utils.memory.memory;
 import std.algorithm;
-import iterator;
 import std.array : Appender;
 
 import botan.utils.containers.hashmap;
@@ -279,7 +279,7 @@ public:
     * @return a string describing the certificate
     */
 
-    string toString() const
+    override string toString() const
     {
         import std.array : Appender;
         __gshared immutable string[] dn_fields = [ "Name",
@@ -517,7 +517,7 @@ private:
         
         BERDecoder tbsCert(tbs_bits);
         
-        tbs_cert.decodeOptional(_version, ASN1Tag(0),
+        tbs_cert.decodeOptional(_version, (cast(ASN1Tag) 0),
                                  ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
             .decode(serial_bn)
                 .decode(sig_algo_inner)

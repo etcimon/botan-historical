@@ -31,7 +31,8 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         // Destructor releases array memory
         ~this()
         {
-            freeArray!(T, true, ALLOCATOR)(_payload.ptr[0 .. capacity]); // calls destructors and frees memory
+			T[] data = _payload.ptr[0 .. capacity];
+            freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
         }
 
         @disable this(this);
@@ -130,11 +131,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             }
             // copy old data over to new array
             memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
-
-            freeArray!(T, ALLOCATOR, false)(_payload.ptr[0 .. capacity]);
+			auto ub = _payload.ptr[0 .. _capacity];
+            freeArray!(T, ALLOCATOR, false)(ub);
 
             static if ( hasIndirections!T )
-                GC.removeRange(_payload.ptr, T.sizeof * _capacity);
+                GC.removeRange(cast(void*) _payload.ptr);
 
             _payload = newPayload;
             _capacity = elements;
@@ -210,7 +211,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     this(Stuff)(Stuff stuff)
         if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T) && !is(Stuff == T[]))
     {
-        pushBack(stuff);
+        insertBack(stuff);
     }
     
     
@@ -237,18 +238,17 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         private Vector _outer;
         private size_t _a, _b;
-        
+
+
+        U opCast(U)() const {
+            return cast(U) _outer._data._payload;
+        }
+
         private this(ref Vector data, size_t a, size_t b)
         {
             _outer = data;
             _a = a;
             _b = b;
-        }
-
-        U opCast(U = T[])() 
-            if (is (U == T[]))
-        {
-            return _outer._payload;
         }
 
         @property Range save()
@@ -406,11 +406,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return length;
     }
 
-    @property T* ptr() {
-        return _data._payload.ptr;
+    @property T* ptr() inout {
+        return cast(T*) _data._payload.ptr;
     }
 
-    @property T* end() {
+    @property inout T* end() inout {
         return this.ptr + this.length;
     }
 
@@ -448,6 +448,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return Range(this, 0, length);
     }
     
+	Range opSlice() const
+	{
+		UnConst!(typeof(this)) _ref = cast(UnConst!(typeof(this))) this;
+		return Range(_ref, 0UL, length);
+	}
     /**
         Returns a range that iterates over elements of the container from
         index $(D a) up to (excluding) index $(D b).
@@ -461,7 +466,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         version (assert) if (i > j || j > length) throw new RangeError();
         return Range(this, i, j);
     }
-    
+
     /**
         Forward to $(D opSlice().front) and $(D opSlice().back), respectively.
 
@@ -492,6 +497,10 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return _data._payload[i];
     }
     
+	ref const(T) opIndex(size_t i) const
+	{
+		return _data._payload[i];
+	}
     /**
         Slicing operations execute an operation on an entire slice.
 
@@ -565,11 +574,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         if (op == "~")
     {
         static if (is (Stuff == typeof(this))) {
-            pushBack(cast(T[]) stuff[]);
+            insertBack(cast(T[]) stuff[]);
         }
         else
         {
-            pushBack(stuff);
+            insertBack(stuff);
         }
     }
     
@@ -813,4 +822,12 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     }
 
     alias remove = linearRemove;
+}
+
+private template UnConst(T) {
+	static if (is(T U == const(U))) {
+		alias UnConst = U;
+	} else static if (is(T V == immutable(V))) {
+		alias UnConst = V;
+	} else alias UnConst = T;
 }

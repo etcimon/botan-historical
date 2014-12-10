@@ -8,7 +8,6 @@ module botan.utils.version_;
 
 import botan.constants;
 import botan.utils.types;
-// import string;
 import botan.utils.parsing;
 /*
  * These are intentionally compiled so an application running against a 
@@ -67,7 +66,7 @@ uint versionPatch() { return BOTAN_VERSION_PATCH; }
 /*
 * Allows compile-time version checks
 */
-long bOTANVERSIONCODEFOR(ubyte a, ubyte b, ubyte c) {
+long BOTAN_VERSION_CODE_FOR(ubyte a, ubyte b, ubyte c) {
     return ((a << 16) | (b << 8) | (c));
 }
 

@@ -404,8 +404,8 @@ public:
         Vector!ubyte m_message;
     }
 
-    Connection_Sequence_Numbers m_seqs;
-    HashMap!(ushort, Handshake_Reassembly) m_messages;
+    ConnectionSequenceNumbers m_seqs;
+    HashMap!(ushort, HandshakeReassembly) m_messages;
     ushort[] m_ccs_epochs;
     Vector!( Vector!ushort ) m_flights;
     HashMap!(ushort, Tuple!(ushort, ubyte, Vector!ubyte) ) m_flight_data;

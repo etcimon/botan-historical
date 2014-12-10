@@ -27,7 +27,7 @@ public:
     /*
     * DER encode a X509Time
     */
-    void encodeInto(DEREncoder der) const
+	override void decodeFrom(DEREncoderImpl der) const
     {
         if (m_tag != ASN1Tag.GENERALIZED_TIME && m_tag != ASN1Tag.UTC_TIME)
             throw new InvalidArgument("X509Time: Bad encoding m_tag");
@@ -41,7 +41,7 @@ public:
     /*
     * Decode a BER encoded X509Time
     */
-    void decodeFrom(BERDecoder source)
+	override void decodeFrom(BERDecoderImpl source)
     {
         BERObject ber_time = source.getNextObject();
         
@@ -54,10 +54,10 @@ public:
     /*
     * Return a string representation of the time
     */
-    string toString() const
+	override string toString() const
     {
         if (timeIsSet() == false)
-            throw new InvalidState("toString: No time set");
+            throw new InvalidState("toTimeString: No time set");
         
         uint full_year = m_year;
         
@@ -104,7 +104,7 @@ public:
         return (m_year != 0);
     }
 
-    string toString() const { return readableString(); }
+    string toPrettyString() const { return readableString(); }
 
     /*
     * Compare this time against another

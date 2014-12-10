@@ -10,19 +10,20 @@ static if (BOTAN_HAS_X509_CERTIFICATES) :
 
 alias x509self = botan.cert.x509.x509self;
 
-import botan.cert.x509.x509cert;
-import botan.pubkey.pkcs8;
-import botan.cert.x509.pkcs10;
 import botan.asn1.asn1_time;
 import botan.asn1.oids;
-import botan.utils.parsing;
-import std.datetime;
+import botan.asn1.der_enc;
+import botan.asn1.asn1_alt_name;
+import botan.cert.x509.pkcs10;
 import botan.cert.x509.x509_ext;
 import botan.cert.x509.x509_ca;
-import botan.asn1.der_enc;
-import botan.asn1.oids;
+import botan.cert.x509.x509cert;
+import botan.cert.x509.key_constraint;
 import botan.filters.pipe;
 import botan.utils.types;
+import botan.utils.parsing;
+import botan.pubkey.pkcs8;
+import std.datetime;
 
 /**
 * Options for X.509 certificates.
@@ -238,9 +239,9 @@ public:
 * @return newly created self-signed certificate
 */
 X509Certificate createSelfSignedCert(in X509CertOptions opts,
-                                         in PrivateKey key,
-                                         in string hash_fn,
-                                         RandomNumberGenerator rng)
+                                     in PrivateKey key,
+                                     in string hash_fn,
+                                     RandomNumberGenerator rng)
 {
     AlgorithmIdentifier sig_algo;
     X509DN subject_dn;
@@ -343,8 +344,9 @@ PKCS10Request createCertReq(in X509CertOptions opts,
 /*
 * Load information from the X509_Cert_Options
 */
-private void loadInfo(in X509CertOptions opts, X509DN subject_dn,
-                           ref AlternativeName subject_alt)
+private void loadInfo(in X509CertOptions opts, 
+                      X509DN subject_dn,
+                      AlternativeName subject_alt)
 {
     subject_dn.addAttribute("X520.CommonName", opts.common_name);
     subject_dn.addAttribute("X520.Country", opts.country);

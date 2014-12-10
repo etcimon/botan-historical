@@ -8,7 +8,7 @@
 module botan.cert.cvc.cvc_self;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 static assert(BOTAN_HAS_ECDSA, "CVC requires ECDSA");
 
@@ -115,14 +115,14 @@ EAC11Req createCvcReq(in PrivateKey key,
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
     Vector!ubyte tbs = DEREncoder()
-            .encode(enc_cpi, ASN1Tag.OCTET_STRING, ASN1Tag(41), ASN1Tag.APPLICATION)
+            .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
             .rawBytes(enc_public_key)
             .encode(chr)
             .getContentsUnlocked();
     
     Vector!ubyte signed_cert = 
-        EAC11GenCVC!EAC11ReqImpl.makeSigned(signer,
-                                            EAC11GenCVC!EAC11ReqImpl.buildCertBody(tbs),
+        EAC11genCVC!EAC11ReqImpl.makeSigned(signer,
+                                            EAC11genCVC!EAC11ReqImpl.buildCertBody(tbs),
                                             rng);
     
     auto source = scoped!DataSourceMemory(signed_cert);
@@ -394,25 +394,25 @@ Vector!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
     // This is why we can't have nice things
     
     DEREncoder enc;
-    enc.startCons(ASN1Tag(73), ASN1Tag.APPLICATION).encode(sig_algo);
+    enc.startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION).encode(sig_algo);
     
     if (key.domainFormat() == EC_DOMPAR_ENC_EXPLICIT)
     {
-        encodeEacBigint(enc, domain.getCurve().getP(), ASN1Tag(1));
-        encodeEacBigint(enc, domain.getCurve().getA(), ASN1Tag(2));
-        encodeEacBigint(enc, domain.getCurve().getB(), ASN1Tag(3));
+        encodeEacBigint(enc, domain.getCurve().getP(), (cast(ASN1Tag)1));
+        encodeEacBigint(enc, domain.getCurve().getA(), (cast(ASN1Tag)2));
+        encodeEacBigint(enc, domain.getCurve().getB(), (cast(ASN1Tag)3));
         
         enc.encode(EC2OSP(domain.getBasePoint(), PointGFp.UNCOMPRESSED), 
-                   ASN1Tag.OCTET_STRING, ASN1Tag(4));
+                   ASN1Tag.OCTET_STRING, (cast(ASN1Tag)4));
         
-        encodeEacBigint(enc, domain.getOrder(), ASN1Tag(4));
+        encodeEacBigint(enc, domain.getOrder(), (cast(ASN1Tag)4));
     }
     
     enc.encode(EC2OSP(key.publicPoint(), PointGFp.UNCOMPRESSED), 
-               ASN1Tag.OCTET_STRING, ASN1Tag(6));
+               ASN1Tag.OCTET_STRING, (cast(ASN1Tag)6));
     
     if (key.domainFormat() == EC_DOMPAR_ENC_EXPLICIT)
-        encodeEacBigint(enc, domain.getCofactor(), ASN1Tag(7));
+        encodeEacBigint(enc, domain.getCofactor(), (cast(ASN1Tag)7));
     
     enc.endCons();
     

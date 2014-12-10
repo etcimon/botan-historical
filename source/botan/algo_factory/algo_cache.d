@@ -47,9 +47,9 @@ public:
     * @param pref_provider = suggests a preferred provider
     * @return prototype object, or NULL
     */
-    T get(in string algo_spec, in string requested_provider) const
+    const(T) get(string algo_spec, string requested_provider) const
     {
-        auto algo = findAlgorithm(algo_spec);
+        HashMap!(string, T) algo = findAlgorithm(algo_spec);
         if (algo.length == 0) // algo not found at all (no providers)
             return null;
         
@@ -59,26 +59,27 @@ public:
             return algo.get(requested_provider);
         }
 
-        const T prototype = null;
+        T prototype = null;
         string prototype_provider;
         size_t prototype_prov_weight = 0;
         
         const string pref_provider = m_pref_providers.get(algo_spec);
 
-        if (algo.get(m_pref_providers))
-            return algo[m_pref_providers];
+        if (algo.get(pref_provider))
+            return algo.get(pref_provider);
 
-        foreach (provider, instance; algo) 
+        algo.opApply( (const ref provider, const ref instance) 
         {            
             const ubyte prov_weight = staticProviderWeight(provider);
             
-            if (prototype == null || prov_weight > prototype_prov_weight)
+            if (prototype is null || prov_weight > prototype_prov_weight)
             {
-                prototype = instance;
+                prototype = cast(T) instance;
                 prototype_provider = provider;
                 prototype_prov_weight = prov_weight;
             }
-        }
+			return 0;
+		});
         
         return prototype;
     }
@@ -98,11 +99,11 @@ public:
                 
         if (algo.name != requested_name && m_aliases.get(requested_name) == null)
         {
-            m_aliases[requested_name] = algo.name;
+            m_aliases.set(requested_name, algo.name);
         }
         
-        if (!m_algorithms[algo.name].get(provider))
-            m_algorithms[algo.name][provider] = algo;
+        if (!m_algorithms.get(algo.name).get(provider))
+            m_algorithms.get(algo.name).set(provider, algo);
 
     }
 
@@ -115,7 +116,7 @@ public:
     void setPreferredProvider(in string algo_spec,
                               in string provider)
     {        
-        m_pref_providers[algo_spec] = provider;
+        m_pref_providers.set(algo_spec, provider);
     }
 
     /**
@@ -131,15 +132,15 @@ public:
 
         string algo = algo_name;
         if (m_aliases.get(algo_name))
-            algo = m_aliases[algo_name];
+            algo = m_aliases.get(algo_name);
 
-        if (!m_algorithms.get(algo))
+        if (m_algorithms.get(algo).length == 0)
             return Vector!string();
 
-        foreach (provider, instance; m_algorithms[algo])
-        {
-            providers.pushBack(provider);
-        }
+		m_algorithms.get(algo).opApply( (const ref string provider, const ref T instance) {
+			providers.pushBack(provider);
+			return 0;
+		});
                 
         return providers;
     }
@@ -168,14 +169,14 @@ private:
     * Look for an algorithm implementation in the cache, also checking aliases
     * Assumes object lock is held
     */
-    HashMap!(string, T) findAlgorithm(in string algo_spec)
+    HashMap!(string, T) findAlgorithm(in string algo_spec) const
     {
-        auto algo = m_algorithms.get(algo_spec);
+		HashMap!(string, T) algo = m_algorithms.get(algo_spec);
         
         // Not found? Check if a known alias
         if (!algo)
         {
-            auto _alias = m_aliases.get(algo_spec);
+            string _alias = m_aliases.get(algo_spec);
 
             if (_alias)
                 algo = m_algorithms.get(_alias);

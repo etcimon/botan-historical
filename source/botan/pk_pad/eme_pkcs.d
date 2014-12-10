@@ -17,7 +17,7 @@ public:
     /*
     * Return the max input size for a given key size
     */
-    size_t maximumInputSize(size_t keybits) const
+    override size_t maximumInputSize(size_t keybits) const
     {
         if (keybits / 8 > 10)
             return ((keybits / 8) - 10);

@@ -21,7 +21,7 @@ import botan.utils.types;
 /**
 * SSL/TLS Client
 */
-final class TLSClient : TLS_Channel
+final class TLSClient : TLSChannel
 {
 public:
     /**
@@ -83,7 +83,8 @@ public:
         HandshakeState state = createHandshakeState(offer_version);
         sendClientHello(state, false, offer_version, srp_identifier, next_protocol);
     }
-private:
+
+protected:
     override Vector!X509Certificate
         getPeerCertChain(in HandshakeState state) const
     {
@@ -493,6 +494,7 @@ private:
         return new ClientHandshakeState(io);
     }
 
+private:
     const TLSPolicy m_policy;
     TLSCredentialsManager m_creds;
     const TLSServerInformation m_info;

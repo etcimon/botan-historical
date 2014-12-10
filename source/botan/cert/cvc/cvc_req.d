@@ -8,7 +8,7 @@
 module botan.cert.cvc.cvc_req;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oids;
@@ -19,7 +19,7 @@ alias EAC11Req = FreeListRef!EAC11ReqImpl;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */
-final class EAC11ReqImpl : EAC11GenCVC!EAC11ReqImpl
+final class EAC11ReqImpl : EAC11genCVC!EAC11ReqImpl
 {
 public:
 
@@ -69,8 +69,8 @@ private:
         Vector!ubyte enc_pk;
         BERDecoder tbs_cert = BERDecoder(tbs_bits);
         size_t cpi;
-        tbs_cert.decode(cpi, ASN1Tag(41), ASN1Tag.APPLICATION)
-                .startCons(ASN1Tag(73))
+        tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)73))
                 .rawBytes(enc_pk)
                 .endCons()
                 .decode(m_chr)

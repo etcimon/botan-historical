@@ -202,7 +202,7 @@ public:
 
 private:
     @disable this(in TLSSessionManagerSQLite);
-    TLSSessionManagerSQLite opAssign(in TLSSessionManagerSQLite);
+    @disable TLSSessionManagerSQLite opAssign(in TLSSessionManagerSQLite);
 
     void pruneSessionCache()
     {

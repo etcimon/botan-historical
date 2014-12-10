@@ -88,7 +88,7 @@ public:
         
         if (response_outer.moreItems())
         {
-            BERDecoder response_bytes = response_outer.startCons(ASN1Tag(0), ASN1Tag.CONTEXT_SPECIFIC).startCons(ASN1Tag.SEQUENCE);
+            BERDecoder response_bytes = response_outer.startCons((cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC).startCons(ASN1Tag.SEQUENCE);
             
             response_bytes.decodeAndCheck(OID("1.3.6.1.5.5.7.48.1.1"), "Unknown response type in OCSP response");
             
@@ -105,7 +105,7 @@ public:
                     .decode(sig_algo)
                     .decode(signature, ASN1Tag.BIT_STRING);
 
-            decodeOptionalList(basicresponse, ASN1Tag(0), certs);
+            decodeOptionalList(basicresponse, (cast(ASN1Tag) 0), certs);
             
             size_t responsedata_version;
             X509DN name;
@@ -114,12 +114,12 @@ public:
             X509Extensions extensions;
             
             BERDecoder(tbs_bits)
-                    .decodeOptional(responsedata_version, ASN1Tag(0), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
-                    .decodeOptional(name, ASN1Tag(1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
+                    .decodeOptional(responsedata_version, (cast(ASN1Tag) 0), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
+                    .decodeOptional(name, (cast(ASN1Tag)1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
                     .decodeOptionalString(key_hash, ASN1Tag.OCTET_STRING, 2,ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
                     .decode(produced_at)                    
                     .decodeList(m_responses)                    
-                    .decodeOptional(extensions, ASN1Tag(1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC));
+                    .decodeOptional(extensions, (cast(ASN1Tag)1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC));
             
             if (certs.empty)
             {

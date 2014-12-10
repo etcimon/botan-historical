@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_DSA):
 
 public import botan.pubkey.algo.dl_algo;
+public import botan.pubkey.pubkey;
 import botan.pubkey.pk_ops;
 import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.pow_mod;

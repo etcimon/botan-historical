@@ -15,7 +15,6 @@ import botan.tls.magic;
 import botan.utils.types;
 // import string;
 import botan.utils.containers.hashmap;
-import set;
 
 import botan.tls.reader;
 import botan.tls.exceptn;
@@ -75,7 +74,7 @@ class ServerNameIndicator : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SERVER_NAME_INDICATION; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     this(in string host_name) 
     {
@@ -115,7 +114,7 @@ public:
 
     string hostName() const { return m_sni_host_name; }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -133,7 +132,7 @@ public:
         return buf;
     }
 
-    @property bool empty() const { return m_sni_host_name == ""; }
+    override @property bool empty() const { return m_sni_host_name == ""; }
 private:
     string m_sni_host_name;
 }
@@ -146,7 +145,7 @@ class SRPIdentifier : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SRP_IDENTIFIER; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     this(in string identifier) 
     {
@@ -166,7 +165,7 @@ public:
     string identifier() const { return m_srp_identifier; }
 
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
 
@@ -177,7 +176,7 @@ public:
         return buf;
     }
 
-    @property bool empty() const { return m_srp_identifier == ""; }
+    override @property bool empty() const { return m_srp_identifier == ""; }
 private:
     string m_srp_identifier;
 }
@@ -190,7 +189,7 @@ class RenegotiationExtension : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SAFE_RENEGOTIATION; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     this() {}
 
@@ -209,14 +208,14 @@ public:
 
     Vector!ubyte renegotiationInfo() const { return m_reneg_data; }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         appendTlsLengthValue(buf, m_reneg_data, 1);
         return buf;
     }
 
-    @property bool empty() const { return false; } // always send this
+    override @property bool empty() const { return false; } // always send this
 
 private:
     Vector!ubyte m_reneg_data;
@@ -230,13 +229,13 @@ class MaximumFragmentLength : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_MAX_FRAGMENT_LENGTH; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
-    @property bool empty() const { return false; }
+    override @property bool empty() const { return false; }
 
     size_t fragmentSize() const { return m_max_fragment; }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         __gshared immutable ubyte[size_t] fragment_to_code = [ 512: 1, 1024: 2, 2048: 3, 4096: 4 ];
         
@@ -291,7 +290,7 @@ class NextProtocolNotification : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_NEXT_PROTOCOL; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     Vector!string protocols() const { return m_protocols; }
 
@@ -328,7 +327,7 @@ public:
         }
     }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -343,7 +342,7 @@ public:
         return buf;
     }
 
-    @property bool empty() const { return false; }
+    override @property bool empty() const { return false; }
 private:
     Vector!string m_protocols;
 }
@@ -356,7 +355,7 @@ class SessionTicket : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SESSION_TICKET; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     /**
     * @return contents of the session ticket
@@ -384,9 +383,9 @@ public:
         m_ticket = reader.get_elem!(ubyte, Vector!ubyte)(extension_size);
     }
 
-    Vector!ubyte serialize() const { return m_ticket; }
+    override Vector!ubyte serialize() const { return m_ticket; }
 
-    @property bool empty() const { return false; }
+    override @property bool empty() const { return false; }
 private:
     Vector!ubyte m_ticket;
 }
@@ -399,7 +398,7 @@ class SupportedEllipticCurves : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_USABLE_ELLIPTIC_CURVES; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     static string curveIdToName(ushort id)
     {
@@ -474,7 +473,7 @@ public:
 
     Vector!string curves() const { return m_curves; }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(2);
         
@@ -518,7 +517,7 @@ public:
         }
     }
 
-    @property bool empty() const { return m_curves.empty; }
+    override @property bool empty() const { return m_curves.empty; }
 private:
     Vector!string m_curves;
 }
@@ -531,7 +530,7 @@ class SignatureAlgorithms : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_SIGNATURE_ALGORITHMS; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     static string hashAlgoName(ubyte code)
     {
@@ -613,7 +612,7 @@ public:
         return m_supported_algos;
     }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(2);
         
@@ -637,7 +636,7 @@ public:
         return buf;
     }
 
-    @property bool empty() const { return false; }
+    override @property bool empty() const { return false; }
 
     this(in Vector!string hashes, in Vector!string sigs)
     {
@@ -686,18 +685,18 @@ class HeartbeatSupportIndicator : Extension
 public:
     static HandshakeExtensionType staticType() { return TLSEXT_HEARTBEAT_SUPPORT; }
 
-    HandshakeExtensionType type() const { return staticType(); }
+    override HandshakeExtensionType type() const { return staticType(); }
 
     bool peerAllowedToSend() const { return m_peer_allowed_to_send; }
 
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte heartbeat = Vector!ubyte(1);
         heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
         return heartbeat;
     }
 
-    @property bool empty() const { return false; }
+    override @property bool empty() const { return false; }
 
     this(bool peer_allowed_to_send) 
     {

@@ -23,7 +23,7 @@ public:
     /*
     * IDEA Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const ushort* KS = super.getEK().ptr;
         
@@ -42,7 +42,7 @@ public:
     /*
     * IDEA Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const ushort* KS = this.getDK().ptr;
         
@@ -58,7 +58,7 @@ public:
             super.decryptN(input, output, blocks);
     }
 
-	override BlockCipher clone() const { return new IDEASSE2; }
+    override BlockCipher clone() const { return new IDEASSE2; }
 }
 
 package:

@@ -29,10 +29,6 @@ version (Have_vibe_d) {
 struct HTTPResponse
 {
 public:
-    this() {
-        m_status_code = 0;
-        m_status_message = "Uninitialized";
-    }
 
     this(uint status_code, in string status_message,
                 in string _body,
@@ -71,7 +67,7 @@ public:
 
 private:
     uint m_status_code;
-    string m_status_message;
+    string m_status_message = "Uninitialized";
     string m_body;
     HashMap!(string, string) m_headers;
 }

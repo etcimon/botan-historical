@@ -75,7 +75,7 @@ public:
         m_certs.pushBack(cert);
     }
 
-    Vector!X509DN allSubjects() const
+    override Vector!X509DN allSubjects() const
     {
         Vector!X509DN subjects;
         foreach (ref cert; m_certs)
@@ -83,7 +83,7 @@ public:
         return subjects;
     }
 
-    X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
+    override X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -107,7 +107,7 @@ public:
         m_crls.pushBack(crl);
     }
 
-    X509CRL findCrlFor(in X509Certificate subject) const
+    override X509CRL findCrlFor(in X509Certificate subject) const
     {
         const Vector!ubyte key_id = subject.authorityKeyId();
         
@@ -143,7 +143,7 @@ public:
         m_certs = certs;
     }
 
-    Vector!X509DN allSubjects() const
+    override Vector!X509DN allSubjects() const
     {
         Vector!X509DN subjects;
         foreach (cert; m_certs)
@@ -151,7 +151,7 @@ public:
         return subjects;
     }
 
-    X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
+    override X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -160,8 +160,8 @@ private:
 }
 
 X509Certificate certSearch(in X509DN subject_dn, 
-                                   in Vector!ubyte key_id, 
-                                   in Vector!X509Certificate certs) const
+                           in Vector!ubyte key_id, 
+                           in Vector!X509Certificate certs)
 {
     foreach (const cert; certs[])
     {

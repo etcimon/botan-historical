@@ -28,7 +28,7 @@ public:
     /*
     * DER encode an AlgorithmIdentifier
     */
-    override void encodeInto(DEREncoder codec) const
+    override void decodeFrom(DEREncoderImpl codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)
@@ -39,7 +39,7 @@ public:
     /*
     * Decode a BER encoded AlgorithmIdentifier
     */
-    override void decodeFrom(BERDecoder codec)
+    override void decodeFrom(BERDecoderImpl codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_oid)
@@ -52,31 +52,31 @@ public:
     /*
     * Create an AlgorithmIdentifier
     */
-    this(in OID, EncodingOption) {
+    this(OID alg_id, EncodingOption option) {
         __gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
         
         m_oid = alg_id;
         
         if (option == USE_NULL_PARAM)
-            m_parameters ~= DER_NULL.ptr[0 .. $];
+            m_parameters ~= DER_NULL.ptr[0 .. 2];
     }
 
     /*
     * Create an AlgorithmIdentifier
     */
-    this(in string, EncodingOption) {
+    this(string alg_id, EncodingOption option) {
         __gshared immutable ubyte[2] DER_NULL = [ 0x05, 0x00 ];
         
         m_oid = OIDS.lookup(alg_id);
         
         if (option == USE_NULL_PARAM)
-            m_parameters ~= DER_NULL.ptr[0 .. $];
+            m_parameters ~= DER_NULL.ptr[0 .. 2];
     }
     
     /*
     * Create an AlgorithmIdentifier
     */
-    this(in OID alg_id, in Vector!ubyte param)
+    this(OID alg_id, Vector!ubyte param)
     {
         m_oid = alg_id;
         m_parameters = param;
@@ -85,7 +85,7 @@ public:
     /*
     * Create an AlgorithmIdentifier
     */
-    this(in string, in Vector!ubyte) {
+    this(in string alg_id, Vector!ubyte param) {
         m_oid = OIDS.lookup(alg_id);
         m_parameters = param;
     }

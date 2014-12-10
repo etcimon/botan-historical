@@ -7,11 +7,12 @@
 module botan.cert.cvc.cvc_ado;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.cvc_req;
+import botan.cert.cvc.ecdsa_sig;
 import botan.rng.rng;
 import botan.pubkey.pubkey;
 import botan.filters.data_src;
@@ -65,9 +66,9 @@ public:
         const Vector!ubyte concat_sig = signer.signMessage(tbs_bits, rng);
         
         return DEREncoder()
-                .startCons(ASN1Tag(7), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
                 .rawBytes(tbs_bits)
-                .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons()
                 .getContentsUnlocked();
     }
@@ -95,7 +96,7 @@ public:
     * @param output = the pipe to encode this object into
     * @param encoding = the encoding type to use, must be DER
     */
-    void encode(Pipe output, X509Encoding encoding) const
+    override void encode(Pipe output, X509Encoding encoding) const
     {
         if (encoding == PEM)
             throw new InvalidArgument("encode() cannot PEM encode an EAC object");
@@ -103,9 +104,9 @@ public:
         auto concat_sig = m_sig.getConcatenation();
         
         output.write(DEREncoder()
-                     .startCons(ASN1Tag(7), ASN1Tag.APPLICATION)
+                     .startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
                      .rawBytes(m_tbs_bits)
-                     .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                     .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                      .endCons()
                      .getContents());
     }
@@ -121,7 +122,7 @@ public:
     * Get the TBS data of this CVC ADO request.
     * @result the TBS data
     */
-    Vector!ubyte tbsData() const
+    override Vector!ubyte tbsData() const
     {
         return m_tbs_bits;
     }
@@ -142,14 +143,14 @@ private:
     {
         Vector!ubyte inner_cert;
         BERDecoder(m_tbs_bits)
-                    .startCons(ASN1Tag(33))
+                    .startCons((cast(ASN1Tag)33))
                     .rawBytes(inner_cert)
                     .endCons()
                     .decode(m_car)
                     .verifyEnd();
         
         Vector!ubyte req_bits = DEREncoder()
-                                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                                .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                                 .rawBytes(inner_cert)
                                 .endCons()
                                 .getContentsUnlocked();
@@ -161,24 +162,24 @@ private:
 
 
     void decodeInfo(DataSource source,
-                     ref Vector!ubyte res_tbs_bits,
-                     ref ECDSASignature res_sig)
+                    ref Vector!ubyte res_tbs_bits,
+                    ref ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         Vector!ubyte cert_inner_bits;
         ASN1Car car;
         
         BERDecoder(source)
-                .startCons(ASN1Tag(7))
-                .startCons(ASN1Tag(33))
+                .startCons((cast(ASN1Tag)7))
+                .startCons((cast(ASN1Tag)33))
                 .rawBytes(cert_inner_bits)
                 .endCons()
                 .decode(car)
-                .decode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons();
         
         Vector!ubyte enc_cert = DEREncoder()
-                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                 .rawBytes(cert_inner_bits)
                 .endCons()
                 .getContentsUnlocked();

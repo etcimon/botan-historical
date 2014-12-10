@@ -23,7 +23,7 @@ public:
     string providerName() const { return "aes_isa"; }
 
     BlockCipher findBlockCipher(in SCANToken request,
-                                  AlgorithmFactory af) const
+	                            AlgorithmFactoryImpl af) const
     {
         static if (BOTAN_HAS_AES_NI) {
             if (CPUID.hasAesNi())

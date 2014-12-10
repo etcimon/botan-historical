@@ -24,7 +24,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-	override void cipher(in ubyte* input, ubyte* output, size_t length)
+    override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -49,7 +49,7 @@ public:
     /*
     * Return the name of this type
     */
-	override void setIv(in ubyte* iv, size_t length)
+    override void setIv(in ubyte* iv, size_t length)
     {
         if (!validIvLength(length))
             throw new InvalidIVLength(name(), length);
@@ -93,7 +93,7 @@ public:
         m_position = 0;
     }
 
-	override bool validIvLength(size_t iv_len) const
+    override bool validIvLength(size_t iv_len) const
     { return (iv_len == 8 || iv_len == 24); }
 
     KeyLengthSpecification keySpec() const
@@ -119,7 +119,7 @@ public:
         return "Salsa20";
     }
 
-	override Salsa20 clone() const { return new Salsa20; }
+    override Salsa20 clone() const { return new Salsa20; }
 private:
     /*
     * Salsa20 Key Schedule
@@ -246,9 +246,9 @@ void salsa20(ref ubyte[64] output, in uint[16] input)
 string SALSA20_QUARTER_ROUND(alias _x1, alias _x2, alias _x3, alias _x4)()
 {
     enum x1 = __traits(identifier, _x1).stringof;
-	enum x2 = __traits(identifier, _x2).stringof;
-	enum x3 = __traits(identifier, _x3).stringof;
-	enum x4 = __traits(identifier, _x4).stringof;
+    enum x2 = __traits(identifier, _x2).stringof;
+    enum x3 = __traits(identifier, _x3).stringof;
+    enum x4 = __traits(identifier, _x4).stringof;
     
     return x2 ~ ` ^= rotateLeft(` ~ x1 ~ ` + ` ~ x4 ~ `,  7);
             ` ~ x3 ~ ` ^= rotateLeft(` ~ x2 ~ ` + ` ~ x1 ~ `,  9);

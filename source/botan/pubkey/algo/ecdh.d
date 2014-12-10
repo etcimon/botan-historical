@@ -11,6 +11,7 @@ module botan.pubkey.algo.ecdh;
 import botan.constants;
 static if (BOTAN_HAS_ECDH):
 
+public import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;
 import botan.pubkey.pk_ops;
 import botan.math.bigint.bigint;
@@ -149,8 +150,8 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
     if (alice_key != bob_key)
     {
         writeln("The two keys didn't match!");
-        writeln("Alice's key was: " ~ alice_key.asString());
-        writeln("Bob's key was: " ~ bob_key.asString());
+        writeln("Alice's key was: " ~ alice_key.toString());
+        writeln("Bob's key was: " ~ bob_key.toString());
         ++fails;
     }
     
@@ -180,7 +181,7 @@ size_t testEcdhSomeDp(RandomNumberGenerator rng)
         SymmetricKey alice_key = ka.deriveKey(32, private_b.publicValue());
         SymmetricKey bob_key = kb.deriveKey(32, private_a.publicValue());
         
-        mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.asString() ~ ", Bob's key was: " ~ bob_key.asString() ) );
+        mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.toString() ~ ", Bob's key was: " ~ bob_key.toString() ) );
     }
     
     return fails;
@@ -212,7 +213,7 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
         SymmetricKey alice_key = ka.deriveKey(32, key_b);
         SymmetricKey bob_key = kb.deriveKey(32, key_a);
         
-        mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.asString() ~ ", Bob's key was: " ~ bob_key.asString() ) );
+        mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.toString() ~ ", Bob's key was: " ~ bob_key.toString() ) );
         
     }
     

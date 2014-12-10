@@ -12,6 +12,7 @@ import botan.constants;
 
 static if (BOTAN_HAS_ECDSA):
 
+public import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;
 import botan.math.numbertheory.reducer;
 import botan.pubkey.pk_ops;

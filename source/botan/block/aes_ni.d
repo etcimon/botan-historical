@@ -23,7 +23,7 @@ public:
     /*
     * AES-128 Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -99,7 +99,7 @@ public:
     /*
     * AES-128 Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -183,7 +183,7 @@ public:
     }
 
     @property string name() const { return "AES-128"; }
-	override BlockCipher clone() const { return new AES128NI; }
+    override BlockCipher clone() const { return new AES128NI; }
 private:
     /*
     * AES-128 Key Schedule
@@ -249,7 +249,7 @@ public:
     /*
     * AES-192 Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -331,7 +331,7 @@ public:
     /*
     * AES-192 Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -421,7 +421,7 @@ public:
         zap(m_DK);
     }
     @property string name() const { return "AES-192"; }
-	override BlockCipher clone() const { return new AES192NI; }
+    override BlockCipher clone() const { return new AES192NI; }
 private:
     /*
     * AES-192 Key Schedule
@@ -480,7 +480,7 @@ public:
     /*
     * AES-256 Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -568,7 +568,7 @@ public:
     /*
     * AES-256 Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -663,7 +663,7 @@ public:
     }
 
     @property string name() const { return "AES-256"; }
-	override BlockCipher clone() const { return new AES256NI; }
+    override BlockCipher clone() const { return new AES256NI; }
 private:
     /*
     * AES-256 Key Schedule

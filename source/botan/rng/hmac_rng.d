@@ -31,7 +31,7 @@ public:
     /*
     * Generate a buffer of random bytes
     */
-    void randomize(ubyte* output, size_t length)
+	override void randomize(ubyte* output, size_t length)
     {
         if (!isSeeded())
         {
@@ -62,7 +62,7 @@ public:
         }
     }
 
-    bool isSeeded() const
+	override bool isSeeded() const
     {
         return (m_collected_entropy_estimate >= 256);
     }
@@ -70,7 +70,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         m_collected_entropy_estimate = 0;
         m_extractor.clear();
@@ -82,7 +82,7 @@ public:
     /*
     * Return the name of this type
     */
-    @property string name() const
+	override @property string name() const
     {
         return "HMAC_RNG(" ~ m_extractor.name ~ "," ~ m_prf.name ~ ")";
     }
@@ -90,7 +90,7 @@ public:
     /*
     * Poll for entropy and reset the internal keys
     */
-    void reseed(size_t poll_bits)
+	override void reseed(size_t poll_bits)
     {
         /*
         Using the terminology of E-t-E, XTR is the MAC function (normally
@@ -151,7 +151,7 @@ public:
     /*
     * Add user-supplied entropy to the extractor input
     */
-    void addEntropy(in ubyte* input, size_t length)
+	override void addEntropy(in ubyte* input, size_t length)
     {
         m_extractor.update(input, length);
         reseed(BOTAN_RNG_RESEED_POLL_BITS);

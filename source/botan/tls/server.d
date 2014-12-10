@@ -23,7 +23,7 @@ import std.datetime;
 /**
 * TLS Server
 */
-final class TLSServer : TLS_Channel
+final class TLSServer : TLSChannel
 {
 public:
     /**
@@ -52,7 +52,7 @@ public:
     */
     string nextProtocol() const { return m_next_protocol; }
 
-private:
+protected:
     override Vector!X509Certificate getPeerCertChain(in HandshakeState state) const
     {
         if (state.clientCerts())
@@ -521,6 +521,7 @@ private:
         return state;
     }
 
+private:
     const TLSPolicy m_policy;
     TLSCredentialsManager m_creds;
 

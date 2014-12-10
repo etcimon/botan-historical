@@ -19,13 +19,13 @@ import botan.hash.hash;
 class MD4_X86_32 : MD4
 {
 public:
-	override HashFunction clone() const { return new MD4_X86_32; }
+    override HashFunction clone() const { return new MD4_X86_32; }
 
 protected:
     /*
     * MD4 Compression Function
     */
-	override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {

@@ -160,7 +160,7 @@ __gshared immutable size_t PBKDF_ITERATIONS = 8 * 1024;
 
 __gshared immutable size_t PBKDF_OUTPUT_LEN = CIPHER_KEY_LEN + CIPHER_IV_LEN + MAC_KEY_LEN;
 
-
+import botan.constants;
 static if (BOTAN_TEST):
 
 import botan.test;

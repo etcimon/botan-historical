@@ -33,12 +33,12 @@ public:
         m_hash = hash_input;
     }
 
-	override @property string name() const
+    override @property string name() const
     {
         return "PBKDF1(" ~ m_hash.name ~ ")";
     }
 
-	override PBKDF clone() const
+    override PBKDF clone() const
     {
         return new PKCS5PBKDF1(m_hash.clone());
     }
@@ -46,7 +46,7 @@ public:
     /*
     * Return a PKCS#5 PBKDF1 derived key
     */
-	override Pair!(size_t, OctetString) keyDerivation(size_t key_len,
+    override Pair!(size_t, OctetString) keyDerivation(size_t key_len,
                                               in string passphrase,
                                               in ubyte* salt, size_t salt_len,
                                               size_t iterations,

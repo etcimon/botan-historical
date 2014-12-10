@@ -37,7 +37,7 @@ public:
             closedir(m_cur_dir.first);
     }
     
-    int nextFd();
+    override int nextFd();
 private:
     void addDirectory(in string dirname)
     {
@@ -68,7 +68,7 @@ private:
     }
     
     Pair!(DIR*, string) m_cur_dir;
-    Deque!string m_dirlist;
+    Vector!string m_dirlist;
 }
 
 

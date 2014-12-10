@@ -44,7 +44,7 @@ public:
     /*
     * Serpent Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         const uint* KS = this.get_round_keys().ptr;
         
@@ -60,7 +60,7 @@ public:
             super.decryptN(input, output, blocks);
     }
 
-	override BlockCipher clone() const { return new SerpentSIMD; }
+    override BlockCipher clone() const { return new SerpentSIMD; }
 }
 
 package:

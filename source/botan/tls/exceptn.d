@@ -32,7 +32,7 @@ private:
 /**
 * TLS_Unexpected_Message Exception
 */
-class TLSUnexpectedMessage : TLS_Exception
+class TLSUnexpectedMessage : TLSException
 {
     this(in string err) 
     {

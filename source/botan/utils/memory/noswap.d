@@ -49,10 +49,10 @@ private nothrow @nogc pure:
     }
 
 }
-final class NoSwapAllocator
+final shared class NoSwapAllocator
 {
     __gshared immutable size_t alignment = 8;
-
+shared:
 public:
     synchronized void[] alloc(size_t n)
     {
@@ -155,8 +155,7 @@ public:
         
         return true;
     }
-        
-private:
+package:
     this()
     {
 
@@ -203,7 +202,8 @@ private:
             m_pool_ptr = null;
         }
     }
-        
+
+private:
     const size_t m_poolsize;
     RedBlackTree!(void[], "a.ptr < b.ptr") m_freelist;
     void[] m_pool; // aligned

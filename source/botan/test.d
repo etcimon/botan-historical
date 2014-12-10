@@ -1,10 +1,9 @@
 module botan.test;
 
 import botan.constants;
+static if (BOTAN_TEST):
 
-// static if (BOTAN_TEST):
-
-public import std.stdio : File, writeln, dirEntries;
+public import std.stdio : File, writeln;
 public import std.algorithm : sort, canFind;
 public import std.string : indexOf, lastIndexOf;
 public import botan.utils.types;

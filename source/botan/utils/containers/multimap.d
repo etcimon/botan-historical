@@ -85,12 +85,12 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         have the same key, possibly resulting in duplicates. Use opIndexAssign
         if you want to avoid duplicates.
     */
-    void insert(KeyType key, ValueType value)
+    void insert(in KeyType key, ValueType value)
     {
         auto keysum = computeCheckSumI(key);
         if (m_fieldCount < m_fields.length)
-            m_fields[m_fieldCount++] = Field(keysum, key, value);
-        else m_extendedFields ~= Field(keysum, key, value);
+            m_fields[m_fieldCount++] = Field(keysum, cast(KeyType) key, value);
+        else m_extendedFields ~= Field(keysum, cast(KeyType) key, value);
     }
 
     /** Returns the first field that matches the given key.
@@ -111,11 +111,16 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
     const {
         import std.array;
         auto ret = appender!(const(ValueType)[])();
-        getAll(key, (v) { ret.put(v); });
+        this.opApply( (k, const ref v) {
+            if (key == k)
+                ret ~= v;
+            return 1;
+        });
         return ret.data;
     }
+
     /// ditto
-    void equalRange(KeyType key, scope void delegate(const(ValueType)) del)
+    void equalRange(in KeyType key, scope void delegate(const(ValueType)) del)
     const {
         uint keysum = computeCheckSumI(key);
         foreach (ref f; m_fields[0 .. m_fieldCount]) {
@@ -127,7 +132,6 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
             if (matches(f.key, key)) del(f.value);
         }
     }
-    
     /** Returns the first value matching the given key.
     */
     inout(ValueType) opIndex(KeyType key)
@@ -224,6 +228,11 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
             csum = (csum << 1) | (csum >> 31);
         }
         return csum;
+    }
+
+    private static uint computeCheckSumI(T)(ref T obj)
+    @trusted {
+        return cast(uint)typeid(obj).getHash(&obj);
     }
 }
 

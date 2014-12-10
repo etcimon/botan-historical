@@ -22,7 +22,7 @@ public:
 
     static size_t size() { return N; }
 
-	@disable this(); // { /* uninitialized */ }
+    @disable this(); // { /* uninitialized */ }
 
     this(in T[N] B)
     {

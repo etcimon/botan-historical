@@ -66,13 +66,13 @@ public:
     * Encode whatever this object is into to
     * @param to = the DEREncoder that will be written to
     */
-    abstract void encodeInto(DEREncoder to) const;
+    abstract void decodeFrom(DEREncoderImpl to) const;
 
     /**
     * Decode whatever this object is from from
     * @param from = the BERDecoder that will be read from
     */
-    abstract void decodeFrom(BERDecoder from);
+    abstract void decodeFrom(BERDecoderImpl from);
 
     ~this() {}
 }
@@ -101,7 +101,7 @@ public:
     */
     string toString()
     {
-        return value[];
+        return cast(string) value[];
     }
 
     ASN1Tag type_tag, class_tag;

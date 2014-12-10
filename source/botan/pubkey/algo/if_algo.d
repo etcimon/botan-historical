@@ -9,6 +9,7 @@ module botan.pubkey.algo.if_algo;
 import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
+public import botan.pubkey.pubkey;
 import botan.math.bigint.bigint;
 import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;

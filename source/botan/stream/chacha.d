@@ -24,7 +24,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-	override void cipher(in ubyte* input, ubyte* output, size_t length)
+    override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -48,7 +48,7 @@ public:
     /*
     * Return the name of this type
     */
-	override void setIv(in ubyte* iv, size_t length)
+    override void setIv(in ubyte* iv, size_t length)
     {
         if (!validIvLength(length))
             throw new InvalidIVLength(name, length);
@@ -66,7 +66,7 @@ public:
         m_position = 0;
     }
 
-	override bool validIvLength(size_t iv_len) const
+    override bool validIvLength(size_t iv_len) const
     { return (iv_len == 8); }
 
     KeyLengthSpecification keySpec() const
@@ -92,7 +92,7 @@ public:
         return "ChaCha";
     }
 
-	override StreamCipher clone() const { return new ChaCha; }
+    override StreamCipher clone() const { return new ChaCha; }
 protected:
 
     void chacha(ref ubyte[64] output, in uint[16] input)

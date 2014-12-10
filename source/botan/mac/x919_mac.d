@@ -32,14 +32,14 @@ public:
     }
 
 
-	override @property string name() const
+    override @property string name() const
     {
         return "X9.19-MAC";
     }
 
-	override @property size_t outputLength() const { return 8; }
+    override @property size_t outputLength() const { return 8; }
 
-	override MessageAuthenticationCode clone() const
+    override MessageAuthenticationCode clone() const
     {
         return new ANSIX919MAC(m_des1.clone());
     }

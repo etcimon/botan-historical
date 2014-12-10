@@ -21,11 +21,11 @@ import botan.codec.pem;
 import botan.pubkey.pk_algs;
 import botan.utils.types;
 
-// import string;
+alias X509Encoding = bool;
 /**
 * The two types of X509 encoding supported by Botan.
 */
-enum X509Encoding { RAW_BER, PEM }
+enum : X509Encoding { RAW_BER, PEM }
 
 /**
 * BER encode a key

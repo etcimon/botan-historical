@@ -21,7 +21,7 @@ import std.algorithm;
 final class ANSIX931RNG : RandomNumberGenerator
 {
 public:
-    void randomize(ubyte* output, size_t length)
+    override void randomize(ubyte* output, size_t length)
     {
         if (!isSeeded())
         {
@@ -45,12 +45,12 @@ public:
         }
     }
 
-    bool isSeeded() const
+    override bool isSeeded() const
     {
         return (m_V.length > 0);
     }
 
-    void clear()
+    override void clear()
     {
         m_cipher.clear();
         m_prng.clear();
@@ -60,18 +60,18 @@ public:
         m_R_pos = 0;
     }
 
-    @property string name() const
+    override @property string name() const
     {
         return "X9.31(" ~ m_cipher.name ~ ")";
     }
 
-    void reseed(size_t poll_bits)
+    override void reseed(size_t poll_bits)
     {
         m_prng.reseed(poll_bits);
         rekey();
     }
 
-    void addEntropy(in ubyte* input, size_t length)
+    override void addEntropy(in ubyte* input, size_t length)
     {
         m_prng.addEntropy(input, length);
         rekey();

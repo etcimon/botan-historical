@@ -18,7 +18,7 @@ public import botan.pubkey.pk_ops;
 public import botan.rng.rng;
 public import botan.math.bigint.bigint;
 public import botan.filters.key_filt;
-public import botan.algo_factory.algo_factory : AlgorithmFactory;
+public import botan.algo_factory.algo_factory : AlgorithmFactoryImpl;
 public import botan.utils.types;
 
 /**
@@ -40,7 +40,7 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    BlockCipher findBlockCipher(in SCANToken algo_spec, AlgorithmFactory af) const;
+	BlockCipher findBlockCipher(in SCANToken algo_spec, AlgorithmFactoryImpl af) const;
 
 
     /**
@@ -48,14 +48,14 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactory af) const;
+	StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactoryImpl af) const;
 
     /**
     * @param algo_spec = the algorithm name/specification
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    HashFunction findHash(in SCANToken algo_spec, AlgorithmFactory af) const;
+	HashFunction findHash(in SCANToken algo_spec, AlgorithmFactoryImpl af) const;
 
 
     /**
@@ -63,14 +63,14 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactory af) const;
+	MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactoryImpl af) const;
 
     /**
     * @param algo_spec = the algorithm name/specification
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const;
+	PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactoryImpl af) const;
 
     /**
     * @param n = the modulus
@@ -86,7 +86,7 @@ public:
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-    KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af);
+	KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactoryImpl af);
 
     /**
     * Return a new operator object for this key, if possible

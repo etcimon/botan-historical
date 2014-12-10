@@ -27,11 +27,11 @@ struct Pair(T, U) {
     import std.typecons : Tuple;
     private Tuple!(T,U) m_obj;
 
-    @property T first() {
+    @property inout(T) first() inout {
         return m_obj[0];
     }
 
-    @property U second() {
+    @property inout(U) second() inout {
         return m_obj[1];
     }
 
@@ -40,6 +40,11 @@ struct Pair(T, U) {
     }
 
     alias m_obj this;
+}
+
+Pair!(T, U) makePair(T, U)(T first, U second)
+{
+	return Pair!(T, U)(first, second);
 }
 
 struct Unique(T)

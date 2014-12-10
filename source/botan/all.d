@@ -13,6 +13,6 @@ public import botan.utils.version_;
 public import botan.utils.parsing;
 
 public import botan.rng.rng;
-
+import botan.constants;
 static if (BOTAN_HAS_AUTO_SEEDING_RNG)
     public import botan.rng.auto_rng;

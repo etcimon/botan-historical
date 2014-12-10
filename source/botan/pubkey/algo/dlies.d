@@ -10,7 +10,7 @@ module botan.pubkey.algo.dlies;
 import botan.constants;
 static if (BOTAN_HAS_DLIES):
 
-import botan.pubkey.pubkey;
+public import botan.pubkey.pubkey;
 import botan.mac.mac;
 import botan.kdf.kdf;
 import botan.utils.xor_buf;

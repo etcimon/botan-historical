@@ -175,7 +175,7 @@ public:
     /**
     * @return new object representing the same algorithm as this
     */
-    abstract BlockCipher clone() const;
+    abstract const(BlockCipher) clone() const;
 }
 
 /**

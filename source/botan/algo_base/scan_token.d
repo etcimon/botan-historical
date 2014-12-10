@@ -34,7 +34,7 @@ public:
         size_t level = 0;
         Appender!string def_buf;
         def_buf.reserve(8);
-        Pair!(size_t, Appender!string) accum = Pair(level, def_buf);
+        auto accum = makePair(level, def_buf);
         
         string decoding_error = "Bad SCAN name '" ~ algo_spec ~ "': ";
         
@@ -58,19 +58,19 @@ public:
                     accum.second ~= c;
                 else
                 {
-                    if (accum.second.length > 0)
-                        names.pushBack(derefAliases(Pair(accum.first, accum.second.data)));
+                    if (accum.second.data.length > 0)
+                        names.pushBack(makePair(accum.first, derefAlias(accum.second.data)));
                     Appender!string str;
                     str.reserve(8);
-                    accum = Pair(level, str);
+					accum = makePair(level, str);
                 }
             }
             else
                 accum.second ~= c;
         }
         
-        if (accum.second.length > 0)
-            names.pushBack(derefAliases(Pair(accum.first, accum.second.data)));
+        if (accum.second.data.length > 0)
+            names.pushBack(makePair(accum.first, derefAlias(accum.second.data)));
         
         if (level != 0)
             throw new DecodingError(decoding_error ~ "Missing close paren");
@@ -81,8 +81,8 @@ public:
         m_alg_name = names[0].second;
         
         bool in_modes;
-
-        foreach (const name; names[])
+		size_t i;
+        foreach (name; names[])
         {
             if (name.first == 0)
             {
@@ -91,7 +91,8 @@ public:
             }
             else if (name.first == 1 && !in_modes)
                 m_args.pushBack(makeArg(names, i));
-        }
+			i++;
+		}
     }
     
     /**
@@ -111,7 +112,7 @@ public:
     {
         Appender!string output;
         
-        output = algo_name;
+        output ~= algoName;
         
         if (argCount())
         {
@@ -189,17 +190,16 @@ public:
     string cipherModePad() const
     { return (m_mode_info.length >= 2) ? m_mode_info[1] : ""; }
     
-    static void addAlias(in string _alias, in string basename)
+    static void addAlias(string _alias, in string basename)
     {
-        
         if (s_alias_map.get(_alias, null) is null)
-            s_alias_map[_alias] = basename;
+            s_alias_map.set(_alias, basename);
     }
 
     
-    static string derefAliases(in Pair!(size_t, string) input)
+    static string derefAlias(string input)
     {
-        return Pair(input.first, s_alias_map.get(input.second));
+        return s_alias_map.get(input, null);
     }
 
     static void setDefaultAliases()
@@ -245,48 +245,9 @@ private:
     Vector!string m_mode_info;
 }
 
-string makeArg(in Vector!(Pair!(size_t, string)) names, size_t start)
-{
-    Appender!string output;
-    output ~= name[start].second;
-    size_t level = name[start].first;
-    
-    size_t paren_depth = 0;
-    
-    foreach (name; name[start + 1 .. $])
-    {
-        if (name.first <= name[start].first)
-            break;
-        
-        if (name.first > level)
-        {
-            output ~= '(' + name.second;
-            ++paren_depth;
-        }
-        else if (name.first < level)
-        {
-            output ~= ")," ~ name.second;
-            --paren_depth;
-        }
-        else
-        {
-            if (output[output.length - 1] != '(')
-                output ~= ",";
-            output ~= name.second;
-        }
-        
-        level = name.first;
-    }
-    
-    foreach (i; 0 .. paren_depth)
-        output ~= ')';
-    
-    return output.data;
-}
+private:
 
-
-string makeArg(
-    const Vector!(Pair!(size_t, string)) names, size_t start)
+string makeArg(Vector!(Pair!(size_t, string)) names, size_t start)
 {
     Appender!string output;
     output ~= names[start].second;
@@ -296,12 +257,12 @@ string makeArg(
 
     foreach (name; names[(start + 1) .. $])
     {
-        if (name.first <= name[start].first)
+        if (name.first <= names[start].first)
             break;
 
         if (name.first > level)
         {
-            output ~= '(' + name.second;
+            output ~= '(' ~ name.second;
             ++paren_depth;
         }
         else if (name.first < level)
@@ -311,7 +272,7 @@ string makeArg(
         }
         else
         {
-            if (output[output.length - 1] != '(')
+            if (output.data[output.data.length - 1] != '(')
                 output ~= ",";
             output ~= name.second;
         }

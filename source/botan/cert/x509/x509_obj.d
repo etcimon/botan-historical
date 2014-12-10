@@ -124,7 +124,7 @@ public:
         }
     }
 
-    override void encodeInto(DEREncoder to) const
+    override void decodeFrom(DEREncoderImpl to) const
     {
         to.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -138,7 +138,7 @@ public:
     /*
     * Read a BER encoded X.509 object
     */
-    override void decodeFrom(BERDecoder from)
+    override void decodeFrom(BERDecoderImpl from)
     {
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -218,9 +218,11 @@ protected:
     this() {}
     AlgorithmIdentifier m_sig_algo;
     Vector!ubyte m_tbs_bits, m_sig;
-private:
+
+protected:
     abstract void forceDecode();
 
+private:
     /*
     * Read a PEM or BER X.509 object
     */

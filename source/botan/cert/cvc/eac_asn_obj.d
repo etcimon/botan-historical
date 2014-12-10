@@ -8,13 +8,12 @@
 module botan.cert.cvc.eac_asn_obj;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.rounding;
-import botan.calendar;
 import botan.utils.charset;
 import botan.utils.parsing;
 import std.datetime;
@@ -38,7 +37,7 @@ public:
     /*
     * DER encode a EACTime
     */
-    void encodeInto(DEREncoder der) const
+    override void decodeFrom(DEREncoderImpl der) const
     {
         der.addObject(m_tag, ASN1Tag.APPLICATION,
                        encodedEacTime());
@@ -47,7 +46,7 @@ public:
     /*
     * Decode a BER encoded EACTime
     */
-    void decodeFrom(BERDecoder source)
+    override void decodeFrom(BERDecoderImpl source)
     {
         BERObject obj = source.getNextObject();
         
@@ -79,7 +78,7 @@ public:
     * Return a string representation of the time
     * @return date string
     */
-    string toString() const
+    override string toString() const
     {
         if (timeIsSet() == false)
             throw new InvalidState("toString: No time set");
@@ -222,8 +221,7 @@ public:
     /*
     * Create an EACTime
     */
-    this(in SysTime time,
-             ASN1Tag t = ASN1Tag(0))
+    this(in SysTime time, ASN1Tag t = (cast(ASN1Tag) 0))
     {
         m_tag = t;
         
@@ -235,7 +233,7 @@ public:
     /*
     * Create an EACTime
     */
-    this(in string t_spec, ASN1Tag t = ASN1Tag(0))
+    this(in string t_spec, ASN1Tag t = (cast(ASN1Tag) 0))
     {
         m_tag = t;
         setTo(t_spec);
@@ -244,7 +242,7 @@ public:
     /*
     * Create an EACTime
     */
-    this(uint y, uint m, uint d, ASN1Tag t = ASN1Tag(0))
+    this(uint y, uint m, uint d, ASN1Tag t = (cast(ASN1Tag) 0))
     {
         year = y;
         month = m;
@@ -335,14 +333,14 @@ public:
     * e.g. "2007 08 01"
     */
     this(in string str = "") {
-        super(str, ASN1Tag(37));
+        super(str, (cast(ASN1Tag)37));
     }
 
     /**
     * Construct a CED from a time point
     */
     this(in SysTime time) {
-        super(time, ASN1Tag(37));
+        super(time, (cast(ASN1Tag)37));
     }
 
     /**
@@ -351,7 +349,7 @@ public:
     */
     this(in EACTime other)
     {
-        super(other.getYear(), other.getMonth(), other.getDay(), ASN1Tag(37));
+        super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)37));
     }
 }
 
@@ -369,18 +367,18 @@ public:
     */
     this(in string str = "") 
     {
-        super(str, ASN1Tag(36));
+        super(str, (cast(ASN1Tag)36));
     }
 
     this(in SysTime time)
     {
-        super(time, ASN1Tag(36));
+        super(time, (cast(ASN1Tag)36));
     }
 
     this(in EACTime other)
     {
         super(other.getYear(), other.getMonth(), other.getDay(),
-              ASN1Tag(36));
+              (cast(ASN1Tag)36));
     }
 }
 
@@ -393,7 +391,7 @@ public:
     /*
     * DER encode an ASN1EACString
     */
-    void encodeInto(DEREncoder encoder) const
+    override void decodeFrom(DEREncoderImpl encoder) const
     {
         string value = iso8859();
         encoder.addObject(tagging(), ASN1Tag.APPLICATION, value);
@@ -402,7 +400,7 @@ public:
     /*
     * Decode a BER encoded ASN1EACString
     */
-    void decodeFrom(BERDecoder source)
+	override void decodeFrom(BERDecoderImpl source)
     {
         BERObject obj = source.getNextObject();
         
@@ -518,7 +516,7 @@ public:
     */
     this(in string str)
     {
-        super(str, ASN1Tag(2));
+        super(str, (cast(ASN1Tag)2));
 
     }
         
@@ -536,7 +534,7 @@ public:
     */
     this(in string str)
     {
-        super(str, ASN1Tag(32));
+        super(str, (cast(ASN1Tag)32));
     }
 
 }

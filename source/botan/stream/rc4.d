@@ -23,7 +23,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-	override void cipher(in ubyte* input, ubyte* output, size_t length)
+    override void cipher(in ubyte* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -57,7 +57,7 @@ public:
         else                return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
     }
 
-	override RC4 clone() const { return new RC4(m_SKIP); }
+    override RC4 clone() const { return new RC4(m_SKIP); }
 
     KeyLengthSpecification keySpec() const
     {

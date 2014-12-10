@@ -13,7 +13,7 @@ import botan.utils.types;
 // import string;
 import botan.utils.types;
 import botan.libstate.libstate;
-import botan.parsing;
+import botan.utils.parsing;
 import std.array : Appender;
 import std.exception;
 
@@ -505,9 +505,9 @@ public:
     *
     * @return list of all known ciphersuites
     */
-    static Vector!TLSCiphersuite allKnownCiphersuites() const
+    static Vector!TLSCiphersuite allKnownCiphersuites()
     {
-        static Vector!TLSCiphersuite all_ciphersuites = Vector!CipherSuite(gatherKnownCiphersuites());
+        static Vector!TLSCiphersuite all_ciphersuites = Vector!TLSCiphersuite(gatherKnownCiphersuites());
         return all_ciphersuites;
     }
 
@@ -716,8 +716,7 @@ public:
         return true;
     }
 
-
-    this() {}
+    @disable this();
 
 private:
     this(ushort ciphersuite_code,

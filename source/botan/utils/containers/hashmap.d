@@ -21,10 +21,11 @@ struct DefaultHashMapTraits(Key) {
     }
 }
 
-alias HashMap(Key, Value) = FreeListRef!(HashMapImpl!(Key, Value));
+alias HashMap(Key, Value, ALLOCATOR = VulnerableAllocator) = FreeListRef!(HashMapImpl!(Key, Value, ALLOCATOR));
 
-struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
+struct HashMapImpl(Key, Value, ALLOCATOR)
 {
+	alias Traits = DefaultHashMapTraits!Key;
     struct TableEntry {
         UnConst!Key key;
         Value value;
@@ -34,19 +35,13 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
     private {
         TableEntry[] m_table; // NOTE: capacity is always POT
         size_t m_length;
-        Allocator m_allocator;
         hash_t delegate(Key) m_hasher;
         bool m_resizing;
     }
-    
-    this(Allocator allocator)
-    {
-        m_allocator = allocator;
-    }
-    
+        
     ~this()
     {
-        if (m_table) m_allocator.free(cast(void[])m_table);
+        if (m_table) freeArray!(TableEntry, ALLOCATOR)(m_table);
     }
     
     @disable this(this);
@@ -75,12 +70,21 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
         }
     }
     
-    Value get(Key key, lazy Value default_value = Value.init)
-    {
-        auto idx = findIndex(key);
-        if (idx == size_t.max) return default_value;
-        return m_table[idx].value;
-    }
+	Value get(Key key, lazy Value default_value = Value.init) const
+	{
+		import std.conv : to;
+		auto idx = findIndex(key);
+		if (idx == size_t.max) return default_value;
+		const Value ret = m_table[idx].value;
+		return cast(Value)ret;
+	}
+
+	Value get(Key key, lazy Value default_value = Value.init)
+	{
+		auto idx = findIndex(key);
+		if (idx == size_t.max) return default_value;
+		return m_table[idx].value;
+	}
     
     static if (!is(typeof({ Value v; const(Value) vc; v = vc; }))) {
         const(Value) get(Key key, lazy const(Value) default_value = Value.init)
@@ -101,6 +105,10 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
         m_length = 0;
     }
     
+	void set(Key key, Value value) {
+		opIndexAssign(value, key);
+	}
+
     void opIndexAssign(Value value, Key key)
     {
         assert(!Traits.equals(key, Traits.clearValue), "Inserting clear value into hash map.");
@@ -141,8 +149,17 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
                     return ret;
         return 0;
     }
-    
-    int opApply(int delegate(in ref Key, ref Value) del)
+
+	int opApply(int delegate(in ref Key, ref Value) del)
+	{
+		foreach (i; 0 .. m_table.length)
+			if (!Traits.equals(m_table[i].key, Traits.clearValue))
+				if (auto ret = del(m_table[i].key, m_table[i].value))
+					return ret;
+		return 0;
+	}
+
+    int opApply(int delegate(ref Key, ref Value) del)
     {
         foreach (i; 0 .. m_table.length)
             if (!Traits.equals(m_table[i].key, Traits.clearValue))
@@ -200,7 +217,6 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
         m_resizing = true;
         scope(exit) m_resizing = false;
         
-        if (!m_allocator) m_allocator = getAllocator!VulnerableAllocator();
         if (!m_hasher) {
             static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHash() : 0;
@@ -219,7 +235,7 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
         new_size = 1 << pot;
         
         auto oldtable = m_table;
-        m_table = allocArray!TableEntry(m_allocator, new_size);
+        m_table = allocArray!(TableEntry, ALLOCATOR)(new_size);
         foreach (ref el; m_table) {
             static if (is(Key == struct)) {
                 emplace(cast(UnConst!Key*)&el.key);
@@ -233,7 +249,7 @@ struct HashMapImpl(Key, Value, Traits = DefaultHashMapTraits!Key)
             auto idx = findInsertIndex(el.key);
             (cast(ubyte[])(&m_table[idx])[0 .. 1])[] = (cast(ubyte[])(&el)[0 .. 1])[];
         }
-        if (oldtable) freeArray(m_allocator, oldtable);
+        if (oldtable) freeArray!(TableEntry, ALLOCATOR)(oldtable);
     }
 }
 

@@ -6,6 +6,7 @@
 */
 module botan.pubkey.algo.dl_group;
 
+public import botan.pubkey.pubkey;
 import botan.math.bigint.bigint;
 import botan.filters.data_src;
 import botan.libstate.libstate;

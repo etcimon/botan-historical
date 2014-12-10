@@ -13,18 +13,18 @@ import botan.utils.types;
 final class AutoSeededRNG : RandomNumberGenerator
 {
 public:
-    void randomize(ubyte* output, size_t len)
+	override void randomize(ubyte* output, size_t len)
     { m_rng.randomize(output, len); }
 
-    bool isSeeded() const { return m_rng.isSeeded(); }
+	override bool isSeeded() const { return m_rng.isSeeded(); }
 
-    void clear() { m_rng.clear(); }
+	override void clear() { m_rng.clear(); }
 
-    @property string name() const { return m_rng.name; }
+	override @property string name() const { return m_rng.name; }
 
-    void reseed(size_t poll_bits = 256) { m_rng.reseed(poll_bits); }
+	override void reseed(size_t poll_bits = 256) { m_rng.reseed(poll_bits); }
 
-    void addEntropy(in ubyte* input, size_t len)
+	override void addEntropy(in ubyte* input, size_t len)
     { m_rng.addEntropy(input, len); }
 
     this()

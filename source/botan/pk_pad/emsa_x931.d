@@ -9,6 +9,7 @@ module botan.pk_pad.emsa_x931;
 import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.pk_pad.hash_id;
+import botan.utils.types;
 
 /**
 * EMSA from X9.31 (EMSA2 in IEEE 1363)

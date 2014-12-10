@@ -11,6 +11,7 @@ module botan.pubkey.algo.ecc_key;
 import botan.constants;
 static if (BOTAN_HAS_ECDH || BOTAN_HAS_ECDSA || BOTAN_HAS_GOST_34_10_2001):
 
+public import botan.pubkey.pubkey;
 public import botan.math.ec_gfp.ec_group;
 public import botan.math.numbertheory.numthry;
 public import botan.math.ec_gfp.curve_gfp;
@@ -232,7 +233,7 @@ public:
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(1, "Unknown version code for ECC key")
                 .decodeOctetStringBigint(m_private_key)
-                .decodeOptional(key_parameters, ASN1Tag(0), ASN1Tag.PRIVATE)
+                .decodeOptional(key_parameters, (cast(ASN1Tag) 0), ASN1Tag.PRIVATE)
                 .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)
                 .endCons();
         

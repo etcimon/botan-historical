@@ -13,6 +13,7 @@ import botan.rng.rng;
 import botan.utils.loadstor;
 import botan.block.blowfish;
 import botan.codec.base64;
+import botan.utils.types;
 
 /**
 * Create a password hash using Bcrypt

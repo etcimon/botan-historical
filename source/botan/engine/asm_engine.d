@@ -27,7 +27,7 @@ public:
 
         
     BlockCipher findBlockCipher(in SCANToken request,
-                                AlgorithmFactory af) const
+	                            AlgorithmFactoryImpl af) const
     {
         static if (BOTAN_HAS_SERPENT_X86_32) { 
             if (request.algoName == "Serpent")
@@ -40,7 +40,7 @@ public:
     }
 
     HashFunction findHash(in SCANToken request,
-                          AlgorithmFactory af) const
+	                      AlgorithmFactoryImpl af) const
     {
         static if (BOTAN_HAS_MD4_X86_32) {
             if (request.algoName == "MD4")

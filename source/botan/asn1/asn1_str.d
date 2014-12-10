@@ -25,7 +25,7 @@ public:
     /*
     * DER encode an ASN1String
     */
-    void encodeInto(DEREncoder encoder) const
+	override void decodeFrom(DEREncoderImpl encoder) const
     {
         string value = iso8859();
         if (tagging() == ASN1Tag.UTF8_STRING)
@@ -36,7 +36,7 @@ public:
     /*
     * Decode a BER encoded ASN1String
     */
-    void decodeFrom(BERDecoder source)
+	override void decodeFrom(BERDecoderImpl source)
     {
         BERObject obj = source.getNextObject();
         
@@ -49,9 +49,9 @@ public:
         else
             charset_is = LATIN1_CHARSET;
         
-        initialize(ranscode(obj.toString(), 
-                            charset_is, 
-                            LOCAL_CHARSET),
+        initialize(transcode(obj.toString(), 
+                             charset_is, 
+                             LOCAL_CHARSET),
                    obj.type_tag);
     }
 

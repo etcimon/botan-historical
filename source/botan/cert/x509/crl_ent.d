@@ -49,7 +49,7 @@ public:
     /*
     * DER encode a CRLEntry
     */
-    void encodeInto(DEREncoder to_) const
+    override void decodeFrom(DEREncoderImpl to_) const
     {
         X509Extensions extensions;
         
@@ -68,10 +68,10 @@ public:
     /*
     * Decode a BER encoded CRLEntry
     */
-    void decodeFrom(BERDecoder source)
+    override void decodeFrom(BERDecoderImpl source)
     {
         BigInt serial_number_bn;
-        m_reason = CRL_Code.UNSPECIFIED;
+        m_reason = CRLCode.UNSPECIFIED;
         
         BERDecoder entry = source.startCons(ASN1Tag.SEQUENCE);
         
@@ -83,7 +83,7 @@ public:
             entry.decode(extensions);
             DataStore info;
             extensions.contentsTo(info, info);
-            m_reason = CRL_Code(info.get1Uint("X509v3.CRLReasonCode"));
+            m_reason = CRLCode(info.get1Uint("X509v3.CRLReasonCode"));
         }
         
         entry.endCons();
@@ -115,7 +115,7 @@ public:
     this(bool throw_on_unknown_critical_extension)
     {
         m_throw_on_unknown_critical = throw_on_unknown_critical_extension;
-        m_reason = CRL_Code.UNSPECIFIED;
+        m_reason = CRLCode.UNSPECIFIED;
     }
 
     /**
@@ -123,7 +123,7 @@ public:
     * @param cert = the certificate to revoke
     * @param reason = the reason code to set in the entry
     */
-    this(in X509Certificate cert, CRLCode why = CRL_Code.UNSPECIFIED)
+    this(in X509CertificateImpl cert, CRLCode why = CRLCode.UNSPECIFIED)
     {
         m_throw_on_unknown_critical = false;
         m_serial = cert.serialNumber();
@@ -159,5 +159,5 @@ private:
     bool m_throw_on_unknown_critical;
     Vector!ubyte m_serial;
     X509Time m_time;
-    CRL_Code m_reason;
+    CRLCode m_reason;
 }

@@ -18,12 +18,12 @@ alias SecureAllocator = ZeroizeAllocator!VulnerableAllocator;
 final class ZeroizeAllocator(Base : Allocator)
 {
     private {
-        NoSwapAllocator m_primary;
+        shared NoSwapAllocator m_primary;
         Base m_secondary;
     }
 
     this() {
-        m_primary = new NoSwapAllocator;
+        m_primary = new shared NoSwapAllocator;
     }
 
     void[] alloc(size_t n)
@@ -31,7 +31,7 @@ final class ZeroizeAllocator(Base : Allocator)
         if (void[] p = m_primary.alloc(n))
             return p;
         void[] p = m_secondary.alloc(n);
-        clearMem(p, n);
+        clearMem(p.ptr, n);
         return p;
     }
 

@@ -7,7 +7,7 @@ module botan.utils.simd.tmmintrin;
 */
 
 import botan.constants;
-static if (BOTAN_HAS_AES_SSSE3):
+static if (BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
 
 public import botan.utils.simd.emmintrin;
 

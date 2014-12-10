@@ -30,7 +30,7 @@ public:
     abstract void readAccept(ulong seq);
 }
 
-final class StreamSequenceNumbers : Connection_Sequence_Numbers
+final class StreamSequenceNumbers : ConnectionSequenceNumbers
 {
 public:
     override void newReadCipherState() { m_read_seq_no = 0; m_read_epoch += 1; }
@@ -51,7 +51,7 @@ private:
     ushort m_write_epoch = 0;
 }
 
-final class DatagramSequenceNumbers : Connection_Sequence_Numbers
+final class DatagramSequenceNumbers : ConnectionSequenceNumbers
 {
 public:
     override void newReadCipherState() { m_read_epoch += 1; }

@@ -23,7 +23,7 @@ public:
     /*
     * Return the name of this type
     */
-	override @property string name() const
+    override @property string name() const
     {
         return "CBC-MAC(" ~ m_cipher.name ~ ")";
     }
@@ -31,12 +31,12 @@ public:
     /*
     * Return a clone of this object
     */
-	override MessageAuthenticationCode clone() const
+    override MessageAuthenticationCode clone() const
     {
         return new CBCMAC(m_cipher.clone());
     }
 
-	override @property size_t outputLength() const { return m_cipher.blockSize(); }
+    override @property size_t outputLength() const { return m_cipher.blockSize(); }
 
     /*
     * Clear memory of sensitive data

@@ -20,7 +20,7 @@ import std.algorithm;
 final class HMACDRBG : RandomNumberGenerator
 {
 public:
-    void randomize(ubyte* output, size_t length)
+    override void randomize(ubyte* output, size_t length)
     {
         if (!isSeeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
             reseed(m_mac.output_length * 8);
@@ -43,12 +43,12 @@ public:
         update(null, 0); // additional_data is always empty
     }
 
-    bool isSeeded() const
+    override bool isSeeded() const
     {
         return m_reseed_counter > 0;
     }
 
-    void clear()
+    override void clear()
     {
         zeroise(m_V);
         
@@ -58,12 +58,12 @@ public:
             m_prng.clear();
     }
 
-    @property string name() const
+    override @property string name() const
     {
         return "HMAC_DRBG(" ~ m_mac.name ~ ")";
     }
 
-    void reseed(size_t poll_bits)
+    override void reseed(size_t poll_bits)
     {
         if (m_prng)
         {

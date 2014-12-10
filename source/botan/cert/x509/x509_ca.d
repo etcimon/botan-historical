@@ -13,6 +13,7 @@ import botan.asn1.asn1_time;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import botan.cert.x509.x509_ext;
+import botan.cert.x509.crl_ent;
 import botan.pubkey.pkcs8;
 import botan.pubkey.pubkey;
 import botan.cert.x509.pkcs10;
@@ -107,9 +108,9 @@ public:
     * as the offset from the current time
     */
     X509CRL updateCRL(in X509CRL crl,
-                        in Vector!CRLEntry new_revoked,
-                        RandomNumberGenerator rng,
-                        Duration next_update = 0.seconds) const
+                      Vector!CRLEntry new_revoked,
+                      RandomNumberGenerator rng,
+                      Duration next_update = 0.seconds) const
     {
 
         Vector!CRLEntry revoked = crl.getRevoked();
@@ -133,14 +134,14 @@ public:
     * @returns newly minted certificate
     */
     static X509Certificate makeCert(ref PKSigner signer,
-                                      RandomNumberGenerator rng,
-                                      in AlgorithmIdentifier sig_algo,
-                                      in Vector!ubyte pub_key,
-                                      in X509Time not_before,
-                                      in X509Time not_after,
-                                      in X509DN issuer_dn,
-                                      in X509DN subject_dn,
-                                      in X509Extensions extensions)
+                                    RandomNumberGenerator rng,
+                                    in AlgorithmIdentifier sig_algo,
+                                    in Vector!ubyte pub_key,
+                                    in X509Time not_before,
+                                    in X509Time not_after,
+                                    in X509DN issuer_dn,
+                                    in X509DN subject_dn,
+                                    in X509Extensions extensions)
     {
         __gshared immutable size_t X509_CERT_VERSION = 3;
         __gshared immutable size_t SERIAL_BITS = 128;

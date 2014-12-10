@@ -8,12 +8,16 @@
 module botan.cert.cvc.cvc_gen_cert;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
+import botan.filters.pipe;
+import botan.filters.data_src;
 import botan.pubkey.algo.ecdsa;
 import botan.pubkey.pubkey;
+import botan.pubkey.x509_key;
+import botan.cert.cvc.ecdsa_sig;
 import botan.utils.types;
 
 /**
@@ -56,20 +60,20 @@ public:
     * @param output = the pipe to push the DER encoded version into
     * @param encoding = the encoding to use. Must be DER.
     */
-    final void encode(Pipe output, X509Encoding encoding) const
+    override final void encode(Pipe output, X509Encoding encoding) const
     {
         Vector!ubyte concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
         Vector!ubyte der = DEREncoder()
-                            .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
-                            .startCons(ASN1Tag(78), ASN1Tag.APPLICATION)
+                            .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+                            .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
                             .rawBytes(EAC11obj!Derived.tbs_bits)
                             .endCons()
-                            .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                            .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                             .endCons()
                             .getContentsUnlocked();
         
         if (encoding == PEM)
-            throw new InvalidArgument("EAC11GenCVC::encode() cannot PEM encode an EAC object");
+            throw new InvalidArgument("EAC11genCVC::encode() cannot PEM encode an EAC object");
         else
             output.write(der);
     }
@@ -78,7 +82,7 @@ public:
     * Get the to-be-signed (TBS) data of this object.
     * @result the TBS data of this object
     */
-    final Vector!ubyte tbsData() const
+    override final Vector!ubyte tbsData() const
     {
         return buildCertBody(m_tbs_bits);
     }
@@ -92,7 +96,7 @@ public:
     static Vector!ubyte buildCertBody(in Vector!ubyte tbs)
     {
         return DEREncoder()
-                .startCons(ASN1Tag(78), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
                 .rawBytes(tbs)
                 .endCons().getContentsUnlocked();
     }
@@ -111,9 +115,9 @@ public:
         const auto concat_sig = signer.signMessage(tbs_bits, rng);
         
         return DEREncoder()
-                .startCons(ASN1Tag(33), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                 .rawBytes(tbs_bits)
-                .encode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons()
                 .getContentsUnlocked();
     }
@@ -129,16 +133,16 @@ protected:
     bool self_signed;
 
     static void decodeInfo(DataSource source,
-                            Vector!ubyte res_tbs_bits,
-                            ECDSASignature res_sig)
+                           Vector!ubyte res_tbs_bits,
+                           ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         BERDecoder(source)
-                .startCons(ASN1Tag(33))
-                .startCons(ASN1Tag(78))
+                .startCons((cast(ASN1Tag)33))
+                .startCons((cast(ASN1Tag)78))
                 .rawBytes(res_tbs_bits)
                 .endCons()
-                .decode(concat_sig, ASN1Tag.OCTET_STRING, ASN1Tag(55), ASN1Tag.APPLICATION)
+                .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons();
         res_sig = decodeConcatenation(concat_sig);
     }

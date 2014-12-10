@@ -10,7 +10,7 @@ module botan.filters.lzma;
 import botan.filters.filter;
 
 import botan.utils.exceptn;
-
+import std.conv;
 import std.c.string;
 import std.c.stdlib;
 import botan.utils.containers.hashmap;
@@ -350,6 +350,79 @@ void lzma_free(void *opaque, void *ptr)
 }
 
 extern(C) nothrow @nogc:
+
+enum LZMA_FILTER_LZMA1 = 0x4000000000000001UL;
+enum LZMA_FILTER_LZMA2 = 0x21UL;
+
+enum lzma_match_finder
+{
+    LZMA_MF_HC3     = 0x03,
+    
+    LZMA_MF_HC4     = 0x04,
+    
+    LZMA_MF_BT2     = 0x12,
+    
+    LZMA_MF_BT3     = 0x13,
+    LZMA_MF_BT4     = 0x14
+}
+
+
+nothrow lzma_bool lzma_mf_is_supported(lzma_match_finder match_finder);
+
+enum lzma_mode
+{
+    LZMA_MODE_FAST = 1,
+    LZMA_MODE_NORMAL = 2
+}
+
+
+nothrow lzma_bool lzma_mode_is_supported(lzma_mode mode);
+
+struct lzma_options_lzma
+{
+    uint dict_size;
+    enum LZMA_DICT_SIZE_MIN     =  4096U;
+    enum LZMA_DICT_SIZE_DEFAULT =  (1U << 23);
+
+    const ubyte *preset_dict;
+    uint preset_dict_size;
+    uint lc;
+    enum LZMA_LCLP_MIN   = 0;
+    enum LZMA_LCLP_MAX   = 4;
+    enum LZMA_LC_DEFAULT = 3;
+
+    uint lp;
+    enum LZMA_LP_DEFAULT = 0;
+    uint pb;
+    enum LZMA_PB_MIN     = 0;
+    enum LZMA_PB_MAX     = 4;
+    enum LZMA_PB_DEFAULT = 2;
+    
+    /** Compression mode */
+    lzma_mode mode;
+    uint nice_len;
+    lzma_match_finder mf;
+    uint depth;
+    uint reserved_int1;
+    uint reserved_int2;
+    uint reserved_int3;
+    uint reserved_int4;
+    uint reserved_int5;
+    uint reserved_int6;
+    uint reserved_int7;
+    uint reserved_int8;
+    lzma_reserved_enum reserved_enum1;
+    lzma_reserved_enum reserved_enum2;
+    lzma_reserved_enum reserved_enum3;
+    lzma_reserved_enum reserved_enum4;
+    void *reserved_ptr1;
+    void *reserved_ptr2;
+    
+}
+
+nothrow lzma_bool lzma_lzma_preset(
+    lzma_options_lzma *options, uint preset);
+
 //TODO: initialize fields to void?
 struct lzma_block
 {

@@ -20,17 +20,17 @@ public:
     /*
     * Return the name of this type
     */
-	override @property string name() const
+    override @property string name() const
     {
         return "SSL3-MAC(" ~ m_hash.name ~ ")";
     }
 
-	override @property size_t outputLength() const { return m_hash.output_length; }
+    override @property size_t outputLength() const { return m_hash.output_length; }
 
     /*
     * Return a clone of this object
     */
-	override MessageAuthenticationCode clone() const
+    override MessageAuthenticationCode clone() const
     {
         return new SSL3MAC(m_hash.clone());
     }

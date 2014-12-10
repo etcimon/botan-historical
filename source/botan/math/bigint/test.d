@@ -1,5 +1,6 @@
 module botan.math.bigint.test;
 
+import botan.constants;
 static if (BOTAN_TEST):
 
 import botan.rng.rng;

@@ -11,7 +11,6 @@ import botan.pk_pad.emsa1;
 import botan.hash.hash;
 import botan.utils.types;
 
-
 /**
 * EMSA1_BSI is a variant of EMSA1 specified by the BSI. It accepts
 * only hash values which are less or equal than the maximum key
@@ -33,7 +32,7 @@ private:
     */
     SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                  size_t output_bits,
-                                 RandomNumberGenerator)
+                                 RandomNumberGenerator rng)
     {
         if (msg.length != hashOutputLength())
             throw new EncodingError("EMSA1_BSI::encodingOf: Invalid size for input");

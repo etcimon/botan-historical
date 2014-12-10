@@ -21,14 +21,14 @@ import botan.utils.containers.hashmap : HashMap;
 
 alias VulnerableAllocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 
-package R getAllocator(R)() {
+R getAllocator(R)() {
     static __gshared R alloc;
     if (!alloc)
         alloc = new R;
     return alloc;
 }
 
-auto allocObject(T, ALLOCATOR = Allocator, bool MANAGED = true, ARGS...)(ARGS args)
+auto allocObject(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true, ARGS...)(ARGS args)
 {
     auto mem = allocator.alloc(AllocSize!T);
     static if( MANAGED ){
@@ -40,7 +40,7 @@ auto allocObject(T, ALLOCATOR = Allocator, bool MANAGED = true, ARGS...)(ARGS ar
     else return cast(T*)mem.ptr;
 }
 
-T[] allocArray(T, ALLOCATOR = Allocator, bool MANAGED = true)(size_t n)
+T[] allocArray(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size_t n)
 {
     auto allocator = getAllocator!ALLOCATOR();
     auto mem = allocator.alloc(T.sizeof * n);
@@ -57,7 +57,7 @@ T[] allocArray(T, ALLOCATOR = Allocator, bool MANAGED = true)(size_t n)
     return ret;
 }
 
-void freeArray(T, ALLOCATOR = Allocator, bool MANAGED = true)(ref T[] array)
+void freeArray(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(ref T[] array)
 {
     auto allocator = getAllocator!ALLOCATOR();
     static if (MANAGED && hasIndirections!T)
@@ -104,7 +104,7 @@ final class LockAllocator(Base) : Allocator {
 final class DebugAllocator(Base) : Allocator {
     private {
         Base m_baseAlloc;
-        HashMap!(void*, size_t) m_blocks;
+        HashMap!(void*, size_t, MallocAllocator) m_blocks;
         size_t m_bytes;
         size_t m_maxBytes;
     }
@@ -112,7 +112,7 @@ final class DebugAllocator(Base) : Allocator {
     this()
     {
         m_baseAlloc = getAllocator!Base();
-        m_blocks = HashMap!(void*, size_t)(getAllocator!VulnerableAllocator());
+        m_blocks = HashMap!(void*, size_t, MallocAllocator)();
     }
     
     @property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -351,15 +351,24 @@ struct FreeListRef(T, bool INIT = true)
         }
     }
     
-    void opAssign(FreeListRef other)
-    {
-        clear();
-        m_object = other.m_object;
-        if( m_object ){
-            //logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
-            refCount++;
-        }
-    }
+	void opAssign(const FreeListRef other)
+	{
+		clear();
+		m_object = cast(TR)other.m_object;
+		if( m_object ){
+			//logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
+			refCount++;
+		}
+	}
+	void opAssign(FreeListRef other)
+	{
+		clear();
+		m_object = other.m_object;
+		if( m_object ){
+			//logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
+			refCount++;
+		}
+	}
     
     void clear()
     {
@@ -382,10 +391,19 @@ struct FreeListRef(T, bool INIT = true)
         m_magic = 0x1EE75817;
     }
     
-    @property const(TR) get() const { checkInvariants(); return m_object; }
-    @property TR get() { checkInvariants(); return m_object; }
-    alias get this;
+    @property const(TR) opStar() const { checkInvariants(); return m_object; }
+	@property TR opStar() { checkInvariants(); return m_object; }
     
+	alias opStar this;
+
+	T opCast(T : bool)() {
+		return m_object !is null;
+	}
+
+	T opCast(T : UnConst!(typeof(this)))() const {
+		return cast(T) this;
+	}
+
     private @property ref int refCount()
     const {
         auto ptr = cast(ubyte*)cast(void*)m_object;
@@ -398,6 +416,14 @@ struct FreeListRef(T, bool INIT = true)
         assert(m_magic == 0x1EE75817);
         assert(!m_object || refCount > 0);
     }
+
+	private template UnConst(T) {
+		static if (is(T U == const(U))) {
+			alias UnConst = U;
+		} else static if (is(T V == immutable(V))) {
+			alias UnConst = V;
+		} else alias UnConst = T;
+	}
 }
 
 private void* extractUnalignedPointer(void* base)

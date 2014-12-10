@@ -10,7 +10,8 @@ import botan.constants;
 static if (BOTAN_HAS_X509_CERTIFICATES):
 
 import botan.cert.x509.ocsp;
-import botan.http_util;
+import botan.cert.x509.x509_crl;
+import botan.utils.http_util.http_util;
 import botan.utils.parsing;
 import botan.pubkey.pubkey;
 import botan.asn1.oids;
@@ -321,8 +322,8 @@ PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
 }
 
 X509Certificate findIssuingCert(in X509Certificate cert,
-                                         ref CertificateStore end_certs, 
-                                         in Vector!CertificateStore certstores) const
+                                ref CertificateStore end_certs, 
+                                in Vector!CertificateStore certstores)
 {
     const X509DN issuer_dn = cert.issuerDn();
     const Vector!ubyte auth_key_id = cert.authorityKeyId();
@@ -340,7 +341,7 @@ X509Certificate findIssuingCert(in X509Certificate cert,
 }
 
 X509CRL findCrlsFor(in X509Certificate cert,
-                              const ref Vector!CertificateStore certstores) const
+                    const ref Vector!CertificateStore certstores)
 {
     foreach (certstore; certstores)
     {

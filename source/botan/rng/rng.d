@@ -120,7 +120,7 @@ public:
 
     override void reseed(size_t) {}
     override bool isSeeded() const { return false; }
-    override void addEntropy(const ubyte[], size_t) {}
+    override void addEntropy(const ubyte*, size_t) {}
 }
 
 /**

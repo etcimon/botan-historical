@@ -8,7 +8,7 @@
 module botan.cert.cvc.signed_obj;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.asn1.asn1_obj;
 import botan.cert.x509.key_constraint;
@@ -148,6 +148,7 @@ protected:
     Vector!ubyte m_tbs_bits;
     string m_PEM_label_pref;
     string[] m_PEM_labels_allowed;
-private:
+
+protected:
     abstract void forceDecode();
 }

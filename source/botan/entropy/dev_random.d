@@ -100,7 +100,7 @@ public:
             close(device);
     }
 private:
-	alias FDType = int;
+    alias FDType = int;
 
     Vector!FDType m_devices;
 }

@@ -15,7 +15,6 @@ import botan.tls.session_key;
 import botan.utils.containers.multimap;
 
 public import botan.algo_base.sym_algo;
-public import botan.tls.tls_handshake_msg;
 public import botan.tls.session;
 public import botan.tls.policy;
 public import botan.tls.ciphersuite;
@@ -55,14 +54,12 @@ enum {
 /**
 * TLS Handshake Message Base Class
 */
-class HandshakeMessage
+interface HandshakeMessage
 {
 public:
     abstract HandshakeType type() const;
     
     abstract Vector!ubyte serialize() const;
-    
-    ~this() {}
 }
 
 /**
@@ -335,7 +332,7 @@ public:
             deserialize_sslv2(buf);
     }
 
-private:
+protected:
     /*
     * Serialize a TLSClient Hello message
     */
@@ -450,6 +447,7 @@ private:
             m_extensions.add(new RenegotiationExtension());
     }
 
+private:
     TLSProtocolVersion m_version;
     Vector!ubyte m_session_id;
     Vector!ubyte m_random;
@@ -601,7 +599,8 @@ public:
         
         m_extensions.deserialize(reader);
     }
-private:
+
+protected:
     /*
     * Serialize a TLSServer Hello message
     */
@@ -611,7 +610,7 @@ private:
         
         buf.pushBack(m_version.majorVersion());
         buf.pushBack(m_version.minorVersion());
-        buf += m_random;
+        buf ~= m_random;
         
         appendTlsLengthValue(buf, m_session_id, 1);
         
@@ -620,11 +619,12 @@ private:
         
         buf.pushBack(m_comp_method);
         
-        buf += m_extensions.serialize();
+        buf ~= m_extensions.serialize();
         
         return buf;
     }
 
+private:
     TLSProtocolVersion m_version;
     Vector!ubyte m_session_id, m_random;
     ushort m_ciphersuite;
@@ -1011,9 +1011,10 @@ public:
     }
 
 
-private:
+protected:
     override Vector!ubyte serialize() const { return m_key_material; }
 
+private:
     Vector!ubyte m_key_material;
     SecureVector!ubyte m_pre_master;
 }
@@ -1076,7 +1077,7 @@ public:
         }
     }
 
-private:
+protected:
     /**
     * Serialize a Certificate message
     */
@@ -1100,6 +1101,7 @@ private:
         return buf;
     }
 
+private:
     Vector!X509Certificate m_certs;
 }
 
@@ -1196,7 +1198,7 @@ public:
         }
     }
 
-private:
+protected:
 
     /**
     * Serialize a Certificate Request message
@@ -1230,6 +1232,7 @@ private:
         return buf;
     }
 
+private:
     Vector!X509DN m_names;
     Vector!string m_cert_key_types;
 
@@ -1316,7 +1319,8 @@ public:
         
         m_signature = reader.getRange!ubyte(2, 0, 65535);
     }
-private:
+
+protected:
     /*
     * Serialize a Certificate Verify message
     */
@@ -1338,6 +1342,7 @@ private:
         return buf;
     }
 
+private:
     string m_sig_algo; // sig algo used to create signature
     string m_hash_algo; // hash used to create signature
     Vector!ubyte m_signature;
@@ -1380,7 +1385,8 @@ public:
     {
         m_verification_data = buf;
     }
-private:
+
+protected:
     /*
     * Serialize a Finished message
     */
@@ -1388,7 +1394,8 @@ private:
     {
         return m_verification_data;
     }
-
+   
+private:
     Vector!ubyte m_verification_data;
 }
 
@@ -1416,11 +1423,12 @@ public:
         if (buf.length)
             throw new DecodingError("Bad HelloRequest, has non-zero size");
     }
-private:
+
+protected:
     /*
     * Serialize a Hello Request message
     */
-    Vector!ubyte serialize() const
+    override Vector!ubyte serialize() const
     {
         return Vector!ubyte();
     }
@@ -1664,9 +1672,7 @@ public:
         state.hash().update(io.send(this));
     }
 
-
-    ~this() {}
-private:
+protected:
     /**
     * Serialize a TLSServer Key Exchange message
     */
@@ -1688,6 +1694,8 @@ private:
         
         return buf;
     }
+
+private:
 
     Unique!PrivateKey m_kex_key;
     Unique!SRP6ServerSession m_srp_params;
@@ -1723,7 +1731,7 @@ public:
         if (buf.length)
             throw new DecodingError("ServerHello_Done: Must be empty, and is not");
     }
-private:
+protected:
     /*
     * Serialize a TLSServer Hello Done message
     */
@@ -1760,7 +1768,7 @@ public:
         m_protocol = protocol;
     }
 
-private:
+protected:
 
     override Vector!ubyte serialize() const
     {
@@ -1781,6 +1789,7 @@ private:
         return buf;
     }
 
+private:
     string m_protocol;
 }
 
@@ -1821,7 +1830,7 @@ public:
         hash.update(io.send(this));
     }
 
-private:
+protected:
     override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(4);
@@ -1830,6 +1839,7 @@ private:
         return buf;
     }
 
+private:
     Duration m_ticket_lifetime_hint;
     Vector!ubyte m_ticket;
 }

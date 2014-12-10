@@ -29,7 +29,7 @@ public:
     /**
     * @return this object as a SecureVector!ubyte
     */
-    SecureVector!ubyte bitsOf() const { return m_bits; }
+    const(SecureVector!ubyte) bitsOf() const { return m_bits; }
     
     /**
     * @return start of this string
@@ -39,7 +39,7 @@ public:
     /**
     * @return end of this string
     */
-    ubyte* end() const{ return begin() + m_bits.length; }
+    ubyte* end() const{ return ptr + m_bits.length; }
     
     /**
     * @return this encoded as hex
@@ -101,8 +101,8 @@ public:
     */
     this(in string hex_string)
     {
-        m_bits.resize(1 + hex_string.length / 2);
-        m_bits.resize(hexDecode(m_bits.ptr, hex_string));
+        m_bits.reserve(1 + hex_string.length / 2);
+        m_bits.reserve(hexDecode(m_bits.ptr, hex_string));
     }
 
     /**
@@ -122,20 +122,20 @@ public:
     */
     this(in ubyte* input, size_t len)
     {
-        m_bits.replace(input[0 .. len]);
+        m_bits = SecureVector!ubyte(input[0 .. len]);
     }
     
     /**
     * Create a new OctetString
     * @param input = a bytestring
     */
-    this(in SecureVector!ubyte input) { bits = input; }
+    this(SecureVector!ubyte input) { m_bits = input; }
     
     /**
     * Create a new OctetString
     * @param input = a bytestring
     */
-    this(in Vector!ubyte input) {  bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
+    this(Vector!ubyte input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**

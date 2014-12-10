@@ -9,13 +9,13 @@ module botan.pubkey.algo.elgamal;
 import botan.constants;
 static if (BOTAN_HAS_ELGAMAL):
 
+public import botan.pubkey.pubkey;
 import botan.pubkey.algo.dl_algo;
 import botan.math.numbertheory.numthry;
 import botan.math.numbertheory.reducer;
 import botan.pubkey.blinding;
 import botan.pubkey.pk_ops;
 import botan.pubkey.workfactor;
-import botan.pubkey.pubkey;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;

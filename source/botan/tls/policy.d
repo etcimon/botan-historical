@@ -371,7 +371,7 @@ public:
         m_sigs = sigs;
     }
     
-    bool compare(U : CipherSuite)(in TLSCiphersuite a, auto ref U b) const
+    bool compare(U : TLSCiphersuite)(in TLSCiphersuite a, auto ref U b) const
     {
         if (a.kexAlgo() != b.kexAlgo())
         {

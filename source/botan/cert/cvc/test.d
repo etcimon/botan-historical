@@ -119,7 +119,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     //cout " ~reading cert again");
     mixin( CHECK(` cert_in.getCar().value() == "my_opt_car" `) );
     mixin( CHECK(` cert_in.getChr().value() == "my_opt_car" `) );
-    mixin( CHECK(` cert_in.getCed().asString() == "20100727" `) );
+    mixin( CHECK(` cert_in.getCed().toString() == "20100727" `) );
     mixin( CHECK(` cert_in.getCed().readableString() == "2010/07/27 " `) );
     
     bool ill_date_exc = false;
@@ -322,14 +322,14 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
 void testEacTime(RandomNumberGenerator)
 {
     EACTime time = EACTime(Clock.currTime(UTC()));
-    //      writeln("time as string = " ~ time.asString());
-    EACTime sooner = EACTime("", ASN1Tag(99));
-    //X509Time sooner("", ASN1Tag(99));
+    //      writeln("time as string = " ~ time.toString());
+    EACTime sooner = EACTime("", (cast(ASN1Tag)99));
+    //X509Time sooner("", (cast(ASN1Tag)99));
     sooner.setTo("2007 12 12");
-    //      writeln("sooner as string = " ~ sooner.asString());
+    //      writeln("sooner as string = " ~ sooner.toString());
     EACTime later = EACTime("2007 12 13");
     //X509Time later("2007 12 13");
-    //      writeln("later as string = " ~ later.asString());
+    //      writeln("later as string = " ~ later.toString());
     mixin( CHECK(` sooner <= later `) );
     mixin( CHECK(` sooner == sooner `) );
     

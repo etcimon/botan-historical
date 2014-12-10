@@ -8,13 +8,15 @@
 module botan.cert.cvc.cvc_cert;
 
 import botan.constants;
-static if (BOTAN_HAS_CVC_CERTIFICATES):
+static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.cert.cvc.cvc_gen_cert;
+import botan.cert.cvc.eac_asn_obj;
 import botan.asn1.oids;
+import botan.asn1.asn1_obj;
 import botan.pubkey.algo.ecdsa;
 import botan.utils.types;
-// import string;
+
 
 
 alias EAC11CVC = FreeListRef!EAC11CVCImpl;
@@ -22,7 +24,7 @@ alias EAC11CVC = FreeListRef!EAC11CVCImpl;
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-final class EAC11CVCImpl : EAC11GenCVC!EAC11CVCImpl//Signed_Object
+final class EAC11CVCImpl : EAC11genCVC!EAC11CVCImpl//Signed_Object
 {
 public:
     /**
@@ -111,15 +113,15 @@ private:
         Vector!ubyte enc_chat_val;
         size_t cpi;
         BERDecoder tbs_cert = BERDecoder(tbs_bits);
-        tbs_cert.decode(cpi, ASN1Tag(41), ASN1Tag.APPLICATION)
+        tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
                 .decode(m_car)
-                .startCons(ASN1Tag(73))
+                .startCons((cast(ASN1Tag)73))
                 .rawBytes(enc_pk)
                 .endCons()
                 .decode(m_chr)
-                .startCons(ASN1Tag(76))
+                .startCons((cast(ASN1Tag)76))
                 .decode(m_chat_oid)
-                .decode(enc_chat_val, ASN1Tag.OCTET_STRING, ASN1Tag(19), ASN1Tag.APPLICATION)
+                .decode(enc_chat_val, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)19), ASN1Tag.APPLICATION)
                 .endCons()
                 .decode(m_ced)
                 .decode(m_cex)
@@ -162,13 +164,13 @@ private:
 * @param rng = a random number generator
 */
 EAC11CVC makeCvcCert(PKSigner signer,
-                         in Vector!ubyte public_key,
-                         in ASN1Car car,
-                         in ASN1Chr chr,
-                         ubyte holder_auth_templ,
-                         ASN1Ced ced,
-                         ASN1Cex cex,
-                         RandomNumberGenerator rng)
+                     in Vector!ubyte public_key,
+                     in ASN1Car car,
+                     in ASN1Chr chr,
+                     ubyte holder_auth_templ,
+                     ASN1Ced ced,
+                     ASN1Cex cex,
+                     RandomNumberGenerator rng)
 {
     OID chat_oid = OID(OIDS.lookup("CertificateHolderAuthorizationTemplate"));
     Vector!ubyte enc_chat_val;
@@ -177,13 +179,13 @@ EAC11CVC makeCvcCert(PKSigner signer,
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
     Vector!ubyte tbs = DEREncoder()
-                        .encode(enc_cpi, ASN1Tag.OCTET_STRING, ASN1Tag(41), ASN1Tag.APPLICATION) // cpi
+                        .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION) // cpi
                         .encode(car)
                         .rawBytes(public_key)
                         .encode(chr)
-                        .startCons(ASN1Tag(76), ASN1Tag.APPLICATION)
+                        .startCons((cast(ASN1Tag)76), ASN1Tag.APPLICATION)
                         .encode(chat_oid)
-                        .encode(enc_chat_val, ASN1Tag.OCTET_STRING, ASN1Tag(19), ASN1Tag.APPLICATION)
+                        .encode(enc_chat_val, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)19), ASN1Tag.APPLICATION)
                         .endCons()
                         .encode(ced)
                         .encode(cex)

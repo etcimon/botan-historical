@@ -1,5 +1,6 @@
 module botan.math.ec_gfp.test;
 
+import botan.constants;
 static if (BOTAN_TEST):
 
 import botan.test;

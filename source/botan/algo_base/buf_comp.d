@@ -75,7 +75,7 @@ public:
     */
     final void update(in string str)
     {
-        addData(&str, str.length);
+        addData(str.ptr, str.length);
     }
 
     /**
@@ -91,7 +91,7 @@ public:
     * Must be of length outputLength()
     */
     final void flushInto(ref ubyte[] output) 
-    in { output.length == output_length; }
+    in { assert(output.length == outputLength); }
     body { finalResult(output.ptr); }
 
     /**
@@ -123,7 +123,7 @@ public:
     */
     final SecureVector!ubyte process(in ubyte[] input)
     {
-        addData(input);
+        addData(input.ptr, input.length);
         return finished();
     }
 
@@ -148,7 +148,7 @@ public:
     */
     final SecureVector!ubyte process(in SecureVector!ubyte input)
     {
-        addData(input[]);
+        addData(input.ptr, input.length);
         return finished();
     }
 
@@ -160,7 +160,7 @@ public:
     */
     final SecureVector!ubyte process(in Vector!ubyte input)
     {
-        addData(input[]);
+        addData(input.ptr, input.length);
         return finished();
     }
 
@@ -184,6 +184,10 @@ protected:
     * @param length = is the length of input in bytes
     */
     abstract void addData(in ubyte* input, size_t length);
+
+	final void addData(T)(in T input, size_t length) {
+		addData(cast(ubyte*)input, length);
+	}
 
     /**
     * Write the final output to out

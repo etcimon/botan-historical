@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_DIFFIE_HELLMAN):
 
 public import botan.pubkey.algo.dl_algo;
+public import botan.pubkey.pubkey;
 import botan.math.numbertheory.pow_mod;
 import botan.pubkey.blinding;
 import botan.pubkey.pk_ops;

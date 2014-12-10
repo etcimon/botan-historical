@@ -7,6 +7,7 @@
 module botan.pubkey.algo.dl_algo;
 
 public import botan.pubkey.algo.dl_group;
+public import botan.pubkey.pubkey;
 import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
 import botan.math.numbertheory.numthry;

@@ -21,7 +21,7 @@ import botan.utils.types;
 struct TLSProtocolVersion
 {
 public:
-    alias ushort Version_Code;
+    alias ushort VersionCode;
     enum : VersionCode {
         SSL_V3              = 0x0300,
         TLS_V10             = 0x0301,

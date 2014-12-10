@@ -28,7 +28,7 @@ import botan.utils.containers.hashmap;
 *
 * Implementations should strive to be thread safe
 */
-class TLSSessionManager
+interface TLSSessionManager
 {
 public:
     /**
@@ -38,8 +38,7 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-    abstract bool loadFromSessionId(in Vector!ubyte session_id,
-                                                 TLSSession session);
+    abstract bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session);
 
     /**
     * Try to load a saved session (using info about server)
@@ -48,8 +47,7 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-    abstract bool loadFromServerInfo(in TLSServerInformation info,
-                                                  TLSSession session);
+    abstract bool loadFromServerInfo(in TLSServerInformation info, ref TLSSession session);
 
     /**
     * Remove this session id from the cache, if it exists
@@ -73,7 +71,6 @@ public:
     */
     abstract Duration sessionLifetime() const;
 
-    ~this() {}
 }
 
 /**
@@ -83,10 +80,10 @@ public:
 final class TLSSessionManagerNoop : TLSSessionManager
 {
 public:
-    override bool loadFromSessionId(in Vector!ubyte, TLSSession)
+    override bool loadFromSessionId(in Vector!ubyte, ref TLSSession)
     { return false; }
 
-    override bool loadFromServerInfo(in TLSServerInformation, TLSSession)
+    override bool loadFromServerInfo(in TLSServerInformation, ref TLSSession)
     { return false; }
 
     override void removeEntry(in Vector!ubyte) {}
@@ -119,14 +116,14 @@ public:
     }
 
     override bool loadFromSessionId(
-        in Vector!ubyte session_id, TLSSession session)
+        in Vector!ubyte session_id, ref TLSSession session)
     {
         
         return loadFromSessionStr(hexEncode(session_id), session);
     }
 
     override bool loadFromServerInfo(
-        const TLSServerInformation info, TLSSession session)
+        const TLSServerInformation info, ref TLSSession session)
     {
         
         auto i = m_info_sessions.find(info);
@@ -179,10 +176,10 @@ public:
     { return m_session_lifetime; }
 
 private:
-    bool loadFromSessionStr(in string session_str, TLSSession session)
+    bool loadFromSessionStr(in string session_str, ref TLSSession session)
     {
         // assert(lock is held)
-        
+
         auto i = m_sessions.find(session_str);
         
         if (i == m_sessions.end())

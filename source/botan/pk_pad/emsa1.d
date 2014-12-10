@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.emsa1;
 
-import botan.pk_pad.emsa;
+public import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.utils.types;
 
@@ -40,8 +40,8 @@ private:
     }
 
     SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
-                                 size_t output_bits,
-                                 RandomNumberGenerator)
+                                  size_t output_bits,
+                                  RandomNumberGenerator rng)
     {
         if (msg.length != hashOutputLength())
             throw new EncodingError("encodingOf: Invalid size for input");

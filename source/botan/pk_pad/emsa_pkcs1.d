@@ -29,17 +29,17 @@ public:
         m_hash_id = pkcsHashId(m_hash.name);
     }
 
-    void update(in ubyte* input, size_t length)
+    override void update(in ubyte* input, size_t length)
     {
         m_hash.update(input, length);
     }
 
-    SecureVector!ubyte rawData()
+    override SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-    SecureVector!ubyte
+    override SecureVector!ubyte
         encodingOf(in SecureVector!ubyte msg,
                     size_t output_bits,
                     RandomNumberGenerator)
@@ -51,9 +51,9 @@ public:
                               m_hash_id.ptr, m_hash_id.length);
     }
 
-    bool verify(in SecureVector!ubyte coded,
-                in SecureVector!ubyte raw,
-                size_t key_bits)
+    override bool verify(in SecureVector!ubyte coded,
+                         in SecureVector!ubyte raw,
+                         size_t key_bits)
     {
         if (raw.length != m_hash.output_length)
             return false;
@@ -81,28 +81,28 @@ private:
 final class EMSAPKCS1v15Raw : EMSA
 {
 public:
-    void update(in ubyte* input, size_t length)
+    override void update(in ubyte* input, size_t length)
     {
         m_message += Pair(input, length);
     }
 
-    SecureVector!ubyte rawData()
+    override SecureVector!ubyte rawData()
     {
         SecureVector!ubyte ret;
         std.algorithm.swap(ret, m_message);
         return ret;
     }
 
-    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    override SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
                                     size_t output_bits,
                                     RandomNumberGenerator)
     {
         return emsa3Encoding(msg, output_bits, null, 0);
     }
 
-    bool verify(in SecureVector!ubyte coded,
-                in SecureVector!ubyte raw,
-                size_t key_bits)
+    override bool verify(in SecureVector!ubyte coded,
+                         in SecureVector!ubyte raw,
+                         size_t key_bits)
     {
         try
         {

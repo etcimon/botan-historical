@@ -783,7 +783,7 @@ private:
     TLSSessionManager m_session_manager;
 
     /* sequence number state */
-    Unique!Connection_Sequence_Numbers m_sequence_numbers;
+    Unique!ConnectionSequenceNumbers m_sequence_numbers;
 
     /* pending and active connection states */
     Unique!HandshakeState m_active_state;

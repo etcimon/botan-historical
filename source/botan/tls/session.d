@@ -20,6 +20,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.asn1_str;
 import botan.codec.pem;
+import botan.rng.rng;
 import botan.constructs.cryptobox_psk;
 import botan.utils.types;
 import core.stdc.time : time_t;
@@ -296,7 +297,7 @@ private:
     TLSProtocolVersion m_version;
     ushort m_ciphersuite;
     ubyte m_compression_method;
-    Connection_Side m_connection_side;
+    ConnectionSide m_connection_side;
 
     size_t m_fragment_size;
 

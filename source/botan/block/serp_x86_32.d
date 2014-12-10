@@ -23,7 +23,7 @@ public:
     /*
     * Serpent Encryption
     */
-	override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         auto keys = this.getRoundKeys().ptr;
         
@@ -37,7 +37,7 @@ public:
     /*
     * Serpent Decryption
     */
-	override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         auto keys = this.getRoundKeys().ptr;
         
@@ -50,12 +50,12 @@ public:
     }
 
 
-	override BlockCipher clone() const { return new Serpent_X86_32; }
+    override BlockCipher clone() const { return new Serpent_X86_32; }
 protected:
     /*
     * Serpent Key Schedule
     */
-	override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         SecureVector!uint W = SecureVector!uint(140);
         foreach (size_t i; 0 .. (length / 4))
