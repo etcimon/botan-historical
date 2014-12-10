@@ -88,5 +88,5 @@ snail-mail address (S), and Bitcoin address (B).
   E: etcimon@globecsys.com
   W: https://www.github.com/etcimon
   D: Library rewrite in D, inline ASM, intrinsics, containers, allocators, sockets
-  S: Québec, Qc
+  S: Québec, Canada
 ```
