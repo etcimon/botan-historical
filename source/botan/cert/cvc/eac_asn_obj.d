@@ -253,39 +253,14 @@ public:
     /*
     * Compare two EACTimes for in various ways
     */
-    bool opEquals(in EACTime t2)
+    bool opEquals(in EACTime t2) const
     {
         return (cmp(t2) == 0);
     }
     
-    bool opCmp(string op)(in EACTime t2)
-        if (op == "!=")
+    int opCmp(in EACTime t2) const
     {
-        return (cmp(t2) != 0);
-    }
-
-    bool opCmp(string op)(in EACTime t2)
-        if (op == "<=")
-    {
-        return (cmp(t2) <= 0);
-    }
-
-    bool opCmp(string op)(in EACTime t2)
-        if (op == ">=")
-    {
-        return (cmp(t2) >= 0);
-    }
-
-    bool opBinary(string op)(in EACTime t2)
-        if (op == ">")
-    {
-        return (cmp(t2) > 0);
-    }
-
-    bool opBinary(string op)(in EACTime t2)
-        if (op == "<")
-    {
-        return (cmp(t2) < 0);
+        return cmp(t2);
     }
 
     ~this() {}

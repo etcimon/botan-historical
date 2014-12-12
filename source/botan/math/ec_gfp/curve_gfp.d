@@ -118,10 +118,10 @@ public:
     * @param rhs = a curve
     * @return true iff lhs is not the same as rhs
     */
-    bool opCmp(string op)(in CurveGFp rhs)
-        if (op == "!=")
+    int opCmp(in CurveGFp rhs) const
     {
-        return !(this == rhs);
+        if (this == rhs) return 0;
+        else return -1;
     }
 private:
     // Curve parameters

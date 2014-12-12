@@ -70,10 +70,10 @@ public:
         return (getR() == other.getR() && getS() == other.getS());
     }
 
-    bool opCmp(string op)(in ECDSASignature rhs)
-        if (op == "!=")
+    bool opCmp(in ECDSASignature rhs) const
     {
-        return !(this == rhs);
+        if (this == rhs) return 0;
+        else return -1;
     }
 
 private:

@@ -178,38 +178,27 @@ public:
     /**
     * @return if this version is not equal to other
     */
-    bool opCmp(string op)(in TLSProtocolVersion other) const
-        if (op == "!=")
+    bool opCmp(in TLSProtocolVersion other) const
     {
-        return (m_version != other.m_version);
+        if (m_version == other.m_version) return 0;
+        else if (isGreaterThan(other)) return 1;
+        else return -1;
     }
 
     /**
     * @return if this version is later than other
     */
-    bool opCmp(string op)(in TLSProtocolVersion other) const
-        if (op == ">")
+    bool isGreaterThan(in TLSProtocolVersion other) const
     {
         if (this.isDatagramProtocol() != other.isDatagramProtocol())
             throw new TLSException(TLSAlert.PROTOCOL_VERSION,
-                                    "Version comparing " ~ toString() ~ " with " ~ other.toString());
+                                   "Version comparing " ~ toString() ~ " with " ~ other.toString());
         
         if (this.isDatagramProtocol())
             return m_version < other.m_version; // goes backwards
         
         return m_version > other.m_version;
     }
-
-
-    /**
-    * @return if this version is later than or equal to other
-    */
-    bool opCmp(string op)(in TLSProtocolVersion other) const
-        if (op == ">=")
-    {
-        return (this == other || this > other);
-    }
-
 private:
     ushort m_version;
 }

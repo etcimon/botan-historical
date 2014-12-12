@@ -21,7 +21,7 @@ public:
     /*
     * XTEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         while (blocks >= 4)
         {
@@ -52,7 +52,7 @@ public:
     /*
     * XTEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         while (blocks >= 4)
         {

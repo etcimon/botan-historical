@@ -13,6 +13,11 @@ import botan.block.block_cipher;
 import botan.utils.rotate;
 import botan.utils.parsing;
 import botan.utils.rotate;
+import std.conv : to;
+
+ubyte opCast(T : ubyte)(int val) {
+    return cast(ubyte) val;
+}
 
 /**
 * SAFER-SK
@@ -24,7 +29,7 @@ public:
     /*
     * SAFER-SK Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -43,14 +48,14 @@ public:
                 
                 B += A; D += C; F += E; H += G; A += B; C += D; E += F; G += H;
                 C += A; G += E; D += B; H += F; A += C; E += G; B += D; F += H;
-                H += D; Y = D + H; D = B + F; X = B + D; B = A + E;
-                A += B; F = C + G; E = C + F; C = X; G = Y;
+                H += D; Y = cast(ubyte)(D + H); D = cast(ubyte)(B + F); X = cast(ubyte)(B + D); B = cast(ubyte)(A + E);
+                A += B; F = cast(ubyte)(C + G); E = cast(ubyte)(C + F); C = X; G = Y;
             }
             
-            output[0] = A ^ m_EK[16*m_rounds+0]; output[1] = B + m_EK[16*m_rounds+1];
-            output[2] = C + m_EK[16*m_rounds+2]; output[3] = D ^ m_EK[16*m_rounds+3];
-            output[4] = E ^ m_EK[16*m_rounds+4]; output[5] = F + m_EK[16*m_rounds+5];
-            output[6] = G + m_EK[16*m_rounds+6]; output[7] = H ^ m_EK[16*m_rounds+7];
+            output[0] = A ^ m_EK[16*m_rounds+0]; output[1] = cast(ubyte) (B + m_EK[16*m_rounds+1]);
+            output[2] = cast(ubyte) (C + m_EK[16*m_rounds+2]); output[3] = D ^ m_EK[16*m_rounds+3];
+            output[4] = E ^ m_EK[16*m_rounds+4]; output[5] = cast(ubyte) (F + m_EK[16*m_rounds+5]);
+            output[6] = cast(ubyte) (G + m_EK[16*m_rounds+6]); output[7] = H ^ m_EK[16*m_rounds+7];
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -60,7 +65,7 @@ public:
     /*
     * SAFER-SK Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -71,7 +76,7 @@ public:
             D ^= m_EK[16*m_rounds+3]; E ^= m_EK[16*m_rounds+4]; F -= m_EK[16*m_rounds+5];
             G -= m_EK[16*m_rounds+6]; H ^= m_EK[16*m_rounds+7];
             
-            for (int j = 16*(m_rounds-1); j >= 0; j -= 16)
+            for (size_t j = 16*(m_rounds-1); j >= 0; j -= 16)
             {
                 ubyte T = E; E = B; B = C; C = T; T = F; F = D; D = G; G = T;
                 A -= E; B -= F; C -= G; D -= H; E -= A; F -= B; G -= C; H -= D;
@@ -127,6 +132,7 @@ public:
             throw new InvalidArgument(name ~ ": Invalid number of rounds");
     }
 
+    override @property size_t parallelism() const { return 1; }
 protected:
     /*
     * SAFER-SK Key Schedule
@@ -188,7 +194,7 @@ protected:
             foreach (size_t j; 0 .. 18)
                 KB[j] = rotateLeft(KB[j], 6);
             foreach (size_t j; 0 .. 16)
-                m_EK[16*i+j+8] = KB[KEY_INDEX[16*i+j]] + BIAS[16*i+j];
+                m_EK[16*i+j+8] = cast(ubyte)(KB[KEY_INDEX[16*i+j]] + BIAS[16*i+j]);
         }
     }
 

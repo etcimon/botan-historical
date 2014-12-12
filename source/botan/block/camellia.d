@@ -20,12 +20,12 @@ import botan.utils.rotate;
 final class Camellia128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         .encrypt(input, output, blocks, m_SK, 9);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         .decrypt(input, output, blocks, m_SK, 9);
     }
@@ -52,12 +52,12 @@ protected:
 final class Camellia192 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         .encrypt(input, output, blocks, m_SK, 12);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         .decrypt(input, output, blocks, m_SK, 12);
     }
@@ -84,12 +84,12 @@ protected:
 final class Camellia256 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         .encrypt(input, output, blocks, m_SK, 12);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         .decrypt(input, output, blocks, m_SK, 12);
     }

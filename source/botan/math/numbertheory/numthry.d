@@ -613,7 +613,7 @@ bool generateDsaPrimes(RandomNumberGenerator rng,
     
     Unique!HashFunction hash = af.makeHashFunction("SHA-" ~ to!string(qbits));
     
-    const size_t HASH_SIZE = hash.output_length;
+    const size_t HASH_SIZE = hash.outputLength;
     
     struct Seed
     {

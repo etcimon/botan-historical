@@ -93,7 +93,7 @@ public:
     /*
     * Compare two AlgorithmIdentifiers
     */
-    bool opEquals(in AlgorithmIdentifier a2)
+    bool opEquals(in AlgorithmIdentifier a2) const
     {
         if (m_oid != a2.m_oid)
             return false;
@@ -105,9 +105,10 @@ public:
     /*
     * Compare two AlgorithmIdentifiers
     */
-    bool opCmp(in AlgorithmIdentifier a2)
+    int opCmp(in AlgorithmIdentifier a2) const
     {
-        return !(this == a2);
+        if (this == a2) return 0;
+        else return -1;
     }
 
     OID m_oid;

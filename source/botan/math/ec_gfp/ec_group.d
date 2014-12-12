@@ -215,10 +215,10 @@ public:
     */
     string getOid() const { return m_oid; }
 
-    bool opCmp(string op, U : ECGroup)(auto ref U rhs)
-        if (op == "!=")
+    int opCmp(U : ECGroup)(auto ref U rhs) const
     {
-        return !(lhs == rhs);
+        if (lhs == rhs) return 0;
+        else return -1;
     }
 
     bool opEquals(U : ECGroup)(auto ref U other) const

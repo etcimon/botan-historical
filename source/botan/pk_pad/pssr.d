@@ -64,7 +64,7 @@ private:
                                  size_t output_bits,
                                  RandomNumberGenerator rng)
     {
-        const size_t HASH_SIZE = m_hash.output_length;
+        const size_t HASH_SIZE = m_hash.outputLength;
         
         if (msg.length != HASH_SIZE)
             throw new EncodingError("encodingOf: Bad input length");
@@ -99,7 +99,7 @@ private:
     bool verify(in SecureVector!ubyte const_coded,
                 in SecureVector!ubyte raw, size_t key_bits)
     {
-        const size_t HASH_SIZE = m_hash.output_length;
+        const size_t HASH_SIZE = m_hash.outputLength;
         const size_t KEY_BYTES = (key_bits + 7) / 8;
         
         if (key_bits < 8*HASH_SIZE + 9)

@@ -157,9 +157,10 @@ public:
     * @param b = the second OID
     * @return true if a is not equal to b
     */
-    bool opCmp(in OID b)
+    int opCmp(in OID b) const
     {
-        return !(this == b);
+        if (this == b) return 0;
+        else return -1;
     }
     
     /**
@@ -195,7 +196,7 @@ public:
     * @return reference to this
     */
     ref OID opOpAssign(string op)(uint new_comp)
-        if (op == "~=") 
+        if (op == "~") 
     {
         m_id.pushBack(new_comp);
         return this;

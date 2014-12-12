@@ -24,7 +24,7 @@ public:
     /*
     * CAST-128 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -58,7 +58,7 @@ public:
     /*
     * CAST-128 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {

@@ -197,7 +197,7 @@ public:
     * @param y = the BigInt to add to this
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
-        if (op == "+=")
+        if (op == "+")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
@@ -234,7 +234,7 @@ public:
     * @param y = the BigInt to subtract from this
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
-        if (op == "-=")
+        if (op == "-")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
@@ -278,7 +278,7 @@ public:
     * @param y = the BigInt to multiply with this
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
-        if (op == "*=")
+        if (op == "*")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         setSign((sign() == y.sign()) ? Positive : Negative);
@@ -317,7 +317,7 @@ public:
     * @param y = the BigInt to divide this by
     */
     ref BigInt opOpAssign(string op)(in BigInt y)
-        if (op == "/=")
+        if (op == "/")
     {
         if (y.sigWords() == 1 && isPowerOf2(y.wordAt(0)))
             this >>= (y.bits() - 1);
@@ -332,7 +332,7 @@ public:
     * @param y = the modulus to reduce this by
     */
     ref BigInt opOpAssign(string op)(in BigInt mod)
-        if (op == "%=")
+        if (op == "%")
     {
         return (this = this % mod);
     }
@@ -342,7 +342,7 @@ public:
     * @param y = the modulus (word) to reduce this by
     */
     word opOpAssign(string op)(word mod)
-        if (op == "%=")
+        if (op == "%")
     {
         if (mod == 0)
             throw new DivideByZero();
@@ -379,7 +379,7 @@ public:
     * @param shift = the number of bits to shift this left by
     */
     ref BigInt opOpAssign(string op)(size_t shift)
-        if (op == "<<=")
+        if (op == "<<")
     {
         if (shift)
         {
@@ -399,7 +399,7 @@ public:
     * @param shift = the number of bits to shift this right by
     */
     ref BigInt opOpAssign(string op)(size_t shift)
-        if (op == ">>=")
+        if (op == ">>")
     {
         if (shift)
         {
@@ -488,6 +488,7 @@ public:
     { 
         return cmp(b);
     }
+
     int opCmp(in size_t n) const
     { 
         BigInt b = n; 

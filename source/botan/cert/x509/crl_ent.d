@@ -134,7 +134,7 @@ public:
     /*
     * Compare two CRL_Entrys for equality
     */
-    bool opEquals(in CRLEntry a2)
+    bool opEquals(in CRLEntry a2) const
     {
         if (serialNumber() != a2.serialNumber())
             return false;
@@ -148,10 +148,10 @@ public:
     /*
     * Compare two CRL_Entrys for inequality
     */
-    bool opCmp(string op)(in CRLEntry a2)
-        if (op == "!=")
+    bool opCmp(in CRLEntry a2) const
     {
-        return !(this == a2);
+        if (this == a2) return 0;
+        else return -1;
     }
 
 

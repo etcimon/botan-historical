@@ -44,7 +44,7 @@ public:
                     size_t output_bits,
                     RandomNumberGenerator)
     {
-        if (msg.length != m_hash.output_length)
+        if (msg.length != m_hash.outputLength)
             throw new EncodingError("encodingOf: Bad input length");
         
         return emsa3Encoding(msg, output_bits,
@@ -55,7 +55,7 @@ public:
                          in SecureVector!ubyte raw,
                          size_t key_bits)
     {
-        if (raw.length != m_hash.output_length)
+        if (raw.length != m_hash.outputLength)
             return false;
         
         try

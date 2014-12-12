@@ -42,7 +42,7 @@ public:
     * @param output = The ubyte array designated to hold the encrypted block.
     * Must be of length blockSize().
     */
-    final void encrypt(ubyte* input, ubyte* output) const
+    final void encrypt(ubyte* input, ubyte* output)
     { encryptN(input, output, 1); }
 
     /**
@@ -52,7 +52,7 @@ public:
     * @param output = The ubyte array designated to hold the decrypted block.
     * Must be of length blockSize().
     */
-    final void decrypt(ubyte* input, ubyte* output) const
+    final void decrypt(ubyte* input, ubyte* output)
     { decryptN(input, output, 1); }
 
     /**
@@ -61,7 +61,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void encrypt(ubyte* block) const { encryptN(block, block, 1); }
+    final void encrypt(ubyte* block) { encryptN(block, block, 1); }
     
     /**
     * Decrypt a block.
@@ -69,7 +69,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void decrypt(ubyte* block) const { decryptN(block, block, 1); }
+    final void decrypt(ubyte* block) { decryptN(block, block, 1); }
 
     /**
     * Encrypt a block.
@@ -77,7 +77,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void encrypt(ref ubyte[] block) const 
+    final void encrypt(ref ubyte[] block) 
     in { assert(block.length == this.blockSize()); }
     body { encryptN(block.ptr, block.ptr, 1); }
     
@@ -87,7 +87,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void decrypt(ref ubyte[] block) const 
+    final void decrypt(ref ubyte[] block) 
     in { assert(block.length == this.blockSize()); }
     body { decryptN(block.ptr, block.ptr, 1); }
 
@@ -95,7 +95,7 @@ public:
     * Encrypt one or more blocks
     * @param block = the input/output buffer (multiple of blockSize())
     */
-    final void encrypt(Alloc)(Vector!( ubyte, Alloc ) block) const
+    final void encrypt(Alloc)(Vector!( ubyte, Alloc ) block)
     {
         return encryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
@@ -104,7 +104,7 @@ public:
     * Decrypt one or more blocks
     * @param block = the input/output buffer (multiple of blockSize())
     */
-    final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block) const
+    final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
     {
         return decryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
@@ -115,7 +115,7 @@ public:
     * @param output = the output buffer (same size as input)
     */
     final void encrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
-                                      ref Vector!( ubyte, Alloc2 ) output) const
+                                      ref Vector!( ubyte, Alloc2 ) output)
     {
         return encryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
@@ -126,7 +126,7 @@ public:
     * @param output = the output buffer (same size as input)
     */
     final void decrypt(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) input,
-                                      ref Vector!( ubyte, Alloc2 ) output) const
+                                      ref Vector!( ubyte, Alloc2 ) output)
     {
         return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
@@ -135,8 +135,7 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void encrypt(ubyte[] input,
-                       ref ubyte[] output) const
+    final void encrypt(ubyte[] input, ref ubyte[] output)
     in { assert(input.length >= this.blockSize()); }
     body {
         return encryptN(input.ptr, output.ptr, input.length / blockSize());
@@ -147,8 +146,7 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void decrypt(ubyte[] input,
-                       ref ubyte[] output) const
+    final void decrypt(ubyte[] input, ref ubyte[] output)
     in { assert(input.length >= this.blockSize()); }
     body {
         return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
@@ -160,7 +158,7 @@ public:
     * @param output = the output buffer (same size as input)
     * @param blocks = the number of blocks to process
     */
-    abstract void encryptN(ubyte* input, ubyte* output, size_t blocks) const;
+    abstract void encryptN(ubyte* input, ubyte* output, size_t blocks);
 
     /**
     * Decrypt one or more blocks
@@ -168,7 +166,7 @@ public:
     * @param output = the output buffer (same size as input)
     * @param blocks = the number of blocks to process
     */
-    abstract void decryptN(ubyte* input, ubyte* output, size_t blocks) const;
+    abstract void decryptN(ubyte* input, ubyte* output, size_t blocks);
 
     /**
     * @return new object representing the same algorithm as this

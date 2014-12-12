@@ -120,7 +120,7 @@ public:
 
         Unique!HashFunction hash = getRtssHashById(hash_id);
         
-        if (shares[0].length != secret_len + hash.output_length + RTSS_HEADER_SIZE + 1)
+        if (shares[0].length != secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1)
             throw new DecodingError("Bad RTSS length field in header");
         
         Vector!ubyte V = Vector!ubyte(shares.length);
@@ -157,13 +157,13 @@ public:
             secret.pushBack(r);
         }
         
-        if (secret.length != secret_len + hash.output_length)
+        if (secret.length != secret_len + hash.outputLength)
             throw new DecodingError("Bad length in RTSS output");
         
         hash.update(secret.ptr, secret_len);
         SecureVector!ubyte hash_check = hash.finished();
         
-        if (!sameMem(hash_check.ptr, &secret[secret_len], hash.output_length))
+        if (!sameMem(hash_check.ptr, &secret[secret_len], hash.outputLength))
             throw new DecodingError("RTSS hash check failed");
         
         return SecureVector!ubyte(secret.ptr[0 .. secret_len]);

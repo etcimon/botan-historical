@@ -12,6 +12,7 @@ static if (BOTAN_HAS_MISTY1):
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.parsing;
+import std.conv : to;
 
 /**
 * MISTY1
@@ -22,7 +23,7 @@ public:
     /*
     * MISTY1 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -40,7 +41,7 @@ public:
                 B3 ^= B2 & RK[2];
                 B2 ^= B3 | RK[3];
                 
-                uint T0, T1;
+                ushort T0, T1;
                 
                 T0  = FI(B0 ^ RK[ 4], RK[ 5], RK[ 6]) ^ B1;
                 T1  = FI(B1 ^ RK[ 7], RK[ 8], RK[ 9]) ^ T0;
@@ -72,7 +73,7 @@ public:
     /*
     * MISTY1 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -90,7 +91,7 @@ public:
                 B0 ^= B1 | RK[2];
                 B1 ^= B0 & RK[3];
                 
-                uint T0, T1;
+                ushort T0, T1;
                 
                 T0  = FI(B2 ^ RK[ 4], RK[ 5], RK[ 6]) ^ B3;
                 T1  = FI(B3 ^ RK[ 7], RK[ 8], RK[ 9]) ^ T0;
@@ -126,6 +127,7 @@ public:
     }
 
     @property string name() const { return "MISTY1"; }
+	override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new MISTY1; }
 
     /**
@@ -135,8 +137,7 @@ public:
     this(size_t rounds = 8)
     {
         if (rounds != 8)
-            throw new InvalidArgument("MISTY1: Invalid number of rounds: "
-                                       + to!string(rounds));
+            throw new InvalidArgument("MISTY1: Invalid number of rounds: " ~ to!string(rounds));
     }
 
 protected:
@@ -274,7 +275,7 @@ __gshared immutable ushort[512] MISTY1_SBOX_S9 = [
 /*
 * MISTY1 FI Function
 */
-ushort FI(ushort input, ushort key7, ushort key9) pure
+ushort FI(in ushort input, in ushort key7, in ushort key9) pure
 {
     ushort D9 = input >> 7, D7 = input & 0x7F;
     D9 = MISTY1_SBOX_S9[D9] ^ D7;

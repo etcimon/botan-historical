@@ -228,25 +228,8 @@ void loadLittleEndian(T)(in ubyte* input,
 */
 void loadLittleEndian(T)(T* output, in ubyte* input, size_t count)
 {
-    static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
-        import std.c.string : memcpy;
-        memcpy(output, input, T.sizeof*count);
-
-        version(BigEndian) {
-            
-            const size_t blocks = count - (count % 4);
-            const size_t left = count - blocks;
-
-            for (size_t i = 0; i != blocks; i += 4)
-                bswap4(*cast(T[4]*) (output + i));
-
-            foreach (size_t i; 0 .. left)
-                output[blocks+i] = reverseBytes(output[blocks+i]);
-        }
-    } else {
-        foreach (size_t i; 0 .. count)
-            output[i] = loadLittleEndian!T(input, i);
-    }
+    foreach (size_t i; 0 .. count)
+        output[i] = loadLittleEndian!T(input, i);
 }
 
 /**

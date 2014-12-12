@@ -278,7 +278,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
     if (!proto_hash)
         throw new AlgorithmNotFound(hash_fn);
     
-    if (key.maxInputBits() < proto_hash.output_length*8)
+    if (key.maxInputBits() < proto_hash.outputLength*8)
         throw new InvalidArgument("Key is too small for chosen hash function");
     
     if (algo_name == "RSA")

@@ -11,7 +11,7 @@ import botan.utils.types;
 import botan.utils.rotate;
 
 import botan.constants;
-static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
+static if (BOTAN_HAS_SIMD_SSE2) {
   import botan.utils.simd.emmintrin;
 }
 /**
@@ -58,7 +58,7 @@ void bswap4(T)(ref T[4] x)
     x[3] = reverseBytes(x[3]);
 }
 
-static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
+static if (BOTAN_HAS_SIMD_SSE2) {
 
     /**
     * Swap 4 uints in an array using SSE2 shuffle instructions
@@ -72,6 +72,6 @@ static if (BOTAN_TARGET_CPU_HAS_SSE2 && !BOTAN_NO_SSE_INTRINSICS) {
 
         T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
 
-        _mm_storeu_si128(cast(m128i*)(x.ptr), T);
+        _mm_storeu_si128(cast(__m128i*)(x.ptr), T);
     }
 }

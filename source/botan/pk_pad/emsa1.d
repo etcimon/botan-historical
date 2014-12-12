@@ -26,7 +26,7 @@ public:
     }
 
 protected:
-    size_t hashOutputLength() const { return m_hash.output_length; }
+    size_t hashOutputLength() const { return m_hash.outputLength; }
 
 private:
     void update(in ubyte* input, size_t length)
@@ -52,7 +52,7 @@ private:
                 in SecureVector!ubyte raw, size_t key_bits)
     {
         try {
-            if (raw.length != m_hash.output_length)
+            if (raw.length != m_hash.outputLength)
                 throw new EncodingError("encodingOf: Invalid size for input");
             
             SecureVector!ubyte our_coding = emsa1Encoding(raw, key_bits);

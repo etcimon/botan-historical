@@ -17,7 +17,7 @@ import botan.block.block_cipher;
 final class CascadeCipher : BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
         size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
@@ -26,7 +26,7 @@ public:
         m_cipher2.encryptN(output, output, c2_blocks);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
         size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());

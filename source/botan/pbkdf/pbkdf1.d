@@ -21,7 +21,7 @@ import botan.algo_base.symkey;
 * Can only generate a key up to the size of the hash output.
 * Unless needed for backwards compatability, use PKCS5_PBKDF2
 */
-final class PKCS5PBKDF1 : PBKDF
+final class PKCS5_PBKDF1 : PBKDF
 {
 public:
     /**
@@ -40,7 +40,7 @@ public:
 
     override PBKDF clone() const
     {
-        return new PKCS5PBKDF1(m_hash.clone());
+        return new PKCS5_PBKDF1(m_hash.clone());
     }
 
     /*
@@ -52,7 +52,7 @@ public:
                                               size_t iterations,
                                               Duration loop_for) const
     {
-        if (key_len > m_hash.output_length)
+        if (key_len > m_hash.outputLength)
             throw new InvalidArgument("PKCS5_PBKDF1: Requested output length too long");
         
         m_hash.update(passphrase);

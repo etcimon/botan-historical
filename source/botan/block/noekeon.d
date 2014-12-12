@@ -22,7 +22,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -34,7 +34,7 @@ public:
             foreach (size_t j; 0 .. 16)
             {
                 A0 ^= m_RC[j];
-                theta(A0, A1, A2, A3, m_EK.ptr);
+                theta(A0, A1, A2, A3, m_EK.ptr[0 .. 4]);
                 
                 A1 = rotateLeft(A1, 1);
                 A2 = rotateLeft(A2, 5);
@@ -48,7 +48,7 @@ public:
             }
             
             A0 ^= m_RC[16];
-            theta(A0, A1, A2, A3, m_EK.ptr);
+            theta(A0, A1, A2, A3, m_EK.ptr[0 .. 4]);
             
             storeBigEndian(output, A0, A1, A2, A3);
             
@@ -60,7 +60,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -71,7 +71,7 @@ public:
             
             for (size_t j = 16; j != 0; --j)
             {
-                theta(A0, A1, A2, A3, m_DK.ptr);
+                theta(A0, A1, A2, A3, m_DK.ptr[0 .. 4]);
                 A0 ^= m_RC[j];
                 
                 A1 = rotateLeft(A1, 1);
@@ -85,7 +85,7 @@ public:
                 A3 = rotateRight(A3, 2);
             }
             
-            theta(A0, A1, A2, A3, m_DK.ptr);
+            theta(A0, A1, A2, A3, m_DK.ptr[0 .. 4]);
             A0 ^= m_RC[0];
             
             storeBigEndian(output, A0, A1, A2, A3);
@@ -107,6 +107,7 @@ public:
     
 
     @property string name() const { return "Noekeon"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Noekeon; }
 
 protected:
@@ -121,12 +122,12 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    SecureVector!uint getEK() const { return m_EK; }
+    const(SecureVector!uint) getEK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    SecureVector!uint getDK() const { return m_DK; }
+    const(SecureVector!uint) getDK() const { return m_DK; }
 
 protected:
     /*

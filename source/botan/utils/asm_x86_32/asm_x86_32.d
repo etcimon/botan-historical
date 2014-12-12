@@ -6,8 +6,9 @@
 */
 module botan.utils.asm_x86_32.asm_x86_32;
 import std.conv : to;
+import botan.constants;
 
-version(D_InlineAsm_X86) {
+static if (BOTAN_HAS_DMD_X86_INLINE_ASM) {
 
     enum START_ASM = "asm {";
     enum END_ASM = "}";
@@ -63,15 +64,15 @@ version(D_InlineAsm_X86) {
     /*
     * Memory Access Operations
     */
-    string ARRAY4(string REG, int NUM) { return `[` ~ REG ~ ` + 4*` ~ NUM ~ `]`; }
+    string ARRAY4(string REG, int NUM) { return `[` ~ REG ~ ` + 4*` ~ NUM.to!string ~ `]`; }
     string ARRAY4_INDIRECT(string BASE, string OFFSET, int NUM) { return `4*` ~ NUM ~ `[` ~ BASE ~ ` + ` ~ OFFSET ~ ` * 4]`; }
-    string ARG(int PUSHED, int NUM) { return `4*` ~ PUSHED ~ ` + ` ~ ARRAY4(ESP, NUM); }
+    string ARG(int PUSHED, int NUM) { return `4*` ~ PUSHED.to!string ~ ` + ` ~ ARRAY4(ESP, NUM); }
 
     string ASSIGN(string TO, string FROM) { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
     string ASSIGN_BYTE(string TO, string FROM) { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
 
-    string PUSH(string REG) { return `push` ~ REG ~ `;`; }
-    string POP(string REG) { return `pop` ~ REG ~ `;`; }
+    string PUSH(string REG) { return `push ` ~ REG ~ `;`; }
+    string POP(string REG) { return `pop ` ~ REG ~ `;`; }
 
     string SPILL_REGS() {
         return PUSH(EBP) ~ `

@@ -14,6 +14,7 @@ import botan.utils.rotate;
 import botan.utils.parsing;
 import std.algorithm;
 import botan.block.block_cipher;
+import std.conv : to;
 
 /**
 * RC5
@@ -24,7 +25,7 @@ public:
     /*
     * RC5 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -57,7 +58,7 @@ public:
     /*
     * RC5 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -100,6 +101,7 @@ public:
         return "RC5(" ~ to!string(m_rounds) ~ ")";
     }
 
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new RC5(m_rounds); }
 
     /**
@@ -129,10 +131,10 @@ protected:
         m_S[0] = 0xB7E15163;
         foreach (size_t i; 1 .. m_S.length)
             m_S[i] = m_S[i-1] + 0x9E3779B9;
-        
+
         SecureVector!uint K = SecureVector!uint(8);
         
-        for (int i = length-1; i >= 0; --i)
+        for (size_t i = length-1; i >= 0; --i)
             K[i/4] = (K[i/4] << 8) + key[i];
         
         uint A = 0, B = 0;

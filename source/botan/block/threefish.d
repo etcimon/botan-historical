@@ -20,7 +20,7 @@ import botan.utils.types;
 class Threefish512 : BlockCipherFixedParams!(64, 64), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         assert(m_K.length == 9, "Key was set");
         assert(m_T.length == 3, "Tweak was set");
@@ -55,7 +55,7 @@ public:
         }
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         assert(m_K.length == 9, "Key was set");
         assert(m_T.length == 3, "Tweak was set");

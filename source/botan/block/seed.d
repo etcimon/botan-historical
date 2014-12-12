@@ -13,6 +13,8 @@ static if (BOTAN_HAS_SEED):
 import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
+import botan.utils.get_byte;
+
 /**
 * SEED, a Korean block cipher
 */
@@ -22,7 +24,7 @@ public:
     /*
     * SEED Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -31,7 +33,7 @@ public:
             uint B2 = loadBigEndian!uint(input, 2);
             uint B3 = loadBigEndian!uint(input, 3);
             
-            G_FUNC G;
+            GFUNC G;
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -61,7 +63,7 @@ public:
     /*
     * SEED Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -70,7 +72,7 @@ public:
             uint B2 = loadBigEndian!uint(input, 2);
             uint B3 = loadBigEndian!uint(input, 3);
             
-            G_FUNC G;
+            GFUNC G;
             
             for (size_t j = 0; j != 16; j += 2)
             {
@@ -104,6 +106,7 @@ public:
     }
 
     override @property string name() const { return "SEED"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new SEED; }
 protected:
 
@@ -124,7 +127,7 @@ protected:
         foreach (size_t i; 0 .. 4)
             WK[i] = loadBigEndian!uint(key, i);
         
-        G_FUNC G;
+        GFUNC G;
         
         m_K.reserve(32);
         

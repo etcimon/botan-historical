@@ -21,12 +21,12 @@ import botan.utils.types;
 class AES128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -58,12 +58,12 @@ protected:
 final class AES192 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -95,12 +95,12 @@ protected:
 final class AES256 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }

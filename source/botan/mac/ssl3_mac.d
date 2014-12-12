@@ -25,7 +25,7 @@ public:
         return "SSL3-MAC(" ~ m_hash.name ~ ")";
     }
 
-    override @property size_t outputLength() const { return m_hash.output_length; }
+    override @property size_t outputLength() const { return m_hash.outputLength; }
 
     /*
     * Return a clone of this object
@@ -48,7 +48,7 @@ public:
 
     KeyLengthSpecification keySpec() const
     {
-        return KeyLengthSpecification(m_hash.output_length);
+        return KeyLengthSpecification(m_hash.outputLength);
     }
 
     /**

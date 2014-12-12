@@ -9,8 +9,6 @@ module botan.utils.simd.emmintrin;
 
 import botan.constants;
 static if (BOTAN_HAS_SIMD_SSE2):
-
-
 import core.simd;
 
 pure:
@@ -18,7 +16,7 @@ nothrow:
 @trusted:
 
 alias __m128i = byte16;
-alias __m64 = byte8;
+alias __m64 = ulong;
 
 int _MM_SHUFFLE(int a, int b, int c, int d)
 {
@@ -76,7 +74,7 @@ version(GDC) {
         return cast(ulong) __builtin_bswap64(val);
     }
 
-    __m128i _mm_cvtsi128_si32(__m128i a) {
+    int _mm_cvtsi128_si32(__m128i a) {
         return cast(int) __builtin_ia32_vec_ext_v4si(cast(int4) a, 0);
     }
 
@@ -248,7 +246,7 @@ version(LDC) {
         return b;
     }
 
-    __m128i _mm_cvtsi128_si32(__m128i a) {
+    int _mm_cvtsi128_si32(__m128i a) {
         return cast(int) __builtin_ia32_vec_ext_v4si(cast(int4) a, 0);
     }
 
@@ -425,6 +423,19 @@ version(D_InlineAsm_X86_64) {
             movdqu [RBX], XMM0;
         }
         return b;
+    }
+
+    int _mm_cvtsi128_si32(__m128i a) {
+        int ret;
+        int* _ret = &ret;
+        const(__m128i)* _a = &a;
+        asm {
+            mov RAX, _a;
+            mov RBX, _ret;
+            movdqu XMM0, [RAX];
+            movd [RBX], XMM0;
+        }
+        return ret;
     }
 
     // _mm_min_epu8 ; PMINUB

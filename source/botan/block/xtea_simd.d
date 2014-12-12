@@ -27,7 +27,7 @@ public:
     /*
     * XTEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const uint* KS = this.getEK().ptr;
         
@@ -46,7 +46,7 @@ public:
     /*
     * XTEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const uint* KS = this.getEK().ptr;
         

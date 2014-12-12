@@ -54,12 +54,12 @@ public:
     * @param other = octet string
     * @return reference to this
     */
-    void opOpAssign(string op)(in OctetString k)
-        if (op == "^=")
+    OctetString opOpAssign(string op)(in OctetString k)
+        if (op == "^")
     {
         if (k.ptr is this.ptr) { zeroise(m_bits); return; }
         xorBuf(m_bits.ptr, k.ptr, min(length(), k.length));
-        return;
+        return this;
     }
     
     /**
@@ -144,7 +144,7 @@ public:
     * @param y = an octet string
     * @return if x is equal to y
     */
-    bool opEquals(in OctetString other)
+    bool opEquals(in OctetString other) const
     {
         return (bitsOf() == other.bitsOf());
     }
@@ -155,9 +155,12 @@ public:
     * @param y = an octet string
     * @return if x is not equal to y
     */
-    bool opCmp(in OctetString other)
+    int opCmp(in OctetString other) const
     {
-        return !(this == other);
+        if (this == other) return 0;
+        else if (bitsOf()[] < other.bitsOf()[])
+            return -1;
+        else return 1;
     }
 
     /**

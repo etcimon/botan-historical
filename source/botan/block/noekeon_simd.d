@@ -25,7 +25,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const SecureVector!uint EK = this.getEK();
         
@@ -45,7 +45,7 @@ public:
             
             foreach (size_t i; 0 .. 16)
             {
-                A0 ^= SIMD32(RC[i]);
+                A0 ^= SIMD32(m_RC[i]);
                 
                 mixin(NOK_SIMD_THETA());
                 
@@ -60,7 +60,7 @@ public:
                 A3.rotateRight(2);
             }
             
-            A0 ^= SIMD32(RC[16]);
+            A0 ^= SIMD32(m_RC[16]);
             mixin(NOK_SIMD_THETA());
             
             SIMD32.transpose(A0, A1, A2, A3);
@@ -82,7 +82,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const SecureVector!uint DK = this.getDK();
         
@@ -104,7 +104,7 @@ public:
             {
                 mixin(NOK_SIMD_THETA());
                 
-                A0 ^= SIMD32(RC[16-i]);
+                A0 ^= SIMD32(m_RC[16-i]);
                 
                 A1.rotateLeft(1);
                 A2.rotateLeft(5);
@@ -118,7 +118,7 @@ public:
             }
             
             mixin(NOK_SIMD_THETA());
-            A0 ^= SIMD32(RC[0]);
+            A0 ^= SIMD32(m_RC[0]);
             
             SIMD32.transpose(A0, A1, A2, A3);
             

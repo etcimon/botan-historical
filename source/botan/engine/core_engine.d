@@ -21,93 +21,93 @@ import std.conv : to;
 import botan.constants;
 static if (BOTAN_HAS_MODE_CFB)        import botan.modes.cfb;
 static if (BOTAN_HAS_MODE_ECB)        import botan.modes.ecb;
-static if (BOTAN_HAS_MODE_CBC)         import botan.modes.cbc;
-static if (BOTAN_HAS_MODE_XTS)         import botan.modes.xts;
+static if (BOTAN_HAS_MODE_CBC)        import botan.modes.cbc;
+static if (BOTAN_HAS_MODE_XTS)        import botan.modes.xts;
 
 static if (BOTAN_HAS_OFB)             import botan.stream.ofb;
-static if (BOTAN_HAS_CTR_BE)        import botan.stream.ctr;
+static if (BOTAN_HAS_CTR_BE)          import botan.stream.ctr;
 
-static if (BOTAN_HAS_AEAD_FILTER)    import botan.filters.aead_filt;
-static if (BOTAN_HAS_AEAD_CCM)         import botan.modes.aead.ccm;
-static if (BOTAN_HAS_AEAD_EAX)         import botan.modes.aead.eax;    
-static if (BOTAN_HAS_AEAD_OCB)         import botan.modes.aead.ocb;
-static if (BOTAN_HAS_AEAD_GCM)         import botan.modes.aead.gcm;
+static if (BOTAN_HAS_AEAD_FILTER)     import botan.filters.aead_filt;
+static if (BOTAN_HAS_AEAD_CCM)        import botan.modes.aead.ccm;
+static if (BOTAN_HAS_AEAD_EAX)        import botan.modes.aead.eax;    
+static if (BOTAN_HAS_AEAD_OCB)        import botan.modes.aead.ocb;
+static if (BOTAN_HAS_AEAD_GCM)        import botan.modes.aead.gcm;
 static if (BOTAN_HAS_RSA)             import botan.pubkey.algo.rsa;
-static if (BOTAN_HAS_RW)             import botan.pubkey.algo.rw;
+static if (BOTAN_HAS_RW)              import botan.pubkey.algo.rw;
 static if (BOTAN_HAS_DSA)             import botan.pubkey.algo.dsa;
-static if (BOTAN_HAS_ECDSA)         import botan.pubkey.algo.ecdsa;
+static if (BOTAN_HAS_ECDSA)           import botan.pubkey.algo.ecdsa;
 static if (BOTAN_HAS_ELGAMAL)         import botan.pubkey.algo.elgamal;
-static if (BOTAN_HAS_GOST_34_10_2001)     import botan.pubkey.algo.gost_3410;
-static if (BOTAN_HAS_NYBERG_RUEPPEL)import  botan.pubkey.algo.nr;
-static if (BOTAN_HAS_DIFFIE_HELLMAN)import botan.pubkey.algo.dh;
-static if (BOTAN_HAS_ECDH)             import botan.pubkey.algo.ecdh;
+static if (BOTAN_HAS_GOST_34_10_2001) import botan.pubkey.algo.gost_3410;
+static if (BOTAN_HAS_NYBERG_RUEPPEL)  import  botan.pubkey.algo.nr;
+static if (BOTAN_HAS_DIFFIE_HELLMAN)  import botan.pubkey.algo.dh;
+static if (BOTAN_HAS_ECDH)            import botan.pubkey.algo.ecdh;
 /// Blocks
 static if (BOTAN_HAS_AES)             import botan.block.aes;
-static if (BOTAN_HAS_BLOWFISH)         import botan.block.blowfish;
-static if (BOTAN_HAS_CAMELLIA)         import botan.block.camellia;
+static if (BOTAN_HAS_BLOWFISH)        import botan.block.blowfish;
+static if (BOTAN_HAS_CAMELLIA)        import botan.block.camellia;
 static if (BOTAN_HAS_CAST) {
-                                    import botan.block.cast128;
-                                    import botan.block.cast256;
+                                      import botan.block.cast128;
+                                      import botan.block.cast256;
 }
-static if (BOTAN_HAS_CASCADE)          import botan.block.cascade;
+static if (BOTAN_HAS_CASCADE)         import botan.block.cascade;
 static if (BOTAN_HAS_DES){
-                                    import botan.block.des;
-                                    import botan.block.desx;
+                                      import botan.block.des;
+                                      import botan.block.desx;
 }
-static if (BOTAN_HAS_GOST_28147_89)    import botan.block.gost_28147;
-static if (BOTAN_HAS_IDEA)             import botan.block.idea;
-static if (BOTAN_HAS_KASUMI)         import botan.block.kasumi;
-static if (BOTAN_HAS_LION)             import botan.block.lion;
-static if (BOTAN_HAS_MARS)             import botan.block.mars;
-static if (BOTAN_HAS_MISTY1)         import botan.block.misty1;
+static if (BOTAN_HAS_GOST_28147_89)   import botan.block.gost_28147;
+static if (BOTAN_HAS_IDEA)            import botan.block.idea;
+static if (BOTAN_HAS_KASUMI)          import botan.block.kasumi;
+static if (BOTAN_HAS_LION)            import botan.block.lion;
+static if (BOTAN_HAS_MARS)            import botan.block.mars;
+static if (BOTAN_HAS_MISTY1)          import botan.block.misty1;
 static if (BOTAN_HAS_NOEKEON)         import botan.block.noekeon;
 static if (BOTAN_HAS_RC2)             import botan.block.rc2;
 static if (BOTAN_HAS_RC5)             import botan.block.rc5;
 static if (BOTAN_HAS_RC6)             import botan.block.rc6;
-static if (BOTAN_HAS_SAFER)         import botan.block.safer_sk;
-static if (BOTAN_HAS_SEED)             import botan.block.seed;
+static if (BOTAN_HAS_SAFER)           import botan.block.safer_sk;
+static if (BOTAN_HAS_SEED)            import botan.block.seed;
 static if (BOTAN_HAS_SERPENT)         import botan.block.serpent;
 static if (BOTAN_HAS_TEA)             import botan.block.tea;
 static if (BOTAN_HAS_TWOFISH)         import botan.block.twofish;
-static if (BOTAN_HAS_THREEFISH_512) import botan.block.threefish;
-static if (BOTAN_HAS_XTEA)             import botan.block.xtea;
+static if (BOTAN_HAS_THREEFISH_512)   import botan.block.threefish;
+static if (BOTAN_HAS_XTEA)            import botan.block.xtea;
 
 //Hash
 static if (BOTAN_HAS_ADLER32)         import botan.checksum.adler32;
-static if (BOTAN_HAS_CRC24)         import botan.checksum.crc24;
-static if (BOTAN_HAS_CRC32)         import botan.checksum.crc32;
-static if (BOTAN_HAS_GOST_34_11)     import botan.hash.gost_3411;
+static if (BOTAN_HAS_CRC24)           import botan.checksum.crc24;
+static if (BOTAN_HAS_CRC32)           import botan.checksum.crc32;
+static if (BOTAN_HAS_GOST_34_11)      import botan.hash.gost_3411;
 static if (BOTAN_HAS_HAS_160)         import botan.hash.has160;
-static if (BOTAN_HAS_KECCAK)         import botan.hash.keccak;
+static if (BOTAN_HAS_KECCAK)          import botan.hash.keccak;
 static if (BOTAN_HAS_MD2)             import botan.hash.md2;
 static if (BOTAN_HAS_MD4)             import botan.hash.md4;
 static if (BOTAN_HAS_MD5)             import botan.hash.md5;
-static if (BOTAN_HAS_RIPEMD_128)     import botan.hash.rmd128;
-static if (BOTAN_HAS_RIPEMD_160)     import botan.hash.rmd160;
-static if (BOTAN_HAS_SHA1)             import botan.hash.sha160;
+static if (BOTAN_HAS_RIPEMD_128)      import botan.hash.rmd128;
+static if (BOTAN_HAS_RIPEMD_160)      import botan.hash.rmd160;
+static if (BOTAN_HAS_SHA1)            import botan.hash.sha160;
 static if (BOTAN_HAS_SHA2_32)         import botan.hash.sha2_32;
 static if (BOTAN_HAS_SHA2_64)         import botan.hash.sha2_64;
-static if (BOTAN_HAS_SKEIN_512)     import botan.hash.skein_512;
-static if (BOTAN_HAS_TIGER)         import botan.hash.tiger;
-static if (BOTAN_HAS_WHIRLPOOL)     import botan.hash.whrlpool;
-static if (BOTAN_HAS_PARALLEL_HASH) import botan.hash.par_hash;
-static if (BOTAN_HAS_COMB4P)         import botan.hash.comb4p;
+static if (BOTAN_HAS_SKEIN_512)       import botan.hash.skein_512;
+static if (BOTAN_HAS_TIGER)           import botan.hash.tiger;
+static if (BOTAN_HAS_WHIRLPOOL)       import botan.hash.whrlpool;
+static if (BOTAN_HAS_PARALLEL_HASH)   import botan.hash.par_hash;
+static if (BOTAN_HAS_COMB4P)          import botan.hash.comb4p;
 
 /// MAC
 static if (BOTAN_HAS_CBC_MAC)         import botan.mac.cbc_mac;
-static if (BOTAN_HAS_CMAC)          import botan.cmac.cmac;
-static if (BOTAN_HAS_HMAC)          import botan.mac.hmac;
-static if (BOTAN_HAS_SSL3_MAC)      import botan.mac.ssl3_mac;
-static if (BOTAN_HAS_ANSI_X919_MAC) import botan.mac.x919_mac;
+static if (BOTAN_HAS_CMAC)            import botan.cmac.cmac;
+static if (BOTAN_HAS_HMAC)            import botan.mac.hmac;
+static if (BOTAN_HAS_SSL3_MAC)        import botan.mac.ssl3_mac;
+static if (BOTAN_HAS_ANSI_X919_MAC)   import botan.mac.x919_mac;
 
 /// PBKDF
-static if (BOTAN_HAS_PBKDF1)         import botan.pbkdf.pbkdf1;
-static if (BOTAN_HAS_PBKDF2)        import botan.pbkdf.pbkdf2;
+static if (BOTAN_HAS_PBKDF1)          import botan.pbkdf.pbkdf1;
+static if (BOTAN_HAS_PBKDF2)          import botan.pbkdf.pbkdf2;
 
 /// STREAM
-static if (BOTAN_HAS_RC4)              import botan.stream.rc4;
+static if (BOTAN_HAS_RC4)             import botan.stream.rc4;
 static if (BOTAN_HAS_CHACHA)          import botan.stream.chacha;
-static if (BOTAN_HAS_SALSA20)          import botan.stream.salsa20;
+static if (BOTAN_HAS_SALSA20)         import botan.stream.salsa20;
 
 /**
 * Core Engine
@@ -650,7 +650,7 @@ public:
     {
         static if (BOTAN_HAS_PBKDF1) {
             if (algo_spec.algoName == "PBKDF1" && algo_spec.argCount() == 1)
-                return new PKCS5PBKDF1(af.makeHashFunction(algo_spec.arg(0)));
+                return new PKCS5_PBKDF1(af.makeHashFunction(algo_spec.arg(0)));
         }
         
         static if (BOTAN_HAS_PBKDF2) {

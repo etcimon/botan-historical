@@ -11,7 +11,6 @@ static if (BOTAN_HAS_SIMD_ALTIVEC):
 
 import botan.utils.loadstor;
 import botan.utils.cpuid;
-
 import botan.utils.simd.altivec;
 
 struct SIMDAltivec
@@ -47,7 +46,7 @@ public:
 
         R0 = vec_perm(R0, R1, perm);
 
-        return SIMD_Altivec(R0);
+        return SIMDAltivec(R0);
     }
 
     static SIMDAltivec loadBigEndian(in void* input)
@@ -61,10 +60,10 @@ public:
 
         R0 = vec_perm(R0, R1, perm);
 
-        return SIMD_Altivec(R0);
+        return SIMDAltivec(R0);
     }
 
-    void storeLittleEndian(ubyte* output) const
+    void storeLittleEndian(ubyte* output)
     {
         vector_byte perm = vec_lvsl(0, null);
 
@@ -77,10 +76,10 @@ public:
 
         vec.V = vec_perm(m_reg, m_reg, perm);
 
-        storeBigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
+        .storeBigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
     }
 
-    void storeBigEndian(ubyte* output) const
+    void storeBigEndian(ubyte* output)
     {
         union {
             vector_uint V;
@@ -89,7 +88,7 @@ public:
 
         vec.V = m_reg;
 
-        storeBigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
+        .storeBigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
     }
 
     void rotateLeft(size_t rot)
@@ -101,49 +100,53 @@ public:
 
     void rotateRight(size_t rot)
     {
-        rotateLeft(32 - rot);
+        this.rotateLeft(32 - rot);
     }
 
-    void opOpAssign(string op)(in SIMDAltivec other)
-        if (op == "+=")
+    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+        if (op == "+")
     {
         m_reg = vec_add(m_reg, other.m_reg);
+        return this;
     }
 
-    SIMDAltivec opBinary(string op)(in SIMDAltivec other) const
+    SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "+")
     {
         return vec_add(m_reg, other.m_reg);
     }
 
-    void opOpAssign(string op)(in SIMDAltivec other)
-        if (op == "-=")
+    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+        if (op == "-")
     {
         m_reg = vec_sub(m_reg, other.m_reg);
+        return this;
     }
 
-    SIMDAltivec opBinary(string op)(in SIMDAltivec other) const
+    SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "-")
     {
         return vec_sub(m_reg, other.m_reg);
     }
 
-    void opOpAssign(string op)(in SIMDAltivec other)
-        if (op == "^=")
+    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+        if (op == "^")
     {
         m_reg = vec_xor(m_reg, other.m_reg);
+        return this;
     }
 
-    SIMDAltivec opBinary(string op)(in SIMDAltivec other) const
+    SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "^")
     {
         return vec_xor(m_reg, other.m_reg);
     }
 
-    void opOpAssign(string op)(in SIMDAltivec other)
-        if (op == "|=")
+    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+        if (op == "|")
     {
         m_reg = vec_or(m_reg, other.m_reg);
+        return this;
     }
 
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
@@ -152,13 +155,14 @@ public:
         return vec_and(m_reg, other.m_reg);
     }
 
-    void opOpAssign(string op)(in SIMDAltivec other)
-        if (op == "&=")
+    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+        if (op == "&")
     {
         m_reg = vec_and(m_reg, other.m_reg);
+        return this;
     }
 
-    SIMDAltivec opBinary(string op)(size_t shift_) const
+    SIMDAltivec opBinary(string op)(size_t shift_)
         if (op == "<<")
     {
         uint shift = cast(uint) shift_;
@@ -167,7 +171,7 @@ public:
         return vec_sl(m_reg, shift_vec);
     }
 
-    SIMDAltivec opBinary(string op)(size_t shift_) const
+    SIMDAltivec opBinary(string op)(size_t shift_)
         if (op == ">>")
     {
         uint shift = cast(uint) shift_;
@@ -176,7 +180,7 @@ public:
         return vec_sr(m_reg, shift_vec);
     }
 
-    SIMDAltivec opUnary(string op)() const
+    SIMDAltivec opUnary(string op)()
         if (op == "~")
     {
         return vec_nor(m_reg, m_reg);
@@ -188,13 +192,13 @@ public:
         return vec_andc(other.m_reg, m_reg);
     }
 
-    SIMDAltivec bswap() const
+    SIMDAltivec bswap()
     {
         vector_byte perm = vec_lvsl(0, null);
 
         perm = vec_xor(perm, vec_splat_u8(3));
 
-        return SIMD_Altivec(vec_perm(m_reg, m_reg, perm));
+        return SIMDAltivec(vec_perm(m_reg, m_reg, perm));
     }
 
     static void transpose(ref SIMDAltivec B0, ref SIMDAltivec B1,

@@ -23,7 +23,7 @@ public:
     /*
     * Serpent Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         auto keys = this.getRoundKeys().ptr;
         
@@ -37,7 +37,7 @@ public:
     /*
     * Serpent Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         auto keys = this.getRoundKeys().ptr;
         
@@ -49,7 +49,7 @@ public:
         }
     }
 
-
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Serpent_X86_32; }
 protected:
     /*

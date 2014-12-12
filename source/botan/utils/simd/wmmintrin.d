@@ -7,7 +7,7 @@ module botan.utils.simd.wmmintrin;
 */
 
 import botan.constants;
-static if (BOTAN_HAS_AES_SSSE3):
+static if (BOTAN_HAS_SIMD_SSE2):
 
 public import botan.utils.simd.emmintrin;
 
@@ -81,8 +81,7 @@ version(LDC) {
     }
 }
 
-version(DMD) {
-
+version(D_Version2) {
     __m128i _mm_aesenc_si128 (__m128i a, in __m128i b) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;

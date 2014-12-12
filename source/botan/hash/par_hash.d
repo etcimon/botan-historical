@@ -62,7 +62,7 @@ public:
         size_t sum = 0;
         
         foreach (hash; m_hashes)
-            sum += hash.output_length;
+            sum += hash.outputLength;
         return sum;
     }
 
@@ -103,7 +103,7 @@ private:
         foreach (hash; m_hashes)
         {
             hash.flushInto(output + offset);
-            offset += hash.output_length;
+            offset += hash.outputLength;
         }
     }
     Vector!HashFunction m_hashes;

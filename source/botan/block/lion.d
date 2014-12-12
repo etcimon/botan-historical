@@ -14,6 +14,8 @@ import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.utils.xor_buf;
 import botan.utils.parsing;
+import botan.utils.mem_ops;
+import std.conv : to;
 
 /**
 * Lion is a block cipher construction designed by Ross Anderson and
@@ -29,7 +31,7 @@ public:
     /*
     * Lion Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const size_t LEFT_SIZE = leftSize();
         const size_t RIGHT_SIZE = right_size();
@@ -59,7 +61,7 @@ public:
     /*
     * Lion Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const size_t LEFT_SIZE = leftSize();
         const size_t RIGHT_SIZE = right_size();
@@ -90,7 +92,7 @@ public:
 
     override KeyLengthSpecification keySpec() const
     {
-        return KeyLengthSpecification(2, 2*m_hash.output_length, 2);
+        return KeyLengthSpecification(2, 2*m_hash.outputLength, 2);
     }
 
     /*
@@ -130,7 +132,7 @@ public:
     */
     this(HashFunction hash, StreamCipher cipher, size_t block_size) 
     {
-        m_block_size = std.algorithm.max(2*hash.output_length + 1, block_size);
+        m_block_size = std.algorithm.max(2*hash.outputLength + 1, block_size);
         m_hash = hash;
         m_cipher = cipher;
         
@@ -143,6 +145,7 @@ public:
         m_key1.reserve(leftSize());
         m_key2.reserve(leftSize());
     }
+	override @property size_t parallelism() const { return 1; }
 protected:
 
     /*
@@ -158,7 +161,7 @@ protected:
     }
 
 private:
-    size_t leftSize() const { return m_hash.output_length; }
+    size_t leftSize() const { return m_hash.outputLength; }
     size_t right_size() const { return m_block_size - leftSize(); }
 
     const size_t m_block_size;

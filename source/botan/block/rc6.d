@@ -23,7 +23,7 @@ public:
     /*
     * RC6 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -70,7 +70,7 @@ public:
     /*
     * RC6 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -121,6 +121,7 @@ public:
     }
 
     override @property string name() const { return "RC6"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new RC6; }
 protected:
     /*
@@ -139,7 +140,7 @@ protected:
         
         SecureVector!uint K = SecureVector!uint(8);
         
-        for (int i = length-1; i >= 0; --i)
+        for (size_t i = length-1; i >= 0; --i)
             K[i/4] = (K[i/4] << 8) + key[i];
         
         uint A = 0, B = 0;

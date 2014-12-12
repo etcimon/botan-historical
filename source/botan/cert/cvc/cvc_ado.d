@@ -128,7 +128,7 @@ public:
     }
 
 
-    bool opCmp(in EAC11ADOImpl rhs)
+    int opCmp(in EAC11ADOImpl rhs) const
     {
         if (this == rhs)
             return 0;

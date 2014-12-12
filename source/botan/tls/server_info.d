@@ -52,7 +52,7 @@ public:
 
     @property bool empty() const { return m_hostname.empty; }
 
-    bool opEquals(in TLSServerInformation b)
+    bool opEquals(in TLSServerInformation b) const
     {
         return (hostname() == b.hostname()) &&
                 (service() == b.service()) &&
@@ -60,20 +60,21 @@ public:
         
     }
 
-    bool opCmp(string op)(in TLSServerInformation b)
+    int opCmp(in TLSServerInformation b) const
     {
-        return !(this == b);
+        if (this == b) return 0;
+        else if (isLessThan(b)) return -1;
+        else return 1;
     }
 
-    bool opCmp(string op)(in TLSServerInformation b)
-        if (op == "<")
+    bool isLessthan(in TLSServerInformation b) const
     {
-        if (a.hostname() != b.hostname())
-            return (a.hostname() < b.hostname());
-        if (a.service() != b.service())
-            return (a.service() < b.service());
-        if (a.port() != b.port())
-            return (a.port() < b.port());
+        if (hostname() != b.hostname())
+            return (hostname() < b.hostname());
+        if (service() != b.service())
+            return (service() < b.service());
+        if (port() != b.port())
+            return (port() < b.port());
         return false; // equal
     }
 

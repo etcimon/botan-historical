@@ -15,7 +15,7 @@ import botan.block.block_cipher;
 /**
 * IDEA in SSE2
 */
-final class IDEASSE2 : IDEA
+final class IDEASSE2 : IDEA, SymmetricAlgorithm
 {
 public:
     override @property size_t parallelism() const { return 8; }
@@ -23,7 +23,7 @@ public:
     /*
     * IDEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const ushort* KS = super.getEK().ptr;
         
@@ -42,7 +42,7 @@ public:
     /*
     * IDEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         const ushort* KS = this.getDK().ptr;
         

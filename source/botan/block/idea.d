@@ -22,7 +22,7 @@ public:
     /*
     * IDEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         idea_op(input, output, blocks, m_EK.ptr);
     }
@@ -30,7 +30,7 @@ public:
     /*
     * IDEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         idea_op(input, output, blocks, m_DK.ptr);
     }
@@ -43,7 +43,7 @@ public:
 
     @property string name() const { return "IDEA"; }
 	override @property size_t parallelism() const { return 1; }
-    final override BlockCipher clone() const { return new IDEA; }
+    override BlockCipher clone() const { return new IDEA; }
 protected:
     /**
     * @return const reference to encryption subkeys

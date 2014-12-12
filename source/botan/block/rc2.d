@@ -12,6 +12,7 @@ static if (BOTAN_HAS_RC2):
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.mem_ops;
 
 /**
 * RC2
@@ -22,7 +23,7 @@ public:
     /*
     * RC2 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -64,7 +65,7 @@ public:
     /*
     * RC2 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -146,6 +147,7 @@ public:
     }
 
     override @property string name() const { return "RC2"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new RC2; }
 protected:
     /*
@@ -185,7 +187,7 @@ protected:
         
         L[128-length] = TABLE[L[128-length]];
         
-        for (int i = 127-length; i >= 0; --i)
+        for (size_t i = 127-length; i >= 0; --i)
             L[i] = TABLE[L[i+1] ^ L[i+length]];
         
         m_K.reserve(64);

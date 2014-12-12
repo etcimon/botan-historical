@@ -104,7 +104,7 @@ public:
     * @result resulting PointGFp
     */
     ref PointGFp opOpAssign(string op)(in PointGFp rhs)
-        if (op == "+=")
+        if (op == "+")
     {
         Vector!BigInt ws = Vector!BigInt(9);
         add(rhs, ws);
@@ -117,7 +117,7 @@ public:
     * @result resulting PointGFp
     */
     ref PointGFp opOpAssign(string op)(in PointGFp rhs)
-        if (op == "-=")
+        if (op == "-")
     {
         PointGFp minus_rhs = PointGFp(rhs).negate();
         
@@ -135,7 +135,7 @@ public:
     * @result resulting PointGFp
     */
     ref PointGFp opOpAssign(string op)(in BigInt scalar)
-        if (op == "*=")
+        if (op == "*")
     {
         this = scalar * this;
         return this;
@@ -672,10 +672,10 @@ private:
     }
 
     // relational operators
-    bool opCmp(string op)(in PointGFp rhs)
-        if (op == "!=")
+    bool opCmp(in PointGFp rhs) const
     {
-        return !(this == lhs);
+        if  (this == lhs) return 0;
+        else return -1;
     }
     
     // arithmetic operators
@@ -708,11 +708,8 @@ private:
     SecureVector!word ws; // workspace for Montgomery
 }
 
-
-
 // encoding and decoding
-// encoding and decoding
-SecureVector!ubyte eC2OSP(in PointGFp point, ubyte format)
+SecureVector!ubyte EC2OSP(in PointGFp point, ubyte format)
 {
     if (point.isZero())
         return SecureVector!ubyte(1); // single 0 ubyte

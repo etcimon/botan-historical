@@ -72,10 +72,10 @@ public:
     /*
     * Comparison
     */
-    bool opCmp(string op)(in EAC11CVCImpl rhs)
-        if (op == "!=")
+    bool opCmp(in EAC11CVCImpl rhs) const
     {
-        return !(lhs == rhs);
+        if (lhs == rhs) return 0;
+        else return -1;
     }
 
     /**

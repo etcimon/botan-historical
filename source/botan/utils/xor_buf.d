@@ -104,7 +104,7 @@ void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
 // fixme: Move into Vector type
 Vector!(T, Alloc) opOpAssign(string op, T, Alloc, Alloc2)(Vector!(T, Alloc) output,
                                                           in Vector!( T, Alloc2 ) input)
-        if (op == "^=")
+        if (op == "^")
 {
     if (output.length < input.length)
         output.reserve(input.length);

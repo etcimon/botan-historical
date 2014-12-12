@@ -13,6 +13,7 @@ import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.get_byte;
 
 /**
 * MARS, IBM's candidate for AES
@@ -23,7 +24,7 @@ public:
     /*
     * MARS Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -66,7 +67,7 @@ public:
     /*
     * MARS Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -112,6 +113,7 @@ public:
     }
 
     @property string name() const { return "MARS"; }
+	override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new MARS; }
 
 protected:

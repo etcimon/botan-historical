@@ -24,7 +24,7 @@ public:
     /*
     * Blowfish Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;
@@ -61,7 +61,7 @@ public:
     /*
     * Blowfish Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
     {
         import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;

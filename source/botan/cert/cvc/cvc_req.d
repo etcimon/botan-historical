@@ -33,7 +33,7 @@ public:
                 this.getConcatSig() == rhs.getConcatSig());
     }
 
-    bool opCmp(in EAC11ReqImpl rhs)
+    int opCmp(in EAC11ReqImpl rhs) const
     {
         if (this == rhs)
             return 0;

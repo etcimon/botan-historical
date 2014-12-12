@@ -440,5 +440,5 @@ void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) pure
     
     T3 = _mm_shuffle_epi8(T3, BSWAP_MASK);
     
-    _mm_storeu_si128(cast(m128i*) x, T3);
+    _mm_storeu_si128(cast(__m128i*) x, T3);
 }

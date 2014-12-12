@@ -465,10 +465,10 @@ public:
     * @return true if the arguments represent different certificates,
     * false if they are binary identical
     */
-    bool opCmp(string op)(in X509Certificate cert2)
-        if (op == "!=")
+    bool opCmp(in X509Certificate cert2)
     {
-        return !(cert1 == cert2);
+        if (cert1 == cert2) return 0;
+        else return -1;
     }
 
 

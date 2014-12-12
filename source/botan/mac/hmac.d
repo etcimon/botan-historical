@@ -45,7 +45,7 @@ public:
         return new HMAC(m_hash.clone());
     }
 
-    override @property size_t outputLength() const { return m_hash.output_length; }
+    override @property size_t outputLength() const { return m_hash.outputLength; }
 
     KeyLengthSpecification keySpec() const
     {
