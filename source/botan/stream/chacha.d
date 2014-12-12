@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)
 */
-final class ChaCha : StreamCipher
+final class ChaCha : StreamCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -135,11 +135,11 @@ protected:
         storeLittleEndian(x15 + input[15], output.ptr + 4 * 15);
     }
 
-private:
+protected:
     /*
     * ChaCha Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable uint[] TAU =    [ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
         
@@ -147,8 +147,8 @@ private:
         
         const uint[] CONSTANTS = (length == 16) ? TAU : SIGMA;
         
-        m_state.resize(16);
-        m_buffer.resize(64);
+        m_state.reserve(16);
+        m_buffer.reserve(64);
         
         m_state[0] = CONSTANTS[0];
         m_state[1] = CONSTANTS[1];
@@ -182,10 +182,10 @@ private:
 
 string CHACHA_QUARTER_ROUND(alias _a, alias _b, alias _c, alias _d)()
 {
-    enum a = __traits(identifier, _a).stringof;
-    enum b = __traits(identifier, _b).stringof;
-    enum c = __traits(identifier, _c).stringof;
-    enum d = __traits(identifier, _d).stringof;
+    enum a = __traits(identifier, _a);
+    enum b = __traits(identifier, _b);
+    enum c = __traits(identifier, _c);
+    enum d = __traits(identifier, _d);
 
     return a ~ ` += ` ~ b ~ `; ` ~ d ~ ` ^= ` ~ a ~ `; ` ~ d ~ ` = rotateLeft(` ~ d ~ `, 16);
                 ` ~ c ~ ` += ` ~ d ~ `; ` ~ b ~ ` ^= ` ~ c ~ `; ` ~ b ~ ` = rotateLeft(` ~ b ~ `, 12);

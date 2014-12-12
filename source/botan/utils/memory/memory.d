@@ -17,7 +17,7 @@ import std.conv;
 import std.exception : enforceEx;
 import std.traits;
 import std.algorithm;
-import botan.utils.containers.hashmap : HashMap;
+import botan.utils.containers.hashmap : HashMapImpl;
 
 alias VulnerableAllocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 
@@ -104,7 +104,7 @@ final class LockAllocator(Base) : Allocator {
 final class DebugAllocator(Base) : Allocator {
     private {
         Base m_baseAlloc;
-        HashMap!(void*, size_t, MallocAllocator) m_blocks;
+        HashMapImpl!(void*, size_t, MallocAllocator) m_blocks;
         size_t m_bytes;
         size_t m_maxBytes;
     }
@@ -112,7 +112,7 @@ final class DebugAllocator(Base) : Allocator {
     this()
     {
         m_baseAlloc = getAllocator!Base();
-        m_blocks = HashMap!(void*, size_t, MallocAllocator)();
+        m_blocks = HashMapImpl!(void*, size_t, MallocAllocator)();
     }
     
     @property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -313,6 +313,8 @@ struct FreeListRef(T, bool INIT = true)
     
     static if( is(T == class) ){
         alias TR = T;
+    } else static if (__traits(isAbstractClass, T)) {
+        alias TR = T;
     } else {
         alias TR = T*;
     }
@@ -350,16 +352,7 @@ struct FreeListRef(T, bool INIT = true)
             this.refCount++;
         }
     }
-    
-	void opAssign(const FreeListRef other)
-	{
-		clear();
-		m_object = cast(TR)other.m_object;
-		if( m_object ){
-			//logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
-			refCount++;
-		}
-	}
+
 	void opAssign(FreeListRef other)
 	{
 		clear();
@@ -369,7 +362,7 @@ struct FreeListRef(T, bool INIT = true)
 			refCount++;
 		}
 	}
-    
+
     void clear()
     {
         checkInvariants();
@@ -396,13 +389,57 @@ struct FreeListRef(T, bool INIT = true)
     
 	alias opStar this;
 
-	T opCast(T : bool)() {
+    auto opBinaryRight(string op, Key)(Key key)
+    inout if (op == "in" && __traits(hasMember, typeof(m_object), "opBinaryRight")) {
+        static if (is(T == class) || __traits(isAbstractClass, T))
+            return m_object.opBinaryRight!("in")(key);
+        else
+            return (*m_object).opBinaryRight!("in")(key);
+    }
+
+	U opCast(U : bool)() {
 		return m_object !is null;
 	}
 
-	T opCast(T : UnConst!(typeof(this)))() const {
-		return cast(T) this;
+	U opCast(U : UnConst!(typeof(this)))() const {
+		return cast(U) this;
 	}
+
+    int opApply(U...)(U args)
+        if (__traits(hasMember, typeof(m_object), "opApply"))
+    {
+        return m_object.opApply(args);
+    }
+
+    int opApply(U...)(U args) const
+        if (__traits(hasMember, typeof(m_object), "opApply"))
+    {
+        return m_object.opApply(args);
+    }
+
+    void opIndexAssign(U...)(U args)
+        if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
+    {
+        m_object.opIndexAssign(args);
+    }
+
+    void opIndexAssign(U, V)(in U arg1, in V arg2)
+        if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
+    {
+        m_object.opIndexAssign(arg1, arg2);
+    }
+    
+    void opIndexAssign(U...)(in U args) const
+        if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
+    {
+        (cast(UnConst!TR)m_object).opIndexAssign(args);
+    }
+    
+    auto opIndex(U...)(U args)
+        if (__traits(hasMember, typeof(m_object), "opIndex"))
+    {
+        return m_object.opIndex(args);
+    }
 
     private @property ref int refCount()
     const {

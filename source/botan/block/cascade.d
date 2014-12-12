@@ -17,8 +17,7 @@ import botan.block.block_cipher;
 final class CascadeCipher : BlockCipher, SymmetricAlgorithm
 {
 public:
-    void encryptN(ubyte* input, ubyte* output, size_t blocks,
-                   size_t blocks) const
+    override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
         size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
@@ -27,8 +26,7 @@ public:
         m_cipher2.encryptN(output, output, c2_blocks);
     }
 
-    void decryptN(ubyte* input, ubyte* output, size_t blocks,
-                   size_t blocks) const
+    override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
         size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
         size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
@@ -56,10 +54,11 @@ public:
         return "Cascade(" ~ m_cipher1.name ~ "," ~ m_cipher2.name ~ ")";
     }
 
+    override @property size_t parallelism() const { return 1; }
+
     override BlockCipher clone() const
     {
-        return new CascadeCipher(m_cipher1.clone(),
-                                  m_cipher2.clone());
+        return new CascadeCipher(m_cipher1.clone(), m_cipher2.clone());
     }
 
     /**
@@ -67,16 +66,16 @@ public:
     * @param cipher1 = the first cipher
     * @param cipher2 = the second cipher
     */
-    this(BlockCipher c1, BlockCipher c2) 
+    this(in BlockCipher c1, in BlockCipher c2) 
     {
-        m_cipher1 = c1; m_cipher2 = c2;
+        m_cipher1 = cast(BlockCipher) c1; m_cipher2 = cast(BlockCipher) c2;
         m_block = block_size_for_cascade(c1.blockSize(), c2.blockSize());
         
         if (this.blockSize() % c1.blockSize() || this.blockSize() % c2.blockSize())
             throw new InternalError("Failure in " ~ name() ~ " constructor");
     }
 protected:
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
         const ubyte* key2 = key + m_cipher1.maximumKeylength();
         

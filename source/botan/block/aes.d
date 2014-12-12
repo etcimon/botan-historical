@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_AES):
 
 import botan.block.block_cipher;
+import botan.algo_base.sym_algo;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.types;
@@ -17,12 +18,12 @@ import botan.utils.types;
 /**
 * AES-128
 */
-final class AES128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+class AES128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
-        aes_encrypt_n(input, output, blocks, m_EK, ME);
+        aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
     override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
@@ -30,7 +31,7 @@ public:
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
     
-    void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -39,9 +40,10 @@ public:
     }
 
     override @property string name() const { return "AES-128"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES128; }
-private:
-    void keySchedule(in ubyte* key, size_t length)
+protected:
+    override void keySchedule(in ubyte* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
@@ -65,7 +67,7 @@ public:
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
-    
+
     void clear()
     {
         zap(m_EK);
@@ -75,9 +77,10 @@ public:
     }
 
     override @property string name() const { return "AES-192"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES192; }
-private:    
-    void keySchedule(in ubyte* key, size_t length)
+protected:    
+    override void keySchedule(in ubyte* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
@@ -111,9 +114,10 @@ public:
     }
 
     override @property string name() const { return "AES-256"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES256; }
-private:
-    void keySchedule(in ubyte* key, size_t length)
+protected:
+    override void keySchedule(in ubyte* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
@@ -524,16 +528,17 @@ __gshared immutable uint[1024] TD = [
 void aes_encrypt_n(ubyte* input, ubyte* output,
                    size_t blocks,
                    in SecureVector!uint EK,
-                   in SecureVector!ubyte ME) pure
+                   in SecureVector!ubyte ME)
 {
+    import botan.utils.get_byte : get_byte;
     assert(EK.length && ME.length == 16, "Key was set");
     
     __gshared immutable size_t BLOCK_SIZE = 16;
     
-    const uint* TE0 = &TE;
-    const uint* TE1 = &TE + 256;
-    const uint* TE2 = &TE + 512;
-    const uint* TE3 = &TE + 768;
+    const uint* TE0 = TE.ptr;
+    const uint* TE1 = TE.ptr + 256;
+    const uint* TE2 = TE.ptr + 512;
+    const uint* TE3 = TE.ptr + 768;
     
     foreach (size_t i; 0 .. blocks)
     {
@@ -637,16 +642,17 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 */
 void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
                    in SecureVector!uint DK,
-                   in SecureVector!ubyte MD) pure
+                   in SecureVector!ubyte MD) 
 {
+    import botan.utils.get_byte : get_byte;
     assert(DK.length && MD.length == 16, "Key was set");
     
     __gshared immutable size_t BLOCK_SIZE = 16;
     
-    const uint* TD0 = &TD;
-    const uint* TD1 = &TD + 256;
-    const uint* TD2 = &TD + 512;
-    const uint* TD3 = &TD + 768;
+    const uint* TD0 = TD.ptr;
+    const uint* TD1 = TD.ptr + 256;
+    const uint* TD2 = TD.ptr + 512;
+    const uint* TD3 = TD.ptr + 768;
     
     foreach (size_t i; 0 .. blocks)
     {
@@ -722,8 +728,10 @@ void aes_key_schedule(in ubyte* key, size_t length,
                       ref SecureVector!uint EK,
                       ref SecureVector!uint DK,
                       SecureVector!ubyte ME,
-                      SecureVector!ubyte MD) pure
+                      SecureVector!ubyte MD) 
 {
+    import botan.utils.get_byte : get_byte;
+    import botan.utils.mem_ops : copyMem;
     __gshared immutable uint[10] RC = [
         0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
         0x20000000, 0x40000000, 0x80000000, 0x1B000000, 0x36000000 ];
@@ -773,8 +781,8 @@ void aes_key_schedule(in ubyte* key, size_t length,
         TD[SE[get_byte(2, XDK[i])] + 512] ^
         TD[SE[get_byte(3, XDK[i])] + 768];
     
-    ME.resize(16);
-    MD.resize(16);
+    ME.reserve(16);
+    MD.reserve(16);
     
     foreach (size_t i; 0 .. 4)
     {
@@ -782,8 +790,8 @@ void aes_key_schedule(in ubyte* key, size_t length,
         storeBigEndian(XEK[i], &MD[4*i]);
     }
     
-    EK.resize(length + 24);
-    DK.resize(length + 24);
+    EK.reserve(length + 24);
+    DK.reserve(length + 24);
     copyMem(EK.ptr, XEK.ptr, EK.length);
     copyMem(DK.ptr, XDK.ptr, DK.length);
 }

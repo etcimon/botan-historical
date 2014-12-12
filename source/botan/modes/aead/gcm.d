@@ -165,7 +165,7 @@ public:
     {
         update(buffer, offset);
         auto mac = m_ghash.finished();
-        buffer ~= Pair(mac.ptr, tagSize());
+        buffer ~= makePair(mac.ptr, tagSize());
     }
 }
 
@@ -226,7 +226,7 @@ public:
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("GCM tag check failed");
         
-        buffer.resize(offset + remaining);
+        buffer.reserve(offset + remaining);
     }
 }
 
@@ -258,7 +258,7 @@ public:
 
     void start(in ubyte* nonce, size_t len)
     {
-        m_nonce.replace(nonce[0 .. nonce + len]);
+        m_nonce[] = nonce[0 .. len];
         m_ghash = m_H_ad;
     }
 
@@ -300,8 +300,8 @@ public:
 
     override void keySchedule(in ubyte* key, size_t length)
     {
-        m_H.replace(key[0 .. key+length]);
-        m_H_ad.resize(16);
+        m_H[] = key[0 .. length];
+        m_H_ad.reserve(16);
         m_ad_len = 0;
         m_text_len = 0;
     }

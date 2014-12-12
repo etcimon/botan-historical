@@ -467,10 +467,10 @@ private:
         z.growTo(output_size);
         z.clear();
         
-        bigint_monty_mul(z.mutableData(), output_size,
-                         x.data(), x.length, x.sigWords(),
-                         y.data(), y.length, y.sigWords(),
-                         p.data(), p_size, p_dash,
+        bigint_monty_mul(z.mutablePtr(), output_size,
+                         x.ptr, x.length, x.sigWords(),
+                         y.ptr, y.length, y.sigWords(),
+                         p.ptr, p_size, p_dash,
                          ws.ptr);
     }
     
@@ -510,9 +510,9 @@ private:
         z.growTo(output_size);
         z.clear();
         
-        bigint_monty_sqr(z.mutableData(), output_size,
-                         x.data(), x.length, x.sigWords(),
-                         p.data(), p_size, p_dash,
+        bigint_monty_sqr(z.mutablePtr(), output_size,
+                         x.ptr, x.length, x.sigWords(),
+                         p.ptr, p_size, p_dash,
                          ws.ptr);
     }
 

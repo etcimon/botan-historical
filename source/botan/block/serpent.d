@@ -145,13 +145,13 @@ protected:
     */
     void setRoundKeys(in uint[132] ks)
     {
-        m_round_key.replace(ks.ptr[0 .. 132]);
+        m_round_key[] = ks.ptr[0 .. 132];
     }
 
     /*
     * Serpent Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         const uint PHI = 0x9E3779B9;
         
@@ -185,7 +185,7 @@ protected:
         mixin(SBoxE6!(W[128],W[129],W[130],W[131])()); mixin(SBoxE5!(W[132],W[133],W[134],W[135])());
         mixin(SBoxE4!(W[136],W[137],W[138],W[139])());
         
-        m_round_key.replace(W.ptr[8 .. 140]);
+        m_round_key[] = W.ptr[8 .. 140];
     }
 
     SecureVector!uint m_round_key;
@@ -195,10 +195,10 @@ protected:
 package:
 
 string SBoxE1(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
     return `{` ~ B3 ~ ` ^= ` ~ B0 ~ `;
             auto B4 = ` ~ B1 ~ `;
             ` ~ B1 ~ ` &= ` ~ B3 ~ `;
@@ -223,10 +223,10 @@ string SBoxE1(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE2(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{` ~ B0 ~ ` = ~` ~ B0 ~ `;
             ` ~ B2 ~ ` = ~` ~ B2 ~ `;
@@ -253,10 +253,10 @@ string SBoxE2(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE3(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{auto B4 = ` ~ B0 ~ `;
             ` ~ B0 ~ ` &= ` ~ B2 ~ `;
@@ -280,10 +280,10 @@ string SBoxE3(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE4(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{auto B4 = ` ~ B0 ~ `;
             ` ~ B0 ~ ` |= ` ~ B3 ~ `;
@@ -310,10 +310,10 @@ string SBoxE4(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE5(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{` ~ B1 ~ ` ^= ` ~ B3 ~ `;
             ` ~ B3 ~ ` = ~` ~ B3 ~ `;
@@ -341,10 +341,10 @@ string SBoxE5(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE6(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{` ~ B0 ~ ` ^= ` ~ B1 ~ `;
             ` ~ B1 ~ ` ^= ` ~ B3 ~ `;
@@ -372,10 +372,10 @@ string SBoxE6(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE7(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{` ~ B2 ~ ` = ~` ~ B2 ~ `;
             auto B4 = ` ~ B3 ~ `;
@@ -399,10 +399,10 @@ string SBoxE7(alias _B0, alias _B1, alias _B2, alias _B3)() {
 }
 
 string SBoxE8(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0).stringof;
-    const B1 = __traits(identifier, _B1).stringof;
-    const B2 = __traits(identifier, _B2).stringof;
-    const B3 = __traits(identifier, _B3).stringof;
+    const B0 = __traits(identifier, _B0);
+    const B1 = __traits(identifier, _B1);
+    const B2 = __traits(identifier, _B2);
+    const B3 = __traits(identifier, _B3);
 
     return `{auto B4 = ` ~ B1 ~ `;
             ` ~ B1 ~ ` |= ` ~ B2 ~ `;

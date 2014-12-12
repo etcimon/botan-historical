@@ -78,9 +78,9 @@ protected:
     /*
     * TEA Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_K.resize(4);
+        m_K.reserve(4);
         foreach (size_t i; 0 .. 4)
             m_K[i] = loadBigEndian!uint(key, i);
     }

@@ -29,7 +29,7 @@ public:
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
         
-        m_nonce.replace(nonce[0 .. nonce + nonce_len]);
+        m_nonce[] = nonce[0 .. nonce_len];
         m_msg_buf.clear();
         
         return SecureVector!ubyte();
@@ -42,7 +42,7 @@ public:
         ubyte* buf = &buffer[offset];
         
         m_msg_buf.insert(m_msg_buf.end(), buf, buf + sz);
-        buffer.resize(offset); // truncate msg
+        buffer.reserve(offset); // truncate msg
     }
 
     final override void setAssociatedData(in ubyte* ad, size_t length)
@@ -56,7 +56,7 @@ public:
             
             m_ad_buf.pushBack(get_byte!ushort(0, length));
             m_ad_buf.pushBack(get_byte!ushort(1, length));
-            m_ad_buf += Pair(ad, length);
+            m_ad_buf += makePair(ad, length);
             while (m_ad_buf.length % BS)
                 m_ad_buf.pushBack(0); // pad with zeros to full block size
         }
@@ -261,7 +261,7 @@ public:
         if (!sameMem(T.ptr, buf_end, tagSize()))
             throw new IntegrityFailure("CCM tag check failed");
         
-        buffer.resize(buffer.length - tagSize());
+        buffer.reserve(buffer.length - tagSize());
     }
 
     override size_t outputLength(size_t input_length) const
@@ -336,7 +336,7 @@ public:
         
         T ^= S0;
         
-        buffer += Pair(T.ptr, tagSize());
+        buffer += makePair(T.ptr, tagSize());
     }
 
     override size_t outputLength(size_t input_length) const

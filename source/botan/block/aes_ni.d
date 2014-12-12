@@ -184,14 +184,14 @@ public:
 
     @property string name() const { return "AES-128"; }
     override BlockCipher clone() const { return new AES128NI; }
-private:
+protected:
     /*
     * AES-128 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_EK.resize(44);
-        m_DK.resize(44);
+        m_EK.reserve(44);
+        m_DK.reserve(44);
         
         __m128i K0  = _mm_loadu_si128(cast(const(__m128i)*)(key));
         mixin(`    __m128i K1  = ` ~ AES_128_key_exp!(K0, 0x01)() ~ `
@@ -422,14 +422,14 @@ public:
     }
     @property string name() const { return "AES-192"; }
     override BlockCipher clone() const { return new AES192NI; }
-private:
+protected:
     /*
     * AES-192 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_EK.resize(52);
-        m_DK.resize(52);
+        m_EK.reserve(52);
+        m_DK.reserve(52);
         
         __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
@@ -664,14 +664,14 @@ public:
 
     @property string name() const { return "AES-256"; }
     override BlockCipher clone() const { return new AES256NI; }
-private:
+protected:
     /*
     * AES-256 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_EK.resize(60);
-        m_DK.resize(60);
+        m_EK.reserve(60);
+        m_DK.reserve(60);
         
         __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 16));
@@ -787,7 +787,7 @@ __m128i aes_256_key_expansion(__m128i key, __m128i key2)
 
 string AES_ENC_4_ROUNDS(alias K)()
 { 
-    const K2 = __traits(identifier, K).stringof;
+    const K2 = __traits(identifier, K);
     return `B0 = _mm_aesenc_si128(B0, ` ~ K2 ~ `);
             B1 = _mm_aesenc_si128(B1, ` ~ K2 ~ `);
             B2 = _mm_aesenc_si128(B2, ` ~ K2 ~ `);
@@ -796,7 +796,7 @@ string AES_ENC_4_ROUNDS(alias K)()
 
 string AES_ENC_4_LAST_ROUNDS(alias K)()
 {
-    const K2 = __traits(identifier, K).stringof;
+    const K2 = __traits(identifier, K);
     return `B0 = _mm_aesenclast_si128(B0, ` ~ K2 ~ `);
             B1 = _mm_aesenclast_si128(B1, ` ~ K2 ~ `);
             B2 = _mm_aesenclast_si128(B2, ` ~ K2 ~ `);
@@ -805,7 +805,7 @@ string AES_ENC_4_LAST_ROUNDS(alias K)()
 
 string AES_DEC_4_ROUNDS(alias K)()
 {
-    const K2 = __traits(identifier, K).stringof;
+    const K2 = __traits(identifier, K);
     return `B0 = _mm_aesdec_si128(B0, ` ~ K2 ~ `);
             B1 = _mm_aesdec_si128(B1, ` ~ K2 ~ `);
             B2 = _mm_aesdec_si128(B2, ` ~ K2 ~ `);
@@ -814,7 +814,7 @@ string AES_DEC_4_ROUNDS(alias K)()
 
 string AES_DEC_4_LAST_ROUNDS(alias K)()
 {
-    const K2 = __traits(identifier, K).stringof;
+    const K2 = __traits(identifier, K);
     return `B0 = _mm_aesdeclast_si128(B0, ` ~ K2 ~ `);
             B1 = _mm_aesdeclast_si128(B1, ` ~ K2 ~ `);
             B2 = _mm_aesdeclast_si128(B2, ` ~ K2 ~ `);
@@ -822,7 +822,7 @@ string AES_DEC_4_LAST_ROUNDS(alias K)()
 }
 
 string AES_128_key_exp(alias K, ubyte RCON)() {
-    const K2 = __traits(identifier, K).stringof;
+    const K2 = __traits(identifier, K);
     return `aes_128_key_expansion(K, _mm_aeskeygenassist_si128(` ~ K2 ~ `, ` ~ RCON.stringof ~ `))`;
 }
 

@@ -32,7 +32,7 @@ public:
     /*
     * DER encode an AlternativeName extension
     */
-	override void decodeFrom(DEREncoderImpl der) const
+	override void encodeInto(DEREncoderImpl der) const
     {
         der.startCons(ASN1Tag.SEQUENCE);
         
@@ -41,7 +41,7 @@ public:
         encodeEntries(der, m_alt_info, "URI", (cast(ASN1Tag)6));
         encodeEntries(der, m_alt_info, "IP", (cast(ASN1Tag)7));
 
-        m_othernames.opApply( (oid, const ref asn1_str )
+        foreach(const ref OID oid, const ref ASN1String asn1_str; m_othernames)
         {
             der.startExplicit(0)
                .encode(oid)
@@ -49,9 +49,7 @@ public:
                .encode(asn1_str)
                .endExplicit()
                .endExplicit();
-
-            return 1;
-        });
+        }
         
         der.endCons();
     }
@@ -127,15 +125,13 @@ public:
     {
         MultiMap!(string, string) names;
 
-        m_alt_info.opApply( (k, const ref v) {
+        foreach(const ref string k, const ref string v; m_alt_info) {
             names.insert(k, v);
-            return 1;
-        });
+        }
 
-        m_othernames.opApply( (oid, const ref asn1_str) {
+        foreach(const ref OID oid, const ref ASN1String asn1_str; m_othernames) {
             names.insert(OIDS.lookup(oid), asn1_str.value());
-            return 1;
-        });
+        }
 
         return names;
     }

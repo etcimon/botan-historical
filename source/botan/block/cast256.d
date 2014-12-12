@@ -117,13 +117,14 @@ public:
     }
 
     @property string name() const { return "CAST-256"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new CAST256; }
 protected:
 
     /*
     * CAST-256 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable uint[192] KEY_MASK = [
             0x5A827999, 0xC95C653A, 0x383650DB, 0xA7103C7C, 0x15EA281D, 0x84C413BE,
@@ -165,8 +166,8 @@ protected:
             0x07, 0x18, 0x09, 0x1A, 0x0B, 0x1C, 0x0D, 0x1E, 0x0F, 0x00,
             0x11, 0x02 ];
         
-        m_MK.resize(48);
-        m_RK.resize(48);
+        m_MK.reserve(48);
+        m_RK.reserve(48);
         
         SecureVector!uint K = SecureVector!uint(8);
         foreach (size_t i; 0 .. length)
@@ -212,6 +213,7 @@ protected:
 
 private:
     
+import botan.utils.get_byte : get_byte;
 /*
 * CAST-256 Round Type 1
 */

@@ -415,7 +415,7 @@ public:
     this(size_t s = 0) { m_SKIP = s; clear(); }
     
     ~this() { clear(); }
-private:
+protected:
     /*
     * RC4 Encryption
     */
@@ -427,7 +427,7 @@ private:
     /*
     * RC4 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         RC4_set_key(&m_state, length, key);
         ubyte dummy = 0;
@@ -534,7 +534,7 @@ public:
         EVP_CIPHER_CTX_cleanup(&m_encrypt);
         EVP_CIPHER_CTX_cleanup(&m_decrypt);
     }
-private:
+protected:
     /*
     * Encrypt a block
     */
@@ -558,7 +558,7 @@ private:
     /*
     * Set the key
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         SecureVector!ubyte full_key = SecureVector!ubyte(key, key + length);
         

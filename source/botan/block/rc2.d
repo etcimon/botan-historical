@@ -151,7 +151,7 @@ protected:
     /*
     * RC2 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable ubyte[256] TABLE = [
             0xD9, 0x78, 0xF9, 0xC4, 0x19, 0xDD, 0xB5, 0xED, 0x28, 0xE9, 0xFD, 0x79,
@@ -188,7 +188,7 @@ protected:
         for (int i = 127-length; i >= 0; --i)
             L[i] = TABLE[L[i+1] ^ L[i+length]];
         
-        m_K.resize(64);
+        m_K.reserve(64);
         loadLittleEndian!ushort(m_K.ptr, L.ptr, 64);
     }
 

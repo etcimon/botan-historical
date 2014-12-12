@@ -105,7 +105,7 @@ public:
         if ((cast(size_t) buf[2]) + 3 != buf.length)
             throw new DecodingError("Bad length in hello verify request");
         
-        m_cookie.replace(buf.ptr[3 .. buf.length]);
+        m_cookie[] = buf.ptr[3 .. buf.length];
     }
 
     this(in Vector!ubyte client_hello_bits, in string client_identity, in SymmetricKey secret_key)
@@ -440,7 +440,7 @@ protected:
             m_suites.pushBack(make_ushort(buf[i+1], buf[i+2]));
         }
         
-        m_random.resize(challenge_len);
+        m_random.reserve(challenge_len);
         copyMem(m_random.ptr, &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
         
         if (offeredSuite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))

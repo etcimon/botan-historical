@@ -121,7 +121,7 @@ protected:
     */
     this()
     {
-        m_next.resize(1);
+        m_next.reserve(1);
         m_port_num = 0;
         m_filter_owns = 0;
         m_owned = false;
@@ -205,7 +205,7 @@ private:
             --size;
         
         if (filters && size)
-            m_next.replace(filters[0 .. filters + size]);
+            m_next[] = filters[0 .. size];
     }
 
 

@@ -44,13 +44,13 @@ public:
         ubyte* buf = &buffer[offset];
         
         m_msg_buf.insert(m_msg_buf.end(), buf, buf + sz);
-        buffer.resize(offset); // truncate msg
+        buffer.reserve(offset); // truncate msg
     }
 
     final void setAssociatedDataN(size_t n, in ubyte* ad, size_t length)
     {
         if (n >= m_ad_macs.length)
-            m_ad_macs.resize(n+1);
+            m_ad_macs.reserve(n+1);
         
         m_ad_macs[n] = m_cmac.process(ad, length);
     }
@@ -238,7 +238,7 @@ public:
         if (T != V)
             throw new IntegrityFailure("SIV tag check failed");
         
-        buffer.resize(buffer.length - tagSize());
+        buffer.reserve(buffer.length - tagSize());
     }
 
     override size_t outputLength(size_t input_length) const

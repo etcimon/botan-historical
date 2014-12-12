@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * DJB's Salsa20 (and XSalsa20)
 */
-final class Salsa20 : StreamCipher
+final class Salsa20 : StreamCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -120,11 +120,11 @@ public:
     }
 
     override Salsa20 clone() const { return new Salsa20; }
-private:
+protected:
     /*
     * Salsa20 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         __gshared immutable uint[] TAU = [ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
 
@@ -132,8 +132,8 @@ private:
         
         const uint[] CONSTANTS = (length == 16) ? TAU : SIGMA;
         
-        m_state.resize(16);
-        m_buffer.resize(64);
+        m_state.reserve(16);
+        m_buffer.reserve(64);
         
         m_state[0] = CONSTANTS[0];
         m_state[5] = CONSTANTS[1];
@@ -245,10 +245,10 @@ void salsa20(ref ubyte[64] output, in uint[16] input)
 
 string SALSA20_QUARTER_ROUND(alias _x1, alias _x2, alias _x3, alias _x4)()
 {
-    enum x1 = __traits(identifier, _x1).stringof;
-    enum x2 = __traits(identifier, _x2).stringof;
-    enum x3 = __traits(identifier, _x3).stringof;
-    enum x4 = __traits(identifier, _x4).stringof;
+    enum x1 = __traits(identifier, _x1);
+    enum x2 = __traits(identifier, _x2);
+    enum x3 = __traits(identifier, _x3);
+    enum x4 = __traits(identifier, _x4);
     
     return x2 ~ ` ^= rotateLeft(` ~ x1 ~ ` + ` ~ x4 ~ `,  7);
             ` ~ x3 ~ ` ^= rotateLeft(` ~ x2 ~ ` + ` ~ x1 ~ `,  9);

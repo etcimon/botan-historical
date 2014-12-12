@@ -18,7 +18,7 @@ import botan.utils.xor_buf;
 /**
 * CMAC, also known as OMAC1
 */
-final class CMAC : MessageAuthenticationCode
+final class CMAC : MessageAuthenticationCode, SymmetricAlgorithm
 {
 public:
     /*
@@ -113,18 +113,18 @@ public:
                                        " bit cipher " ~ m_cipher.name);
         }
         
-        m_state.resize(outputLength());
-        m_buffer.resize(outputLength());
-        m_B.resize(outputLength());
-        m_P.resize(outputLength());
+        m_state.reserve(outputLength());
+        m_buffer.reserve(outputLength());
+        m_B.reserve(outputLength());
+        m_P.reserve(outputLength());
         m_position = 0;
     }
 
-private:
+protected:
     /*
     * Update an CMAC Calculation
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(in ubyte* input, size_t length)
     {
         bufferInsert(m_buffer, m_position, input, length);
         if (m_position + length > outputLength())
@@ -149,7 +149,7 @@ private:
     /*
     * Finalize an CMAC Calculation
     */
-    void finalResult(ubyte* mac)
+    override void finalResult(ubyte* mac)
     {
         xorBuf(m_state, m_buffer, m_position);
         
@@ -176,7 +176,7 @@ private:
     /*
     * CMAC Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         clear();
         m_cipher.setKey(key, length);

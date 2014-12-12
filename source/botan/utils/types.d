@@ -35,22 +35,32 @@ struct Pair(T, U) {
         return m_obj[1];
     }
 
-    this(T a, U b) {
-        m_obj = Tuple!(T,U)(a,b);
+    this(in T a, in U b) {
+        m_obj = Tuple!(T,U)(cast(T) a,cast(U) b);
     }
 
     alias m_obj this;
 }
 
-Pair!(T, U) makePair(T, U)(T first, U second)
+Pair!(T, U) makePair(T, U)(in T first, in U second)
 {
-	return Pair!(T, U)(first, second);
+	return Pair!(UnConst!T, UnConst!U)(first, second);
+}
+
+private template UnConst(T) {
+    static if (is(T U == const(U))) {
+        alias UnConst = U;
+    } else static if (is(T V == immutable(V))) {
+        alias UnConst = V;
+    } else alias UnConst = T;
 }
 
 struct Unique(T)
 {
     /** Represents a reference to $(D T). Resolves to $(D T*) if $(D T) is a value type. */
     static if (is(T:Object))
+        alias RefT = T;
+    else static if (__traits(isAbstractClass, T))
         alias RefT = T;
     else
         alias RefT = T*;
@@ -82,6 +92,7 @@ public:
         p = null;
         assert(p is null);
     }
+
     /**
     Constructor that takes a $(D Unique) of a type that is convertible to our type.
 
@@ -108,7 +119,7 @@ public:
         RefT p = null;
         opAssign(p);
     }
-    
+
     void opAssign(ref RefT p)
     {
         destroy(this);
@@ -116,6 +127,15 @@ public:
         p = null;
         assert(p is null);
     }
+    /*
+    void opAssign(U)(in Unique!U p)
+    {
+        debug(Unique) writeln("Unique opAssign converting from ", U.stringof);
+        // first delete any resource we own
+        destroy(this);
+        _p = cast(RefT)u._p;
+        cast(RefT)u._p = null;
+    }*/
 
     /// Transfer ownership from a $(D Unique) of a type that is convertible to our type.
     void opAssign(U)(Unique!U u)
@@ -156,7 +176,8 @@ public:
     }
 
     /** Forwards member access to contents. */
-    RefT opDot() { return _p; }
+	RefT opDot() { return _p; }
+	const(RefT) opDot() const { return _p; }
 
     RefT opUnary(string op)() if (op == "*") { return _p; }
 

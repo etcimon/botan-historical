@@ -45,8 +45,7 @@ public:
     /*
     * Start a new ASN.1 ASN1Tag.SEQUENCE/SET/EXPLICIT
     */
-	DEREncoderImpl startCons(ASN1Tag m_type_tag,
-                         ASN1Tag m_class_tag = ASN1Tag.UNIVERSAL)
+	DEREncoderImpl startCons(ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.UNIVERSAL)
     {
         m_subsequences.pushBack(DERSequence(m_type_tag, m_class_tag));
         return this;
@@ -301,7 +300,7 @@ public:
     */
 	DEREncoderImpl addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in string rep_str)
     {
-        const ubyte* rep = cast(const ubyte*)(rep_str.data());
+        const ubyte* rep = cast(const ubyte*)(rep_str.ptr);
         const size_t rep_len = rep_str.length;
         return addObject(m_type_tag, m_class_tag, rep, rep_len);
     }
@@ -338,7 +337,8 @@ public:
         return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
 private:
-    class DERSequence
+    alias DERSequence = FreeListRef!DERSequenceImpl;
+    class DERSequenceImpl
     {
     public:
         /*
@@ -380,7 +380,7 @@ private:
         void addBytes(in ubyte* data, size_t length)
         {
             if (m_type_tag == ASN1Tag.SET)
-                m_set_contents.pushBack(SecureVector!ubyte(data, data + length));
+                m_set_contents.pushBack(SecureVector!ubyte(data[0 .. length]));
             else
                 m_contents ~= data[0 .. length];
         }

@@ -66,7 +66,7 @@ public:
         return true;
     }
 
-    override void decodeFrom(DEREncoderImpl to) const
+    override void encodeInto(DEREncoderImpl to) const
     {
         to.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_hash_id)
@@ -122,7 +122,7 @@ public:
 
     X509Time nextUpdate() const { return m_nextupdate; }
 
-    override void decodeFrom(DEREncoderImpl) const
+    override void encodeInto(DEREncoderImpl) const
     {
         throw new Exception("Not implemented (SingleResponse::encodeInto)");
     }

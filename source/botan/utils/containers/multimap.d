@@ -97,8 +97,13 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
 
         If no field is found, def_val is returned.
     */
-    inout(ValueType) get(KeyType key, lazy inout(ValueType) def_val = ValueType.init)
-    inout {
+    ValueType get(KeyType key, lazy ValueType def_val = ValueType.init) {
+        if (auto pv = key in this) return *pv;
+        return def_val;
+    }
+
+    const(ValueType) get(in KeyType key, lazy const(ValueType) def_val = const(ValueType).init) const
+    {
         if (auto pv = key in this) return *pv;
         return def_val;
     }
@@ -107,7 +112,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
 
         Note that the version returning an array will allocate for each call.
     */
-    const(ValueType)[] equalRange(KeyType key)
+    const(ValueType)[] equalRange(in KeyType key)
     const {
         import std.array;
         auto ret = appender!(const(ValueType)[])();
@@ -154,7 +159,12 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
     
     /** Returns a pointer to the first field that matches the given key.
     */
-    inout(ValueType)* opBinaryRight(string op)(KeyType key) inout if(op == "in") {
+    inout(ValueType)* opBinaryRight(string op)(in KeyType key) inout if(op == "in") {
+        return find(key);
+    }
+
+    inout(ValueType)* find(in KeyType key) inout 
+    {
         uint keysum = computeCheckSumI(key);
         auto idx = getIndex(m_fields[0 .. m_fieldCount], key, keysum);
         if( idx >= 0 ) return &m_fields[idx].value;
@@ -162,6 +172,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         if( idx >= 0 ) return &m_extendedFields[idx].value;
         return null;
     }
+
     /// ditto
     bool opBinaryRight(string op)(KeyType key) inout if(op == "!in") {
         return !(key in this);
@@ -169,7 +180,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
     
     /** Iterates over all fields, including duplicates.
     */
-    int opApply(scope int delegate(KeyType key, ref ValueType val) del)
+    int opApply(int delegate(KeyType key, ref ValueType val) del)
     {
         foreach (ref kv; m_fields[0 .. m_fieldCount]) {
             if (auto ret = del(kv.key, kv.value))
@@ -181,26 +192,39 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         }
         return 0;
     }
-    
+
+    int opApply(int delegate(const ref KeyType key, const ref ValueType val) del) const
+    {
+        foreach (ref kv; m_fields[0 .. m_fieldCount]) {
+            if (auto ret = del(kv.key, kv.value))
+                return ret;
+        }
+        foreach (ref kv; m_extendedFields) {
+            if (auto ret = del(kv.key, kv.value))
+                return ret;
+        }
+        return 0;
+    }
+
     /// ditto
-    int opApply(scope int delegate(ref ValueType val) del)
+    int opApply(int delegate(ref ValueType val) del)
     {
         return this.opApply((KeyType key, ref ValueType val) { return del(val); });
     }
     
     /// ditto
-    int opApply(scope int delegate(KeyType key, ref const(ValueType) val) del) const
+    int opApply(int delegate(KeyType key, ref const(ValueType) val) del) const
     {
         return (cast() this).opApply(cast(int delegate(KeyType, ref ValueType)) del);
     }
     
     /// ditto
-    int opApply(scope int delegate(ref const(ValueType) val) del) const
+    int opApply(int delegate(ref const(ValueType) val) del) const
     {
         return (cast() this).opApply(cast(int delegate(ref ValueType)) del);
     }
     
-    private ptrdiff_t getIndex(in Field[] map, KeyType key, uint keysum)
+    private ptrdiff_t getIndex(in Field[] map, in KeyType key, uint keysum)
     const {
         foreach (i, ref const(Field) entry; map) {
             if (entry.keyCheckSum != keysum) continue;
@@ -209,7 +233,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         return -1;
     }
     
-    private static bool matches(KeyType a, KeyType b)
+    private static bool matches(in KeyType a, in KeyType b)
     {
         static if (case_sensitive) return a == b;
         else static if (is (KeyType == string)) return icmp2(a, b) == 0;
@@ -244,7 +268,7 @@ void removeFromArrayIdx(T)(ref T[] array, size_t idx)
 }
 
 /// Special version of icmp() with optimization for ASCII characters
-int icmp2(string a, string b)
+int icmp2(in string a, in string b)
 @safe pure {
     size_t i = 0, j = 0;
     
@@ -282,4 +306,12 @@ int icmp2(string a, string b)
     
     assert(i == a.length || j == b.length, "Strings equal but we didn't fully compare them!?");
     return 0;
+}
+
+private template UnConst(T) {
+    static if (is(T U == const(U))) {
+        alias UnConst = U;
+    } else static if (is(T V == immutable(V))) {
+        alias UnConst = V;
+    } else alias UnConst = T;
 }

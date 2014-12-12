@@ -32,7 +32,7 @@ public:
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
-        m_g.resize((1 << window_bits));
+        m_g.reserve((1 << window_bits));
         m_g[0] = 1;
         m_g[1] = base;
         
@@ -101,22 +101,22 @@ public:
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
-        m_g.resize((1 << m_window_bits));
+        m_g.reserve((1 << m_window_bits));
         
         BigInt z = BigInt(BigInt.Positive, 2 * (m_mod_words + 1));
         SecureVector!word workspace(z.length);
         
         m_g[0] = 1;
         
-        bigint_monty_mul(z.mutableData(), z.length, m_g[0].data(), m_g[0].length, m_g[0].sigWords(), m_R2_mod.data(), 
-                         m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.data(), m_mod_words, m_mod_prime, workspace.ptr);
+        bigint_monty_mul(z.mutablePtr(), z.length, m_g[0].ptr, m_g[0].length, m_g[0].sigWords(), m_R2_mod.ptr, 
+                         m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
         m_g[0] = z;
         
         m_g[1] = (base >= m_modulus) ? (base % m_modulus) : base;
         
-        bigint_monty_mul(z.mutableData(), z.length, m_g[1].data(), m_g[1].length, m_g[1].sigWords(), m_R2_mod.data(), 
-                         m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.data(), m_mod_words, m_mod_prime, workspace.ptr);
+        bigint_monty_mul(z.mutablePtr(), z.length, m_g[1].ptr, m_g[1].length, m_g[1].sigWords(), m_R2_mod.ptr, 
+                         m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
         m_g[1] = z;
         
@@ -128,10 +128,10 @@ public:
             const BigInt y = m_g[i-1];
             const size_t y_sig = y.sigWords();
             
-            bigint_monty_mul(z.mutableData(), z.length,
-                             x.data(), x.length, x_sig,
-                             y.data(), y.length, y_sig,
-                             m_modulus.data(), m_mod_words, m_mod_prime,
+            bigint_monty_mul(z.mutablePtr(), z.length,
+                             x.ptr, x.length, x_sig,
+                             y.ptr, y.length, y_sig,
+                             m_modulus.ptr, m_mod_words, m_mod_prime,
                              workspace.ptr);
             
             m_g[i] = z;
@@ -156,8 +156,8 @@ public:
         {
             for (size_t k = 0; k != m_window_bits; ++k)
             {
-                bigint_monty_sqr(z.mutableData(), z_size, x.data(), x.length, x.sigWords(),
-                                 m_modulus.data(), m_mod_words, m_mod_prime, workspace.ptr);
+                bigint_monty_sqr(z.mutablePtr(), z_size, x.ptr, x.length, x.sigWords(),
+                                 m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
                 
                 x = z;
             }
@@ -166,15 +166,15 @@ public:
             
             const BigInt y = m_g[nibble];
 
-            bigint_monty_mul(z.mutableData(), z_size, x.data(), x.length, x.sigWords(), y.data(), y.length, y.sigWords(),
-                             m_modulus.data(), m_mod_words, m_mod_prime, workspace.ptr);
+            bigint_monty_mul(z.mutablePtr(), z_size, x.ptr, x.length, x.sigWords(), y.ptr, y.length, y.sigWords(),
+                             m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
 
             x = z;
         }
         
         x.growTo(2*m_mod_words + 1);
         
-        bigint_monty_redc(x.mutableData(), m_modulus.data(), m_mod_words, m_mod_prime, workspace.ptr);
+        bigint_monty_redc(x.mutablePtr(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
         return x;
     }

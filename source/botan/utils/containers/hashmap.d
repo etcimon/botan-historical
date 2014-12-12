@@ -69,15 +69,24 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
             m_table[j] = m_table[i];
         }
     }
-    
-	Value get(Key key, lazy Value default_value = Value.init) const
-	{
-		import std.conv : to;
-		auto idx = findIndex(key);
-		if (idx == size_t.max) return default_value;
-		const Value ret = m_table[idx].value;
-		return cast(Value)ret;
-	}
+
+    Value get(in Key key, lazy Value default_value = Value.init) const
+    {
+        import std.conv : to;
+        auto idx = findIndex(key);
+        if (idx == size_t.max) return default_value;
+        const Value ret = m_table[idx].value;
+        return cast(Value)ret;
+    }
+
+    Value get(Key key, lazy Value default_value = Value.init) const
+    {
+        import std.conv : to;
+        auto idx = findIndex(key);
+        if (idx == size_t.max) return default_value;
+        const Value ret = m_table[idx].value;
+        return cast(Value)ret;
+    }
 
 	Value get(Key key, lazy Value default_value = Value.init)
 	{
@@ -117,12 +126,29 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         if (!Traits.equals(m_table[i].key, key)) m_length++;
         m_table[i] = TableEntry(key, value);
     }
+
+    void opIndexAssign(in Value value, in Key key)
+    {
+        assert(!Traits.equals(key, Traits.clearValue), "Inserting clear value into hash map.");
+        grow(1);
+        auto i = findInsertIndex(key);
+        if (!Traits.equals(m_table[i].key, key)) m_length++;
+        m_table[i] = TableEntry(cast(Key) key, cast(Value) value);
+    }
     
     ref inout(Value) opIndex(Key key)
     inout {
         auto idx = findIndex(key);
         assert (idx != size_t.max, "Accessing non-existent key.");
         return m_table[idx].value;
+    }
+
+    Value opIndex(Key key) const
+    inout {
+        auto idx = findIndex(key);
+        assert (idx != size_t.max, "Accessing non-existent key.");
+        const Value ret = m_table[idx].value;
+        return cast(Value) ret;
     }
     
     inout(Value)* opBinaryRight(string op)(Key key)
@@ -177,10 +203,10 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         return 0;
     }
     
-    private size_t findIndex(Key key)
+    private size_t findIndex(in Key key)
     const {
         if (m_length == 0) return size_t.max;
-        size_t start = m_hasher(key) & (m_table.length-1);
+        size_t start = m_hasher(cast(Key) key) & (m_table.length-1);
         auto i = start;
         while (!Traits.equals(m_table[i].key, key)) {
             if (Traits.equals(m_table[i].key, Traits.clearValue)) return size_t.max;
@@ -190,9 +216,9 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         return i;
     }
     
-    private size_t findInsertIndex(Key key)
+    private size_t findInsertIndex(in Key key)
     const {
-        auto hash = m_hasher(key);
+        auto hash = m_hasher(cast(Key) key);
         size_t target = hash & (m_table.length-1);
         auto i = target;
         while (!Traits.equals(m_table[i].key, Traits.clearValue) && !Traits.equals(m_table[i].key, key)) {

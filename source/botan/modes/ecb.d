@@ -174,7 +174,7 @@ public:
         update(buffer, offset);
         
         const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
-        buffer.resize(buffer.length - pad_bytes); // remove padding
+        buffer.reserve(buffer.length - pad_bytes); // remove padding
     }
 
     override size_t outputLength(size_t input_length) const

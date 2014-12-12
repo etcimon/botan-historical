@@ -47,13 +47,13 @@ final class ZeroizeAllocator(Base : Allocator)
 
 alias SecureVector(T) = Vector!(T, SecureAllocator);
 
-Vector!T unlock(T)(in SecureVector!T input)
+Vector!(T, VulnerableAllocator) unlock(T, ALLOC)(Vector!(T, ALLOC) input)
+    if (is(ALLOC == SecureAllocator))
 {
-    Vector!T output = Vector!T(input.length);
+    Vector!(T, VulnerableAllocator) output = Vector!T(input.length);
     copyMem(output.ptr, input.ptr, input.length);
     return output;
 }
-
 
 size_t bufferInsert(T, Alloc)(Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
 {
@@ -84,7 +84,8 @@ void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
 */
 void zap(T, Alloc)(Vector!(T, Alloc) vec)
 {
-    zeroise(vec);
+    import std.traits : hasIndirections;
+    static if (!hasIndirections!T)
+        zeroise(vec);
     vec.clear();
-    vec.shrinkToFit();
 }

@@ -184,7 +184,7 @@ private:
             if (m_personalization.length > 64)
                 throw new InvalidArgument("Skein m_personalization must be less than 64 bytes");
             
-            const ubyte* bits = cast(const ubyte*)(m_personalization.data());
+            const ubyte* bits = cast(const ubyte*)(m_personalization.ptr);
             resetTweak(type_code.SKEIN_PERSONALIZATION, true);
             ubi_512(bits, m_personalization.length);
         }

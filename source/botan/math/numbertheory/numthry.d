@@ -45,10 +45,10 @@ BigInt mulAdd(in BigInt a, in BigInt b, in BigInt c)
     BigInt r = BigInt(sign, std.algorithm.max(a.length + b.length, c_sw) + 1);
     SecureVector!word workspace = SecureVector!word(r.length);
     
-    bigint_mul(r.mutableData(), r.length, workspace.ptr, a.data(), a.length, a_sw, b.data(), b.length, b_sw);
+    bigint_mul(r.mutablePtr(), r.length, workspace.ptr, a.ptr, a.length, a_sw, b.ptr, b.length, b_sw);
     
     const size_t r_size = std.algorithm.max(r.sigWords(), c_sw);
-    bigint_add2(r.mutableData(), r_size, c.data(), c_sw);
+    bigint_add2(r.mutablePtr(), r_size, c.ptr, c_sw);
     return r;
 }
 
@@ -131,7 +131,7 @@ BigInt square(in BigInt x)
     BigInt z = BigInt(BigInt.Positive, roundUp!size_t(2*x_sw, 16));
     SecureVector!word workspace = SecureVector!word(z.length);
     
-    bigint_sqr(z.mutableData(), z.length, workspace.ptr, x.data(), x.length, x_sw);
+    bigint_sqr(z.mutablePtr(), z.length, workspace.ptr, x.ptr, x.length, x_sw);
     return z;
 }
 

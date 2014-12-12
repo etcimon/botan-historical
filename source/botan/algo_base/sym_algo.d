@@ -69,7 +69,7 @@ public:
             throw new InvalidKeyLength(name, length);
         keySchedule(key, length);
     }
-    
+
     abstract @property string name() const;
     
 protected:

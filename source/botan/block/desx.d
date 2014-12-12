@@ -57,17 +57,18 @@ public:
     }
 
     @property string name() const { return "DESX"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new DESX; }
 
 protected:
     /*
     * DESX Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_K1.replace(key[0 .. key + 8]);
+        m_K1[] = key[0 .. 8];
         m_des.setKey(key + 8, 8);
-        m_K2.replace(key[16 .. key + 24]);
+        m_K2[] = key[16 .. 24];
     }
 
     SecureVector!ubyte m_K1, m_K2;

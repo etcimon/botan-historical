@@ -97,9 +97,9 @@ protected:
     /*
     * XTEA Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_EK.resize(64);
+        m_EK.reserve(64);
         
         SecureVector!uint UK = SecureVector!uint(4);
         foreach (size_t i; 0 .. 4)

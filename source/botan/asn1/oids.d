@@ -8,16 +8,31 @@ module botan.asn1.oids;
 
 public import botan.asn1.asn1_oid;
 import botan.utils.types;
+import botan.utils.containers.hashmap;
 
 auto globalOidMap()
 {
-    static OID_Map map;
+    static OIDMap map;
     return map;
 }
 
 struct OIDS {
 
 private:
+
+
+
+private static:
+    void addOidstr(string oidstr, string name)
+    {
+        addOid(OID(oidstr), name);
+    }    
+    
+    void addOid(in OID oid, in string name)
+    {
+        globalOidMap().addOid(oid, name);
+    }
+
     /**
     * Register an OID to string mapping.
     * @param oid = the oid to register
@@ -27,24 +42,13 @@ private:
     {
         globalOidMap().addOid2str(oid, name);
     }
-
+    
     void addStr2oid(in OID oid, in string name)
     {
         globalOidMap().addStr2oid(oid, name);
     }
 
-    void addOidstr(string oidstr, string name)
-    {
-        addOid(OID(oidstr), name);
-    }
-
-
-    void addOid(in OID oid, in string name)
-    {
-        globalOidMap().addOid(oid, name);
-    }
-
-public static:
+public:
     /**
     * See if an OID exists in the internal table.
     * @param oid = the oid to check for
@@ -320,19 +324,19 @@ public:
     
     void addStr2oid(in OID oid, in string str)
     {
-        if (str !in m_str2oid)
+        if (m_str2oid.get(str) == OID())
             m_str2oid[str] = oid;
     }
     
     void addOid2str(in OID oid, in string str)
     {
-        if (oid !in m_oid2str)
+        if (m_oid2str.get(oid, null) is null)
             m_oid2str[oid] = str;
     }
 
     string lookup(in OID oid)
     {
-        auto str = m_oid2str.get(oid, null);
+        auto str = m_oid2str.get(oid, string.init);
         if (str)
             return str;
         
@@ -357,7 +361,7 @@ public:
     
     bool haveOid(in string str)
     {
-        return str in m_str2oid;
+        return (str in m_str2oid) !is null;
     }
     
 private:

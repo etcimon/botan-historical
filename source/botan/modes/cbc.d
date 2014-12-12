@@ -33,7 +33,7 @@ public:
         * this is the first message then we use an IV of all zeros.
         */
         if (nonce_len)
-            m_state.replace(nonce[0 .. nonce + nonce_len]);
+            m_state[] = nonce[0 .. nonce_len];
         
         return SecureVector!ubyte();
     }
@@ -137,7 +137,7 @@ public:
                 prev_block = &buf[BS*i];
             }
             
-            state().replace(buf.ptr[BS*(blocks-1) .. BS*blocks]);
+            state()[] = buf[BS*(blocks-1) .. BS*blocks];
         }
     }
 
@@ -211,7 +211,7 @@ public:
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
             SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.resize(full_blocks + offset);
+            buffer.reserve(full_blocks + offset);
             update(buffer, offset);
             
             xorBuf(last.ptr, statePtr(), BS);
@@ -294,7 +294,7 @@ public:
         update(buffer, offset);
         
         const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
-        buffer.resize(buffer.length - pad_bytes); // remove padding
+        buffer.reserve(buffer.length - pad_bytes); // remove padding
     }
 
     override size_t outputLength(size_t input_length) const
@@ -348,7 +348,7 @@ public:
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
             SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.resize(full_blocks + offset);
+            buffer.reserve(full_blocks + offset);
             update(buffer, offset);
             
             cipher().decrypt(last.ptr);

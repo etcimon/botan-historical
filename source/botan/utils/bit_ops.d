@@ -6,6 +6,7 @@
 */
 module botan.utils.bit_ops;
 
+import botan.utils.get_byte;
 import botan.utils.types;
 /**
 * Power of 2 test. T should be an uinteger type

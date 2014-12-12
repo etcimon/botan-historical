@@ -154,7 +154,7 @@ public:
         xorBuf(data_mac, m_nonce_mac, data_mac.length);
         xorBuf(data_mac, m_ad_mac, data_mac.length);
         
-        buffer += Pair(data_mac.ptr, tagSize());
+        buffer += makePair(data_mac.ptr, tagSize());
     }
 }
 
@@ -216,7 +216,7 @@ public:
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("EAX tag check failed");
         
-        buffer.resize(offset + remaining);
+        buffer.reserve(offset + remaining);
     }
 }
 

@@ -50,7 +50,7 @@ public:
     this(DataSource input)
     {
         init(input);
-       doDecodee();
+        doDecodee();
     }
 
     /**
@@ -128,13 +128,13 @@ public:
     }
 
 
-    bool opCmp(string op)(in EAC11ADOImpl rhs)
-        if (op == "!=")
+    bool opCmp(in EAC11ADOImpl rhs)
     {
-        return (!(this == rhs));
+        if (this == rhs)
+            return 0;
+        else return -1; // no comparison support
     }
 
-    ~this() {}
 private:
     ASN1Car m_car;
     EAC11Req m_req;

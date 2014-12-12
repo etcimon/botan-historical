@@ -55,7 +55,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
         
         q.growTo(n - t + 1);
         
-        word* q_words = q.mutableData();
+        word* q_words = q.mutablePtr();
         
         if (n <= t)
         {

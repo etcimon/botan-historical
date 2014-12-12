@@ -14,7 +14,7 @@ import botan.utils.mem_ops;
 /**
 * This class represents Message Authentication Code (MAC) objects.
 */
-class MessageAuthenticationCode : BufferedComputation, SymmetricAlgorithm
+abstract class MessageAuthenticationCode : BufferedComputation, SymmetricAlgorithm
 {
 public:
     /**

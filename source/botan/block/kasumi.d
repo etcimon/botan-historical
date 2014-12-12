@@ -117,12 +117,13 @@ public:
         zap(m_EK);
     }
     @property string name() const { return "KASUMI"; }
+	override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new KASUMI; }
 protected:
     /*
     * KASUMI Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
         __gshared immutable ushort[] RC = [ 0x0123, 0x4567, 0x89AB, 0xCDEF,
             0xFEDC, 0xBA98, 0x7654, 0x3210 ];
@@ -134,7 +135,7 @@ protected:
             K[i+8] = K[i] ^ RC[i];
         }
         
-        m_EK.resize(64);
+        m_EK.reserve(64);
         
         foreach (size_t i; 0 .. 8)
         {
@@ -244,5 +245,5 @@ ushort FI(ushort I, ushort K)
     D7 ^= (K >> 9);
     D9 = KASUMI_SBOX_S9[D9 ^ (K & 0x1FF)] ^ D7;
     D7 = KASUMI_SBOX_S7[D7] ^ (D9 & 0x7F);
-    return (D7 << 9) | D9;
+    return cast(ushort) ((D7 << 9) | D9);
 }

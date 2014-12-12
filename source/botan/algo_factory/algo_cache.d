@@ -68,7 +68,7 @@ public:
         if (algo.get(pref_provider))
             return algo.get(pref_provider);
 
-        algo.opApply( (const ref provider, const ref instance) 
+        foreach(const ref string provider, const ref T instance; algo) 
         {            
             const ubyte prov_weight = staticProviderWeight(provider);
             
@@ -78,8 +78,7 @@ public:
                 prototype_provider = provider;
                 prototype_prov_weight = prov_weight;
             }
-			return 0;
-		});
+		}
         
         return prototype;
     }
@@ -99,11 +98,11 @@ public:
                 
         if (algo.name != requested_name && m_aliases.get(requested_name) == null)
         {
-            m_aliases.set(requested_name, algo.name);
+            m_aliases[requested_name] = algo.name;
         }
         
-        if (!m_algorithms.get(algo.name).get(provider))
-            m_algorithms.get(algo.name).set(provider, algo);
+        if (!m_algorithms[algo.name].get(provider))
+            m_algorithms[algo.name][provider] = algo;
 
     }
 
@@ -116,7 +115,7 @@ public:
     void setPreferredProvider(in string algo_spec,
                               in string provider)
     {        
-        m_pref_providers.set(algo_spec, provider);
+        m_pref_providers[algo_spec] = provider;
     }
 
     /**
@@ -137,10 +136,9 @@ public:
         if (m_algorithms.get(algo).length == 0)
             return Vector!string();
 
-		m_algorithms.get(algo).opApply( (const ref string provider, const ref T instance) {
+		foreach(const ref string provider, const ref T instance; m_algorithms[algo]) {
 			providers.pushBack(provider);
-			return 0;
-		});
+		}
                 
         return providers;
     }

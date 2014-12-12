@@ -17,7 +17,7 @@ import std.algorithm;
 /**
 * CBC-MAC
 */
-final class CBCMAC : MessageAuthenticationCode
+final class CBCMAC : MessageAuthenticationCode, SymmetricAlgorithm
 {
 public:
     /*
@@ -63,11 +63,11 @@ public:
     }
 
 
-private:
+protected:
     /*
     * Update an CBC-MAC Calculation
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(in ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(outputLength() - m_position, length);
         xorBuf(&m_state[m_position], input, xored);
@@ -94,7 +94,7 @@ private:
     /*
     * Finalize an CBC-MAC Calculation
     */
-    void finalResult(ubyte* mac)
+    override void finalResult(ubyte* mac)
     {
         if (m_position)
             m_cipher.encrypt(m_state);
@@ -107,7 +107,7 @@ private:
     /*
     * CBC-MAC Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }

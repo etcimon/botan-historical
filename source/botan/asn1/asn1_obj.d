@@ -66,7 +66,7 @@ public:
     * Encode whatever this object is into to
     * @param to = the DEREncoder that will be written to
     */
-    abstract void decodeFrom(DEREncoderImpl to) const;
+    abstract void encodeInto(DEREncoderImpl to) const;
 
     /**
     * Decode whatever this object is from from
@@ -83,6 +83,10 @@ public:
 struct BERObject
 {
 public:
+	void opAssign(in BERObject ber) {
+		this = cast(BERObject) ber;
+	}
+
     /*
     * Check a type invariant on BER data
     */

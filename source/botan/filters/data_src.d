@@ -27,7 +27,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    abstract size_t read(ubyte* output);
+    abstract size_t read(ubyte* output, size_t length);
 
     /**
     * Read from the source but do not modify the internal
@@ -40,7 +40,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    abstract size_t peek(ubyte* output, size_t peek_offset) const;
+    abstract size_t peek(ubyte* output, size_t length, size_t peek_offset) const;
 
     /**
     * Test whether the source still has data that can be read.
@@ -261,8 +261,7 @@ public:
     /*
     * DataSourceStream Constructor
     */
-    this(ref File input,
-                      in string name)
+    this(ref File input, in string name)
     {
         m_identifier = name;
         m_source = input;

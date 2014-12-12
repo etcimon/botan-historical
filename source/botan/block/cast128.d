@@ -90,24 +90,25 @@ public:
     }
 
 
-    void clear()
+    override void clear()
     {
         zap(m_MK);
         zap(m_RK);
     }
 
     @property string name() const { return "CAST-128"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new CAST128; }
 
 protected:
     /*
     * CAST-128 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
 
-        m_MK.resize(48);
-        m_RK.resize(48);
+        m_MK.reserve(48);
+        m_RK.reserve(48);
         
         SecureVector!uint X = SecureVector!uint(4);
         foreach (size_t i; 0 .. length)
@@ -312,7 +313,7 @@ private:
         class ByteReader
         {
         public:
-            ubyte opCall(size_t i) { return (X[i/4] >> (8*(3 - (i%4)))); } 
+            ubyte opCall(size_t i) { return cast(ubyte)(X[i/4] >> (8*(3 - (i%4)))); } 
             this(in uint* x) { X = x; }
         private:
             const uint* X;
@@ -361,6 +362,7 @@ private:
 
 private:
     
+import botan.utils.get_byte : get_byte;
 /*
 * CAST-128 Round Type 1
 */

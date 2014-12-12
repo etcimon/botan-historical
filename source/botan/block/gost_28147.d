@@ -13,6 +13,7 @@ import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.exceptn;
+import botan.utils.get_byte;
 
 /**
 * The GOST 28147-89 block cipher uses a set of 4 bit Sboxes, however
@@ -101,6 +102,7 @@ public:
             
             foreach (size_t j; 0 .. 3)
             {
+                pragma(msg, GOST_2ROUND!(N1, N2, 0, 1)());
                 mixin(GOST_2ROUND!(N1, N2, 0, 1)());
                 mixin(GOST_2ROUND!(N1, N2, 2, 3)());
                 mixin(GOST_2ROUND!(N1, N2, 4, 5)());
@@ -172,6 +174,7 @@ public:
         return "GOST-28147-89(" ~ sbox_name ~ ")";
     }
 
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new GOST2814789(m_SBOX); }
 
     /**
@@ -191,16 +194,16 @@ public:
     }
 protected:
     this(in Vector!uint other_SBOX) {
-        m_SBOX = other_SBOX; 
+        m_SBOX = other_SBOX[]; 
         m_EK = 8;
     }
 
     /*
     * GOST Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_EK.resize(8);
+        m_EK.reserve(8);
         foreach (size_t i; 0 .. 8)
             m_EK[i] = loadLittleEndian!uint(key, i);
     }
@@ -221,8 +224,8 @@ protected:
 */
 string GOST_2ROUND(alias N1, alias N2, ubyte R1, ubyte R2)()
 {
-    const N1_ = __traits(identifier, N1).stringof;
-    const N2_ = __traits(identifier, N2).stringof;
+    const N1_ = __traits(identifier, N1);
+    const N2_ = __traits(identifier, N2);
     return `{
             uint T0 = ` ~ N1_ ~ ` + m_EK[` ~ R1.stringof ~ `];
             N2 ^= m_SBOX[get_byte(3, T0)] |
@@ -230,7 +233,7 @@ string GOST_2ROUND(alias N1, alias N2, ubyte R1, ubyte R2)()
                 m_SBOX[get_byte(1, T0)+512] | 
                 m_SBOX[get_byte(0, T0)+768];
 
-            uint T1 = ` ~ N2 ~ ` + m_EK[` ~ R2.stringof ~ `];
+            uint T1 = ` ~ N2_ ~ ` + m_EK[` ~ R2.stringof ~ `];
             N1 ^= m_SBOX[get_byte(3, T1)] |
                 m_SBOX[get_byte(2, T1)+256] |
                 m_SBOX[get_byte(1, T1)+512] |

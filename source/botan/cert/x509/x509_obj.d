@@ -124,7 +124,7 @@ public:
         }
     }
 
-    override void decodeFrom(DEREncoderImpl to) const
+    override void encodeInto(DEREncoderImpl to) const
     {
         to.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)

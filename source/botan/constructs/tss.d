@@ -327,7 +327,7 @@ unittest
         ++fails;
     }
     
-    shares.resize(shares.length-1);
+    shares.reserve(shares.length-1);
     
     back = RTSS.reconstruct(shares);
     

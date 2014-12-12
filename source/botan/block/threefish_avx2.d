@@ -220,7 +220,7 @@ void deinterleave_epi64(ref __m256i X0, ref __m256i X1) pure
 
 string THREEFISH_ENC_ROUND(alias _SHL)()
 {
-    const SHL = __traits(identifier, _SHL).stringof;
+    const SHL = __traits(identifier, _SHL);
 
     return `{const __m256i SHR = _mm256_sub_epi64(_mm256_set1_epi64x(64), ` ~ SHL ~ `);
             X0 = _mm256_add_epi64(X0, X1);
@@ -232,7 +232,7 @@ string THREEFISH_ENC_ROUND(alias _SHL)()
 
 string THREEFISH_ENC_ROUND_2(alias _SHL)()
 {
-    const SHL = __traits(identifier, _SHL).stringof;
+    const SHL = __traits(identifier, _SHL);
 
     return `{const __m256i SHR = _mm256_sub_epi64(_mm256_set1_epi64x(64), ` ~ SHL ~ `);
             X0 = _mm256_add_epi64(X0, X1);
@@ -249,8 +249,8 @@ string THREEFISH_ENC_ROUND_2(alias _SHL)()
 
 string THREEFISH_ENC_INJECT_KEY(alias _K0, alias _K1, ubyte _T0I, ubyte _T1I)()
 {
-    const K0 = __traits(identifier, _K0).stringof;
-    const K1 = __traits(identifier, _K1).stringof;
+    const K0 = __traits(identifier, _K0);
+    const K1 = __traits(identifier, _K1);
     const T0I = _T0I.stringof;
     const T1I = _T1I.stringof;
 
@@ -266,9 +266,9 @@ string THREEFISH_ENC_INJECT_KEY(alias _K0, alias _K1, ubyte _T0I, ubyte _T1I)()
 
 string THREEFISH_ENC_INJECT_KEY_2(alias _K0, alias _K1, ubyte _T0I, ubyte _T1I)()    
 {
-    const K0 = __traits(identifier, _K0).stringof;
-    const K1 = __traits(identifier, _K1).stringof;
-    const K2 = __traits(identifier, _K2).stringof;
+    const K0 = __traits(identifier, _K0);
+    const K1 = __traits(identifier, _K1);
+    const K2 = __traits(identifier, _K2);
     const T0I = _T0I.stringof;
     const T1I = _T1I.stringof;
 
@@ -288,9 +288,9 @@ string THREEFISH_ENC_INJECT_KEY_2(alias _K0, alias _K1, ubyte _T0I, ubyte _T1I)(
 
 string THREEFISH_ENC_8_ROUNDS(alias _K1, alias _K2, alias _K3, ubyte _T0, ubyte _T1, ubyte _T2)()
 {
-    const K1 = __traits(identifier, _K1).stringof;
-    const K2 = __traits(identifier, _K2).stringof;
-    const K3 = __traits(identifier, _K3).stringof;
+    const K1 = __traits(identifier, _K1);
+    const K2 = __traits(identifier, _K2);
+    const K3 = __traits(identifier, _K3);
     const T0 = _T0.stringof;
     const T1 = _T1.stringof;
     const T2 = _T2.stringof;
@@ -310,9 +310,9 @@ string THREEFISH_ENC_8_ROUNDS(alias _K1, alias _K2, alias _K3, ubyte _T0, ubyte 
 
 string THREEFISH_ENC_2_8_ROUNDS(alias _K1, alias _K2, alias _K3, ubyte _T0, ubyte _T1, ubyte _T2)()
 {
-    const K1 = __traits(identifier, _K1).stringof;
-    const K2 = __traits(identifier, _K2).stringof;
-    const K3 = __traits(identifier, _K3).stringof;
+    const K1 = __traits(identifier, _K1);
+    const K2 = __traits(identifier, _K2);
+    const K3 = __traits(identifier, _K3);
     const T0 = _T0.stringof;
     const T1 = _T1.stringof;
     const T2 = _T2.stringof;
@@ -332,7 +332,7 @@ string THREEFISH_ENC_2_8_ROUNDS(alias _K1, alias _K2, alias _K3, ubyte _T0, ubyt
 
 string THREEFISH_DEC_ROUND(alias _SHR)()
 {
-    const SHR = __traits(identifier, _SHR).stringof;
+    const SHR = __traits(identifier, _SHR);
 
     return `{const __m256i SHL = _mm256_sub_epi64(_mm256_set1_epi64x(64), ` ~ SHR ~ `);
             X0 = _mm256_permute4x64_epi64(X0, _MM_SHUFFLE(2, 1, 0, 3));
@@ -344,8 +344,8 @@ string THREEFISH_DEC_ROUND(alias _SHR)()
 
 string THREEFISH_DEC_INJECT_KEY(alias _K0, alias _K1, ubyte _T0I, ubyte _T1I)()
 {
-    const K0 = __traits(identifier, _K0).stringof;
-    const K1 = __traits(identifier, _K1).stringof;
+    const K0 = __traits(identifier, _K0);
+    const K1 = __traits(identifier, _K1);
     const T0I = _T0I.stringof;
     const T1I = _T1I.stringof;
     return `{const __m256i T0_ = _mm256_permute4x64_epi64(T, _MM_SHUFFLE(` ~ T0I ~ `, 0, 0, 0));
@@ -360,9 +360,9 @@ string THREEFISH_DEC_INJECT_KEY(alias _K0, alias _K1, ubyte _T0I, ubyte _T1I)()
 
 string THREEFISH_DEC_8_ROUNDS(alias _K1, alias _K2, alias _K3, ubyte _T0, ubyte _T1, ubyte _T2)()
 {
-    const K1 = __traits(identifier, _K1).stringof;
-    const K2 = __traits(identifier, _K2).stringof;
-    const K3 = __traits(identifier, _K3).stringof;
+    const K1 = __traits(identifier, _K1);
+    const K2 = __traits(identifier, _K2);
+    const K3 = __traits(identifier, _K3);
     const T0 = _T0.stringof;
     const T1 = _T1.stringof;
     const T2 = _T2.stringof;

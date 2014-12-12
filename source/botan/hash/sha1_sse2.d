@@ -223,7 +223,7 @@ string GET_P_32(alias P, ubyte i)()
 
 string prep00_15(alias P, alias _W)()
 {
-    enum W = __traits(identifier, _W).stringof;
+    enum W = __traits(identifier, _W);
     return W ~ ` = _mm_shufflehi_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
            W ~ ` = _mm_shufflelo_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
            W ~ ` = _mm_or_si128(_mm_slli_epi16(` ~ W ~ `, 8),
@@ -278,12 +278,12 @@ W0 = W[t]..W[t+3]
 */
 string prep(alias _prep, alias _XW0, alias _XW1, alias _XW2, alias _XW3, alias _K)()
 {
-    enum prep = __traits(identifier, _prep).stringof;
-    enum XW0 = __traits(identifier, _XW0).stringof;
-    enum XW1 = __traits(identifier, _XW1).stringof;
-    enum XW2 = __traits(identifier, _XW2).stringof;
-    enum XW3 = __traits(identifier, _XW3).stringof;
-    enum K = __traits(identifier, _K).stringof;
+    enum prep = __traits(identifier, _prep);
+    enum XW0 = __traits(identifier, _XW0);
+    enum XW1 = __traits(identifier, _XW1);
+    enum XW2 = __traits(identifier, _XW2);
+    enum XW3 = __traits(identifier, _XW3);
+    enum K = __traits(identifier, _K);
     return `{
                 __m128i r0, r1, r2, r3;
 

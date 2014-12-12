@@ -27,8 +27,8 @@ public:
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
         
-        m_shift_register.replace(nonce[0 .. nonce + nonce_len]);
-        m_keystream_buf.resize(m_shift_register.length);
+        m_shift_register[] = nonce[0 .. nonce_len];
+        m_keystream_buf.reserve(m_shift_register.length);
         cipher().encrypt(m_shift_register, m_keystream_buf);
         
         return SecureVector!ubyte();

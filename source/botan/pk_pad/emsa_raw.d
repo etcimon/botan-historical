@@ -21,7 +21,7 @@ private:
     */
     void update(in ubyte* input, size_t length)
     {
-        m_message += Pair(input, length);
+        m_message += makePair(input, length);
     }
 
     /*

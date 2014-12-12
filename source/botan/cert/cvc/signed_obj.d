@@ -148,7 +148,5 @@ protected:
     Vector!ubyte m_tbs_bits;
     string m_PEM_label_pref;
     string[] m_PEM_labels_allowed;
-
-protected:
     abstract void forceDecode();
 }

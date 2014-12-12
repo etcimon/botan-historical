@@ -60,7 +60,7 @@ public:
             
             SecureVector!ubyte digest = hash.finished();
             const size_t needed = std.algorithm.min(digest.length, key_len - key.length);
-            key += Pair(digest.ptr, needed);
+            key += makePair(digest.ptr, needed);
             
             ++counter;
         }

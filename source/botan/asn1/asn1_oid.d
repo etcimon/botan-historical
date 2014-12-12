@@ -11,8 +11,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.bit_ops;
 import botan.utils.parsing;
-
-// import string;
+import std.array;
 import botan.utils.types;
 
 alias OID = FreeListRef!OIDImpl;
@@ -27,26 +26,26 @@ public:
     /*
     * DER encode an OBJECT IDENTIFIER
     */
-    override void decodeFrom(DEREncoderImpl der) const
+    override void encodeInto(DEREncoderImpl der) const
     {
         if (m_id.length < 2)
             throw new InvalidArgument("encodeInto: OID is invalid");
         
         Vector!ubyte encoding;
-        encoding.pushBack(40 * m_id[0] + m_id[1]);
+		encoding.pushBack(cast(ubyte) (40 * m_id[0] + m_id[1]));
         
         foreach (size_t i; 2 .. m_id.length)
         {
             if (m_id[i] == 0)
-                encoding.pushBack(0);
+                encoding.pushBack(cast(ubyte)0);
             else
             {
                 size_t blocks = highBit(m_id[i]) + 6;
                 blocks = (blocks - (blocks % 7)) / 7;
                 
                 foreach (size_t j; 0 .. (blocks - 1))
-                    encoding.pushBack(0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F));
-                encoding.pushBack(m_id[i] & 0x7F);
+					encoding.pushBack(cast(ubyte) (0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F)));
+				encoding.pushBack(cast(ubyte) (m_id[i] & 0x7F));
             }
         }
         der.addObject(ASN1Tag.OBJECT_ID, ASN1Tag.UNIVERSAL, encoding);
@@ -99,7 +98,7 @@ public:
     * Get this OID as list (vector) of its components.
     * @return vector representing this OID
     */
-    Vector!uint getId() const { return m_id; }
+    const(Vector!uint) getId() const { return m_id; }
 
     /**
     * Get this OID as a string
@@ -204,9 +203,9 @@ public:
 
     /**
     * Construct an OID from a string.
-    * @param str = a string in the form "a.b.c" etc., where a,b,c are numbers
+    * @param oid_str = a string in the form "a.b.c" etc., where a,b,c are numbers
     */
-    this(in string str = "")
+    this(in string oid_str = "")
     {
         if (oid_str == "")
             return;

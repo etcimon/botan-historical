@@ -110,7 +110,7 @@ protected:
     /*
     * SEED Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
         __gshared immutable uint[16] RC = [
             0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,
@@ -126,7 +126,7 @@ protected:
         
         G_FUNC G;
         
-        m_K.resize(32);
+        m_K.reserve(32);
         
         foreach (size_t i; iota(0, 16, 2))
         {

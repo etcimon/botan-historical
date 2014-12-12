@@ -42,7 +42,7 @@ public:
     */
     final bool isSelfSigned() const
     {
-        return self_signed;
+        return m_self_signed;
     }
 
 
@@ -66,7 +66,7 @@ public:
         Vector!ubyte der = DEREncoder()
                             .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                             .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
-                            .rawBytes(EAC11obj!Derived.tbs_bits)
+                            .rawBytes(EAC11obj!Derived.m_tbs_bits)
                             .endCons()
                             .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                             .endCons()
@@ -130,7 +130,7 @@ public:
 protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;
-    bool self_signed;
+    bool m_self_signed;
 
     static void decodeInfo(DataSource source,
                            Vector!ubyte res_tbs_bits,

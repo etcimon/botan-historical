@@ -27,7 +27,7 @@ public:
     /*
     * DER encode a X509Time
     */
-	override void decodeFrom(DEREncoderImpl der) const
+	override void encodeInto(DEREncoderImpl der) const
     {
         if (m_tag != ASN1Tag.GENERALIZED_TIME && m_tag != ASN1Tag.UTC_TIME)
             throw new InvalidArgument("X509Time: Bad encoding m_tag");
@@ -118,16 +118,16 @@ public:
         
         if (m_year < other.m_year)          return EARLIER;
         if (m_year > other.m_year)          return LATER;
-        if (m_month < other.m_month)    return EARLIER;
-        if (m_month > other.m_month)    return LATER;
-        if (m_day < other.m_day)        return EARLIER;
-        if (m_day > other.m_day)        return LATER;
+        if (m_month < other.m_month)        return EARLIER;
+        if (m_month > other.m_month)        return LATER;
+        if (m_day < other.m_day)            return EARLIER;
+        if (m_day > other.m_day)            return LATER;
         if (m_hour < other.m_hour)          return EARLIER;
         if (m_hour > other.m_hour)          return LATER;
-        if (m_minute < other.m_minute)     return EARLIER;
-        if (m_minute > other.m_minute)     return LATER;
-        if (m_second < other.m_second)     return EARLIER;
-        if (m_second > other.m_second)     return LATER;
+        if (m_minute < other.m_minute)      return EARLIER;
+        if (m_minute > other.m_minute)      return LATER;
+        if (m_second < other.m_second)      return EARLIER;
+        if (m_second > other.m_second)      return LATER;
         
         return SAME_TIME;
     }
@@ -145,7 +145,7 @@ public:
         }
         
         Vector!string params;
-        Appender!string current;
+        Vector!ubyte current;
         
         for (size_t j = 0; j != time_str.length; ++j)
         {
@@ -153,13 +153,13 @@ public:
                 current ~= time_str[j];
             else
             {
-                if (current.data != "")
-                    params.pushBack(current.data);
+                if (current.length > 0)
+                    params.pushBack(cast(string) current[]);
                 current.clear();
             }
         }
-        if (current.data != "")
-            params.pushBack(current.data);
+        if (current.length > 0)
+            params.pushBack(cast(string) current[]);
         
         if (params.length < 3 || params.length > 6)
             throw new InvalidArgument("Invalid time specification " ~ time_str);
@@ -204,11 +204,11 @@ public:
         const size_t YEAR_SIZE = (spec_tag == ASN1Tag.UTC_TIME) ? 2 : 4;
         
         Vector!string params;
-        Appender!string current;
+        Vector!ubyte current;
         current.reserve(YEAR_SIZE);
         foreach (size_t j; 0 .. YEAR_SIZE)
             current ~= t_spec[j];
-        params.pushBack(current.data);
+        params.pushBack(current[]);
         current.clear();
         
         for (size_t j = YEAR_SIZE; j != t_spec.length - 1; ++j)
@@ -216,7 +216,7 @@ public:
             current ~= t_spec[j];
             if (current.length == 2)
             {
-                params.pushBack(current);
+                params.pushBack(current[]);
                 current.clear();
             }
         }
@@ -277,25 +277,8 @@ public:
     bool opEquals(in X509Time t2)
     { return (cmp(t2) == 0); }
 
-    bool opCmp(string op)(in X509Time t2)
-        if (op == "!=")
-    { return (t1.cmp(t2) != 0); }
-    
-    bool opCmp(string op)(in X509Time t2)
-        if (op == "<=")
-    { return (t1.cmp(t2) <= 0); }
-
-    bool opCmp(string op)(in X509Time t2)
-        if (op == ">=")
-    { return (t1.cmp(t2) >= 0); }
-    
-    bool opCmp(string op)(in X509Time t2)
-        if (op == "<")
-    { return (t1.cmp(t2) < 0); }
-
-    bool opCmp(string op)(in X509Time t2)
-        if (op == ">")
-    { return (t1.cmp(t2) > 0); }
+    int opCmp(in X509Time t2) const
+    { return cmp(t2); }
 
 
 private:

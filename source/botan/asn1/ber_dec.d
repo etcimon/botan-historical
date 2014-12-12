@@ -38,12 +38,12 @@ public:
             return next;
         }
         
-        decodeTag(m_source, next.type_tag, next.class_tag);
+        decodeTag(*m_source, next.type_tag, next.class_tag);
         if (next.type_tag == ASN1Tag.NO_OBJECT)
             return next;
         
-        size_t length = decodeLength(m_source);
-        next.value.resize(length);
+        size_t length = decodeLength(*m_source);
+        next.value.reserve(length);
         if (m_source.read(&next.value[0], length) != length)
             throw new BERDecodingError("Value truncated");
         
@@ -249,7 +249,7 @@ public:
     * Decode a BER encoded INTEGER
     */
 	BERDecoderImpl decode(ref BigInt output,
-                       ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                          ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
         obj.assertIsA(type_tag, class_tag);
@@ -314,15 +314,15 @@ public:
             if (obj.value[0] >= 8)
                 throw new BERDecodingError("Bad number of unused bits in BIT STRING");
             
-            buffer.resize(obj.value.length - 1);
+            buffer.reserve(obj.value.length - 1);
             copyMem(buffer.ptr, &obj.value[1], obj.value.length - 1);
         }
         return this;
     }
     
 	BERDecoderImpl decode(ref Vector!ubyte buffer,
-                      ASN1Tag real_type,
-                      ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                          ASN1Tag real_type,
+                          ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         if (real_type != ASN1Tag.OCTET_STRING && real_type != ASN1Tag.BIT_STRING)
             throw new BERBadTag("Bad tag for {BIT,OCTET} STRING", real_type);
@@ -337,7 +337,7 @@ public:
             if (obj.value[0] >= 8)
                 throw new BERDecodingError("Bad number of unused bits in BIT STRING");
             
-            buffer.resize(obj.value.length - 1);
+            buffer.reserve(obj.value.length - 1);
             copyMem(buffer.ptr, &obj.value[1], obj.value.length - 1);
         }
         return this;
@@ -561,7 +561,7 @@ public:
     /*
     * BERDecoder Copy Constructor
     */
-    this(in BERDecoderImpl other)
+    this(BERDecoderImpl other)
     {
         m_source = other.m_source;
         m_owns = false;
@@ -574,19 +574,9 @@ public:
         m_parent = other.m_parent;
     }
 
-    /*
-    * BERDecoder Destructor
-    */
-    ~this()
-    {
-        if (m_owns)
-            m_source.clear();
-        else
-            m_source.drop();
-    }
 protected:
     BERDecoderImpl m_parent;
-    Unique!DataSource m_source;
+    FreeListRef!DataSource m_source;
     BERObject m_pushed;
     bool m_owns;
 }
@@ -606,13 +596,13 @@ size_t decodeTag(DataSource ber, ref ASN1Tag type_tag, ref ASN1Tag class_tag)
     
     if ((b & 0x1F) != 0x1F)
     {
-        type_tag = ASN1Tag(b & 0x1F);
-        class_tag = ASN1Tag(b & 0xE0);
+        type_tag = cast(ASN1Tag)(b & 0x1F);
+        class_tag = cast(ASN1Tag)(b & 0xE0);
         return 1;
     }
     
     size_t tag_bytes = 1;
-    class_tag = ASN1Tag(b & 0xE0);
+    class_tag = cast(ASN1Tag)(b & 0xE0);
     
     size_t tag_buf = 0;
     while (true)
@@ -625,7 +615,7 @@ size_t decodeTag(DataSource ber, ref ASN1Tag type_tag, ref ASN1Tag class_tag)
         tag_buf = (tag_buf << 7) | (b & 0x7F);
         if ((b & 0x80) == 0) break;
     }
-    type_tag = ASN1Tag(tag_buf);
+    type_tag = cast(ASN1Tag)(tag_buf);
     return tag_bytes;
 }
 
@@ -697,7 +687,7 @@ size_t findEoc(DataSource ber)
             break;
         
         size_t length_size = 0;
-        size_t item_size = decodeLength(m_source.scopedPayload, length_size);
+        size_t item_size = decodeLength(m_source.Scoped_payload, length_size);
         m_source.discardNext(item_size);
         
         length += item_size + length_size + tag_size;

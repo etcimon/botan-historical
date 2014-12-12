@@ -17,7 +17,7 @@ import botan.utils.rounding;
 /**
 * RC4 stream cipher
 */
-final class RC4 : StreamCipher
+final class RC4 : StreamCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -70,14 +70,14 @@ public:
     this(size_t s = 0) { m_SKIP = s; }
 
     ~this() { clear(); }
-private:
+protected:
     /*
     * RC4 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
-        m_state.resize(256);
-        m_buffer.resize(roundUp!size_t(DEFAULT_BUFFERSIZE, 4));
+        m_state.reserve(256);
+        m_buffer.reserve(roundUp!size_t(DEFAULT_BUFFERSIZE, 4));
         
         m_position = m_X = m_Y = 0;
         

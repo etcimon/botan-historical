@@ -49,7 +49,7 @@ public:
     /*
     * DER encode a CRLEntry
     */
-    override void decodeFrom(DEREncoderImpl to_) const
+    override void encodeInto(DEREncoderImpl to_) const
     {
         X509Extensions extensions;
         

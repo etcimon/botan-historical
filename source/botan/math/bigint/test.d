@@ -295,7 +295,7 @@ unittest
         // Do line continuation
         while(line[line.length-1] == '\\' && !test_data.eof())
         {
-            line.replace(line.length-1, 1, "");
+            line[] = line.ptr[0 .. line.length-1];
             string nextline = test_data.readln().strip();
             if (nextline.length == 0) continue;
             line ~= nextline;

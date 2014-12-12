@@ -16,7 +16,7 @@ import botan.utils.xor_buf;
 /**
 * HMAC
 */
-final class HMAC : MessageAuthenticationCode
+final class HMAC : MessageAuthenticationCode, SymmetricAlgorithm
 {
 public:
     /*
@@ -62,11 +62,11 @@ public:
         if (m_hash.hashBlockSize == 0)
             throw new InvalidArgument("HMAC cannot be used with " ~ m_hash.name);
     }
-private:
+protected:
     /*
     * Update a HMAC Calculation
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(in ubyte* input, size_t length)
     {
         m_hash.update(input, length);
     }
@@ -74,7 +74,7 @@ private:
     /*
     * Finalize a HMAC Calculation
     */
-    void finalResult(ubyte* mac)
+    override void finalResult(ubyte* mac)
     {
         m_hash.flushInto(mac);
         m_hash.update(m_okey);
@@ -86,12 +86,12 @@ private:
     /*
     * HMAC Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_hash.clear();
         
-        m_ikey.resize(m_hash.hashBlockSize);
-        m_okey.resize(m_hash.hashBlockSize);
+        m_ikey.reserve(m_hash.hashBlockSize);
+        m_okey.reserve(m_hash.hashBlockSize);
         
         std.algorithm.fill(m_ikey.ptr, m_ikey.end(), 0x36);
         std.algorithm.fill(m_okey.ptr, m_okey.end(), 0x5C);

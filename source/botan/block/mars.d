@@ -118,7 +118,7 @@ protected:
     /*
     * MARS Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         SecureVector!uint T = SecureVector!uint(15);
         foreach (size_t i; 0 .. (length / 4))
@@ -126,7 +126,7 @@ protected:
         
         T[length / 4] = cast(uint)(length) / 4;
         
-        m_EK.resize(40);
+        m_EK.reserve(40);
         
         for (uint i = 0; i != 4; ++i)
         {

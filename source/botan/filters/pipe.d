@@ -92,7 +92,7 @@ public:
     */
     void write(in string input)
     {
-        write(cast(const ubyte*)(input.data()), input.length);
+        write(cast(const ubyte*)(input.ptr), input.length);
     }
 
     /**
@@ -172,7 +172,7 @@ public:
     */
     void processMsg(in string input)
     {
-        processMsg(cast(const ubyte*)(input.data()), input.length);
+        processMsg(cast(const ubyte*)(input.ptr), input.length);
     }
 
     /**
@@ -262,7 +262,7 @@ public:
         msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
         SecureVector!ubyte buffer = SecureVector!ubyte(remaining(msg));
         size_t got = read(buffer.ptr, buffer.length, msg);
-        buffer.resize(got);
+        buffer.reserve(got);
         return buffer;
     }
 

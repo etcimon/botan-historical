@@ -26,9 +26,9 @@ final class DirectoryWalker : FileDescriptorSource
 public:
     this(in string root) 
     {
-        m_cur_dir = Pair!(DIR*, string)(null, "");
+        m_cur_dir = makePair!(DIR*, string)(null, "");
         if (DIR* root_dir = opendir(root.toStringz))
-            m_cur_dir = Pair(root_dir, root);
+            m_cur_dir = makePair(root_dir, root);
     }
     
     ~this()
@@ -52,7 +52,7 @@ private:
                 return Pair(dir, m_cur_dir.second);
             
             closedir(m_cur_dir.first);
-            m_cur_dir = Pair!(DIR*, string)(null, "");
+            m_cur_dir = makePair!(DIR*, string)(null, "");
             
             while (!m_dirlist.empty && !m_cur_dir.first)
             {
@@ -60,7 +60,7 @@ private:
                 m_dirlist.popFront();
                 
                 if (DIR* next_dir = opendir(next_dir_name.toStringz))
-                    m_cur_dir = Pair(next_dir, next_dir_name);
+                    m_cur_dir = makePair(next_dir, next_dir_name);
             }
         }
         

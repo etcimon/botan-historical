@@ -17,7 +17,7 @@ import std.algorithm;
 /**
 * DES/3DES-based MAC from ANSI X9.19
 */
-final class ANSIX919MAC : MessageAuthenticationCode
+final class ANSIX919MAC : MessageAuthenticationCode, SymmetricAlgorithm
 {
 public:
     /*
@@ -62,11 +62,11 @@ public:
             throw new InvalidArgument("ANSI X9.19 MAC only supports DES");
     }
 
-private:
+protected:
     /*
     * Update an ANSI X9.19 MAC Calculation
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(in ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(8 - m_position, length);
         xorBuf(&m_state[m_position], input, xored);
@@ -92,7 +92,7 @@ private:
     /*
     * Finalize an ANSI X9.19 MAC Calculation
     */
-    void finalResult(ubyte* mac)
+    override void finalResult(ubyte* mac)
     {
         if (m_position)
             m_des1.encrypt(m_state);
@@ -106,7 +106,7 @@ private:
     /*
     * ANSI X9.19 MAC Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_des1.setKey(key, 8);
         

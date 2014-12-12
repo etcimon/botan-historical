@@ -48,7 +48,7 @@ public:
         
         try
         {
-            m_mac.setKey(cast(const ubyte*)(passphrase.data()),
+            m_mac.setKey(cast(const ubyte*)(passphrase.ptr),
                         passphrase.length);
         }
         catch(InvalidKeyLength)

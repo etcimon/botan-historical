@@ -143,7 +143,7 @@ protected:
     /*
     * MISTY1 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         SecureVector!ushort KS = SecureVector!ushort(32);
         foreach (size_t i; 0 .. (length / 2))
@@ -182,8 +182,8 @@ protected:
             0x1C, 0x05, 0x00, 0x15, 0x1D, 0x02, 0x11, 0x19, 0x07, 0x13, 0x1B, 0x04,
             0x04, 0x0A, 0x0E, 0x00 ];
         
-        m_EK.resize(100);
-        m_DK.resize(100);
+        m_EK.reserve(100);
+        m_DK.reserve(100);
         
         foreach (size_t i; 0 .. 100)
         {

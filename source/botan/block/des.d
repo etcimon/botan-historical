@@ -13,6 +13,8 @@ import std.range : iota;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 public import botan.block.block_cipher;
+import botan.utils.get_byte : get_byte;
+import botan.utils.mem_ops;
 
 /**
 * DES
@@ -89,15 +91,16 @@ public:
     }
 
     @property string name() const { return "DES"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new DES; }
 protected:
     /*
     * DES Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_round_key.resize(32);
-        desKeySchedule(*cast(uint[32]*) m_round_key.ptr, *cast(ubyte[8]*) key);
+        m_round_key.reserve(32);
+        des_key_schedule(*cast(uint[32]*) m_round_key.ptr, *cast(ubyte[8]*) key);
     }
 
     SecureVector!uint m_round_key;
@@ -180,19 +183,20 @@ public:
     }
 
     @property string name() const { return "TripleDES"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new TripleDES; }
 protected:
     /*
     * TripleDES Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
-        m_round_key.resize(3*32);
-        desKeySchedule(m_round_key.ptr, key);
-        desKeySchedule(&m_round_key[32], key + 8);
+        m_round_key.reserve(3*32);
+        des_key_schedule(m_round_key.ptr[0 .. 32], key[0 .. 8]);
+        des_key_schedule(m_round_key.ptr[32 .. 64], key[8 .. 16]);
         
         if (length == 24)
-            desKeySchedule(&m_round_key[64], key + 16);
+            des_key_schedule(m_round_key.ptr[64 .. 96], key[16 .. 24]);
         else
             copyMem(&m_round_key[64], m_round_key.ptr, 32);
     }

@@ -193,7 +193,7 @@ public:
     static void addAlias(string _alias, in string basename)
     {
         if (s_alias_map.get(_alias, null) is null)
-            s_alias_map.set(_alias, basename);
+            s_alias_map[_alias] = basename;
     }
 
     

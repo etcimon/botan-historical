@@ -29,7 +29,7 @@ public:
         if (m_final_minimum > m_main_block_mod)
             throw new InvalidArgument("final_minimum > main_block_mod");
         
-        m_buffer.resize(2 * m_main_block_mod);
+        m_buffer.reserve(2 * m_main_block_mod);
         m_buffer_pos = 0;
         m_nonce = transform.defaultNonceLength() == 0;
         m_transform = transform;
@@ -184,7 +184,7 @@ private:
         {
             const size_t take = std.algorithm.min(m_transform.updateGranularity(), input_length);
             
-            m_buffer.replace(input[0 .. input + take]);
+            m_buffer[] = input[0 .. take];
             m_transform.update(m_buffer);
             
             send(m_buffer);

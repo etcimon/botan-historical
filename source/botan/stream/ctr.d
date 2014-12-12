@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * CTR-BE (Counter mode, big-endian)
 */
-final class CTRBE : StreamCipher
+final class CTRBE : StreamCipher, SymmetricAlgorithm
 {
 public:
     override void cipher(in ubyte* input, ubyte* output, size_t length)
@@ -76,7 +76,7 @@ public:
     override CTRBE clone() const
     { return new CTRBE(m_cipher.clone()); }
 
-    void clear()
+    override void clear()
     {
         m_cipher.clear();
         zeroise(m_pad);
@@ -94,8 +94,8 @@ public:
         m_pad = m_counter.length;
         m_pad_pos = 0;
     }
-private:
-    void keySchedule(in ubyte* key, size_t length)
+protected:
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, key_len);
         

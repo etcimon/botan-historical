@@ -33,10 +33,11 @@ public:
                 this.getConcatSig() == rhs.getConcatSig());
     }
 
-    bool opCmp(string op)(in EAC11ReqImpl rhs)
-        if (op == "!=")
+    bool opCmp(in EAC11ReqImpl rhs)
     {
-        return !(this == rhs);
+        if (this == rhs)
+            return 0;
+        else return -1;
 
     }
     /**
@@ -46,7 +47,7 @@ public:
     this(DataSource source)
     {
         init(input);
-        self_signed = true;
+        m_self_signed = true;
         doDecode();
     }
 
@@ -58,16 +59,15 @@ public:
     {
         auto stream = scoped!DataSourceStream(input, true);
         init(stream);
-        self_signed = true;
+        m_self_signed = true;
         doDecode();
     }
 
-    ~this(){}
 private:
     void forceDecode()
     {
         Vector!ubyte enc_pk;
-        BERDecoder tbs_cert = BERDecoder(tbs_bits);
+        BERDecoder tbs_cert = BERDecoder(m_tbs_bits);
         size_t cpi;
         tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
                 .startCons((cast(ASN1Tag)73))
@@ -79,8 +79,7 @@ private:
         if (cpi != 0)
             throw new DecodingError("EAC1_1 requests cpi was not 0");
         
-        m_pk = decodeEac11Key(enc_pk, sig_algo);
+        m_pk = decodeEac11Key(enc_pk, m_sig_algo);
     }
 
-    this() {}
 }

@@ -355,7 +355,7 @@ public:
         if (fragment_offset == 0 && fragment_length == m_msg_length)
         {
             m_fragments.clear();
-            m_message.replace(fragment[0 .. fragment+fragment_length]);
+            m_message[] = fragment[0 .. fragment_length];
         }
         else
         {
@@ -372,7 +372,7 @@ public:
             
             if (m_fragments.length == m_msg_length)
             {
-                m_message.resize(m_msg_length);
+                m_message.reserve(m_msg_length);
                 foreach (size_t i; 0 .. m_msg_length)
                     m_message[i] = m_fragments[i];
                 m_fragments.clear();

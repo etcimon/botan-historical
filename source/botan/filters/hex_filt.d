@@ -72,8 +72,8 @@ public:
     { 
         m_casing = the_case;
         m_line_length = 0;
-        m_input.resize(HEX_CODEC_BUFFER_SIZE);
-        m_output.resize(2*m_input.length);
+        m_input.reserve(HEX_CODEC_BUFFER_SIZE);
+        m_output.reserve(2*m_input.length);
         m_counter = m_position = 0;
     }
 
@@ -88,8 +88,8 @@ public:
     {
         m_casing = the_case;
         m_line_length = newlines ? length : 0;
-        m_input.resize(HEX_CODEC_BUFFER_SIZE);
-        m_output.resize(2*m_input.length);
+        m_input.reserve(HEX_CODEC_BUFFER_SIZE);
+        m_output.reserve(2*m_input.length);
         m_counter = m_position = 0;
     }
 private:
@@ -200,8 +200,8 @@ public:
     this(DecoderChecking c = NONE)
     {
         m_checking = c;
-        m_input.resize(HEX_CODEC_BUFFER_SIZE);
-        m_output.resize(m_input.length / 2);
+        m_input.reserve(HEX_CODEC_BUFFER_SIZE);
+        m_output.reserve(m_input.length / 2);
         m_position = 0;
     }
 private:

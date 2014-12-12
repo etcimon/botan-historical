@@ -271,7 +271,7 @@ SecureVector!ubyte base64Decode(string input, size_t input_length, bool ignore_w
     
     size_t written = base64Decode(bin.ptr, input.ptr, input_length, ignore_ws);
     
-    bin.resize(written);
+    bin.reserve(written);
     return bin;
 }
 

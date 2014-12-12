@@ -42,25 +42,26 @@ public:
     }
 
     @property string name() const { return "IDEA"; }
-    override BlockCipher clone() const { return new IDEA; }
+	override @property size_t parallelism() const { return 1; }
+    final override BlockCipher clone() const { return new IDEA; }
 protected:
     /**
     * @return const reference to encryption subkeys
     */
-    SecureVector!ushort getEK() const { return m_EK; }
+    const(SecureVector!ushort) getEK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    SecureVector!ushort getDK() const { return m_DK; }
+    const(SecureVector!ushort) getDK() const { return m_DK; }
 
     /*
     * IDEA Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
-        m_EK.resize(52);
-        m_DK.resize(52);
+        m_EK.reserve(52);
+        m_DK.reserve(52);
         
         foreach (size_t i; 0 .. 8)
             m_EK[i] = loadBigEndian!ushort(key, i);
@@ -108,15 +109,15 @@ ushort mul(ushort x, ushort y) pure
     const uint P = cast(uint)(x) * y;
     
     // P ? 0xFFFF : 0
-    const ushort P_mask = !P - 1;
+    const ushort P_mask = cast(const ushort)(!P - 1);
     
     const uint P_hi = P >> 16;
     const uint P_lo = P & 0xFFFF;
     
-    const ushort r_1 = (P_lo - P_hi) + (P_lo < P_hi);
-    const ushort r_2 = 1 - x - y;
+    const ushort r_1 = cast(const ushort) ((P_lo - P_hi) + (P_lo < P_hi));
+	const ushort r_2 = cast(const ushort) (1 - x - y);
     
-    return (r_1 & P_mask) | (r_2 & ~P_mask);
+	return cast(const ushort) ((r_1 & P_mask) | (r_2 & ~P_mask));
 }
 
 /*
@@ -146,7 +147,7 @@ ushort mul_inv(ushort x) pure
 /**
 * IDEA is involutional, depending only on the key schedule
 */
-void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
+void idea_op(ubyte* input, ubyte* output, size_t blocks, in const(ushort)* K) pure
 {
     __gshared immutable size_t BLOCK_SIZE = 8;
     
@@ -168,7 +169,7 @@ void idea_op(ubyte* input, ubyte* output, size_t blocks) pure
             X3 = mul(X3 ^ X1, K[6*j+4]);
             
             ushort T1 = X2;
-            X2 = mul((X2 ^ X4) + X3, K[6*j+5]);
+            X2 = mul(cast(ushort) ((X2 ^ X4) + X3), K[6*j+5]);
             X3 += X2;
             
             X1 ^= X2;

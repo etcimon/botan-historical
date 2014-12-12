@@ -78,7 +78,7 @@ protected:
             throw new InvalidArgument("Bad cipher for XTS: " ~ cipher.name);
         
         m_tweak_cipher = m_cipher.clone();
-        m_tweak.resize(updateGranularity());
+        m_tweak.reserve(updateGranularity());
     }
 
     final ubyte* tweak() const { return m_tweak.ptr; }
@@ -176,7 +176,7 @@ public:
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
             SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.resize(full_blocks + offset);
+            buffer.reserve(full_blocks + offset);
             update(buffer, offset);
             
             xorBuf(last, tweak(), BS);
@@ -266,7 +266,7 @@ public:
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
             SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.resize(full_blocks + offset);
+            buffer.reserve(full_blocks + offset);
             update(buffer, offset);
             
             xorBuf(last, tweak() + BS, BS);

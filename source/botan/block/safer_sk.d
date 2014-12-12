@@ -131,7 +131,7 @@ protected:
     /*
     * SAFER-SK Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
         __gshared immutable ubyte[208] BIAS = [
             0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,
@@ -173,7 +173,7 @@ protected:
             0x07, 0x08, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x11, 0x09, 0x0A, 0x0B,
             0x0C, 0x0D, 0x0E, 0x0F ];
         
-        m_EK.resize(16 * m_rounds + 8);
+        m_EK.reserve(16 * m_rounds + 8);
         
         SecureVector!ubyte KB = SecureVector!ubyte(18);
         

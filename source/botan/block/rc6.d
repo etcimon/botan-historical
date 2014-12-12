@@ -126,9 +126,9 @@ protected:
     /*
     * RC6 Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
-        m_S.resize(44);
+        m_S.reserve(44);
         
         const size_t WORD_KEYLENGTH = (((length - 1) / 4) + 1);
         const size_t MIX_ROUNDS      = 3 * std.algorithm.max(WORD_KEYLENGTH, m_S.length);

@@ -25,7 +25,7 @@ public:
     /**
     * @return native parallelism of this cipher in blocks
     */
-    abstract @property size_t parallelism() const { return 1; }
+    abstract @property size_t parallelism() const;
 
     /**
     * @return prefererred parallelism of this cipher in bytes
@@ -135,7 +135,7 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void encrypt(in ubyte[] input,
+    final void encrypt(ubyte[] input,
                        ref ubyte[] output) const
     in { assert(input.length >= this.blockSize()); }
     body {
@@ -147,7 +147,7 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void decrypt(in ubyte[] input,
+    final void decrypt(ubyte[] input,
                        ref ubyte[] output) const
     in { assert(input.length >= this.blockSize()); }
     body {
@@ -160,8 +160,7 @@ public:
     * @param output = the output buffer (same size as input)
     * @param blocks = the number of blocks to process
     */
-    abstract void encryptN(ubyte* input, ubyte* output,
-                            size_t blocks) const;
+    abstract void encryptN(ubyte* input, ubyte* output, size_t blocks) const;
 
     /**
     * Decrypt one or more blocks
@@ -169,8 +168,7 @@ public:
     * @param output = the output buffer (same size as input)
     * @param blocks = the number of blocks to process
     */
-    abstract void decryptN(ubyte* input, ubyte* output,
-                            size_t blocks) const;
+    abstract void decryptN(ubyte* input, ubyte* output, size_t blocks) const;
 
     /**
     * @return new object representing the same algorithm as this
@@ -181,7 +179,7 @@ public:
 /**
 * Represents a block cipher with a single fixed block size
 */ 
-class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
+class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher, SymmetricAlgorithm
 {
 public:
     enum { BLOCK_SIZE = BS }

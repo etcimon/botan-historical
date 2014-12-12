@@ -139,7 +139,7 @@ uint loadBigEndian(T : uint)(in ubyte* input, size_t off)
 
 uint loadLittleEndian(T : uint)(in ubyte* input, size_t off)
 {
-    return nativeToLittleEndian!uint(*cast(ubyte[4]*)( (cast(const uint*) input) + off));
+    return *cast(uint*) nativeToLittleEndian!uint(*( (cast(const uint*) input) + off));
 }
 
 /**

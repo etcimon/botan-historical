@@ -37,7 +37,7 @@ public:
     SecureVector!ubyte getIoBuffer(size_t size)
     {
         m_io_buffer.clear();
-        m_io_buffer.resize(size);
+        m_io_buffer.reserve(size);
         return m_io_buffer;
     }
 

@@ -92,7 +92,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
                     // Zero out unused capacity to prevent gc from seeing
                     // false pointers
                     static if (hasIndirections!T)
-                        memset(_payload.ptr + newLength, 0, (elements - oldLength) * T.sizeof);
+                        memset(_payload.ptr + newLength, 0, (_payload.length - newLength) * T.sizeof);
                 }
                 _payload = _payload.ptr[0 .. newLength];
                 return;
@@ -214,7 +214,6 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         insertBack(stuff);
     }
     
-    
     /**
         Comparison for equality.
      */
@@ -238,11 +237,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         private Vector _outer;
         private size_t _a, _b;
-
-
-        U opCast(U)() const {
-            return cast(U) _outer._data._payload;
-        }
+        import std.traits : isNarrowString;
 
         private this(ref Vector data, size_t a, size_t b)
         {
@@ -278,9 +273,6 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             version (assert) if (empty) throw new RangeError();
             return _outer[_b - 1];
         }
-
-        alias pop_front = popFront;
-        alias pop_back = popBack;
 
         void popFront() @safe pure nothrow
         {
@@ -367,7 +359,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             mixin("_outer[_a + i .. _a + j] "~op~"= value;");
         }
     }
-    
+
     /**
         Duplicates the container. The elements themselves are not transitively
         duplicated.
@@ -443,15 +435,23 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH 1)
      */
+	static if (!is(T == ubyte))
     Range opSlice()
     {
         return Range(this, 0, length);
     }
     
+	static if (!is(T == ubyte))
 	Range opSlice() const
 	{
 		UnConst!(typeof(this)) _ref = cast(UnConst!(typeof(this))) this;
 		return Range(_ref, 0UL, length);
+	}
+
+	static if (is(T == ubyte))
+	string opSlice() const
+	{
+		return cast(string) _data._payload;
 	}
     /**
         Returns a range that iterates over elements of the container from
@@ -461,11 +461,19 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH 1)
      */
-    Range opSlice(size_t i, size_t j)
-    {
-        version (assert) if (i > j || j > length) throw new RangeError();
-        return Range(this, i, j);
-    }
+	static if (!is(T == ubyte))
+	Range opSlice(size_t i, size_t j)
+	{
+		version (assert) if (i > j || j > length) throw new RangeError();
+		return Range(this, i, j);
+	}
+
+	static if (is(T == ubyte))
+	string opSlice(size_t i, size_t j)
+	{
+		version (assert) if (i > j || j > length) throw new RangeError();
+		return cast(string) _data._payload[i .. j];
+	}
 
     /**
         Forward to $(D opSlice().front) and $(D opSlice().back), respectively.
@@ -508,13 +516,18 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH slice.length)
      */
-    void opSliceAssign(T value)
+    void opSliceAssign(Stuff)(Stuff value)
     {
-        _data._payload[] = value;
+        static if (isRandomAccessRange!Stuff)
+        {
+            _data.length = value.length;
+            _data._payload.ptr[0 .. value.length] = value[0 .. $];
+        } else
+            _data._payload[] = value;
     }
     
     /// ditto
-    void opSliceAssign(T value, size_t i, size_t j)
+    void opSliceAssign(Stuff)(Stuff value, size_t i, size_t j)
     {
         auto slice = _data._payload;
         slice[i .. j] = value;
@@ -576,11 +589,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         static if (is (Stuff == typeof(this))) {
             insertBack(cast(T[]) stuff[]);
         }
-        else
-        {
-            insertBack(stuff);
-        }
-    }
+		else
+		{
+			insertBack(stuff);
+		}
+	}
     
     /**
         Removes all contents from the container. The container decides how $(D
@@ -592,6 +605,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
      */
     void clear()
     {
+        _data.length = 0;
         _data = Data.init;
     }
     
@@ -609,7 +623,35 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         _data.length = newLength;
     }
-    alias pushBack = insertBack;
+
+    import std.traits : isNumeric;
+
+    static if (is(T == ubyte))
+    int opCmp(in Vector!(T, ALLOCATOR) other) {
+        if (this[] == other[])
+            return 0;
+        else if (this[] < other[])
+            return -1;
+        else
+            return 0;
+    }
+
+    size_t pushBack(Stuff...)(Stuff stuff) 
+        if (!isNumeric!Stuff || !is ( T == ubyte ))
+    {
+        return insertBack(stuff);
+    }
+
+    size_t pushBack(Stuff...)(Stuff stuff) 
+        if (isNumeric!Stuff && is(T == ubyte))
+    {
+        return insertBack(cast(T) stuff);
+    }
+
+	size_t insert(Stuff...)(Stuff stuff) {
+		return insertBack(stuff);
+	}
+
     /**
         Inserts $(D value) to the front or back of the container. $(D stuff)
         can be a value convertible to $(D T) or a range of objects convertible
@@ -628,14 +670,17 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return _data.pushBack(stuff);
     }
 
+    static if (is (T == ubyte))
+    size_t insertBack(string stuff) {
+        return _data.pushBack(cast(ubyte[]) stuff);
+    }
+
     size_t pushBack(U)(Vector!(U, ALLOCATOR) rhs)
     {
         return pushBack(rhs[]);
     }
 
-    /// ditto
-    alias insert = pushBack;
-    
+    alias popBack = removeBack;
     /**
         Removes the value at the back of the container. The stable version
         behaves the same, but guarantees that ranges iterating over the

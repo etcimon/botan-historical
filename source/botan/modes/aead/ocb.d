@@ -240,7 +240,7 @@ public:
         
         mac ^= m_ad_hash;
         
-        buffer += Pair(mac.ptr, tagSize());
+        buffer += makePair(mac.ptr, tagSize());
         
         zeroise(m_checksum);
         zeroise(m_offset);
@@ -367,7 +367,7 @@ public:
             throw new IntegrityFailure("OCB tag check failed");
         
         // remove tag from end of message
-        buffer.resize(remaining + offset);
+        buffer.reserve(remaining + offset);
     }
 
 private:
@@ -412,7 +412,7 @@ final class LComputer
 public:
     this(in BlockCipher cipher)
     {
-        m_L_star.resize(cipher.blockSize());
+        m_L_star.reserve(cipher.blockSize());
         cipher.encrypt(m_L_star);
         m_L_dollar = polyDouble(star());
         m_L.pushBack(polyDouble(dollar()));
@@ -428,7 +428,7 @@ public:
                                         size_t block_index,
                                         size_t blocks) const
     {
-        m_offset_buf.resize(blocks*BS);
+        m_offset_buf.reserve(blocks*BS);
         
         foreach (size_t i; 0 .. blocks)
         { // could be done in parallel

@@ -30,7 +30,7 @@ public:
     /*
     * DER encode a DistinguishedName
     */
-	override void decodeFrom(DEREncoderImpl der) const
+	override void encodeInto(DEREncoderImpl der) const
     {
         auto dn_info = getAttributes();
         
@@ -63,7 +63,7 @@ public:
             .rawBytes(bits)
                 .endCons();
         
-        BERDecoder sequence(bits);
+        BERDecoder sequence = BERDecoder(bits);
         
         while (sequence.moreItems())
         {
@@ -93,7 +93,7 @@ public:
     MultiMap!(OID, string) getAttributes() const
     {
         MultiMap!(OID, string) retval;
-        foreach (oid, asn1_str; m_dn_info)
+        foreach (const ref OID oid, const ref ASN1String asn1_str; m_dn_info)
             retval.insert(oid, asn1_str.value());
         return retval;
     }
@@ -108,8 +108,8 @@ public:
         auto range = m_dn_info.equalRange(oid);
         
         Vector!string values;
-        for (auto i = range.first; i != range.second; ++i)
-            values.pushBack(i.second.value());
+        foreach (const ref ASN1String asn1_string; range)
+            values.pushBack(asn1_string.value());
         return values;
     }
 
@@ -119,7 +119,7 @@ public:
     MultiMap!(string, string) contents() const
     {
         MultiMap!(string, string) retval;
-        foreach (key, value; m_dn_info)
+        foreach (const ref OID key, const ref ASN1String value; m_dn_info)
             retval.insert(OIDS.lookup(key), value.value());
         return retval;
     }
@@ -144,10 +144,11 @@ public:
             return;
 
         bool exists;
-        m_dn_info.equalRange(oid, (string name) {
-            if (name == str)
+        void search_func(in ASN1String name) {
+            if (name.value() == str)
                 exists = true;
-        });
+        }
+        m_dn_info.equalRange(oid, &search_func);
 
         if (!exists) {
             m_dn_info.insert(oid, ASN1String(str));
@@ -175,7 +176,7 @@ public:
     /*
     * Return the BER encoded data, if any
     */
-    Vector!ubyte getBits() const
+    const(Vector!ubyte) getBits() const
     {
         return m_dn_bits;
     }
@@ -192,7 +193,7 @@ public:
     */
     this(in MultiMap!(OID, string) args)
     {
-        foreach (oid, val; args)
+        foreach (const ref OID oid, const ref string val; args)
             addAttribute(oid, val);
     }
     
@@ -201,7 +202,7 @@ public:
     */
     this(in MultiMap!(string, string) args)
     {
-        foreach (key, val; args)
+        foreach (const ref string key, const ref string val; args)
             addAttribute(OIDS.lookup(key), val);
     }
 
@@ -216,12 +217,12 @@ public:
         {
             MultiMap!(OID, string) map1 = getAttributes();
             MultiMap!(OID, string) map2 = dn2.getAttributes();
-            foreach (oid, val; map1) {
-                attr1 ~= Pair(oid, val);
+            foreach (const ref OID oid, const ref string val; map1) {
+                attr1 ~= makePair(oid, val);
             }
 
-            foreach (oid, val; map2) {
-                attr2 ~= Pair(oid, val);
+            foreach (const ref OID oid, const ref string val; map2) {
+                attr2 ~= makePair(oid, val);
             }
         }
 
@@ -248,26 +249,29 @@ public:
     /*
     * Compare two X509DNs for inequality
     */
-    bool opCmp(string op)(const X509DN dn2)
-        if (op == "!=")
+    int opCmp(const X509DN dn2)
     {
-        return !(this == dn2);
+        if (this == dn2)
+            return 0;
+        else if (this.isSmallerThan(dn2))
+            return -1;
+        else
+            return 1;
     }
 
     /*
     * Induce an arbitrary ordering on DNs
     */
-    bool opBinary(string op)(const X509DN dn2)
-        if (op == "<")
+    bool isSmallerThan(const X509DN dn2)
     {
-        auto attr1 = getAttributes();
-        auto attr2 = dn2.getAttributes();
+        const auto attr1 = getAttributes();
+        const auto attr2 = dn2.getAttributes();
         
         if (attr1.length < attr2.length) return true;
         if (attr1.length > attr2.length) return false;
 
-        foreach (key, value; attr1) {
-            auto value2 = attr2.get(key);
+        foreach (const ref OID key, const ref string value; attr1) {
+            const auto value2 = attr2.get(key);
             if (value2 == null) return false;
             if (value > value2) return false;
             if (value < value2) return true;
@@ -278,9 +282,9 @@ public:
 	override string toString()
     {
         Appender!string output;
-        MultiMap!(string, string) contents = dn.contents();
+        MultiMap!(string, string) contents = contents();
 
-        foreach(key, val; contents)
+        foreach(const ref string key, const ref string val; contents)
         {
             output ~= toShortForm(key) ~ "=" ~ val ~ ' ';
         }
@@ -295,10 +299,10 @@ private:
 /*
 * DER encode a RelativeDistinguishedName
 */
-void doAva(DEREncoder encoder,
-            in MultiMap!(OID, string) dn_info,
-            ASN1Tag string_type, in string oid_str,
-            bool must_exist = false)
+void doAva(DEREncoderImpl encoder,
+           in MultiMap!(OID, string) dn_info,
+           ASN1Tag string_type, in string oid_str,
+           bool must_exist = false)
 {
     const OID oid = OIDS.lookup(oid_str);
     const bool exists = (dn_info.get(oid) != null);
@@ -307,7 +311,7 @@ void doAva(DEREncoder encoder,
         throw new EncodingError("X509DN: No entry for " ~ oid_str);
     if (!exists) return;
 
-    dn_info.equalRange(oid, (string val) {
+    dn_info.equalRange(oid, (in string val) {
          encoder.startCons(ASN1Tag.SET)
                 .startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)

@@ -148,18 +148,18 @@ ulong sigma(ulong X, uint rot1, uint rot2, uint shift)
 */
 string SHA2_64_F(alias _A, alias _B, alias _C, alias _D, alias _E, alias _F, alias _G, alias _H, alias _M1, alias _M2, alias _M3, alias _M4, ulong magic)()
 {
-    enum A = __traits(identifier, _A).stringof;
-    enum B = __traits(identifier, _B).stringof;
-    enum C = __traits(identifier, _C).stringof;
-    enum D = __traits(identifier, _D).stringof;
-    enum E = __traits(identifier, _E).stringof;
-    enum F = __traits(identifier, _F).stringof;
-    enum G = __traits(identifier, _G).stringof;
-    enum H = __traits(identifier, _H).stringof;
-    enum M1 = __traits(identifier, _M1).stringof;
-    enum M2 = __traits(identifier, _M2).stringof;
-    enum M3 = __traits(identifier, _M3).stringof;
-    enum M4 = __traits(identifier, _M4).stringof;
+    enum A = __traits(identifier, _A);
+    enum B = __traits(identifier, _B);
+    enum C = __traits(identifier, _C);
+    enum D = __traits(identifier, _D);
+    enum E = __traits(identifier, _E);
+    enum F = __traits(identifier, _F);
+    enum G = __traits(identifier, _G);
+    enum H = __traits(identifier, _H);
+    enum M1 = __traits(identifier, _M1);
+    enum M2 = __traits(identifier, _M2);
+    enum M3 = __traits(identifier, _M3);
+    enum M4 = __traits(identifier, _M4);
     
     return H ~ ` += ` ~ magic.stringof ~ `+ rho(` ~ E ~ `, 14, 18, 41) + ((` ~ E ~ ` & ` ~ F ~ `) ^ (~` ~ E ~ ` & ` ~ G ~ `)) + ` ~ M1 ~ `;
     ` ~ D ~ ` += ` ~ H ~ `;

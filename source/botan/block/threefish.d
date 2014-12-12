@@ -118,7 +118,7 @@ protected:
     override void keySchedule(in ubyte* key, size_t)
     {
         // todo: define key schedule for smaller keys
-        m_K.resize(9);
+        m_K.reserve(9);
         
         foreach (size_t i; 0 .. 8)
             m_K[i] = loadLittleEndian!ulong(key, i);
@@ -184,14 +184,14 @@ string THREEFISH_ENC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
                            alias _X4, alias _X5, alias _X6, alias _X7, 
                            ubyte _ROT1, ubyte _ROT2, ubyte _ROT3, ubyte _ROT4)()
 {
-    const X0 = __traits(identifier, _X0).stringof;
-    const X1 = __traits(identifier, _X1).stringof;
-    const X2 = __traits(identifier, _X2).stringof;
-    const X3 = __traits(identifier, _X3).stringof;
-    const X4 = __traits(identifier, _X4).stringof;
-    const X5 = __traits(identifier, _X5).stringof;
-    const X6 = __traits(identifier, _X6).stringof;
-    const X7 = __traits(identifier, _X7).stringof;
+    const X0 = __traits(identifier, _X0);
+    const X1 = __traits(identifier, _X1);
+    const X2 = __traits(identifier, _X2);
+    const X3 = __traits(identifier, _X3);
+    const X4 = __traits(identifier, _X4);
+    const X5 = __traits(identifier, _X5);
+    const X6 = __traits(identifier, _X6);
+    const X7 = __traits(identifier, _X7);
     const ROT1 = _ROT1.stringof;
     const ROT2 = _ROT2.stringof;
     const ROT3 = _ROT3.stringof;
@@ -213,7 +213,7 @@ string THREEFISH_ENC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
 
 string THREEFISH_ENC_INJECT_KEY(alias _r)() 
 {
-    const r = __traits(identifier, _r).stringof;
+    const r = __traits(identifier, _r);
 
     return `X0 += m_K[(` ~ r ~ `  ) % 9];
             X1 += m_K[(` ~ r ~ `+1) % 9];
@@ -244,14 +244,14 @@ string THREEFISH_DEC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
                            alias _X4, alias _X5, alias _X6, alias _X7, 
                            ubyte _ROT1, ubyte _ROT2, ubyte _ROT3, ubyte _ROT4)()
 {
-    const X0 = __traits(identifier, _X0).stringof;
-    const X1 = __traits(identifier, _X1).stringof;
-    const X2 = __traits(identifier, _X2).stringof;
-    const X3 = __traits(identifier, _X3).stringof;
-    const X4 = __traits(identifier, _X4).stringof;
-    const X5 = __traits(identifier, _X5).stringof;
-    const X6 = __traits(identifier, _X6).stringof;
-    const X7 = __traits(identifier, _X7).stringof;
+    const X0 = __traits(identifier, _X0);
+    const X1 = __traits(identifier, _X1);
+    const X2 = __traits(identifier, _X2);
+    const X3 = __traits(identifier, _X3);
+    const X4 = __traits(identifier, _X4);
+    const X5 = __traits(identifier, _X5);
+    const X6 = __traits(identifier, _X6);
+    const X7 = __traits(identifier, _X7);
     const ROT1 = _ROT1.stringof;
     const ROT2 = _ROT2.stringof;
     const ROT3 = _ROT3.stringof;
@@ -272,7 +272,7 @@ string THREEFISH_DEC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
     
 string THREEFISH_DEC_INJECT_KEY(alias _r)() 
 {
-    const r = __traits(identifier, _r).stringof;
+    const r = __traits(identifier, _r);
     return `X0 -= m_K[(` ~ r ~ `  ) % 9];
             X1 -= m_K[(` ~ r ~ `+1) % 9];
             X2 -= m_K[(` ~ r ~ `+2) % 9];

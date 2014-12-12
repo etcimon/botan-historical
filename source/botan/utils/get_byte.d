@@ -6,6 +6,7 @@
 */
 module botan.utils.get_byte;
 
+public import botan.utils.mem_ops;
 import botan.utils.types;
 /**
 * Byte extraction

@@ -14,7 +14,7 @@ import botan.mac.mac;
 /**
 * A MAC only used in SSLv3. Do not use elsewhere! Use HMAC instead.
 */
-final class SSL3MAC : MessageAuthenticationCode
+final class SSL3MAC : MessageAuthenticationCode, SymmetricAlgorithm
 {
 public:
     /*
@@ -60,11 +60,11 @@ public:
         if (m_hash.hashBlockSize == 0)
             throw new InvalidArgument("SSL3-MAC cannot be used with " ~ m_hash.name);
     }
-private:
+protected:
     /*
     * Update a SSL3-MAC Calculation
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(in ubyte* input, size_t length)
     {
         m_hash.update(input, length);
     }
@@ -72,7 +72,7 @@ private:
     /*
     * Finalize a SSL3-MAC Calculation
     */
-    void finalResult(ubyte* mac)
+    override void finalResult(ubyte* mac)
     {
         m_hash.flushInto(mac);
         m_hash.update(m_okey);
@@ -84,15 +84,15 @@ private:
     /*
     * SSL3-MAC Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_hash.clear();
         
         // Quirk to deal with specification bug
         const size_t inner_hash_length = (m_hash.name == "SHA-160") ? 60 : m_hash.hashBlockSize;
         
-        m_ikey.resize(inner_hash_length);
-        m_okey.resize(inner_hash_length);
+        m_ikey.reserve(inner_hash_length);
+        m_okey.reserve(inner_hash_length);
         
         std.algorithm.fill(m_ikey.ptr, m_ikey.end(), 0x36);
         std.algorithm.fill(m_okey.ptr, m_okey.end(), 0x5C);

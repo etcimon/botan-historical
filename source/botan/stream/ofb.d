@@ -16,7 +16,7 @@ import botan.utils.xor_buf;
 /**
 * Output Feedback Mode
 */
-final class OFB : StreamCipher
+final class OFB : StreamCipher, SymmetricAlgorithm
 {
 public:
     override void cipher(in ubyte* input, ubyte* output, size_t length)
@@ -78,8 +78,8 @@ public:
         m_buffer = m_cipher.blockSize();
         m_buf_pos = 0;
     }
-private:
-    void keySchedule(in ubyte* key, size_t length)
+protected:
+    override void keySchedule(in ubyte* key, size_t length)
     {
         m_cipher.setKey(key, key_len);
         

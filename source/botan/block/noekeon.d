@@ -132,7 +132,7 @@ protected:
     /*
     * Noekeon Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(in ubyte* key, size_t)
     {
         uint A0 = loadBigEndian!uint(key, 0);
         uint A1 = loadBigEndian!uint(key, 1);
@@ -157,7 +157,7 @@ protected:
         
         A0 ^= m_RC[16];
         
-        m_DK.resize(4);
+        m_DK.reserve(4);
         m_DK[0] = A0;
         m_DK[1] = A1;
         m_DK[2] = A2;
@@ -165,7 +165,7 @@ protected:
         
         theta(A0, A1, A2, A3);
         
-        m_EK.resize(4);
+        m_EK.reserve(4);
         m_EK[0] = A0;
         m_EK[1] = A1;
         m_EK[2] = A2;

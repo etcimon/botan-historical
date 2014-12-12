@@ -183,7 +183,7 @@ public:
         BigInt output = BigInt(BigInt.Positive, (bytes() + (word).sizeof - 1) / (word).sizeof);
         size_t dummy = 0;
         
-        word* reg = output.mutableData();
+        word* reg = output.mutablePtr();
         
         mpz_export(reg, &dummy, -1, (word).sizeof, 0, 0, value);
         
@@ -236,7 +236,7 @@ public:
     {
         mpz_init(value);
         if (input != 0)
-            mpz_import(value, input.sigWords(), -1, (word).sizeof, 0, 0, input.data());
+            mpz_import(value, input.sigWords(), -1, (word).sizeof, 0, 0, input.ptr);
     }
     
     /*

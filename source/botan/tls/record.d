@@ -71,7 +71,7 @@ public:
             
             assert(iv.length == 4, "Using 4/8 partial implicit nonce");
             m_nonce = iv.bitsOf();
-            m_nonce.resize(12);
+            m_nonce.reserve(12);
             return;
         }
         
@@ -278,13 +278,13 @@ void writeRecord(ref SecureVector!ubyte output,
     
     if (iv_size)
     {
-        output.resize(output.length + iv_size);
+        output.reserve(output.length + iv_size);
         rng.randomize(&output[$- iv_size], iv_size);
     }
     
     output.insert(output.end(), msg.ptr, &msg[msg_length]);
     
-    output.resize(output.length + mac_size);
+    output.reserve(output.length + mac_size);
     cipherstate.mac().flushInto(&output[output.length - mac_size]);
     
     if (block_size)
@@ -325,7 +325,7 @@ void writeRecord(ref SecureVector!ubyte output,
             bc.encrypt(&buf[block_size*i]);
         }
         
-        cbc_state.replace(buf.ptr[block_size*(blocks-1) .. block_size*blocks]);
+        cbc_state[] = buf[block_size*(blocks-1) .. block_size*blocks];
     }
     else
         throw new InternalError("NULL cipher not supported");
@@ -377,7 +377,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
             record_sequence = 0;
             record_type = HANDSHAKE;
             
-            record.resize(4 + readbuf.length - 2);
+            record.reserve(4 + readbuf.length - 2);
             
             record[0] = CLIENT_HELLO_SSLV2;
             record[1] = 0;
@@ -444,7 +444,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
     
     if (epoch == 0) // Unencrypted initial handshake
     {
-        record.replace(readbuf.ptr[header_size .. header_size + record_len]);
+        record[] = readbuf.ptr[header_size .. header_size + record_len];
         readbuf.clear();
         return 0; // got a full record
     }
@@ -556,14 +556,14 @@ void cbcDecryptRecord(ubyte[] record_contents, ConnectionCipherState cipherstate
     SecureVector!ubyte last_ciphertext = SecureVector!ubyte(block_size);
     copyMem(last_ciphertext.ptr, buf.ptr, block_size);
     
-    bc.decrypt(buf.ptr);
+    bc.decrypt(buf);
     xorBuf(buf.ptr, &cipherstate.cbcState()[0], block_size);
     
     SecureVector!ubyte last_ciphertext2;
     
     for (size_t i = 1; i < blocks; ++i)
     {
-        last_ciphertext2.replace(buf.ptr[block_size*i .. block_size*(i+1)]);
+        last_ciphertext2[] = buf[block_size*i .. block_size*(i+1)];
         bc.decrypt(&buf[block_size*i]);
         xorBuf(&buf[block_size*i], last_ciphertext.ptr, block_size);
         std.algorithm.swap(last_ciphertext, last_ciphertext2);
@@ -652,6 +652,6 @@ void decryptRecord(SecureVector!ubyte output,
         if (mac_bad || padding_bad)
             throw new TLSException(TLSAlert.BAD_RECORD_MAC, "Message authentication failure");
         
-        output.replace(plaintext_block[0 .. plaintext_block + plaintext_length]);
+        output[] = plaintext_block[0 .. plaintext_length];
     }
 }

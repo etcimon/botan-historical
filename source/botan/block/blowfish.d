@@ -26,6 +26,7 @@ public:
     */
     override void encryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
+        import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
         const uint* S3 = &m_S[512];
@@ -62,6 +63,7 @@ public:
     */
     override void decryptN(ubyte* input, ubyte* output, size_t blocks) const
     {
+        import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
         const uint* S3 = &m_S[512];
@@ -97,8 +99,9 @@ public:
     * Modified EKSBlowfish key schedule, used for bcrypt password hashing
     */
     void eksKeySchedule(in ubyte* key, size_t length,
-                          in ubyte[16] salt, size_t workfactor)
+                        in ubyte[16] salt, size_t workfactor)
     {
+        import std.conv : to;
         // Truncate longer passwords to the 56 ubyte limit Blowfish enforces
         length = std.algorithm.min(length, 55);
         
@@ -114,21 +117,21 @@ public:
             throw new InvalidArgument("Requested Bcrypt work factor " ~
                                        to!string(workfactor) ~ " too large");
         
-        m_P.resize(18);
-        std.algorithm.copy(P_INIT[0 .. 18], m_P);
+        m_P.reserve(18);
+        m_P ~= P_INIT[0 .. 18];
         
-        m_S.resize(1024);
-        std.algorithm.copy(S_INIT[0 .. 1024], m_S);
+        m_S.reserve(1024);
+        m_S ~= S_INIT[0 .. 1024];
         
         key_expansion(key, length, salt);
-        
+
         const ubyte[16] null_salt;
         const size_t rounds = 1 << workfactor;
         
         for (size_t r = 0; r != rounds; ++r)
         {
             key_expansion(key, length, null_salt);
-            key_expansion(salt, 16, null_salt);
+            key_expansion(salt.ptr, 16, null_salt);
         }
     }
 
@@ -142,18 +145,19 @@ public:
     }
 
     override @property string name() const { return "Blowfish"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Blowfish; }
 protected:
     /*
     * Blowfish Key Schedule
     */
-    void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(in ubyte* key, size_t length)
     {
-        m_P.resize(18);
-        std.algorithm.copy(P_INIT[0 .. 18], m_P);
+        m_P.reserve(18);
+        m_P ~= P_INIT[0 .. 18];
         
-        m_S.resize(1024);
-        std.algorithm.copy(S_INIT[0 .. 1024], m_S);
+        m_S.reserve(1024);
+        m_S ~= S_INIT[0 .. 1024];
         
         immutable ubyte[16] null_salt;
         
@@ -183,6 +187,7 @@ private:
                        in ubyte[16] salt,
                        size_t salt_off) const
     {
+        import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;
         const uint* S2 = &m_S[256];
         const uint* S3 = &m_S[512];
@@ -190,8 +195,8 @@ private:
         
         for (size_t i = 0; i != box.length; i += 2)
         {
-            L ^= loadBigEndian!uint(salt, (i + salt_off) % 4);
-            R ^= loadBigEndian!uint(salt, (i + salt_off + 1) % 4);
+            L ^= loadBigEndian!uint(salt.ptr, (i + salt_off) % 4);
+            R ^= loadBigEndian!uint(salt.ptr, (i + salt_off + 1) % 4);
             
             foreach (size_t j; iota(0, 16, 2))
             {
