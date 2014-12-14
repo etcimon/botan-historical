@@ -86,12 +86,13 @@ public:
     }
 
     override @property string name() const { return "XTEA"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new XTEA; }
 protected:
     /**
     * @return const reference to the key schedule
     */
-    SecureVector!uint getEK() const { return m_EK; }
+    const(SecureVector!uint) getEK() const { return m_EK; }
 
 protected:
     /*
@@ -123,7 +124,7 @@ pure:
 void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
     uint L0, R0, L1, R1, L2, R2, L3, R3;
-    loadBigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
+    loadBigEndian(input.ptr, L0, R0, L1, R1, L2, R2, L3, R3);
     
     foreach (size_t i; 0 .. 32)
     {
@@ -138,13 +139,13 @@ void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
         R3 += (((L3 << 4) ^ (L3 >> 5)) + L3) ^ EK[2*i+1];
     }
     
-    storeBigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
+    storeBigEndian(output.ptr, L0, R0, L1, R1, L2, R2, L3, R3);
 }
 
 void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {
     uint L0, R0, L1, R1, L2, R2, L3, R3;
-    loadBigEndian(input, L0, R0, L1, R1, L2, R2, L3, R3);
+    loadBigEndian(input.ptr, L0, R0, L1, R1, L2, R2, L3, R3);
     
     foreach (size_t i; 0 .. 32)
     {
@@ -159,5 +160,5 @@ void xtea_decrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
         L3 -= (((R3 << 4) ^ (R3 >> 5)) + R3) ^ EK[62 - 2*i];
     }
     
-    storeBigEndian(output, L0, R0, L1, R1, L2, R2, L3, R3);
+    storeBigEndian(output.ptr, L0, R0, L1, R1, L2, R2, L3, R3);
 }

@@ -9,6 +9,7 @@ import botan.utils.memory.zeroize;
 import botan.codec.base64;
 import botan.utils.mem_ops;
 import botan.utils.rounding;
+import botan.utils.types;
 import std.exception;
 // import string;
 

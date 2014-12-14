@@ -106,6 +106,7 @@ public:
     }
 
     final override @property string name() const { return "Threefish-512"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Threefish512; }
 
     this() {
@@ -113,8 +114,8 @@ public:
     }
 
 protected:
-    final SecureVector!ulong getT() const { return m_T; }
-    final SecureVector!ulong getK() const { return m_K; }
+    final const(SecureVector!ulong) getT() const { return m_T; }
+    final const(SecureVector!ulong) getK() const { return m_K; }
     override void keySchedule(in ubyte* key, size_t)
     {
         // todo: define key schedule for smaller keys
@@ -211,21 +212,20 @@ string THREEFISH_ENC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
         ` ~ X7 ~ ` ^= ` ~ X3 ~ `;`;
 }
 
-string THREEFISH_ENC_INJECT_KEY(alias _r)() 
+string THREEFISH_ENC_INJECT_KEY(ushort r)() 
 {
-    const r = __traits(identifier, _r);
-
-    return `X0 += m_K[(` ~ r ~ `  ) % 9];
-            X1 += m_K[(` ~ r ~ `+1) % 9];
-            X2 += m_K[(` ~ r ~ `+2) % 9];
-            X3 += m_K[(` ~ r ~ `+3) % 9];
-            X4 += m_K[(` ~ r ~ `+4) % 9];
-            X5 += m_K[(` ~ r ~ `+5) % 9] + m_T[(` ~ r ~ `  ) % 3];
-            X6 += m_K[(` ~ r ~ `+6) % 9] + m_T[(` ~ r ~ `+1) % 3];
-            X7 += m_K[(` ~ r ~ `+7) % 9] + (` ~ r ~ `);`;
+    
+    return `X0 += m_K[(` ~ r.stringof ~ `  ) % 9];
+            X1 += m_K[(` ~ (r + 1).stringof ~ `+1) % 9];
+            X2 += m_K[(` ~ (r + 2).stringof ~ `) % 9];
+            X3 += m_K[(` ~ (r + 3).stringof ~ `) % 9];
+            X4 += m_K[(` ~ (r + 4).stringof ~ `) % 9];
+            X5 += m_K[(` ~ (r + 5).stringof ~ `) % 9] + m_T[(` ~ r.stringof ~ `  ) % 3];
+            X6 += m_K[(` ~ (r + 6).stringof ~ `) % 9] + m_T[(` ~ (r + 1).stringof ~ `) % 3];
+            X7 += m_K[(` ~ (r + 7).stringof ~ `) % 9] + (` ~ r.stringof ~ `);`;
 }
 
-string THREEFISH_ENC_8_ROUNDS(ubyte R1, ubyte R2)()
+string THREEFISH_ENC_8_ROUNDS(ushort R1, ushort R2)()
 {
     return `mixin(THREEFISH_ENC_ROUND!(X0,X2,X4,X6, X1,X3,X5,X7, 46,36,19,37)());
             mixin(THREEFISH_ENC_ROUND!(X2,X4,X6,X0, X1,X7,X5,X3, 33,27,14,42)());
@@ -270,20 +270,19 @@ string THREEFISH_DEC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
         ` ~ X3 ~ ` -= ` ~ X7 ~ `;`;
 }
     
-string THREEFISH_DEC_INJECT_KEY(alias _r)() 
+string THREEFISH_DEC_INJECT_KEY(ushort r)() 
 {
-    const r = __traits(identifier, _r);
-    return `X0 -= m_K[(` ~ r ~ `  ) % 9];
-            X1 -= m_K[(` ~ r ~ `+1) % 9];
-            X2 -= m_K[(` ~ r ~ `+2) % 9];
-            X3 -= m_K[(` ~ r ~ `+3) % 9];
-            X4 -= m_K[(` ~ r ~ `+4) % 9];
-            X5 -= m_K[(` ~ r ~ `+5) % 9] + m_T[(` ~ r ~ `  ) % 3];
-            X6 -= m_K[(` ~ r ~ `+6) % 9] + m_T[(` ~ r ~ `+1) % 3];
-            X7 -= m_K[(` ~ r ~ `+7) % 9] + (` ~ r ~ `);`;
+    return `X0 -= m_K[(` ~ r.stringof ~ `  ) % 9];
+            X1 -= m_K[(` ~ (r+1).stringof ~ `) % 9];
+            X2 -= m_K[(` ~ (r+2).stringof ~ `) % 9];
+            X3 -= m_K[(` ~ (r+3).stringof ~ `) % 9];
+            X4 -= m_K[(` ~ (r+4).stringof ~ `) % 9];
+            X5 -= m_K[(` ~ (r+5).stringof ~ `) % 9] + m_T[(` ~ r.stringof ~ `  ) % 3];
+            X6 -= m_K[(` ~ (r+6).stringof ~ `) % 9] + m_T[(` ~ (r+1).stringof ~ `) % 3];
+            X7 -= m_K[(` ~ (r+7).stringof ~ `) % 9] + (` ~ r.stringof ~ `);`;
 }
 
-void THREEFISH_DEC_8_ROUNDS(ubyte R1, ubyte R2)()
+string THREEFISH_DEC_8_ROUNDS(ushort R1, ushort R2)()
 {
     return `mixin(THREEFISH_DEC_ROUND!(X6,X0,X2,X4, X1,X7,X5,X3,  8,35,56,22)());
             mixin(THREEFISH_DEC_ROUND!(X4,X6,X0,X2, X1,X3,X5,X7, 25,29,39,43)());

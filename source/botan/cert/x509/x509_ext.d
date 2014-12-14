@@ -28,7 +28,7 @@ import botan.utils.containers.multimap;
 /**
 * X.509 Certificate Extension
 */
-class CertificateExtension
+interface CertificateExtension
 {
 public:
     /**
@@ -59,9 +59,8 @@ public:
     */
     abstract string oidName() const;
 
-    ~this() {}
 protected:
-    abstract bool shouldEncode() const { return true; }
+    abstract bool shouldEncode() const;
     abstract Vector!ubyte encodeInner() const;
     abstract void decodeInner(in Vector!ubyte);
 }
@@ -148,7 +147,7 @@ public:
             extension.first.contentsTo(subject_info, issuer_info);
     }
 
-    void add(CertificateExtension extn, bool critical)
+    void add(CertificateExtension extn, bool critical = false)
     {
         m_extensions.pushBack(Pair(extn, critical));
     }
@@ -237,7 +236,7 @@ public:
         return m_path_limit;
     }
 
-private:
+protected:
     string oidName() const { return "X509v3.BasicConstraints"; }
 
     /*
@@ -296,7 +295,7 @@ public:
     this(KeyConstraints c = KeyConstraints.NO_CONSTRAINTS) { constraints = c; }
 
     KeyConstraints getConstraints() const { return constraints; }
-private:
+protected:
     string oidName() const { return "X509v3.KeyUsage"; }
 
     bool shouldEncode() const { return (constraints != KeyConstraints.NO_CONSTRAINTS); }
@@ -378,7 +377,7 @@ public:
 
 
     Vector!ubyte getKeyId() const { return m_key_id; }
-private:
+protected:
     string oidName() const { return "X509v3.SubjectKeyIdentifier"; }
 
     bool shouldEncode() const { return (m_key_id.length > 0); }
@@ -422,7 +421,7 @@ public:
     this(in Vector!ubyte k) { m_key_id = k; }
 
     Vector!ubyte getKeyId() const { return m_key_id; }
-private:
+protected:
     string oidName() const { return "X509v3.AuthorityKeyIdentifier"; }
 
     bool shouldEncode() const { return (m_key_id.length > 0); }
@@ -478,7 +477,7 @@ protected:
         m_oid_name_str = oid_name_str;
     }
 
-private:
+protected:
     string oidName() const { return m_oid_name_str; }
 
     bool shouldEncode() const { return m_alt_name.hasItems(); }
@@ -525,7 +524,7 @@ private:
 /**
 * Subject Alternative Name Extension
 */
-final class SubjectAlternativeName : AlternativeNameExt
+final class SubjectAlternativeName : AlternativeNameExt, CertificateExtension
 {
 public:
     override SubjectAlternativeName copy() const
@@ -539,7 +538,7 @@ public:
 /**
 * Issuer Alternative Name Extension
 */
-final class IssuerAlternativeName : AlternativeNameExt
+final class IssuerAlternativeName : AlternativeNameExt, CertificateExtension
 {
 public:
     override IssuerAlternativeName copy() const
@@ -565,13 +564,13 @@ public:
     }
 
     Vector!OID getOids() const { return m_oids; }
-private:
+protected:
     string oidName() const { return "X509v3.ExtendedKeyUsage"; }
 
     bool shouldEncode() const { return (m_oids.length > 0); }
     /*
-* Encode the extension
-*/
+    * Encode the extension
+    */
     Vector!ubyte encodeInner() const
     {
         return DEREncoder()
@@ -614,7 +613,7 @@ public:
     this(in Vector!OID o) { m_oids = o; }
 
     Vector!OID getOids() const { return m_oids; }
-private:
+protected:
     string oidName() const { return "X509v3.CertificatePolicies"; }
 
     bool shouldEncode() const { return (m_oids.length > 0); }
@@ -671,7 +670,7 @@ public:
 
     this(in string ocsp) { m_ocsp_responder = ocsp; }
 
-private:
+protected:
     string oidName() const { return "PKIX.AuthorityInformationAccess"; }
 
     bool shouldEncode() const { return (m_ocsp_responder != ""); }
@@ -758,7 +757,7 @@ public:
         return m_crl_number;
     }
 
-private:
+protected:
     string oidName() const { return "X509v3.CRLNumber"; }
 
     bool shouldEncode() const { return m_has_value; }
@@ -800,14 +799,15 @@ public:
     this(CRLCode r = CRLCode.UNSPECIFIED) { m_reason = r; }
 
     CRLCode getReason() const { return m_reason; }
-private:
-    string oidName() const { return "X509v3.ReasonCode"; }
 
-    bool shouldEncode() const { return (m_reason != CRLCode.UNSPECIFIED); }
+protected:
+    override string oidName() const { return "X509v3.ReasonCode"; }
+
+    override bool shouldEncode() const { return (m_reason != CRLCode.UNSPECIFIED); }
     /*
     * Encode the extension
     */
-    Vector!ubyte encodeInner() const
+    override Vector!ubyte encodeInner() const
     {
         return DEREncoder()
             .encode(cast(size_t)(m_reason), ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL)
@@ -817,7 +817,7 @@ private:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    override void decodeInner(in Vector!ubyte input)
     {
         size_t reason_code = 0;
         BERDecoder(input).decode(reason_code, ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL);
@@ -827,7 +827,7 @@ private:
     /*
     * Return a textual representation
     */
-    void contentsTo(ref DataStore info, ref DataStore) const
+    override void contentsTo(ref DataStore info, ref DataStore) const
     {
         info.add("X509v3.CRLReasonCode", m_reason);
     }
@@ -856,7 +856,7 @@ public:
             ber.startCons(ASN1Tag.SEQUENCE)
                     .startCons((cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC)
                     .decodeOptionalImplicit(m_point, (cast(ASN1Tag) 0),
-                                              ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED),
+                                              (ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED),
                                               ASN1Tag.SEQUENCE, ASN1Tag.CONSTRUCTED)
                     .endCons().endCons();
         }
@@ -877,7 +877,7 @@ public:
     Vector!( DistributionPoint ) distributionPoints() const
     { return m_distribution_points; }
 
-private:
+protected:
     string oidName() const { return "X509v3.CRLDistributionPoints"; }
 
     bool shouldEncode() const { return !m_distribution_points.empty; }

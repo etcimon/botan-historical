@@ -34,11 +34,11 @@ public:
     {
         static if (BOTAN_HAS_AES_SSSE3) {
             if (request.algoName == "AES-128" && CPUID.hasSsse3())
-                return new AES128SSSE3;
+                return new AES128_SSSE3;
             if (request.algoName == "AES-192" && CPUID.hasSsse3())
-                return new AES192SSSE3;
+                return new AES192_SSSE3;
             if (request.algoName == "AES-256" && CPUID.hasSsse3())
-                return new AES256SSSE3;
+                return new AES256_SSSE3;
         }
         
         static if (BOTAN_HAS_IDEA_SSE2) {

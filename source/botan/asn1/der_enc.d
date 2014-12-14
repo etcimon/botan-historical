@@ -267,7 +267,7 @@ public:
     /*
     * Conditionally write some values to the stream
     */
-    DEREncoderImpl encodeIf (bool cond, DEREncoder codec)
+    DEREncoderImpl encodeIf (bool cond, DEREncoderImpl codec)
     {
         if (cond)
             return rawBytes(codec.getContents());
@@ -344,9 +344,9 @@ private:
         /*
         * Return the type and class taggings
         */
-        ASN1Tag tagOf() const
+        const(ASN1Tag) tagOf() const
         {
-            return ASN1Tag(m_type_tag | m_class_tag);
+            return m_type_tag | m_class_tag;
         }
 
         /*
@@ -354,7 +354,7 @@ private:
         */
         SecureVector!ubyte getContents()
         {
-            const ASN1Tag real_class_tag = ASN1Tag(m_class_tag | ASN1Tag.CONSTRUCTED);
+            const ASN1Tag real_class_tag = m_class_tag | ASN1Tag.CONSTRUCTED;
             
             if (m_type_tag == ASN1Tag.SET)
             {    // sort?

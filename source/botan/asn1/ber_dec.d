@@ -111,7 +111,7 @@ public:
                              ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
         BERObject obj = getNextObject();
-        obj.assertIsA(type_tag, ASN1Tag(class_tag | ASN1Tag.CONSTRUCTED));
+        obj.assertIsA(type_tag, class_tag | ASN1Tag.CONSTRUCTED);
         
         BERDecoder result = BERDecoder(&obj.value[0], obj.value.length);
         result.m_parent = this;
@@ -171,8 +171,9 @@ public:
         return this;
     }
 
-	BERDecoderImpl decode(T)(T obj) {
-		(*obj).decodeFrom(this);
+	BERDecoderImpl decode(T)(auto ref T obj)
+    {
+		obj.decodeFrom(this);
 
 		return this;
 	}
@@ -180,7 +181,7 @@ public:
     /*
     * Request for an object to decode itself
     */
-	BERDecoderImpl decode(ref ASN1Object obj, ASN1Tag, ASN1Tag)
+	BERDecoderImpl decode(T : ASN1Object)(auto ref T obj, ASN1Tag type, ASN1Tag tag)
     {
         obj.decodeFrom(this);
         return this;
@@ -215,7 +216,7 @@ public:
     * Decode a BER encoded BOOLEAN
     */
 	BERDecoderImpl decode(ref bool output,
-                      ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                          ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
         obj.assertIsA(type_tag, class_tag);
@@ -380,14 +381,14 @@ public:
         output = decodeConstrainedInteger(type_tag, class_tag, (output).sizeof);
         return this;
     }
-    
+
     /*
     * Decode an OPTIONAL or DEFAULT element
     */
-	BERDecoderImpl decodeOptional(T)(ref T output,
-                                 ASN1Tag type_tag,
-                                 ASN1Tag class_tag,
-                                 in T default_value = T.init)
+	BERDecoderImpl decodeOptional(T)(auto ref T output,
+                                     ASN1Tag type_tag,
+                                     ASN1Tag class_tag,
+                                     T default_value = T.init)
     {
         BERObject obj = getNextObject();
         
@@ -399,6 +400,7 @@ public:
             {
                 pushBack(obj);
                 decode(output, type_tag, class_tag);
+
             }
         }
         else
@@ -477,9 +479,9 @@ public:
         * Decode an OPTIONAL string type
         */
 	BERDecoderImpl decodeOptionalString(Alloc)(Vector!( ubyte, Alloc ) output,
-                                           ASN1Tag real_type,
-                                           ushort type_no,
-                                           ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                                               ASN1Tag real_type,
+                                               ushort type_no,
+                                               ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
         

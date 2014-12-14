@@ -52,7 +52,7 @@ public:
     }
 
     alias m_pub this;
-private:
+
     ECPublicKey m_pub;
 }
 
@@ -98,7 +98,7 @@ public:
 
 
     alias m_priv this;
-private:
+
     ECPrivateKey m_priv;
 }
 

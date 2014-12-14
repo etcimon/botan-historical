@@ -25,7 +25,7 @@ alias X509Encoding = bool;
 /**
 * The two types of X509 encoding supported by Botan.
 */
-enum : X509Encoding { RAW_BER, PEM }
+enum : X509Encoding { RAW_BER, PEM_ }
 
 /**
 * BER encode a key

@@ -102,7 +102,6 @@ public:
             
             foreach (size_t j; 0 .. 3)
             {
-                pragma(msg, GOST_2ROUND!(N1, N2, 0, 1)());
                 mixin(GOST_2ROUND!(N1, N2, 0, 1)());
                 mixin(GOST_2ROUND!(N1, N2, 2, 3)());
                 mixin(GOST_2ROUND!(N1, N2, 4, 5)());

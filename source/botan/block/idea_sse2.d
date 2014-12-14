@@ -177,7 +177,7 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 /*
 * IDEA encryption/decryption in SSE2
 */
-void idea_op8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
+void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
 {
     const(__m128i)* in_mm = cast(const(__m128i)*)(input.ptr);
     

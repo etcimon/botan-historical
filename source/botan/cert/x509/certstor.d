@@ -17,25 +17,20 @@ import std.file;
 /**
 * Certificate Store Interface
 */
-class CertificateStore
+interface CertificateStore
 {
 public:
-    ~this() {}
-
     /**
     * Subject DN and (optionally) key identifier
     */
     abstract X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const;
 
-    abstract X509CRL findCrlFor(in X509Certificate subject) const
-    {
-        return null;
-    }
+    abstract X509CRL findCrlFor(in X509Certificate subject) const;
 
 
-    bool certificateKnown(in X509Certificate cert) const
+    final bool certificateKnown(in X509Certificate cert) const
     {
-        return findCert(cert.subjectDn(), cert.subjectKeyId());
+        return findCert(cert.subjectDn(), cert.subjectKeyId()) != X509Certificate.init;
     }
 
     // remove this (used by TLSServer)
@@ -64,7 +59,7 @@ public:
 
     this() {}
 
-    void addCertificate(in X509Certificate cert)
+    void addCertificate(X509Certificate cert)
     {
         foreach (const cert_stored; m_certs[])
         {
@@ -88,7 +83,7 @@ public:
         return certSearch(subject_dn, key_id, m_certs);
     }
 
-    void addCrl(in X509CRL crl)
+    void addCrl(X509CRL crl)
     {
         X509DN crl_issuer = crl.issuerDn();
         
@@ -111,7 +106,7 @@ public:
     {
         const Vector!ubyte key_id = subject.authorityKeyId();
         
-        foreach (const crl; m_crls)
+        foreach (crl; m_crls)
         {
             // Only compare key ids if set in both call and in the CRL
             if (key_id.length)
@@ -121,12 +116,12 @@ public:
                 if (akid.length && akid != key_id) // no match
                     continue;
             }
-            
+
             if (crl.issuerDn() == subject.issuerDn())
                 return crl;
         }
         
-        return null;
+        return X509CRL.init;
     }
 
 private:
@@ -163,7 +158,7 @@ X509Certificate certSearch(in X509DN subject_dn,
                            in Vector!ubyte key_id, 
                            in Vector!X509Certificate certs)
 {
-    foreach (const cert; certs[])
+    foreach (cert; certs[])
     {
         // Only compare key ids if set in both call and in the cert
         if (key_id.length)
@@ -178,5 +173,5 @@ X509Certificate certSearch(in X509DN subject_dn,
             return cert;
     }
     
-    return null;
+    return X509Certificate.init;
 }

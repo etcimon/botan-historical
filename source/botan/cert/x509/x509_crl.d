@@ -81,7 +81,7 @@ public:
     * Get the entries of this CRL in the form of a vector.
     * @return vector containing the entries of this CRL.
     */
-    Vector!CRLEntry getRevoked() const
+    const(Vector!CRLEntry) getRevoked() const
     {
         return m_revoked;
     }
@@ -118,18 +118,18 @@ public:
     * Get the CRL's thisUpdate value.
     * @return CRLs thisUpdate
     */
-    X509Time thisUpdate() const
+    const(X509Time) thisUpdate() const
     {
-        return m_info.get1("X509.CRL.start");
+        return X509Time(m_info.get1("X509.CRL.start"));
     }
 
     /**
     * Get the CRL's nextUpdate value.
     * @return CRLs nextdUpdate
     */
-    X509Time nextUpdate() const
+    const(X509Time) nextUpdate() const
     {
-        return m_info.get1("X509.CRL.end");
+        return X509Time(m_info.get1("X509.CRL.end"));
     }
 
     /**
@@ -152,10 +152,10 @@ public:
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(in string filename,
-                bool throw_on_unknown_critical_ = false)
+         bool throw_on_unknown_critical_ = false)
     {
         m_throw_on_unknown_critical = throw_on_unknown_critical_;
-        super(input, "CRL/X509 CRL");
+        super(filename, "CRL/X509 CRL");
         doDecode();
     }
 
@@ -166,10 +166,10 @@ public:
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(in Vector!ubyte vec,
-                bool throw_on_unknown_critical_ = false)
+         bool throw_on_unknown_critical_ = false)
     {
         m_throw_on_unknown_critical = throw_on_unknown_critical_;
-        super(input, "CRL/X509 CRL");
+        super(vec, "CRL/X509 CRL");
         doDecode();
     }
 
@@ -180,10 +180,10 @@ private:
     */
     void forceDecode()
     {
-        BERDecoder tbs_crl = BERDecoder(tbs_bits);
+        BERDecoder tbs_crl = BERDecoder(m_tbs_bits);
         
         size_t _version;
-        tbs_crl.decodeOptional(_version, INTEGER, ASN1Tag.UNIVERSAL);
+        tbs_crl.decodeOptional(_version, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
         
         if (_version != 0 && _version != 1)
             throw new X509CRLError("Unknown X.509 CRL version " ~
@@ -192,7 +192,7 @@ private:
         AlgorithmIdentifier sig_algo_inner;
         tbs_crl.decode(sig_algo_inner);
         
-        if (sig_algo != sig_algo_inner)
+        if (m_sig_algo != sig_algo_inner)
             throw new X509CRLError("Algorithm identifier mismatch");
         
         X509DN dn_issuer;
@@ -220,7 +220,7 @@ private:
         }
         
         if (next.type_tag == 0 &&
-            next.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
+            next.class_tag == (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
             BERDecoder crl_options = BERDecoder(next.value);
             

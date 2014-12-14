@@ -84,9 +84,9 @@ public:
     * @return signed X509 object
     */
     static Vector!ubyte makeSigned(ref PKSigner signer,
-                             RandomNumberGenerator rng,
-                             const AlgorithmIdentifier algo,
-                             in SecureVector!ubyte tbs_bits)
+                                   RandomNumberGenerator rng,
+                                   in AlgorithmIdentifier algo,
+                                   in SecureVector!ubyte tbs_bits)
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)

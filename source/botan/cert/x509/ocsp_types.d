@@ -28,15 +28,15 @@ public:
     this() {}
 
     this(in X509Certificate issuer,
-         const X509Certificate subject)
+         in X509Certificate subject)
     {
         /*
         In practice it seems some responders, including, notably,
         ocsp.verisign.com, will reject anything but SHA-1 here
         */
-        Unique!HashFunction hash = getHash("SHA-160");
+        Unique!HashFunction hash = retrieveHash("SHA-160").clone();
         
-        m_hash_id = AlgorithmIdentifier(hash.name, AlgorithmIdentifier.USE_NULL_PARAM);
+        m_hash_id = AlgorithmIdentifier(hash.name, AlgorithmIdentifierImpl.USE_NULL_PARAM);
         m_issuer_key_hash = unlock(hash.process(extractKeyBitstr(issuer)));
         m_issuer_dn_hash = unlock(hash.process(subject.rawIssuerDn()));
         m_subject_serial = BigInt.decode(subject.serialNumber());
@@ -50,7 +50,7 @@ public:
             if (BigInt.decode(subject.serialNumber()) != m_subject_serial)
                 return false;
             
-            Unique!HashFunction hash = getHash(OIDS.lookup(m_hash_id.oid));
+            Unique!HashFunction hash = retrieveHash(OIDS.lookup(m_hash_id.oid)).clone();
             
             if (m_issuer_dn_hash != unlock(hash.process(subject.rawIssuerDn())))
                 return false;
@@ -88,7 +88,7 @@ public:
         
     }
 
-private:
+package:
     Vector!ubyte extractKeyBitstr(in X509Certificate cert) const
     {
         const auto key_bits = cert.subjectPublicKeyBits();
@@ -114,13 +114,13 @@ alias SingleResponse = FreeListRef!SingleResponseImpl;
 final class SingleResponseImpl : ASN1Object
 {
 public:
-    CertID certid() const { return m_certid; }
+    const(CertID) certid() const { return m_certid; }
 
     size_t certStatus() const { return m_cert_status; }
 
-    X509Time thisUpdate() const { return m_thisupdate; }
+    const(X509Time) thisUpdate() const { return m_thisupdate; }
 
-    X509Time nextUpdate() const { return m_nextupdate; }
+    const(X509Time) nextUpdate() const { return m_nextupdate; }
 
     override void encodeInto(DEREncoderImpl) const
     {
@@ -136,10 +136,10 @@ public:
                 .decode(m_certid)
                 .getNext(cert_status)
                 .decode(m_thisupdate)
-                .decodeOptional(m_nextupdate, (cast(ASN1Tag) 0),
-                                 ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
+                .decodeOptional(*m_nextupdate, (cast(ASN1Tag) 0),
+                                 ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED)
                 .decodeOptional(extensions, (cast(ASN1Tag)1),
-                                 ASN1Tag(ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED))
+                                 ASN1Tag.CONTEXT_SPECIFIC | ASN1Tag.CONSTRUCTED)
                 .endCons();
         
         m_cert_status = cert_status.type_tag;

@@ -19,7 +19,7 @@ import botan.utils.simd.tmmintrin;
 /**
 * AES-128 using SSSE3
 */
-final class AES128SSSE3 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+final class AES128_SSSE3 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
 {
 public:
     /*
@@ -63,7 +63,8 @@ public:
     }
 
     @property string name() const { return "AES-128"; }
-    override BlockCipher clone() const { return new AES128SSSE3; }
+    override @property size_t parallelism() const { return 1; }
+    override BlockCipher clone() const { return new AES128_SSSE3; }
 protected:
 
     /*
@@ -71,8 +72,7 @@ protected:
     */
     override void keySchedule(in ubyte* keyb, size_t)
     {
-        __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
-                                     0x1F8391B9, 0xAF9DEEB6)();
+        __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81, 0x1F8391B9, 0xAF9DEEB6)();
         
         __m128i key = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
         
@@ -108,7 +108,7 @@ protected:
 /**
 * AES-192 using SSSE3
 */
-final class AES192SSSE3 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
+final class AES192_SSSE3 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
 {
 public:
     /*
@@ -152,7 +152,8 @@ public:
     }
 
     @property string name() const { return "AES-192"; }
-    override BlockCipher clone() const { return new AES192SSSE3; }
+    override @property size_t parallelism() const { return 1; }
+    override BlockCipher clone() const { return new AES192_SSSE3; }
 protected:
     /*
     * AES-192 Key Schedule
@@ -185,8 +186,8 @@ protected:
         {
             key2 = aes_schedule_round(&rcon, key2, key1);
             
-            _mm_storeu_si128(EK_mm + 3*i+1, aes_schedule_mangle(_mm_alignr_epi8(key2, t, 8), (i+3)%4));
-            _mm_storeu_si128(DK_mm + 11-3*i, aes_schedule_mangle_dec(_mm_alignr_epi8(key2, t, 8), (i+3)%4));
+            _mm_storeu_si128(EK_mm + 3*i+1, aes_schedule_mangle(_mm_alignr_epi8!8(key2, t), (i+3)%4));
+            _mm_storeu_si128(DK_mm + 11-3*i, aes_schedule_mangle_dec(_mm_alignr_epi8!8(key2, t), (i+3)%4));
             
             t = aes_schedule_192_smear(key2, t);
             
@@ -218,7 +219,7 @@ protected:
 /**
 * AES-256 using SSSE3
 */
-final class AES256SSSE3 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
+final class AES256_SSSE3 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
 {
 public:
     /*
@@ -262,7 +263,8 @@ public:
     }
 
     @property string name() const { return "AES-256"; }
-    override BlockCipher clone() const { return new AES256SSSE3; }
+    override @property size_t parallelism() const { return 1; }
+    override BlockCipher clone() const { return new AES256_SSSE3; }
 protected:
     /*
     * AES-256 Key Schedule
@@ -364,7 +366,7 @@ __m128i aes_schedule_transform(__m128i input,
         _mm_shuffle_epi8(table_2, i_2));
 }
     
-__m128i aes_scheduleMangle(__m128i k, ubyte round_no)
+__m128i aes_schedule_mangle(__m128i k, ubyte round_no)
 {
     __m128i t = _mm_shuffle_epi8(_mm_xor_si128(k, _mm_set1_epi8!(0x5B)()), mc_forward[0]);
     
@@ -434,13 +436,13 @@ __m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
 {
     if (rcon)
     {
-        input2 = _mm_xor_si128(_mm_alignr_epi8(_mm_setzero_si128(), *rcon, 15),
+        input2 = _mm_xor_si128(_mm_alignr_epi8!15(_mm_setzero_si128(), *rcon),
                                input2);
         
-        *rcon = _mm_alignr_epi8(*rcon, *rcon, 15); // next rcon
+        *rcon = _mm_alignr_epi8!15(*rcon, *rcon); // next rcon
         
         input1 = _mm_shuffle_epi32(input1, 0xFF); // rotate
-        input1 = _mm_alignr_epi8(input1, input1, 1);
+        input1 = _mm_alignr_epi8!1(input1, input1);
     }
     
     __m128i smeared = _mm_xor_si128(input2, _mm_slli_si128(input2, 4));
@@ -505,8 +507,8 @@ __m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
         if (r == rounds)
         {
             B = _mm_shuffle_epi8(_mm_xor_si128(_mm_shuffle_epi8(sbou, t5),
-                                               _mm_xor_si128(_mm_shuffle_epi8(sbot, t6), K),
-                                               sr[r % 4]));
+                                               _mm_xor_si128(_mm_shuffle_epi8(sbot, t6), K)),
+                                 sr[r % 4]);
             
             return B;
         }
@@ -589,6 +591,6 @@ __m128i aes_ssse3_decrypt(__m128i B, const(__m128i)* keys, size_t rounds)
                                         _mm_shuffle_epi8(sbeu, t5)),
                           _mm_shuffle_epi8(sbet, t6));
         
-        mc = _mm_alignr_epi8(mc, mc, 12);
+        mc = _mm_alignr_epi8!12(mc, mc);
     }
 }

@@ -20,6 +20,7 @@ import botan.asn1.asn1_obj;
 import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
+import botan.cert.cvc.cvc_gen_cert;
 import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;
 import botan.pubkey.algo.ecdsa;
@@ -27,6 +28,7 @@ import botan.math.ec_gfp.curve_gfp;
 import botan.cert.cvc.eac_asn_obj;
 import botan.rng.rng;
 import botan.utils.types;
+import std.datetime;
 import std.array : Appender;
 
 /**
@@ -53,14 +55,14 @@ public:
 * @result the self signed certificate
 */
 EAC11CVC createSelfSignedCert(in PrivateKey key,
-                                   in EAC11CVCOptions opt,
-                                   RandomNumberGenerator rng)
+                              in EAC11CVCOptions opt,
+                              RandomNumberGenerator rng)
 {
     // NOTE: we ignore the value of opt.chr
     
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
     
-    if (priv_key == 0)
+    if (!priv_key)
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     
     ASN1Chr chr = ASN1Chr(opt.car.value());
@@ -75,10 +77,10 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
     Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(signer,
-                         enc_public_key,
-                         opt.car, chr,
-                         opt.holder_auth_templ,
-                         opt.ced, opt.cex, rng);
+                       enc_public_key,
+                       opt.car, chr,
+                       opt.holder_auth_templ,
+                       opt.ced, opt.cex, rng);
 }
 
 
@@ -99,7 +101,7 @@ EAC11Req createCvcReq(in PrivateKey key,
 {
     
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
-    if (priv_key == 0)
+    if (priv_key is null)
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
@@ -126,7 +128,7 @@ EAC11Req createCvcReq(in PrivateKey key,
                                             rng);
     
     auto source = scoped!DataSourceMemory(signed_cert);
-    return EAC11Req(source);
+    return EAC11Req(source.Scoped_payload);
 }
 
 /**
@@ -144,7 +146,7 @@ EAC11ADO createAdoReq(in PrivateKey key,
 {
     
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
-    if (priv_key == 0)
+    if (!priv_key)
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
@@ -157,7 +159,7 @@ EAC11ADO createAdoReq(in PrivateKey key,
     Vector!ubyte signed_cert = EAC11ADO.makeSigned(signer, tbs_bits, rng);
     
     auto source = scoped!DataSourceMemory(signed_cert);
-    return EAC11ADO(source);
+    return EAC11ADO(source.Scoped_payload);
 }
 
 
@@ -183,12 +185,12 @@ EAC11CVC createCvca(in PrivateKey key,
                        RandomNumberGenerator rng)
 {
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
-    if (priv_key == 0)
+    if (!priv_key)
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
     EAC11CVCOptions opts;
-    opts.car = car;
+    opts.car = cast(ASN1Car)car;
     
     opts.ced = ASN1Ced(Clock.currTime());
     opts.cex = ASN1Cex(opts.ced);
@@ -210,13 +212,13 @@ EAC11CVC createCvca(in PrivateKey key,
 * @param rng = a random number generator
 */
 EAC11CVC linkCvca(in EAC11CVC signer,
-                     in PrivateKey key,
-                     in EAC11CVC signee,
-                     RandomNumberGenerator rng)
+                  in PrivateKey key,
+                  in EAC11CVC signee,
+                  RandomNumberGenerator rng)
 {
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
     
-    if (priv_key == 0)
+    if (!priv_key)
         throw new InvalidArgument("linkCvca(): unsupported key type");
     
     ASN1Ced ced = ASN1Ced(Clock.currTime());
@@ -233,7 +235,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
     {
         throw new InvalidArgument("linkCvca(): signature algorithms of signer and signee don't match");
     }
-    AlgorithmIdentifier sig_algo = signer.signatureAlgorithm();
+    AlgorithmIdentifier sig_algo = cast(AlgorithmIdentifier) signer.signatureAlgorithm();
     string padding_and_hash = paddingAndHashFromOid(sig_algo.oid);
     PKSigner pk_signer = PKSigner(priv_key, padding_and_hash);
     Unique!PublicKey pk = signee.subjectPublicKey();
@@ -260,17 +262,16 @@ EAC11CVC linkCvca(in EAC11CVC signer,
 * @param rng = a random number generator
 * @result the new request
 */
-EAC11Req createCVCReqImplicitca(in PrivateKey prkey, in ASN1Chr chr,
-                                     in string hash_alg, RandomNumberGenerator rng)
+EAC11Req createCVCReqImplicitca(PrivateKey prkey, in ASN1Chr chr,
+                                in string hash_alg, RandomNumberGenerator rng)
 {
-    const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) prkey;
-    if (priv_key == 0)
+    ECDSAPrivateKey priv_key = cast(ECDSAPrivateKey) prkey;
+    if (!priv_key)
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
-    ECDSAPrivateKey key = priv_key;
-    key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
-    return createCvcReq(key, chr, hash_alg, rng);
+    priv_key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
+    return createCvcReq(priv_key, chr, hash_alg, rng);
 }
 
 /**
@@ -301,7 +302,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
                         RandomNumberGenerator rng)
 {
     const ECDSAPrivateKey  priv_key = cast(const ECDSAPrivateKey) key;
-    if (priv_key == 0)
+    if (!priv_key)
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
@@ -317,7 +318,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     string padding_and_hash = paddingAndHashFromOid(signee.signatureAlgorithm().oid);
     PKSigner pk_signer = PKSigner(priv_key, padding_and_hash);
     Unique!PublicKey pk = signee.subjectPublicKey();
-    ECDSAPublicKey  subj_pk = cast(ECDSAPublicKey) pk;
+    ECDSAPublicKey subj_pk = cast(ECDSAPublicKey) *pk;
     // Unique!PublicKey signer_pk = signer_cert.subjectPublicKey();
     
     // for the case that the domain parameters are not set...
@@ -326,13 +327,13 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     
     subj_pk.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     
-    AlgorithmIdentifier sig_algo = AlgorithmIdentifier(signer_cert.signatureAlgorithm());
-    
+    AlgorithmIdentifier sig_algo = cast(AlgorithmIdentifier) signer_cert.signatureAlgorithm();
+
     ASN1Ced ced = ASN1Ced(Clock.currTime());
     
-    uint chat_val;
-    uint chat_low = signer_cert.get_chat_value() & 0x3; // take the chat rights from signer
-    ASN1Cex cex(ced);
+    ubyte chat_val;
+    ubyte chat_low = signer_cert.getChatValue() & 0x3; // take the chat rights from signer
+    ASN1Cex cex = ASN1Cex(ced);
     if ((signer_cert.getChatValue() & CVCA) == CVCA)
     {
         // we sign a dvca
@@ -357,12 +358,12 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
     Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(pk_signer, enc_public_key,
-                         ASN1Car(signer_cert.getChr().iso8859()),
-                         chr,
-                         chat_val,
-                         ced,
-                         cex,
-                         rng);
+                       ASN1Car(signer_cert.getChr().iso8859()),
+                       chr,
+                       chat_val,
+                       ced,
+                       cex,
+                       rng);
 }
 
 /*
@@ -421,11 +422,12 @@ Vector!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
 
 string paddingAndHashFromOid(in OID oid)
 {
+    import std.string : indexOf;
     string padding_and_hash = OIDS.lookup(oid); // use the hash
     
     if (padding_and_hash[0 .. 6] != "ECDSA/")
         throw new InvalidState("CVC: Can only use ECDSA, not " ~ padding_and_hash);
     
-    padding_and_hash.erase(0, padding_and_hash.find("/") + 1);
+    padding_and_hash = padding_and_hash[padding_and_hash.indexOf("/") + 1 .. $];
     return padding_and_hash;
 }

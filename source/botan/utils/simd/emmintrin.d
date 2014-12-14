@@ -25,27 +25,30 @@ int _MM_SHUFFLE(int a, int b, int c, int d)
 
 // _mm_set1_epi32
 __m128i _mm_set1_epi32 (int i)() {
-    return cast(__m128i) int4([i, i, i, i]);
+    int4 vec = [i, i, i, i];
+    return *cast(__m128i*) &vec;
 }
 
 // _mm_set_epi32
-__m128i _mm_set1_epi32 (int i, int j, int k, int l)() {
-    return cast(__m128i) int4([i, j, k, l]);
+immutable(__m128i) _mm_set_epi32 (int i, int j, int k, int l)() {
+    int4 vec = [i, j, k, l];
+    return *cast(immutable(__m128i)*) &vec;
 }
 
 // _mm_set_epi8
 __m128i _mm_set1_epi8 (byte i)() {
-    return cast(__m128i) byte16([i, i, i, i, i, i, i, i, i, i, i, i, i, i, i, i]);
+    return byte16([i, i, i, i, i, i, i, i, i, i, i, i, i, i, i, i]);
 }
 
 // _mm_set_epi8
 __m128i _mm_set1_epi8(byte[] arr)() {
-    return cast(__m128i) byte16(arr);
+    return *cast(__m128i*) &byte16(arr);
 }
 
 // _mm_set1_epi16
 __m128i _mm_set1_epi16(short w)() {
-    return cast(__m128i) short8([w,w,w,w,w,w,w,w]);
+    short8 vec = short8([w,w,w,w,w,w,w,w]);
+    return *cast(__m128i*) &vec;
 }
 
 version(GDC) {
@@ -487,12 +490,7 @@ version(D_InlineAsm_X86_64) {
         }
         return a;
     }
-    
-    // _mm_set1_epi16
-    __m128i _mm_set1_epi16 (short w) {
-        return cast(__m128i) short8([w, w, w, w, w, w, w, w]);
-    }
-    
+        
     // _mm_cmpeq_epi16 ; PCMPEQW
     __m128i _mm_cmpeq_epi16 (__m128i a, in __m128i b) {
 
@@ -559,7 +557,7 @@ version(D_InlineAsm_X86_64) {
         }
         return a;
     }
-    
+
     // _mm_srli_epi16 ; PSRLW
     __m128i _mm_srli_epi16 (__m128i a, in int imm) {
         __m128i* _a = &a;
@@ -571,6 +569,38 @@ version(D_InlineAsm_X86_64) {
             mov RBX, _b;
             movdqu XMM0, [RAX];
             psrlw XMM0, [RBX];
+            movdqu [RAX], XMM0;
+        }
+        return a;
+    }    
+
+    // _mm_srli_epi32 ; PSRLD
+    __m128i _mm_srli_epi32 (__m128i a, in int imm) {
+        __m128i* _a = &a;
+        const(byte) b = cast(const byte) imm;
+        const(byte)* _b = cast(const(byte)*)&b;
+        
+        asm {
+            mov RAX, _a;
+            mov RBX, _b;
+            movdqu XMM0, [RAX];
+            psrld XMM0, [RBX];
+            movdqu [RAX], XMM0;
+        }
+        return a;
+    }
+
+    // _mm_slli_epi32 ; PSLLD
+    __m128i _mm_slli_epi32 (__m128i a, in int imm) {
+        __m128i* _a = &a;
+        const(byte) b = cast(const byte) imm;
+        const(byte)* _b = cast(const(byte)*)&b;
+        
+        asm {
+            mov RAX, _a;
+            mov RBX, _b;
+            movdqu XMM0, [RAX];
+            pslld XMM0, [RBX];
             movdqu [RAX], XMM0;
         }
         return a;

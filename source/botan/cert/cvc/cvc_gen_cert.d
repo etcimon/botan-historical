@@ -10,8 +10,10 @@ module botan.cert.cvc.cvc_gen_cert;
 import botan.constants;
 static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
+import botan.asn1.ber_dec;
 import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
+import botan.cert.cvc.signed_obj;
 import botan.filters.pipe;
 import botan.filters.data_src;
 import botan.pubkey.algo.ecdsa;
@@ -23,7 +25,7 @@ import botan.utils.types;
 /**
 *  This class represents TR03110 (EAC) v1.1 generalized CV Certificates
 */
-class EAC11genCVC(Derived) : EAC11obj!Derived // CRTP continuation from EAC11obj
+class EAC11genCVC(Derived) : EAC11obj!Derived, SignedObject // CRTP continuation from EAC11obj
 {
 public:
 
@@ -31,9 +33,9 @@ public:
     * Get this certificates public key.
     * @result this certificates public key
     */
-    final PublicKey subjectPublicKey() const
+    final const(PublicKey) subjectPublicKey() const
     {
-        return new ECDSAPublicKey(m_pk);
+        return m_pk;
     }
 
     /**
@@ -50,7 +52,7 @@ public:
     * Get the CHR of the certificate.
     * @result the CHR of the certificate
     */
-    final ASN1Chr getChr() const {
+    final const(ASN1Chr) getChr() const {
         return m_chr;
     }
 
@@ -62,17 +64,17 @@ public:
     */
     override final void encode(Pipe output, X509Encoding encoding) const
     {
-        Vector!ubyte concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
+        const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
         Vector!ubyte der = DEREncoder()
                             .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                             .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
-                            .rawBytes(EAC11obj!Derived.m_tbs_bits)
+                            .rawBytes(EAC11obj!Derived.tbsData())
                             .endCons()
                             .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                             .endCons()
                             .getContentsUnlocked();
         
-        if (encoding == PEM)
+        if (encoding == PEM_)
             throw new InvalidArgument("EAC11genCVC::encode() cannot PEM encode an EAC object");
         else
             output.write(der);
@@ -82,7 +84,7 @@ public:
     * Get the to-be-signed (TBS) data of this object.
     * @result the TBS data of this object
     */
-    override final Vector!ubyte tbsData() const
+    override final const(Vector!ubyte) tbsData() const
     {
         return buildCertBody(m_tbs_bits);
     }
@@ -108,9 +110,9 @@ public:
     * @param rng = a random number generator
     * @result the DER encoded signed generalized CVC object
     */
-    static Vector!ubyte makeSigned(PKSigner signer,
-                                    in Vector!ubyte tbs_bits,
-                                    RandomNumberGenerator rng)
+    static Vector!ubyte makeSigned(ref PKSigner signer,
+                                   in Vector!ubyte tbs_bits,
+                                   RandomNumberGenerator rng)
     {
         const auto concat_sig = signer.signMessage(tbs_bits, rng);
         
@@ -122,16 +124,12 @@ public:
                 .getContentsUnlocked();
     }
 
-    this() { m_pk = 0; }
-
-    ~this()
-    { delete m_pk; }
-
+    ~this() { if (m_pk) delete m_pk; }
 protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;
     bool m_self_signed;
-
+package:
     static void decodeInfo(DataSource source,
                            Vector!ubyte res_tbs_bits,
                            ECDSASignature res_sig)

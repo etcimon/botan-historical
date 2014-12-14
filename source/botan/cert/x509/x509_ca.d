@@ -50,7 +50,7 @@ public:
     {
         KeyConstraints constraints;
         if (req.isCA())
-            constraints = KeyConstraints(KEY_CERT_SIGN | CRL_SIGN);
+            constraints = KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN;
         else
         {
             Unique!PublicKey key = req.subjectPublicKey();
@@ -81,7 +81,7 @@ public:
     * Get the certificate of this CA.
     * @return CA certificate
     */
-    X509Certificate caCertificate() const
+    const(X509Certificate) caCertificate() const
     {
         return m_cert;
     }
@@ -113,9 +113,7 @@ public:
                       Duration next_update = 0.seconds) const
     {
 
-        Vector!CRLEntry revoked = crl.getRevoked();
-        new_revoked = revoked.dup;
-        
+        const(Vector!CRLEntry) revoked = crl.getRevoked();        
         return makeCRL(revoked, crl.crlNumber() + 1, next_update, rng);
     }
 
@@ -185,7 +183,7 @@ public:
     * @param key = the private key of the CA
     * @param hash_fn = name of a hash function to use for signing
     */
-    this(in X509Certificate c,
+    this(X509Certificate c,
          in PrivateKey key,
          in string hash_fn)
     {
@@ -207,8 +205,8 @@ private:
     * Create a CRL
     */
     X509CRL makeCRL(in Vector!CRLEntry revoked,
-                      uint crl_number, Duration next_update,
-                      RandomNumberGenerator rng) const
+                    uint crl_number, Duration next_update,
+                    RandomNumberGenerator rng) const
     {
         __gshared immutable size_t X509_CRL_VERSION = 2;
         
@@ -222,9 +220,9 @@ private:
         X509Extensions extensions;
         extensions.add(new AuthorityKeyID(m_cert.subjectKeyId()));
         extensions.add(new CRLNumber(crl_number));
-        
-        const Vector!ubyte crl = x509_obj.makeSigned(
-            m_signer, rng, m_ca_sig_algo,
+        PKSigner* _signer = cast(PKSigner*)&m_signer;
+        const Vector!ubyte crl = X509Object.makeSigned(
+            *_signer, rng, m_ca_sig_algo,
             DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .encode(X509_CRL_VERSION-1)
             .encode(m_ca_sig_algo)

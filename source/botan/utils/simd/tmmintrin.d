@@ -11,12 +11,16 @@ static if (BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
 
 public import botan.utils.simd.emmintrin;
 
-
 version(GDC) {
 @inline:
     // _mm_shuffle_epi8
     __m128i _mm_shuffle_epi8(__m128i a, in __m128i b) {
         return cast(__m128i) __builtin_ia32_pshufb128(a, b);
+    }
+
+    // _mm_alignr_epi8
+    __m128i _mm_alignr_epi8(int n)(__m128i a, __m128i b) {
+        return cast(__m128i) __builtin_ia32_palignr128(cast(long2) a, cast(long2) b, n*8); 
     }
 }
 
@@ -24,6 +28,10 @@ version(LDC) {
     // _mm_shuffle_epi8
     __m128i _mm_shuffle_epi8(__m128i a, in __m128i b) {
         return cast(__m128i) __builtin_ia32_pshufb128(a, b);
+    }
+
+    __m128i _mm_alignr_epi8(int n)(__m128i a, __m128i b) {
+        return cast(__m128i) __builtin_ia32_palignr128(cast(long2) a, cast(long2) b, n*8); 
     }
 }
 
@@ -42,6 +50,26 @@ version(D_InlineAsm_X86_64) {
             pshufb XMM0, XMM1;
             movdqu [RAX], XMM0;
         }
+        return a;
+    }
+
+    // _mm_alignr_epi8 ; palignr
+    __m128i _mm_alignr_epi8(int n)(__m128i a, __m128i b) {
+        
+        __m128i* _a = &a;
+        __m128i* _b = &b;
+
+        mixin(`
+            asm {
+                mov RAX, _a;
+                mov RBX, _b;
+                movdqu XMM0, [RAX];
+                movdqu XMM1, [RBX];
+                palignr XMM0, XMM1, ` ~ n.stringof ~ `;
+                movdqu [RAX], XMM0;
+            }
+        `);
+
         return a;
     }
 }

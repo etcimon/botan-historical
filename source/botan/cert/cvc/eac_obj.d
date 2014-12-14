@@ -21,23 +21,22 @@ import botan.utils.exceptn;
 * TR03110 v1.1 EAC CV Certificate
 */
 // CRTP is used enable the call sequence:
-class EAC11obj(Derived) : EACSignedObject
+class EAC11obj(Derived) : EACSignedObject, SignedObject
 {
 public:
     /**
     * Return the signature as a concatenation of the encoded parts.
     * @result the concatenated signature
     */
-    override Vector!ubyte getConcatSig() const
-    { return m_sig.getConcatenation(); }
+    override const(Vector!ubyte) getConcatSig() const { return m_sig.getConcatenation(); }
 
     bool checkSignature(ref PublicKey key) const
     {
-        return checkSignature(key, m_sig.DER_encode());
+        return super.checkSignature(key, m_sig.DER_encode());
     }
 
-protected:
     ECDSASignature m_sig;
+protected:
 
     void init(DataSource input)
     {

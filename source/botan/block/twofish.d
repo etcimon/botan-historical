@@ -10,7 +10,9 @@ import botan.constants;
 static if (BOTAN_HAS_TWOFISH):
 
 import std.range : iota;
-
+import botan.utils.loadstor;
+import botan.utils.get_byte;
+import botan.utils.rotate;
 import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist
@@ -130,6 +132,7 @@ public:
     }
 
     override @property string name() const { return "Twofish"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Twofish; }
 
 protected:

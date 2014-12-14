@@ -31,7 +31,7 @@ public:
     * Get the CAR of the certificate.
     * @result the CAR of the certificate
     */
-    ASN1Car getCar() const
+    const(ASN1Car) getCar() const
     {
         return m_car;
     }
@@ -40,7 +40,7 @@ public:
     * Get the CED of this certificate.
     * @result the CED this certificate
     */
-    ASN1Ced getCed() const
+    const(ASN1Ced) getCed() const
     {
         return m_ced;
     }
@@ -49,7 +49,7 @@ public:
     * Get the CEX of this certificate.
     * @result the CEX this certificate
     */
-    ASN1Cex getCex() const
+    const(ASN1Cex) getCex() const
     {
         return m_cex;
     }
@@ -58,7 +58,7 @@ public:
     * Get the CHAT value.
     * @result the CHAT value
     */
-    uint getChatValue() const
+    ubyte getChatValue() const
     {
         return m_chat_val;
     }
@@ -72,9 +72,9 @@ public:
     /*
     * Comparison
     */
-    bool opCmp(in EAC11CVCImpl rhs) const
+    int opCmp(in EAC11CVCImpl rhs) const
     {
-        if (lhs == rhs) return 0;
+        if (this == rhs) return 0;
         else return -1;
     }
 
@@ -85,7 +85,7 @@ public:
     this(DataSource input)
     {
         init(input);
-        self_signed = false;
+        m_self_signed = false;
         doDecode();
     }
 
@@ -97,22 +97,22 @@ public:
     {
         auto stream = scoped!DataSourceStream(input, true);
         init(stream);
-        self_signed = false;
+        m_self_signed = false;
         doDecode();
     }
 
     ~this() {}
-private:
+protected:
 
     /*
-* Decode the TBSCertificate data
-*/
+    * Decode the TBSCertificate data
+    */
     void forceDecode()
     {
         Vector!ubyte enc_pk;
         Vector!ubyte enc_chat_val;
         size_t cpi;
-        BERDecoder tbs_cert = BERDecoder(tbs_bits);
+        BERDecoder tbs_cert = BERDecoder(m_tbs_bits);
         tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
                 .decode(m_car)
                 .startCons((cast(ASN1Tag)73))
@@ -133,11 +133,11 @@ private:
         if (cpi != 0)
             throw new DecodingError("EAC1_1 certificate's cpi was not 0");
         
-        m_pk = decodeEac11Key(enc_pk, sig_algo);
-        
+        m_pk = decodeEac11Key(enc_pk, m_sig_algo);
+
         m_chat_val = enc_chat_val[0];
-        
-        self_signed = (m_car.iso8859() == m_chr.iso8859());
+
+        m_self_signed = (m_car.iso8859() == m_chr.iso8859());
     }
 
     this() {}
@@ -163,16 +163,16 @@ private:
 * @param cex = the CEX to appear in the certificate
 * @param rng = a random number generator
 */
-EAC11CVC makeCvcCert(PKSigner signer,
+EAC11CVC makeCvcCert(ref PKSigner signer,
                      in Vector!ubyte public_key,
                      in ASN1Car car,
                      in ASN1Chr chr,
-                     ubyte holder_auth_templ,
-                     ASN1Ced ced,
-                     ASN1Cex cex,
+                     in ubyte holder_auth_templ,
+                     in ASN1Ced ced,
+                     in ASN1Cex cex,
                      RandomNumberGenerator rng)
 {
-    OID chat_oid = OID(OIDS.lookup("CertificateHolderAuthorizationTemplate"));
+    OID chat_oid = OIDS.lookup("CertificateHolderAuthorizationTemplate");
     Vector!ubyte enc_chat_val;
     enc_chat_val.pushBack(holder_auth_templ);
     
@@ -191,10 +191,10 @@ EAC11CVC makeCvcCert(PKSigner signer,
                         .encode(cex)
                         .getContentsUnlocked();
     
-    Vector!ubyte signed_cert = makeSigned(signer, buildCertBody(tbs), rng);
+    Vector!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
     
     auto source = scoped!DataSourceMemory(signed_cert);
-    return EAC11CVC(source);
+    return EAC11CVC(source.Scoped_payload);
 }
 
 /**
@@ -205,5 +205,4 @@ ECDSAPublicKey decodeEac11Key(in Vector!ubyte,
                               ref AlgorithmIdentifier)
 {
     throw new InternalError("decodeEac11Key: Unimplemented");
-    return 0;
 }

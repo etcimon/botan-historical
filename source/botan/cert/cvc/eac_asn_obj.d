@@ -147,7 +147,7 @@ public:
         }
         
         Vector!string params;
-        Appender!string current;
+        Vector!ubyte current;
         current.reserve(time_str.length);
         
         for (uint j = 0; j != time_str.length; ++j)
@@ -156,19 +156,19 @@ public:
                 current ~= time_str[j];
             else
             {
-                if (current.data.length > 0)
-                    params.pushBack(current.data);
+                if (current.length > 0)
+                    params.pushBack(current);
                 current.clear();
             }
         }
-        if (current.data.length > 0)
-            params.pushBack(current.data);
+        if (current.length > 0)
+            params.pushBack(current);
         
         if (params.length != 3)
             throw new InvalidArgument("Invalid time specification " ~ time_str);
         
         year    = to!uint(params[0]);
-        month  = to!uint(params[1]);
+        month   = to!uint(params[1]);
         day     = to!uint(params[2]);
         
         if (!passesSanityCheck())
@@ -271,9 +271,9 @@ private:
     Vector!ubyte encodedEacTime() const
     {
         Vector!ubyte result = Vector!ubyte(6);
-        result ~= encTwoDigitArr(year);
-        result ~= encTwoDigitArr(month);
-        result ~= encTwoDigitArr(day);
+        result ~= encTwoDigitArr(year).ptr[0..2];
+        result ~= encTwoDigitArr(month).ptr[0..2];
+        result ~= encTwoDigitArr(day).ptr[0..2];
         return result;
     }
 
@@ -382,27 +382,21 @@ public:
         if (obj.type_tag != this.m_tag)
         {
             Appender!string ss;
-            ss ~= "ASN1EACString tag mismatch, tag was "
-                   ~ obj.type_tag
-                   ~ " expected "
-                   ~ this.m_tag;
+            ss ~= "ASN1EACString tag mismatch, tag was " ~ obj.type_tag.to!string ~ " expected " ~ this.m_tag.to!string;
             
             throw new DecodingError(ss.data);
         }
-        
-        CharacterSet charset_is;
-        charset_is = LATIN1_CHARSET;
+
+        CharacterSet charset_is = LATIN1_CHARSET;
         
         try
         {
-            this = ASN1EACString(transcode(obj.toString(),
-                                             charset_is, 
-                                             LOCAL_CHARSET),
-                                   obj.type_tag);
+            m_iso_8859_str = transcode(obj.toString(), charset_is, LOCAL_CHARSET);
+            m_tag = obj.type_tag;
         }
         catch(InvalidArgument inv_arg)
         {
-            throw new DecodingError(string("ASN1EACString decoding failed: ") ~ inv_arg.msg);
+            throw new DecodingError("ASN1EACString decoding failed: " ~ inv_arg.msg);
         }
     }
     

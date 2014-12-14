@@ -111,6 +111,23 @@ public:
         else return -1;
     }
 
+    @property OID oid() const {
+        return cast(OID) m_oid;
+    }
+
+    @property Vector!ubyte parameters() const {
+        return cast(Vector!ubyte) m_parameters;
+    }
+
+    @property void oid(OID oid) {
+        m_oid = oid;
+    }
+
+    @property void parameters(Vector!ubyte param) {
+        m_parameters = param;
+    }
+
+private:
     OID m_oid;
     Vector!ubyte m_parameters;
 }

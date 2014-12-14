@@ -50,7 +50,6 @@ public:
 
     alias m_pub this;
 
-private:
     ECPublicKey m_pub;
 }
 
@@ -81,7 +80,7 @@ public:
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
 
     alias m_priv this;
-private:
+
     ECPrivateKey m_priv;
 
 }

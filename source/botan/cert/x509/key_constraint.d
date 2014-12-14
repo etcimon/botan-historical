@@ -39,26 +39,26 @@ enum KeyConstraints {
 * additional limits
 */
 KeyConstraints findConstraints(in PublicKey pub_key,
-                                 KeyConstraints limits)
+                               KeyConstraints limits)
 {
     const string name = pub_key.algoName;
     
-    size_t constraints = 0;
+    KeyConstraints constraints;
     
     if (name == "DH" || name == "ECDH")
-        constraints |= KEY_AGREEMENT;
+        constraints |= KeyConstraints.KEY_AGREEMENT;
     
     if (name == "RSA" || name == "ElGamal")
-        constraints |= KEY_ENCIPHERMENT | DATA_ENCIPHERMENT;
+        constraints |= KeyConstraints.KEY_ENCIPHERMENT | KeyConstraints.DATA_ENCIPHERMENT;
     
     if (name == "RSA" || name == "RW" || name == "NR" ||
         name == "DSA" || name == "ECDSA")
-        constraints |= DIGITAL_SIGNATURE | NON_REPUDIATION;
+        constraints |= KeyConstraints.DIGITAL_SIGNATURE | KeyConstraints.NON_REPUDIATION;
     
     if (limits)
         constraints &= limits;
     
-    return KeyConstraints(constraints);
+    return constraints;
 }
 
 /*
@@ -76,12 +76,12 @@ void decode(BERDecoder source, ref KeyConstraints key_usage)
     if (obj.value[0] >= 8)
         throw new BERDecodingError("Invalid unused bits in usage constraint");
     
-    const ubyte mask = (0xFF << obj.value[0]);
+    const ubyte mask = cast(const ubyte)(0xFF << obj.value[0]);
     obj.value[obj.value.length-1] &= mask;
     
-    ushort usage = 0;
+    KeyConstraints usage;
     for (size_t j = 1; j != obj.value.length; ++j)
-        usage = (obj.value[j] << 8) | usage;
+        usage |= cast(KeyConstraints)(obj.value[j] << 8);
     
-    key_usage = KeyConstraints(usage);
+    key_usage = usage;
 }

@@ -42,7 +42,7 @@ public:
 
     uint statusCode() const { return m_status_code; }
 
-    string Body() const { return m_body; }
+    string _body() const { return m_body; }
 
     HashMap!(string, string) headers() const { return m_headers; }
 

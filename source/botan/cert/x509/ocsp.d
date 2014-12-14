@@ -25,14 +25,16 @@ import botan.pubkey.pubkey;
 import botan.cert.x509.x509path;
 import botan.utils.http_util.http_util;
 import botan.utils.types;
+import std.datetime;
+import std.algorithm : splitter;
 
 struct OCSPRequest
 {
 public:
     @disable this();
 
-    this(in X509Certificate issuer_cert,
-         in X509Certificate subject_cert) 
+    this(X509Certificate issuer_cert,
+         X509Certificate subject_cert) 
         
     {
         m_issuer = issuer_cert;
@@ -59,12 +61,12 @@ public:
 
     string base64Encode() const
     {
-        return base64Encode(BER_encode());
+        return .base64Encode(BER_encode());
     }
 
-    X509Certificate issuer() const { return m_issuer; }
+    const(X509Certificate) issuer() const { return m_issuer; }
 
-    X509Certificate subject() const { return m_subject; }
+    const(X509Certificate) subject() const { return m_subject; }
 private:
     X509Certificate m_issuer, m_subject;
 }
@@ -75,9 +77,10 @@ public:
     @disable this();
 
     this(in CertificateStore trusted_roots,
-             in Vector!ubyte response_bits)
+         in string response_bits)
     {
-        BERDecoder response_outer = BERDecoder(response_bits).startCons(ASN1Tag.SEQUENCE);
+        Vector!ubyte response_vec = Vector!ubyte(response_bits);
+        BERDecoder response_outer = BERDecoder(response_vec).startCons(ASN1Tag.SEQUENCE);
         
         size_t resp_status = 0;
         
@@ -114,17 +117,17 @@ public:
             X509Extensions extensions;
             
             BERDecoder(tbs_bits)
-                    .decodeOptional(responsedata_version, (cast(ASN1Tag) 0), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
-                    .decodeOptional(name, (cast(ASN1Tag)1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
-                    .decodeOptionalString(key_hash, ASN1Tag.OCTET_STRING, 2,ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))                    
+                    .decodeOptional(responsedata_version, (cast(ASN1Tag) 0), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)
+                    .decodeOptional(cast(ASN1Object)*name, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)                    
+                    .decodeOptionalString(key_hash, ASN1Tag.OCTET_STRING, 2, ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)
                     .decode(produced_at)                    
                     .decodeList(m_responses)                    
-                    .decodeOptional(extensions, (cast(ASN1Tag)1), ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC));
+                    .decodeOptional(*extensions, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC);
             
             if (certs.empty)
             {
                 if (auto cert = trusted_roots.findCert(name, Vector!ubyte()))
-                    certs.pushBack(*cert);
+                    certs.pushBack(cert);
                 else
                     throw new Exception("Could not find certificate that signed OCSP response");
             }
@@ -232,7 +235,7 @@ void checkSignature(in Vector!ubyte tbs_response,
     if (!certs[0].allowedUsage("PKIX.OCSPSigning"))
         throw new Exception("OCSP response cert does not allow OCSP signing");
     
-    auto result = x509PathValidate(certs, Path_Validation_Restrictions(), trusted_roots);
+    auto result = x509PathValidate(certs, PathValidationRestrictions(), trusted_roots);
     
     if (!result.successfulValidation())
         throw new Exception("Certificate validation failure: " ~ result.resultString());
@@ -246,9 +249,9 @@ void checkSignature(in Vector!ubyte tbs_response,
 }
 
 /// Checks the certificate online
-OCSPResponse onlineCheck(in X509Certificate issuer,
-                      const X509Certificate subject,
-                      const CertificateStore trusted_roots)
+OCSPResponse onlineCheck(X509Certificate issuer,
+                         X509Certificate subject,
+                         in CertificateStore trusted_roots)
 {
     const string responder_url = subject.ocspResponder();
     

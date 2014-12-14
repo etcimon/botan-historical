@@ -105,8 +105,7 @@ public:
     /*
     * Get a single uint atom
     */
-    uint get1Uint(in string key,
-                   uint default_val) const
+    uint get1Uint(in string key, uint default_val = 0) const
     {
         Vector!string vals = get(key);
         

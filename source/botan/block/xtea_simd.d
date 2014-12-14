@@ -67,7 +67,7 @@ public:
 
 package:
 
-void xtea_encrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK) pure
+void xtea_encrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK)
 {
     SIMD32 L0 = SIMD32.loadBigEndian(input.ptr      );
     SIMD32 R0 = SIMD32.loadBigEndian(input.ptr + 16);

@@ -46,7 +46,7 @@ public:
     this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
 
     alias m_pub this;
-private:
+
     IFSchemePublicKey m_pub;
 }
 
@@ -128,7 +128,7 @@ public:
     this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
 
     alias m_priv this;
-private:
+
     IFSchemePrivateKey m_priv;
 }
 

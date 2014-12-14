@@ -14,6 +14,8 @@ import botan.cert.cvc.cvc_gen_cert;
 import botan.asn1.oids;
 import botan.asn1.ber_dec;
 import botan.utils.types;
+import botan.cert.cvc.cvc_cert;
+import botan.cert.cvc.ecdsa_sig;
 
 alias EAC11Req = FreeListRef!EAC11ReqImpl;
 /**
@@ -46,7 +48,7 @@ public:
     */
     this(DataSource source)
     {
-        init(input);
+        init(source);
         m_self_signed = true;
         doDecode();
     }
@@ -57,13 +59,13 @@ public:
     */
     this(in string str)
     {
-        auto stream = scoped!DataSourceStream(input, true);
+        auto stream = scoped!DataSourceStream(str, true);
         init(stream);
         m_self_signed = true;
         doDecode();
     }
 
-private:
+protected:
     void forceDecode()
     {
         Vector!ubyte enc_pk;
@@ -81,5 +83,4 @@ private:
         
         m_pk = decodeEac11Key(enc_pk, m_sig_algo);
     }
-
 }

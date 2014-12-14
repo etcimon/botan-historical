@@ -518,7 +518,7 @@ private:
         BERDecoder tbsCert(tbs_bits);
         
         tbs_cert.decodeOptional(_version, (cast(ASN1Tag) 0),
-                                 ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
+                                 (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
             .decode(serial_bn)
                 .decode(sig_algo_inner)
                 .decode(dn_issuer)
@@ -554,7 +554,7 @@ private:
         
         BERObject v3_exts_data = tbs_cert.getNextObject();
         if (v3_exts_data.type_tag == 3 &&
-            v3_exts_data.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
+            v3_exts_data.class_tag == (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
             X509Extensions extensions;
             

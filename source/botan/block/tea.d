@@ -72,6 +72,7 @@ public:
     }
 
     override @property string name() const { return "TEA"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new TEA; }
 
 protected:

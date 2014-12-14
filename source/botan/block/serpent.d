@@ -32,38 +32,38 @@ public:
             uint B2 = loadLittleEndian!uint(input, 2);
             uint B3 = loadLittleEndian!uint(input, 3);
             
-            mixin(key_xor!( 0)()); mixin(SBoxE1!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 1)()); mixin(SBoxE2!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 2)()); mixin(SBoxE3!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 3)()); mixin(SBoxE4!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 4)()); mixin(SBoxE5!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 5)()); mixin(SBoxE6!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 6)()); mixin(SBoxE7!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 7)()); mixin(SBoxE8!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 8)()); mixin(SBoxE1!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!( 9)()); mixin(SBoxE2!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(10)()); mixin(SBoxE3!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(11)()); mixin(SBoxE4!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(12)()); mixin(SBoxE5!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(13)()); mixin(SBoxE6!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(14)()); mixin(SBoxE7!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(15)()); mixin(SBoxE8!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(16)()); mixin(SBoxE1!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(17)()); mixin(SBoxE2!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(18)()); mixin(SBoxE3!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(19)()); mixin(SBoxE4!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(20)()); mixin(SBoxE5!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(21)()); mixin(SBoxE6!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(22)()); mixin(SBoxE7!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(23)()); mixin(SBoxE8!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(24)()); mixin(SBoxE1!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(25)()); mixin(SBoxE2!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(26)()); mixin(SBoxE3!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(27)()); mixin(SBoxE4!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(28)()); mixin(SBoxE5!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(29)()); mixin(SBoxE6!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(30)()); mixin(SBoxE7!(B0,B1,B2,B3)()); transform(B0,B1,B2,B3);
-            mixin(key_xor!(31)()); mixin(SBoxE8!(B0,B1,B2,B3)()); mixin(key_xor!(32)());
+            mixin(key_xor!( 0)()); mixin(SBoxE1!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 1)()); mixin(SBoxE2!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 2)()); mixin(SBoxE3!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 3)()); mixin(SBoxE4!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 4)()); mixin(SBoxE5!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 5)()); mixin(SBoxE6!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 6)()); mixin(SBoxE7!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 7)()); mixin(SBoxE8!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 8)()); mixin(SBoxE1!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!( 9)()); mixin(SBoxE2!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(10)()); mixin(SBoxE3!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(11)()); mixin(SBoxE4!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(12)()); mixin(SBoxE5!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(13)()); mixin(SBoxE6!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(14)()); mixin(SBoxE7!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(15)()); mixin(SBoxE8!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(16)()); mixin(SBoxE1!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(17)()); mixin(SBoxE2!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(18)()); mixin(SBoxE3!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(19)()); mixin(SBoxE4!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(20)()); mixin(SBoxE5!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(21)()); mixin(SBoxE6!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(22)()); mixin(SBoxE7!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(23)()); mixin(SBoxE8!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(24)()); mixin(SBoxE1!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(25)()); mixin(SBoxE2!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(26)()); mixin(SBoxE3!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(27)()); mixin(SBoxE4!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(28)()); mixin(SBoxE5!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(29)()); mixin(SBoxE6!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(30)()); mixin(SBoxE7!("B0", "B1", "B2", "B3")()); transform(B0,B1,B2,B3);
+            mixin(key_xor!(31)()); mixin(SBoxE8!("B0", "B1", "B2", "B3")()); mixin(key_xor!(32)());
             
             storeLittleEndian(output, B0, B1, B2, B3);
             
@@ -130,13 +130,14 @@ public:
     }
 
     override @property string name() const { return "Serpent"; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Serpent; }
 protected:
     /**
     * For use by subclasses using SIMD, asm, etc
     * @return const reference to the key schedule
     */
-    SecureVector!uint getRoundKeys() const
+    const(SecureVector!uint) getRoundKeys() const
     { return m_round_key; }
 
     /**
@@ -163,27 +164,27 @@ protected:
         
         foreach (size_t i; 8 .. 140)
         {
-            uint wi = W[i-8] ^ W[i-5] ^ W[i-3] ^ W[i-1] ^ PHI ^ uint(i-8);
+            uint wi = cast(uint) (W[i-8] ^ W[i-5] ^ W[i-3] ^ W[i-1] ^ PHI ^ (cast(uint) i - 8));
             W[i] = rotateLeft(wi, 11);
         }
 
-        mixin(SBoxE4!(W[  8],W[  9],W[ 10],W[ 11])()); mixin(SBoxE3!(W[ 12],W[ 13],W[ 14],W[ 15])());
-        mixin(SBoxE2!(W[ 16],W[ 17],W[ 18],W[ 19])()); mixin(SBoxE1!(W[ 20],W[ 21],W[ 22],W[ 23])());
-        mixin(SBoxE8!(W[ 24],W[ 25],W[ 26],W[ 27])()); mixin(SBoxE7!(W[ 28],W[ 29],W[ 30],W[ 31])());
-        mixin(SBoxE6!(W[ 32],W[ 33],W[ 34],W[ 35])()); mixin(SBoxE5!(W[ 36],W[ 37],W[ 38],W[ 39])());
-        mixin(SBoxE4!(W[ 40],W[ 41],W[ 42],W[ 43])()); mixin(SBoxE3!(W[ 44],W[ 45],W[ 46],W[ 47])());
-        mixin(SBoxE2!(W[ 48],W[ 49],W[ 50],W[ 51])()); mixin(SBoxE1!(W[ 52],W[ 53],W[ 54],W[ 55])());
-        mixin(SBoxE8!(W[ 56],W[ 57],W[ 58],W[ 59])()); mixin(SBoxE7!(W[ 60],W[ 61],W[ 62],W[ 63])());
-        mixin(SBoxE6!(W[ 64],W[ 65],W[ 66],W[ 67])()); mixin(SBoxE5!(W[ 68],W[ 69],W[ 70],W[ 71])());
-        mixin(SBoxE4!(W[ 72],W[ 73],W[ 74],W[ 75])()); mixin(SBoxE3!(W[ 76],W[ 77],W[ 78],W[ 79])());
-        mixin(SBoxE2!(W[ 80],W[ 81],W[ 82],W[ 83])()); mixin(SBoxE1!(W[ 84],W[ 85],W[ 86],W[ 87])());
-        mixin(SBoxE8!(W[ 88],W[ 89],W[ 90],W[ 91])()); mixin(SBoxE7!(W[ 92],W[ 93],W[ 94],W[ 95])());
-        mixin(SBoxE6!(W[ 96],W[ 97],W[ 98],W[ 99])()); mixin(SBoxE5!(W[100],W[101],W[102],W[103])());
-        mixin(SBoxE4!(W[104],W[105],W[106],W[107])()); mixin(SBoxE3!(W[108],W[109],W[110],W[111])());
-        mixin(SBoxE2!(W[112],W[113],W[114],W[115])()); mixin(SBoxE1!(W[116],W[117],W[118],W[119])());
-        mixin(SBoxE8!(W[120],W[121],W[122],W[123])()); mixin(SBoxE7!(W[124],W[125],W[126],W[127])());
-        mixin(SBoxE6!(W[128],W[129],W[130],W[131])()); mixin(SBoxE5!(W[132],W[133],W[134],W[135])());
-        mixin(SBoxE4!(W[136],W[137],W[138],W[139])());
+        mixin(SBoxE4!("W[  8]", "W[  9]", "W[ 10]", "W[ 11]")()); mixin(SBoxE3!("W[ 12]", "W[ 13]", "W[ 14]", "W[ 15]")());
+        mixin(SBoxE2!("W[ 16]", "W[ 17]", "W[ 18]", "W[ 19]")()); mixin(SBoxE1!("W[ 20]", "W[ 21]", "W[ 22]", "W[ 23]")());
+        mixin(SBoxE8!("W[ 24]", "W[ 25]", "W[ 26]", "W[ 27]")()); mixin(SBoxE7!("W[ 28]", "W[ 29]", "W[ 30]", "W[ 31]")());
+        mixin(SBoxE6!("W[ 32]", "W[ 33]", "W[ 34]", "W[ 35]")()); mixin(SBoxE5!("W[ 36]", "W[ 37]", "W[ 38]", "W[ 39]")());
+        mixin(SBoxE4!("W[ 40]", "W[ 41]", "W[ 42]", "W[ 43]")()); mixin(SBoxE3!("W[ 44]", "W[ 45]", "W[ 46]", "W[ 47]")());
+        mixin(SBoxE2!("W[ 48]", "W[ 49]", "W[ 50]", "W[ 51]")()); mixin(SBoxE1!("W[ 52]", "W[ 53]", "W[ 54]", "W[ 55]")());
+        mixin(SBoxE8!("W[ 56]", "W[ 57]", "W[ 58]", "W[ 59]")()); mixin(SBoxE7!("W[ 60]", "W[ 61]", "W[ 62]", "W[ 63]")());
+        mixin(SBoxE6!("W[ 64]", "W[ 65]", "W[ 66]", "W[ 67]")()); mixin(SBoxE5!("W[ 68]", "W[ 69]", "W[ 70]", "W[ 71]")());
+        mixin(SBoxE4!("W[ 72]", "W[ 73]", "W[ 74]", "W[ 75]")()); mixin(SBoxE3!("W[ 76]", "W[ 77]", "W[ 78]", "W[ 79]")());
+        mixin(SBoxE2!("W[ 80]", "W[ 81]", "W[ 82]", "W[ 83]")()); mixin(SBoxE1!("W[ 84]", "W[ 85]", "W[ 86]", "W[ 87]")());
+        mixin(SBoxE8!("W[ 88]", "W[ 89]", "W[ 90]", "W[ 91]")()); mixin(SBoxE7!("W[ 92]", "W[ 93]", "W[ 94]", "W[ 95]")());
+        mixin(SBoxE6!("W[ 96]", "W[ 97]", "W[ 98]", "W[ 99]")()); mixin(SBoxE5!("W[100]", "W[101]", "W[102]", "W[103]")());
+        mixin(SBoxE4!("W[104]", "W[105]", "W[106]", "W[107]")()); mixin(SBoxE3!("W[108]", "W[109]", "W[110]", "W[111]")());
+        mixin(SBoxE2!("W[112]", "W[113]", "W[114]", "W[115]")()); mixin(SBoxE1!("W[116]", "W[117]", "W[118]", "W[119]")());
+        mixin(SBoxE8!("W[120]", "W[121]", "W[122]", "W[123]")()); mixin(SBoxE7!("W[124]", "W[125]", "W[126]", "W[127]")());
+        mixin(SBoxE6!("W[128]", "W[129]", "W[130]", "W[131]")()); mixin(SBoxE5!("W[132]", "W[133]", "W[134]", "W[135]")());
+        mixin(SBoxE4!("W[136]", "W[137]", "W[138]", "W[139]")());
         
         m_round_key[] = W.ptr[8 .. 140];
     }
@@ -194,11 +195,8 @@ protected:
 
 package:
 
-string SBoxE1(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE1(string B0, string B1, string B2, string B3)() {
+
     return `{` ~ B3 ~ ` ^= ` ~ B0 ~ `;
             auto B4 = ` ~ B1 ~ `;
             ` ~ B1 ~ ` &= ` ~ B3 ~ `;
@@ -222,11 +220,7 @@ string SBoxE1(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B1 ~ ` = B4; }`;
 }
 
-string SBoxE2(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE2(string B0, string B1, string B2, string B3)() {
 
     return `{` ~ B0 ~ ` = ~` ~ B0 ~ `;
             ` ~ B2 ~ ` = ~` ~ B2 ~ `;
@@ -252,11 +246,7 @@ string SBoxE2(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B1 ~ ` = B4;}`;
 }
 
-string SBoxE3(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE3(string B0, string B1, string B2, string B3)() {
 
     return `{auto B4 = ` ~ B0 ~ `;
             ` ~ B0 ~ ` &= ` ~ B2 ~ `;
@@ -279,11 +269,7 @@ string SBoxE3(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B3 ~ ` = ~B4;}`;
 }
 
-string SBoxE4(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE4(string B0, string B1, string B2, string B3)() {
 
     return `{auto B4 = ` ~ B0 ~ `;
             ` ~ B0 ~ ` |= ` ~ B3 ~ `;
@@ -309,11 +295,7 @@ string SBoxE4(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B3 ~ ` = B4;}`;
 }
 
-string SBoxE5(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE5(string B0, string B1, string B2, string B3)() {
 
     return `{` ~ B1 ~ ` ^= ` ~ B3 ~ `;
             ` ~ B3 ~ ` = ~` ~ B3 ~ `;
@@ -340,11 +322,7 @@ string SBoxE5(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B1 ~ ` = B4;}`;
 }
 
-string SBoxE6(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE6(string B0, string B1, string B2, string B3)() {
 
     return `{` ~ B0 ~ ` ^= ` ~ B1 ~ `;
             ` ~ B1 ~ ` ^= ` ~ B3 ~ `;
@@ -371,11 +349,7 @@ string SBoxE6(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B3 ~ ` = B4;}`;
 }
 
-string SBoxE7(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE7(string B0, string B1, string B2, string B3)() {
 
     return `{` ~ B2 ~ ` = ~` ~ B2 ~ `;
             auto B4 = ` ~ B3 ~ `;
@@ -398,11 +372,7 @@ string SBoxE7(alias _B0, alias _B1, alias _B2, alias _B3)() {
             ` ~ B2 ~ ` = B4;}`;
 }
 
-string SBoxE8(alias _B0, alias _B1, alias _B2, alias _B3)() {
-    const B0 = __traits(identifier, _B0);
-    const B1 = __traits(identifier, _B1);
-    const B2 = __traits(identifier, _B2);
-    const B3 = __traits(identifier, _B3);
+string SBoxE8(string B0, string B1, string B2, string B3)() {
 
     return `{auto B4 = ` ~ B1 ~ `;
             ` ~ B1 ~ ` |= ` ~ B2 ~ `;
@@ -662,8 +632,8 @@ void i_transform(ref uint B0, ref uint B1, ref uint B2, ref uint B3)
 */
 string key_xor(ubyte round)()
 {
-    return `B0 ^= round_key[4*` ~ round.stringof ~ `  ];
-            B1 ^= round_key[4*` ~ round.stringof ~ `+1];
-            B2 ^= round_key[4*` ~ round.stringof ~ `+2];
-            B3 ^= round_key[4*` ~ round.stringof ~ `+3];`;
+    return `B0 ^= m_round_key[4*` ~ round.stringof ~ `  ];
+            B1 ^= m_round_key[4*` ~ round.stringof ~ `+1];
+            B2 ^= m_round_key[4*` ~ round.stringof ~ `+2];
+            B3 ^= m_round_key[4*` ~ round.stringof ~ `+3];`;
 }

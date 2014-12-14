@@ -45,7 +45,7 @@ public:
     }
 
     alias m_pub this;
-private:
+
     DLSchemePublicKey m_pub;
 }
 
@@ -98,7 +98,7 @@ public:
 
     alias m_priv this;
 
-private:
+
     DLSchemePrivateKey m_priv;
 
 }

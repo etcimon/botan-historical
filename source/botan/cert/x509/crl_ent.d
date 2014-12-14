@@ -17,6 +17,7 @@ import botan.asn1.ber_dec;
 import botan.math.bigint.bigint;
 import botan.asn1.oids;
 import botan.utils.types;
+import std.datetime;
 
 alias CRLEntry = FreeListRef!CRLEntryImpl;
 
@@ -53,10 +54,10 @@ public:
     {
         X509Extensions extensions;
         
-        extensions.add(new CRLReasonCode(reason));
+        extensions.add(new CRLReasonCode(m_reason));
         
         to_.startCons(ASN1Tag.SEQUENCE)
-                .encode(BigInt.decode(serial))
+                .encode(BigInt.decode(m_serial))
                 .encode(m_time)
                 .startCons(ASN1Tag.SEQUENCE)
                 .encode(extensions)
@@ -83,25 +84,25 @@ public:
             entry.decode(extensions);
             DataStore info;
             extensions.contentsTo(info, info);
-            m_reason = CRLCode(info.get1Uint("X509v3.CRLReasonCode"));
+            m_reason = cast(CRLCode)(info.get1Uint("X509v3.CRLReasonCode"));
         }
-        
+
         entry.endCons();
         
-        serial = BigInt.encode(serial_number_bn);
+        m_serial = BigInt.encode(serial_number_bn);
     }
 
     /**
     * Get the serial number of the certificate associated with this entry.
     * @return certificate's serial number
     */
-    Vector!ubyte serialNumber() const { return m_serial; }
+    const(Vector!ubyte) serialNumber() const { return m_serial; }
 
     /**
     * Get the revocation date of the certificate associated with this entry
     * @return certificate's revocation date
     */
-    X509Time expireTime() const { return m_time; }
+    const(X509Time) expireTime() const { return m_time; }
 
     /**
     * Get the entries reason code
@@ -148,7 +149,7 @@ public:
     /*
     * Compare two CRL_Entrys for inequality
     */
-    bool opCmp(in CRLEntry a2) const
+    int opCmp(in CRLEntry a2) const
     {
         if (this == a2) return 0;
         else return -1;

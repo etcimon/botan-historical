@@ -20,7 +20,7 @@ class ECDSASignature
 {
 public:
     this() {}
-    this(in BigInt r, in BigInt s) {
+    this(BigInt r, BigInt s) {
         m_r = r;
         m_s = s;
     }
@@ -35,21 +35,21 @@ public:
                 .verifyEnd();
     }
 
-    BigInt getR() const { return m_r; }
-    BigInt getS() const { return m_s; }
+    const(BigInt) getR() const { return m_r; }
+    const(BigInt) getS() const { return m_s; }
 
     /**
     * return the r||s
     */
-    Vector!ubyte getConcatenation() const
+    const(Vector!ubyte) getConcatenation() const
     {
         // use the larger
         const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
         
-        const auto sv_r = BigInt.encode1363(m_r, enc_len);
-        const auto sv_s = BigInt.encode1363(m_s, enc_len);
+        auto sv_r = BigInt.encode1363(m_r, enc_len);
+        auto sv_s = BigInt.encode1363(m_s, enc_len);
         
-        SecureVector!ubyte result = SecureVector!ubyte(sv_r);
+        SecureVector!ubyte result = sv_r;
         result ~= sv_s;
         return unlock(result);
     }
@@ -70,7 +70,7 @@ public:
         return (getR() == other.getR() && getS() == other.getS());
     }
 
-    bool opCmp(in ECDSASignature rhs) const
+    int opCmp(in ECDSASignature rhs) const
     {
         if (this == rhs) return 0;
         else return -1;
@@ -91,5 +91,5 @@ ECDSASignature decodeConcatenation(in Vector!ubyte concat)
     BigInt r = BigInt.decode(concat.ptr, rs_len);
     BigInt s = BigInt.decode(&concat[rs_len], rs_len);
     
-    return ECDSASignature(r, s);
+    return new ECDSASignature(r, s);
 }

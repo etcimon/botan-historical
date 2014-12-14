@@ -73,7 +73,8 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "+")
     {
-        return _mm_add_epi32(m_reg, other.m_reg);
+        m_reg = _mm_add_epi32(m_reg, other.m_reg);
+        return this;
     }
 
     SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
@@ -86,7 +87,8 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "-")
     {
-        return _mm_sub_epi32(m_reg, other.m_reg);
+        m_reg = _mm_sub_epi32(m_reg, other.m_reg);
+        return this;
     }
 
     SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
@@ -99,7 +101,8 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "^")
     {
-        return _mm_xor_si128(m_reg, other.m_reg);
+        m_reg = _mm_xor_si128(m_reg, other.m_reg);
+        return this;
     }
 
     SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
@@ -112,7 +115,8 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "&")
     {
-        return _mm_and_si128(m_reg, other.m_reg);
+        m_reg = _mm_and_si128(m_reg, other.m_reg);
+        return this;
     }
 
     SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
@@ -125,25 +129,29 @@ public:
     SIMDSSE2 opBinary(string op)(size_t shift)
         if (op == "<<")
     {
-        return _mm_slli_epi32(m_reg, cast(int)(shift));
+        m_reg = _mm_slli_epi32(m_reg, cast(int)(shift));
+        return this;
     }
 
     SIMDSSE2 opBinary(string op)(size_t shift)
         if (op == ">>")
     {
-        return _mm_srli_epi32(m_reg, cast(int)(shift));
+        m_reg = _mm_srli_epi32(m_reg, cast(int)(shift));
+        return this;
     }
 
     SIMDSSE2 opUnary(string op)()
         if (op == "~")
     {
-        return _mm_xor_si128(m_reg, _mm_set1_epi32!(0xFFFFFFFF)());
+        m_reg = _mm_xor_si128(m_reg, _mm_set1_epi32!(0xFFFFFFFF)());
+        return this;
     }
 
     // (~reg) & other
     SIMDSSE2 andc(in SIMDSSE2 other)
     {
-        return _mm_andnot_si128(m_reg, other.m_reg);
+        m_reg = _mm_andnot_si128(m_reg, other.m_reg);
+        return this;
     }
 
     SIMDSSE2 bswap()
@@ -153,8 +161,9 @@ public:
         T = _mm_shufflehi_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
         T = _mm_shufflelo_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
 
-        return _mm_or_si128(_mm_srli_epi16(T, 8),
+        m_reg = _mm_or_si128(_mm_srli_epi16(T, 8),
                             _mm_slli_epi16(T, 8));
+        return this;
     }
 
     static void transpose(ref SIMDSSE2 B0, ref SIMDSSE2 B1,

@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 import botan.cert.cvc.eac_obj;
+import botan.cert.cvc.signed_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.ecdsa_sig;
@@ -20,8 +21,7 @@ import botan.filters.pipe;
 import botan.pubkey.x509_key;
 import botan.asn1.asn1_obj;
 import botan.utils.types;
-// import fstream;
-// import string;
+import std.typecons : scoped;
 
 alias EAC11ADO = FreeListRef!EAC11ADOImpl;
 /**
@@ -29,7 +29,7 @@ alias EAC11ADO = FreeListRef!EAC11ADOImpl;
 */
 
  // CRTP continuation from EAC11obj
-final class EAC11ADOImpl : EAC11obj!EAC11ADO
+final class EAC11ADOImpl : EAC11obj!EAC11ADOImpl, SignedObject
 {
 public:
     /**
@@ -50,7 +50,7 @@ public:
     this(DataSource input)
     {
         init(input);
-        doDecodee();
+        doDecode();
     }
 
     /**
@@ -59,9 +59,9 @@ public:
     * @param tbs_bits = the TBS data to sign
     * @param rng = a random number generator
     */
-    static Vector!ubyte makeSigned(PKSigner signer,
-                                    in Vector!ubyte tbs_bits,
-                                    RandomNumberGenerator rng)
+    static Vector!ubyte makeSigned(ref PKSigner signer,
+                                   in Vector!ubyte tbs_bits,
+                                   RandomNumberGenerator rng)
     {
         const Vector!ubyte concat_sig = signer.signMessage(tbs_bits, rng);
         
@@ -77,7 +77,7 @@ public:
     * Get the CAR of this CVC ADO request
     * @result the CAR of this CVC ADO request
     */
-    ASN1Car getCar() const
+    const(ASN1Car) getCar() const
     {
         return m_car;
     }
@@ -86,7 +86,7 @@ public:
     * Get the CVC request contained in this object.
     * @result the CVC request inside this CVC ADO request
     */    
-    EAC11Req getRequest() const
+    const(EAC11Req) getRequest() const
     {
         return m_req;
     }
@@ -98,7 +98,7 @@ public:
     */
     override void encode(Pipe output, X509Encoding encoding) const
     {
-        if (encoding == PEM)
+        if (encoding == PEM_)
             throw new InvalidArgument("encode() cannot PEM encode an EAC object");
         
         auto concat_sig = m_sig.getConcatenation();
@@ -122,7 +122,7 @@ public:
     * Get the TBS data of this CVC ADO request.
     * @result the TBS data
     */
-    override Vector!ubyte tbsData() const
+    override const(Vector!ubyte) tbsData() const
     {
         return m_tbs_bits;
     }
@@ -135,7 +135,7 @@ public:
         else return -1; // no comparison support
     }
 
-private:
+protected:
     ASN1Car m_car;
     EAC11Req m_req;
 
@@ -156,14 +156,15 @@ private:
                                 .getContentsUnlocked();
         
         auto req_source = scoped!DataSourceMemory(req_bits);
-        m_req = EAC11Req(req_source);
-        sig_algo = m_req.sig_algo;
+        m_req = EAC11Req(req_source.Scoped_payload);
+        m_sig_algo = cast(AlgorithmIdentifier) m_req.signatureAlgorithm();
     }
 
 
-    void decodeInfo(DataSource source,
-                    ref Vector!ubyte res_tbs_bits,
-                    ref ECDSASignature res_sig)
+package:
+    static void decodeInfo(DataSource source,
+                           ref Vector!ubyte res_tbs_bits,
+                           ref ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         Vector!ubyte cert_inner_bits;

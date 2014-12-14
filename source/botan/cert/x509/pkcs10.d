@@ -41,7 +41,7 @@ public:
     */
     PublicKey subjectPublicKey() const
     {
-        DataSourceMemory source = m_info.get1("X509.Certificate.public_key");
+        auto source = scoped!DataSourceMemory(m_info.get1("X509.Certificate.public_key"));
         return x509_key.loadKey(source);
     }
 
@@ -81,7 +81,7 @@ public:
     */
     KeyConstraints constraints() const
     {
-        return KeyConstraints(m_info.get1Uint("X509v3.KeyUsage", KeyConstraints.NO_CONSTRAINTS));
+        return cast(KeyConstraints)m_info.get1Uint("X509v3.KeyUsage", KeyConstraints.NO_CONSTRAINTS);
     }
 
     /**
@@ -163,7 +163,7 @@ private:
     */
     void forceDecode()
     {
-        BERDecoder cert_req_info = BERDecoder(tbs_bits);
+        BERDecoder cert_req_info = BERDecoder(m_tbs_bits);
         
         size_t _version;
         cert_req_info.decode(_version);
@@ -186,7 +186,7 @@ private:
         BERObject attr_bits = cert_req_info.getNextObject();
         
         if (attr_bits.type_tag == 0 &&
-            attr_bits.class_tag == ASN1Tag(ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
+            attr_bits.class_tag == (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
             auto attributes = BERDecoder(attr_bits.value);
             while (attributes.moreItems())
@@ -228,7 +228,7 @@ private:
         }
         else if (attr.oid == OIDS.lookup("PKCS9.ExtensionRequest"))
         {
-            auto extensions = scoped!X509Extensions;
+            X509Extensions extensions;
             value.decode(extensions).verifyEnd();
             
             DataStore issuer_info;
