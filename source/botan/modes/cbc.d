@@ -71,6 +71,8 @@ public:
         m_cipher.clear();
         m_state.clear();
     }
+
+    final override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding) 
     {

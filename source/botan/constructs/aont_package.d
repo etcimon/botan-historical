@@ -28,15 +28,15 @@ void aontPackage(RandomNumberGenerator rng,
                   in ubyte* input, size_t input_len,
                   ubyte* output)
 {
+    import std.algorithm : fill;
     const size_t BLOCK_SIZE = cipher.blockSize();
     
     if (!cipher.validKeylength(BLOCK_SIZE))
         throw new InvalidArgument("AONT::package: Invalid cipher");
     
     // The all-zero string which is used both as the CTR IV and as K0
-    string all_zeros;
-    all_zeros.length = BLOCK_SIZE*2;
-    all_zeros.fill('0');
+    Vector!ubyte all_zeros = Vector!ubyte(BLOCK_SIZE*2);
+    zeroise(all_zeros);
     
     SymmetricKey package_key = SymmetricKey(rng, BLOCK_SIZE);
     
@@ -68,11 +68,11 @@ void aontPackage(RandomNumberGenerator rng,
         
         cipher.encrypt(buf.ptr);
         
-        xorBuf(final_block.ptr, buf.ptr, BLOCK_SIZE);
+        xorBuf(final_block, buf.ptr, BLOCK_SIZE);
     }
     
     // XOR the random package key into the final block
-    xorBuf(final_block.ptr, package_key.ptr, BLOCK_SIZE);
+    xorBuf(final_block, package_key.ptr, BLOCK_SIZE);
 }
 
 /**
@@ -96,9 +96,8 @@ void aontUnpackage(BlockCipher cipher,
         throw new InvalidArgument("AONT::unpackage: Input too short");
     
     // The all-zero string which is used both as the CTR IV and as K0
-    string all_zeros;
-    all_zeros.length = BLOCK_SIZE*2;
-    all_zeros.fill('0');
+    Vector!ubyte all_zeros = Vector!ubyte(BLOCK_SIZE*2);
+    all_zeros.zeroise();
     
     cipher.setKey(SymmetricKey(all_zeros));
     
@@ -127,7 +126,7 @@ void aontUnpackage(BlockCipher cipher,
         xorBuf(package_key.ptr, buf.ptr, BLOCK_SIZE);
     }
     
-    Pipe pipe = Pipe(new StreamCipherFilter(new CTRBE(cipher), package_key));
+    Pipe pipe = Pipe(new StreamCipherFilter(new CTRBE(cipher), SymmetricKey(package_key)));
     
     pipe.processMsg(input, input_len - BLOCK_SIZE);
     

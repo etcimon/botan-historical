@@ -51,7 +51,7 @@ public:
         
         static if (is(typeof(clock_gettime))) {
 
-            void cLOCKGETTIMEPOLL(clockid_t src)()
+            void CLOCK_GETTIME_POLL(clockid_t src)
             {
                 timespec ts;
                 clock_gettime(src, &ts);

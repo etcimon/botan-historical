@@ -15,7 +15,7 @@ import botan.utils.types;
 * This class represents any kind of computation which uses an internal
 * state, such as hash functions or MACs
 */
-class BufferedComputation
+interface BufferedComputation
 {
 public:
     /**
@@ -175,8 +175,6 @@ public:
         update(input);
         return finished();
     }
-
-    ~this() {}
 protected:
     /**
     * Add more data to the computation
@@ -185,9 +183,9 @@ protected:
     */
     abstract void addData(ubyte* input, size_t length);
 
-	final void addData(T)(in T input, size_t length) {
-		addData(cast(ubyte*)input, length);
-	}
+    final void addData(T)(in T input, size_t length) {
+        addData(cast(ubyte*)input, length);
+    }
 
     /**
     * Write the final output to out

@@ -84,7 +84,7 @@ public:
         return returned;
     }
 
-    final void write(in ubyte* buf, size_t len) { m_channel.send(buf, len); }
+    final void write(ubyte* buf, size_t len) { m_channel.send(buf, len); }
 
     final TLSChannel underlyingChannel() const { return m_channel; }
     final TLSChannel underlyingChannel() { return m_channel; }

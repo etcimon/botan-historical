@@ -62,7 +62,7 @@ public:
                         names.pushBack(makePair(accum.first, derefAlias(accum.second.data)));
                     Appender!string str;
                     str.reserve(8);
-					accum = makePair(level, str);
+                    accum = makePair(level, str);
                 }
             }
             else
@@ -81,7 +81,7 @@ public:
         m_alg_name = names[0].second;
         
         bool in_modes;
-		size_t i;
+        size_t i;
         foreach (name; names[])
         {
             if (name.first == 0)
@@ -91,8 +91,8 @@ public:
             }
             else if (name.first == 1 && !in_modes)
                 m_args.pushBack(makeArg(names, i));
-			i++;
-		}
+            i++;
+        }
     }
     
     /**

@@ -15,7 +15,7 @@ import botan.utils.loadstor;
 /**
 * XTEA
 */
-class XTEA : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
+class XTEA : BlockCipherFixedParams!(8, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

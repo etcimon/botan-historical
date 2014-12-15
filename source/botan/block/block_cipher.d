@@ -13,7 +13,7 @@ public import botan.algo_base.sym_algo;
 /**
 * This class represents a block cipher object.
 */
-class BlockCipher : SymmetricAlgorithm
+interface BlockCipher : SymmetricAlgorithm
 {
 public:
 
@@ -171,13 +171,13 @@ public:
     /**
     * @return new object representing the same algorithm as this
     */
-    abstract const(BlockCipher) clone() const;
+    abstract BlockCipher clone() const;
 }
 
 /**
 * Represents a block cipher with a single fixed block size
 */ 
-class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher, SymmetricAlgorithm
+class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
 {
 public:
     enum { BLOCK_SIZE = BS }

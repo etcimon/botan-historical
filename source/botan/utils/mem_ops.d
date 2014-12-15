@@ -25,7 +25,7 @@ void clearMem(T)(T* ptr, size_t n)
 {
 
     ubyte[] mem = cast(ubyte[])ptr[0 .. T.sizeof*n];
-	foreach (ref ubyte ub; mem) ub = 0;
+    foreach (ref ubyte ub; mem) ub = 0;
 }
 
 /**

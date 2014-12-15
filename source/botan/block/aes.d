@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * AES-128
 */
-class AES128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+class AES128 : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)
@@ -55,7 +55,7 @@ protected:
 /**
 * AES-192
 */
-final class AES192 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
+final class AES192 : BlockCipherFixedParams!(16, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)
@@ -92,7 +92,7 @@ protected:
 /**
 * AES-256
 */
-final class AES256 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
+final class AES256 : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)

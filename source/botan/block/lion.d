@@ -145,7 +145,7 @@ public:
         m_key1.reserve(leftSize());
         m_key2.reserve(leftSize());
     }
-	override @property size_t parallelism() const { return 1; }
+    override @property size_t parallelism() const { return 1; }
 protected:
 
     /*

@@ -8,6 +8,7 @@ module botan.codec.openpgp;
 
 import botan.filters.filters;
 import botan.filters.basefilt;
+import botan.filters.b64_filt;
 import botan.utils.charset;
 import botan.checksum.crc24;
 import botan.filters.data_src;
@@ -32,9 +33,8 @@ string PGP_encode(in ubyte* input, size_t length, in string label,
     
     if (headers.get("Version") != null)
         pgp_encoded ~= "Version: " ~ headers["Version"] ~ '\n';
-    
 
-    foreach(k, v; headers)
+    foreach(const ref string k, const ref string v; headers)
     {
         if (k != "Version")
             pgp_encoded ~= k ~ ": " ~ v ~ '\n';

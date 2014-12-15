@@ -8,6 +8,7 @@ module botan.math.numbertheory.numthry;
 
 public import botan.math.bigint.bigint;
 public import botan.math.numbertheory.pow_mod;
+public import botan.math.numbertheory.primes;
 public import botan.utils.types;
 import botan.rng.rng;
 import botan.hash.hash;
@@ -16,7 +17,6 @@ import std.algorithm;
 import botan.math.numbertheory.reducer;
 import botan.utils.bit_ops;
 import botan.math.mp.mp_core;
-import botan.math.numbertheory.primes;
 import botan.algo_factory.algo_factory : AlgorithmFactory;
 
 /**

@@ -77,6 +77,8 @@ public:
         m_cipher.clear();
         m_shift_register.clear();
     }
+
+    final override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher, size_t feedback_bits)
     { 

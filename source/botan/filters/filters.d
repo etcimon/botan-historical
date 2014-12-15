@@ -8,14 +8,14 @@ module botan.filters.filters;
 
 public import botan.filters.filter;
 public import botan.filters.pipe;
+public import botan.filters.basefilt;
+public import botan.filters.key_filt;
 import botan.algo_factory.algo_factory;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.mac.mac;
 
-import botan.filters.basefilt;
-import botan.filters.key_filt;
 import botan.libstate.libstate;
 import botan.algo_base.scan_token;
 
@@ -41,7 +41,7 @@ public:
     * @param input = data
     * @param input_len = length of input in bytes
     */
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
         while (length)
         {
@@ -134,7 +134,7 @@ private:
 final class HashFilter : Filter, Filterable
 {
 public:
-    override void write(in ubyte* input, size_t len) { m_hash.update(input, len); }
+    override void write(ubyte* input, size_t len) { m_hash.update(input, len); }
 
     /*
     * Complete a calculation by a HashFilter
@@ -191,7 +191,7 @@ private:
 final class MACFilter : KeyedFilter, Filterable
 {
 public:
-    override void write(in ubyte* input, size_t len) { m_mac.update(input, len); }
+    override void write(ubyte* input, size_t len) { m_mac.update(input, len); }
 
     /*
     * Complete a calculation by a MACFilter
@@ -214,6 +214,8 @@ public:
     override void setKey(in SymmetricKey key) { m_mac.setKey(key); }
 
     override KeyLengthSpecification keySpec() const { return m_mac.keySpec(); }
+
+    override  bool validIvLength(size_t length) const {    }
 
     /**
     * Construct a MAC filter. The MAC key will be left empty.

@@ -47,8 +47,7 @@ public:
         foreach (size_t i; 0 .. RDRAND_POLLS)
         {
             uint r = 0;
-
-            int cf = _rdrand32_step(&r);
+			int cf = _rdrand32_step(&r);
 
 
             if (cf == 1)
@@ -57,3 +56,60 @@ public:
     }
 }
 
+version(D_InlineAsm_X86) {
+
+	// todo: move this to another module
+	int _rdrand32_step(uint* r) {
+		int ret;
+		
+		asm
+		{
+			mov EAX, ret;
+			rdrand EAX;
+			mov ret, EAX;
+		}
+		if (ret != 0)
+			*r = ret;
+		else
+			return 0;
+		return 1;
+	}
+
+}
+version(GDC) {
+	static import gcc.attribute;
+	import gcc.builtins;
+	enum inline = gcc.attribute.attribute("forceinline");
+
+	@inline
+	int _rdrand32_step(uint* i) {
+		return __builtin_ia32_rdrand32_step(i);
+	}
+
+}
+
+version(LDC) {
+	pragma(LDC_intrinsic, "llvm.x86.rdrand.32")
+		int _rdrand32_step(uint*);
+}
+
+version(D_InlineAsm_X86_64) {
+
+	// todo: move this to another module
+	int _rdrand32_step(uint* r) {
+		int ret;
+		
+		asm
+		{
+			mov EAX, ret;
+			rdrand EAX;
+			mov ret, EAX;
+		}
+		if (ret != 0)
+			*r = ret;
+		else
+			return 0;
+		return 1;
+	}
+
+}

@@ -18,7 +18,7 @@ import botan.utils.xor_buf;
 /**
 * CMAC, also known as OMAC1
 */
-final class CMAC : MessageAuthenticationCode, SymmetricAlgorithm
+final class CMAC : MessageAuthenticationCode, BufferedComputation, SymmetricAlgorithm
 {
 public:
     /*

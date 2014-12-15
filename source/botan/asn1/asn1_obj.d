@@ -83,9 +83,9 @@ public:
 struct BERObject
 {
 public:
-	void opAssign(in BERObject ber) {
-		this = cast(BERObject) ber;
-	}
+    void opAssign(in BERObject ber) {
+        this = cast(BERObject) ber;
+    }
 
     /*
     * Check a type invariant on BER data

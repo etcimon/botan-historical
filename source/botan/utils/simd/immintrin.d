@@ -31,11 +31,6 @@ version(GDC) {
     enum inline = gcc.attribute.attribute("forceinline");
     enum avx2 = gcc.attribute.attribute("target", "avx2");
 
-    @inline
-    int _rdrand32_step(uint* i) {
-        return __builtin_ia32_rdrand32_step(i);
-    }
-
     @inline @avx2
     __m256i _mm256_unpacklo_epi64(__m256i a, __m256i b) {
         return cast(__m256i) __builtin_ia32_punpcklqdq256(cast(long4) a, cast(long4) b);
@@ -197,23 +192,6 @@ version(LDC) {
 
 version(D_InlineAsm_X86_64) {
     static assert(false, "DMD does not currently support AVX2.");
-
-    // todo: move this to another module
-    int _rdrand32_step(uint* r) {
-        int ret;
-        
-        asm
-        {
-            mov EAX, ret;
-            rdrand EAX;
-            mov ret, EAX;
-        }
-        if (ret != 0)
-            *r = ret;
-        else
-            return 0;
-        return 1;
-    }
 
     __m256i _mm256_unpacklo_epi64(__m256i a, __m256i b) 
     {

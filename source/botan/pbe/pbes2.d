@@ -76,7 +76,7 @@ public:
     /*
     * Encrypt some bytes using PBES2
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         m_pipe.write(input, length);
         flushPipe(true);

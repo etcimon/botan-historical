@@ -353,15 +353,15 @@ struct FreeListRef(T, bool INIT = true)
         }
     }
 
-	void opAssign(FreeListRef other)
-	{
-		clear();
-		m_object = other.m_object;
-		if( m_object ){
-			//logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
-			refCount++;
-		}
-	}
+    void opAssign(FreeListRef other)
+    {
+        clear();
+        m_object = other.m_object;
+        if( m_object ){
+            //logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
+            refCount++;
+        }
+    }
 
     void clear()
     {
@@ -385,9 +385,9 @@ struct FreeListRef(T, bool INIT = true)
     }
     
     @property const(TR) opStar() const { checkInvariants(); return m_object; }
-	@property TR opStar() { checkInvariants(); return m_object; }
+    @property TR opStar() { checkInvariants(); return m_object; }
     
-	alias opStar this;
+    alias opStar this;
 
     auto opBinaryRight(string op, Key)(Key key)
     inout if (op == "in" && __traits(hasMember, typeof(m_object), "opBinaryRight")) {
@@ -397,13 +397,17 @@ struct FreeListRef(T, bool INIT = true)
             return (*m_object).opBinaryRight!("in")(key);
     }
 
-	U opCast(U : bool)() const {
-		return m_object !is null;
-	}
+    U opCast(U : bool)() const {
+        return m_object !is null;
+    }
 
-	U opCast(U : UnConst!(typeof(this)))() const {
-		return cast(U) this;
-	}
+    U opCast(U : UnConst!(typeof(this)))() const {
+        return cast(U) this;
+    }
+
+    U opCast(U : T)() const {
+        return cast(U) this;
+    }
 
     int opApply(U...)(U args)
         if (__traits(hasMember, typeof(m_object), "opApply"))
@@ -435,7 +439,7 @@ struct FreeListRef(T, bool INIT = true)
         (cast(UnConst!TR)m_object).opIndexAssign(args);
     }
     
-    auto opIndex(U...)(U args)
+    auto opIndex(U...)(U args) const
         if (__traits(hasMember, typeof(m_object), "opIndex"))
     {
         return m_object.opIndex(args);
@@ -460,13 +464,13 @@ struct FreeListRef(T, bool INIT = true)
         assert(!m_object || refCount > 0);
     }
 
-	private template UnConst(T) {
-		static if (is(T U == const(U))) {
-			alias UnConst = U;
-		} else static if (is(T V == immutable(V))) {
-			alias UnConst = V;
-		} else alias UnConst = T;
-	}
+    private template UnConst(T) {
+        static if (is(T U == const(U))) {
+            alias UnConst = U;
+        } else static if (is(T V == immutable(V))) {
+            alias UnConst = V;
+        } else alias UnConst = T;
+    }
 }
 
 private void* extractUnalignedPointer(void* base)

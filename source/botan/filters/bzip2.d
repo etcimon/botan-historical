@@ -17,24 +17,24 @@ import std.c.stdlib;
 /**
 * Bzip Compression Filter
 */
-final class BzipCompression : Filter
+final class BzipCompression : Filter, Filterable
 {
 public:
-    @property string name() const { return "BzipCompression"; }
+    override @property string name() const { return "BzipCompression"; }
 
     /*
     * Compress Input with Bzip
     */
-    void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
-        m_bz.m_stream.next_in = cast(char*) input;
-        m_bz.m_stream.avail_in = length;
+        m_bz.m_stream.next_in = cast(ubyte*) input;
+        m_bz.m_stream.avail_in = cast(uint)length;
         
         while (m_bz.m_stream.avail_in != 0)
         {
-            m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
-            m_bz.m_stream.avail_out = m_buffer.length;
-            BZ2_bzCompress(&(m_bz.m_stream), BZ_RUN);
+            m_bz.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
+            m_bz.m_stream.avail_out = cast(uint)m_buffer.length;
+            BZ2_bzCompress(m_bz.m_stream, BZ_RUN);
             send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
         }
     }
@@ -45,26 +45,26 @@ public:
     {
         clear();
         m_bz = new Bzip_Stream;
-        if (BZ2_bzCompressInit(&(m_bz.m_stream), m_level, 0, 0) != BZ_OK)
-            throw new Memory_Exhaustion();
+        if (BZ2_bzCompressInit(m_bz.m_stream, cast(int) m_level, 0, 0) != BZ_OK)
+            throw new MemoryExhaustion("Cannot start Bzip Message");
     }
 
     /*
     * Finish Compressing with Bzip
     */
-    void endMsg()
+    override void endMsg()
     {
-        m_bz.m_stream.next_in = 0;
+        m_bz.m_stream.next_in = null;
         m_bz.m_stream.avail_in = 0;
         
         int rc = BZ_OK;
         while (rc != BZ_STREAM_END)
         {
-            m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
-            m_bz.m_stream.avail_out = m_buffer.length;
-            rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FINISH);
+            m_bz.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
+            m_bz.m_stream.avail_out = cast(uint)m_buffer.length;
+            rc = BZ2_bzCompress(m_bz.m_stream, BZ_FINISH);
             send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
-        }LzmaCompression
+        }
         clear();
     }
 
@@ -73,20 +73,20 @@ public:
     */
     void finished()
     {
-        m_bz.m_stream.next_in = 0;
+        m_bz.m_stream.next_in = null;
         m_bz.m_stream.avail_in = 0;
         
         int rc = BZ_OK;
         while (rc != BZ_RUN_OK)
         {
-            m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
-            m_bz.m_stream.avail_out = m_buffer.length;
-            rc = BZ2_bzCompress(&(m_bz.m_stream), BZ_FLUSH);
+            m_bz.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
+            m_bz.m_stream.avail_out = cast(uint)m_buffer.length;
+            rc = BZ2_bzCompress(m_bz.m_stream, BZ_FLUSH);
             send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
         }
     }
 
-    this(size_t = 9)
+    this(size_t l = 9)
     {
         m_level = (l >= 9) ? 9 : l;
         m_buffer = DEFAULT_BUFFERSIZE;
@@ -103,7 +103,7 @@ private:
         
         if (m_bz)
         {
-            BZ2_bzCompressEnd(&(m_bz.m_stream));
+            BZ2_bzCompressEnd(m_bz.m_stream);
             delete m_bz;
             m_bz = null;
         }
@@ -125,21 +125,21 @@ public:
     /*
     * Decompress Input with Bzip
     */
-    void write(in ubyte* input_arr, size_t length)
+    void write(ubyte* input_arr, size_t length)
     {
         if (length) m_no_writes = false;
         
-        char* input = cast(char*) input_arr;
+        ubyte* input = input_arr;
         
         m_bz.m_stream.next_in = input;
-        m_bz.m_stream.avail_in = length;
+        m_bz.m_stream.avail_in = cast(uint)length;
         
         while (m_bz.m_stream.avail_in != 0)
         {
-            m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
-            m_bz.m_stream.avail_out = m_buffer.length;
+            m_bz.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
+            m_bz.m_stream.avail_out = cast(uint)m_buffer.length;
             
-            int rc = BZ2_bzDecompress(&(m_bz.m_stream));
+            int rc = BZ2_bzDecompress(m_bz.m_stream);
             
             if (rc != BZ_OK && rc != BZ_STREAM_END)
             {
@@ -150,7 +150,7 @@ public:
                 else if (rc == BZ_DATA_ERROR_MAGIC)
                     throw new DecodingError("BzipDecompression: Invalid input");
                 else if (rc == BZ_MEM_ERROR)
-                    throw new Memory_Exhaustion();
+                    throw new MemoryExhaustion("Memory unavailable for Bzip write");
                 else
                     throw new Exception("Bzip2 decompression: Unknown error");
             }
@@ -162,7 +162,7 @@ public:
                 size_t read_from_block = length - m_bz.m_stream.avail_in;
                 startMsg();
                 m_bz.m_stream.next_in = input + read_from_block;
-                m_bz.m_stream.avail_in = length - read_from_block;
+                m_bz.m_stream.avail_in = cast(uint)(length - read_from_block);
                 input += read_from_block;
                 length -= read_from_block;
             }
@@ -177,8 +177,8 @@ public:
         clear();
         m_bz = new Bzip_Stream;
         
-        if (BZ2_bzDecompressInit(&(m_bz.m_stream), 0, m_small_mem) != BZ_OK)
-            throw new Memory_Exhaustion();
+        if (BZ2_bzDecompressInit(m_bz.m_stream, 0, cast(int) m_small_mem) != BZ_OK)
+            throw new MemoryExhaustion("No more memory for Bzip to start message.");
         
         m_no_writes = true;
     }
@@ -189,15 +189,15 @@ public:
     void endMsg()
     {
         if (m_no_writes) return;
-        m_bz.m_stream.next_in = 0;
+        m_bz.m_stream.next_in = null;
         m_bz.m_stream.avail_in = 0;
         
         int rc = BZ_OK;
         while (rc != BZ_STREAM_END)
         {
-            m_bz.m_stream.next_out = cast(char*)(m_buffer.ptr);
-            m_bz.m_stream.avail_out = m_buffer.length;
-            rc = BZ2_bzDecompress(&(m_bz.m_stream));
+            m_bz.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
+            m_bz.m_stream.avail_out = cast(uint)m_buffer.length;
+            rc = BZ2_bzDecompress(m_bz.m_stream);
             
             if (rc != BZ_OK && rc != BZ_STREAM_END)
             {
@@ -205,7 +205,7 @@ public:
                 throw new DecodingError("BzipDecompression: Error finalizing");
             }
             
-            send(m_buffer, m_buffer.length - bz.m_stream.avail_out);
+            send(m_buffer, m_buffer.length - m_bz.m_stream.avail_out);
         }
         
         clear();
@@ -225,11 +225,11 @@ private:
     */
     void clear()
     {
-        zeroise(buffer);
+        zeroise(m_buffer);
         
-        if (bz)
+        if (m_bz)
         {
-            BZ2_bzDecompressEnd(&(m_bz.m_stream));
+            BZ2_bzDecompressEnd(m_bz.m_stream);
             delete m_bz;
             m_bz = null;
         }
@@ -268,9 +268,9 @@ public:
     this()
     {
         memset(&m_stream, 0, (bz_stream).sizeof);
-        m_stream.bzalloc = bzip_malloc;
-        m_stream.bzfree = bzip_free;
-        m_stream.opaque = new Bzip_Alloc_Info;
+        m_stream.bzalloc = &bzip_malloc;
+        m_stream.bzfree = &bzip_free;
+        m_stream.opaque = cast(void*) new Bzip_Alloc_Info;
     }
     
     /**
@@ -287,29 +287,31 @@ public:
 /*
 * Allocation Function for Bzip
 */
-void* bzip_malloc(void* info_ptr, int n, int size)
+extern(C) void* bzip_malloc(void* info_ptr, int n, int size) nothrow
 {
     Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
     
     const size_t total_sz = n * size;
     
-    void* ptr = malloc(total_sz);
-    info.current_allocs[ptr] = total_sz;
+    void* ptr = .malloc(total_sz);
+	try info.current_allocs[ptr] = total_sz; catch {}
     return ptr;
 }
 
 /*
 * Allocation Function for Bzip
 */
-void bzip_free(void* info_ptr, void* ptr)
+extern(C) void bzip_free(void* info_ptr, void* ptr) nothrow
 {
     Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
-    auto i = info.current_allocs.find(ptr);
-    if (i == info.current_allocs.end())
-        throw new InvalidArgument("bzip_free: Got pointer not allocated by us");
-    
-    memset(ptr, 0, i.second);
-    free(ptr);
+	try {
+	    auto val = (cast(const)info.current_allocs).get(ptr, -1);
+	    if (val == -1)
+	        throw new InvalidArgument("bzip_free: Got pointer not allocated by us");
+	    
+	    memset(ptr, 0, val);
+	} catch {}
+    .free(ptr);
 }
 
 

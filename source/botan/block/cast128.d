@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * CAST-128
 */
-final class CAST128 : BlockCipherFixedParams!(8, 11, 16), SymmetricAlgorithm
+final class CAST128 : BlockCipherFixedParams!(8, 11, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

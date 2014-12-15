@@ -19,7 +19,7 @@ import botan.utils.semaphore;
 */
 final class BitBucket : Filter, Filterable
 {
-    override void write(in ubyte*, size_t) {}
+    override void write(ubyte*, size_t) {}
 
     override @property string name() const { return "BitBucket"; }
 }
@@ -33,7 +33,7 @@ final class BitBucket : Filter, Filterable
 final class Chain : FanoutFilter, Filterable
 {
 public:
-    override void write(in ubyte* input, size_t length) { send(input, length); }
+    override void write(ubyte* input, size_t length) { send(input, length); }
 
     override @property string name() const
     {
@@ -79,7 +79,7 @@ public:
 class Fork : FanoutFilter, Filterable
 {
 public:
-    override final void write(in ubyte* input, size_t length) { send(input, length); }
+    override final void write(ubyte* input, size_t length) { send(input, length); }
     override final void setPort(size_t n) { super.setPort(n); }
 
     override @property string name() const
@@ -93,7 +93,7 @@ public:
     this(Filter f1, Filter f2, Filter f3 = null, Filter f4 = null)
     {
         Filter[4] filters = [ f1, f2, f3, f4 ];
-        setNext(filters, 4);
+        setNext(filters.ptr, 4);
     }
 
     /**
@@ -112,7 +112,7 @@ public:
 * threads, the class itself is NOT thread-safe. This is meant as a drop-
 * in replacement for Fork where performance gains are possible.
 */
-class ThreadedFork : Fork
+class ThreadedFork : Fork, Filterable
 {
 public:
     override @property string name() const
@@ -128,7 +128,7 @@ public:
         super(null, cast(size_t)(0));
         m_thread_data = new ThreadedForkData;
         Filter[4] filters = [ f1, f2, f3, f4 ];
-        setNext(filters, 4);
+        setNext(filters.ptr, 4);
     }
 
     /**
@@ -150,16 +150,16 @@ public:
         m_thread_data.m_input_length = 0;
         
         m_thread_data.m_input_ready_semaphore.release(m_threads.length);
-        
+        /*
         foreach (ref thread; m_threads)
-            thread.join();
+            thread.join();*/
     }
 
 protected:
-    void setNext(Filter* f, size_t n)
+    override void setNext(Filter* f, size_t n)
     {
         super.setNext(f, n);
-        n = next.length;
+        n = m_next.length;
         
         if (n < m_threads.length)
             m_threads.reserve(n);
@@ -168,14 +168,12 @@ protected:
             m_threads.reserve(n);
             foreach (size_t i; m_threads.length .. n)
             {
-                m_threads.pushBack(
-                    FreeListRef!Thread(
-                        spawn(&threadEntry, this, next[i])));
+                m_threads.pushBack(spawn(&threadEntry, cast(shared)this, cast(shared)m_next[i]));
             }
         }
     }
 
-    override void send(in ubyte* input, size_t length)
+    override void send(ubyte* input, size_t length)
     {
         if (m_write_queue.length)
             threadDelegateWork(m_write_queue.ptr, m_write_queue.length);
@@ -183,7 +181,7 @@ protected:
         
         bool nothing_attached = true;
         foreach (size_t j; 0 .. totalPorts())
-            if (next[j])
+            if (m_next[j])
                 nothing_attached = false;
         
         if (nothing_attached)
@@ -193,7 +191,7 @@ protected:
     }
 
 private:
-    void threadDelegateWork(in ubyte* input, size_t length)
+    void threadDelegateWork(ubyte* input, size_t length)
     {
         //Set the data to do.
         m_thread_data.m_input = input;
@@ -211,8 +209,10 @@ private:
         m_thread_data.m_input_length = 0;
     }
 
-    static void threadEntry(ThreadedFork This, Filter filter)
+    static void threadEntry(shared(ThreadedFork) This_, shared(Filter) filter_)
     {
+		ThreadedFork This = cast(ThreadedFork) This_;
+		Filter filter = cast(Filter) filter_;
         while (true)
         {
             This.m_thread_data.m_input_ready_semaphore.acquire();
@@ -220,12 +220,12 @@ private:
             if (!This.m_thread_data.m_input)
                 break;
             
-            filter.write(m_thread_data.m_input, m_thread_data.m_input_length);
+            filter.write(This.m_thread_data.m_input[0 .. This.m_thread_data.m_input_length]);
             This.m_thread_data.m_input_complete_semaphore.release();
         }
     }
 
-    Vector!(FreeListRef!Tid) m_threads;
+    Vector!(Tid) m_threads;
     Unique!ThreadedForkData m_thread_data;
 }
 
@@ -247,7 +247,7 @@ struct ThreadedForkData
     * are NOT running (i.e. before notifying the work condition, after
     * the input_complete_semaphore is completely reset.)
     */
-    const ubyte* m_input;
+    ubyte* m_input;
     
     /*
     * The length of the work that needs to be done.

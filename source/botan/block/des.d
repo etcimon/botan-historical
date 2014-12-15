@@ -19,7 +19,7 @@ import botan.utils.mem_ops;
 /**
 * DES
 */
-final class DES : BlockCipherFixedParams!(8, 8), SymmetricAlgorithm
+final class DES : BlockCipherFixedParams!(8, 8), BlockCipher, SymmetricAlgorithm
 {
 public:
 
@@ -109,7 +109,7 @@ protected:
 /**
 * Triple DES
 */
-class TripleDES : BlockCipherFixedParams!(8, 16, 24, 8), SymmetricAlgorithm
+class TripleDES : BlockCipherFixedParams!(8, 16, 24, 8), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

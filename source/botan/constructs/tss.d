@@ -19,6 +19,7 @@ import botan.hash.sha2_32;
 import botan.hash.sha160;
 import botan.utils.types;
 import botan.utils.exceptn;
+import botan.utils.get_byte;
 
 /**
 * A split secret, using the format from draft-mcgrew-tss-03
@@ -42,7 +43,7 @@ public:
         if (M == 0 || N == 0 || M > N)
             throw new EncodingError("split: M == 0 or N == 0 or M > N");
         
-        SHA_256 hash; // always use SHA-256 when generating shares
+        SHA256 hash; // always use SHA-256 when generating shares
         
         Vector!RTSS shares = Vector!RTSS(N);
         
@@ -61,7 +62,7 @@ public:
             shares[i].m_contents.pushBack(i+1);
         
         // secret = S || H(S)
-        SecureVector!ubyte secret = SecureVector!ubyte(S, S + S_len);
+        SecureVector!ubyte secret = SecureVector!ubyte(S[0 .. S_len]);
         secret ~= hash.process(S, S_len);
         
         foreach (ubyte s; secret[])
@@ -71,7 +72,7 @@ public:
             
             foreach (ubyte j; 0 .. N)
             {
-                const ubyte X = j + 1;
+                const ubyte X = cast(const ubyte) (j + 1);
                 
                 ubyte sum = s;
                 ubyte X_i = X;
@@ -111,7 +112,7 @@ public:
                 throw new DecodingError("Different RTSS headers detected");
         }
         
-        if (shares.length < shares[0].contents[17])
+        if (shares.length < shares[0].m_contents[17])
             throw new DecodingError("Insufficient shares to do TSS reconstruction");
         
         ushort secret_len = make_ushort(shares[0].m_contents[18], shares[0].m_contents[19]);
@@ -203,6 +204,9 @@ public:
     * @return size of this share in bytes
     */
     size_t size() const { return m_contents.length; }
+
+    /// ditto
+    @property size_t length() const { return size(); }
 
     /**
     * @return if this TSS share was initialized or not

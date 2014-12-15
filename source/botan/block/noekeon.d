@@ -16,7 +16,7 @@ import botan.utils.rotate;
 /**
 * Noekeon
 */
-class Noekeon : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+class Noekeon : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

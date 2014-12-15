@@ -12,6 +12,7 @@ import botan.algo_base.symkey;
 import botan.filters.pipe;
 import botan.libstate.lookup;
 import botan.mac.mac;
+import botan.utils.mem_ops;
 import botan.utils.loadstor;
 import botan.utils.types;
 /**
@@ -42,7 +43,7 @@ struct CryptoBox {
         
         InitializationVector cipher_iv = InitializationVector(rng, 16);
         
-        Unique!MessageAuthenticationCode mac = getMac(CRYPTOBOX_MAC);
+        Unique!MessageAuthenticationCode mac = retrieveMac(CRYPTOBOX_MAC).clone();
         mac.setKey(mac_key);
         
         Pipe pipe = Pipe(getCipher(CRYPTOBOX_CIPHER, cipher_key, cipher_iv, ENCRYPTION));
@@ -51,9 +52,9 @@ struct CryptoBox {
         
         SecureVector!ubyte output = SecureVector!ubyte(MAGIC_LENGTH);
         storeBigEndian(CRYPTOBOX_MAGIC, output.ptr);
-        output ~= cipher_key_salt;
-        output ~= mac_key_salt;
-        output ~= cipher_iv.bitsOf();
+        output ~= cipher_key_salt[];
+        output ~= mac_key_salt[];
+        output ~= cipher_iv.bitsOf()[];
         output ~= ctext;
 
         mac.update(output);
@@ -93,10 +94,10 @@ struct CryptoBox {
                                               mac_key_salt,
                                               KEY_KDF_SALT_LENGTH);
         
-        Unique!MessageAuthenticationCode mac = getMac(CRYPTOBOX_MAC);
+        Unique!MessageAuthenticationCode mac = retrieveMac(CRYPTOBOX_MAC).clone();
         mac.setKey(mac_key);
         
-        mac.update(input.ptr, input_len - MAC_OUTPUT_LENGTH);
+        mac.update(input, input_len - MAC_OUTPUT_LENGTH);
         SecureVector!ubyte computed_mac = mac.finished();
         
         if (!sameMem(&input[input_len - MAC_OUTPUT_LENGTH], computed_mac.ptr, computed_mac.length))

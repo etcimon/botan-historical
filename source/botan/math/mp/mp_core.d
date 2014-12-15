@@ -8,7 +8,7 @@
 module botan.math.mp.mp_core;
 
 import botan.constants;
-public import botan.botan.math.mp.mp_types;
+public import botan.math.mp.mp_types;
 
 pure nothrow @nogc:
 // todo: Bring back ASM for x86_32, x86_64, from Botan C++.

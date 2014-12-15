@@ -15,6 +15,7 @@ import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.exceptn;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
 import botan.algo_factory.algo_factory;
 import botan.utils.types;
 
@@ -51,7 +52,7 @@ SecureVector!ubyte rfc3394Keywrap(in SecureVector!ubyte key,
     {
         foreach (size_t i; 1 .. n + 1)
         {
-            const uint t = (n * j) + i;
+            const uint t = cast(uint) ((n * j) + i);
             
             copyMem(&A[8], &R[8*i], 8);
             
@@ -102,7 +103,7 @@ SecureVector!ubyte rfc3394Keyunwrap(in SecureVector!ubyte key,
     {
         for (size_t i = n; i != 0; --i)
         {
-            const uint t = (5 - j) * n + i;
+            const uint t = cast(uint)( (5 - j) * n + i );
             
             ubyte[4] t_buf;
             storeBigEndian(t, t_buf);

@@ -70,6 +70,8 @@ public:
         m_tweak_cipher.clear();
         zeroise(m_tweak);
     }
+
+    final override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher) 
     {

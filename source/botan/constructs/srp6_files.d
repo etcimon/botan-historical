@@ -9,9 +9,9 @@ module botan.constructs.srp6_files;
 import botan.math.bigint.bigint;
 import botan.utils.parsing;
 import botan.codec.base64;
-// import string;
 import botan.utils.containers.hashmap;
 import std.stdio;
+import std.array;
 
 /**
 * A GnuTLS compatible SRP6 authenticator file
@@ -29,8 +29,7 @@ public:
         auto range = file.byLine();
         
         foreach (line; range) {    
-            import std.array : array;
-            string[] parts = cast(string[]) splitter(line, ':').array;
+            string[] parts = line.split(':');
             
             if (parts.length != 4)
                 throw new DecodingError("Invalid line in SRP authenticator file");
@@ -79,8 +78,8 @@ private:
              in Vector!ubyte _salt,
              in string _group_id) 
         {
-            v = _v;
-            salt = _salt; 
+            v = _v.dup;
+            salt = _salt.dup; 
             group_id = _group_id;
         }
 

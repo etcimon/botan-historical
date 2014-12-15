@@ -81,20 +81,18 @@ public:
             m_v[i] = .rotateRight(m_v[i], rot);
     }
 
-    ref SIMDScalar!(T, N) opOpAssign(string op)(in SIMDScalar!(T, N) other)
+    void opOpAssign(string op)(in SIMDScalar!(T, N) other)
         if (op == "+")
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] += other.m_v[i];
-        return this;
     }
 
-    ref SIMDScalar!(T, N) opOpAssign(string op)(in SIMDScalar!(T, N) other)
+    void opOpAssign(string op)(in SIMDScalar!(T, N) other)
         if (op == "-")
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] -= other.m_v[i];
-        return this;
     }
 
     ref SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
@@ -111,7 +109,7 @@ public:
         return this;
     }
 
-    ref SIMDScalar!(T, N) opOpAssign(string op)(in SIMDScalar!(T, N) other)
+    void opOpAssign(string op)(in SIMDScalar!(T, N) other)
         if (op == "^")
     {
         for (size_t i = 0; i != size(); ++i)
@@ -126,20 +124,18 @@ public:
         return this;
     }
 
-    ref SIMDScalar!(T, N) opOpAssign(string op)(in SIMDScalar!(T, N) other)
+    void opOpAssign(string op)(in SIMDScalar!(T, N) other)
         if (op == "|")
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] |= other.m_v[i];
-        return this;
     }
 
-    ref SIMDScalar!(T, N) opOpAssign(string op)(in SIMDScalar!(T, N) other)
+    void opOpAssign(string op)(in SIMDScalar!(T, N) other)
         if (op == "&")
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] &= other.m_v[i];
-        return this;
     }
 
     ref SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)

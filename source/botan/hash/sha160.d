@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * NIST's SHA-160
 */
-class SHA160 : MDxHashFunction
+class SHA160 : MDxHashFunction, HashFunction
 {
 public:
     override final @property string name() const { return "SHA-160"; }

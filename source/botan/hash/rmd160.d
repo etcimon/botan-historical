@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * RIPEMD-160
 */
-final class RIPEMD160 : MDxHashFunction
+final class RIPEMD160 : MDxHashFunction, HashFunction
 {
 public:
     override @property string name() const { return "RIPEMD-160"; }
@@ -46,11 +46,11 @@ public:
 
         clear(); 
     }
-private:
+protected:
     /*
     * RIPEMD-160 Compression Function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         const uint MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,
             MAGIC4 = 0x8F1BBCDC, MAGIC5 = 0xA953FD4E,
@@ -164,7 +164,7 @@ private:
     /*
     * Copy out the m_digest
     */
-    void copyOut(ubyte* output)
+    override void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != outputLength(); i += 4)
             storeLittleEndian(m_digest[i/4], output + i);

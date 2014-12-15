@@ -102,13 +102,12 @@ void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
 }
 
 // fixme: Move into Vector type
-Vector!(T, Alloc) opOpAssign(string op, T, Alloc, Alloc2)(Vector!(T, Alloc) output,
-                                                          in Vector!( T, Alloc2 ) input)
+void opOpAssign(string op, T, Alloc, Alloc2)(ref Vector!(T, Alloc) output,
+                                             in Vector!( T, Alloc2 ) input)
         if (op == "^")
 {
     if (output.length < input.length)
         output.reserve(input.length);
 
     xorBuf(output.ptr, input.ptr, input.length);
-    return output;
 }

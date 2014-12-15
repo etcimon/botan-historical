@@ -19,7 +19,7 @@ import botan.utils.types;
 /**
 * Tiger
 */
-final class Tiger : MDxHashFunction
+final class Tiger : MDxHashFunction, HashFunction
 {
 public:
     /*
@@ -68,11 +68,11 @@ public:
             throw new InvalidArgument("Tiger: Invalid number of m_passes: " ~ to!string(m_passes));
         clear();
     }
-private:
+protected:
     /*
     * Tiger Compression Function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         ulong A = m_digest[0], B = m_digest[1], C = m_digest[2];
         
@@ -103,7 +103,7 @@ private:
     /*
     * Copy out the digest
     */
-    void copyOut(ubyte* output)
+    override void copyOut(ubyte* output)
     {
         foreach (size_t i; 0 .. outputLength())
             output[i] = get_byte(7 - (i % 8), m_digest[i/8]);

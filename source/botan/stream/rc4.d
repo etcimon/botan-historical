@@ -69,6 +69,15 @@ public:
     */
     this(size_t s = 0) { m_SKIP = s; }
 
+    override bool validIvLength(size_t iv_len) const
+    { return (iv_len == 0); }
+
+    override void setIv(const ubyte*, size_t iv_len) 
+    { 
+        if (iv_len) 
+            throw new InvalidArgument("The stream cipher " ~ name ~ " does not support resyncronization"); 
+    }
+
     ~this() { clear(); }
 protected:
     /*

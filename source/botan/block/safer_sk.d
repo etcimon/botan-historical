@@ -22,7 +22,7 @@ ubyte opCast(T : ubyte)(int val) {
 /**
 * SAFER-SK
 */
-final class SAFERSK : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
+final class SAFERSK : BlockCipherFixedParams!(8, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
 

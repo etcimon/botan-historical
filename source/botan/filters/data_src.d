@@ -10,6 +10,7 @@ import botan.utils.memory.zeroize;
 import botan.utils.types;
 import std.stdio;
 import botan.utils.exceptn;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
@@ -61,7 +62,7 @@ public:
     */
     final size_t readByte(ref ubyte output)
     {
-        return read(output.ptr[0..1]);
+        return read(&output, 1);
     }
 
 
@@ -73,7 +74,7 @@ public:
     */
     final size_t peekByte(ref ubyte output) const
     {
-        return peek(output.ptr[0..1]);
+        return peek(&output, 1, 0);
     }
 
 
@@ -107,9 +108,9 @@ final class DataSourceMemory : DataSource
 public:
     size_t read(ubyte* output, size_t length)
     {
-        size_t got = std.algorithm.min(m_source.length - offset, length);
-        copyMem(output, &m_source[offset], got);
-        offset += got;
+        size_t got = std.algorithm.min(m_source.length - m_offset, length);
+        copyMem(output, &m_source[m_offset], got);
+        m_offset += got;
         return got;
     }
 
@@ -118,11 +119,11 @@ public:
     */
     size_t peek(ubyte* output, size_t length, size_t peek_offset) const
     {
-        const size_t bytes_left = m_source.length - offset;
+        const size_t bytes_left = m_source.length - m_offset;
         if (peek_offset >= bytes_left) return 0;
         
         size_t got = std.algorithm.min(bytes_left - peek_offset, length);
-        copyMem(output, &m_source[offset + peek_offset], got);
+        copyMem(output, &m_source[m_offset + peek_offset], got);
         return got;
     }
 
@@ -131,7 +132,7 @@ public:
     */
     override bool endOfData() const
     {
-        return (offset == m_source.length);
+        return (m_offset == m_source.length);
     }
 
 
@@ -141,8 +142,8 @@ public:
     */
     this(in string input) 
     {
-        m_source = SecureVector!ubyte(cast(ubyte*) input.ptr, (cast(ubyte*) input.ptr) + input.length);
-        offset = 0;
+        m_source = SecureVector!ubyte((cast(ubyte*)input.ptr)[0 .. input.length]);
+        m_offset = 0;
     }
 
 
@@ -153,8 +154,8 @@ public:
     */
     this(in ubyte* input, size_t length)
     {
-        m_source = SecureVector!ubyte(input, input + length);
-        offset = 0; 
+        m_source = SecureVector!ubyte(input[0 .. length]);
+        m_offset = 0; 
     }
 
     /**
@@ -163,8 +164,8 @@ public:
     */
     this(in SecureVector!ubyte input)
     {
-        m_source = input;
-        offset = 0;
+        m_source = input.dup;
+        m_offset = 0;
     }
 
     /**
@@ -173,10 +174,10 @@ public:
     */
     this(in Vector!ubyte input) {
         m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
-        offset = 0;
+        m_offset = 0;
     }
 
-    override size_t getBytesRead() const { return offset; }
+    override size_t getBytesRead() const { return m_offset; }
 private:
     SecureVector!ubyte m_source;
     size_t m_offset;
@@ -217,7 +218,8 @@ public:
         {
             SecureVector!ubyte buf = SecureVector!ubyte(offset);
             ubyte[] data;
-            try data = m_source.rawRead(buf[0..length]);
+			ubyte[] output_buf = buf.ptr[0 .. offset];
+            try data = m_source.rawRead(output_buf);
             catch (Exception e)
                 throw new StreamIOError("peek: Source failure..." ~ e.toString());
             
@@ -227,7 +229,8 @@ public:
         if (got == offset)
         {
             ubyte[] data;
-            try data = m_source.rawRead(output[0..length]);
+			ubyte[] output_buf = output[0 .. length];
+            try data = m_source.rawRead(output_buf);
             catch (Exception e)
                 throw new StreamIOError("peek: Source failure" ~ e.toString());
             got = data.length;

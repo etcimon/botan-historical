@@ -22,7 +22,7 @@ public:
     /*
     * Add some bytes to the queue
     */
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
         if (!m_head)
             m_head = m_tail = new SecureQueueNode;

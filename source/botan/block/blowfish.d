@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * Blowfish
 */
-final class Blowfish : BlockCipherFixedParams!(8, 1, 56), SymmetricAlgorithm
+final class Blowfish : BlockCipherFixedParams!(8, 1, 56), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

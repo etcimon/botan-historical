@@ -32,7 +32,7 @@ public:
             throw new InvalidArgument("encodeInto: OID is invalid");
         
         Vector!ubyte encoding;
-		encoding.pushBack(cast(ubyte) (40 * m_id[0] + m_id[1]));
+        encoding.pushBack(cast(ubyte) (40 * m_id[0] + m_id[1]));
         
         foreach (size_t i; 2 .. m_id.length)
         {
@@ -44,8 +44,8 @@ public:
                 blocks = (blocks - (blocks % 7)) / 7;
                 
                 foreach (size_t j; 0 .. (blocks - 1))
-					encoding.pushBack(cast(ubyte) (0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F)));
-				encoding.pushBack(cast(ubyte) (m_id[i] & 0x7F));
+                    encoding.pushBack(cast(ubyte) (0x80 | ((m_id[i] >> 7*(blocks-j-1)) & 0x7F)));
+                encoding.pushBack(cast(ubyte) (m_id[i] & 0x7F));
             }
         }
         der.addObject(ASN1Tag.OBJECT_ID, ASN1Tag.UNIVERSAL, encoding);
@@ -195,11 +195,10 @@ public:
     * @param new_comp = the new component to add to the end of this OID
     * @return reference to this
     */
-    ref OID opOpAssign(string op)(uint new_comp)
+    void opOpAssign(string op)(uint new_comp)
         if (op == "~") 
     {
         m_id.pushBack(new_comp);
-        return this;
     }
 
     /**

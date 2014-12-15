@@ -18,6 +18,7 @@ import botan.pbkdf.pbkdf2;
 import botan.codec.pem;
 import botan.utils.get_byte;
 import botan.utils.mem_ops;
+import botan.filters.data_src;
 
 /**
 * This namespace holds various high-level crypto functions
@@ -37,21 +38,21 @@ struct CryptoBox {
     {
         SecureVector!ubyte pbkdf_salt = SecureVector!ubyte(PBKDF_SALT_LEN);
         rng.randomize(pbkdf_salt.ptr, pbkdf_salt.length);
-        
-        PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(new HMAC(new SHA_512));
+
+        auto pbkdf = scoped!PKCS5_PBKDF2(new HMAC(new SHA512));
         
         OctetString master_key = pbkdf.deriveKey(PBKDF_OUTPUT_LEN, passphrase, pbkdf_salt.ptr, pbkdf_salt.length, PBKDF_ITERATIONS);
         
-        const ubyte* mk = master_key.ptr;
+        const(ubyte*) mk = master_key.ptr;
         
-        SymmetricKey cipher_key = SymmetricKey(mk.ptr, CIPHER_KEY_LEN);
+        SymmetricKey cipher_key = SymmetricKey(mk, CIPHER_KEY_LEN);
         SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
         InitializationVector iv = InitializationVector(&mk[CIPHER_KEY_LEN + MAC_KEY_LEN], CIPHER_IV_LEN);
         
         Pipe pipe = Pipe(getCipher("Serpent/CTR-BE", cipher_key, iv, ENCRYPTION),
-                  new Fork(null,
-                            new MACFilter(new HMAC(new SHA_512),
-                                       mac_key, MAC_OUTPUT_LEN)));
+                         new Fork(null,
+                                  new MACFilter(new HMAC(new SHA512),
+                                                mac_key, MAC_OUTPUT_LEN)));
         
         pipe.processMsg(input, input_len);
         
@@ -86,8 +87,8 @@ struct CryptoBox {
     */
     static string decrypt(in ubyte* input, size_t input_len, in string passphrase)
     {
-        DataSourceMemory inputSrc(input, input_len);
-        SecureVector!ubyte ciphertext = PEM.decodeCheckLabel(input_src, "BOTAN CRYPTOBOX MESSAGE");
+        auto input_src = scoped!DataSourceMemory(input, input_len);
+        SecureVector!ubyte ciphertext = PEM.decodeCheckLabel(input_src.Scoped_payload, "BOTAN CRYPTOBOX MESSAGE");
         
         if (ciphertext.length < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
             throw new DecodingError("Invalid CryptoBox input");
@@ -98,22 +99,22 @@ struct CryptoBox {
         
         const ubyte* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
         
-        PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(new HMAC(new SHA_512));
+        auto pbkdf = scoped!PKCS5_PBKDF2(new HMAC(new SHA512));
         
         OctetString master_key = pbkdf.deriveKey(PBKDF_OUTPUT_LEN,
-                                                  passphrase,
-                                                  pbkdf_salt,
-                                                  PBKDF_SALT_LEN,
-                                                  PBKDF_ITERATIONS);
+                                                 passphrase,
+                                                 pbkdf_salt,
+                                                 PBKDF_SALT_LEN,
+                                                 PBKDF_ITERATIONS);
         
         const ubyte* mk = master_key.ptr;
         
-        SymmetricKey cipher_key = SymmetricKey(mk.ptr, CIPHER_KEY_LEN);
+        SymmetricKey cipher_key = SymmetricKey(mk, CIPHER_KEY_LEN);
         SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
         InitializationVector iv = InitializationVector(&mk[CIPHER_KEY_LEN + MAC_KEY_LEN], CIPHER_IV_LEN);
 
         Pipe pipe = Pipe(new Fork(getCipher("Serpent/CTR-BE", cipher_key, iv, DECRYPTION),
-                                  new MACFilter(new HMAC(new SHA_512), mac_key, MAC_OUTPUT_LEN)));
+                                  new MACFilter(new HMAC(new SHA512), mac_key, MAC_OUTPUT_LEN)));
         
         const size_t ciphertext_offset = VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN;
         
@@ -121,9 +122,9 @@ struct CryptoBox {
         ciphertext.length - ciphertext_offset);
 
         ubyte[MAC_OUTPUT_LEN] computed_mac;
-        pipe.read(computed_mac, MAC_OUTPUT_LEN, 1);
+        pipe.read(computed_mac.ptr, MAC_OUTPUT_LEN, 1);
         
-        if (!sameMem(computed_mac, &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN], MAC_OUTPUT_LEN))
+        if (!sameMem(computed_mac.ptr, &ciphertext[VERSION_CODE_LEN + PBKDF_SALT_LEN], MAC_OUTPUT_LEN))
             throw new DecodingError("CryptoBox integrity failure");
         
         return pipe.toString(0);

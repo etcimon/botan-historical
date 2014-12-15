@@ -174,7 +174,7 @@ final class NullPadding : BlockCipherModePaddingMethod
 public:
     override void addPadding(SecureVector!ubyte, size_t, size_t) const {}
 
-    size_t unpad(in ubyte[], size_t size) const { return size; }
+    override size_t unpad(in ubyte*, size_t size) const { return size; }
 
     override bool validBlocksize(size_t) const { return true; }
 

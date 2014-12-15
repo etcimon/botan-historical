@@ -103,11 +103,10 @@ public:
         this.rotateLeft(32 - rot);
     }
 
-    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+    void opOpAssign(string op)(in SIMDAltivec other)
         if (op == "+")
     {
         m_reg = vec_add(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
@@ -116,11 +115,10 @@ public:
         return vec_add(m_reg, other.m_reg);
     }
 
-    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+    void opOpAssign(string op)(in SIMDAltivec other)
         if (op == "-")
     {
         m_reg = vec_sub(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
@@ -129,11 +127,10 @@ public:
         return vec_sub(m_reg, other.m_reg);
     }
 
-    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+    void opOpAssign(string op)(in SIMDAltivec other)
         if (op == "^")
     {
         m_reg = vec_xor(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
@@ -142,11 +139,10 @@ public:
         return vec_xor(m_reg, other.m_reg);
     }
 
-    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+    void opOpAssign(string op)(in SIMDAltivec other)
         if (op == "|")
     {
         m_reg = vec_or(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
@@ -155,11 +151,10 @@ public:
         return vec_and(m_reg, other.m_reg);
     }
 
-    SIMDAltivec opOpAssign(string op)(in SIMDAltivec other)
+    void opOpAssign(string op)(in SIMDAltivec other)
         if (op == "&")
     {
         m_reg = vec_and(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDAltivec opBinary(string op)(size_t shift_)

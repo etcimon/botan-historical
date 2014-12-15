@@ -12,7 +12,7 @@ import botan.algo_base.buf_comp;
 /**
 * This class represents hash function (message digest) objects
 */
-class HashFunction : BufferedComputation
+interface HashFunction : BufferedComputation
 {
 public:
     /**
@@ -27,7 +27,7 @@ public:
     /**
     * @return hash block size as defined for this algorithm
     */
-    abstract @property size_t hashBlockSize() const { return 0; }
+    abstract @property size_t hashBlockSize() const;
 }
 
 static if (BOTAN_TEST):

@@ -7,7 +7,7 @@
 */
 module botan.math.bigint.bigint;
 
-public import botan.botan.math.mp.mp_types;
+public import botan.math.mp.mp_types;
 public import botan.utils.types;
 
 import botan.rng.rng;
@@ -22,6 +22,7 @@ import botan.utils.rounding;
 import botan.utils.parsing;
 import botan.utils.bit_ops;
 import std.algorithm;
+import std.traits : isNumeric;
 
 
 /**
@@ -61,15 +62,16 @@ public:
     }
 
     /**
-    * Create BigInt from 64 bit integer
+    * Create BigInt from any integer
     * @param n = initial value of this BigInt
     */
-    this(ulong n)
+    this(T)(T n)
+        if (isNumeric!T)
     {
         if (n == 0)
             return;
         
-        const size_t limbs_needed = (ulong).sizeof / (word).sizeof;
+        const size_t limbs_needed = T.sizeof / word.sizeof;
         
         m_reg.reserve(4*limbs_needed);
         foreach (size_t i; 0 .. limbs_needed)
@@ -166,6 +168,11 @@ public:
         this.swap(other);
     }
 
+    this(in SecureVector!ubyte payload, in Sign sign) {
+        m_reg = payload.dup;
+        m_signedness = sign;
+    }
+
     /**
     * Move assignment
     */
@@ -196,7 +203,7 @@ public:
     * += operator
     * @param y = the BigInt to add to this
     */
-    ref BigInt opOpAssign(string op)(in BigInt y)
+    void opOpAssign(string op)(in BigInt y)
         if (op == "+")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
@@ -208,12 +215,12 @@ public:
             bigint_add2(mutablePtr(), reg_size - 1, y.ptr, y_sw);
         else
         {
-            int relative_size = bigint_cmp(data(), x_sw, y.ptr, y_sw);
+            int relative_size = bigint_cmp(m_reg.ptr, x_sw, y.ptr, y_sw);
             
             if (relative_size < 0)
             {
                 SecureVector!word z = SecureVector!word(reg_size - 1);
-                bigint_sub3(z.ptr, y.ptr, reg_size - 1, data(), x_sw);
+                bigint_sub3(z.ptr, y.ptr, reg_size - 1, m_reg.ptr, x_sw);
                 std.algorithm.swap(m_reg, z);
                 setSign(y.sign());
             }
@@ -226,19 +233,24 @@ public:
                 bigint_sub2(mutablePtr(), x_sw, y.ptr, y_sw);
         }
         
-        return this;
+    }
+
+    void opOpAssign(string op)(in word y)
+        if (op == "+")
+    {
+        this += BigInt(y);
     }
 
     /**
     * -= operator
     * @param y = the BigInt to subtract from this
     */
-    ref BigInt opOpAssign(string op)(in BigInt y)
+    void opOpAssign(string op)(in BigInt y)
         if (op == "-")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
-        int relative_size = bigint_cmp(data(), x_sw, y.ptr, y_sw);
+        int relative_size = bigint_cmp(m_reg.ptr, x_sw, y.ptr, y_sw);
         
         const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
         growTo(reg_size);
@@ -269,15 +281,21 @@ public:
             else
                 bigint_add2(mutablePtr(), reg_size - 1, y.ptr, y_sw);
         }
-        
-        return this;
     }
+
+
+    void opOpAssign(string op)(in word y)
+        if (op == "-")
+    {
+        this -= BigInt(y);
+    }
+
 
     /**
     * *= operator
     * @param y = the BigInt to multiply with this
     */
-    ref BigInt opOpAssign(string op)(in BigInt y)
+    void opOpAssign(string op)(in BigInt y)
         if (op == "*")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
@@ -302,28 +320,38 @@ public:
         {
             growTo(size() + y.length);
             
-            SecureVector!word z = SecureVector!word(data(), data() + x_sw);
+            SecureVector!word z = SecureVector!word(m_reg.ptr[0 .. x_sw]);
             SecureVector!word workspace = SecureVector!word(size());
             
             bigint_mul(mutablePtr(), size(), workspace.ptr, z.ptr, z.length, x_sw, y.ptr, y.length, y_sw);
         }
-        
-        return this;
     }
 
+
+    void opOpAssign(string op)(in word y)
+        if (op == "*")
+    {
+        this *= BigInt(y);
+    }
 
     /**
     * /= operator
     * @param y = the BigInt to divide this by
     */
-    ref BigInt opOpAssign(string op)(in BigInt y)
+    void opOpAssign(string op)(in BigInt y)
         if (op == "/")
     {
         if (y.sigWords() == 1 && isPowerOf2(y.wordAt(0)))
             this >>= (y.bits() - 1);
         else
             this = this / y;
-        return this;
+    }
+
+
+    void opOpAssign(string op)(in word y)
+        if (op == "/")
+    {
+        this /= BigInt(y);
     }
 
 
@@ -331,17 +359,17 @@ public:
     * Modulo operator
     * @param y = the modulus to reduce this by
     */
-    ref BigInt opOpAssign(string op)(in BigInt mod)
+    void opOpAssign(string op)(in BigInt mod)
         if (op == "%")
     {
-        return (this = this % mod);
+        this = this % mod;
     }
 
     /**
     * Modulo operator
     * @param y = the modulus (word) to reduce this by
     */
-    word opOpAssign(string op)(word mod)
+    void opOpAssign(string op)(word mod)
         if (op == "%")
     {
         if (mod == 0)
@@ -369,8 +397,6 @@ public:
             m_reg[0] = remainder;
         
         setSign(Positive);
-        
-        return wordAt(0);
     }
 
 
@@ -378,7 +404,7 @@ public:
     * Left shift operator
     * @param shift = the number of bits to shift this left by
     */
-    ref BigInt opOpAssign(string op)(size_t shift)
+    void opOpAssign(string op)(size_t shift)
         if (op == "<<")
     {
         if (shift)
@@ -391,14 +417,13 @@ public:
             bigint_shl1(mutablePtr(), words, shift_words, shift_bits);
         }
         
-        return this;
     }
 
     /**
     * Right shift operator
     * @param shift = the number of bits to shift this right by
     */
-    ref BigInt opOpAssign(string op)(size_t shift)
+    void opOpAssign(string op)(size_t shift)
         if (op == ">>")
     {
         if (shift)
@@ -411,8 +436,6 @@ public:
             if (isZero())
                 setSign(Positive);
         }
-        
-        return this;
     }
 
     /**
@@ -466,10 +489,10 @@ public:
                 return 1;
             
             if (other.isNegative() && this.isNegative())
-                return (-bigint_cmp(this.ptr, this.sigWords(), other.ptr, other.sigWords()));
+                return (-bigint_cmp(m_reg.ptr, this.sigWords(), other.ptr, other.sigWords()));
         }
         
-        return bigint_cmp(this.ptr, this.sigWords(), other.ptr, other.sigWords());
+        return bigint_cmp(m_reg.ptr, this.sigWords(), other.ptr, other.sigWords());
     }
     /*
     * Comparison Operators
@@ -706,6 +729,9 @@ public:
     * @result size of internal register in words
     */
     size_t size() const { return m_reg.length; }
+
+    // ditto
+    size_t length() const { return size(); }
 
     /**
     * Return how many words we need to hold this value
@@ -1056,7 +1082,7 @@ public:
     /*
     * Addition Operator
     */
-    ref BigInt opBinary(string op)(in BigInt y)
+    BigInt opBinary(string op)(in BigInt y)
         if (op == "+")
     {
         const BigInt x = this;
@@ -1138,7 +1164,7 @@ public:
             bigint_linmul3(z.mutablePtr(), x.ptr, x_sw, y.wordAt(0));
         else if (x_sw && y_sw)
         {
-            SecureVector!word workspace(z.length);
+            SecureVector!word workspace = SecureVector!word(z.length);
             bigint_mul(z.mutablePtr(), z.length, workspace.ptr,
             x.ptr, x.length, x_sw,
             y.ptr, y.length, y_sw);
@@ -1167,7 +1193,7 @@ public:
     BigInt opBinary(string op)(in BigInt mod)
         if (op == "%")
     {
-        const BigInt n = this;
+        BigInt n = this;
         if (mod.isZero())
             throw new BigInt.DivideByZero();
         if (mod.isNegative())
@@ -1243,6 +1269,11 @@ public:
         bigint_shr2(y.mutablePtr(), x.ptr, x_sw, shift_words, shift_bits);
         return y;
     }
+
+    BigInt dup() const {
+        return BigInt(m_reg, m_signedness);
+    }
+
 private:
     SecureVector!word m_reg;
     Sign m_signedness = Positive;

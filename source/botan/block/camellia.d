@@ -17,7 +17,7 @@ import botan.utils.rotate;
 /**
 * Camellia-128
 */
-final class Camellia128 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+final class Camellia128 : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)
@@ -49,7 +49,7 @@ protected:
 /**
 * Camellia-192
 */
-final class Camellia192 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
+final class Camellia192 : BlockCipherFixedParams!(16, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)
@@ -81,7 +81,7 @@ protected:
 /**
 * Camellia-256
 */
-final class Camellia256 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
+final class Camellia256 : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)

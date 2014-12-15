@@ -11,6 +11,7 @@ import botan.codec.base64;
 import botan.utils.charset;
 import botan.utils.exceptn;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
@@ -26,7 +27,7 @@ public:
     * @param input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -80,12 +81,12 @@ private:
     /*
     * Encode and send a block
     */
-    void encodeAndSend(in ubyte* input, size_t length,
+    void encodeAndSend(ubyte* input, size_t length,
                          bool final_inputs = false)
     {
         while (length)
         {
-            const size_t proc = std.algorithm.min(length, input.length);
+            const size_t proc = std.algorithm.min(length, m_input.length);
             
             size_t consumed = 0;
             size_t produced = base64Encode(cast(char*)(m_output.ptr), input,
@@ -102,7 +103,7 @@ private:
     /*
     * Handle the output
     */
-    void doOutput(in ubyte* input, size_t length)
+    void doOutput(ubyte* input, size_t length)
     {
         if (m_line_length == 0)
             send(input, length);
@@ -145,7 +146,7 @@ public:
     * @param input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
         while (length)
         {

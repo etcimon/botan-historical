@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * KASUMI, the block cipher used in 3G telephony
 */
-final class KASUMI : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
+final class KASUMI : BlockCipherFixedParams!(8, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -117,7 +117,7 @@ public:
         zap(m_EK);
     }
     @property string name() const { return "KASUMI"; }
-	override @property size_t parallelism() const { return 1; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new KASUMI; }
 protected:
     /*

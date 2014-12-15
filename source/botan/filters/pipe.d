@@ -65,7 +65,7 @@ public:
     * @param input = the ubyte array to write
     * @param length = the length of the ubyte array in
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         if (!m_inside_msg)
             throw new InvalidState("Cannot write to a Pipe while it is not processing");
@@ -648,7 +648,7 @@ private:
 final class NullFilter : Filter, Filterable
 {
 public:
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     { send(input, length); }
     
     override @property string name() const { return "Null"; }

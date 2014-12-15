@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * Serpent, an AES finalist
 */
-class Serpent : BlockCipherFixedParams!(16, 16, 32, 8), SymmetricAlgorithm
+class Serpent : BlockCipherFixedParams!(16, 16, 32, 8), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

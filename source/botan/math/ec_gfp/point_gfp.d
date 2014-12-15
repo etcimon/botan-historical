@@ -103,12 +103,11 @@ public:
     * @param rhs = the PointGFp to add to the local value
     * @result resulting PointGFp
     */
-    ref PointGFp opOpAssign(string op)(in PointGFp rhs)
+    void opOpAssign(string op)(in PointGFp rhs)
         if (op == "+")
     {
         Vector!BigInt ws = Vector!BigInt(9);
         add(rhs, ws);
-        return this;
     }
 
     /**
@@ -116,7 +115,7 @@ public:
     * @param rhs = the PointGFp to subtract from the local value
     * @result resulting PointGFp
     */
-    ref PointGFp opOpAssign(string op)(in PointGFp rhs)
+    void opOpAssign(string op)(in PointGFp rhs)
         if (op == "-")
     {
         PointGFp minus_rhs = PointGFp(rhs).negate();
@@ -126,7 +125,6 @@ public:
         else
             this += minus_rhs;
         
-        return this;
     }
 
     /**
@@ -134,11 +132,10 @@ public:
     * @param scalar = the PointGFp to multiply with this
     * @result resulting PointGFp
     */
-    ref PointGFp opOpAssign(string op)(in BigInt scalar)
+    void opOpAssign(string op)(in BigInt scalar)
         if (op == "*")
     {
         this = scalar * this;
-        return this;
     }
 
     /**

@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * MD4
 */
-class MD4 : MDxHashFunction
+class MD4 : MDxHashFunction, HashFunction
 {
 public:
     override @property string name() const { return "MD4"; }

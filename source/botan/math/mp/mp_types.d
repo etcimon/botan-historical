@@ -4,7 +4,8 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.botan.math.mp.mp_types;
+module botan.math.mp.mp_types;
+
 import botan.utils.types;
 import botan.utils.mul128;
 import botan.constants;

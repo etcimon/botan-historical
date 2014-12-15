@@ -63,25 +63,23 @@ public:
         rotateLeft(32 - rot);
     }
 
-    SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
+    void opOpAssign(string op)(in SIMDSSE2 other)
+        if (op == "+")
+    {
+        m_reg = _mm_add_epi32(m_reg, other.m_reg);
+    }
+
+    SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "+")
     {
         m_reg = _mm_add_epi32(m_reg, other.m_reg);
         return this;
     }
 
-    SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
-        if (op == "+")
-    {
-        m_reg = _mm_add_epi32(m_reg, other.m_reg);
-        return this;
-    }
-
-    SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
+    void opOpAssign(string op)(in SIMDSSE2 other)
         if (op == "-")
     {
         m_reg = _mm_sub_epi32(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
@@ -91,11 +89,10 @@ public:
         return this;
     }
 
-    SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
+    void opOpAssign(string op)(in SIMDSSE2 other)
         if (op == "^")
     {
         m_reg = _mm_xor_si128(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
@@ -105,11 +102,10 @@ public:
         return this;
     }
 
-    SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
+    void opOpAssign(string op)(in SIMDSSE2 other)
         if (op == "|")
     {
         m_reg = _mm_or_si128(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
@@ -119,11 +115,10 @@ public:
         return this;
     }
 
-    SIMDSSE2 opOpAssign(string op)(in SIMDSSE2 other)
+    void opOpAssign(string op)(in SIMDSSE2 other)
         if (op == "&")
     {
         m_reg = _mm_and_si128(m_reg, other.m_reg);
-        return this;
     }
 
     SIMDSSE2 opBinary(string op)(size_t shift)

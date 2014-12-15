@@ -16,7 +16,7 @@ import botan.utils.types;
 /**
 * IDEA
 */
-class IDEA : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
+class IDEA : BlockCipherFixedParams!(8, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -42,7 +42,7 @@ public:
     }
 
     @property string name() const { return "IDEA"; }
-	override @property size_t parallelism() const { return 1; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new IDEA; }
 protected:
     /**
@@ -115,9 +115,9 @@ ushort mul(ushort x, ushort y) pure
     const uint P_lo = P & 0xFFFF;
     
     const ushort r_1 = cast(const ushort) ((P_lo - P_hi) + (P_lo < P_hi));
-	const ushort r_2 = cast(const ushort) (1 - x - y);
+    const ushort r_2 = cast(const ushort) (1 - x - y);
     
-	return cast(const ushort) ((r_1 & P_mask) | (r_2 & ~P_mask));
+    return cast(const ushort) ((r_1 & P_mask) | (r_2 & ~P_mask));
 }
 
 /*

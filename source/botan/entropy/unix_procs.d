@@ -21,6 +21,7 @@ import core.sys.posix.sys.wait;
 import core.sys.posix.sys.resource;
 import core.sys.posix.signal;
 import std.c.stdlib;
+import std.string : toStringz;
 
 /**
 * Entropy source for generic Unix. Runs various programs trying to
@@ -66,12 +67,12 @@ public:
         while (!accum.pollingGoalAchieved())
         {
             while (m_procs.length < m_concurrent)
-                m_procs.emplaceBack(Unix_Process(next_source()));
+                m_procs.pushBack(UnixProcess(nextSource()));
             
             fd_set read_set;
             FD_ZERO(&read_set);
             
-            Vector!( int ) fds;
+            Vector!int fds;
             
             foreach (ref proc; m_procs)
             {
@@ -86,8 +87,12 @@ public:
             if (fds.empty)
                 break;
             
-            const int max_fd = *std.algorithm.max(fds[]);
-            
+
+			int max_fd;
+			foreach (fd; fds[]) {
+				if (fd > max_fd)
+					max_fd = fd;
+			}
             timeval timeout;
             timeout.tv_sec = (MS_WAIT_TIME / 1000);
             timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
@@ -187,7 +192,7 @@ private:
             shutdown();
             
             int[2] pipe;
-            if (pipe(pipe) != 0)
+            if (.pipe(pipe) != 0)
                 return;
             
             pid_t pid = fork();
@@ -270,7 +275,7 @@ private:
 
     string[] nextSource()
     {
-        const src = m_sources[m_sources_idx];
+        string[] src = m_sources[m_sources_idx];
         m_sources_idx = (m_sources_idx + 1) % m_sources.length;
         return src;
     }
@@ -342,11 +347,11 @@ size_t concurrent_processes(size_t user_request)
 void do_exec(in string[] args)
 {
     // cleaner way to do this?
-    string arg0 = (args.length > 0) ? args[0].toStringz : null;
-    string arg1 = (args.length > 1) ? args[1].toStringz : null;
-    string arg2 = (args.length > 2) ? args[2].toStringz : null;
-    string arg3 = (args.length > 3) ? args[3].toStringz : null;
-    string arg4 = (args.length > 4) ? args[4].toStringz : null;
+    immutable(char*) arg0 = (args.length > 0) ? args[0].toStringz : null;
+	immutable(char*) arg1 = (args.length > 1) ? args[1].toStringz : null;
+	immutable(char*) arg2 = (args.length > 2) ? args[2].toStringz : null;
+	immutable(char*) arg3 = (args.length > 3) ? args[3].toStringz : null;
+	immutable(char*) arg4 = (args.length > 4) ? args[4].toStringz : null;
     
-    execl(arg0, arg0, arg1, arg2, arg3, arg4, NULL);
+    execl(arg0, arg0, arg1, arg2, arg3, arg4, null);
 }

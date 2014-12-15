@@ -17,7 +17,7 @@ import botan.utils.types;
 /**
 * Threefish-512
 */
-class Threefish512 : BlockCipherFixedParams!(64, 64), SymmetricAlgorithm
+class Threefish512 : BlockCipherFixedParams!(64, 64), BlockCipher, SymmetricAlgorithm
 {
 public:
     override void encryptN(ubyte* input, ubyte* output, size_t blocks)

@@ -18,7 +18,7 @@ import botan.utils.get_byte;
 /**
 * SEED, a Korean block cipher
 */
-final class SEED : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+final class SEED : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

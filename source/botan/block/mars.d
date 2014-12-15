@@ -18,7 +18,7 @@ import botan.utils.get_byte;
 /**
 * MARS, IBM's candidate for AES
 */
-final class MARS : BlockCipherFixedParams!(16, 16, 32, 4), SymmetricAlgorithm
+final class MARS : BlockCipherFixedParams!(16, 16, 32, 4), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -113,7 +113,7 @@ public:
     }
 
     @property string name() const { return "MARS"; }
-	override @property size_t parallelism() const { return 1; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new MARS; }
 
 protected:

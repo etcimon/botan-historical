@@ -78,7 +78,7 @@ public:
                 prototype_provider = provider;
                 prototype_prov_weight = prov_weight;
             }
-		}
+        }
         
         return prototype;
     }
@@ -136,9 +136,9 @@ public:
         if (m_algorithms.get(algo).length == 0)
             return Vector!string();
 
-		foreach(const ref string provider, const ref T instance; m_algorithms[algo]) {
-			providers.pushBack(provider);
-		}
+        foreach(const ref string provider, const ref T instance; m_algorithms[algo]) {
+            providers.pushBack(provider);
+        }
                 
         return providers;
     }
@@ -169,7 +169,7 @@ private:
     */
     HashMap!(string, T) findAlgorithm(in string algo_spec) const
     {
-		HashMap!(string, T) algo = m_algorithms.get(algo_spec);
+        HashMap!(string, T) algo = m_algorithms.get(algo_spec);
         
         // Not found? Check if a known alias
         if (!algo)

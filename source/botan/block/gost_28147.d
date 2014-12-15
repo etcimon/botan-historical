@@ -86,7 +86,7 @@ private:
 /**
 * GOST 28147-89
 */
-final class GOST2814789 : BlockCipherFixedParams!(8, 32), SymmetricAlgorithm
+final class GOST2814789 : BlockCipherFixedParams!(8, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
 
@@ -175,6 +175,10 @@ public:
 
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new GOST2814789(m_SBOX); }
+
+    this(in string params) {
+        this(scoped!GOST2814789Params(params).Scoped_payload);
+    }
 
     /**
     * @param params = the sbox parameters to use

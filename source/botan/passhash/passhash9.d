@@ -92,9 +92,9 @@ bool checkPasshash9(in string password, in string hash)
     if (bin.length != BINARY_LENGTH)
         return false;
     
-    ubyte alg_id = binput[0];
+    ubyte alg_id = bin[0];
     
-    const size_t work_factor = loadBigEndian!ushort(&binput[ALGID_BYTES], 0);
+    const size_t work_factor = loadBigEndian!ushort(&bin[ALGID_BYTES], 0);
     
     // Bug in the format, bad states shouldn't be representable, but are...
     if (work_factor == 0)
@@ -113,10 +113,10 @@ bool checkPasshash9(in string password, in string hash)
     PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
     
     SecureVector!ubyte cmp = kdf.deriveKey(PASSHASH9_PBKDF_OUTPUT_LEN, password,
-                                             &binput[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
+                                             &bin[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
                                              kdf_iterations).bitsOf();
     
-    return sameMem(cmp.ptr, &binput[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
+    return sameMem(cmp.ptr, &bin[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
 }
 
 private:

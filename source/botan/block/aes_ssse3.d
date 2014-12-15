@@ -19,7 +19,7 @@ import botan.utils.simd.tmmintrin;
 /**
 * AES-128 using SSSE3
 */
-final class AES128_SSSE3 : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+final class AES128_SSSE3 : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -108,7 +108,7 @@ protected:
 /**
 * AES-192 using SSSE3
 */
-final class AES192_SSSE3 : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
+final class AES192_SSSE3 : BlockCipherFixedParams!(16, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -219,7 +219,7 @@ protected:
 /**
 * AES-256 using SSSE3
 */
-final class AES256_SSSE3 : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
+final class AES256_SSSE3 : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -382,7 +382,7 @@ __m128i aes_schedule_mangle(__m128i k, ubyte round_no)
 __m128i aes_schedule_192_smear(__m128i x, __m128i y)
 {
 return _mm_xor_si128(y,_mm_xor_si128(_mm_shuffle_epi32(x, 0xFE),
-                   					 _mm_shuffle_epi32(y, 0x80)));
+                                        _mm_shuffle_epi32(y, 0x80)));
 }
 
 __m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)

@@ -19,7 +19,7 @@ public:
     /*
     * Append to the buffer
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         m_buffer ~= input[0 .. length];
     }
@@ -55,7 +55,7 @@ public:
     /*
     * Append to the buffer
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         m_buffer ~= input[0 .. length];
     }
@@ -85,7 +85,7 @@ public:
     /*
     * Add more data
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         m_signer.update(input, length);
     }
@@ -121,7 +121,7 @@ public:
     /*
     * Add more data
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         m_verifier.update(input, length);
     }

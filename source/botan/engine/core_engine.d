@@ -16,6 +16,7 @@ import botan.filters.transform_filter;
 import botan.math.numbertheory.def_powm;
 import botan.algo_base.scan_token;
 import botan.algo_factory.algo_factory;
+import std.algorithm : canFind;
 import std.conv : to;
 
 import botan.constants;
@@ -588,14 +589,14 @@ public:
             
             if (request.algoName == "Parallel")
             {
-                Vector!( const HashFunction ) hash_prototypes;
+                Vector!HashFunction hash_prototypes;
                 
                 /* First pass, just get the prototypes (no memory allocation). Then
                     if all were found, replace each prototype with a newly created clone
                 */
                 foreach (size_t i; 0 .. request.argCount())
                 {
-                    const HashFunction hash = af.prototypeHashFunction(request.arg(i));
+                    HashFunction hash = cast(HashFunction)af.prototypeHashFunction(request.arg(i));
                     if (!hash)
                         return null;
                     
@@ -603,7 +604,7 @@ public:
                 }
                 
                 Vector!HashFunction hashes;
-                foreach (hash_prototype; hash_prototypes)
+                foreach (hash_prototype; hash_prototypes[])
                     hashes.pushBack(hash_prototype.clone());
                 
                 return new Parallel(hashes);
@@ -734,11 +735,11 @@ KeyedFilter getCipherMode(const BlockCipher block_cipher,
         }
     }
     
-    if (mode.find("CFB") != -1 ||
-        mode.find("EAX") != -1 ||
-        mode.find("GCM") != -1 ||
-        mode.find("OCB") != -1 ||
-        mode.find("CCM") != -1)
+    if (mode.canFind("CFB") ||
+        mode.canFind("EAX") ||
+        mode.canFind("GCM") ||
+        mode.canFind("OCB") ||
+        mode.canFind("CCM"))
     {
         Vector!string algo_info = parseAlgorithmName(mode);
         const string mode_name = algo_info[0];

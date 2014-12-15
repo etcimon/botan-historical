@@ -17,7 +17,7 @@ import botan.block.block_cipher;
 /**
 * Twofish, an AES finalist
 */
-final class Twofish : BlockCipherFixedParams!(16, 16, 32, 8), SymmetricAlgorithm
+final class Twofish : BlockCipherFixedParams!(16, 16, 32, 8), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

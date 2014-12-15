@@ -15,7 +15,7 @@ import botan.utils.xor_buf;
 /**
 * DESX
 */
-final class DESX : BlockCipherFixedParams!(8, 24), SymmetricAlgorithm
+final class DESX : BlockCipherFixedParams!(8, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

@@ -14,7 +14,7 @@ import botan.utils.loadstor;
 /**
 * TEA
 */
-final class TEA : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
+final class TEA : BlockCipherFixedParams!(8, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

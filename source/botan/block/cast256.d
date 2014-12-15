@@ -19,7 +19,7 @@ import botan.utils.rotate;
 /**
 * CAST-256
 */
-final class CAST256 : BlockCipherFixedParams!(16, 4, 32, 4), SymmetricAlgorithm
+final class CAST256 : BlockCipherFixedParams!(16, 4, 32, 4), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

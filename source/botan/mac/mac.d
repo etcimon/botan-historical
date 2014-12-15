@@ -8,13 +8,13 @@ module botan.mac.mac;
 
 import botan.constants;
 public import botan.algo_base.sym_algo;
-import botan.algo_base.buf_comp;
+public import botan.algo_base.buf_comp;
 import botan.utils.mem_ops;
 
 /**
 * This class represents Message Authentication Code (MAC) objects.
 */
-abstract class MessageAuthenticationCode : BufferedComputation, SymmetricAlgorithm
+interface MessageAuthenticationCode : BufferedComputation, SymmetricAlgorithm
 {
 public:
     /**

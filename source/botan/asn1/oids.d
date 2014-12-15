@@ -330,7 +330,7 @@ public:
     
     void addOid2str(in OID oid, in string str)
     {
-        if (m_oid2str.get(oid, null) is null)
+        if (m_oid2str.get(oid) == string.init)
             m_oid2str[oid] = str;
     }
 

@@ -19,7 +19,8 @@ import core.sys.posix.sys.stat;
 import core.sys.posix.fcntl;
 import core.sys.posix.unistd;
 import core.sys.posix.dirent;
-
+import std.string : toStringz;
+import std.array;
 
 final class DirectoryWalker : FileDescriptorSource
 {
@@ -37,11 +38,46 @@ public:
             closedir(m_cur_dir.first);
     }
     
-    override int nextFd();
+    override int nextFd() 
+    {
+        while (true)
+        {
+            Pair!(dirent*, string) entry = getNextDirent();
+            
+            if (!entry.first)
+                break; // no more dirs
+            
+            const string filename = cast(string) entry.first.d_name[0 .. strlen(entry.first.d_name.ptr)];
+            
+            if (filename == "." || filename == "..")
+                continue;
+            
+            const string full_path = entry.second ~ '/' ~ filename;
+            
+            stat_t stat_buf;
+            if (.lstat(full_path.toStringz, &stat_buf) == -1)
+                continue;
+            
+            if (S_ISDIR(stat_buf.st_mode))
+            {
+                addDirectory(full_path);
+            }
+            else if (S_ISREG(stat_buf.st_mode) && (stat_buf.st_mode & S_IROTH))
+            {
+                int fd = .open(full_path.toStringz, O_RDONLY | O_NOCTTY);
+                
+                if (fd > 0)
+                    return fd;
+            }
+        }
+        
+        return -1;
+    }
+
 private:
     void addDirectory(in string dirname)
     {
-        m_dirlist.pushBack(dirname);
+        m_dirlist.insertBack(dirname);
     }
     
     Pair!(dirent*, string) getNextDirent()
@@ -49,15 +85,15 @@ private:
         while (m_cur_dir.first)
         {
             if (dirent* dir = readdir(m_cur_dir.first))
-                return Pair(dir, m_cur_dir.second);
+                return makePair(dir, m_cur_dir.second);
             
             closedir(m_cur_dir.first);
             m_cur_dir = makePair!(DIR*, string)(null, "");
             
             while (!m_dirlist.empty && !m_cur_dir.first)
             {
-                const string next_dir_name = m_dirlist[0];
-                m_dirlist.popFront();
+                const string next_dir_name = m_dirlist.front;
+                m_dirlist = Vector!string(m_dirlist[1 .. $]);
                 
                 if (DIR* next_dir = opendir(next_dir_name.toStringz))
                     m_cur_dir = makePair(next_dir, next_dir_name);
@@ -72,46 +108,11 @@ private:
 }
 
 
-class FileDescriptorSource
+interface FileDescriptorSource
 {
 public:
-    int nextFd()
-    {
-        while (true)
-        {
-            Pair!(dirent*, string) entry = get_next_dirent();
-            
-            if (!entry.first)
-                break; // no more dirs
-            
-            const string filename = entry.first.d_name;
-            
-            if (filename == "." || filename == "..")
-                continue;
-            
-            const string full_path = entry.second + '/' + filename;
-            
-            stat stat_buf;
-            if (lstat(full_path.toStringz, &stat_buf) == -1)
-                continue;
-            
-            if (S_ISDIR(stat_buf.st_mode))
-            {
-                add_directory(full_path);
-            }
-            else if (S_ISREG(stat_buf.st_mode) && (stat_buf.st_mode & S_IROTH))
-            {
-                int fd = open(full_path.toStringz, O_RDONLY | O_NOCTTY);
-                
-                if (fd > 0)
-                    return fd;
-            }
-        }
-        
-        return -1;
-    }
+    abstract int nextFd();
 
-    ~this() {}
 }
 
 /**
@@ -131,7 +132,6 @@ public:
             m_dir = new DirectoryWalker(m_path);
         
         SecureVector!ubyte io_buffer = accum.getIoBuffer(4096);
-        
         foreach (size_t i; 0 .. MAX_FILES_READ_PER_POLL)
         {
             int fd = m_dir.nextFd();
@@ -139,11 +139,12 @@ public:
             // If we've exhaused this walk of the directory, halt the poll
             if (fd == -1)
             {
-                m_dir.clear();
+				delete m_dir;
+                m_dir = null;
                 break;
             }
             
-            ssize_t got = read(fd, io_buffer[]);
+            ssize_t got = .read(fd, io_buffer.ptr, 4096);
             close(fd);
             
             if (got > 0)
@@ -157,10 +158,11 @@ public:
     this(in string root_dir)
     {
         m_path = root_dir;
-        m_dir.clear();
     }
+
+	~this() { if (m_dir) delete m_dir; }
 
 private:
     const string m_path;
-    Unique!FileDescriptorSource m_dir;
+    FileDescriptorSource m_dir;
 }

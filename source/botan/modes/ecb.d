@@ -60,6 +60,8 @@ public:
     {
         m_cipher.clear();
     }
+
+    final override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)
     {

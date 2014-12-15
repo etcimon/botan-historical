@@ -17,7 +17,7 @@ import std.conv : to;
 /**
 * MISTY1
 */
-final class MISTY1 : BlockCipherFixedParams!(8, 16), SymmetricAlgorithm
+final class MISTY1 : BlockCipherFixedParams!(8, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*
@@ -127,7 +127,7 @@ public:
     }
 
     @property string name() const { return "MISTY1"; }
-	override @property size_t parallelism() const { return 1; }
+    override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new MISTY1; }
 
     /**

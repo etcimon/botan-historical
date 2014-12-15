@@ -16,7 +16,7 @@ import botan.utils.types;
 /**
 * Whirlpool
 */
-final class Whirlpool : MDxHashFunction
+final class Whirlpool : MDxHashFunction, HashFunction
 {
 public:
     override @property string name() const { return "Whirlpool"; }
@@ -40,11 +40,11 @@ public:
         m_digest = 8;
         clear();
     }
-private:
+protected:
     /*
     * Whirlpool Compression Function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         __gshared immutable ulong[10] RC = [
             0x1823C6E887B8014F, 0x36A6D2F5796F9152,
@@ -157,7 +157,7 @@ private:
     /*
     * Copy out the digest
     */
-    void copyOut(ubyte* output)
+    override void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != outputLength(); i += 8)
             storeBigEndian(m_digest[i/8], output + i);

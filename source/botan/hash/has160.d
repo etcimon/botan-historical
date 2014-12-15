@@ -18,7 +18,7 @@ import botan.utils.types;
 * HAS-160, a Korean hash function standardized in
 * TTAS.KO-12.0011/R1. Used in conjuction with KCDSA
 */
-class HAS160 : MDxHashFunction
+class HAS160 : MDxHashFunction, HashFunction
 {
 public:
     override @property string name() const { return "HAS-160"; }
@@ -46,11 +46,11 @@ public:
         m_digest = 5;
         clear(); 
     }
-private:
+protected:
     /*
     * HAS-160 Compression Function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
@@ -133,7 +133,7 @@ private:
     /*
     * Copy out the digest
     */
-    void copyOut(ubyte* output)
+    override void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != outputLength(); i += 4)
             storeLittleEndian(m_digest[i/4], output + i);

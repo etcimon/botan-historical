@@ -13,6 +13,7 @@ import botan.filters.secqueue;
 import botan.utils.exceptn;
 
 interface Filterable {
+public:
     /**
     * @return descriptive name for this filter
     */
@@ -23,7 +24,7 @@ interface Filterable {
     * @param input = the input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    abstract void write(in ubyte* input, size_t length);
+    abstract void write(ubyte* input, size_t length);
     
     /**
     * Start a new message. Must be closed by endMsg() before another
@@ -42,6 +43,14 @@ interface Filterable {
     * @return true if this filter is attachable, false otherwise
     */
     abstract bool attachable();
+
+	/**
+    * @param filters = the filters to set
+    * @param count = number of items in filters
+    */
+	abstract void setNext(Filter* filters, size_t size);
+
+	abstract void setNext(Filter f, size_t n);
 }
 
 /**
@@ -54,14 +63,14 @@ public:
     * Write a portion of a message to this filter.
     * @param input = the input as a ubyte array
     */
-    final void write(in ubyte[] input) { write(input.ptr, input.length); }
+    final void write(ubyte[] input) { write(input.ptr, input.length); }
 
 protected:
     /**
     * @param input = some input for the filter
     * @param length = the length of in
     */
-    void send(in ubyte* input, size_t length)
+    void send(ubyte* input, size_t length)
     {
         if (!length)
             return;
@@ -102,7 +111,7 @@ protected:
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-    final void send(in SecureVector!ubyte input)
+    final void send(in SecureVector!ubyte input, size_t length)
     {
         send(input.ptr, length);
     }
@@ -111,7 +120,7 @@ protected:
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-    final void send(in Vector!ubyte input)
+    final void send(in Vector!ubyte input, size_t length)
     {
         send(input.ptr, length);
     }
@@ -127,7 +136,6 @@ protected:
         m_owned = false;
     }
 
-private:
     /**
     * Start a new message in this and all following filters. Only for
     * internal use, not intended for use in client applications.
@@ -194,7 +202,7 @@ private:
     * @param filters = the filters to set
     * @param count = number of items in filters
     */
-    void setNext(Filter* filters, size_t size)
+    override void setNext(Filter* filters, size_t size)
     {
         m_next.clear();
         
@@ -230,19 +238,21 @@ private:
 /**
 * This is the abstract FanoutFilter base class.
 **/
-class FanoutFilter : Filter
+class FanoutFilter : Filter, Filterable
 {
+	override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
 protected:
     /**
     * Increment the number of filters past us that we own
     */
     void incrOwns() { ++m_filter_owns; }
 
-    void setPort(size_t n) { setPort(n); }
+    override void setPort(size_t n) { setPort(n); }
 
-    void setNext(Filter f, size_t n) { setNext(f, n); }
+	override void setNext(Filter f, size_t n) { super.setNext(f, n); }
 
-    void attach(Filter f) { attach(f); }
+
+    override void attach(Filter f) { attach(f); }
 
 }
 

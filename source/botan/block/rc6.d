@@ -17,7 +17,7 @@ import std.algorithm;
 /**
 * RC6, Ron Rivest's AES candidate
 */
-final class RC6 : BlockCipherFixedParams!(16, 1, 32), SymmetricAlgorithm
+final class RC6 : BlockCipherFixedParams!(16, 1, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

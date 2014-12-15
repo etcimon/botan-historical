@@ -31,7 +31,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         // Destructor releases array memory
         ~this()
         {
-			T[] data = _payload.ptr[0 .. capacity];
+            T[] data = _payload.ptr[0 .. capacity];
             freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
         }
 
@@ -131,7 +131,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             }
             // copy old data over to new array
             memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
-			auto ub = _payload.ptr[0 .. _capacity];
+            auto ub = _payload.ptr[0 .. _capacity];
             freeArray!(T, ALLOCATOR, false)(ub);
 
             static if ( hasIndirections!T )
@@ -429,24 +429,24 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH 1)
      */
-	static if (!is(T == ubyte))
+    static if (!is(T == ubyte))
     Range opSlice()
     {
         return Range(this, 0, length);
     }
     
-	static if (!is(T == ubyte))
-	Range opSlice() const
-	{
-		UnConst!(typeof(this)) _ref = cast(UnConst!(typeof(this))) this;
-		return Range(_ref, 0UL, length);
-	}
+    static if (!is(T == ubyte))
+    Range opSlice() const
+    {
+        UnConst!(typeof(this)) _ref = cast(UnConst!(typeof(this))) this;
+        return Range(_ref, 0UL, length);
+    }
 
-	static if (is(T == ubyte))
-	string opSlice() const
-	{
-		return cast(string) _data._payload;
-	}
+    static if (is(T == ubyte))
+    string opSlice() const
+    {
+        return cast(string) _data._payload;
+    }
     /**
         Returns a range that iterates over elements of the container from
         index $(D a) up to (excluding) index $(D b).
@@ -455,19 +455,19 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH 1)
      */
-	static if (!is(T == ubyte))
-	Range opSlice(size_t i, size_t j)
-	{
-		version (assert) if (i > j || j > length) throw new RangeError();
-		return Range(this, i, j);
-	}
+    static if (!is(T == ubyte))
+    Range opSlice(size_t i, size_t j)
+    {
+        version (assert) if (i > j || j > length) throw new RangeError();
+        return Range(this, i, j);
+    }
 
-	static if (is(T == ubyte))
-	string opSlice(size_t i, size_t j)
-	{
-		version (assert) if (i > j || j > length) throw new RangeError();
-		return cast(string) _data._payload[i .. j];
-	}
+    static if (is(T == ubyte))
+    string opSlice(size_t i, size_t j)
+    {
+        version (assert) if (i > j || j > length) throw new RangeError();
+        return cast(string) _data._payload[i .. j];
+    }
 
     /**
         Forward to $(D opSlice().front) and $(D opSlice().back), respectively.
@@ -499,10 +499,10 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return _data._payload[i];
     }
     
-	ref const(T) opIndex(size_t i) const
-	{
-		return _data._payload[i];
-	}
+    ref const(T) opIndex(size_t i) const
+    {
+        return _data._payload[i];
+    }
     /**
         Slicing operations execute an operation on an entire slice.
 
@@ -583,11 +583,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         static if (is (Stuff == typeof(this))) {
             insertBack(cast(T[]) stuff[]);
         }
-		else
-		{
-			insertBack(stuff);
-		}
-	}
+        else
+        {
+            insertBack(stuff);
+        }
+    }
     
     /**
         Removes all contents from the container. The container decides how $(D
@@ -642,9 +642,9 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return insertBack(cast(T) stuff);
     }
 
-	size_t insert(Stuff...)(Stuff stuff) {
-		return insertBack(stuff);
-	}
+    size_t insert(Stuff...)(Stuff stuff) {
+        return insertBack(stuff);
+    }
 
     /**
         Inserts $(D value) to the front or back of the container. $(D stuff)
@@ -864,9 +864,9 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 }
 
 private template UnConst(T) {
-	static if (is(T U == const(U))) {
-		alias UnConst = U;
-	} else static if (is(T V == immutable(V))) {
-		alias UnConst = V;
-	} else alias UnConst = T;
+    static if (is(T U == const(U))) {
+        alias UnConst = U;
+    } else static if (is(T V == immutable(V))) {
+        alias UnConst = V;
+    } else alias UnConst = T;
 }

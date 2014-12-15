@@ -32,7 +32,7 @@ public:
     /*
     * DER encode an AlternativeName extension
     */
-	override void encodeInto(DEREncoderImpl der) const
+    override void encodeInto(DEREncoderImpl der) const
     {
         der.startCons(ASN1Tag.SEQUENCE);
         
@@ -57,7 +57,7 @@ public:
     /*
     * Decode a BER encoded AlternativeName
     */
-	override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoderImpl source)
     {
         BERDecoder names = source.startCons(ASN1Tag.SEQUENCE);
         

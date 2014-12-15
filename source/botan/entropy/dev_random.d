@@ -20,6 +20,7 @@ import core.sys.posix.unistd;
 import core.sys.posix.fcntl;
 import std.c.string;
 import botan.utils.rounding;
+import std.string : toStringz;
 
 /**
 * Entropy source reading from kernel devices like /dev/random

@@ -18,7 +18,7 @@ import botan.utils.types;
 /**
 * MD5
 */
-class MD5 : MDxHashFunction
+class MD5 : MDxHashFunction, HashFunction
 {
 public:
     final override @property string name() const { return "MD5"; }

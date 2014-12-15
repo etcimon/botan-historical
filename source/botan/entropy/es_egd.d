@@ -26,6 +26,7 @@ import core.sys.posix.sys.socket;
 import core.sys.posix.sys.un;
 
 import std.c.string;
+import std.string : toStringz;
 
 enum PF_LOCAL = AF_UNIX;
 
@@ -46,9 +47,10 @@ public:
         
         SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
         
+        ubyte[] io_buf_mutable = io_buffer.ptr[0 .. READ_ATTEMPT];
         foreach (socket; m_sockets)
         {
-            size_t got = socket.read(io_buffer.ptr, io_buffer.length);
+            size_t got = socket.read(io_buf_mutable);
             
             if (got)
             {
@@ -64,16 +66,17 @@ public:
     this(in Vector!string paths)
     {
         foreach (path; paths[])
-            m_sockets.pushBack(EGD_Socket(paths[i]));
+            m_sockets.pushBack(EGDSocket(path));
     }
     ~this()
     {
-        foreach (socket; m_sockets[])
-            socket[i].close();
+        foreach (socket; m_sockets[]) {
+            socket.close();
+        }
         m_sockets.clear();
     }
 private:
-    class EGDSocket
+    struct EGDSocket
     {
     public:
         this(in string path)
@@ -87,7 +90,7 @@ private:
         {
             if (m_fd > 0)
             {
-                close(m_fd);
+                .close(m_fd);
                 m_fd = -1;
             }
         }
@@ -113,17 +116,17 @@ private:
                 // 1 == EGD command for non-blocking read
                 ubyte[2] egd_read_command = [ 1, cast(ubyte)(std.algorithm.min(length, 255)) ];
                 
-                if (write(m_fd, egd_read_command, 2) != 2)
+                if (.write(m_fd, egd_read_command.ptr, 2) != 2)
                     throw new Exception("Writing entropy read command to EGD failed");
                 
                 ubyte out_len = 0;
-                if (read(m_fd, &out_len, 1) != 1)
+                if (.read(m_fd, &out_len, 1) != 1)
                     throw new Exception("Reading response length from EGD failed");
                 
                 if (out_len > egd_read_command[1])
                     throw new Exception("Bogus length field received from EGD");
                 
-                ssize_t count = read(m_fd, outbuf, out_len);
+                ssize_t count = .read(m_fd, outbuf.ptr, out_len);
                 
                 if (count != out_len)
                     throw new Exception("Reading entropy result from EGD failed");
@@ -156,13 +159,13 @@ private:
                 if (addr.sun_path.sizeof < path.length + 1)
                     throw new InvalidArgument("EGD socket path is too long");
                 
-                strncpy(addr.sun_path, path.toStringz, sizeof(addr.sun_path));
+                strncpy(cast(char*) addr.sun_path.ptr, path.toStringz, addr.sun_path.sizeof);
                 
-                int len = addr.sun_family.sizeof + strlen(addr.sun_path) + 1;
+                int len = cast(int)( addr.sun_family.sizeof + strlen(cast(const(char*))addr.sun_path.ptr) + 1 );
                 
-                if (connect(fd, cast(sockaddr*)(&addr), len) < 0)
+                if (.connect(fd, cast(sockaddr*)(&addr), len) < 0)
                 {
-                    close(fd);
+                    .close(fd);
                     fd = -1;
                 }
             }
@@ -174,5 +177,5 @@ private:
         int m_fd; // cached fd
     }
 
-    Vector!( EGDSocket ) m_sockets;
+    Vector!EGDSocket m_sockets;
 }

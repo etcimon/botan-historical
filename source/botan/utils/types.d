@@ -35,6 +35,10 @@ struct Pair(T, U) {
         return m_obj[1];
     }
 
+    this(T a, U b) {
+        m_obj = Tuple!(T,U)(a, b);
+    }
+
     this(in T a, in U b) {
         m_obj = Tuple!(T,U)(cast(T) a,cast(U) b);
     }
@@ -42,9 +46,14 @@ struct Pair(T, U) {
     alias m_obj this;
 }
 
-Pair!(T, U) makePair(T, U)(in T first, in U second)
+Pair!(T, U) makePair(T, U)(const T first, const U second)
 {
-	return Pair!(UnConst!T, UnConst!U)(first, second);
+    return Pair!(UnConst!T, UnConst!U)(first, second);
+}
+
+Pair!(T, U) makePair(T, U)(T first, U second)
+{
+    return Pair!(T, U)(first, second);
 }
 
 private template UnConst(T) {
@@ -176,8 +185,8 @@ public:
     }
 
     /** Forwards member access to contents. */
-	RefT opDot() { return _p; }
-	const(RefT) opDot() const { return _p; }
+    RefT opDot() { return _p; }
+    const(RefT) opDot() const { return _p; }
 
     RefT opUnary(string op)() if (op == "*") { return _p; }
 

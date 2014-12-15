@@ -27,7 +27,7 @@ public:
     /*
     * Compress Input with Zlib
     */
-    void write(in ubyte* input, size_t length)
+    void write(ubyte* input, size_t length)
     {
         m_zlib.m_stream.next_in = cast(ubyte*)input;
         m_zlib.m_stream.avail_in = length;
@@ -154,7 +154,7 @@ public:
     /*
     * Decompress Input with Zlib
     */
-    void write(in ubyte* input_arr, size_t length)
+    void write(ubyte* input_arr, size_t length)
     {
         if (length) m_no_writes = false;
         

@@ -32,7 +32,7 @@ public:
     /*
     * Convert some data into hex format
     */
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -139,7 +139,7 @@ public:
     /*
     * Convert some data from hex format
     */
-    override void write(in ubyte* input, size_t length)
+    override void write(ubyte* input, size_t length)
     {
         while (length)
         {

@@ -70,7 +70,7 @@ public:
     * @param input = the input bytes
     * @param input_size = of input in bytes
     */
-    void write(in ubyte* input, size_t input_size)
+    void write(ubyte* input, size_t input_size)
     {
         if (!input_size)
             return;

@@ -16,7 +16,7 @@ import botan.utils.xor_buf;
 /**
 * HMAC
 */
-final class HMAC : MessageAuthenticationCode, SymmetricAlgorithm
+final class HMAC : MessageAuthenticationCode, BufferedComputation, SymmetricAlgorithm
 {
 public:
     /*

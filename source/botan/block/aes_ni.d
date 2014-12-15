@@ -15,7 +15,7 @@ import botan.utils.simd.wmmintrin;
 /**
 * AES-128 using AES-NI
 */
-final class AES128NI : BlockCipherFixedParams!(16, 16), SymmetricAlgorithm
+final class AES128NI : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
     override @property size_t parallelism() const { return 4; }
@@ -242,7 +242,7 @@ protected:
 /**
 * AES-192 using AES-NI
 */
-final class AES192NI : BlockCipherFixedParams!(16, 24), SymmetricAlgorithm
+final class AES192NI : BlockCipherFixedParams!(16, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
     override @property size_t parallelism() const { return 4; }
@@ -473,7 +473,7 @@ protected:
 /**
 * AES-256 using AES-NI
 */
-final class AES256NI : BlockCipherFixedParams!(16, 32), SymmetricAlgorithm
+final class AES256NI : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     override @property size_t parallelism() const { return 4; }

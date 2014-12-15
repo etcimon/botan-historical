@@ -30,7 +30,7 @@ public:
     /*
     * DER encode a DistinguishedName
     */
-	override void encodeInto(DEREncoderImpl der) const
+    override void encodeInto(DEREncoderImpl der) const
     {
         auto dn_info = getAttributes();
         
@@ -55,7 +55,7 @@ public:
     /*
     * Decode a BER encoded DistinguishedName
     */
-	override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoderImpl source)
     {
         Vector!ubyte bits;
         
@@ -279,7 +279,7 @@ public:
         return false;
     }
 
-	override string toString()
+    override string toString()
     {
         Appender!string output;
         MultiMap!(string, string) contents = contents();

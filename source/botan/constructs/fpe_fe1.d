@@ -30,10 +30,11 @@ struct FPE {
     * @param key = a random key
     * @param tweak = will modify the ciphertext (think of as an IV)
     */
-    static BigInt fe1Encrypt(in BigInt n, in BigInt X0,
-                              in SymmetricKey key,
-                              in Vector!ubyte tweak)
+    static BigInt fe1Encrypt(in BigInt n0, in BigInt X0,
+                             in SymmetricKey key,
+                             in Vector!ubyte tweak)
     {
+        BigInt n = n0.dup;
         FPEEncryptor F = scoped!FPEEncryptor(key, n, tweak);
         
         BigInt a, b;
@@ -41,7 +42,7 @@ struct FPE {
         
         const size_t r = rounds(a, b);
         
-        BigInt X = X0;
+        BigInt X = X0.dup;
         
         foreach (size_t i; 0 .. r)
         {
@@ -63,8 +64,9 @@ struct FPE {
     * @param key = is the key used for encryption
     * @param tweak = the same tweak used for encryption
     */
-    static BigInt fe1Decrypt(in BigInt n, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
+    static BigInt fe1Decrypt(in BigInt n0, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
     {
+        BigInt n = n0.dup;
         auto F = scoped!FPEEncryptor(key, n, tweak);
         
         BigInt a, b;
@@ -72,7 +74,7 @@ struct FPE {
         
         const size_t r = rounds(a, b);
         
-        BigInt X = X0;
+        BigInt X = X0.dup;
         
         foreach (size_t i; 0 .. r)
         {
@@ -155,6 +157,7 @@ final class FPEEncryptor
 public:
     this(in SymmetricKey key, in BigInt n, in Vector!ubyte tweak)
     {
+
         m_mac = new HMAC(new SHA256);
         m_mac.setKey(key);
         
@@ -164,7 +167,7 @@ public:
             throw new Exception("N is too large for FPE encryption");
         
         m_mac.updateBigEndian(cast(uint)(n_bin.length));
-        m_mac.update(n_binput.ptr, n_bin.length);
+        m_mac.update(n_bin.ptr, n_bin.length);
         
         m_mac.updateBigEndian(cast(uint)(tweak.length));
         m_mac.update(tweak.ptr, tweak.length);
@@ -181,7 +184,7 @@ public:
         m_mac.updateBigEndian(cast(uint)(round_no));
         
         m_mac.updateBigEndian(cast(uint)(r_bin.length));
-        m_mac.update(r_binput.ptr, r_bin.length);
+        m_mac.update(r_bin.ptr, r_bin.length);
         
         SecureVector!ubyte X = m_mac.finished();
         return BigInt(X.ptr, X.length);

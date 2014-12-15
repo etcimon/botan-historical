@@ -9,6 +9,7 @@ module botan.codec.pem;
 import botan.filters.filters;
 import botan.utils.parsing;
 import botan.filters.data_src;
+import botan.filters.b64_filt;
 import botan.utils.types;
 import std.array : Appender;
 
@@ -20,12 +21,12 @@ struct PEM
     */
     static string encode(in ubyte* der, size_t length, in string label, size_t width = 64)
     {
-        const string PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
-        const string PEM_TRAILER = "-----END " ~ label ~ "-----";
+        immutable(string) PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
+        immutable(string) PEM_TRAILER = "-----END " ~ label ~ "-----";
         
         Pipe pipe = Pipe(new Base64Encoder(true, width));
         pipe.processMsg(der, length);
-        return (PEM_HEADER + pipe.toString() + PEM_TRAILER);
+        return (PEM_HEADER ~ pipe.toString() ~ PEM_TRAILER);
     }
 
     /**

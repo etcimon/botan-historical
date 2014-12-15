@@ -20,7 +20,7 @@ import botan.utils.types;
 /**
 * SHA-224
 */
-final class SHA224 : MDxHashFunction
+final class SHA224 : MDxHashFunction, HashFunction
 {
 public:
     override @property string name() const { return "SHA-224"; }
@@ -50,11 +50,12 @@ public:
         m_digest = 8;
         clear(); 
     }
-private:
+
+protected:
     /*
     * SHA-224 compression function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         compress(m_digest, input, blocks);
     }
@@ -62,7 +63,7 @@ private:
     /*
     * Copy out the digest
     */
-    void copyOut(ubyte* output)
+    override void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != outputLength(); i += 4)
             storeBigEndian(m_digest[i/4], output + i);
@@ -75,7 +76,7 @@ private:
 /**
 * SHA-256
 */
-class SHA256 : MDxHashFunction
+class SHA256 : MDxHashFunction, HashFunction
 {
 public:
     override @property string name() const { return "SHA-256"; }
@@ -104,11 +105,11 @@ public:
         m_digest = 8;
         clear();
     }
-private:
+protected:
     /*
     * SHA-256 compression function
     */
-    void compressN(in ubyte* input, size_t blocks)
+    override void compressN(in ubyte* input, size_t blocks)
     {
         compress(m_digest, input, blocks);
     }
@@ -116,7 +117,7 @@ private:
     /*
     * Copy out the digest
     */
-    void copyOut(ubyte* output)
+    override void copyOut(ubyte* output)
     {
         for (size_t i = 0; i != outputLength(); i += 4)
             storeBigEndian(m_digest[i/4], output + i);

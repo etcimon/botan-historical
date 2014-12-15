@@ -11,7 +11,7 @@ public import botan.algo_base.sym_algo;
 /**
 * Base class for all stream ciphers
 */
-class StreamCipher : SymmetricAlgorithm
+interface StreamCipher : SymmetricAlgorithm
 {
 public:
     /**
@@ -51,21 +51,15 @@ public:
     * @param iv = the initialization vector
     * @param iv_len = the length of the IV in bytes
     */
-    abstract void setIv(const ubyte*, size_t iv_len)
-    {
-        if (iv_len)
-            throw new InvalidArgument("The stream cipher " ~ name ~
-                                       " does not support resyncronization");
-    }
+    abstract void setIv(const ubyte*, size_t iv_len);
+    // { if (iv_len) throw new InvalidArgument("The stream cipher " ~ name ~ " does not support resyncronization"); }
 
     /**
     * @param iv_len = the length of the IV in bytes
     * @return if the length is valid for this algorithm
     */
-    abstract bool validIvLength(size_t iv_len) const
-    {
-        return (iv_len == 0);
-    }
+    abstract bool validIvLength(size_t iv_len) const;
+    // { return (iv_len == 0); }
 
     /**
     * Get a new object representing the same algorithm as this

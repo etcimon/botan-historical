@@ -19,7 +19,7 @@ import std.conv : to;
 /**
 * RC5
 */
-final class RC5 : BlockCipherFixedParams!(8, 1, 32), SymmetricAlgorithm
+final class RC5 : BlockCipherFixedParams!(8, 1, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

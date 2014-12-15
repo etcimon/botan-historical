@@ -375,7 +375,7 @@ public:
     /*
     * Decode a BER encoded ASN1EACString
     */
-	override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoderImpl source)
     {
         BERObject obj = source.getNextObject();
         

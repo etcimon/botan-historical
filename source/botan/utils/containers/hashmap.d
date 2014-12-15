@@ -25,7 +25,7 @@ alias HashMap(Key, Value, ALLOCATOR = VulnerableAllocator) = FreeListRef!(HashMa
 
 struct HashMapImpl(Key, Value, ALLOCATOR)
 {
-	alias Traits = DefaultHashMapTraits!Key;
+    alias Traits = DefaultHashMapTraits!Key;
     struct TableEntry {
         UnConst!Key key;
         Value value;
@@ -70,15 +70,6 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         }
     }
 
-    Value get(in Key key, lazy Value default_value = Value.init) const
-    {
-        import std.conv : to;
-        auto idx = findIndex(key);
-        if (idx == size_t.max) return default_value;
-        const Value ret = m_table[idx].value;
-        return cast(Value)ret;
-    }
-
     Value get(Key key, lazy Value default_value = Value.init) const
     {
         import std.conv : to;
@@ -88,12 +79,12 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         return cast(Value)ret;
     }
 
-	Value get(Key key, lazy Value default_value = Value.init)
-	{
-		auto idx = findIndex(key);
-		if (idx == size_t.max) return default_value;
-		return m_table[idx].value;
-	}
+    Value get(in Key key, lazy Value default_value = Value.init)
+    {
+        auto idx = findIndex(key);
+        if (idx == size_t.max) return default_value;
+        return m_table[idx].value;
+    }
     
     static if (!is(typeof({ Value v; const(Value) vc; v = vc; }))) {
         const(Value) get(Key key, lazy const(Value) default_value = Value.init)
@@ -114,9 +105,9 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         m_length = 0;
     }
     
-	void set(Key key, Value value) {
-		opIndexAssign(value, key);
-	}
+    void set(Key key, Value value) {
+        opIndexAssign(value, key);
+    }
 
     void opIndexAssign(Value value, Key key)
     {
@@ -136,15 +127,13 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         m_table[i] = TableEntry(cast(Key) key, cast(Value) value);
     }
     
-    ref inout(Value) opIndex(Key key)
-    inout {
+    ref inout(Value) opIndex(Key key) inout {
         auto idx = findIndex(key);
         assert (idx != size_t.max, "Accessing non-existent key.");
         return m_table[idx].value;
     }
 
-    Value opIndex(Key key) const
-    inout {
+    Value opIndex(Key key) const {
         auto idx = findIndex(key);
         assert (idx != size_t.max, "Accessing non-existent key.");
         const Value ret = m_table[idx].value;
@@ -176,14 +165,14 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         return 0;
     }
 
-	int opApply(int delegate(in ref Key, ref Value) del)
-	{
-		foreach (i; 0 .. m_table.length)
-			if (!Traits.equals(m_table[i].key, Traits.clearValue))
-				if (auto ret = del(m_table[i].key, m_table[i].value))
-					return ret;
-		return 0;
-	}
+    int opApply(int delegate(in ref Key, ref Value) del)
+    {
+        foreach (i; 0 .. m_table.length)
+            if (!Traits.equals(m_table[i].key, Traits.clearValue))
+                if (auto ret = del(m_table[i].key, m_table[i].value))
+                    return ret;
+        return 0;
+    }
 
     int opApply(int delegate(ref Key, ref Value) del)
     {

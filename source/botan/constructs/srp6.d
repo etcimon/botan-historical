@@ -55,13 +55,13 @@ Pair!(BigInt, SymmetricKey)
     
     BigInt u = hashSeq(hash_id, p_bytes, A, B);
     
-    const BigInt x = computeX(hash_id, identifier, password, salt);
+    BigInt x = computeX(hash_id, identifier, password, salt);
     
-    BigInt S = powerMod((B - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
+    BigInt S = powerMod((B.dup - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
     
     SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
-    return Pair(A, Sk);
+    return makePair(A, Sk);
 }
 
 
@@ -141,15 +141,15 @@ public:
         
         m_p_bytes = p.bytes();
         
-        BigInt k = hashSeq(hash_id, p_bytes, p, g);
+        BigInt k = hashSeq(hash_id, m_p_bytes, p, g);
         
         BigInt b = BigInt(rng, 256);
         
-        m_B = (v*k + powerMod(g, b, p)) % p;
+        m_B = (v.dup*k + powerMod(g, b, p)) % p;
         
-        m_v = v;
+        m_v = v.dup;
         m_b = b;
-        m_p = p;
+        m_p = p.dup;
         m_hash_id = hash_id;
         
         return m_B;
@@ -162,14 +162,14 @@ public:
     */
     SymmetricKey step2(in BigInt A)
     {
-        if (A <= 0 || A >= p)
+        if (A <= 0 || A >= m_p)
             throw new Exception("Invalid SRP parameter from client");
         
         BigInt u = hashSeq(m_hash_id, m_p_bytes, A, m_B);
         
-        BigInt S = powerMod(A * powerMod(m_v, u, m_p), m_b, m_p);
+        BigInt S = powerMod(A.dup * powerMod(m_v, u, m_p), m_b, m_p);
         
-        return BigInt.encode1363(S, m_p_bytes);
+        return SymmetricKey(BigInt.encode1363(S, m_p_bytes));
     }
 
 private:

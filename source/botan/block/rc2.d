@@ -17,7 +17,7 @@ import botan.utils.mem_ops;
 /**
 * RC2
 */
-final class RC2 : BlockCipherFixedParams!(8, 1, 32), SymmetricAlgorithm
+final class RC2 : BlockCipherFixedParams!(8, 1, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
     /*

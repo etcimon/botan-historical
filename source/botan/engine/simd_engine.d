@@ -30,7 +30,7 @@ public:
     string providerName() const { return "simd"; }
 
     BlockCipher findBlockCipher(in SCANToken request,
-	                            AlgorithmFactoryImpl) const
+                                AlgorithmFactoryImpl) const
     {
         static if (BOTAN_HAS_AES_SSSE3) {
             if (request.algoName == "AES-128" && CPUID.hasSsse3())
@@ -70,7 +70,7 @@ public:
     }
 
     HashFunction findHash(in SCANToken request,
-	                      AlgorithmFactoryImpl) const
+                          AlgorithmFactoryImpl) const
     {
         static if (BOTAN_HAS_SHA1_SSE2) {
             if (request.algoName == "SHA-160" && CPUID.hasSse2())

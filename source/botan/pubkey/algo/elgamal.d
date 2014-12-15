@@ -165,7 +165,7 @@ final class ElGamalDecryptionOperation : Decryption
 public:
     override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
 
-    this(PrivateKey pkey, RandomNumberGenerator rng) {
+    this(in PrivateKey pkey, RandomNumberGenerator rng) {
         this(cast(DLSchemePrivateKey) pkey, rng);
     }
 

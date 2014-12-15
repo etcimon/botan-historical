@@ -128,7 +128,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to freshly created instance of the request algorithm
     */
-	const(BlockCipher) makeBlockCipher(in string algo_spec, in string provider = "")
+    BlockCipher makeBlockCipher(in string algo_spec, in string provider = "")
     {
         if (const BlockCipher proto = prototypeBlockCipher(algo_spec, provider))
             return proto.clone();
@@ -163,7 +163,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to freshly created instance of the request algorithm
     */
-	const(StreamCipher) makeStreamCipher(in string algo_spec, in string provider = "")
+    StreamCipher makeStreamCipher(in string algo_spec, in string provider = "")
     {
         if (const StreamCipher proto = prototypeStreamCipher(algo_spec, provider))
             return proto.clone();
@@ -187,7 +187,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-	const(HashFunction) prototypeHashFunction(in string algo_spec, in string provider = "")
+    const(HashFunction) prototypeHashFunction(in string algo_spec, in string provider = "")
     {
         return factoryPrototype!HashFunction(algo_spec, provider, engines, this, m_hash_cache);
     }
@@ -199,7 +199,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to freshly created instance of the request algorithm
     */
-	const(HashFunction) makeHashFunction(in string algo_spec, in string provider = "")
+    HashFunction makeHashFunction(in string algo_spec, in string provider = "")
     {
         if (const HashFunction proto = prototypeHashFunction(algo_spec, provider))
             return proto.clone();
@@ -222,7 +222,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-	const(MessageAuthenticationCode) prototypeMac(in string algo_spec, in string provider = "")
+    const(MessageAuthenticationCode) prototypeMac(in string algo_spec, in string provider = "")
     {
         return factoryPrototype!MessageAuthenticationCode(algo_spec, provider, engines, this, m_mac_cache);
     }
@@ -233,7 +233,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to freshly created instance of the request algorithm
     */
-	const(MessageAuthenticationCode) makeMac(in string algo_spec, in string provider = "")
+    MessageAuthenticationCode makeMac(in string algo_spec, in string provider = "")
     {
         if (const MessageAuthenticationCode proto = prototypeMac(algo_spec, provider))
             return proto.clone();
@@ -257,7 +257,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to const prototype object, ready to clone(), or NULL
     */
-	const(PBKDF) prototypePbkdf(in string algo_spec, in string provider = "")
+    const(PBKDF) prototypePbkdf(in string algo_spec, in string provider = "")
     {
         return factoryPrototype!PBKDF(algo_spec, provider, engines, this, m_pbkdf_cache);
     }
@@ -270,7 +270,7 @@ public:
     * @param provider = the provider we would like to use
     * @returns pointer to freshly created instance of the request algorithm
     */
-	const(PBKDF) makePbkdf(in string algo_spec, in string provider = "")
+    PBKDF makePbkdf(in string algo_spec, in string provider = "")
     {
         if (const PBKDF proto = prototypePbkdf(algo_spec, provider))
             return proto.clone();
@@ -286,7 +286,7 @@ public:
         m_pbkdf_cache.add(pbkdf, pbkdf.name, provider);
     }
 
-	@property const(Vector!Engine) engines() const {
+    @property const(Vector!Engine) engines() const {
         return m_engines;
     }
 
@@ -342,10 +342,10 @@ PBKDF engineGetAlgo(T : PBKDF, U : SCANToken)(Engine engine,
 { return engine.findPbkdf(request, af); }
 
 const(T) factoryPrototype(T)(in string algo_spec,
-		                     in string provider,
-		                     in Vector!( Engine ) engines,
-		                     AlgorithmFactoryImpl af,
-		                     AlgorithmCache!T cache) {
+                             in string provider,
+                             in Vector!( Engine ) engines,
+                             AlgorithmFactoryImpl af,
+                             AlgorithmCache!T cache) {
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
 

@@ -26,11 +26,11 @@ public:
         super(0);
     } // no W needed
 
-private:
+protected:
     /*
     * SHA-160 Compression Function using SSE for message expansion
     */
-    void compressN(in ubyte* input_bytes, size_t blocks)
+    override void compressN(in ubyte* input_bytes, size_t blocks)
     {
         
         const(__m128i) K00_19 = _mm_set1_epi32!(0x5A827999)();
