@@ -48,7 +48,8 @@ public:
         m_count = 0;
         m_position = 0;
     }
-private:
+
+protected:
     /**
     * The GOST 34.11 compression function
     */
@@ -202,7 +203,7 @@ private:
     /**
     * Hash additional inputs
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         m_count += length;
         
@@ -232,7 +233,7 @@ private:
     /**
     * Produce the final GOST 34.11 output
     */
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         if (m_position)
         {

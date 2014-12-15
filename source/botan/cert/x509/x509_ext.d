@@ -11,6 +11,7 @@ static if (BOTAN_HAS_X509_CERTIFICATES):
 
 import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
+import botan.asn1.asn1_str;
 import botan.utils.datastor.datastor;
 import botan.cert.x509.crl_ent;
 import botan.cert.x509.key_constraint;
@@ -74,7 +75,7 @@ final class X509ExtensionsImpl : ASN1Object
 {
 public:
 
-    override void encodeInto(DEREncoderImpl to) const
+    override void encodeInto(DEREncoderImpl to_object) const
     {
         foreach (const extension; m_extensions)
         {
@@ -96,8 +97,11 @@ public:
 
     override void decodeFrom(BERDecoderImpl from_source)
     {
-        foreach (extension; m_extensions)
-            delete extension.first;
+        CertificateExtension cext;
+        foreach (Pair!(CertificateExtension, bool) extension; m_extensions[]) {
+            cext = extension.first;
+            delete cext;
+        }
         m_extensions.clear();
         
         BERDecoder sequence = from_source.startCons(ASN1Tag.SEQUENCE);
@@ -110,7 +114,7 @@ public:
             
             sequence.startCons(ASN1Tag.SEQUENCE)
                     .decode(oid)
-                    .decodeOptional(critical, BOOLEAN, ASN1Tag.UNIVERSAL, false)
+                    .decodeOptional(critical, ASN1Tag.BOOLEAN, ASN1Tag.UNIVERSAL, false)
                     .decode(value, ASN1Tag.OCTET_STRING)
                     .verifyEnd()
                     .endCons();
@@ -133,7 +137,7 @@ public:
                                              oid.toString() ~ ": " ~ e.msg);
                 }
                 
-                m_extensions.pushBack(Pair(ext, critical));
+                m_extensions.pushBack(makePair(ext, critical));
             }
         }
         
@@ -149,17 +153,20 @@ public:
 
     void add(CertificateExtension extn, bool critical = false)
     {
-        m_extensions.pushBack(Pair(extn, critical));
+        m_extensions.pushBack(makePair(extn, critical));
     }
 
-    X509Extensions opAssign(in X509Extensions other)
+    X509ExtensionsImpl opAssign(in X509Extensions other)
     {
-        foreach (extension; m_extensions)
-            delete extension.first;
+        CertificateExtension cext;
+        foreach (extension; m_extensions[]) {
+            cext = extension.first;
+            delete cext;
+        }
         m_extensions.clear();
         
-        foreach (extension; other.m_extensions)
-            m_extensions.pushBack(Pair(extension.first.copy(), extension.second));
+        foreach (extension; other.m_extensions[])
+            m_extensions.pushBack(makePair(extension.first.copy(), extension.second));
         
         return this;
     }
@@ -172,8 +179,11 @@ public:
 
     ~this()
     {
-        foreach (extension; m_extensions)
-            delete extension.first;
+        CertificateExtension cext;
+        foreach (extension; m_extensions) {
+            cext = extension.first;
+            delete cext;
+        }
     }
 
 private:
@@ -183,22 +193,22 @@ private:
     */
     CertificateExtension getExtension(in OID oid)
     {
-        string x509EXTENSION(string NAME, alias T)() {
-            return `if (OIDS.nameOf(oid, "` ~ NAME ~ `")) return new ` ~ __traits(T, identifier).stringof ~ `();`;
+        string X509_EXTENSION(string NAME, string TYPE)() {
+            return `if (OIDS.nameOf(oid, "` ~ NAME ~ `")) return new ` ~ TYPE ~ `();`;
         }
         
-        mixin( X509_EXTENSION!("X509v3.KeyUsage", KeyUsage)() );
-        mixin( X509_EXTENSION!("X509v3.BasicConstraints", BasicConstraints)() );
-        mixin( X509_EXTENSION!("X509v3.SubjectKeyIdentifier", SubjectKeyID)() );
-        mixin( X509_EXTENSION!("X509v3.AuthorityKeyIdentifier", AuthorityKeyID)() );
-        mixin( X509_EXTENSION!("X509v3.ExtendedKeyUsage", ExtendedKeyUsage)() );
-        mixin( X509_EXTENSION!("X509v3.IssuerAlternativeName", IssuerAlternativeName)() );
-        mixin( X509_EXTENSION!("X509v3.SubjectAlternativeName", SubjectAlternativeName)() );
-        mixin( X509_EXTENSION!("X509v3.CertificatePolicies", CertificatePolicies)() );
-        mixin( X509_EXTENSION!("X509v3.CRLDistributionPoints", CRLDistributionPoints)() );
-        mixin( X509_EXTENSION!("PKIX.AuthorityInformationAccess", AuthorityInformationAccess)() );
-        mixin( X509_EXTENSION!("X509v3.CRLNumber", CRLNumber)() );
-        mixin( X509_EXTENSION!("X509v3.ReasonCode", CRLReasonCode)() );
+        mixin( X509_EXTENSION!("X509v3.KeyUsage", "KeyUsage")() );
+        mixin( X509_EXTENSION!("X509v3.BasicConstraints", "BasicConstraints")() );
+        mixin( X509_EXTENSION!("X509v3.SubjectKeyIdentifier", "SubjectKeyID")() );
+        mixin( X509_EXTENSION!("X509v3.AuthorityKeyIdentifier", "AuthorityKeyID")() );
+        mixin( X509_EXTENSION!("X509v3.ExtendedKeyUsage", "ExtendedKeyUsage")() );
+        mixin( X509_EXTENSION!("X509v3.IssuerAlternativeName", "IssuerAlternativeName")() );
+        mixin( X509_EXTENSION!("X509v3.SubjectAlternativeName", "SubjectAlternativeName")() );
+        mixin( X509_EXTENSION!("X509v3.CertificatePolicies", "CertificatePolicies")() );
+        mixin( X509_EXTENSION!("X509v3.CRLDistributionPoints", "CRLDistributionPoints")() );
+        mixin( X509_EXTENSION!("PKIX.AuthorityInformationAccess", "AuthorityInformationAccess")() );
+        mixin( X509_EXTENSION!("X509v3.CRLNumber", "CRLNumber")() );
+        mixin( X509_EXTENSION!("X509v3.ReasonCode", "CRLReasonCode")() );
         
         return null;
     }
@@ -217,7 +227,7 @@ final class BasicConstraints : CertificateExtension
 {
 public:
     override BasicConstraints copy() const
-    { return new BasicConstraints(m_is_ca, path_limit); }
+    { return new BasicConstraints(m_is_ca, m_path_limit); }
 
     this(bool ca = false, size_t limit = 0)
     {
@@ -262,8 +272,8 @@ protected:
     {
         BERDecoder(input)
                 .startCons(ASN1Tag.SEQUENCE)
-                .decodeOptional(m_is_ca, BOOLEAN, ASN1Tag.UNIVERSAL, false)
-                .decodeOptional(m_path_limit, INTEGER, ASN1Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
+                .decodeOptional(m_is_ca, ASN1Tag.BOOLEAN, ASN1Tag.UNIVERSAL, false)
+                .decodeOptional(m_path_limit, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL, NO_CERT_PATH_LIMIT)
                 .verifyEnd()
                 .endCons();
         
@@ -292,13 +302,13 @@ final class KeyUsage : CertificateExtension
 public:
     override KeyUsage copy() const { return new KeyUsage(m_constraints); }
 
-    this(KeyConstraints c = KeyConstraints.NO_CONSTRAINTS) { constraints = c; }
+    this(KeyConstraints c = KeyConstraints.NO_CONSTRAINTS) { m_constraints = c; }
 
-    KeyConstraints getConstraints() const { return constraints; }
+    KeyConstraints getConstraints() const { return m_constraints; }
 protected:
     string oidName() const { return "X509v3.KeyUsage"; }
 
-    bool shouldEncode() const { return (constraints != KeyConstraints.NO_CONSTRAINTS); }
+    bool shouldEncode() const { return (m_constraints != KeyConstraints.NO_CONSTRAINTS); }
 
     /*
     * Encode the extension
@@ -342,11 +352,11 @@ protected:
         
         obj.value[obj.value.length-1] &= (0xFF << obj.value[0]);
         
-        ushort usage = 0;
+        KeyConstraints usage;
         foreach (size_t i; 1 .. obj.value.length)
-            usage = (obj.value[i] << 8) | usage;
+            usage |= cast(KeyConstraints) (obj.value[i] << 8);
         
-        m_constraints = KeyConstraints(usage);
+        m_constraints = usage;
     }
 
     /*
@@ -376,7 +386,7 @@ public:
     }
 
 
-    Vector!ubyte getKeyId() const { return m_key_id; }
+    const(Vector!ubyte) getKeyId() const { return m_key_id; }
 protected:
     string oidName() const { return "X509v3.SubjectKeyIdentifier"; }
 
@@ -415,12 +425,12 @@ protected:
 class AuthorityKeyID : CertificateExtension
 {
 public:
-    override AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
+    override AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id.dup); }
 
     this() {}
-    this(in Vector!ubyte k) { m_key_id = k; }
+    this(Vector!ubyte k) { m_key_id = k; }
 
-    Vector!ubyte getKeyId() const { return m_key_id; }
+    const(Vector!ubyte) getKeyId() const { return m_key_id; }
 protected:
     string oidName() const { return "X509v3.AuthorityKeyIdentifier"; }
 
@@ -467,11 +477,11 @@ protected:
 class AlternativeNameExt : CertificateExtension
 {
 public:
-    AlternativeName getAltName() const { return m_alt_name; }
+    const(AlternativeName) getAltName() const { return m_alt_name; }
 
 protected:
 
-    this(in AlternativeName alt_name = AlternativeName(), in string oid_name_str = null)
+    this(AlternativeName alt_name = AlternativeName.init, string oid_name_str = null)
     {
         m_alt_name = alt_name;
         m_oid_name_str = oid_name_str;
@@ -528,9 +538,9 @@ final class SubjectAlternativeName : AlternativeNameExt, CertificateExtension
 {
 public:
     override SubjectAlternativeName copy() const
-    { return new SubjectAlternativeName(getAltName()); }
+    { return new SubjectAlternativeName(cast(AlternativeName) getAltName()); }
 
-    this(in AlternativeName name = AlternativeName()) {
+    this(AlternativeName name = AlternativeName()) {
         super(name, "X509v3.SubjectAlternativeName");
     }
 }
@@ -542,9 +552,9 @@ final class IssuerAlternativeName : AlternativeNameExt, CertificateExtension
 {
 public:
     override IssuerAlternativeName copy() const
-    { return new IssuerAlternativeName(getAltName()); }
+    { return new IssuerAlternativeName(cast(AlternativeName)getAltName()); }
 
-    this(in AlternativeName name = AlternativeName()) {
+    this(AlternativeName name = AlternativeName()) {
         super(name, "X509v3.IssuerAlternativeName");
     }
 }
@@ -555,15 +565,15 @@ public:
 final class ExtendedKeyUsage : CertificateExtension
 {
 public:
-    override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids); }
+    override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids.dup); }
 
     this() {}
-    this(in Vector!OID o) 
+    this(Vector!OID o) 
     {
         m_oids = o;
     }
 
-    Vector!OID getOids() const { return m_oids; }
+    const(Vector!OID) getOids() const { return m_oids; }
 protected:
     string oidName() const { return "X509v3.ExtendedKeyUsage"; }
 
@@ -574,7 +584,7 @@ protected:
     Vector!ubyte encodeInner() const
     {
         return DEREncoder()
-            .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encodeList(m_oids)
                 .endCons()
                 .getContentsUnlocked();
@@ -607,12 +617,12 @@ final class CertificatePolicies : CertificateExtension
 {
 public:
     override CertificatePolicies copy() const
-    { return new CertificatePolicies(m_oids); }
+    { return new CertificatePolicies(m_oids.dup); }
 
     this() {}
-    this(in Vector!OID o) { m_oids = o; }
+    this(Vector!OID o) { m_oids = o; }
 
-    Vector!OID getOids() const { return m_oids; }
+    const(Vector!OID) getOids() const { return m_oids; }
 protected:
     string oidName() const { return "X509v3.CertificatePolicies"; }
 
@@ -624,9 +634,9 @@ protected:
     Vector!ubyte encodeInner() const
     {
         Vector!( PolicyInformation ) policies;
-        
-        foreach (oid; m_oids)
-            policies.pushBack(m_oids[i]);
+
+        foreach (oid; m_oids[])
+            policies.pushBack(PolicyInformation(oid));
         
         return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
@@ -677,8 +687,8 @@ protected:
 
     Vector!ubyte encodeInner() const
     {
-        ASN1String url = ASN1String(m_ocsp_responder, IA5_STRING);
-        
+        ASN1String url = ASN1String(m_ocsp_responder, ASN1Tag.IA5_STRING);
+
         return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -862,19 +872,19 @@ public:
         }
 
 
-        AlternativeName point() const { return m_point; }
+        const(AlternativeName) point() const { return m_point; }
     private:
         AlternativeName m_point;
     }
 
     override CRLDistributionPoints copy() const
-    { return new CRLDistributionPoints(m_distribution_points); }
+    { return new CRLDistributionPoints(m_distribution_points.dup); }
 
     this() {}
 
-    this(in Vector!( DistributionPoint ) points) { m_distribution_points = points; }
+    this(Vector!( DistributionPoint ) points) { m_distribution_points = points; }
 
-    Vector!( DistributionPoint ) distributionPoints() const
+    const(Vector!( DistributionPoint )) distributionPoints() const
     { return m_distribution_points; }
 
 protected:
@@ -899,7 +909,7 @@ protected:
         {
             auto point = distribution_point.point().contents();
             
-            point.equalRange("URI", (string val) {
+            point.equalRange("URI", (in string val) {
                 info.add("CRL.DistributionPoint", val);
             });
         }
@@ -920,19 +930,19 @@ public:
     OID oid;
     
     this() {}
-    this(in OID oid_) { oid = oid_; }
+    this(OID oid_) { oid = oid_; }
     
     override void encodeInto(DEREncoderImpl codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
-            .encode(oid)
+                .encode(oid)
                 .endCons();
     }
     
     override void decodeFrom(BERDecoderImpl codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
-            .decode(oid)
+                .decode(oid)
                 .discardRemaining()
                 .endCons();
     }

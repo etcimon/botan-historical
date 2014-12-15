@@ -37,7 +37,7 @@ protected:
     /*
     * Update the hash
     */
-    override final void addData(in ubyte* input, size_t length)
+    override final void addData(ubyte* input, size_t length)
     {
         m_count += length;
         

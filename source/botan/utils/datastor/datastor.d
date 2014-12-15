@@ -13,6 +13,8 @@ import botan.utils.containers.multimap;
 import botan.utils.memory.zeroize;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
+import std.traits : isNumeric;
+import std.conv : to;
 
 /**
 * Data Store
@@ -139,7 +141,8 @@ public:
     /*
     * Insert a single key and value
     */
-    void add(in string key, uint val)
+    void add(T)(in string key, in T val)
+        if (isNumeric!T)
     {
         add(key, to!string(val));
     }

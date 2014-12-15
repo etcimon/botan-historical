@@ -74,8 +74,6 @@ private:
 struct OCSPResponse
 {
 public:
-    @disable this();
-
     this(in CertificateStore trusted_roots,
          in string response_bits)
     {
@@ -248,17 +246,20 @@ void checkSignature(in Vector!ubyte tbs_response,
     checkSignature(tbs_response, sig_algo, signature, cert_path[0]);
 }
 
+version(Have_vibe_d) import vibe.core.concurrency : Tid, send;
+else import std.concurrency : Tid, send;
 /// Checks the certificate online
-OCSPResponse onlineCheck(X509Certificate issuer,
-                         X509Certificate subject,
-                         in CertificateStore trusted_roots)
+void onlineCheck(shared(Tid) sender,
+                 immutable X509Certificate issuer,
+                 immutable X509Certificate subject,
+                 immutable CertificateStore trusted_roots)
 {
     const string responder_url = subject.ocspResponder();
     
     if (responder_url == "")
         throw new Exception("No OCSP responder specified");
     
-    OCSPRequest req = OCSPRequest(issuer, subject);
+    OCSPRequest req = OCSPRequest(cast(X509Certificate)issuer, cast(X509Certificate)subject);
     
     HTTPResponse res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
     
@@ -266,7 +267,7 @@ OCSPResponse onlineCheck(X509Certificate issuer,
     
     // Check the MIME type?
     
-    OCSPResponse response = OCSPResponse(trusted_roots, res._body());
+    immutable(OCSPResponse) response = cast(immutable)OCSPResponse(trusted_roots, res._body());
     
-    return response;
+    send(cast(Tid)sender, response);
 }

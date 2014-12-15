@@ -13,6 +13,7 @@ alias x509self = botan.cert.x509.x509self;
 import botan.asn1.asn1_time;
 import botan.asn1.oids;
 import botan.asn1.der_enc;
+import botan.asn1.asn1_attribute;
 import botan.asn1.asn1_alt_name;
 import botan.cert.x509.pkcs10;
 import botan.cert.x509.x509_ext;
@@ -23,6 +24,7 @@ import botan.filters.pipe;
 import botan.utils.types;
 import botan.utils.parsing;
 import botan.pubkey.pkcs8;
+import std.array;
 import std.datetime;
 
 /**
@@ -182,7 +184,7 @@ public:
     * Add constraints to the ExtendedKeyUsage extension.
     * @param oid = the oid to add
     */
-    void addExConstraint(in OID oid)
+    void addExConstraint(OID oid)
     {
         ex_constraints.pushBack(oid);
     }
@@ -202,8 +204,7 @@ public:
     * parameter would be "common_name/country/organization/organizational_unit".
     * @param expire_time = the expiration time (default 1 year)
     */
-    this(in string initial_opts = "",
-                      Duration expiration_time = 365.days)
+    this(in string initial_opts = "", Duration expiration_time = 365.days)
     {
         is_CA = false;
         path_limit = 0;
@@ -217,7 +218,7 @@ public:
         if (initial_opts == "")
             return;
         
-        Vector!string parsed = splitter(initial_opts, '/');
+        Vector!string parsed = initial_opts.split('/');
         
         if (parsed.length > 4)
             throw new InvalidArgument("X.509 cert options: Too many names: " ~ initial_opts);
@@ -250,12 +251,12 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
     opts.sanityCheck();
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
-    Unique!PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
+    PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
     loadInfo(opts, subject_dn, subject_alt);
     
     KeyConstraints constraints;
     if (opts.is_CA)
-        constraints = KeyConstraints(KEY_CERT_SIGN | CRL_SIGN);
+        constraints = KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN;
     else
         constraints = findConstraints(key, opts.constraints);
     
@@ -269,12 +270,12 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
     
     extensions.add(new SubjectAlternativeName(subject_alt));
     
-    extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
+    extensions.add(new ExtendedKeyUsage(cast(Vector!OID) opts.ex_constraints));
     
-    return X509_CA.makeCert(*signer, rng, sig_algo, pub_key,
-                              opts.start, opts.end,
-                              subject_dn, subject_dn,
-                              extensions);
+    return X509CA.makeCert(signer, rng, sig_algo, pub_key,
+                           opts.start, opts.end,
+                           subject_dn, subject_dn,
+                           extensions);
 }
 
 /**
@@ -305,10 +306,8 @@ PKCS10Request createCertReq(in X509CertOptions opts,
     X509Extensions extensions;
     
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
-    extensions.add(new KeyUsage(opts.is_CA ? 
-                                          KeyConstraints(KEY_CERT_SIGN | CRL_SIGN) : 
-                                          findConstraints(key, opts.constraints)));
-    extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
+    extensions.add(new KeyUsage(opts.is_CA ? KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN : findConstraints(key, opts.constraints)));
+    extensions.add(new ExtendedKeyUsage(cast(Vector!OID)opts.ex_constraints));
     extensions.add(new SubjectAlternativeName(subject_alt));
     
     DEREncoder tbs_req;
@@ -321,10 +320,9 @@ PKCS10Request createCertReq(in X509CertOptions opts,
     
     if (opts.challenge != "")
     {
-        ASN1String challenge(opts.challenge, ASN1Tag.DIRECTORYSTRING);
+        ASN1String challenge = ASN1String(opts.challenge, ASN1Tag.DIRECTORY_STRING);
         
-        tbs_req.encode(Attribute("PKCS9.ChallengePassword",
-                                 DEREncoder().encode(challenge).getContentsUnlocked()));
+        tbs_req.encode(Attribute("PKCS9.ChallengePassword", DEREncoder().encode(challenge).getContentsUnlocked()));
     }
     
     tbs_req.encode(Attribute("PKCS9.ExtensionRequest",

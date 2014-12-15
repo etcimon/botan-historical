@@ -190,16 +190,10 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
      */
     this(U)(U[] values...) if (isImplicitlyConvertible!(U, T))
     {
-        auto p = cast(T*) malloc(T.sizeof * values.length);
-        static if (hasIndirections!T)
-        {
-            if (p)
-                GC.addRange(p, T.sizeof * values.length);
-        }
-        
+        auto p = allocArray!(T, ALLOCATOR, true)(values.length);
         foreach (i, e; values)
         {
-            emplace(p + i, e);
+            emplace(p.ptr + i, e);
             assert(p[i] == e);
         }
         _data = Data(p[0 .. values.length]);
@@ -366,9 +360,9 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH n).
      */
-    @property Vector dup()
+    @property Vector dup() const
     {
-        return Vector(_data._payload);
+        return Vector(cast(T[])_data._payload);
     }
     
     /**

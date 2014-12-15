@@ -420,7 +420,7 @@ public:
                                          ASN1Tag class_tag,
                                          ASN1Tag real_type,
                                          ASN1Tag real_class,
-                                         in T default_value = T.init)
+                                         T default_value = T.init)
     {
         BERObject obj = getNextObject();
         

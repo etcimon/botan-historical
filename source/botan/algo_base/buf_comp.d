@@ -183,7 +183,7 @@ protected:
     * @param input = is an input buffer
     * @param length = is the length of input in bytes
     */
-    abstract void addData(in ubyte* input, size_t length);
+    abstract void addData(ubyte* input, size_t length);
 
 	final void addData(T)(in T input, size_t length) {
 		addData(cast(ubyte*)input, length);

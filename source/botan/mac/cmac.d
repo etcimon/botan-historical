@@ -124,7 +124,7 @@ protected:
     /*
     * Update an CMAC Calculation
     */
-    override void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         bufferInsert(m_buffer, m_position, input, length);
         if (m_position + length > outputLength())

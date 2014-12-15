@@ -20,17 +20,19 @@ final class CRC32 : HashFunction
 public:
     override @property string name() const { return "CRC32"; }
     override @property size_t outputLength() const { return 4; }
+    override @property size_t hashBlockSize() const { return 0; }
     override HashFunction clone() const { return new CRC32; }
 
     override void clear() { m_crc = 0xFFFFFFFF; }
 
     this() { clear(); }
     ~this() { clear(); }
-private:
+
+protected:
     /*
     * Update a CRC32 Checksum
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         __gshared immutable uint[256] TABLE = [
             0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
@@ -109,7 +111,7 @@ private:
     /*
     * Finalize a CRC32 Checksum
     */
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         m_crc ^= 0xFFFFFFFF;
         storeBigEndian(m_crc, output);

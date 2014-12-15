@@ -12,6 +12,7 @@ static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 alias pkcs8 = botan.pubkey.pkcs8;
 
 public import botan.rng.rng;
+public import botan.pubkey.pubkey;
 import botan.pubkey.x509_key;
 import std.datetime;
 import botan.filters.pipe;

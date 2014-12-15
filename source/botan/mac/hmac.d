@@ -66,7 +66,7 @@ protected:
     /*
     * Update a HMAC Calculation
     */
-    override void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         m_hash.update(input, length);
     }

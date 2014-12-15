@@ -654,19 +654,19 @@ public:
         EVP_MD_CTX_cleanup(&m_md);
     }
     
-private:
+protected:
     
     /*
-* Update an EVP Hash Calculation
-*/
-    void addData(in ubyte* input, size_t length)
+    * Update an EVP Hash Calculation
+    */
+    override void addData(ubyte* input, size_t length)
     {
         EVP_DigestUpdate(&m_md, input, length);
     }
     /*
     * Finalize an EVP Hash Calculation
     */
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         EVP_DigestFinal_ex(&m_md, output, 0);
         const EVP_MD* algo = EVP_MD_CTX_md(&m_md);

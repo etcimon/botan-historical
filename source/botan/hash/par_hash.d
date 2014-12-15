@@ -83,11 +83,11 @@ public:
         foreach (hash; m_hashes)
             delete hash;
     }
-private:
+protected:
     /*
     * Update the hash
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         foreach (hash; m_hashes)
             hash.update(input, length);
@@ -96,7 +96,7 @@ private:
     /*
     * Finalize the hash
     */
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         uint offset = 0;
         
@@ -106,5 +106,6 @@ private:
             offset += hash.outputLength;
         }
     }
+
     Vector!HashFunction m_hashes;
 }

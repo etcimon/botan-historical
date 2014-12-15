@@ -19,6 +19,7 @@ final class Adler32 : HashFunction
 public:
     override @property string name() const { return "Adler32"; }
     override @property size_t outputLength() const { return 4; }
+    override @property size_t hashBlockSize() const { return 0; }
     override HashFunction clone() const { return new Adler32; }
 
     override void clear() { m_S1 = 1; m_S2 = 0; }
@@ -29,7 +30,7 @@ protected:
     /*
     * Update an Adler32 Checksum
     */
-    override void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         __gshared immutable size_t PROCESS_AMOUNT = 5552;
         
@@ -57,8 +58,7 @@ protected:
 
 package:
 
-void adler32Update(in ubyte* input, size_t length,
-                    ref ushort S1, ref ushort S2)
+void adler32Update(ubyte* input, size_t length, ref ushort S1, ref ushort S2)
 {
     uint S1x = S1;
     uint S2x = S2;

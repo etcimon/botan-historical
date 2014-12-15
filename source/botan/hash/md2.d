@@ -41,11 +41,11 @@ public:
         m_buffer = 16;
         clear(); 
     }
-private:
+protected:
     /**
     * Update the hash
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         bufferInsert(m_buffer, m_position, input, length);
         
@@ -119,7 +119,7 @@ private:
     /**
     * Finalize a MD2 Hash
     */
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         foreach (size_t i; m_position .. hashBlockSize)
             m_buffer[i] = cast(ubyte)(hashBlockSize - m_position);

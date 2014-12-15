@@ -186,8 +186,7 @@ private:
         tbs_crl.decodeOptional(_version, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
         
         if (_version != 0 && _version != 1)
-            throw new X509CRLError("Unknown X.509 CRL version " ~
-                                     to!string(_version+1));
+            throw new X509CRLError("Unknown X.509 CRL version " ~ to!string(_version+1));
         
         AlgorithmIdentifier sig_algo_inner;
         tbs_crl.decode(sig_algo_inner);

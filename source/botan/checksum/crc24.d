@@ -19,17 +19,19 @@ final class CRC24 : HashFunction
 public:
     override @property string name() const { return "CRC24"; }
     override @property size_t outputLength() const { return 3; }
+    override @property size_t hashBlockSize() const { return 0; }
     override HashFunction clone() const { return new CRC24; }
 
     override void clear() { m_crc = 0xB704CE; }
 
     this() { clear(); }
     ~this() { clear(); }
-private:
+
+protected:
     /*
     * Update a CRC24 Checksum
     */
-    void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         __gshared immutable uint[256] TABLE = [
             0x00000000, 0x00864CFB, 0x008AD50D, 0x000C99F6, 0x0093E6E1, 0x0015AA1A,
@@ -108,7 +110,7 @@ private:
     /*
     * Finalize a CRC24 Checksum
     */
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         foreach (size_t i; 0 .. 3)
             output[i] = get_byte(i+1, m_crc);

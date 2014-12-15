@@ -2,6 +2,8 @@ module botan.utils.containers.rbtree;
 import botan.utils.memory.memory;
 // FIXME
 import std.functional; // : binaryFun;
+import std.traits;
+import std.range;
 
 /*
  * Implementation for a Red Black node for use in a Red Black Tree (see below)
@@ -49,7 +51,7 @@ struct RBNode(V)
     /**
      * Get the left child
      */
-    @property Node left()
+    @property inout(Node) left() inout
     {
         return _left;
     }
@@ -57,7 +59,7 @@ struct RBNode(V)
     /**
      * Get the right child
      */
-    @property Node right()
+    @property inout(Node) right() inout
     {
         return _right;
     }
@@ -614,7 +616,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     // add an element to the tree, returns the node added, or the existing node
     // if it has already been added and allowDuplicates is false
     
-    private auto Add(Elem n)
+    private auto _add(Elem n)
     {
         Node result;
         static if(!allowDuplicates)
@@ -703,7 +705,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     private Node   _begin;
     private size_t _length;
     
-    private void Setup()
+    private void _setup()
     {
         assert(!_end); //Make sure that _setup isn't run more than once.
         _begin = _end = allocate();
@@ -789,7 +791,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
     }
         
     // find a node based on an element value
-    private Node Find(Elem e)
+    private Node _find(Elem e) const
     {
         static if(allowDuplicates)
         {
@@ -825,12 +827,14 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
             return null;
         }
     }
-    
+
+
+
     /**
      * Check if any elements exist in the container.  Returns $(D false) if at least
      * one element exists.
      */
-    @property bool empty()
+    @property bool empty() const
     {
         return _end.left is null;
     }
@@ -840,7 +844,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
 
         Complexity: $(BIGOH 1).
     +/
-    @property size_t length()
+    @property size_t length() const
     {
         return _length;
     }
@@ -851,7 +855,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
      *
      * Complexity: $(BIGOH n)
      */
-    @property RedBlackTree dup()
+    @property RedBlackTree dup() const
     {
         return new RedBlackTree(_end.dup(), _length);
     }
@@ -892,7 +896,7 @@ final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
 
        Complexity: $(BIGOH log(n))
      +/
-    bool opBinaryRight(string op)(Elem e) if (op == "in")
+    bool opBinaryRight(string op)(Elem e) const if (op == "in") 
     {
         return _find(e) !is null;
     }
@@ -1145,7 +1149,7 @@ assert(equal(rbt[], [5]));
     }
     
     // find the first node where the value is > e
-    private Node FirstGreater(Elem e)
+    private Node _firstGreater(Elem e)
     {
         // can't use _find, because we cannot return null
         auto cur = _end.left;
@@ -1164,7 +1168,7 @@ assert(equal(rbt[], [5]));
     }
     
     // find the first node where the value is >= e
-    private Node FirstGreaterEqual(Elem e)
+    private Node _firstGreaterEqual(Elem e)
     {
         // can't use _find, because we cannot return null.
         auto cur = _end.left;

@@ -39,7 +39,7 @@ size_t base64Encode(char* output,
     
     while (input_remaining >= 3)
     {
-        doBase64Encode(output + output_produced, input + input_consumed);
+        doBase64Encode((output + output_produced)[0..4], (input + input_consumed)[0..3]);
         
         input_consumed += 3;
         output_produced += 4;
@@ -52,7 +52,7 @@ size_t base64Encode(char* output,
         foreach (size_t i; 0 .. input_remaining)
             remainder[i] = input[input_consumed + i];
         
-        doBase64Encode(output + output_produced, remainder);
+        doBase64Encode((output + output_produced)[0..4], remainder);
         
         size_t empty_bits = 8 * (3 - input_remaining);
         size_t index = output_produced + 4 - 1;
@@ -80,8 +80,8 @@ string base64Encode(in ubyte* input,
                      size_t input_length)
 {
     import std.conv : to;
-    string output;
-    output.capacity = roundUp!size_t(input_length, 3) / 3 * 4;
+    char[] output;
+    output.length = roundUp!size_t(input_length, 3) / 3 * 4;
     
     size_t consumed = 0;
     size_t produced = base64Encode(output.ptr,
@@ -91,7 +91,7 @@ string base64Encode(in ubyte* input,
     assert(consumed == input_length, "Consumed the entire input");
     assert(produced == output.length, "Produced expected size");
     
-    return output;
+    return output.to!string;
 }
 
 /**
@@ -193,8 +193,8 @@ size_t base64Decode(ubyte* output,
         {
             if (decode_buf_pos)
             {
-                foreach (size_t i; decode_buf_pos .. 4)
-                    decode_buf[i] = 0;
+                foreach (size_t j; decode_buf_pos .. 4)
+                    decode_buf[j] = 0;
                 final_truncate = (4 - decode_buf_pos);
                 decode_buf_pos = 4;
             }
@@ -202,9 +202,9 @@ size_t base64Decode(ubyte* output,
 
         if (decode_buf_pos == 4)
         {
-            out_ptr[0] = (decode_buf[0] << 2) | (decode_buf[1] >> 4);
-            out_ptr[1] = (decode_buf[1] << 4) | (decode_buf[2] >> 2);
-            out_ptr[2] = (decode_buf[2] << 6) | decode_buf[3];
+            out_ptr[0] = cast(ubyte) ((decode_buf[0] << 2) | (decode_buf[1] >> 4));
+            out_ptr[1] = cast(ubyte) ((decode_buf[1] << 4) | (decode_buf[2] >> 2));
+            out_ptr[2] = cast(ubyte) ((decode_buf[2] << 6) | decode_buf[3]);
 
             out_ptr += 3;
             decode_buf_pos = 0;
@@ -253,7 +253,7 @@ size_t base64Decode(ubyte* output, const(char)* input, size_t input_length, bool
 */
 size_t base64Decode(ubyte* output, in string input, bool ignore_ws = true)
 {
-    return base64Decode(output, input.ptr, input.length, ignore_ws);
+    return base64Decode(output, input, ignore_ws);
 }
 
 
@@ -265,14 +265,13 @@ size_t base64Decode(ubyte* output, in string input, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded base64 output
 */
-SecureVector!ubyte base64Decode(string input, size_t input_length, bool ignore_ws = true)
+SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
 {
     SecureVector!ubyte bin;
-    bin.reserve((roundUp!size_t(input_length, 4) * 3) / 4);
-    
-    size_t written = base64Decode(bin.ptr, input.ptr, input_length, ignore_ws);
-    
-    bin.reserve(written);
+    bin.reserve((roundUp!size_t(input.length, 4) * 3) / 4);
+
+    size_t written = base64Decode(bin.ptr, input.ptr, input.length, ignore_ws);
+
     return bin;
 }
 
@@ -284,9 +283,9 @@ SecureVector!ubyte base64Decode(string input, size_t input_length, bool ignore_w
                          exception if whitespace is encountered
 * @return decoded base64 output
 */
-SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
+SecureVector!ubyte base64Decode(in Vector!ubyte input, bool ignore_ws = true)
 {
-    return base64Decode(input.ptr, input.length, ignore_ws);
+    return base64Decode(input[], ignore_ws);
 }
 
 

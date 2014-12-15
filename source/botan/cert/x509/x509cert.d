@@ -27,6 +27,7 @@ import botan.codec.pem;
 import botan.codec.hex;
 import botan.utils.types;
 import botan.utils.memory.memory;
+import botan.asn1.asn1_time;
 import std.algorithm;
 import std.array : Appender;
 
@@ -89,10 +90,9 @@ public:
     * "X509.Certificate.serial".
     * @return value(s) of the specified parameter
     */
-    Vector!string
-        subjectInfo(in string what) const
+    Vector!string subjectInfo(in string what) const
     {
-        return m_subject.get(X509DN.derefInfoField(what));
+        return m_subject.get(X509DNImpl.derefInfoField(what));
     }
 
     /**
@@ -103,7 +103,7 @@ public:
     */
     Vector!string issuerInfo(in string what) const
     {
-        return m_issuer.get(X509DN.derefInfoField(what));
+        return m_issuer.get(X509DNImpl.derefInfoField(what));
     }
 
     /**
@@ -192,7 +192,7 @@ public:
         if (!m_subject.get1Uint("X509v3.BasicConstraints.is_ca"))
             return false;
         
-        return allowedUsage(KEY_CERT_SIGN);
+        return allowedUsage(KeyConstraints.KEY_CERT_SIGN);
     }
 
 
@@ -200,7 +200,7 @@ public:
     {
         if (constraints() == KeyConstraints.NO_CONSTRAINTS)
             return true;
-        return (constraints() & usage);
+        return cast(bool) (constraints() & usage);
     }
 
     /**
@@ -234,8 +234,7 @@ public:
     */
     KeyConstraints constraints() const
     {
-        return KeyConstraints(m_subject.get1Uint("X509v3.KeyUsage",
-                                                 KeyConstraints.NO_CONSTRAINTS));
+        return cast(KeyConstraints) m_subject.get1Uint("X509v3.KeyUsage", KeyConstraints.NO_CONSTRAINTS);
     }
 
     /**
@@ -322,7 +321,7 @@ public:
             output ~= "";
         }
         
-        output ~= "Version: " ~ x509Version();
+        output ~= "Version: " ~ x509Version().to!string;
         
         output ~= "Not valid before: " ~ startTime();
         output ~= "Not valid after: " ~ endTime();
@@ -333,19 +332,19 @@ public:
             output ~= " None";
         else
         {
-            if (constraints & DIGITAL_SIGNATURE)
+            if (constraints & KeyConstraints.DIGITAL_SIGNATURE)
                 output ~= "    Digital Signature";
-            if (constraints & NON_REPUDIATION)
+            if (constraints & KeyConstraints.NON_REPUDIATION)
                 output ~= "    Non-Repuidation";
-            if (constraints & KEY_ENCIPHERMENT)
+            if (constraints & KeyConstraints.KEY_ENCIPHERMENT)
                 output ~= "    Key Encipherment";
-            if (constraints & DATA_ENCIPHERMENT)
+            if (constraints & KeyConstraints.DATA_ENCIPHERMENT)
                 output ~= "    Data Encipherment";
-            if (constraints & KEY_AGREEMENT)
+            if (constraints & KeyConstraints.KEY_AGREEMENT)
                 output ~= "    Key Agreement";
-            if (constraints & KEY_CERT_SIGN)
+            if (constraints & KeyConstraints.KEY_CERT_SIGN)
                 output ~= "    Cert Sign";
-            if (constraints & CRL_SIGN)
+            if (constraints & KeyConstraints.CRL_SIGN)
                 output ~= "    CRL Sign";
         }
         
@@ -392,11 +391,11 @@ public:
     */
     string fingerprint(in string hash_name) const
     {
-        Unique!HashFunction hash = getHash(hash_name);
+        Unique!HashFunction hash = retrieveHash(hash_name).clone();
         hash.update(BER_encode());
         const auto hex_print = hexEncode(hash.finished());
         
-        string formatted_print;
+        Vector!ubyte formatted_print;
         
         for (size_t i = 0; i != hex_print.length; i += 2)
         {
@@ -407,7 +406,7 @@ public:
                 formatted_print.pushBack(':');
         }
         
-        return formatted_print;
+        return formatted_print[].idup;
     }
 
     /**
@@ -434,8 +433,8 @@ public:
     */
     bool opEquals(in X509Certificate other) const
     {
-        return (sig == other.sig &&
-                sig_algo == other.sig_algo &&
+        return (m_sig == other.m_sig &&
+                m_sig_algo == other.m_sig_algo &&
                 m_self_signed == other.m_self_signed &&
                 m_issuer == other.m_issuer &&
                 m_subject == other.m_subject);
@@ -465,9 +464,9 @@ public:
     * @return true if the arguments represent different certificates,
     * false if they are binary identical
     */
-    bool opCmp(in X509Certificate cert2)
+    int opCmp(in X509Certificate cert2)
     {
-        if (cert1 == cert2) return 0;
+        if (this == cert2) return 0;
         else return -1;
     }
 
@@ -515,11 +514,11 @@ private:
         X509DN dn_issuer, dn_subject;
         X509Time start, end;
         
-        BERDecoder tbsCert(tbs_bits);
+        BERDecoder tbsCert = BERDecoder(m_tbs_bits);
         
-        tbs_cert.decodeOptional(_version, (cast(ASN1Tag) 0),
-                                 (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
-            .decode(serial_bn)
+        tbsCert.decodeOptional(_version, (cast(ASN1Tag) 0),
+                              (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
+                .decode(serial_bn)
                 .decode(sig_algo_inner)
                 .decode(dn_issuer)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -531,7 +530,7 @@ private:
         
         if (_version > 2)
             throw new DecodingError("Unknown X.509 cert version " ~ to!string(_version));
-        if (sig_algo != sig_algo_inner)
+        if (m_sig_algo != sig_algo_inner)
             throw new DecodingError("Algorithm identifier mismatch");
         
         m_self_signed = (dn_subject == dn_issuer);
@@ -542,17 +541,17 @@ private:
         m_subject.add("X509.Certificate.dn_bits", putInSequence(dn_subject.getBits()));
         m_issuer.add("X509.Certificate.dn_bits", putInSequence(dn_issuer.getBits()));
         
-        BERObject public_key = tbs_cert.getNextObject();
+        BERObject public_key = tbsCert.getNextObject();
         if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
             throw new BERBadTag("X509Certificate: Unexpected tag for public key",
                                   public_key.type_tag, public_key.class_tag);
         
         Vector!ubyte v2_issuer_key_id, v2_subject_key_id;
         
-        tbs_cert.decodeOptionalString(v2_issuer_key_id, ASN1Tag.BIT_STRING, 1);
-        tbs_cert.decodeOptionalString(v2_subject_key_id, ASN1Tag.BIT_STRING, 2);
+        tbsCert.decodeOptionalString(v2_issuer_key_id, ASN1Tag.BIT_STRING, 1);
+        tbsCert.decodeOptionalString(v2_subject_key_id, ASN1Tag.BIT_STRING, 2);
         
-        BERObject v3_exts_data = tbs_cert.getNextObject();
+        BERObject v3_exts_data = tbsCert.getNextObject();
         if (v3_exts_data.type_tag == 3 &&
             v3_exts_data.class_tag == (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
         {
@@ -566,7 +565,7 @@ private:
             throw new BERBadTag("Unknown tag in X.509 cert",
                                   v3_exts_data.type_tag, v3_exts_data.class_tag);
         
-        if (tbs_cert.moreItems())
+        if (tbsCert.moreItems())
             throw new DecodingError("TBSCertificate has more items that expected");
         
         m_subject.add("X509.Certificate.version", _version);
@@ -586,7 +585,7 @@ private:
             m_subject.add("X509v3.BasicConstraints.path_constraint", NO_CERT_PATH_LIMIT);
         }
         
-        if (is_CA_cert() &&
+        if (isCACert() &&
             !m_subject.hasValue("X509v3.BasicConstraints.path_constraint"))
         {
             const size_t limit = (x509Version() < 3) ? NO_CERT_PATH_LIMIT : 0;
@@ -611,14 +610,15 @@ private:
 */
 X509DN createDn(in DataStore info)
 {
-    auto names = info.searchFor((in string key, in string)
+    bool search_for(string key, string val)
     {
         return (key.canFind("X520."));
-    });
+    }
+    auto names = info.searchFor(&search_for);
     
     X509DN dn;
     
-    foreach (key, value; names)
+    foreach (const ref string key, const ref string value; names)
         dn.addAttribute(key, value);
     
     return dn;
@@ -630,12 +630,12 @@ X509DN createDn(in DataStore info)
 */
 AlternativeName createAltName(in DataStore info)
 {
-    auto names = info.searchFor((in string key, in string)
+    auto names = info.searchFor((string key, string)
                                  { return (key == "RFC822" || key == "DNS" || key == "URI" || key == "IP"); });
     
     AlternativeName alt_name;
     
-    foreach (key, value; names)
+    foreach (const ref string key, const ref string value; names)
         alt_name.addAttribute(key, value);
     
     return alt_name;

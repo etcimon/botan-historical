@@ -66,7 +66,7 @@ protected:
     /*
     * Update an ANSI X9.19 MAC Calculation
     */
-    override void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         size_t xored = std.algorithm.min(8 - m_position, length);
         xorBuf(&m_state[m_position], input, xored);

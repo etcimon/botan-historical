@@ -11,6 +11,7 @@ static if (BOTAN_HAS_X509_CERTIFICATES):
 
 import botan.cert.x509.ocsp;
 import botan.cert.x509.x509_crl;
+import botan.cert.x509.key_constraint;
 import botan.utils.http_util.http_util;
 import botan.utils.parsing;
 import botan.pubkey.pubkey;
@@ -19,7 +20,7 @@ import botan.asn1.asn1_time;
 import std.algorithm;
 import std.datetime;
 import botan.utils.types;
-import std.container.rbtree;
+import botan.utils.containers.rbtree;
 version(Have_vibe_d) {
     import vibe.core.concurrency;
 }
@@ -70,7 +71,7 @@ public:
     this(bool require_rev, 
          size_t minimum_key_strength, 
          bool ocsp_all_intermediates, 
-         in RedBlackTree!string trusted_hashes) 
+         RedBlackTree!string trusted_hashes) 
     {
         m_require_revocation_information = require_rev;
         m_ocsp_all_intermediates = ocsp_all_intermediates;
@@ -84,7 +85,7 @@ public:
     bool ocspAllIntermediates() const
     { return m_ocsp_all_intermediates; }
 
-    RedBlackTree!string trustedHashes() const
+    const(RedBlackTree!string) trustedHashes() const
     { return m_trusted_hashes; }
 
     size_t minimumKeyStrength() const
@@ -129,7 +130,7 @@ public:
     /**
     * @return the full path from subject to trust root
     */
-    Vector!X509Certificate certPath() const { return m_cert_path; }
+    const(Vector!X509Certificate) certPath() const { return m_cert_path; }
 
     /**
     * @return true iff the validation was succesful
@@ -150,7 +151,7 @@ public:
     /**
     * Return a set of status codes for each certificate in the chain
     */
-    Vector!(  RedBlackTree!CertificateStatusCode ) allStatuses() const
+    const(Vector!(RedBlackTree!CertificateStatusCode)) allStatuses() const
     { return m_all_status; }
 
     /**
@@ -254,29 +255,29 @@ private:
 */
 PathValidationResult 
     x509PathValidate(in Vector!X509Certificate end_certs,
-                       in PathValidationRestrictions restrictions,
-                       in Vector!CertificateStore certstores)
+                     in PathValidationRestrictions restrictions,
+                     in Vector!CertificateStore certstores)
 {
     if (end_certs.empty)
         throw new InvalidArgument("x509PathValidate called with no subjects");
     
     Vector!X509Certificate cert_path;
-    cert_path.pushBack(end_certs[0]);
-    
+    cert_path.pushBack(cast(X509Certificate)end_certs[0]);
+
     auto extra = scoped!CertificateStoreOverlay(end_certs);
+    CertificateStore cert_store = extra.Scoped_payload;
     
     // iterate until we reach a root or cannot find the issuer
     while (!cert_path.back().isSelfSigned())
     {
-        const X509Certificate cert = findIssuingCert(cert_path.back(), extra, certstores);
+        const X509Certificate cert = findIssuingCert(cert_path.back(), cert_store, certstores);
         if (!cert)
-            return Path_Validation_Result(CertificateStatusCode.CERT_ISSUER_NOT_FOUND);
+            return PathValidationResult(CertificateStatusCode.CERT_ISSUER_NOT_FOUND);
         
-        cert_path.pushBack(*cert);
+        cert_path.pushBack(cast(X509Certificate) cert);
     }
     
-    return Path_Validation_Result(checkChain(cert_path, restrictions, certstores),
-                                  std.algorithm.move(cert_path));
+    return PathValidationResult(checkChain(cert_path, restrictions, certstores), cert_path);
 }
 
 
@@ -284,64 +285,64 @@ PathValidationResult
 * PKIX Path Validation
 */
 PathValidationResult x509PathValidate(in X509Certificate end_cert,
-                                          in PathValidationRestrictions restrictions,
-                                          in Vector!CertificateStore certstores)
+                                      in PathValidationRestrictions restrictions,
+                                      in Vector!CertificateStore certstores)
 {
     Vector!X509Certificate certs;
-    certs.pushBack(end_cert);
+    certs.pushBack(cast(X509Certificate)end_cert);
     return x509PathValidate(certs, restrictions, certstores);
 }
 
 /**
 * PKIX Path Validation
 */
-
 PathValidationResult x509PathValidate(in X509Certificate end_cert,
-                                          in PathValidationRestrictions restrictions,
-                                          in CertificateStore store)
+                                      in PathValidationRestrictions restrictions,
+                                      in CertificateStore store)
 {
     Vector!X509Certificate certs;
-    certs.pushBack(end_cert);
+    certs.pushBack(cast(X509Certificate)end_cert);
     
     Vector!CertificateStore certstores;
-    certstores.pushBack(&store);
+    certstores.pushBack(cast(CertificateStore) store);
     
     return x509PathValidate(certs, restrictions, certstores);
 }
+
 /**
 * PKIX Path Validation
 */
 PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
-                                          in PathValidationRestrictions restrictions,
-                                          in CertificateStore store)
+                                      in PathValidationRestrictions restrictions,
+                                      in CertificateStore store)
 {
     Vector!CertificateStore certstores;
-    certstores.pushBack(&store);
+    certstores.pushBack(cast(CertificateStore)store);
     
     return x509PathValidate(end_certs, restrictions, certstores);
 }
 
-X509Certificate findIssuingCert(in X509Certificate cert,
-                                ref CertificateStore end_certs, 
-                                in Vector!CertificateStore certstores)
+const(X509Certificate) findIssuingCert(in X509Certificate cert_,
+                                       ref CertificateStore end_certs, 
+                                       in Vector!CertificateStore certstores)
 {
-    const X509DN issuer_dn = cert.issuerDn();
-    const Vector!ubyte auth_key_id = cert.authorityKeyId();
+    const X509DN issuer_dn = cert_.issuerDn();
+    const Vector!ubyte auth_key_id = cert_.authorityKeyId();
     
     if (const X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id))
         return cert;
     
-    foreach (certstore; certstores)
+    foreach (certstore; certstores[])
     {
         if (const X509Certificate cert = certstore.findCert(issuer_dn, auth_key_id))
             return cert;
     }
     
-    return null;
+    return X509Certificate.init;
 }
 
-X509CRL findCrlsFor(in X509Certificate cert,
-                    const ref Vector!CertificateStore certstores)
+const(X509CRL) findCrlsFor(in X509Certificate cert,
+                           in Vector!CertificateStore certstores)
 {
     foreach (certstore; certstores)
     {
@@ -369,7 +370,7 @@ X509CRL findCrlsFor(in X509Certificate cert,
         }*/
     }
     
-    return null;
+    return X509CRL.init;
 }
 
 Vector!( RedBlackTree!CertificateStatusCode )
@@ -385,7 +386,7 @@ Vector!( RedBlackTree!CertificateStatusCode )
     
     Vector!( Tid ) ocsp_responses;
     
-    Vector!( RedBlackTree!CertificateStatusCode ) cert_status = Vector!( Vector!CertificateStatusCode )( cert_path.length );
+    Vector!( RedBlackTree!CertificateStatusCode ) cert_status = Vector!( RedBlackTree!CertificateStatusCode )( cert_path.length );
     
     foreach (size_t i; 0 .. cert_path.length)
     {
@@ -401,9 +402,9 @@ Vector!( RedBlackTree!CertificateStatusCode )
         
         if (i == 0 || restrictions.ocspAllIntermediates()) {
             version(Have_vibe_d)
-                ocsp_responses.pushBack(runTask(&onlineCheck, issuer, subject, trusted));
+                ocsp_responses.pushBack(runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(immutable)issuer, cast(immutable)subject, cast(immutable)trusted));
             else
-                ocsp_responses.pushBack(spawn(&onlineCheck, issuer, subject, trusted));
+                ocsp_responses.pushBack(spawn(&onlineCheck, cast(shared)thisTid(), cast(immutable)issuer, cast(immutable)subject, cast(immutable)trusted));
 
         }
         // Check all certs for valid time range
@@ -450,7 +451,7 @@ Vector!( RedBlackTree!CertificateStatusCode )
         {
             try
             {
-                OCSPResponse ocsp = ocsp_responses[i].receiveOnly!(OCSPResponse)();
+                OCSPResponse ocsp = receiveOnly!(OCSPResponse)();
                 
                 auto ocsp_status = ocsp.statusFor(ca, subject);
                 
@@ -479,15 +480,15 @@ Vector!( RedBlackTree!CertificateStatusCode )
             continue;
         }
         
-        const X509CRL crl = *crl_p;
-        
-        if (!ca.allowedUsage(CRL_SIGN))
+        const X509CRL crl = crl_p;
+
+        if (!ca.allowedUsage(KeyConstraints.CRL_SIGN))
             status.insert(CertificateStatusCode.CA_CERT_NOT_FOR_CRL_ISSUER);
         
-        if (current_time < X509Time(crl.thisUpdate()))
+        if (current_time < crl.thisUpdate())
             status.insert(CertificateStatusCode.CRL_NOT_YET_VALID);
         
-        if (current_time > X509Time(crl.nextUpdate()))
+        if (current_time > crl.nextUpdate())
             status.insert(CertificateStatusCode.CRL_HAS_EXPIRED);
         
         if (crl.checkSignature(ca.subjectPublicKey()) == false)

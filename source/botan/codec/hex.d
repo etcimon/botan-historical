@@ -11,6 +11,7 @@ import botan.codec.hex;
 import botan.utils.mem_ops;
 import botan.utils.types;
 import std.exception;
+import std.conv : to;
 
 /**
 * Perform hex encoding
@@ -31,8 +32,8 @@ void hexEncode(char* output,
     __gshared immutable ubyte[16] BIN_TO_HEX_LOWER = [
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         'a', 'b', 'c', 'd', 'e', 'f' ];
-    
-    const ubyte* tbl = uppercase ? BIN_TO_HEX_UPPER : BIN_TO_HEX_LOWER;
+
+    const ubyte* tbl = uppercase ? BIN_TO_HEX_UPPER.ptr : BIN_TO_HEX_LOWER.ptr;
     
     foreach (size_t i; 0 .. input_length)
     {
@@ -51,13 +52,13 @@ void hexEncode(char* output,
 */
 string hexEncode(in ubyte* input, size_t input_length, bool uppercase = true)
 {
-    string output;
-    output.capacity = 2 * input_length;
+    char[] output;
+    output.length = 2 * input_length;
     
     if (input_length)
         hexEncode(output.ptr, input, input_length, uppercase);
-    
-    return output;
+
+    return output.to!string;
 }
 
 /**
@@ -85,7 +86,7 @@ string hexEncode(Alloc)(in Vector!( ubyte, Alloc ) input, bool uppercase = true)
 * @return number of bytes written to output
 */
 size_t hexDecode(ubyte* output,
-                  const(char)** input,
+                  const(char)* input,
                   size_t input_length,
                   ref size_t input_consumed,
                   bool ignore_ws = true)
@@ -141,7 +142,7 @@ size_t hexDecode(ubyte* output,
             if (bin == 0x80 && ignore_ws)
                 continue;
             
-            string bad_char = input[i];
+            string bad_char = input[i].to!string;
             if (bad_char == "\t")
                 bad_char = "\\t";
             else if (bad_char == "\n")
@@ -183,9 +184,9 @@ size_t hexDecode(ubyte* output,
 * @return number of bytes written to output
 */
 size_t hexDecode(ubyte* output,
-                  const(char)* input,
-                  size_t input_length,
-                  bool ignore_ws = true)
+                 const(char)* input,
+                 size_t input_length,
+                 bool ignore_ws = true)
 {
     size_t consumed = 0;
     size_t written = hexDecode(output, input, input_length, consumed, ignore_ws);
@@ -217,14 +218,13 @@ size_t hexDecode(ubyte* output, in string input, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!ubyte hexDecode(string input, size_t input_length, bool ignore_ws = true)
+Vector!ubyte hexDecode(string input, bool ignore_ws = true)
 {
     Vector!ubyte bin;
-    bin.reserve(1 + input_length / 2);
+    bin.reserve(1 + input.length / 2);
     
-    size_t written = hexDecode(bin.ptr, input.ptr, input_length,ignore_ws);
+    size_t written = hexDecode(bin.ptr, input.ptr, input.length, ignore_ws);
     
-    bin.reserve(written);
     return bin;
 }
 
@@ -235,9 +235,9 @@ Vector!ubyte hexDecode(string input, size_t input_length, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!ubyte hexDecode(in string input, bool ignore_ws = true)
+Vector!ubyte hexDecode(in Vector!ubyte input, bool ignore_ws = true)
 {
-    return hexDecode(input.ptr, input.length, ignore_ws);
+    return hexDecode(input[], ignore_ws);
 }
 
 /**
@@ -253,9 +253,8 @@ SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool
     SecureVector!ubyte bin;
     bin.reserve(1 + input_length / 2);
     
-    size_t written = hexDecode(bin.ptr, input.ptr, input_length, ignore_ws = true);
-    
-    bin.reserve(written);
+    size_t written = hexDecode(bin.ptr, input, input_length, ignore_ws = true);
+
     return bin;
 }
 

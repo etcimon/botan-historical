@@ -22,6 +22,7 @@ import botan.codec.pem;
 import std.algorithm;
 import botan.utils.types;
 import botan.utils.types;
+import std.algorithm : splitter;
 import std.array;
 
 /**
@@ -35,7 +36,7 @@ public:
     * The underlying data that is to be or was signed
     * @return data that is or was signed
     */
-    final Vector!ubyte tbsData() const
+    final const(Vector!ubyte) tbsData() const
     {
         return putInSequence(m_tbs_bits);
     }
@@ -43,7 +44,7 @@ public:
     /**
     * @return signature on tbsData()
     */
-    final Vector!ubyte signature() const
+    final const(Vector!ubyte) signature() const
     {
         return m_sig;
     }
@@ -51,7 +52,7 @@ public:
     /**
     * @return signature algorithm that was used to generate signature
     */
-    final AlgorithmIdentifier signatureAlgorithm() const
+    final const(AlgorithmIdentifier) signatureAlgorithm() const
     {
         return m_sig_algo;
     }
@@ -90,9 +91,9 @@ public:
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
-                .rawBytes(m_tbs_bits)
+                .rawBytes(tbs_bits)
                 .encode(algo)
-                .encode(signer.signMessage(m_tbs_bits, rng), ASN1Tag.BIT_STRING)
+                .encode(signer.signMessage(tbs_bits, rng), ASN1Tag.BIT_STRING)
                 .endCons()
                 .getContentsUnlocked();
     }
@@ -131,7 +132,7 @@ public:
                 .rawBytes(m_tbs_bits)
                 .endCons()
                 .encode(m_sig_algo)
-                .encode(sig, ASN1Tag.BIT_STRING)
+                .encode(m_sig, ASN1Tag.BIT_STRING)
                 .endCons();
     }
 
@@ -156,7 +157,7 @@ public:
     */
     final Vector!ubyte BER_encode() const
     {
-        auto der = BERDecoder();
+        auto der = DEREncoder.init;
         encodeInto(der);
         return der.getContentsUnlocked();
     }
@@ -228,11 +229,11 @@ private:
     */
     final void init(DataSource input, in string labels)
     {
-        m_PEM_labels_allowed = splitter(labels, '/').array!(string[]);
+        m_PEM_labels_allowed = labels.split('/');
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-        m_PEM_label_pref = m_PEM_labels_allowed;
+        m_PEM_label_pref = m_PEM_labels_allowed[0];
         std.algorithm.sort(m_PEM_labels_allowed);
         
         try {
@@ -248,7 +249,7 @@ private:
                 if (m_PEM_labels_allowed.canFind(got_label))
                     throw new DecodingError("Invalid PEM label: " ~ got_label);
                 
-                auto dec = BERDecoder(ber);
+                auto dec = BERDecoder(ber.Scoped_payload);
                 decodeFrom(dec);
             }
         }

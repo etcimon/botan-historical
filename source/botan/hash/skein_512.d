@@ -69,7 +69,7 @@ public:
         initialBlock();
     }
 
-private:
+protected:
     enum type_code {
         SKEIN_KEY = 0,
         SKEIN_CONFIG = 4,
@@ -81,7 +81,7 @@ private:
         SKEIN_OUTPUT = 63
     }
 
-    void addData(in ubyte* input, size_t length)
+    override void addData(ubyte* input, size_t length)
     {
         if (length == 0)
             return;
@@ -110,7 +110,7 @@ private:
         m_buf_pos += length;
     }
 
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         m_T[1] |= ((cast(ulong)1) << 63); // final block flag
         

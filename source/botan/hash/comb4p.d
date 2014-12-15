@@ -77,14 +77,15 @@ public:
         m_hash1.update(0);
         m_hash2.update(0);
     }
-private:
-    void addData(in ubyte* input, size_t length)
+
+protected:
+    override void addData(ubyte* input, size_t length)
     {
         m_hash1.update(input, length);
         m_hash2.update(input, length);
     }
 
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         SecureVector!ubyte h1 = m_hash1.finished();
         SecureVector!ubyte h2 = m_hash2.finished();

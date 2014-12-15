@@ -397,7 +397,7 @@ struct FreeListRef(T, bool INIT = true)
             return (*m_object).opBinaryRight!("in")(key);
     }
 
-	U opCast(U : bool)() {
+	U opCast(U : bool)() const {
 		return m_object !is null;
 	}
 
@@ -439,6 +439,12 @@ struct FreeListRef(T, bool INIT = true)
         if (__traits(hasMember, typeof(m_object), "opIndex"))
     {
         return m_object.opIndex(args);
+    }
+
+    static if (__traits(compiles, m_object.opBinaryRight!("in")(ReturnType!(m_object.front).init)))
+    bool opBinaryRight(string op, U)(U e) const if (op == "in") 
+    {
+        return m_object.opBinaryRight!("in")(e);
     }
 
     private @property ref int refCount()

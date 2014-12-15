@@ -62,8 +62,8 @@ public:
         m_S_pos = 0;
     }
 
-private:
-    void addData(in ubyte* input, size_t length)
+protected:
+    override void addData(ubyte* input, size_t length)
     {
         if (length == 0)
             return;
@@ -108,7 +108,7 @@ private:
         }
     }
 
-    void finalResult(ubyte* output)
+    override void finalResult(ubyte* output)
     {
         Vector!ubyte padding = Vector!ubyte(m_bitrate / 8 - m_S_pos);
         
