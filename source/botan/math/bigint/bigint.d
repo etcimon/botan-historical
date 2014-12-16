@@ -36,7 +36,7 @@ public:
     */
     string toString(Base base = Decimal)
     {
-        return BigInt.encode(this, base).toString();
+        return BigInt.encode(this, base)[].idup;
     }
 
     alias Base = int;
@@ -92,8 +92,8 @@ public:
     */
     this(in BigInt other)
     {
-        m_reg = other.m_reg;
-        m_signedness = other.m_signedness;
+        m_reg = cast(SecureVector!word)other.m_reg;
+        m_signedness = cast(Sign)other.m_signedness;
     }
 
     /**
@@ -122,7 +122,7 @@ public:
             base = Hexadecimal;
         }
         
-        this = decode(cast(const ubyte*)(str.ptr) + markers,
+        this = decode(cast(const(ubyte)*)(str.ptr) + markers,
                        str.length - markers, base);
         
         if (negative) setSign(Negative);
@@ -135,7 +135,7 @@ public:
     * @param length = size of buf
     * @param base = is the number base of the integer in buf
     */
-    this(in ubyte* input, size_t length, Base base = Binary)
+    this(const(ubyte)* input, size_t length, Base base = Binary)
     {
         this = decode(input, length, base);
     }
@@ -167,9 +167,14 @@ public:
     {
         this.swap(other);
     }
+    
+    this(SecureVector!ubyte payload, in Sign sign) {
+        this(payload.ptr, payload.length);
+    }
 
-    this(in SecureVector!ubyte payload, in Sign sign) {
-        m_reg = payload.dup;
+    
+    this(SecureVector!word reg, in Sign sign) {
+        m_reg = reg;
         m_signedness = sign;
     }
 
@@ -195,7 +200,7 @@ public:
     */
     void swap(BigInt other)
     {
-        m_reg.swap(other.m_reg);
+        .swap(this, other);
         std.algorithm.swap(m_signedness, other.m_signedness);
     }
 
@@ -441,12 +446,12 @@ public:
     /**
     * Increment operator
     */
-    BigInt opUnary(string op)() if (op == "++") { return (this += 1); }
+    BigInt opUnary(string op)() if (op == "++") { return (this + BigInt(1)); }
 
     /**
     * Decrement operator
     */
-    BigInt opUnary(string op)() if (op == "--") { return (this -= 1); }
+    BigInt opUnary(string op)() if (op == "--") { return (this - BigInt(1)); }
 
     /**
     * Unary negation operator
@@ -718,10 +723,11 @@ public:
     /**
     * @result absolute (positive) value of this
     */
-    ref BigInt abs() const
+    BigInt abs() const
     {
-        setSign(Positive);
-        return this;
+        BigInt ret = BigInt(this);
+        ret.setSign(Positive);
+        return ret;
     }
 
     /**
@@ -836,7 +842,7 @@ public:
     * @param buf = ubyte array buffer containing the integer
     * @param length = size of buf
     */
-    void binaryDecode(in ubyte* buf, size_t length)
+    void binaryDecode(const(ubyte)* buf, size_t length)
     {
         const size_t WORD_BYTES = (word).sizeof;
         
@@ -888,7 +894,7 @@ public:
     * @param max = the maximum value
     * @return random integer in [min,max)
     */
-    static BigInt randomInteger(RandomNumberGenerator rng, in BigInt min, in BigInt max)
+    static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, BigInt max)
     {
         BigInt range = max - min;
         
@@ -903,7 +909,7 @@ public:
     * @param n = the power of two to create
     * @return bigint representing 2^n
     */
-    static ref BigInt powerOf2(size_t n)
+    static BigInt powerOf2(size_t n)
     {
         BigInt b;
         b.setBit(n);
@@ -966,13 +972,13 @@ public:
         }
         else if (base == Decimal)
         {
-            BigInt copy = n;
+            BigInt copy = BigInt(n.dup);
             BigInt remainder;
             copy.setSign(Positive);
             const size_t output_size = n.encodedSize(Decimal);
             foreach (size_t j; 0 .. output_size)
             {
-                divide(copy, 10, copy, remainder);
+                divide(copy, BigInt(10), copy, remainder);
                 output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
                 if (copy.isZero())
                     break;
@@ -989,7 +995,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static ref BigInt decode(in ubyte* buf, size_t length, Base base = Binary)
+    static BigInt decode(const(ubyte)* buf, size_t length, Base base = Binary)
     {
         BigInt r;
         if (base == Binary)
@@ -1005,10 +1011,10 @@ public:
                 
                 binary = hexDecodeLocked(buf0_with_leading_0.ptr, 2);
                 
-                binary ~= hexDecodeLocked(&buf[1], length - 1, false);
+                binary ~= hexDecodeLocked(cast(const(char)*)&buf[1], length - 1, false);
             }
             else
-                binary = hexDecodeLocked(buf.ptr, length, false);
+                binary = hexDecodeLocked(cast(const(char)*)buf, length, false);
             
             r.binaryDecode(binary.ptr, binary.length);
         }
@@ -1044,7 +1050,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static ref BigInt decode(in SecureVector!ubyte buf, Base base = Binary)
+    static BigInt decode(in SecureVector!ubyte buf, Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
     }
@@ -1055,7 +1061,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static ref BigInt decode(in Vector!ubyte buf, Base base = Binary)
+    static BigInt decode(in Vector!ubyte buf, Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
     }
@@ -1109,7 +1115,13 @@ public:
         
         return z;
     }
-    
+
+    BigInt opBinary(string op)(in word y)
+        if (op == "+")
+    {
+        return this + BigInt(y);
+    }
+
     /*
     * Subtraction Operator
     */
@@ -1146,7 +1158,14 @@ public:
         }
         return z;
     }
-    
+
+
+    BigInt opBinary(string op)(in word y)
+        if (op == "-")
+    {
+        return this - BigInt(y);
+    }
+
     /*
     * Multiplication Operator
     */
@@ -1174,6 +1193,13 @@ public:
             z.flipSign();
         return z;
     }
+
+
+    BigInt opBinary(string op)(in word y)
+        if (op == "*")
+    {
+        return this * BigInt(y);
+    }
     
     /*
     * Division Operator
@@ -1186,7 +1212,14 @@ public:
         divide(x, y, q, r);
         return q;
     }
-    
+
+
+    BigInt opBinary(string op)(in word y)
+        if (op == "/")
+    {
+        return this / BigInt(y);
+    }
+
     /*
     * Modulo Operator
     */
@@ -1205,7 +1238,7 @@ public:
         divide(n, mod, q, r);
         return r;
     }
-    
+
     /*
     * Modulo Operator
     */
@@ -1237,7 +1270,7 @@ public:
     {
         const BigInt x = this;
         if (shift == 0)
-            return x;
+            return BigInt(x);
         
         const size_t shift_words = shift / MP_WORD_BITS,
             shift_bits  = shift % MP_WORD_BITS;
@@ -1271,7 +1304,7 @@ public:
     }
 
     BigInt dup() const {
-        return BigInt(m_reg, m_signedness);
+        return BigInt(m_reg.dup, m_signedness);
     }
 
 private:

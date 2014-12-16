@@ -163,7 +163,7 @@ public:
     size_t maxInputBits() const { return (n.bits() - 1); }
 
     SecureVector!ubyte
-        sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+        sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -180,7 +180,7 @@ public:
     /*
     * RSA Decryption Operation
     */
-    SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+    SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
     {
         const BigInt m = BigInt(msg, msg_len);
         const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
@@ -238,13 +238,13 @@ public:
     size_t maxInputBits() const { return (n.bits() - 1); }
     bool withRecovery() const { return true; }
 
-    SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+    SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
     {
         BigInt m = BigInt(msg, msg_len);
         return BigInt.encode1363(publicOp(m), m_n.bytes());
     }
 
-    SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+    SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
         return BigInt.encodeLocked(publicOp(m));

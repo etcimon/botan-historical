@@ -27,7 +27,7 @@ import botan.utils.types;
 class HandshakeHash
 {
 public:
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     { m_data ~= input[0 .. length]; }
 
     void update(in Vector!ubyte input)

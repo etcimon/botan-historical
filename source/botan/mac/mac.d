@@ -23,14 +23,14 @@ public:
     * @param length = the length of param in
     * @return true if the MAC is valid, false otherwise
     */
-    final bool verifyMac(in ubyte* mac, size_t length)
+    final bool verifyMac(const(ubyte)* mac, size_t length)
     {
         SecureVector!ubyte our_mac = finished();
         
         if (our_mac.length != length)
             return false;
         
-        return sameMem(our_mac.ptr, mac.ptr, length);
+        return sameMem(our_mac.ptr, mac, length);
     }
 
     /**

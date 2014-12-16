@@ -40,7 +40,7 @@ public:
                 throw new PRNGUnseeded(name);
         }
         
-        const size_t max_per_prf_iter = m_prf.output_length / 2;
+        const size_t max_per_prf_iter = m_prf.outputLength / 2;
         
         /*
          HMAC KDF as described in E-t-E, using a CTXinfo of "rng"
@@ -103,7 +103,7 @@ public:
         double bits_collected = 0;
         
         Entropy_Accumulator accum = Entropy_Accumulator(
-            (in ubyte* input, size_t in_len)
+            (const(ubyte)* input, size_t in_len)
             {
                 m_extractor.update(input, in_len);
                 bits_collected += entropy_estimate;
@@ -143,7 +143,7 @@ public:
         m_counter = 0;
         
         m_collected_entropy_estimate = std.algorithm.min(m_collected_entropy_estimate + bits_collected,
-                                                         m_extractor.output_length * 8);
+                                                         m_extractor.outputLength * 8);
         
         m_output_since_reseed = 0;
     }
@@ -151,7 +151,7 @@ public:
     /*
     * Add user-supplied entropy to the extractor input
     */
-    override void addEntropy(in ubyte* input, size_t length)
+    override void addEntropy(const(ubyte)* input, size_t length)
     {
         m_extractor.update(input, length);
         reseed(BOTAN_RNG_RESEED_POLL_BITS);
@@ -166,14 +166,14 @@ public:
     {
         m_extractor = extractor; 
         m_prf = prf;
-        if (!m_prf.validKeylength(m_extractor.output_length) ||
-            !m_extractor.validKeylength(m_prf.output_length))
+        if (!m_prf.validKeylength(m_extractor.outputLength) ||
+            !m_extractor.validKeylength(m_prf.outputLength))
             throw new InvalidArgument("HMAC_RNG: Bad algo combination " ~
                                        m_extractor.name ~ " and " ~
                                        m_prf.name);
         
         // First PRF inputs are all zero, as specified in section 2
-        m_K.reserve(m_prf.output_length);
+        m_K.reserve(m_prf.outputLength);
         
         /*
         Normally we want to feedback PRF outputs to the extractor function
@@ -188,7 +188,7 @@ public:
         The PRF key will not be used to generate outputs until after reseed
         sets m_seeded to true.
         */
-        SecureVector!ubyte prf_key = SecureVector!ubyte(m_extractor.output_length);
+        SecureVector!ubyte prf_key = SecureVector!ubyte(m_extractor.outputLength);
         m_prf.setKey(prf_key);
         
         /*

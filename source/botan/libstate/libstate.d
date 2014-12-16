@@ -69,13 +69,13 @@ public:
     shared this()
     {
         m_entropy_src_mutex = new Mutex;
-        m_global_prng = new shared SerializedRNG();
+        m_global_prng = new SerializedRNG();
     }
 
     void initialize()
     {
         if (m_initialized)
-            return false;
+            return;
 
         SCANToken.setDefaultAliases();
         OIDS.setDefaults();
@@ -105,7 +105,7 @@ public:
         algorithmFactory().addEngine(new CoreEngine);
 
         synchronized(m_entropy_src_mutex)
-            if (!m_sources)
+            if (m_sources.length == 0)
                 m_sources = entropySources();
 
         static if (BOTAN_HAS_SELFTESTS)
@@ -119,7 +119,7 @@ public:
     * Return a reference to the AlgorithmFactory
     * @return global AlgorithmFactory
     */
-    AlgorithmFactory algorithmFactory() const
+    AlgorithmFactory algorithmFactory()
     {
         if (!m_algorithm_factory)
             throw new InvalidState("Uninitialized in algorithmFactory");
@@ -132,7 +132,7 @@ public:
     */
     RandomNumberGenerator globalRng()
     {
-        return m_global_prng;
+        return cast(RandomNumberGenerator)m_global_prng;
     }
 
     void pollAvailableSources(ref EntropyAccumulator accum)
@@ -164,21 +164,21 @@ private:
         static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
             sources.pushBack(new IntelRdrand);
                 
-        static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
+        static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER) version(Posix)
             sources.pushBack(new UnixProcessInfoEntropySource);
                 
-        static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM)
+        static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM) version(Posix)
             sources.pushBack(new DeviceEntropySource(
-                [ "/dev/random", "/dev/srandom", "/dev/urandom" ]
+                Vector!string([ "/dev/random", "/dev/srandom", "/dev/urandom" ])
             ));
                 
-        static if (BOTAN_HAS_ENTROPY_SRC_CAPI)
+        static if (BOTAN_HAS_ENTROPY_SRC_CAPI) version(Windows)
             sources.pushBack(EntropySource(new Win32CAPIEntropySource));
                 
         static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
             sources.pushBack(new ProcWalkingEntropySource("/proc"));
                 
-        static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
+        static if (BOTAN_HAS_ENTROPY_SRC_WIN32) version(Windows)
             sources.pushBack(new Win32EntropySource);
                 
         static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
@@ -186,18 +186,18 @@ private:
 
         static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
             sources.pushBack(
-                new UnixEntropySource(    [ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] )
+                new UnixEntropySource(   Vector!string( [ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] ) )
             );
                 
         static if (BOTAN_HAS_ENTROPY_SRC_EGD)
             sources.pushBack(
-                new EGDEntropySource( [ "/var/run/egd-pool", "/dev/egd-pool" ] )
+                new EGDEntropySource( Vector!string( [ "/var/run/egd-pool", "/dev/egd-pool" ] ) )
                 );
                 
         return sources;
     }
 
-    shared SerializedRNG m_global_prng;
+    __gshared SerializedRNG m_global_prng;
     __gshared Mutex m_entropy_src_mutex;
     __gshared Vector!( EntropySource ) m_sources;
 

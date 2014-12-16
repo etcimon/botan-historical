@@ -167,7 +167,7 @@ public:
     override size_t messagePartSize() const { return m_order.bytes(); }
     override size_t maxInputBits() const { return m_order.bits(); }
 
-    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len,
+    override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len,
                           RandomNumberGenerator rng)
     {
         BigInt k;
@@ -233,8 +233,8 @@ public:
 
     override bool withRecovery() const { return false; }
 
-    override bool verify(in ubyte* msg, size_t msg_len,
-                in ubyte* sig, size_t sig_len)
+    override bool verify(const(ubyte)* msg, size_t msg_len,
+                const(ubyte)* sig, size_t sig_len)
     {
         if (sig_len != m_order.bytes()*2)
             return false;
@@ -257,7 +257,7 @@ public:
         BigInt z2 = (-r*v) % m_order;
         
         PointGFp R = multiExponentiate(m_base_point, z1,
-                                        m_public_point, z2);
+                                       m_public_point, z2);
         
         if (R.isZero())
             return false;
@@ -273,7 +273,7 @@ private:
 
 private:
 
-BigInt decodeLittleEndian(in ubyte* msg, size_t msg_len)
+BigInt decodeLittleEndian(const(ubyte)* msg, size_t msg_len)
 {
     SecureVector!ubyte msg_le = SecureVector!ubyte(msg, msg + msg_len);
     

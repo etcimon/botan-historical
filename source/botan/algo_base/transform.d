@@ -33,7 +33,7 @@ public:
     * @param nonce = the per message nonce
     * @param nonce_len = length of nonce
     */
-    abstract SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len);
+    abstract SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len);
 
     /**
     * Process some data. Input must be in size updateGranularity() ubyte blocks.
@@ -125,7 +125,7 @@ public:
     * @param key = contains the key material
     * @param length = in bytes of key param
     */
-    final void setKey(in ubyte* key, size_t length)
+    final void setKey(const(ubyte)* key, size_t length)
     {
         if (!validKeylength(length))
             throw new InvalidKeyLength(name, length);
@@ -134,7 +134,7 @@ public:
 
 protected:
 
-    abstract void keySchedule(in ubyte* key, size_t length);
+    abstract void keySchedule(const(ubyte)* key, size_t length);
 }
 
 static if (BOTAN_TEST):

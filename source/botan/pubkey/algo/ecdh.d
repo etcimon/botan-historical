@@ -106,7 +106,7 @@ public:
         l_times_priv = inverseMod(m_cofactor, key.domain().getOrder()) * key.privateValue();
     }
 
-    override SecureVector!ubyte agree(in ubyte* w, size_t w_len)
+    override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
         PointGFp point = OS2ECP(w, w_len, m_curve);
         

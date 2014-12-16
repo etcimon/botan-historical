@@ -65,7 +65,7 @@ public:
     /**
     * Load a session from DER representation (created by DER_encode)
     */
-    this(in ubyte* ber, size_t ber_len)
+    this(const(ubyte)* ber, size_t ber_len)
     {
         ubyte side_code = 0;
         
@@ -180,7 +180,7 @@ public:
     * @param ctext_size = the size of ctext in bytes
     * @param key = the same key used by the encrypting side
     */
-    static TLSSession decrypt(in ubyte* buf, size_t buf_len, in SymmetricKey master_key)
+    static TLSSession decrypt(const(ubyte)* buf, size_t buf_len, in SymmetricKey master_key)
     {
         try
         {

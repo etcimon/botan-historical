@@ -25,7 +25,7 @@ import botan.algo_base.symkey;
 */
 void aontPackage(RandomNumberGenerator rng,
                   BlockCipher cipher,
-                  in ubyte* input, size_t input_len,
+                  const(ubyte)* input, size_t input_len,
                   ubyte* output)
 {
     import std.algorithm : fill;
@@ -84,7 +84,7 @@ void aontPackage(RandomNumberGenerator rng,
 *          input_len - cipher.BLOCK_SIZE bytes long)
 */
 void aontUnpackage(BlockCipher cipher,
-                    in ubyte* input, size_t input_len,
+                    const(ubyte)* input, size_t input_len,
                     ubyte* output)
 {
     const size_t BLOCK_SIZE = cipher.blockSize();

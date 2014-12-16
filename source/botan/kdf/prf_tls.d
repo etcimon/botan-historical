@@ -11,6 +11,7 @@ import botan.utils.xor_buf;
 import botan.mac.hmac;
 import botan.hash.md5;
 import botan.hash.sha160;
+import std.conv : to;
 
 /**
 * PRF used in TLS 1.0/1.1
@@ -22,15 +23,15 @@ public:
     * TLS PRF
     */
     override SecureVector!ubyte derive(size_t key_len,
-                            in ubyte* secret, size_t secret_len,
-                            in ubyte* seed, size_t seed_len) const
+                            const(ubyte)* secret, size_t secret_len,
+                            const(ubyte)* seed, size_t seed_len) const
     {
         SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
         size_t S1_len = (secret_len + 1) / 2;
         size_t S2_len = (secret_len + 1) / 2;
-        const ubyte* S1 = secret;
-        const ubyte* S2 = secret + (secret_len - S2_len);
+        const(ubyte)* S1 = secret;
+        const(ubyte)* S2 = secret + (secret_len - S2_len);
         
         P_hash(output, *m_hmac_md5,  S1, S1_len, seed, seed_len);
         P_hash(output, *m_hmac_sha1, S2, S2_len, seed, seed_len);
@@ -62,8 +63,8 @@ class TLS12PRF : KDF
 {
 public:
     override SecureVector!ubyte derive(size_t key_len,
-                                   in ubyte* secret, size_t secret_len,
-                                   in ubyte* seed, size_t seed_len) const
+                                   const(ubyte)* secret, size_t secret_len,
+                                   const(ubyte)* seed, size_t seed_len) const
     {
         SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
@@ -91,10 +92,10 @@ private:
 /*
 * TLS PRF P_hash function
 */
-void pHash(SecureVector!ubyte output,
+void P_hash(SecureVector!ubyte output,
             MessageAuthenticationCode mac,
-            in ubyte* secret, size_t secret_len,
-            in ubyte* seed, size_t seed_len) pure
+            const(ubyte)* secret, size_t secret_len,
+            const(ubyte)* seed, size_t seed_len) 
 {
     try
     {
@@ -105,13 +106,13 @@ void pHash(SecureVector!ubyte output,
         throw new InternalError("The premaster secret of " ~ to!string(secret_len) ~ " bytes is too long for the PRF");
     }
     
-    SecureVector!ubyte A = SecureVector!ubyte(seed, seed + seed_len);
+    SecureVector!ubyte A = SecureVector!ubyte(seed[0 .. seed_len]);
     
     size_t offset = 0;
     
     while (offset != output.length)
     {
-        const size_t this_block_len = std.algorithm.min(mac.output_length, output.length - offset);
+        const size_t this_block_len = std.algorithm.min(mac.outputLength, output.length - offset);
         
         A = mac.process(A);
         

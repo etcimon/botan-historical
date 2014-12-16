@@ -113,7 +113,7 @@ public:
         return m_nonce;
     }
 
-    SecureVector!ubyte aeadNonce(in ubyte* record, size_t record_len) const
+    SecureVector!ubyte aeadNonce(const(ubyte)* record, size_t record_len) const
     {
         assert(m_aead, "Using AEAD mode");
         assert(m_nonce.length == 12, "Expected nonce size");
@@ -152,7 +152,7 @@ public:
 
     size_t blockSize() const { return m_block_size; }
 
-    size_t macSize() const { return m_mac.output_length; }
+    size_t macSize() const { return m_mac.outputLength; }
 
     size_t ivSize() const { return m_iv_size; }
 
@@ -196,7 +196,7 @@ private:
 * @return number of bytes written to write_buffer
 */
 void writeRecord(ref SecureVector!ubyte output,
-                  ubyte msg_type, in ubyte* msg, size_t msg_length,
+                  ubyte msg_type, const(ubyte)* msg, size_t msg_length,
                   TLSProtocolVersion _version,
                   ulong msg_sequence,
                   ConnectionCipherState cipherstate,
@@ -336,7 +336,7 @@ void writeRecord(ref SecureVector!ubyte output,
 * @return zero if full message, else number of bytes still needed
 */
 size_t readRecord(SecureVector!ubyte readbuf,
-                   in ubyte* input, in size_t input_sz,
+                   const(ubyte)* input, in size_t input_sz,
                    ref size_t consumed,
                    SecureVector!ubyte record,
                    ref ulong record_sequence,
@@ -474,7 +474,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
 
 private:
                     
-size_t fillBufferTo(SecureVector!ubyte readbuf, in ubyte* input, 
+size_t fillBufferTo(SecureVector!ubyte readbuf, const(ubyte)* input, 
                       ref size_t input_size, ref size_t input_consumed, 
                       size_t desired)
 {
@@ -507,7 +507,7 @@ size_t fillBufferTo(SecureVector!ubyte readbuf, in ubyte* input,
 *
 * @fixme This should run in constant time
 */
-size_t tlsPaddingCheck(bool sslv3_padding, size_t block_size, in ubyte* record, in size_t record_len)
+size_t tlsPaddingCheck(bool sslv3_padding, size_t block_size, const(ubyte)* record, in size_t record_len)
 {
     const size_t padding_length = record[(record_len-1)];
 
@@ -573,7 +573,7 @@ void cbcDecryptRecord(ubyte[] record_contents, ConnectionCipherState cipherstate
 }
 
 void decryptRecord(SecureVector!ubyte output,
-                    in ubyte* record_contents, in size_t record_len,
+                    const(ubyte)* record_contents, in size_t record_len,
                     ulong record_sequence,
                     TLSProtocolVersion record_version,
                     RecordType record_type,
@@ -585,7 +585,7 @@ void decryptRecord(SecureVector!ubyte output,
         __gshared immutable size_t nonce_length = 8; // fixme, take from ciphersuite
         
         assert(record_len > nonce_length, "Have data past the nonce");
-        const ubyte* msg = &record_contents[nonce_length];
+        const(ubyte)* msg = &record_contents[nonce_length];
         const size_t msg_length = record_len - nonce_length;
         
         const size_t ptext_size = aead.outputLength(msg_length);
@@ -635,7 +635,7 @@ void decryptRecord(SecureVector!ubyte output,
         if (record_len < mac_pad_iv_size)
             throw new DecodingError("Record sent with invalid length");
         
-        const ubyte* plaintext_block = &record_contents[iv_size];
+        const(ubyte)* plaintext_block = &record_contents[iv_size];
         const ushort plaintext_length = record_len - mac_pad_iv_size;
         
         cipherstate.mac().update(cipherstate.formatAd(record_sequence, record_type, record_version, plaintext_length));

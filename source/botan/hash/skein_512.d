@@ -16,6 +16,8 @@ import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.get_byte;
+import std.conv : to;
 import std.algorithm;
 
 /**
@@ -29,8 +31,7 @@ public:
     * @param arg_personalization = is a string that will paramaterize the
     * hash output
     */
-    this(size_t m_output_bits = 512,
-         in string arg_personalization = "") 
+    this(size_t arg_output_bits = 512, string arg_personalization = "") 
     {
         m_personalization = arg_personalization;
         m_output_bits = arg_output_bits;
@@ -56,8 +57,7 @@ public:
     override @property string name() const
     {
         if (m_personalization != "")
-            return "Skein-512(" ~ to!string(m_output_bits) ~ "," ~
-                m_personalization ~ ")";
+            return "Skein-512(" ~ to!string(m_output_bits) ~ "," ~ m_personalization ~ ")";
         return "Skein-512(" ~ to!string(m_output_bits) ~ ")";
     }
 
@@ -81,7 +81,7 @@ protected:
         SKEIN_OUTPUT = 63
     }
 
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         if (length == 0)
             return;
@@ -133,7 +133,7 @@ protected:
         initialBlock();
     }
 
-    void ubi_512(in ubyte* msg, size_t msg_len)
+    void ubi_512(const(ubyte)* msg, size_t msg_len)
     {
         SecureVector!ulong M = SecureVector!ulong(8);
         
@@ -168,8 +168,9 @@ protected:
         m_threefish.setKey(zeros.ptr, zeros.length);
         
         // ASCII("SHA3") followed by version (0x0001) code
-        ubyte[32] config_str = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
-        storeLittleEndian(uint(m_output_bits), config_str + 8);
+		ubyte[32] config_str;
+		config_str[0 .. 7] = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
+        storeLittleEndian(cast(uint) m_output_bits, config_str.ptr + 8);
         
         resetTweak(type_code.SKEIN_CONFIG, true);
         ubi_512(config_str.ptr, config_str.length);
@@ -184,7 +185,7 @@ protected:
             if (m_personalization.length > 64)
                 throw new InvalidArgument("Skein m_personalization must be less than 64 bytes");
             
-            const ubyte* bits = cast(const ubyte*)(m_personalization.ptr);
+            const(ubyte)* bits = cast(const(ubyte)*)(m_personalization.ptr);
             resetTweak(type_code.SKEIN_PERSONALIZATION, true);
             ubi_512(bits, m_personalization.length);
         }

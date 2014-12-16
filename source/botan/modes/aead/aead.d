@@ -40,7 +40,7 @@ public:
     * @param ad = the associated data
     * @param ad_len = length of add in bytes
     */
-    abstract void setAssociatedData(in ubyte* ad, size_t ad_len);
+    abstract void setAssociatedData(const(ubyte)* ad, size_t ad_len);
 
     final void setAssociatedDataVec(Alloc)(in Vector!( ubyte, Alloc ) ad)
     {

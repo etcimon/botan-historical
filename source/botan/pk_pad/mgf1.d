@@ -16,7 +16,7 @@ import std.algorithm;
 * MGF1 from PKCS #1 v2.0
 */
 void mgf1Mask(HashFunction hash,
-               in ubyte* input, size_t in_len,
+               const(ubyte)* input, size_t in_len,
                ubyte* output, size_t out_len)
 {
     uint counter = 0;

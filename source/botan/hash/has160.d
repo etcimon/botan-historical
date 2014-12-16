@@ -50,7 +50,7 @@ protected:
     /*
     * HAS-160 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
@@ -148,7 +148,7 @@ private:
 /*
 * HAS-160 F1 Function
 */
-void f1(uint A, ref uint B, uint C, uint D, ref uint E,
+void F1(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
     E += rotateLeft(A, rot) + (D ^ (B & (C ^ D))) + msg;
@@ -158,7 +158,7 @@ void f1(uint A, ref uint B, uint C, uint D, ref uint E,
 /*
 * HAS-160 F2 Function
 */
-void f2(uint A, ref uint B, uint C, uint D, ref uint E,
+void F2(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
     E += rotateLeft(A, rot) + (B ^ C ^ D) + msg + 0x5A827999;
@@ -168,7 +168,7 @@ void f2(uint A, ref uint B, uint C, uint D, ref uint E,
 /*
 * HAS-160 F3 Function
 */
-void f3(uint A, ref uint B, uint C, uint D, ref uint E,
+void F3(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
     E += rotateLeft(A, rot) + (C ^ (B | ~D)) + msg + 0x6ED9EBA1;
@@ -178,7 +178,7 @@ void f3(uint A, ref uint B, uint C, uint D, ref uint E,
 /*
 * HAS-160 F4 Function
 */
-void f4(uint A, ref uint B, uint C, uint D, ref uint E,
+void F4(uint A, ref uint B, uint C, uint D, ref uint E,
         uint msg, uint rot)
 {
     E += rotateLeft(A, rot) + (B ^ C ^ D) + msg + 0x8F1BBCDC;

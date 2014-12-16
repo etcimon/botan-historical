@@ -20,7 +20,7 @@ public:
     /*
     * TEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -44,7 +44,7 @@ public:
     /*
     * TEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -79,7 +79,7 @@ protected:
     /*
     * TEA Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         m_K.reserve(4);
         foreach (size_t i; 0 .. 4)

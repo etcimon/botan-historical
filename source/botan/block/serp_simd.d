@@ -25,7 +25,7 @@ public:
     /*
     * Serpent Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const uint* KS = this.getRoundKeys().ptr;
         
@@ -44,7 +44,7 @@ public:
     /*
     * Serpent Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const uint* KS = this.getRoundKeys().ptr;
         

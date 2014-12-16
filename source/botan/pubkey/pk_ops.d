@@ -22,7 +22,7 @@ interface Encryption
 public:
     abstract size_t maxInputBits() const;
 
-    abstract SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
+    abstract SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng);
 
 }
 
@@ -34,7 +34,7 @@ interface Decryption
 public:
     abstract size_t maxInputBits() const;
 
-    abstract SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len);
+    abstract SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len);
 
 }
 
@@ -68,7 +68,7 @@ public:
     * @param msg_len = the length of msg in bytes
     * @param rng = a random number generator
     */
-    abstract SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng);
+    abstract SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng);
 
 }
 
@@ -110,7 +110,7 @@ public:
     * @param sig_len = the length of sig in bytes
     * @returns if signature is a valid one for message
     */
-    abstract bool verify(const ubyte*, size_t, const ubyte*, size_t);
+    abstract bool verify(const(ubyte)*, size_t, const(ubyte)*, size_t);
 
     /*
     * Perform a signature operation (with message recovery)
@@ -119,7 +119,7 @@ public:
     * @param msg_len = the length of msg in bytes
     * @returns recovered message
     */
-    abstract SecureVector!ubyte verifyMr(const ubyte*, size_t);
+    abstract SecureVector!ubyte verifyMr(const(ubyte)*, size_t);
 
 }
 
@@ -135,5 +135,5 @@ public:
     * @param w_len = the length of w in bytes
     * @returns the agreed key
     */
-    abstract SecureVector!ubyte agree(in ubyte* w, size_t w_len);
+    abstract SecureVector!ubyte agree(const(ubyte)* w, size_t w_len);
 }

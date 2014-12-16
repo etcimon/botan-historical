@@ -25,7 +25,7 @@ public:
     /*
     * Compress Input with Bzip
     */
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_bz.m_stream.next_in = cast(ubyte*) input;
         m_bz.m_stream.avail_in = cast(uint)length;
@@ -41,7 +41,7 @@ public:
     /*
     * Start Compressing with Bzip
     */
-    void startMsg()
+    override void startMsg()
     {
         clear();
         m_bz = new Bzip_Stream;
@@ -117,19 +117,19 @@ private:
 /**
 * Bzip Decompression Filter
 */
-final class BzipDecompression : Filter
+final class BzipDecompression : Filter, Filterable
 {
 public:
-    @property string name() const { return "BzipDecompression"; }
+    override @property string name() const { return "BzipDecompression"; }
 
     /*
     * Decompress Input with Bzip
     */
-    void write(ubyte* input_arr, size_t length)
+    override void write(const(ubyte)* input_arr, size_t length)
     {
         if (length) m_no_writes = false;
         
-        ubyte* input = input_arr;
+        ubyte* input = cast(ubyte*) input_arr;
         
         m_bz.m_stream.next_in = input;
         m_bz.m_stream.avail_in = cast(uint)length;
@@ -172,7 +172,7 @@ public:
     /*
     * Start Decompressing with Bzip
     */
-    void startMsg()
+    override void startMsg()
     {
         clear();
         m_bz = new Bzip_Stream;
@@ -186,7 +186,7 @@ public:
     /*
     * Finish Decompressing with Bzip
     */
-    void endMsg()
+    override void endMsg()
     {
         if (m_no_writes) return;
         m_bz.m_stream.next_in = null;
@@ -278,7 +278,7 @@ public:
     */
     ~this()
     {
-        Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(m_stream.opaque);
+        Bzip_Alloc_Info info = cast(Bzip_Alloc_Info)(m_stream.opaque);
         delete info;
         memset(m_stream, 0, (bz_stream).sizeof);
     }
@@ -289,7 +289,7 @@ public:
 */
 extern(C) void* bzip_malloc(void* info_ptr, int n, int size) nothrow
 {
-    Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
+    Bzip_Alloc_Info info = cast(Bzip_Alloc_Info)(info_ptr);
     
     const size_t total_sz = n * size;
     

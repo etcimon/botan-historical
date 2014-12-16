@@ -26,7 +26,7 @@ public:
         return cipher().name ~ "/XTS";
     }
 
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -100,7 +100,7 @@ protected:
             polyDouble(&m_tweak[i*BS], &m_tweak[(i-1)*BS], BS);
     }
 
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         const size_t key_half = length / 2;
         
@@ -300,7 +300,7 @@ public:
 
 private:
 
-void polyDouble128(ubyte* output, in ubyte* input) pure
+void polyDouble128(ubyte* output, const(ubyte)* input) pure
 {
     ulong X0 = loadLittleEndian!ulong(input, 0);
     ulong X1 = loadLittleEndian!ulong(input, 1);
@@ -316,7 +316,7 @@ void polyDouble128(ubyte* output, in ubyte* input) pure
     storeLittleEndian(output, X0, X1);
 }
 
-void polyDouble64(ubyte* output, in ubyte* input) pure
+void polyDouble64(ubyte* output, const(ubyte)* input) pure
 {
     ulong X = loadLittleEndian!ulong(input, 0);
     const bool carry = (X >> 63);
@@ -326,7 +326,7 @@ void polyDouble64(ubyte* output, in ubyte* input) pure
     storeLittleEndian(X, output);
 }
 
-void polyDouble(ubyte* output, in ubyte* input) pure
+void polyDouble(ubyte* output, const(ubyte)* input) pure
 {
     if (size == 8)
         polyDouble64(output, input);

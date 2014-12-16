@@ -62,7 +62,7 @@ public:
     /**
     * Blocking read, will return at least 1 ubyte or 0 on connection close
     */
-    final size_t read(ubyte* buf, size_t buf_len)
+    final size_t read(const(ubyte)* buf, size_t buf_len)
     {
         Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
         
@@ -84,7 +84,7 @@ public:
         return returned;
     }
 
-    final void write(ubyte* buf, size_t len) { m_channel.send(buf, len); }
+    final void write(const(ubyte)* buf, size_t len) { m_channel.send(buf, len); }
 
     final TLSChannel underlyingChannel() const { return m_channel; }
     final TLSChannel underlyingChannel() { return m_channel; }

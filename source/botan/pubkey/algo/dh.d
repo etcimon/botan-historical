@@ -145,7 +145,7 @@ public:
         m_blinder = Blinder(k, m_powermod_x_p(inverseMod(k, m_p)), m_p);
     }
 
-    override SecureVector!ubyte agree(in ubyte* w, size_t w_len)
+    override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
         BigInt input = BigInt.decode(w, w_len);
         

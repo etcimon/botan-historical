@@ -44,14 +44,14 @@ private:
     /*
     * DLIES Encryption
     */
-    Vector!ubyte enc(in ubyte* input, size_t length, RandomNumberGenerator rng) const
+    Vector!ubyte enc(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
     {
         if (length > maximumInputSize())
             throw new InvalidArgument("DLIES: Plaintext too large");
         if (m_other_key.empty)
             throw new InvalidState("DLIES: The other key was never set");
         
-        SecureVector!ubyte output = SecureVector!ubyte(m_my_key.length + length + m_mac.output_length);
+        SecureVector!ubyte output = SecureVector!ubyte(m_my_key.length + length + m_mac.outputLength);
         bufferInsert(output, 0, m_my_key);
         bufferInsert(output, m_my_key.length, input, length);
         
@@ -115,19 +115,19 @@ private:
     /*
     * DLIES Decryption
     */
-    SecureVector!ubyte dec(in ubyte* msg, size_t length) const
+    SecureVector!ubyte dec(const(ubyte)* msg, size_t length) const
     {
-        if (length < m_my_key.length + m_mac.output_length)
+        if (length < m_my_key.length + m_mac.outputLength)
             throw new DecodingError("DLIES decryption: ciphertext is too short");
         
-        const size_t CIPHER_LEN = length - m_my_key.length - m_mac.output_length;
+        const size_t CIPHER_LEN = length - m_my_key.length - m_mac.outputLength;
         
         Vector!ubyte v = Vector!ubyte(msg, msg + m_my_key.length);
         
         SecureVector!ubyte C = SecureVector!ubyte(msg + m_my_key.length, msg + m_my_key.length + CIPHER_LEN);
         
         SecureVector!ubyte T = SecureVector!ubyte(msg + m_my_key.length + CIPHER_LEN,
-                           msg + m_my_key.length + CIPHER_LEN + m_mac.output_length);
+                           msg + m_my_key.length + CIPHER_LEN + m_mac.outputLength);
         
         SecureVector!ubyte vz = SecureVector!ubyte(msg, msg + m_my_key.length);
         vz ~= m_ka.deriveKey(0, v).bitsOf();

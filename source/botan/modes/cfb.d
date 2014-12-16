@@ -22,7 +22,7 @@ import botan.utils.types;
 class CFBMode : CipherMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -98,7 +98,7 @@ protected:
     final SecureVector!ubyte keystreamBuf() { return m_keystream_buf; }
 
 protected:
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }

@@ -32,7 +32,7 @@ protected:
     /*
     * Update a CRC32 Checksum
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         __gshared immutable uint[256] TABLE = [
             0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,

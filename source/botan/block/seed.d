@@ -24,7 +24,7 @@ public:
     /*
     * SEED Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -63,7 +63,7 @@ public:
     /*
     * SEED Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -113,7 +113,7 @@ protected:
     /*
     * SEED Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         __gshared immutable uint[16] RC = [
             0x9E3779B9, 0x3C6EF373, 0x78DDE6E6, 0xF1BBCDCC,

@@ -30,7 +30,7 @@ public:
     * @param ad = the associated data
     * @param ad_len = length of add in bytes
     */
-    void setAssociatedData(in ubyte* ad, size_t ad_len)
+    void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         (cast(AEADMode)(getTransform())).setAssociatedData(ad, ad_len);
     }

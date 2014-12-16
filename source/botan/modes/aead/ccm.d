@@ -24,7 +24,7 @@ import std.algorithm;
 class CCMMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -45,7 +45,7 @@ public:
         buffer.reserve(offset); // truncate msg
     }
 
-    final override void setAssociatedData(in ubyte* ad, size_t length)
+    final override void setAssociatedData(const(ubyte)* ad, size_t length)
     {
         m_ad_buf.clear();
         
@@ -176,7 +176,7 @@ protected:
         return C;
     }
 
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }
@@ -240,7 +240,7 @@ public:
         
         SecureVector!ubyte X = SecureVector!ubyte(BS);
         
-        const ubyte* buf_end = &buf[sz - tagSize()];
+        const(ubyte)* buf_end = &buf[sz - tagSize()];
         
         while (buf != buf_end)
         {
@@ -318,7 +318,7 @@ public:
         
         SecureVector!ubyte X = SecureVector!ubyte(BS);
         
-        const ubyte* buf_end = &buf[sz];
+        const(ubyte)* buf_end = &buf[sz];
         
         while (buf != buf_end)
         {

@@ -45,7 +45,7 @@ private:
     /*
     * OAEP Pad Operation
     */
-    SecureVector!ubyte pad(in ubyte* input, size_t in_length, size_t key_length,
+    SecureVector!ubyte pad(const(ubyte)* input, size_t in_length, size_t key_length,
                              RandomNumberGenerator rng) const
     {
         key_length /= 8;
@@ -73,7 +73,7 @@ private:
     /*
     * OAEP Unpad Operation
     */
-    SecureVector!ubyte unpad(in ubyte* input, size_t in_length, size_t key_length) const
+    SecureVector!ubyte unpad(const(ubyte)* input, size_t in_length, size_t key_length) const
     {
         /*
         Must be careful about error messages here; if an attacker can

@@ -47,7 +47,7 @@ final class ZeroizeAllocator(Base : Allocator)
 
 alias SecureVector(T) = Vector!(T, SecureAllocator);
 
-Vector!(T, VulnerableAllocator) unlock(T, ALLOC)(Vector!(T, ALLOC) input)
+Vector!(T, VulnerableAllocator) unlock(T, ALLOC)(in Vector!(T, ALLOC) input)
     if (is(ALLOC == SecureAllocator))
 {
     Vector!(T, VulnerableAllocator) output = Vector!T(input.length);

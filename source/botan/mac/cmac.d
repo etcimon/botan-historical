@@ -15,6 +15,8 @@ import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
+import std.conv : to;
 /**
 * CMAC, also known as OMAC1
 */
@@ -61,9 +63,9 @@ public:
     * @param input = the input
     * @param polynomial = the ubyte value of the polynomial
     */
-    SecureVector!ubyte polyDouble(in SecureVector!ubyte input)
+    SecureVector!ubyte polyDouble(SecureVector!ubyte input)
     {
-        const bool top_carry = (input[0] & 0x80);
+        const bool top_carry = (input[0] & 0x80) != 0;
         
         SecureVector!ubyte output = input;
         
@@ -71,7 +73,7 @@ public:
         for (size_t i = output.length; i != 0; --i)
         {
             ubyte temp = output[i-1];
-            output[i-1] = (temp << 1) | carry;
+            output[i-1] = cast(ubyte)( (temp << 1) | carry );
             carry = (temp >> 7);
         }
         
@@ -93,6 +95,8 @@ public:
                     output[$-2] ^= 0x1;
                     output[$-1] ^= 0x25;
                     break;
+                default:
+                    assert(false, "Unhandled length input");
             }
         }
         
@@ -108,9 +112,7 @@ public:
         if (m_cipher.blockSize() !=  8 && m_cipher.blockSize() != 16 &&
             m_cipher.blockSize() != 32 && m_cipher.blockSize() != 64)
         {
-            throw new InvalidArgument("CMAC cannot use the " ~
-                                       to!string(m_cipher.blockSize() * 8) ~
-                                       " bit cipher " ~ m_cipher.name);
+            throw new InvalidArgument("CMAC cannot use the " ~ to!string(m_cipher.blockSize() * 8) ~ " bit cipher " ~ m_cipher.name);
         }
         
         m_state.reserve(outputLength());
@@ -124,7 +126,7 @@ protected:
     /*
     * Update an CMAC Calculation
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         bufferInsert(m_buffer, m_position, input, length);
         if (m_position + length > outputLength())
@@ -176,7 +178,7 @@ protected:
     /*
     * CMAC Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         clear();
         m_cipher.setKey(key, length);

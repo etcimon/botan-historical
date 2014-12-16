@@ -36,7 +36,7 @@ public:
     * @param rng = the random number generator to use
     */
     static Vector!RTSS split(ubyte M, ubyte N,
-                                   in ubyte* S, ushort S_len,
+                                   const(ubyte)* S, ushort S_len,
                                    in ubyte[16] identifier,
                                    RandomNumberGenerator rng)
     {

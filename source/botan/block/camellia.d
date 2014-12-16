@@ -20,12 +20,12 @@ import botan.utils.rotate;
 final class Camellia128 : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         .encrypt(input, output, blocks, m_SK, 9);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         .decrypt(input, output, blocks, m_SK, 9);
     }
@@ -38,7 +38,7 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Camellia128; }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         .key_schedule(m_SK, key, length);
     }
@@ -52,12 +52,12 @@ protected:
 final class Camellia192 : BlockCipherFixedParams!(16, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         .encrypt(input, output, blocks, m_SK, 12);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         .decrypt(input, output, blocks, m_SK, 12);
     }
@@ -70,7 +70,7 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Camellia192; }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         .key_schedule(m_SK, key, length);
     }
@@ -84,12 +84,12 @@ protected:
 final class Camellia256 : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         .encrypt(input, output, blocks, m_SK, 12);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         .decrypt(input, output, blocks, m_SK, 12);
     }
@@ -102,7 +102,7 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Camellia256; }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         .key_schedule(m_SK, key, length);
     }
@@ -214,7 +214,7 @@ ulong FLINV(ulong v, ulong K)
 /*
 * Camellia Encryption
 */
-void encrypt(ubyte* input, ubyte* output, size_t blocks,
+void encrypt(const(ubyte)* input, ubyte* output, size_t blocks,
              in SecureVector!ulong SK, in size_t rounds)
 {
     foreach (size_t i; 0 .. blocks)
@@ -258,7 +258,7 @@ void encrypt(ubyte* input, ubyte* output, size_t blocks,
 /*
 * Camellia Decryption
 */
-void decrypt(ubyte* input, ubyte* output, size_t blocks,
+void decrypt(const(ubyte)* input, ubyte* output, size_t blocks,
              in SecureVector!ulong SK, in size_t rounds)
 {
     foreach (size_t i; 0 .. blocks)
@@ -312,7 +312,7 @@ ulong left_rot_lo(ulong h, ulong l, size_t shift)
 /*
 * Camellia Key Schedule
 */
-void key_schedule(ref SecureVector!ulong SK, in ubyte* key, size_t length)
+void key_schedule(ref SecureVector!ulong SK, const(ubyte)* key, size_t length)
 {
     const ulong Sigma1 = 0xA09E667F3BCC908B;
     const ulong Sigma2 = 0xB67AE8584CAA73B2;

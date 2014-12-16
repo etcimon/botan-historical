@@ -23,7 +23,7 @@ public:
     /*
     * Twofish Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -74,7 +74,7 @@ public:
     /*
     * Twofish Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -140,7 +140,7 @@ protected:
     /*
     * Twofish Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_SB.reserve(1024);
         m_RK.reserve(40);

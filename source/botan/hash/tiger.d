@@ -15,6 +15,8 @@ import botan.utils.exceptn;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.types;
+import botan.utils.get_byte;
+import std.conv : to;
 
 /**
 * Tiger
@@ -43,7 +45,7 @@ public:
     */
     override void clear()
     {
-        MDxHashFunction.clear();
+        super.clear();
         zeroise(m_X);
         m_digest[0] = 0x0123456789ABCDEF;
         m_digest[1] = 0xFEDCBA9876543210;
@@ -72,7 +74,7 @@ protected:
     /*
     * Tiger Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         ulong A = m_digest[0], B = m_digest[1], C = m_digest[2];
         

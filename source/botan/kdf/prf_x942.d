@@ -24,8 +24,8 @@ public:
     * X9.42 PRF
     */
     override SecureVector!ubyte derive(size_t key_len,
-                            in ubyte* secret, size_t secret_len,
-                            in ubyte* salt, size_t salt_len) const
+                                       const(ubyte)* secret, size_t secret_len,
+                                       const(ubyte)* salt, size_t salt_len) const
     {
         SHA160 hash;
         const OID kek_algo = OID(m_key_wrap_oid);
@@ -60,7 +60,7 @@ public:
             
             SecureVector!ubyte digest = hash.finished();
             const size_t needed = std.algorithm.min(digest.length, key_len - key.length);
-            key += makePair(digest.ptr, needed);
+            key ~= digest.ptr[0 .. needed];
             
             ++counter;
         }

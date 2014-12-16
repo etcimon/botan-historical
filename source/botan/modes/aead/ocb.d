@@ -30,7 +30,7 @@ import std.algorithm;
 class OCBMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -44,7 +44,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override void setAssociatedData(in ubyte* ad, size_t ad_len)
+    final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         assert(m_L, "A key was set");
         m_ad_hash = ocbHash(*m_L, *m_cipher, ad.ptr, ad_len);
@@ -102,7 +102,7 @@ protected:
         
     }
 
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
         m_L = new LComputer(*m_cipher);
@@ -119,7 +119,7 @@ protected:
     SecureVector!ubyte m_ad_hash;
 private:
     final SecureVector!ubyte
-            updateNonce(in ubyte* nonce, size_t nonce_len)
+            updateNonce(const(ubyte)* nonce, size_t nonce_len)
     {
         assert(nonce_len < BS, "Nonce is less than 128 bits");
         
@@ -361,7 +361,7 @@ public:
         m_block_index = 0;
         
         // compare mac
-        const ubyte* included_tag = &buf[remaining];
+        const(ubyte)* included_tag = &buf[remaining];
         
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("OCB tag check failed");
@@ -371,7 +371,7 @@ public:
     }
 
 private:
-    void decrypt(ubyte* buffer, size_t blocks)
+    void decrypt(const(ubyte)* buffer, size_t blocks)
     {
         const LComputer L = *m_L; // convenient name
         
@@ -463,7 +463,7 @@ private:
 */
 SecureVector!ubyte ocbHash(in LComputer L,
                           const BlockCipher cipher,
-                          in ubyte* ad, size_t ad_len)
+                          const(ubyte)* ad, size_t ad_len)
 {
     SecureVector!ubyte sum = SecureVector!ubyte(BS);
     SecureVector!ubyte offset = SecureVector!ubyte(BS);
@@ -511,8 +511,8 @@ import botan.block.aes;
 
 Vector!ubyte ocbDecrypt(in SymmetricKey key,
                          in Vector!ubyte nonce,
-                         in ubyte* ct, size_t ct_len,
-                         in ubyte* ad, size_t ad_len)
+                         const(ubyte)* ct, size_t ct_len,
+                         const(ubyte)* ad, size_t ad_len)
 {
     auto ocb = scoped!OCBDecryption(new AES128);
     
@@ -529,8 +529,8 @@ Vector!ubyte ocbDecrypt(in SymmetricKey key,
 
 Vector!ubyte ocbEncrypt(in SymmetricKey key,
                          in Vector!ubyte nonce,
-                         in ubyte* pt, size_t pt_len,
-                         in ubyte* ad, size_t ad_len)
+                         const(ubyte)* pt, size_t pt_len,
+                         const(ubyte)* ad, size_t ad_len)
 {
     auto ocb = scoped!OCBEncryption(new AES128);
     

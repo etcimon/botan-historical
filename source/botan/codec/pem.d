@@ -19,7 +19,7 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-    static string encode(in ubyte* der, size_t length, in string label, size_t width = 64)
+    static string encode(const(ubyte)* der, size_t length, in string label, size_t width = 64)
     {
         immutable(string) PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
         immutable(string) PEM_TRAILER = "-----END " ~ label ~ "-----";

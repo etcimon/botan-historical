@@ -23,7 +23,7 @@ public:
     /*
     * KASUMI Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -68,7 +68,7 @@ public:
     /*
     * KASUMI Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -123,7 +123,7 @@ protected:
     /*
     * KASUMI Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         __gshared immutable ushort[] RC = [ 0x0123, 0x4567, 0x89AB, 0xCDEF,
             0xFEDC, 0xBA98, 0x7654, 0x3210 ];

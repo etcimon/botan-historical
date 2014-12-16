@@ -203,5 +203,5 @@ void appendTlsLengthValue(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in 
 
 void appendTlsLengthValue(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
 {
-    appendTlsLengthValue(buf, cast(const ubyte*)(str.ptr), str.length, tag_size);
+    appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);
 }

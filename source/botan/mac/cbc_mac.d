@@ -12,6 +12,7 @@ static if (BOTAN_HAS_CBC_MAC):
 import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
@@ -67,7 +68,7 @@ protected:
     /*
     * Update an CBC-MAC Calculation
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         size_t xored = std.algorithm.min(outputLength() - m_position, length);
         xorBuf(&m_state[m_position], input, xored);
@@ -107,7 +108,7 @@ protected:
     /*
     * CBC-MAC Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }

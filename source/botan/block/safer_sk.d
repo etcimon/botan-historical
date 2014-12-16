@@ -29,7 +29,7 @@ public:
     /*
     * SAFER-SK Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -65,7 +65,7 @@ public:
     /*
     * SAFER-SK Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -137,7 +137,7 @@ protected:
     /*
     * SAFER-SK Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         __gshared immutable ubyte[208] BIAS = [
             0x16, 0x73, 0x3B, 0x1E, 0x8E, 0x70, 0xBD, 0x86, 0x47, 0x7E, 0x24, 0x56,

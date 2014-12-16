@@ -31,7 +31,7 @@ public:
     /*
     * Lion Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const size_t LEFT_SIZE = leftSize();
         const size_t RIGHT_SIZE = right_size();
@@ -61,7 +61,7 @@ public:
     /*
     * Lion Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const size_t LEFT_SIZE = leftSize();
         const size_t RIGHT_SIZE = right_size();
@@ -151,7 +151,7 @@ protected:
     /*
     * Lion Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         clear();
         

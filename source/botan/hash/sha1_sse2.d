@@ -30,7 +30,7 @@ protected:
     /*
     * SHA-160 Compression Function using SSE for message expansion
     */
-    override void compressN(in ubyte* input_bytes, size_t blocks)
+    override void compressN(const(ubyte)* input_bytes, size_t blocks)
     {
         
         const(__m128i) K00_19 = _mm_set1_epi32!(0x5A827999)();
@@ -55,7 +55,7 @@ protected:
             
             v4si P0, P1, P2, P3;
             
-            __m128i W0 = _mm_loadu_si12input8(input.ptr);
+            __m128i W0 = _mm_loadu_si128(input);
             mixin(prep00_15!(P0, W0)());
             
             __m128i W1 = _mm_loadu_si128(&input[1]);
@@ -73,97 +73,97 @@ protected:
         F1(E, A, B, C, D, ` ~ GET_P_32!(P0, 1)() ~ `);
         F1(D, E, A, B, C, ` ~ GET_P_32!(P0, 2)() ~ `);
         F1(C, D, E, A, B, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K0019)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K00_19)() ~ `
 
         F1(B, C, D, E, A, ` ~ GET_P_32!(P1, 0)() ~ `);
         F1(A, B, C, D, E, ` ~ GET_P_32!(P1, 1)() ~ `);
         F1(E, A, B, C, D, ` ~ GET_P_32!(P1, 2)() ~ `);
         F1(D, E, A, B, C, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K2039)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K20_39)() ~ `
 
         F1(C, D, E, A, B, ` ~ GET_P_32!(P2, 0)() ~ `);
         F1(B, C, D, E, A, ` ~ GET_P_32!(P2, 1)() ~ `);
         F1(A, B, C, D, E, ` ~ GET_P_32!(P2, 2)() ~ `);
         F1(E, A, B, C, D, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K2039)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K20_39)() ~ `
 
         F1(D, E, A, B, C, ` ~ GET_P_32!(P3, 0)() ~ `);
         F1(C, D, E, A, B, ` ~ GET_P_32!(P3, 1)() ~ `);
         F1(B, C, D, E, A, ` ~ GET_P_32!(P3, 2)() ~ `);
         F1(A, B, C, D, E, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K2039)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K20_39)() ~ `
 
         F1(E, A, B, C, D, ` ~ GET_P_32!(P0, 0)() ~ `);
         F1(D, E, A, B, C, ` ~ GET_P_32!(P0, 1)() ~ `);
         F1(C, D, E, A, B, ` ~ GET_P_32!(P0, 2)() ~ `);
         F1(B, C, D, E, A, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K2039)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K20_39)() ~ `
 
         F2(A, B, C, D, E, ` ~ GET_P_32!(P1, 0)() ~ `);
         F2(E, A, B, C, D, ` ~ GET_P_32!(P1, 1)() ~ `);
         F2(D, E, A, B, C, ` ~ GET_P_32!(P1, 2)() ~ `);
         F2(C, D, E, A, B, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K2039)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K20_39)() ~ `
 
         F2(B, C, D, E, A, ` ~ GET_P_32!(P2, 0)() ~ `);
         F2(A, B, C, D, E, ` ~ GET_P_32!(P2, 1)() ~ `);
         F2(E, A, B, C, D, ` ~ GET_P_32!(P2, 2)() ~ `);
         F2(D, E, A, B, C, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K4059)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K40_59)() ~ `
 
         F2(C, D, E, A, B, ` ~ GET_P_32!(P3, 0)() ~ `);
         F2(B, C, D, E, A, ` ~ GET_P_32!(P3, 1)() ~ `);
         F2(A, B, C, D, E, ` ~ GET_P_32!(P3, 2)() ~ `);
         F2(E, A, B, C, D, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K4059)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K40_59)() ~ `
 
         F2(D, E, A, B, C, ` ~ GET_P_32!(P0, 0)() ~ `);
         F2(C, D, E, A, B, ` ~ GET_P_32!(P0, 1)() ~ `);
         F2(B, C, D, E, A, ` ~ GET_P_32!(P0, 2)() ~ `);
         F2(A, B, C, D, E, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K4059)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K40_59)() ~ `
 
         F2(E, A, B, C, D, ` ~ GET_P_32!(P1, 0)() ~ `);
         F2(D, E, A, B, C, ` ~ GET_P_32!(P1, 1)() ~ `);
         F2(C, D, E, A, B, ` ~ GET_P_32!(P1, 2)() ~ `);
         F2(B, C, D, E, A, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K4059)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K40_59)() ~ `
 
         F3(A, B, C, D, E, ` ~ GET_P_32!(P2, 0)() ~ `);
         F3(E, A, B, C, D, ` ~ GET_P_32!(P2, 1)() ~ `);
         F3(D, E, A, B, C, ` ~ GET_P_32!(P2, 2)() ~ `);
         F3(C, D, E, A, B, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K4059)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K40_59)() ~ `
 
         F3(B, C, D, E, A, ` ~ GET_P_32!(P3, 0)() ~ `);
         F3(A, B, C, D, E, ` ~ GET_P_32!(P3, 1)() ~ `);
         F3(E, A, B, C, D, ` ~ GET_P_32!(P3, 2)() ~ `);
         F3(D, E, A, B, C, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K6079)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K60_79)() ~ `
 
         F3(C, D, E, A, B, ` ~ GET_P_32!(P0, 0)() ~ `);
         F3(B, C, D, E, A, ` ~ GET_P_32!(P0, 1)() ~ `);
         F3(A, B, C, D, E, ` ~ GET_P_32!(P0, 2)() ~ `);
         F3(E, A, B, C, D, ` ~ GET_P_32!(P0, 3)() ~ `);
-        ` ~ prep!(P0, W0, W1, W2, W3, K6079)() ~ `
+        ` ~ prep!(P0, W0, W1, W2, W3, K60_79)() ~ `
 
         F3(D, E, A, B, C, ` ~ GET_P_32!(P1, 0)() ~ `);
         F3(C, D, E, A, B, ` ~ GET_P_32!(P1, 1)() ~ `);
         F3(B, C, D, E, A, ` ~ GET_P_32!(P1, 2)() ~ `);
         F3(A, B, C, D, E, ` ~ GET_P_32!(P1, 3)() ~ `);
-        ` ~ prep!(P1, W1, W2, W3, W0, K6079)() ~ `
+        ` ~ prep!(P1, W1, W2, W3, W0, K60_79)() ~ `
 
         F3(E, A, B, C, D, ` ~ GET_P_32!(P2, 0)() ~ `);
         F3(D, E, A, B, C, ` ~ GET_P_32!(P2, 1)() ~ `);
         F3(C, D, E, A, B, ` ~ GET_P_32!(P2, 2)() ~ `);
         F3(B, C, D, E, A, ` ~ GET_P_32!(P2, 3)() ~ `);
-        ` ~ prep!(P2, W2, W3, W0, W1, K6079)() ~ `
+        ` ~ prep!(P2, W2, W3, W0, W1, K60_79)() ~ `
 
         F4(A, B, C, D, E, ` ~ GET_P_32!(P3, 0)() ~ `);
         F4(E, A, B, C, D, ` ~ GET_P_32!(P3, 1)() ~ `);
         F4(D, E, A, B, C, ` ~ GET_P_32!(P3, 2)() ~ `);
         F4(C, D, E, A, B, ` ~ GET_P_32!(P3, 3)() ~ `);
-        ` ~ prep!(P3, W3, W0, W1, W2, K6079)() ~ `
+        ` ~ prep!(P3, W3, W0, W1, W2, K60_79)() ~ `
 
         F4(B, C, D, E, A, ` ~ GET_P_32!(P0, 0)() ~ `);
         F4(A, B, C, D, E, ` ~ GET_P_32!(P0, 1)() ~ `);
@@ -217,7 +217,7 @@ string GET_P_32(alias P, ubyte i)()
     static if (BOTAN_FORCE_SSE4)
         return `_mm_extract_epi32(` ~ __traits(identifier, P).stringof ~ `.u128, ` ~ i.stringof ~ `)`;
     else
-        return __traits(identifier, P).stringof ~ `.u32[` ~ i.stringof ~ `]`;
+        return __traits(identifier, P) ~ `.u32[` ~ i.stringof ~ `]`;
 
 }
 
@@ -227,8 +227,8 @@ string prep00_15(alias P, alias _W)()
     return W ~ ` = _mm_shufflehi_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
            W ~ ` = _mm_shufflelo_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
            W ~ ` = _mm_or_si128(_mm_slli_epi16(` ~ W ~ `, 8),
-                                 _mm_srli_epi16(` ~ W ~ `, 8));
-               ` ~ __traits(identifier, P).stringof ~ `.u128 = _mm_add_epi32(` ~ W ~ `, K00_19);`;
+                                _mm_srli_epi16(` ~ W ~ `, 8));
+               ` ~ __traits(identifier, P) ~ `.u128 = _mm_add_epi32(` ~ W ~ `, K00_19);`;
 }
 
 /*
@@ -319,7 +319,7 @@ pure:
 /*
 * SHA-160 F1 Function
 */
-void f1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += (D ^ (B & (C ^ D))) + msg + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);
@@ -328,7 +328,7 @@ void f1(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F2 Function
 */
-void f2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += (B ^ C ^ D) + msg + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);
@@ -337,7 +337,7 @@ void f2(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F3 Function
 */
-void f3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += ((B & C) | ((B | C) & D)) + msg + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);
@@ -346,7 +346,7 @@ void f3(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 /*
 * SHA-160 F4 Function
 */
-void f4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
+void F4(uint A, ref uint B, uint C, uint D, ref uint E, uint msg)
 {
     E += (B ^ C ^ D) + msg + rotateLeft(A, 5);
     B  = rotateLeft(B, 30);

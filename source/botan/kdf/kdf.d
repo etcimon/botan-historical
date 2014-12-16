@@ -38,7 +38,7 @@ public:
                                 in string salt = "") const
     {
         return deriveKey(key_len, secret.ptr, secret.length,
-                                cast(const ubyte*)(salt.ptr),
+                                cast(const(ubyte)*)(salt.ptr),
                                 salt.length);
     }
 
@@ -67,7 +67,7 @@ public:
     */
     SecureVector!ubyte deriveKey(size_t key_len,
                                 in SecureVector!ubyte secret,
-                                in ubyte* salt,
+                                const(ubyte)* salt,
                                 size_t salt_len) const
     {
         return deriveKey(key_len,
@@ -83,12 +83,12 @@ public:
     * @param salt = a diversifier
     */
     SecureVector!ubyte deriveKey(size_t key_len,
-                                in ubyte* secret,
+                                const(ubyte)* secret,
                                 size_t secret_len,
                                 in string salt = "") const
     {
         return deriveKey(key_len, secret, secret_len,
-                                cast(const ubyte*)(salt.ptr),
+                                cast(const(ubyte)*)(salt.ptr),
                                 salt.length);
     }
 
@@ -101,9 +101,9 @@ public:
     * @param salt_len = size of salt in bytes
     */
     SecureVector!ubyte deriveKey(size_t key_len,
-                                in ubyte* secret,
+                                const(ubyte)* secret,
                                 size_t secret_len,
-                                in ubyte* salt,
+                                const(ubyte)* salt,
                                 size_t salt_len) const
     {
         return derive(key_len, secret, secret_len, salt, salt_len);
@@ -114,8 +114,8 @@ public:
 protected:
     abstract SecureVector!ubyte
         derive(size_t key_len,
-                 in ubyte* secret, size_t secret_len,
-                 in ubyte* salt, size_t salt_len) const;
+                 const(ubyte)* secret, size_t secret_len,
+                 const(ubyte)* salt, size_t salt_len) const;
 }
 
 /**

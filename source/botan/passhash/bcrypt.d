@@ -56,7 +56,7 @@ bool checkBcrypt(in string password, in string hash)
 
 private:
 
-string bcryptBase64Encode(in ubyte* input, size_t length)
+string bcryptBase64Encode(const(ubyte)* input, size_t length)
 {
     // Bcrypt uses a non-standard base64 alphabet
     __gshared immutable ubyte[256] OPENBSD_BASE64_SUB = [
@@ -143,7 +143,7 @@ string makeBcrypt(in string pass,
     Blowfish blowfish;
     
     // Include the trailing NULL ubyte
-    blowfish.eksKeySchedule(cast(const ubyte*) pass.toStringz, pass.length + 1, salt.ptr,    work_factor);
+    blowfish.eksKeySchedule(cast(const(ubyte)*) pass.toStringz, pass.length + 1, salt.ptr,    work_factor);
     
     foreach (size_t i; 0 .. 64)
         blowfish.encryptN(ctext.ptr, ctext.ptr, 3);

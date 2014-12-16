@@ -12,6 +12,7 @@ static if (BOTAN_HAS_COMB4P):
 import botan.hash.hash;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.exception;
 
 /**
@@ -32,7 +33,7 @@ public:
         if (m_hash1.name == m_hash2.name)
             throw new InvalidArgument("Comb4P: Must use two distinct hashes");
         
-        if (m_hash1.output_length != m_hash2.output_length)
+        if (m_hash1.outputLength != m_hash2.outputLength)
             throw new InvalidArgument("Comb4P: Incompatible hashes " ~
                                        m_hash1.name ~ " and " ~
                                        m_hash2.name);
@@ -55,7 +56,7 @@ public:
 
     override @property size_t outputLength() const
     {
-        return m_hash1.output_length + m_hash2.output_length;
+        return m_hash1.outputLength + m_hash2.outputLength;
     }
 
     override HashFunction clone() const
@@ -79,7 +80,7 @@ public:
     }
 
 protected:
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         m_hash1.update(input, length);
         m_hash2.update(input, length);

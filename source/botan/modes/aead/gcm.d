@@ -34,7 +34,7 @@ static if (BOTAN_HAS_GCM_CLMUL) {
 class GCMMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -61,7 +61,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override void setAssociatedData(in ubyte* ad, size_t ad_len)
+    final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         m_ghash.setAssociatedData(ad, ad_len);
     }
@@ -92,7 +92,7 @@ public:
         m_ghash.clear();
     }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_ctr.setKey(key, keylen);
         
@@ -221,7 +221,7 @@ public:
         
         auto mac = m_ghash.finished();
         
-        const ubyte* included_tag = &buffer[remaining];
+        const(ubyte)* included_tag = &buffer[remaining];
         
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("GCM tag check failed");
@@ -237,7 +237,7 @@ public:
 final class GHASH : SymmetricAlgorithm
 {
 public:
-    void setAssociatedData(in ubyte* input, size_t length)
+    void setAssociatedData(const(ubyte)* input, size_t length)
     {
         zeroise(m_H_ad);
         
@@ -245,7 +245,7 @@ public:
         m_ad_len = length;
     }
 
-    SecureVector!ubyte nonceHash(in ubyte* nonce, size_t nonce_len)
+    SecureVector!ubyte nonceHash(const(ubyte)* nonce, size_t nonce_len)
     {
         assert(m_ghash.length == 0, "nonceHash called during wrong time");
         SecureVector!ubyte y0 = SecureVector!ubyte(16);
@@ -256,7 +256,7 @@ public:
         return y0;
     }
 
-    void start(in ubyte* nonce, size_t len)
+    void start(const(ubyte)* nonce, size_t len)
     {
         m_nonce[] = nonce[0 .. len];
         m_ghash = m_H_ad;
@@ -265,7 +265,7 @@ public:
     /*
     * Assumes input len is multiple of 16
     */
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         assert(m_ghash.length == 16, "Key was set");
         
@@ -298,7 +298,7 @@ public:
 
     @property string name() const { return "GHASH"; }
 
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_H[] = key[0 .. length];
         m_H_ad.reserve(16);
@@ -344,7 +344,7 @@ private:
         storeBigEndian!ulong(x.ptr, Z[0], Z[1]);
     }
 
-    void ghashUpdate(SecureVector!ubyte ghash, in ubyte* input, size_t length)
+    void ghashUpdate(SecureVector!ubyte ghash, const(ubyte)* input, size_t length)
     {
         __gshared immutable size_t BS = 16;
         

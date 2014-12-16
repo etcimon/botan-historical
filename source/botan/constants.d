@@ -97,7 +97,8 @@ version(SSL_V3_PRF)      {    const BOTAN_HAS_SSL_V3_PRF = true;                
 else                          const BOTAN_HAS_SSL_V3_PRF = false;
 version(TLS_V10_PRF)     {    const BOTAN_HAS_TLS_V10_PRF = true;                                                         }
 else                          const BOTAN_HAS_TLS_V10_PRF = false;
-
+version(TLS_V12_PRF)     {    const BOTAN_HAS_TLS_V12_PRF = true;                                                         }
+else                          const BOTAN_HAS_TLS_V12_PRF = false;
 version(AES_NI)          {    const BOTAN_HAS_AES_NI = true;                                                              }
 else                          const BOTAN_HASH_AES_NI = false;
 version(Serpent_x86_32)  {    const BOTAN_HAS_SERPENT_X86_32 = true;    static assert(BOTAN_HAS_X86_ARCH, ERR_ARCH);      }

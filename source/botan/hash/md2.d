@@ -12,6 +12,7 @@ static if (BOTAN_HAS_MD2):
 import botan.hash.hash;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.mem_ops;
 /**
 * MD2
 */
@@ -45,7 +46,7 @@ protected:
     /**
     * Update the hash
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         bufferInsert(m_buffer, m_position, input, length);
         
@@ -68,7 +69,7 @@ protected:
     /**
     * MD2 Compression Function
     */
-    void hash(in ubyte* input)
+    void hash(const(ubyte)* input)
     {
         __gshared immutable ubyte[256] SBOX = [
             0x29, 0x2E, 0x43, 0xC9, 0xA2, 0xD8, 0x7C, 0x01, 0x3D, 0x36, 0x54, 0xA1,
@@ -126,7 +127,7 @@ protected:
         
         hash(m_buffer.ptr);
         hash(m_checksum.ptr);
-        copyMem(output, m_X.ptr, output_length);
+        copyMem(output, m_X.ptr, outputLength);
         clear();
     }
 

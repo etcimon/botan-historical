@@ -42,7 +42,7 @@ public:
     * @param order = the order of the base point
     * @param cofactor = the cofactor
     */
-    this(in CurveGFp curve, in PointGFp base_point, in BigInt order, in BigInt cofactor) 
+    this(CurveGFp curve, PointGFp base_point, BigInt order, BigInt cofactor) 
     {
         m_curve = curve;
         m_base_point = base_point;
@@ -59,14 +59,14 @@ public:
     {
         BERDecoder ber = BERDecoder(ber_data);
         BERObject obj = ber.getNextObject();
-        
-        if (obj.type_tag == ASN1Tag.NULL_TAG)
-            throw new DecodingError("Cannot handle ImplicitCA ECDSA parameters");
-        else if (obj.type_tag == ASN1Tag.OBJECT_ID)
+        m_curve = CurveGFp.init;
+        m_base_point = PointGFp.init;
+
+        if (obj.type_tag == ASN1Tag.OBJECT_ID)
         {
             OID dom_par_oid;
             BERDecoder(ber_data).decode(dom_par_oid);
-            this(dom_par_oid);
+            this = ECGroup(dom_par_oid);
         }
         else if (obj.type_tag == ASN1Tag.SEQUENCE)
         {
@@ -93,6 +93,8 @@ public:
             m_curve = CurveGFp(p, a, b);
             m_base_point = OS2ECP(sv_base_point, m_curve);
         }
+        else if (obj.type_tag == ASN1Tag.NULL_TAG)
+            throw new DecodingError("Cannot handle ImplicitCA ECDSA parameters");
         else
             throw new DecodingError("Unexpected tag while decoding ECC domain params");
     }
@@ -103,13 +105,15 @@ public:
     */
     this(in OID domain_oid)
     {
+        m_curve = CurveGFp.init;
+        m_base_point = PointGFp.init;
         string pem = getPemForNamedGroup(OIDS.lookup(domain_oid));
         
         if (!pem)
             throw new LookupError("No ECC domain data for " ~ domain_oid.toString());
         
-        this(pem);
-        oid = domain_oid.toString();
+        this = ECGroup(pem);
+        m_oid = domain_oid.toString();
     }
 
     /**
@@ -119,6 +123,8 @@ public:
     */
     this(in string pem_or_oid = "")
     {
+        m_curve = CurveGFp.init;
+        m_base_point = PointGFp.init;
         if (pem_or_oid == "")
             return; // no initialization / uninitialized
         
@@ -126,11 +132,11 @@ public:
         {
             Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem_or_oid, "EC PARAMETERS"));
             
-            this(ber);
+            this = ECGroup(ber);
         }
         catch(DecodingError) // hmm, not PEM?
         {
-            this(OIDS.lookup(pem_or_oid));
+            this = ECGroup(OIDS.lookup(pem_or_oid));
         }
     }
 
@@ -152,7 +158,7 @@ public:
                     .startCons(ASN1Tag.SEQUENCE)
                     .encode(ecpVers1)
                     .startCons(ASN1Tag.SEQUENCE)
-                    .encode(m_curve_type)
+                    .encode(curve_type)
                     .encode(m_curve.getP())
                     .endCons()
                     .startCons(ASN1Tag.SEQUENCE)
@@ -187,25 +193,25 @@ public:
     * Return domain parameter curve
     * @result domain parameter curve
     */
-    ref CurveGFp getCurve() const { return m_curve; }
+    const(CurveGFp) getCurve() const { return m_curve; }
 
     /**
     * Return domain parameter curve
     * @result domain parameter curve
     */
-    ref PointGFp getBasePoint() const { return m_base_point; }
+    const(PointGFp) getBasePoint() const { return m_base_point; }
 
     /**
     * Return the order of the base point
     * @result order of the base point
     */
-    BigInt getOrder() const { return m_order; }
+    const(BigInt) getOrder() const { return m_order; }
 
     /**
     * Return the cofactor
     * @result the cofactor
     */
-    BigInt getCofactor() const { return m_cofactor; }
+    const(BigInt) getCofactor() const { return m_cofactor; }
 
     bool initialized() const { return !m_base_point.isZero(); }
 
@@ -224,9 +230,9 @@ public:
     bool opEquals(U : ECGroup)(auto ref U other) const
     {
         return ((getCurve() == other.getCurve()) &&
-                  (getBasePoint() == other.getBasePoint()) &&
-                  (getOrder() == other.getOrder()) &&
-                  (getCofactor() == other.getCofactor()));
+               (getBasePoint() == other.getBasePoint()) &&
+               (getOrder() == other.getOrder()) &&
+               (getCofactor() == other.getCofactor()));
     }
 
 

@@ -102,7 +102,7 @@ public:
     /*
     * Write raw bytes into the stream
     */
-    DEREncoderImpl rawBytes(in ubyte* bytes, size_t length)
+    DEREncoderImpl rawBytes(const(ubyte)* bytes, size_t length)
     {
         if (m_subsequences.length)
             m_subsequences[m_subsequences.length-1].addBytes(bytes, length);
@@ -165,7 +165,7 @@ public:
     /*
     * Encode this object
     */
-    DEREncoderImpl encode(in ubyte* bytes, size_t length,
+    DEREncoderImpl encode(const(ubyte)* bytes, size_t length,
                              ASN1Tag real_type)
     {
         return encode(bytes, length, real_type, real_type, ASN1Tag.UNIVERSAL);
@@ -237,7 +237,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    DEREncoderImpl encode(in ubyte* bytes, size_t length,
+    DEREncoderImpl encode(const(ubyte)* bytes, size_t length,
                           ASN1Tag real_type,
                           ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
@@ -300,7 +300,7 @@ public:
     */
     DEREncoderImpl addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in string rep_str)
     {
-        const ubyte* rep = cast(const ubyte*)(rep_str.ptr);
+        const(ubyte)* rep = cast(const(ubyte)*)(rep_str.ptr);
         const size_t rep_len = rep_str.length;
         return addObject(m_type_tag, m_class_tag, rep, rep_len);
     }
@@ -308,7 +308,7 @@ public:
     /*
     * Write the encoding of the ubyte(s)
     */
-    DEREncoderImpl addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in ubyte* rep, size_t length)
+    DEREncoderImpl addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, const(ubyte)* rep, size_t length)
     {
         SecureVector!ubyte buffer;
         buffer ~= encodeTag(m_type_tag, m_class_tag);
@@ -377,7 +377,7 @@ private:
         /*
         * Add an encoded value to the ASN1Tag.SEQUENCE/SET
         */
-        void addBytes(in ubyte* data, size_t length)
+        void addBytes(const(ubyte)* data, size_t length)
         {
             if (m_type_tag == ASN1Tag.SET)
                 m_set_contents.pushBack(SecureVector!ubyte(data[0 .. length]));

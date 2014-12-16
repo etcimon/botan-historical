@@ -25,7 +25,7 @@ protected:
     /*
     * SHA-160 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -38,7 +38,7 @@ protected:
 private:
 pure:
 
-void botan_sha160_x86_64_compress(uint* arg1, in ubyte* arg2, uint* arg3)
+void botan_sha160_x86_64_compress(uint* arg1, const(ubyte)* arg2, uint* arg3)
 {
     /* defined later
          enum A = "R8D";

@@ -15,28 +15,29 @@ import std.c.stdio;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 import etc.c.zlib;
+import std.c.stdlib;
 
 /**
 * Zlib Compression Filter
 */
-final class Zlib_Compression : Filter
+final class Zlib_Compression : Filter, Filterable
 {
 public:
-    @property string name() const { return "Zlib_Compression"; }
+    override @property string name() const { return "Zlib_Compression"; }
 
     /*
     * Compress Input with Zlib
     */
-    void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_zlib.m_stream.next_in = cast(ubyte*)input;
-        m_zlib.m_stream.avail_in = length;
+		m_zlib.m_stream.avail_in = cast(uint)length;
         
         while (m_zlib.m_stream.avail_in != 0)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-            m_zlib.m_stream.avail_out = m_buffer.length;
-            deflate(&(m_zlib.m_stream), Z_NO_FLUSH);
+            m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
+            deflate(m_zlib.m_stream, Z_NO_FLUSH);
             send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
         }
     }
@@ -44,13 +45,13 @@ public:
     /*
     * Start Compressing with Zlib
     */
-    void startMsg()
+    override void startMsg()
     {
         clear();
         m_zlib = new Zlib_Stream;
         
-        int res = deflateInit2(&(m_zlib.m_stream),
-                               m_level,
+        int res = deflateInit2(m_zlib.m_stream,
+                               cast(int) m_level,
                                Z_DEFLATED,
                                (m_raw_deflate ? -15 : 15),
                                8,
@@ -59,24 +60,24 @@ public:
         if (res == Z_STREAM_ERROR)
             throw new InvalidArgument("Bad setting in deflateInit2");
         else if (res != Z_OK)
-            throw new Memory_Exhaustion();
+            throw new MemoryExhaustion("Couldn't start message, not enough memory.");
     }
 
     /*
     * Finish Compressing with Zlib
     */
-    void endMsg()
+    override void endMsg()
     {
-        m_zlib.m_stream.next_in = 0;
+        m_zlib.m_stream.next_in = null;
         m_zlib.m_stream.avail_in = 0;
         
         int rc = Z_OK;
         while (rc != Z_STREAM_END)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-            m_zlib.m_stream.avail_out = m_buffer.length;
+			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             
-            rc = deflate(&(m_zlib.m_stream), Z_FINISH);
+            rc = deflate(m_zlib.m_stream, Z_FINISH);
             send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
         }
         
@@ -88,15 +89,15 @@ public:
     */
     void finished()
     {
-        m_zlib.m_stream.next_in = 0;
+        m_zlib.m_stream.next_in = null;
         m_zlib.m_stream.avail_in = 0;
         
         while (true)
         {
-            m_zlib.m_stream.avail_out = m_buffer.length;
+			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
             
-            deflate(&(m_zlib.m_stream), Z_FULL_FLUSH);
+            deflate(m_zlib.m_stream, Z_FULL_FLUSH);
             send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
             
             if (m_zlib.m_stream.avail_out == m_buffer.length)
@@ -116,7 +117,7 @@ public:
         m_level = (level >= 9) ? 9 : level;
         m_raw_deflate = raw_deflate;
         m_buffer = DEFAULT_BUFFERSIZE;
-        m_zlib = 0;
+        m_zlib = null;
     }
 
     ~this() { clear(); }
@@ -130,9 +131,9 @@ private:
         
         if (m_zlib)
         {
-            deflateEnd(&(m_zlib.m_stream));
+            deflateEnd(m_zlib.m_stream);
             delete m_zlib;
-            m_zlib = 0;
+            m_zlib = null;
         }
     }
 
@@ -146,30 +147,30 @@ private:
 /**
 * Zlib Decompression Filter
 */
-final class Zlib_Decompression : Filter
+final class Zlib_Decompression : Filter, Filterable
 {
 public:
-    @property string name() const { return "Zlib_Decompression"; }
+    override @property string name() const { return "Zlib_Decompression"; }
 
     /*
     * Decompress Input with Zlib
     */
-    void write(ubyte* input_arr, size_t length)
+    override void write(const(ubyte)* input_arr, size_t length)
     {
         if (length) m_no_writes = false;
         
         // non-const needed by m_zlib api :(
-        ubyte* input = cast(ubyte*)(input_arr);
+        const(ubyte)* input = cast(const(ubyte)*)(input_arr);
         
-        m_zlib.m_stream.next_in = input;
-        m_zlib.m_stream.avail_in = length;
+        m_zlib.m_stream.next_in = cast(ubyte*)input;
+		m_zlib.m_stream.avail_in = cast(uint)length;
         
         while (m_zlib.m_stream.avail_in != 0)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-            m_zlib.m_stream.avail_out = m_buffer.length;
+			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             
-            int rc = inflate(&(m_zlib.m_stream), Z_SYNC_FLUSH);
+            int rc = inflate(m_zlib.m_stream, Z_SYNC_FLUSH);
             
             if (rc != Z_OK && rc != Z_STREAM_END)
             {
@@ -179,7 +180,7 @@ public:
                 else if (rc == Z_NEED_DICT)
                     throw new DecodingError("Zlib_Decompression: Need preset dictionary");
                 else if (rc == Z_MEM_ERROR)
-                    throw new Memory_Exhaustion();
+                    throw new MemoryExhaustion("Couldn't write during Zlib Decompression");
                 else
                     throw new Exception("Zlib decompression: Unknown error");
             }
@@ -191,8 +192,8 @@ public:
                 size_t read_from_block = length - m_zlib.m_stream.avail_in;
                 startMsg();
                 
-                m_zlib.m_stream.next_in = input + read_from_block;
-                m_zlib.m_stream.avail_in = length - read_from_block;
+				m_zlib.m_stream.next_in = cast(ubyte*)( input + read_from_block);
+				m_zlib.m_stream.avail_in = cast(uint)(length - read_from_block);
                 
                 input += read_from_block;
                 length -= read_from_block;
@@ -203,22 +204,22 @@ public:
     /*
     * Start Decompressing with Zlib
     */
-    void startMsg()
+    override void startMsg()
     {
         clear();
         m_zlib = new Zlib_Stream;
         
-        if (inflateInit2(&(m_zlib.m_stream), (m_raw_deflate ? -15 : 15)) != Z_OK)
-            throw new Memory_Exhaustion();
+        if (inflateInit2(m_zlib.m_stream, (m_raw_deflate ? -15 : 15)) != Z_OK)
+            throw new MemoryExhaustion("Couldnt' start message in decompression");
     }
 
     /*
     * Finish Decompressing with Zlib
     */
-    void endMsg()
+    override void endMsg()
     {
         if (m_no_writes) return;
-        m_zlib.m_stream.next_in = 0;
+        m_zlib.m_stream.next_in = null;
         m_zlib.m_stream.avail_in = 0;
         
         int rc = Z_OK;
@@ -226,8 +227,8 @@ public:
         while (rc != Z_STREAM_END)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-            m_zlib.m_stream.avail_out = m_buffer.length;
-            rc = inflate(&(m_zlib.m_stream), Z_SYNC_FLUSH);
+			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
+            rc = inflate(m_zlib.m_stream, Z_SYNC_FLUSH);
             
             if (rc != Z_OK && rc != Z_STREAM_END)
             {
@@ -267,7 +268,7 @@ private:
         
         if (m_zlib)
         {
-            inflateEnd(&(m_zlib.m_stream));
+            inflateEnd(m_zlib.m_stream);
             delete m_zlib;
             m_zlib = null;
         }
@@ -293,13 +294,13 @@ public:
 /*
 * Allocation Function for Zlib
 */
-void* zlib_malloc(void* info_ptr, uint n, uint size)
+extern(C) void* zlib_malloc(void* info_ptr, uint n, uint size)
 {
-    Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
+    Zlib_Alloc_Info info = cast(Zlib_Alloc_Info)(info_ptr);
     
     const size_t total_sz = n * size;
     
-    void* ptr = malloc(total_sz);
+    void* ptr = .malloc(total_sz);
     info.current_allocs[ptr] = total_sz;
     return ptr;
 }
@@ -307,15 +308,15 @@ void* zlib_malloc(void* info_ptr, uint n, uint size)
 /*
 * Allocation Function for Zlib
 */
-void zlib_free(void* info_ptr, void* ptr)
+extern(C) void zlib_free(void* info_ptr, void* ptr)
 {
-    Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(info_ptr);
-    auto i = info.current_allocs.find(ptr);
-    if (i == info.current_allocs.end())
+    Zlib_Alloc_Info info = cast(Zlib_Alloc_Info)(info_ptr);
+    auto len = (cast(const)info.current_allocs).get(ptr);
+    if (!len)
         throw new InvalidArgument("zlib_free: Got pointer not allocated by us");
     
-    memset(ptr, 0, i.second);
-    free(ptr);
+    memset(ptr, 0, len);
+    .free(ptr);
 }
 
 /**
@@ -334,10 +335,11 @@ public:
     */
     this()
     {
-        memset(&m_stream, 0, (z_stream).sizeof);
-        m_stream.zalloc = zlib_malloc;
-        m_stream.zfree = zlib_free;
-        m_stream.opaque = new Zlib_Alloc_Info;
+		m_stream = new z_stream;
+        memset(m_stream, 0, (z_stream).sizeof);
+        m_stream.zalloc = &zlib_malloc;
+        m_stream.zfree = &zlib_free;
+        m_stream.opaque = cast(void*)new Zlib_Alloc_Info;
     }
     
     /**
@@ -345,8 +347,9 @@ public:
     */
     ~this()
     {
-        Zlib_Alloc_Info* info = cast(Zlib_Alloc_Info*)(m_stream.opaque);
+        Zlib_Alloc_Info info = cast(Zlib_Alloc_Info)(m_stream.opaque);
         delete info;
         memset(m_stream, 0, (z_stream).sizeof);
+		delete m_stream;
     }
 }

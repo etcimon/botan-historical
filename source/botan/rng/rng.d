@@ -54,7 +54,7 @@ public:
     * @param bytes = number of bytes in the result
     * @return randomized vector of length bytes
     */
-    abstract SecureVector!ubyte randomVec(size_t bytes)
+    final SecureVector!ubyte randomVec(size_t bytes)
     {
         SecureVector!ubyte output = SecureVector!ubyte(bytes);
         randomize(output.ptr, output.length);
@@ -100,7 +100,7 @@ public:
     * @param input = a ubyte array containg the entropy to be added
     * @param length = the length of the ubyte array in
     */
-    abstract void addEntropy(in ubyte* input, size_t length);
+    abstract void addEntropy(const(ubyte)* input, size_t length);
 
     this() {}
     ~this() {}
@@ -120,50 +120,53 @@ public:
 
     override void reseed(size_t) {}
     override bool isSeeded() const { return false; }
-    override void addEntropy(const ubyte*, size_t) {}
+    override void addEntropy(const(ubyte)*, size_t) {}
 }
 
 /**
 * Wraps access to a RNG in a mutex
 */
-shared class SerializedRNG : RandomNumberGenerator
+class SerializedRNG : RandomNumberGenerator
 {
 public:
-    synchronized void randomize(ubyte* output, size_t length)
+    override void randomize(ubyte* output, size_t length)
     {
-        m_rng.randomize(output, len);
+        synchronized(m_mtx) m_rng.randomize(output, len);
+        
     }
 
-    synchronized bool isSeeded() const
+    override bool isSeeded() const
     {
-        return m_rng.isSeeded();
+        synchronized(m_mtx) return m_rng.isSeeded();
     }
 
-    synchronized void clear()
+    override void clear()
     {
-        m_rng.clear();
+        synchronized(m_mtx) m_rng.clear();
     }
 
-    synchronized @property string name() const
+    override   @property string name() const
     {
-        return m_rng.name;
+        synchronized(m_mtx) return m_rng.name;
     }
 
-    synchronized void reseed(size_t poll_bits)
+    override  void reseed(size_t poll_bits)
     {
-        m_rng.reseed(poll_bits);
+        synchronized(m_mtx) m_rng.reseed(poll_bits);
     }
 
-    synchronized void addEntropy(in ubyte* input, size_t len)
+    override  void addEntropy(const(ubyte)* input, size_t len)
     {
-        m_rng.addEntropy(input, len);
+        synchronized(m_mtx) m_rng.addEntropy(input, len);
     }
 
     this()
     {
-        m_rng = RandomNumberGenerator.makeRng();
+        m_mtx = new Mutex;
+        synchronized(m_mtx) m_rng = RandomNumberGenerator.makeRng();
     }
 
 private:
     Unique!RandomNumberGenerator m_rng;
+    Mutex m_mtx;
 }

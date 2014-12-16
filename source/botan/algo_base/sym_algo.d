@@ -63,7 +63,7 @@ public:
     * @param key = the to be set as a ubyte array.
     * @param length = in bytes of key param
     */
-    final void setKey(in ubyte* key, size_t length)
+    final void setKey(const(ubyte)* key, size_t length)
     {
         if (!validKeylength(length))
             throw new InvalidKeyLength(name, length);
@@ -78,6 +78,6 @@ protected:
     * @param key = the key
     * @param length = of key
     */
-    abstract void keySchedule(in ubyte* key, size_t length);
+    abstract void keySchedule(const(ubyte)* key, size_t length);
 }
 

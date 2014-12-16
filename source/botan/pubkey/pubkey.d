@@ -56,7 +56,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    final Vector!ubyte encrypt(in ubyte* input, size_t length, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
     {
         return enc(input, length, rng);
     }
@@ -79,7 +79,7 @@ public:
     abstract size_t maximumInputSize() const;
 
 protected:
-    abstract Vector!ubyte enc(in ubyte*, size_t, RandomNumberGenerator) const;
+    abstract Vector!ubyte enc(const(ubyte)*, size_t, RandomNumberGenerator) const;
 }
 
 /**
@@ -94,7 +94,7 @@ public:
     * @param length = the length of the above ubyte array
     * @return decrypted message
     */
-    final SecureVector!ubyte decrypt(in ubyte* input, size_t length) const
+    final SecureVector!ubyte decrypt(const(ubyte)* input, size_t length) const
     {
         return dec(input, length);
     }
@@ -110,7 +110,7 @@ public:
     }
 
 protected:
-    abstract SecureVector!ubyte dec(in ubyte*, size_t) const;
+    abstract SecureVector!ubyte dec(const(ubyte)*, size_t) const;
 }
 
 /**
@@ -128,7 +128,7 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte signMessage(in ubyte* msg, size_t length, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
     {
         update(msg, length);
         return signature(rng);
@@ -157,7 +157,7 @@ public:
     * @param input = the message part to add as a ubyte array
     * @param length = the length of the above ubyte array
     */
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         m_emsa.update(input, length);
     }
@@ -301,8 +301,8 @@ public:
     * @param sig_length = the length of the above ubyte array sig
     * @return true if the signature is valid
     */
-    bool verifyMessage(in ubyte* msg, size_t msg_length,
-                        in ubyte* sig, size_t sig_length)
+    bool verifyMessage(const(ubyte)* msg, size_t msg_length,
+                        const(ubyte)* sig, size_t sig_length)
     {
         update(msg, msg_length);
         return checkSignature(sig, sig_length);
@@ -333,7 +333,7 @@ public:
     * @param msg_part = the new message part as a ubyte array
     * @param length = the length of the above ubyte array
     */
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         m_emsa.update(input, length);
     }
@@ -353,7 +353,7 @@ public:
     * @param length = the length of the above ubyte array
     * @return true if the signature is valid, false otherwise
     */
-    bool checkSignature(in ubyte* sig, size_t length)
+    bool checkSignature(const(ubyte)* sig, size_t length)
     {
         try {
             if (m_sig_format == IEEE_1363)
@@ -432,7 +432,7 @@ public:
     }
 
 private:
-    bool validateSignature(in SecureVector!ubyte msg, in ubyte* sig, size_t sig_len)
+    bool validateSignature(in SecureVector!ubyte msg, const(ubyte)* sig, size_t sig_len)
     {
         if (m_op.withRecovery())
         {
@@ -469,8 +469,8 @@ public:
     * @param params = extra derivation params
     * @param params_len = the length of params in bytes
     */
-    SymmetricKey deriveKey(size_t key_len, in ubyte* input,
-                            size_t in_len, in ubyte* params,
+    SymmetricKey deriveKey(size_t key_len, const(ubyte)* input,
+                            size_t in_len, const(ubyte)* params,
                             size_t params_len) const
     {
         SecureVector!ubyte z = m_op.agree(input, in_len);
@@ -489,7 +489,7 @@ public:
     * @param params = extra derivation params
     * @param params_len = the length of params in bytes
     */
-    SymmetricKey deriveKey(size_t key_len, in Vector!ubyte input, in ubyte* params, size_t params_len) const
+    SymmetricKey deriveKey(size_t key_len, in Vector!ubyte input, const(ubyte)* params, size_t params_len) const
     {
         return deriveKey(key_len, input.ptr, input.length, params, params_len);
     }
@@ -501,9 +501,9 @@ public:
     * @param in_len = the length of in in bytes
     * @param params = extra derivation params
     */
-    SymmetricKey deriveKey(size_t key_len, in ubyte* input, size_t in_len, in string params = "") const
+    SymmetricKey deriveKey(size_t key_len, const(ubyte)* input, size_t in_len, in string params = "") const
     {
-        return deriveKey(key_len, input, in_len, cast(const ubyte*)(params.ptr), params.length);
+        return deriveKey(key_len, input, in_len, cast(const(ubyte)*)(params.ptr), params.length);
     }
 
     /*
@@ -517,7 +517,7 @@ public:
                                     in string params = "") const
     {
         return deriveKey(key_len, input.ptr, input.length,
-                                cast(const ubyte*)(params.ptr),
+                                cast(const(ubyte)*)(params.ptr),
                                 params.length);
     }
 
@@ -589,7 +589,7 @@ public:
     }
 
 private:
-    Vector!ubyte enc(in ubyte* input, size_t length, RandomNumberGenerator rng) const
+    Vector!ubyte enc(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
     {
         if (m_eme)
         {
@@ -646,7 +646,7 @@ private:
     /*
     * Decrypt a message
     */
-    SecureVector!ubyte dec(in ubyte* msg, size_t length) const
+    SecureVector!ubyte dec(const(ubyte)* msg, size_t length) const
     {
         try {
             SecureVector!ubyte decrypted = m_op.decrypt(msg, length);

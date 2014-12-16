@@ -15,7 +15,7 @@ import botan.utils.types;
 /**
 * Password Based Encryption (PBE) Filter.
 */
-class PBE : Filter
+class PBE : Filter, Filterable
 {
 public:
     /**

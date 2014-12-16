@@ -318,7 +318,7 @@ public:
     /*
     * OSSL_BN Constructor
     */
-    this(in ubyte* input, size_t length)
+    this(const(ubyte)* input, size_t length)
     {
         m_bn = BN_new();
         BN_bin2bn(input, length, m_bn);
@@ -419,7 +419,7 @@ protected:
     /*
     * RC4 Encryption
     */
-    void cipher(in ubyte* input, ubyte* output, size_t length)
+    void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
         RC4(&m_state, length, input, output);
     }
@@ -427,7 +427,7 @@ protected:
     /*
     * RC4 Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         RC4_set_key(&m_state, length, key);
         ubyte dummy = 0;
@@ -538,7 +538,7 @@ protected:
     /*
     * Encrypt a block
     */
-    void encryptN(in ubyte* input, ubyte* output,
+    void encryptN(const(ubyte)* input, ubyte* output,
                    size_t blocks) const
     {
         int out_len = 0;
@@ -548,7 +548,7 @@ protected:
     /*
     * Decrypt a block
     */
-    void decryptN(in ubyte* input, ubyte* output,
+    void decryptN(const(ubyte)* input, ubyte* output,
                    size_t blocks) const
     {
         int out_len = 0;
@@ -558,7 +558,7 @@ protected:
     /*
     * Set the key
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         SecureVector!ubyte full_key = SecureVector!ubyte(key, key + length);
         
@@ -659,7 +659,7 @@ protected:
     /*
     * Update an EVP Hash Calculation
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         EVP_DigestUpdate(&m_md, input, length);
     }
@@ -700,7 +700,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
             m_p = dh.groupP();
         }
         
-        SecureVector!ubyte agree(in ubyte* w, size_t w_len)
+        SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
         {
             OSSL_BN i = OSSL_BN(w, w_len);
             OSSL_BN r;
@@ -741,7 +741,7 @@ static if (BOTAN_HAS_DSA) {
         size_t messagePartSize() const { return (m_q_bits + 7) / 8; }
         size_t maxInputBits() const { return m_q_bits; }
 
-        SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+        SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
         {
             const size_t q_bytes = (m_q_bits + 7) / 8;
             
@@ -809,8 +809,8 @@ static if (BOTAN_HAS_DSA) {
         
         bool withRecovery() const { return false; }
         
-        bool verify(in ubyte* msg, size_t msg_len,
-                    in ubyte* sig, size_t sig_len)
+        bool verify(const(ubyte)* msg, size_t msg_len,
+                    const(ubyte)* sig, size_t sig_len)
         {
             const size_t q_bytes = m_q.bytes();
             
@@ -879,14 +879,14 @@ static if (BOTAN_HAS_DSA) {
             
             size_t maxInputBits() const { return (m_n_bits - 1); }
             
-            SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+            SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 BigInt x = privateOp(m);
                 return BigInt.encode1363(x, (m_n_bits + 7) / 8);
             }
             
-            SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encodeLocked(privateOp(m));
@@ -935,13 +935,13 @@ static if (BOTAN_HAS_DSA) {
             size_t maxInputBits() const { return (m_n.bits() - 1); }
             bool withRecovery() const { return true; }
             
-            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+            SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encode1363(publicOp(m), m_n.bytes());
             }
             
-            SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encodeLocked(publicOp(m));

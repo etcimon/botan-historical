@@ -125,7 +125,7 @@ public:
         m_mod_order = order;
     }
 
-    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -192,8 +192,8 @@ public:
 
     override bool withRecovery() const { return false; }
 
-    override bool verify(in ubyte* msg, size_t msg_len,
-                in ubyte* sig, size_t sig_len)
+    override bool verify(const(ubyte)* msg, size_t msg_len,
+                const(ubyte)* sig, size_t sig_len)
     {
         if (sig_len != m_order.bytes()*2)
             return false;

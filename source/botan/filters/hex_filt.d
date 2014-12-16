@@ -12,6 +12,7 @@ import botan.utils.parsing;
 import botan.utils.charset;
 import botan.utils.exceptn;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
@@ -32,7 +33,7 @@ public:
     /*
     * Convert some data into hex format
     */
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -84,19 +85,19 @@ public:
     * @param line_length = if newlines are used, how long are lines
     * @param the_case = the case to use in the encoded strings
     */
-    this(bool newlines = false, size_t m_line_length = 72, Case the_case = Uppercase)
+    this(bool newlines = false, size_t line_length = 72, Case the_case = Uppercase)
     {
         m_casing = the_case;
-        m_line_length = newlines ? length : 0;
+		m_line_length = newlines ? line_length : 0;
         m_input.reserve(HEX_CODEC_BUFFER_SIZE);
-        m_output.reserve(2*m_input.length);
+		m_output.reserve(2*HEX_CODEC_BUFFER_SIZE);
         m_counter = m_position = 0;
     }
 private:
     /*
     * Encode and send a block
     */
-    void encodeAndSend(in ubyte* block, size_t length)
+    void encodeAndSend(const(ubyte)* block, size_t length)
     {
         hexEncode(cast(char*)(m_output.ptr), block, length, m_casing == Uppercase);
         
@@ -107,15 +108,15 @@ private:
             size_t remaining = 2*length, offset = 0;
             while (remaining)
             {
-                size_t sent = std.algorithm.min(m_line_length - counter, remaining);
+                size_t sent = std.algorithm.min(m_line_length - m_counter, remaining);
                 send(&m_output[offset], sent);
-                counter += sent;
+				m_counter += sent;
                 remaining -= sent;
                 offset += sent;
-                if (counter == m_line_length)
+				if (m_counter == m_line_length)
                 {
                     send('\n');
-                    counter = 0;
+					m_counter = 0;
                 }
             }
         }
@@ -139,7 +140,7 @@ public:
     /*
     * Convert some data from hex format
     */
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         while (length)
         {
@@ -201,7 +202,7 @@ public:
     {
         m_checking = c;
         m_input.reserve(HEX_CODEC_BUFFER_SIZE);
-        m_output.reserve(m_input.length / 2);
+		m_output.reserve(HEX_CODEC_BUFFER_SIZE / 2);
         m_position = 0;
     }
 private:

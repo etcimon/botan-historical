@@ -64,7 +64,7 @@ protected:
     /*
     * SHA-160 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2],
             D = m_digest[3], E = m_digest[4];

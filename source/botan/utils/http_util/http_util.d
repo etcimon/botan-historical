@@ -209,7 +209,7 @@ string urlEncode(in string input)
             output ~= c;
         else {
             char[2] buf;
-            hexEncode(buf.ptr, cast(ubyte*) &c, 1);
+            hexEncode(buf.ptr, cast(const(ubyte)*) &c, 1);
             output ~= '%' ~ buf.ptr[0 .. 2];
         }
     }

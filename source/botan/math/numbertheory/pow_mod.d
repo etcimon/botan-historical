@@ -16,14 +16,13 @@ alias FixedBasePowerMod = FreeListRef!FixedBasePowerModImpl;
 /**
 * Modular Exponentiator Interface
 */
-class ModularExponentiator
+interface ModularExponentiator
 {
 public:
-    abstract void setBase(in BigInt);
-    abstract void setExponent(in BigInt);
+    abstract void setBase(BigInt);
+    abstract void setExponent(BigInt);
     abstract BigInt execute() const;
     abstract ModularExponentiator copy() const;
-    ~this() {}
 }
 
 /**

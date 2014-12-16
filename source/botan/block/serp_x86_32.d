@@ -23,7 +23,7 @@ public:
     /*
     * Serpent Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         auto keys = this.getRoundKeys().ptr;
         
@@ -37,7 +37,7 @@ public:
     /*
     * Serpent Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         auto keys = this.getRoundKeys().ptr;
         
@@ -55,7 +55,7 @@ protected:
     /*
     * Serpent Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         SecureVector!uint W = SecureVector!uint(140);
         foreach (size_t i; 0 .. (length / 4))
@@ -74,7 +74,7 @@ protected:
 * @param output = the output block
 * @param ks = the key schedule
 */
-void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) pure
+void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* ks ) pure
 {
 
     enum PUSHED = 4;
@@ -145,7 +145,7 @@ void botan_serpent_x86_32_encrypt(in ubyte* input, ubyte* output, in uint* ks ) 
 * @param ks = the key schedule
 */
 
-void botan_serpent_x86_32_decrypt(in ubyte* input, ubyte* output, in uint* ks) pure
+void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* ks) pure
 {
 
     enum PUSHED = 4;

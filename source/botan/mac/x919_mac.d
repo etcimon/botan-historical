@@ -66,7 +66,7 @@ protected:
     /*
     * Update an ANSI X9.19 MAC Calculation
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         size_t xored = std.algorithm.min(8 - m_position, length);
         xorBuf(&m_state[m_position], input, xored);
@@ -106,7 +106,7 @@ protected:
     /*
     * ANSI X9.19 MAC Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_des1.setKey(key, 8);
         

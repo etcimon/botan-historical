@@ -27,7 +27,7 @@ public:
     */
     this(HashFunction hash)
     {
-        m_SALT_SIZE = h.output_length;
+        m_SALT_SIZE = h.outputLength;
         m_hash = hash;
     }
 
@@ -44,7 +44,7 @@ private:
     /*
     * PSSR Update Operation
     */
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
@@ -129,7 +129,7 @@ private:
         ubyte* DB = coded.ptr;
         const size_t DB_size = coded.length - HASH_SIZE - 1;
         
-        const ubyte* H = &coded[DB_size];
+        const(ubyte)* H = &coded[DB_size];
         const size_t H_size = HASH_SIZE;
         
         mfg1Mask(*m_hash, H.ptr, H_size, DB.ptr, DB_size);

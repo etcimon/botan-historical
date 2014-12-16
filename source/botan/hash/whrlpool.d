@@ -11,6 +11,7 @@ static if (BOTAN_HAS_WHIRLPOOL):
 
 import botan.hash.mdx_hash;
 import botan.utils.loadstor;
+import botan.utils.get_byte;
 import botan.utils.types;
 
 /**
@@ -44,7 +45,7 @@ protected:
     /*
     * Whirlpool Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         __gshared immutable ulong[10] RC = [
             0x1823C6E887B8014F, 0x36A6D2F5796F9152,
@@ -69,37 +70,37 @@ protected:
             {
                 ulong T0, T1, T2, T3, T4, T5, T6, T7;
                 T0 = C0[get_byte(0, K0)] ^ C1[get_byte(1, K7)] ^
-                    C2[get_byte(2, K6)] ^ C3[get_byte(3, K5)] ^
-                    C4[get_byte(4, K4)] ^ C5[get_byte(5, K3)] ^
-                    C6[get_byte(6, K2)] ^ C7[get_byte(7, K1)] ^ RC[j];
+                     C2[get_byte(2, K6)] ^ C3[get_byte(3, K5)] ^
+                     C4[get_byte(4, K4)] ^ C5[get_byte(5, K3)] ^
+                     C6[get_byte(6, K2)] ^ C7[get_byte(7, K1)] ^ RC[j];
                 T1 = C0[get_byte(0, K1)] ^ C1[get_byte(1, K0)] ^
-                    C2[get_byte(2, K7)] ^ C3[get_byte(3, K6)] ^
-                    C4[get_byte(4, K5)] ^ C5[get_byte(5, K4)] ^
-                    C6[get_byte(6, K3)] ^ C7[get_byte(7, K2)];
+                     C2[get_byte(2, K7)] ^ C3[get_byte(3, K6)] ^
+                     C4[get_byte(4, K5)] ^ C5[get_byte(5, K4)] ^
+                     C6[get_byte(6, K3)] ^ C7[get_byte(7, K2)];
                 T2 = C0[get_byte(0, K2)] ^ C1[get_byte(1, K1)] ^
-                    C2[get_byte(2, K0)] ^ C3[get_byte(3, K7)] ^
-                    C4[get_byte(4, K6)] ^ C5[get_byte(5, K5)] ^
-                    C6[get_byte(6, K4)] ^ C7[get_byte(7, K3)];
+                     C2[get_byte(2, K0)] ^ C3[get_byte(3, K7)] ^
+                     C4[get_byte(4, K6)] ^ C5[get_byte(5, K5)] ^
+                     C6[get_byte(6, K4)] ^ C7[get_byte(7, K3)];
                 T3 = C0[get_byte(0, K3)] ^ C1[get_byte(1, K2)] ^
-                    C2[get_byte(2, K1)] ^ C3[get_byte(3, K0)] ^
-                    C4[get_byte(4, K7)] ^ C5[get_byte(5, K6)] ^
-                    C6[get_byte(6, K5)] ^ C7[get_byte(7, K4)];
+                     C2[get_byte(2, K1)] ^ C3[get_byte(3, K0)] ^
+                     C4[get_byte(4, K7)] ^ C5[get_byte(5, K6)] ^
+                     C6[get_byte(6, K5)] ^ C7[get_byte(7, K4)];
                 T4 = C0[get_byte(0, K4)] ^ C1[get_byte(1, K3)] ^
-                    C2[get_byte(2, K2)] ^ C3[get_byte(3, K1)] ^
-                    C4[get_byte(4, K0)] ^ C5[get_byte(5, K7)] ^
-                    C6[get_byte(6, K6)] ^ C7[get_byte(7, K5)];
+                     C2[get_byte(2, K2)] ^ C3[get_byte(3, K1)] ^
+                     C4[get_byte(4, K0)] ^ C5[get_byte(5, K7)] ^
+                     C6[get_byte(6, K6)] ^ C7[get_byte(7, K5)];
                 T5 = C0[get_byte(0, K5)] ^ C1[get_byte(1, K4)] ^
-                    C2[get_byte(2, K3)] ^ C3[get_byte(3, K2)] ^
-                    C4[get_byte(4, K1)] ^ C5[get_byte(5, K0)] ^
-                    C6[get_byte(6, K7)] ^ C7[get_byte(7, K6)];
+                     C2[get_byte(2, K3)] ^ C3[get_byte(3, K2)] ^
+                     C4[get_byte(4, K1)] ^ C5[get_byte(5, K0)] ^
+                     C6[get_byte(6, K7)] ^ C7[get_byte(7, K6)];
                 T6 = C0[get_byte(0, K6)] ^ C1[get_byte(1, K5)] ^
-                    C2[get_byte(2, K4)] ^ C3[get_byte(3, K3)] ^
-                    C4[get_byte(4, K2)] ^ C5[get_byte(5, K1)] ^
-                    C6[get_byte(6, K0)] ^ C7[get_byte(7, K7)];
+                     C2[get_byte(2, K4)] ^ C3[get_byte(3, K3)] ^
+                     C4[get_byte(4, K2)] ^ C5[get_byte(5, K1)] ^
+                     C6[get_byte(6, K0)] ^ C7[get_byte(7, K7)];
                 T7 = C0[get_byte(0, K7)] ^ C1[get_byte(1, K6)] ^
-                    C2[get_byte(2, K5)] ^ C3[get_byte(3, K4)] ^
-                    C4[get_byte(4, K3)] ^ C5[get_byte(5, K2)] ^
-                    C6[get_byte(6, K1)] ^ C7[get_byte(7, K0)];
+                     C2[get_byte(2, K5)] ^ C3[get_byte(3, K4)] ^
+                     C4[get_byte(4, K3)] ^ C5[get_byte(5, K2)] ^
+                     C6[get_byte(6, K1)] ^ C7[get_byte(7, K0)];
                 
                 K0 = T0; K1 = T1; K2 = T2; K3 = T3;
                 K4 = T4; K5 = T5; K6 = T6; K7 = T7;

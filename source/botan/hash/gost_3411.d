@@ -15,6 +15,7 @@ import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.get_byte;
 
 /**
 * GOST 34.11
@@ -41,7 +42,7 @@ public:
     */
     this() 
     {
-        m_cipher = GOST_28147_89_Params("R3411_CryptoPro");
+        m_cipher = new GOST2814789(scoped!GOST2814789Params("R3411_CryptoPro").Scoped_payload);
         m_buffer = 32;
         m_sum = 32;
         m_hash = 32;
@@ -53,13 +54,13 @@ protected:
     /**
     * The GOST 34.11 compression function
     */
-    void compress_n(in ubyte* input, size_t blocks)
+    void compress_n(const(ubyte)* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
             for (ushort j = 0, carry = 0; j != 32; ++j)
             {
-                ushort s = m_sum[j] + input[32*i+j] + carry;
+                ushort s = cast(ushort)(m_sum[j] + input[32*i+j] + carry);
                 carry = get_byte(0, s);
                 m_sum[j] = get_byte(1, s);
             }
@@ -67,8 +68,8 @@ protected:
             ubyte[32] S;
             
             ulong[4] U, V;
-            loadBigEndian(U, m_hash.ptr, 4);
-            loadBigEndian(V, input + 32*i, 4);
+            loadBigEndian(U.ptr, m_hash.ptr, 4);
+            loadBigEndian(V.ptr, input + 32*i, 4);
             
             foreach (size_t j; 0 .. 4)
             {
@@ -79,8 +80,8 @@ protected:
                     foreach (size_t l; 0 .. 8)
                         key[4*l+k] = get_byte(l, U[k]) ^ get_byte(l, V[k]);
                 
-                m_cipher.setKey(key, 32);
-                m_cipher.encrypt(&m_hash[8*j], S + 8*j);
+                m_cipher.setKey(key.ptr, 32);
+                m_cipher.encrypt(&m_hash[8*j], S.ptr + 8*j);
                 
                 if (j == 3)
                     break;
@@ -145,16 +146,16 @@ protected:
             S2[30] = S[ 0] ^ S[ 2] ^ S[ 4] ^ S[12] ^ S[18] ^ S[20] ^ S[28];
             S2[31] = S[ 1] ^ S[ 3] ^ S[ 5] ^ S[13] ^ S[19] ^ S[21] ^ S[29];
             
-            xorBuf(S, S2, input + 32*i, 32);
+            xorBuf(S.ptr, S2.ptr, input + 32*i, 32);
             
             S2[0] = S[0] ^ S[2] ^ S[4] ^ S[6] ^ S[24] ^ S[30];
             S2[1] = S[1] ^ S[3] ^ S[5] ^ S[7] ^ S[25] ^ S[31];
             
-            copyMem(S, S+2, 30);
+            copyMem(S.ptr, S.ptr+2, 30);
             S[30] = S2[0];
             S[31] = S2[1];
             
-            xorBuf(S, m_hash.ptr, 32);
+            xorBuf(S.ptr, m_hash.ptr, 32);
             
             // 61 rounds of psi
             S2[ 0] = S[ 2] ^ S[ 6] ^ S[14] ^ S[20] ^ S[22] ^ S[26] ^ S[28] ^ S[30];
@@ -203,7 +204,7 @@ protected:
     /**
     * Hash additional inputs
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         m_count += length;
         

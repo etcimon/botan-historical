@@ -73,7 +73,7 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 * @param off = an offset into the array
 * @return off'th T of in, as a big-endian value
 */
-T loadBigEndian(T)(in ubyte* input, size_t off)
+T loadBigEndian(T)(const(ubyte)* input, size_t off)
 {
     input += off * T.sizeof;
     T output = 0;
@@ -88,7 +88,7 @@ T loadBigEndian(T)(in ubyte* input, size_t off)
 * @param off = an offset into the array
 * @return off'th T of in, as a litte-endian value
 */
-T loadLittleEndian(T)(in ubyte* input, size_t off)
+T loadLittleEndian(T)(const(ubyte)* input, size_t off)
 {
     input += off * T.sizeof;
     T output = 0;
@@ -103,7 +103,7 @@ T loadLittleEndian(T)(in ubyte* input, size_t off)
 * @param off = an offset into the array
 * @return off'th ushort of in, as a big-endian value
 */
-ushort loadBigEndian(T : ushort)(in ubyte* input, size_t off)
+ushort loadBigEndian(T : ushort)(const(ubyte)* input, size_t off)
 {
     return *cast(ushort*) nativeToBigEndian!ushort(*( (cast(const ushort*) input) + off));
 }
@@ -114,7 +114,7 @@ ushort loadBigEndian(T : ushort)(in ubyte* input, size_t off)
 * @param off = an offset into the array
 * @return off'th ushort of in, as a little-endian value
 */
-ushort loadLittleEndian(T : ushort)(in ubyte* input, size_t off)
+ushort loadLittleEndian(T : ushort)(const(ubyte)* input, size_t off)
 {
     return *cast(ushort*) nativeToLittleEndian!ushort(*((cast(const ushort*) input) + off));
 }
@@ -125,7 +125,7 @@ ushort loadLittleEndian(T : ushort)(in ubyte* input, size_t off)
 * @param off = an offset into the array
 * @return off'th uint of in, as a big-endian value
 */
-uint loadBigEndian(T : uint)(in ubyte* input, size_t off)
+uint loadBigEndian(T : uint)(const(ubyte)* input, size_t off)
 {
     return *cast(uint*) nativeToBigEndian!uint(*((cast(const uint*) input) + off));
 }
@@ -137,7 +137,7 @@ uint loadBigEndian(T : uint)(in ubyte* input, size_t off)
 * @return off'th uint of in, as a little-endian value
 */
 
-uint loadLittleEndian(T : uint)(in ubyte* input, size_t off)
+uint loadLittleEndian(T : uint)(const(ubyte)* input, size_t off)
 {
     return *cast(uint*) nativeToLittleEndian!uint(*( (cast(const uint*) input) + off));
 }
@@ -148,7 +148,7 @@ uint loadLittleEndian(T : uint)(in ubyte* input, size_t off)
 * @param off = an offset into the array
 * @return off'th ulong of in, as a big-endian value
 */
-ulong loadBigEndian(T : ulong)(in ubyte* input, size_t off)
+ulong loadBigEndian(T : ulong)(const(ubyte)* input, size_t off)
 {
     return *cast(ulong*) nativeToBigEndian!ulong(*( (cast(const ulong*) input) + off));
     
@@ -160,7 +160,7 @@ ulong loadBigEndian(T : ulong)(in ubyte* input, size_t off)
 * @param off = an offset into the array
 * @return off'th ulong of in, as a little-endian value
 */
-ulong loadLittleEndian(T : ulong)(in ubyte* input, size_t off)
+ulong loadLittleEndian(T : ulong)(const(ubyte)* input, size_t off)
 {
     return *cast(ulong*) nativeToLittleEndian!ulong(*( (cast(const ulong*) input) + off));
 }
@@ -171,7 +171,7 @@ ulong loadLittleEndian(T : ulong)(in ubyte* input, size_t off)
 * @param x0 = where the first word will be written
 * @param x1 = where the second word will be written
 */
-void loadLittleEndian(T)(in ubyte* input, ref T x0, ref T x1)
+void loadLittleEndian(T)(const(ubyte)* input, ref T x0, ref T x1)
 {
     x0 = loadLittleEndian!T(input, 0);
     x1 = loadLittleEndian!T(input, 1);
@@ -185,7 +185,7 @@ void loadLittleEndian(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x2 = where the third word will be written
 * @param x3 = where the fourth word will be written
 */
-void loadLittleEndian(T)(in ubyte* input,
+void loadLittleEndian(T)(const(ubyte)* input,
                 ref T x0, ref T x1, ref T x2, ref T x3)
 {
     x0 = loadLittleEndian!T(input, 0);
@@ -206,7 +206,7 @@ void loadLittleEndian(T)(in ubyte* input,
 * @param x6 = where the seventh word will be written
 * @param x7 = where the eighth word will be written
 */
-void loadLittleEndian(T)(in ubyte* input,
+void loadLittleEndian(T)(const(ubyte)* input,
                   ref T x0, ref T x1, ref T x2, ref T x3,
                   ref T x4, ref T x5, ref T x6, ref T x7)
 {
@@ -226,7 +226,7 @@ void loadLittleEndian(T)(in ubyte* input,
 * @param input = the input array of bytes
 * @param count = how many words are in in
 */
-void loadLittleEndian(T)(T* output, in ubyte* input, size_t count)
+void loadLittleEndian(T)(T* output, const(ubyte)* input, size_t count)
 {
     foreach (size_t i; 0 .. count)
         output[i] = loadLittleEndian!T(input, i);
@@ -238,7 +238,7 @@ void loadLittleEndian(T)(T* output, in ubyte* input, size_t count)
 * @param x0 = where the first word will be written
 * @param x1 = where the second word will be written
 */
-void loadBigEndian(T)(in ubyte* input, ref T x0, ref T x1)
+void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1)
 {
     x0 = loadBigEndian!T(input, 0);
     x1 = loadBigEndian!T(input, 1);
@@ -252,7 +252,7 @@ void loadBigEndian(T)(in ubyte* input, ref T x0, ref T x1)
 * @param x2 = where the third word will be written
 * @param x3 = where the fourth word will be written
 */
-void loadBigEndian(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
+void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1, ref T x2, ref T x3)
 {
     x0 = loadBigEndian!T(input, 0);
     x1 = loadBigEndian!T(input, 1);
@@ -272,7 +272,7 @@ void loadBigEndian(T)(in ubyte* input, ref T x0, ref T x1, ref T x2, ref T x3)
 * @param x6 = where the seventh word will be written
 * @param x7 = where the eighth word will be written
 */
-void loadBigEndian(T)(in ubyte* input,
+void loadBigEndian(T)(const(ubyte)* input,
                 ref T x0, ref T x1, ref T x2, ref T x3,
                 ref T x4, ref T x5, ref T x6, ref T x7)
 {
@@ -292,28 +292,10 @@ void loadBigEndian(T)(in ubyte* input,
 * @param input = the input array of bytes
 * @param count = how many words are in in
 */
-void loadBigEndian(T)(T* output, in ubyte* input, size_t count)
+void loadBigEndian(T)(T* output, const(ubyte)* input, size_t count)
 {
-    static if (BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS) {
-        import std.c.string : memcpy;
-        memcpy(output, input, T.sizeof*count);
-
-        version(LittleEndian) {
-            
-            const size_t blocks = count - (count % 4);
-            const size_t left = count - blocks;
-
-            for (size_t i = 0; i != blocks; i += 4)
-                bswap4(*cast(T[4]*) (output + i));
-
-            foreach (size_t i; 0 .. left)
-                output[blocks+i] = reverseBytes(output[blocks+i]);
-        }
-
-    } else {
-        foreach (size_t i; 0 .. count)
-            output[i] = loadBigEndian!T(input, i);
-    }
+    foreach (size_t i; 0 .. count)
+        output[i] = loadBigEndian!T(input, i);
 }
 
 /**

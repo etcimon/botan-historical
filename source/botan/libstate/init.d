@@ -33,14 +33,14 @@ public:
             allocators and so forth, so globalState() has to be a valid
             reference before initialize() can be called. Yeah, gross.
             */
-            Global_State_Management.setGlobalState(new LibraryState);
+            setGlobalState(LibraryState.init);
             
             globalState().initialize();
         }
         catch (Throwable)
         {
             deinitialize();
-            throw new Exception("Library initialization failed");
+            throw new Exception("Library innullitialization failed");
         }
     }
 
@@ -48,7 +48,7 @@ public:
     * Shutdown the library
     */
     static void deinitialize() {
-        Global_State_Management.setGlobalState(null);
+        setGlobalState(LibraryState.init);
     }
 
     /**

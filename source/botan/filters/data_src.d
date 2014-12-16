@@ -142,7 +142,7 @@ public:
     */
     this(in string input) 
     {
-        m_source = SecureVector!ubyte((cast(ubyte*)input.ptr)[0 .. input.length]);
+        m_source = SecureVector!ubyte((cast(const(ubyte)*)input.ptr)[0 .. input.length]);
         m_offset = 0;
     }
 
@@ -152,7 +152,7 @@ public:
     * @param input = the ubyte array to read from
     * @param length = the length of the ubyte array
     */
-    this(in ubyte* input, size_t length)
+    this(const(ubyte)* input, size_t length)
     {
         m_source = SecureVector!ubyte(input[0 .. length]);
         m_offset = 0; 
@@ -211,7 +211,7 @@ public:
     {
         if (endOfData())
             throw new InvalidState("DataSourceStream: Cannot peek when out of data");
-        
+		File file = cast(File)m_source;
         size_t got = 0;
         
         if (offset)
@@ -219,7 +219,7 @@ public:
             SecureVector!ubyte buf = SecureVector!ubyte(offset);
             ubyte[] data;
 			ubyte[] output_buf = buf.ptr[0 .. offset];
-            try data = m_source.rawRead(output_buf);
+            try data = file.rawRead(output_buf);
             catch (Exception e)
                 throw new StreamIOError("peek: Source failure..." ~ e.toString());
             
@@ -230,17 +230,17 @@ public:
         {
             ubyte[] data;
 			ubyte[] output_buf = output[0 .. length];
-            try data = m_source.rawRead(output_buf);
+			try data = file.rawRead(output_buf);
             catch (Exception e)
                 throw new StreamIOError("peek: Source failure" ~ e.toString());
             got = data.length;
         }
         
-        if (m_source.eof) {
-            m_source.clearerr();
-            m_source.rewind();
+		if (file.eof) {
+			file.clearerr();
+			file.rewind();
         }
-        m_source.seek(m_total_read, SEEK_SET);
+		file.seek(m_total_read, SEEK_SET);
         
         return got;
     }

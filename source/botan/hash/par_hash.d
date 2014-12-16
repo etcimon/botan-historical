@@ -70,7 +70,7 @@ public:
     * Constructor
     * @param hash_input = a set of hashes to compute in parallel
     */
-    this(in Vector!HashFunction hash_input)
+    this(Vector!HashFunction hash_input)
     {
         m_hashes = hash_input;
     }
@@ -87,7 +87,7 @@ protected:
     /*
     * Update the hash
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         foreach (hash; m_hashes)
             hash.update(input, length);

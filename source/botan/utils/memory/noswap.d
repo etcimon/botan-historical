@@ -163,12 +163,12 @@ package:
         
         if (m_poolsize)
         {
-            m_pool_ptr = cast(ubyte*)(mmap(null, m_poolsize,
+            m_pool_ptr = cast(const(ubyte)*)(mmap(null, m_poolsize,
                                        PROT_READ | PROT_WRITE,
                                        MAP_ANONYMOUS | MAP_SHARED | MAP_NOCORE,
                                        -1, 0));
             
-            if (m_pool_ptr == cast(ubyte*)(MAP_FAILED))
+            if (m_pool_ptr == cast(const(ubyte)*)(MAP_FAILED))
             {
                 m_pool_ptr = null;
                 throw new Exception("Failed to mmap locking_allocator pool");

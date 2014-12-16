@@ -130,7 +130,7 @@ public:
         m_mod_q = ModularReducer(nr.groupQ());
     }
 
-    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -195,7 +195,7 @@ public:
 
     override bool withRecovery() const { return true; }
 
-    override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+    override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
         const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?
         size_t msg_len = msg.length;

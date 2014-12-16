@@ -20,7 +20,7 @@ import botan.utils.types;
 class Threefish512 : BlockCipherFixedParams!(64, 64), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         assert(m_K.length == 9, "Key was set");
         assert(m_T.length == 3, "Tweak was set");
@@ -55,7 +55,7 @@ public:
         }
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         assert(m_K.length == 9, "Key was set");
         assert(m_T.length == 3, "Tweak was set");
@@ -90,7 +90,7 @@ public:
         }
     }
 
-    final void setTweak(in ubyte* tweak, size_t len)
+    final void setTweak(const(ubyte)* tweak, size_t len)
     {
         if (len != 16)
             throw new Exception("Unsupported twofish tweak length");
@@ -116,7 +116,7 @@ public:
 protected:
     final const(SecureVector!ulong) getT() const { return m_T; }
     final const(SecureVector!ulong) getK() const { return m_K; }
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         // todo: define key schedule for smaller keys
         m_K.reserve(9);
@@ -127,9 +127,7 @@ protected:
         m_K[8] = m_K[0] ^ m_K[1] ^ m_K[2] ^ m_K[3] ^
                  m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
     }
-
-private:
-
+public:
     final void skeinFeedfwd(in SecureVector!ulong M, in SecureVector!ulong T)
     {
         assert(m_K.length == 9, "Key was set");

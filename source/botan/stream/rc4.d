@@ -23,7 +23,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-    override void cipher(in ubyte* input, ubyte* output, size_t length)
+    override void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -72,7 +72,7 @@ public:
     override bool validIvLength(size_t iv_len) const
     { return (iv_len == 0); }
 
-    override void setIv(const ubyte*, size_t iv_len) 
+    override void setIv(const(ubyte)*, size_t iv_len) 
     { 
         if (iv_len) 
             throw new InvalidArgument("The stream cipher " ~ name ~ " does not support resyncronization"); 
@@ -83,7 +83,7 @@ protected:
     /*
     * RC4 Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_state.reserve(256);
         m_buffer.reserve(roundUp!size_t(DEFAULT_BUFFERSIZE, 4));

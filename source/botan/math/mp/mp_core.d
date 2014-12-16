@@ -9,8 +9,11 @@ module botan.math.mp.mp_core;
 
 import botan.constants;
 public import botan.math.mp.mp_types;
+import botan.utils.exceptn;
+import botan.utils.mem_ops;
+import botan.utils.mul128;
 
-pure nothrow @nogc:
+pure:
 // todo: Bring back ASM for x86_32, x86_64, from Botan C++.
 
 /*
@@ -147,7 +150,7 @@ word bigint_add2_nc(word* x, size_t x_size, in word* y, size_t y_size)
     const size_t blocks = y_size - (y_size % 8);
     
     for (size_t i = 0; i != blocks; i += 8)
-        carry = word8_add2(x + i, y + i, carry);
+        carry = word8_add2((x + i)[0 .. 8], (y + i)[0 .. 8], carry);
     
     foreach (size_t i; blocks .. y_size)
         x[i] = word_add(x[i], y[i], &carry);
@@ -254,7 +257,7 @@ void bigint_shl1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
 {
     if (word_shift)
     {
-        copy_mem(x + word_shift, x, x_size);
+        copyMem(x + word_shift, x, x_size);
         clearMem(x, word_shift);
     }
     
@@ -283,7 +286,7 @@ void bigint_shr1(word* x, size_t x_size, size_t word_shift, size_t bit_shift)
     
     if (word_shift)
     {
-        copy_mem(x, x + word_shift, x_size - word_shift);
+        copyMem(x, x + word_shift, x_size - word_shift);
         clearMem(x + x_size - word_shift, word_shift);
     }
     
@@ -455,7 +458,7 @@ void bigint_linmul3(word* z, in word* x, size_t x_size, word y)
     word carry = 0;
     
     for (size_t i = 0; i != blocks; i += 8)
-        carry = word8_linmul3(*cast(word[12]*) (z + i), *cast(word[12]*) (x + i), y, carry);
+        carry = word8_linmul3(*cast(word[8]*) (z + i), *cast(word[8]*) (x + i), y, carry);
     
     foreach (size_t i; blocks .. x_size)
         z[i] = word_madd2(x[i], y, &carry);
@@ -494,7 +497,7 @@ void bigint_monty_redc(word* z, in word* p, size_t p_size, word p_dash, word* ws
         word carry = 0;
         
         for (size_t j = 0; j != blocks_of_8; j += 8)
-            carry = word8_madd3(*cast(word[12]*) (z_i + j), *cast(word[12]*) (p + j), y, carry);
+            carry = word8_madd3(*cast(word[8]*) (z_i + j), *cast(word[8]*) (p + j), y, carry);
         
         foreach (size_t j; blocks_of_8 .. p_size)
             z_i[j] = word_madd3(p[j], y, z_i[j], &carry);
@@ -516,9 +519,9 @@ void bigint_monty_redc(word* z, in word* p, size_t p_size, word p_dash, word* ws
     
     ws[p_size] = word_sub(z[p_size+p_size], 0, &borrow);
     
-    copy_mem(ws + p_size + 1, z + p_size, p_size + 1);
+    copyMem(ws + p_size + 1, z + p_size, p_size + 1);
     
-    copy_mem(z, ws + borrow*(p_size+1), p_size + 1);
+    copyMem(z, ws + borrow*(p_size+1), p_size + 1);
     clearMem(z + p_size + 1, z_size - p_size - 1);
 }
 
@@ -532,11 +535,11 @@ void bigint_monty_mul(word* z, size_t z_size,
                       in word* p, size_t p_size, word p_dash,
                       word* ws)
 {
-    bigint_mul( z.ptr, z_size, ws.ptr,
-                x.ptr, x_size, x_sw,
-                y.ptr, y_size, y_sw);
+    bigint_mul( z, z_size, ws,
+                x, x_size, x_sw,
+                y, y_size, y_sw);
     
-    bigint_monty_redc(z.ptr, p.ptr, p_size, p_dash, ws.ptr);
+    bigint_monty_redc(z, p, p_size, p_dash, ws);
 }
 
 
@@ -548,9 +551,9 @@ void bigint_monty_sqr(word* z, size_t z_size,
                       in word* p, size_t p_size, word p_dash,
                       word* ws)
 {
-    bigint_sqr(z.ptr, z_size, ws.ptr, x.ptr, x_size, x_sw);
+    bigint_sqr(z, z_size, ws, x, x_size, x_sw);
 
-    bigint_monty_redc(z.ptr, p.ptr, p_size, p_dash, ws.ptr);
+    bigint_monty_redc(z, p, p_size, p_dash, ws);
 }
 
 /**
@@ -1535,7 +1538,7 @@ word word_madd2(word a, word b, word* c)
         
         word[2] res;
         
-        mul64x64_128(a, b, &res);
+        mul64x64_128(a, b, res);
         
         res[0] += *c;
         res[1] += (res[0] < *c); // carry?
@@ -1557,9 +1560,9 @@ word word_madd3(word a, word b, word c, word* d)
     } else {
         static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
         
-        word[2] res = 0;
+        word[2] res;
         
-        mul64x64_128(a, b, &res);
+        mul64x64_128(a, b, res);
         
         res[0] += c;
         res[1] += (res[0] < c); // carry?

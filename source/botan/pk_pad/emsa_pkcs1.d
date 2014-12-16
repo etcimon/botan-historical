@@ -29,7 +29,7 @@ public:
         m_hash_id = pkcsHashId(m_hash.name);
     }
 
-    override void update(in ubyte* input, size_t length)
+    override void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
@@ -81,7 +81,7 @@ private:
 final class EMSAPKCS1v15Raw : EMSA
 {
 public:
-    override void update(in ubyte* input, size_t length)
+    override void update(const(ubyte)* input, size_t length)
     {
         m_message += makePair(input, length);
     }
@@ -122,7 +122,7 @@ private:
 
 SecureVector!ubyte emsa3Encoding(in SecureVector!ubyte msg,
                                 size_t output_bits,
-                                in ubyte* hash_id,
+                                const(ubyte)* hash_id,
                                 size_t hash_id_length)
 {
     size_t output_length = output_bits / 8;

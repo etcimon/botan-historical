@@ -229,7 +229,7 @@ public:
         
         __gshared immutable size_t DTLS_HANDSHAKE_HEADER_LEN = 12;
         
-        const ubyte* record_bits = record.ptr;
+        const(ubyte)* record_bits = record.ptr;
         size_t record_size = record.length;
         
         while (record_size)
@@ -293,7 +293,7 @@ public:
 
 private:
 
-Vector!ubyte formatFragment(in ubyte* fragment,
+Vector!ubyte formatFragment(const(ubyte)* fragment,
                              size_t frag_len,
                              ushort frag_offset,
                              ushort msg_len,
@@ -326,7 +326,7 @@ Vector!ubyte formatWSeq(in Vector!ubyte msg,
 class HandshakeReassembly
 {
 public:
-    void addFragment(in ubyte* fragment,
+    void addFragment(const(ubyte)* fragment,
                         size_t fragment_length,
                         size_t fragment_offset,
                         ushort epoch,

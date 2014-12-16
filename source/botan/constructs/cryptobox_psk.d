@@ -27,7 +27,7 @@ struct CryptoBox {
     * @param key = the key used to encrypt the message
     * @param rng = a ref to a random number generator, such as AutoSeededRNG
     */
-    static Vector!ubyte encrypt(in ubyte* input, size_t input_len,
+    static Vector!ubyte encrypt(const(ubyte)* input, size_t input_len,
                                 in SymmetricKey master_key,
                                 RandomNumberGenerator rng)
     {
@@ -70,7 +70,7 @@ struct CryptoBox {
     * @param key = the key used to encrypt the message
     * @param rng = a ref to a random number generator, such as AutoSeededRNG
     */
-    static SecureVector!ubyte decrypt(in ubyte* input, size_t input_len, in SymmetricKey master_key)
+    static SecureVector!ubyte decrypt(const(ubyte)* input, size_t input_len, in SymmetricKey master_key)
     {
         __gshared immutable size_t MIN_CTEXT_SIZE = 16; // due to using CBC with padding
         
@@ -85,9 +85,9 @@ struct CryptoBox {
         
         Unique!KDF kdf = getKdf(CRYPTOBOX_KDF);
         
-        const ubyte* cipher_key_salt = &input[MAGIC_LENGTH];
+        const(ubyte)* cipher_key_salt = &input[MAGIC_LENGTH];
         
-        const ubyte* mac_key_salt = &input[MAGIC_LENGTH + KEY_KDF_SALT_LENGTH];
+        const(ubyte)* mac_key_salt = &input[MAGIC_LENGTH + KEY_KDF_SALT_LENGTH];
         
         SymmetricKey mac_key = kdf.deriveKey(MAC_KEY_LENGTH,
                                               master_key.bitsOf(),

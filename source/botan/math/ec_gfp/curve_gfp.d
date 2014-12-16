@@ -8,6 +8,9 @@
 */
 module botan.math.ec_gfp.curve_gfp;
 import botan.math.numbertheory.numthry;
+import botan.math.mp.mp_types;
+import std.algorithm : swap;
+import botan.constants;
 /**
 * This class represents an elliptic curve over GF(p)
 */
@@ -25,14 +28,14 @@ public:
     * @param a = first coefficient
     * @param b = second coefficient
     */
-    this(in BigInt p, in BigInt a, in BigInt b)
+    this(BigInt p, BigInt a, BigInt b)
     {        
         m_p = p;
         m_a = a;
         m_b = b;
         m_p_words = m_p.sigWords();
         m_p_dash = montyInverse(m_p.wordAt(0));
-        const BigInt r = BigInt.powerOf2(m_p_words * BOTAN_MP_WORD_BITS);
+        BigInt r = BigInt.powerOf2(m_p_words * BOTAN_MP_WORD_BITS);
 
         m_r2  = (r * r) % p;
         m_a_r = (a * r) % p;
@@ -42,33 +45,33 @@ public:
     /**
     * @return curve coefficient a
     */
-    BigInt getA() const { return m_a; }
+    const(BigInt) getA() const { return m_a; }
 
     /**
     * @return curve coefficient b
     */
-    BigInt getB() const { return m_b; }
+    const(BigInt) getB() const { return m_b; }
 
     /**
     * Get prime modulus of the field of the curve
     * @return prime modulus of the field of the curve
     */
-    BigInt getP() const { return m_p; }
+    const(BigInt) getP() const { return m_p; }
 
     /**
     * @return Montgomery parameter r^2 % p
     */
-    BigInt getR2() const { return m_r2; }
+    const(BigInt) getR2() const { return m_r2; }
 
     /**
     * @return a * r mod p
     */
-    BigInt getAR() const { return m_a_r; }
+    const(BigInt) getAR() const { return m_a_r; }
 
     /**
     * @return b * r mod p
     */
-    BigInt getBR() const { return m_b_r; }
+    const(BigInt) getBR() const { return m_b_r; }
 
     /**
     * @return Montgomery parameter p-dash
@@ -86,18 +89,18 @@ public:
     */
     void swap(CurveGFp other)
     {
-        swap(m_p, other.m_p);
+        m_p.swap(other.m_p);
 
-        swap(m_a, other.m_a);
-        swap(m_b, other.m_b);
+        m_a.swap(other.m_a);
+        m_b.swap(other.m_b);
 
-        swap(m_a_r, other.m_a_r);
-        swap(m_b_r, other.m_b_r);
+        m_a_r.swap(other.m_a_r);
+        m_b_r.swap(other.m_b_r);
 
-        swap(m_p_words, other.m_p_words);
+        .swap(m_p_words, other.m_p_words);
 
-        swap(m_r2, other.m_r2);
-        swap(m_p_dash, other.m_p_dash);
+        m_r2.swap(other.m_r2);
+        .swap(m_p_dash, other.m_p_dash);
     }
 
     /**
@@ -122,6 +125,16 @@ public:
     {
         if (this == rhs) return 0;
         else return -1;
+    }
+
+    CurveGFp dup() const {
+        CurveGFp ret = CurveGFp(m_p.dup, m_a.dup, m_b.dup);
+        ret.m_p_words = m_p_words;
+        ret.m_r2 = m_r2.dup;
+        ret.m_a_r = m_a_r.dup;
+        ret.m_b_r = m_b_r.dup;
+        ret.m_p_dash = m_p_dash;
+        return ret;
     }
 private:
     // Curve parameters

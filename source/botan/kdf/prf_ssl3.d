@@ -24,8 +24,8 @@ public:
     * SSL3 PRF
     */
     override SecureVector!ubyte derive(size_t key_len,
-                            in ubyte* secret, size_t secret_len,
-                            in ubyte* seed, size_t seed_len) const
+                            const(ubyte)* secret, size_t secret_len,
+                            const(ubyte)* seed, size_t seed_len) const
     {
         if (key_len > 416)
             throw new InvalidArgument("SSL3_PRF: Requested key length is too large");
@@ -38,15 +38,14 @@ public:
         int counter = 0;
         while (key_len)
         {
-            const size_t produce = std.algorithm.min(key_len, md5.output_length);
+            const size_t produce = std.algorithm.min(key_len, md5.outputLength);
             
-            output = output + nextHash(counter++, produce, md5, sha1,
-                                        secret, secret_len, seed, seed_len);
+            output ~= nextHash(counter++, produce, md5, sha1, secret, secret_len, seed, seed_len);
             
             key_len -= produce;
         }
         
-        return output.bitsOf();
+        return output.bitsOf().dup;
     }
 
     override @property string name() const { return "SSL3-PRF"; }
@@ -60,10 +59,10 @@ private:
 */
 OctetString nextHash(size_t where, size_t want,
                       HashFunction md5, HashFunction sha1,
-                      in ubyte* secret, size_t secret_len,
-                      in ubyte* seed, size_t seed_len) pure
+                      const(ubyte)* secret, size_t secret_len,
+                      const(ubyte)* seed, size_t seed_len)
 {
-    assert(want <= md5.output_length,
+    assert(want <= md5.outputLength,
                  "Output size producable by MD5");
     
     __gshared immutable ubyte ASCII_A_CHAR = 0x41;

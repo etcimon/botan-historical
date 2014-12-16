@@ -20,12 +20,13 @@ public:
     * KDF1 Key Derivation Mechanism
     */
     override SecureVector!ubyte derive(size_t,
-                            in ubyte* secret, size_t secret_len,
-                            in ubyte* P, size_t P_len) const
+                            const(ubyte)* secret, size_t secret_len,
+                            const(ubyte)* P, size_t P_len) const
     {
-        m_hash.update(secret, secret_len);
-        m_hash.update(P, P_len);
-        return m_hash.finished();
+		HashFunction hash = (cast(HashFunction)*m_hash);
+		hash.update(secret, secret_len);
+        hash.update(P, P_len);
+        return hash.finished();
     }
 
 

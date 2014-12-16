@@ -15,7 +15,7 @@ pure:
 * @param input = the read-only input buffer
 * @param length = the length of the buffers
 */
-void xorBuf(T)(T* output, in T* input, size_t length)
+void xorBuf(T)(T* output, const(T)* input, size_t length)
 {
     while (length >= 8)
     {
@@ -35,9 +35,9 @@ void xorBuf(T)(T* output, in T* input, size_t length)
 * @param length = the length of the three buffers
 */
 void xorBuf(T)(T* output,
-                in T* input,
-                in T* input2,
-                size_t length)
+               const(T)* input,
+               const(T)* input2,
+               size_t length)
 {
     while (length >= 8)
     {
@@ -48,62 +48,63 @@ void xorBuf(T)(T* output,
 
     output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
 }
+version(none) {
+    static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
 
-static if (BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK) {
-
-    void xorBuf(ubyte* output, in ubyte* input, size_t length)
-    {
-        while (length >= 8)
+        void xorBuf(ubyte* output, const(ubyte)* input, size_t length)
         {
-            *cast(ulong*)(output) ^= *cast(const ulong*)(input);
-            output += 8; input += 8; length -= 8;
+            while (length >= 8)
+            {
+                *cast(ulong*)(output) ^= *cast(const ulong*)(input);
+                output += 8; input += 8; length -= 8;
+            }
+
+            output[0 .. length] ^= input[0 .. length];
         }
 
-        output[0 .. length] ^= input[0 .. length];
-    }
-
-    void xorBuf(ubyte* output,
-                 in ubyte* input,
-                 in ubyte* input2,
-                 size_t length)
-    {
-        while (length >= 8)
+        void xorBuf(ubyte* output,
+                     const(ubyte)* input,
+                     const(ubyte)* input2,
+                     size_t length)
         {
-            *cast(ulong*)(output) = (*cast(const ulong*) input) ^ (*cast(const ulong*)input2);
+            while (length >= 8)
+            {
+                *cast(ulong*)(output) = (*cast(const ulong*) input) ^ (*cast(const ulong*)input2);
 
-            input += 8; input2 += 8; output += 8; length -= 8;
+                input += 8; input2 += 8; output += 8; length -= 8;
+            }
+
+            output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
         }
 
-        output[0 .. length] = input[0 .. length] ^ input2[0 .. length];
     }
-
 }
 
-void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
-                            in Vector!( ubyte, Alloc2 ) input,
-                            size_t n)
+void xorBuf(Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) output,
+                           ref Vector!( ubyte, Alloc2 ) input,
+                           size_t n)
 {
     xorBuf(output.ptr, input.ptr, n);
 }
 
 void xorBuf(Alloc)(ref Vector!( ubyte, Alloc ) output,
-                    in ubyte* input,
-                    size_t n)
+                   const(ubyte)* input,
+                   size_t n)
 {
     xorBuf(output.ptr, input, n);
 }
 
 void xorBuf(Alloc, Alloc2)(Vector!( ubyte, Alloc ) output,
-                            in ubyte* input,
-                            in Vector!( ubyte, Alloc2 ) input2,
-                            size_t n)
+                           const(ubyte)* input,
+                           Vector!( ubyte, Alloc2 ) input2,
+                           size_t n)
 {
     xorBuf(output.ptr, input.ptr, input2.ptr, n);
 }
 
 // fixme: Move into Vector type
 void opOpAssign(string op, T, Alloc, Alloc2)(ref Vector!(T, Alloc) output,
-                                             in Vector!( T, Alloc2 ) input)
+                                             Vector!( T, Alloc2 ) input)
         if (op == "^")
 {
     if (output.length < input.length)

@@ -19,7 +19,7 @@ public:
     * Initialize an Entropy_Accumulator
     * @param goal = is how many bits we would like to collect
     */
-    this(bool delegate(in ubyte*, size_t len, double) accum)
+    this(bool delegate(const(ubyte)*, size_t len, double) accum)
     {
         m_accum_fn = accum; 
         m_done = false;
@@ -55,7 +55,7 @@ public:
     */
     void add(const void* bytes, size_t length, double entropy_bits_per_byte)
     {
-        m_done = m_accum_fn(cast(const ubyte*)(bytes),
+        m_done = m_accum_fn(cast(const(ubyte)*)(bytes),
                                   length, entropy_bits_per_byte * length);
     }
 
@@ -70,7 +70,7 @@ public:
         add(&v, T.sizeof, entropy_bits_per_byte);
     }
 private:
-    bool delegate(in ubyte*, size_t, double) m_accum_fn;
+    bool delegate(const(ubyte)*, size_t, double) m_accum_fn;
     bool m_done;
     SecureVector!ubyte m_io_buffer;
 }

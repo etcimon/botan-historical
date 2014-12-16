@@ -27,7 +27,7 @@ import std.exception;
 * @return number of bytes written to output
 */
 size_t base64Encode(char* output,
-                     in ubyte* input,
+                     const(ubyte)* input,
                      size_t input_length,
                      ref size_t input_consumed,
                      bool final_inputs)
@@ -76,7 +76,7 @@ size_t base64Encode(char* output,
 * @return base64adecimal representation of input
 */
 
-string base64Encode(in ubyte* input,
+string base64Encode(const(ubyte)* input,
                      size_t input_length)
 {
     import std.conv : to;

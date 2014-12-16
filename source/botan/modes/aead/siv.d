@@ -22,7 +22,7 @@ import std.algorithm;
 class SIVMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -47,7 +47,7 @@ public:
         buffer.reserve(offset); // truncate msg
     }
 
-    final void setAssociatedDataN(size_t n, in ubyte* ad, size_t length)
+    final void setAssociatedDataN(size_t n, const(ubyte)* ad, size_t length)
     {
         if (n >= m_ad_macs.length)
             m_ad_macs.reserve(n+1);
@@ -55,7 +55,7 @@ public:
         m_ad_macs[n] = m_cmac.process(ad, length);
     }
 
-    final override void setAssociatedData(in ubyte* ad, size_t ad_len)
+    final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         setAssociatedDataN(0, ad, ad_len);
     }
@@ -116,7 +116,7 @@ protected:
 
     final SecureVector!ubyte msgBuf() { return m_msg_buf; }
 
-    final SecureVector!ubyte S2V(in ubyte* text, size_t text_len)
+    final SecureVector!ubyte S2V(const(ubyte)* text, size_t text_len)
     {
         const ubyte[16] zero;
         
@@ -151,7 +151,7 @@ protected:
 protected:
     final MessageAuthenticationCode cmac() { return *m_cmac; }
 
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         const size_t keylen = length / 2;
         m_cmac.setKey(key, keylen);

@@ -39,7 +39,7 @@ public:
     */
     final OctetString deriveKey(size_t output_len,
                            in string passphrase,
-                           in ubyte* salt, size_t salt_len,
+                           const(ubyte)* salt, size_t salt_len,
                            size_t iterations) const
     {
         if (iterations == 0)
@@ -81,7 +81,7 @@ public:
     */
     final OctetString deriveKey(size_t output_len,
                            in string passphrase,
-                           in ubyte* salt, size_t salt_len,
+                           const(ubyte)* salt, size_t salt_len,
                            Duration loop_for,
                            ref size_t iterations) const
     {
@@ -126,7 +126,7 @@ public:
     abstract Pair!(size_t, OctetString)
         keyDerivation(size_t output_len,
                             in string passphrase,
-                            in ubyte* salt, size_t salt_len,
+                            const(ubyte)* salt, size_t salt_len,
                             size_t iterations,
                        Duration loop_for) const;
 }

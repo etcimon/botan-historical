@@ -28,7 +28,7 @@ public:
     * @param block = the last block
     * @param size = the of the block
     */
-    abstract size_t unpad(in ubyte* block,
+    abstract size_t unpad(const(ubyte)* block,
                                 size_t size) const;
 
     /**
@@ -68,7 +68,7 @@ public:
     /*
     * Unpad with PKCS #7 Method
     */
-    override size_t unpad(in ubyte* block, size_t size) const
+    override size_t unpad(const(ubyte)* block, size_t size) const
     {
         size_t position = block[size-1];
         
@@ -110,7 +110,7 @@ public:
     /*
     * Unpad with ANSI X9.23 Method
     */
-    override size_t unpad(in ubyte* block, size_t size) const
+    override size_t unpad(const(ubyte)* block, size_t size) const
     {
         size_t position = block[size-1];
         if (position > size)
@@ -146,7 +146,7 @@ public:
     /*
     * Unpad with One and Zeros Method
     */
-    override size_t unpad(in ubyte* block, size_t size) const
+    override size_t unpad(const(ubyte)* block, size_t size) const
     {
         while (size)
         {
@@ -174,7 +174,7 @@ final class NullPadding : BlockCipherModePaddingMethod
 public:
     override void addPadding(SecureVector!ubyte, size_t, size_t) const {}
 
-    override size_t unpad(in ubyte*, size_t size) const { return size; }
+    override size_t unpad(const(ubyte)*, size_t size) const { return size; }
 
     override bool validBlocksize(size_t) const { return true; }
 

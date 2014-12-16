@@ -21,7 +21,7 @@ public:
     /*
     * XTEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         while (blocks >= 4)
         {
@@ -52,7 +52,7 @@ public:
     /*
     * XTEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         while (blocks >= 4)
         {
@@ -98,7 +98,7 @@ protected:
     /*
     * XTEA Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         m_EK.reserve(64);
         

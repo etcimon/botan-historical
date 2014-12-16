@@ -41,7 +41,7 @@ public:
     * @return a hint as the how many more bytes we need to process the
     *            current record (this may be 0 if on a record boundary)
     */
-    size_t receivedData(in ubyte* input, size_t input_size)
+    size_t receivedData(const(ubyte)* input, size_t input_size)
     {
         const auto get_cipherstate = (ushort epoch)
         { return this.readCipherStateEpoch(epoch); };
@@ -211,7 +211,7 @@ public:
     /**
     * Inject plaintext intended for counterparty
     */
-    void send(in ubyte* buf, size_t buf_size)
+    void send(const(ubyte)* buf, size_t buf_size)
     {
         if (!isActive())
             throw new Exception("Data cannot be sent on inactive TLS connection");
@@ -224,7 +224,7 @@ public:
     */
     void send(in string str)
     {
-        this.send(cast(const ubyte*)(str.toStringz), str.length);
+        this.send(cast(const(ubyte)*)(str.toStringz), str.length);
     }
 
     void send(in string val);
@@ -352,7 +352,7 @@ public:
     * @param payload = will be echoed back
     * @param payload_size = size of payload in bytes
     */
-    void heartbeat(in ubyte* payload, size_t payload_size)
+    void heartbeat(const(ubyte)* payload, size_t payload_size)
     {
         if (heartbeatSendingAllowed())
         {
@@ -676,7 +676,7 @@ private:
         sendRecordArray(epoch, record_type, record.ptr, record.length);
     }
 
-    void sendRecordArray(ushort epoch, ubyte type, in ubyte* input, size_t length)
+    void sendRecordArray(ushort epoch, ubyte type, const(ubyte)* input, size_t length)
     {
         if (length == 0)
             return;
@@ -715,7 +715,7 @@ private:
     }
 
     void writeRecord(ConnectionCipherState cipher_state,
-                      ubyte record_type, in ubyte* input, size_t length)
+                      ubyte record_type, const(ubyte)* input, size_t length)
     {
         assert(m_pending_state || m_active_state,
                "Some connection state exists");

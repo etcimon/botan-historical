@@ -21,13 +21,13 @@ public:
     /*
     * DESX Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
-            xorBuf(output, input, m_K1.ptr, BLOCK_SIZE);
+            xorBuf(output, cast(ubyte*)input, m_K1.ptr, BLOCK_SIZE);
             m_des.encrypt(output);
-            xorBuf(output, m_K2.ptr, BLOCK_SIZE);
+            xorBuf(output, cast(ubyte*)m_K2.ptr, BLOCK_SIZE);
             
             input += BLOCK_SIZE;
             output += BLOCK_SIZE;
@@ -37,11 +37,11 @@ public:
     /*
     * DESX Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {    
         foreach (size_t i; 0 .. blocks)
         {
-            xorBuf(output, input, m_K2.ptr, BLOCK_SIZE);
+            xorBuf(output, cast(ubyte*)input, m_K2.ptr, BLOCK_SIZE);
             m_des.decrypt(output);
             xorBuf(output, m_K1.ptr, BLOCK_SIZE);
             
@@ -64,7 +64,7 @@ protected:
     /*
     * DESX Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         m_K1[] = key[0 .. 8];
         m_des.setKey(key + 8, 8);

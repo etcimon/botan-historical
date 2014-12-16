@@ -61,5 +61,5 @@ void setMem(T)(T* ptr, size_t n, ubyte val)
 */
 bool sameMem(T)(in T* p1, in T* p2, in size_t n)
 {
-    return ((cast(ubyte*)p1)[0 .. n] is (cast(ubyte*)p2)[0 .. n]);
+    return ((cast(const(ubyte)*)p1)[0 .. n] is (cast(const(ubyte)*)p2)[0 .. n]);
 }

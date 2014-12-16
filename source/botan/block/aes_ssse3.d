@@ -25,7 +25,7 @@ public:
     /*
     * AES-128 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -42,7 +42,7 @@ public:
     /*
     * AES-128 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -70,7 +70,7 @@ protected:
     /*
     * AES-128 Key Schedule
     */
-    override void keySchedule(in ubyte* keyb, size_t)
+    override void keySchedule(const(ubyte)* keyb, size_t)
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81, 0x1F8391B9, 0xAF9DEEB6)();
         
@@ -114,7 +114,7 @@ public:
     /*
     * AES-192 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -131,7 +131,7 @@ public:
     /*
     * AES-192 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -158,7 +158,7 @@ protected:
     /*
     * AES-192 Key Schedule
     */
-    override void keySchedule(in ubyte* keyb, size_t)
+    override void keySchedule(const(ubyte)* keyb, size_t)
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();
@@ -225,7 +225,7 @@ public:
     /*
     * AES-256 Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -242,7 +242,7 @@ public:
     /*
     * AES-256 Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const(__m128i)* in_mm = cast(const(__m128i)*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
@@ -269,7 +269,7 @@ protected:
     /*
     * AES-256 Key Schedule
     */
-    override void keySchedule(in ubyte* keyb, size_t)
+    override void keySchedule(const(ubyte)* keyb, size_t)
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();

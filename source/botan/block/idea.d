@@ -22,7 +22,7 @@ public:
     /*
     * IDEA Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         idea_op(input, output, blocks, m_EK.ptr);
     }
@@ -30,7 +30,7 @@ public:
     /*
     * IDEA Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         idea_op(input, output, blocks, m_DK.ptr);
     }
@@ -58,7 +58,7 @@ protected:
     /*
     * IDEA Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         m_EK.reserve(52);
         m_DK.reserve(52);
@@ -147,7 +147,7 @@ ushort mul_inv(ushort x) pure
 /**
 * IDEA is involutional, depending only on the key schedule
 */
-void idea_op(ubyte* input, ubyte* output, size_t blocks, in const(ushort)* K) pure
+void idea_op(const(ubyte)* input, ubyte* output, size_t blocks, in const(ushort)* K) pure
 {
     __gshared immutable size_t BLOCK_SIZE = 8;
     

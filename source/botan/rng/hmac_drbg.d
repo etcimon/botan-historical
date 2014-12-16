@@ -23,7 +23,7 @@ public:
     override void randomize(ubyte* output, size_t length)
     {
         if (!isSeeded() || m_reseed_counter > BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED)
-            reseed(m_mac.output_length * 8);
+            reseed(m_mac.outputLength * 8);
         
         if (!isSeeded())
             throw new PRNGUnseeded(name);
@@ -71,14 +71,14 @@ public:
             
             if (m_prng.isSeeded())
             {
-                SecureVector!ubyte input = m_prng.randomVec(m_mac.output_length);
+                SecureVector!ubyte input = m_prng.randomVec(m_mac.outputLength);
                 update(input.ptr, input.length);
                 m_reseed_counter = 1;
             }
         }
     }
 
-    void ddEntropy(in ubyte* input, size_t length)
+    void ddEntropy(const(ubyte)* input, size_t length)
     {
         update(input, length);
         m_reseed_counter = 1;
@@ -93,16 +93,16 @@ public:
     { 
         m_mac = mac;
         m_prng = prng;
-        m_V = SecureVector!ubyte(m_mac.output_length, 0x01);
+        m_V = SecureVector!ubyte(m_mac.outputLength, 0x01);
         m_reseed_counter = 0;
-        m_mac.setKey(SecureVector!ubyte(m_mac.output_length, 0x00));
+        m_mac.setKey(SecureVector!ubyte(m_mac.outputLength, 0x00));
     }
 
 private:
     /*
     * Reset V and the mac key with new values
     */
-    void update(in ubyte* input, size_t input_len)
+    void update(const(ubyte)* input, size_t input_len)
     {
         m_mac.update(m_V);
         m_mac.update(0x00);

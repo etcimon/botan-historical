@@ -32,12 +32,12 @@ public:
         m_prf = m_extractor.clone(); 
     }
 
-    void startExtract(in ubyte* salt, size_t salt_len)
+    void startExtract(const(ubyte)* salt, size_t salt_len)
     {
         m_extractor.setKey(salt, salt_len);
     }
 
-    void extract(in ubyte* input, size_t input_len)
+    void extract(const(ubyte)* input, size_t input_len)
     {
         m_extractor.update(input, input_len);
     }
@@ -53,9 +53,9 @@ public:
     * @param output_len = must be less than 256*hashlen
     */
     void expand(ubyte* output, size_t output_len,
-                in ubyte* info, size_t info_len)
+                const(ubyte)* info, size_t info_len)
     {
-        if (output_len > m_prf.output_length * 255)
+        if (output_len > m_prf.outputLength * 255)
             throw new InvalidArgument("HKDF requested output too large");
         
         ubyte counter = 1;

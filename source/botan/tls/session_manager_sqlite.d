@@ -77,7 +77,7 @@ public:
             
             if (stmt.step())
             {
-                Pair!(const ubyte*, size_t) salt = stmt.getBlob(0);
+                Pair!(const(ubyte)*, size_t) salt = stmt.getBlob(0);
                 const size_t iterations = stmt.getSizeT(1);
                 const size_t check_val_db = stmt.getSizeT(2);
                 
@@ -130,7 +130,7 @@ public:
         
         while (stmt.step())
         {
-            Pair!(const ubyte*, size_t) blob = stmt.getBlob(0);
+            Pair!(const(ubyte)*, size_t) blob = stmt.getBlob(0);
             
             try
             {
@@ -157,7 +157,7 @@ public:
         
         while (stmt.step())
         {
-            Pair!(const ubyte*, size_t) blob = stmt.getBlob(0);
+            Pair!(const(ubyte)*, size_t) blob = stmt.getBlob(0);
             
             try
             {
@@ -232,7 +232,7 @@ private:
 }
 
 SymmetricKey deriveKey(in string passphrase,
-                        in ubyte* salt,
+                        const(ubyte)* salt,
                         size_t salt_len,
                         size_t iterations,
                         ref size_t check_val)

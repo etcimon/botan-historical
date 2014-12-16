@@ -24,7 +24,7 @@ public:
     /*
     * Combine cipher stream with message
     */
-    override void cipher(in ubyte* input, ubyte* output, size_t length)
+    override void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_position)
         {
@@ -48,7 +48,7 @@ public:
     /*
     * Return the name of this type
     */
-    override void setIv(in ubyte* iv, size_t length)
+    override void setIv(const(ubyte)* iv, size_t length)
     {
         if (!validIvLength(length))
             throw new InvalidIVLength(name, length);
@@ -139,7 +139,7 @@ protected:
     /*
     * ChaCha Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         __gshared immutable uint[] TAU =    [ 0x61707865, 0x3120646e, 0x79622d36, 0x6b206574 ];
         

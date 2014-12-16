@@ -22,7 +22,7 @@ import botan.utils.types;
 * @param label = the human-readable label
 * @param headers = a set of key/value pairs included in the header
 */
-string PGP_encode(in ubyte* input, size_t length, in string label,
+string PGP_encode(const(ubyte)* input, size_t length, in string label,
                   in HashMap!(string, string) headers)
 {
     const string PGP_HEADER = "-----BEGIN PGP " ~ label ~ "-----";
@@ -61,7 +61,7 @@ string PGP_encode(in ubyte* input, size_t length, in string label,
 * @param length = length of input in bytes
 * @param type = the human-readable label
 */
-string PGP_encode(in ubyte* input, size_t length, in string type)
+string PGP_encode(const(ubyte)* input, size_t length, in string type)
 {
     HashMap!(string, string) empty;
     return PGP_encode(input, length, type, empty);

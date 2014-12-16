@@ -410,7 +410,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         return _data._capacity;
     }
-    
+
+    @property Range range() {
+        return Range(this, 0, length);
+    }
+
     /**
         Ensures sufficient capacity to accommodate $(D e) elements.
 

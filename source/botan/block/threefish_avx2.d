@@ -19,7 +19,7 @@ import botan.block.block_cipher;
 final class Threefish512AVX2 : Threefish512
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const ulong* K = &getK()[0];
         const ulong* T_64 = &getT()[0];
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const ulong* K = &getK()[0];
         const ulong* T_64 = &getT()[0];

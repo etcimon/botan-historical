@@ -24,7 +24,7 @@ public:
     * @param input = the input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    abstract void write(ubyte* input, size_t length);
+    abstract void write(const(ubyte)* input, size_t length);
     
     /**
     * Start a new message. Must be closed by endMsg() before another
@@ -63,14 +63,17 @@ public:
     * Write a portion of a message to this filter.
     * @param input = the input as a ubyte array
     */
-    final void write(ubyte[] input) { write(input.ptr, input.length); }
+    final void write(const(ubyte)[] input) { write(input.ptr, input.length); }
 
-protected:
+	override void write(const(ubyte)* input, size_t length) {
+		Filterable.write(input, length);
+	}
+
     /**
     * @param input = some input for the filter
     * @param length = the length of in
     */
-    void send(ubyte* input, size_t length)
+    void send(const(ubyte)* input, size_t length)
     {
         if (!length)
             return;
@@ -209,7 +212,7 @@ protected:
         m_port_num = 0;
         m_filter_owns = 0;
         
-        while (size && filters && (filters[size-1] == null))
+        while (size && filters && (filters[size-1] is null))
             --size;
         
         if (filters && size)
@@ -240,7 +243,6 @@ protected:
 **/
 class FanoutFilter : Filter, Filterable
 {
-	override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
 protected:
     /**
     * Increment the number of filters past us that we own
@@ -249,8 +251,9 @@ protected:
 
     override void setPort(size_t n) { setPort(n); }
 
-	override void setNext(Filter f, size_t n) { super.setNext(f, n); }
+	override void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
 
+	override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
 
     override void attach(Filter f) { attach(f); }
 

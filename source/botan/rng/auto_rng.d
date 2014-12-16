@@ -24,7 +24,7 @@ public:
 
     override void reseed(size_t poll_bits = 256) { m_rng.reseed(poll_bits); }
 
-    override void addEntropy(in ubyte* input, size_t len)
+    override void addEntropy(const(ubyte)* input, size_t len)
     { m_rng.addEntropy(input, len); }
 
     this()

@@ -188,7 +188,8 @@ public:
     RefT opDot() { return _p; }
     const(RefT) opDot() const { return _p; }
 
-    RefT opUnary(string op)() if (op == "*") { return _p; }
+	RefT opUnary(string op)() if (op == "*") { return _p; }
+	const(RefT) opUnary(string op)() const if (op == "*") { return _p; }
 
     RefT get() { return _p; }
 

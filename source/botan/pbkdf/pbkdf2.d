@@ -39,7 +39,7 @@ public:
     Pair!(size_t, OctetString)
         keyDerivation(size_t key_len,
                        in string passphrase,
-                       in ubyte* salt, size_t salt_len,
+                       const(ubyte)* salt, size_t salt_len,
                        size_t iterations,
                        Duration loop_for) const
     {
@@ -48,7 +48,7 @@ public:
         
         try
         {
-            m_mac.setKey(cast(const ubyte*)(passphrase.ptr),
+            m_mac.setKey(cast(const(ubyte)*)(passphrase.ptr),
                         passphrase.length);
         }
         catch(InvalidKeyLength)
@@ -60,16 +60,16 @@ public:
         
         ubyte* T = key.ptr;
         
-        SecureVector!ubyte U = SecureVector!ubyte(m_mac.output_length);
+        SecureVector!ubyte U = SecureVector!ubyte(m_mac.outputLength);
         
-        const size_t blocks_needed = roundUp(key_len, m_mac.output_length) / m_mac.output_length;
+        const size_t blocks_needed = roundUp(key_len, m_mac.outputLength) / m_mac.outputLength;
         
         Duration dur_per_block = loop_for / blocks_needed;
         
         uint counter = 1;
         while (key_len)
         {
-            size_t T_size = std.algorithm.min(mac.output_length, key_len);
+            size_t T_size = std.algorithm.min(mac.outputLength, key_len);
             
             m_mac.update(salt, salt_len);
             m_mac.updateBigEndian(counter);

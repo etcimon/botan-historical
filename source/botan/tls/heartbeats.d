@@ -59,7 +59,7 @@ public:
     }
 
     this(MessageType type,
-         in ubyte* payload,
+         const(ubyte)* payload,
          size_t payload_len) 
     {
         m_type = type;

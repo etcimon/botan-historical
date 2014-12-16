@@ -127,7 +127,7 @@ public:
         buf.pushBack(get_byte!ushort(0, name_len));
         buf.pushBack(get_byte!ushort(1, name_len));
         
-        buf ~= (cast(const ubyte*)m_sni_host_name.ptr)[0 .. m_sni_host_name.length];
+        buf ~= (cast(const(ubyte)*)m_sni_host_name.ptr)[0 .. m_sni_host_name.length];
         
         return buf;
     }
@@ -169,7 +169,7 @@ public:
     {
         Vector!ubyte buf;
 
-        const ubyte* srp_bytes = cast(const ubyte*) m_srp_identifier.ptr;
+        const(ubyte)* srp_bytes = cast(const(ubyte)*) m_srp_identifier.ptr;
         
         appendTlsLengthValue(buf, srp_bytes, m_srp_identifier.length, 1);
         
@@ -336,7 +336,7 @@ public:
             const string p = m_protocols[i];
             
             if (p != "")
-                appendTlsLengthValue(buf, cast(const ubyte*) p.ptr, p.length, 1);
+                appendTlsLengthValue(buf, cast(const(ubyte)*) p.ptr, p.length, 1);
         }
         
         return buf;

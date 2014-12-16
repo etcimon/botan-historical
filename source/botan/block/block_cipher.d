@@ -42,7 +42,7 @@ public:
     * @param output = The ubyte array designated to hold the encrypted block.
     * Must be of length blockSize().
     */
-    final void encrypt(ubyte* input, ubyte* output)
+    final void encrypt(const(ubyte)* input, ubyte* output)
     { encryptN(input, output, 1); }
 
     /**
@@ -52,7 +52,7 @@ public:
     * @param output = The ubyte array designated to hold the decrypted block.
     * Must be of length blockSize().
     */
-    final void decrypt(ubyte* input, ubyte* output)
+    final void decrypt(const(ubyte)* input, ubyte* output)
     { decryptN(input, output, 1); }
 
     /**
@@ -61,7 +61,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void encrypt(ubyte* block) { encryptN(block, block, 1); }
+    final void encrypt(ubyte* block) { encryptN(cast(const(ubyte)*)block, block, 1); }
     
     /**
     * Decrypt a block.
@@ -69,7 +69,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-    final void decrypt(ubyte* block) { decryptN(block, block, 1); }
+	final void decrypt(ubyte* block) { decryptN(cast(const(ubyte)*)block, block, 1); }
 
     /**
     * Encrypt a block.
@@ -158,7 +158,7 @@ public:
     * @param output = the output buffer (same size as input)
     * @param blocks = the number of blocks to process
     */
-    abstract void encryptN(ubyte* input, ubyte* output, size_t blocks);
+    abstract void encryptN(const(ubyte)* input, ubyte* output, size_t blocks);
 
     /**
     * Decrypt one or more blocks
@@ -166,7 +166,7 @@ public:
     * @param output = the output buffer (same size as input)
     * @param blocks = the number of blocks to process
     */
-    abstract void decryptN(ubyte* input, ubyte* output, size_t blocks);
+    abstract void decryptN(const(ubyte)* input, ubyte* output, size_t blocks);
 
     /**
     * @return new object representing the same algorithm as this

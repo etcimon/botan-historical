@@ -71,7 +71,7 @@ public:
         rekey();
     }
 
-    override void addEntropy(in ubyte* input, size_t length)
+    override void addEntropy(const(ubyte)* input, size_t length)
     {
         m_prng.addEntropy(input, length);
         rekey();

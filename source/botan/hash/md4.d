@@ -49,7 +49,7 @@ protected:
     /*
     * MD4 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         uint A = m_digest[0], B = m_digest[1], C = m_digest[2], D = m_digest[3];
         
@@ -98,7 +98,7 @@ protected:
     */
     override void copyOut(ubyte* output)
     {
-        for (size_t i = 0; i != output_length; i += 4)
+        for (size_t i = 0; i != outputLength; i += 4)
             storeLittleEndian(m_digest[i/4], output + i);
     }
 

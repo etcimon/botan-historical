@@ -21,12 +21,12 @@ import botan.utils.types;
 class AES128 : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -43,7 +43,7 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES128; }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
@@ -58,12 +58,12 @@ protected:
 final class AES192 : BlockCipherFixedParams!(16, 24), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -80,7 +80,7 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES192; }
 protected:    
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
@@ -95,12 +95,12 @@ protected:
 final class AES256 : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
@@ -117,7 +117,7 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES256; }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         aes_key_schedule(key, length, m_EK, m_DK, m_ME, m_MD);
     }
@@ -525,7 +525,7 @@ __gshared immutable uint[1024] TD = [
 /*
 * AES Encryption
 */
-void aes_encrypt_n(ubyte* input, ubyte* output,
+void aes_encrypt_n(const(ubyte)* input, ubyte* output,
                    size_t blocks,
                    in SecureVector!uint EK,
                    in SecureVector!ubyte ME)
@@ -640,7 +640,7 @@ void aes_encrypt_n(ubyte* input, ubyte* output,
 /*
 * AES Decryption
 */
-void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
+void aes_decrypt_n(const(ubyte)* input, ubyte* output, size_t blocks,
                    in SecureVector!uint DK,
                    in SecureVector!ubyte MD) 
 {
@@ -724,7 +724,7 @@ void aes_decrypt_n(ubyte* input, ubyte* output, size_t blocks,
     }
 }
 
-void aes_key_schedule(in ubyte* key, size_t length,
+void aes_key_schedule(const(ubyte)* key, size_t length,
                       ref SecureVector!uint EK,
                       ref SecureVector!uint DK,
                       SecureVector!ubyte ME,

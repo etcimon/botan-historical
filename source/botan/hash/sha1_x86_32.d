@@ -31,7 +31,7 @@ protected:
     /*
     * SHA-160 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -44,7 +44,7 @@ protected:
 
 private:
 
-void botan_sha160_x86_32_compress(uint* arg1, in ubyte* arg2, uint* arg2) pure
+void botan_sha160_x86_32_compress(uint* arg1, const(ubyte)* arg2, uint* arg2) pure
 {
     enum PUSHED = 4;
     mixin(START_ASM ~

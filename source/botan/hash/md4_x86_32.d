@@ -25,7 +25,7 @@ protected:
     /*
     * MD4 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -42,7 +42,7 @@ private:
 * @param input = the input block
 * @param M = the message buffer
 */
-void botan_md4_x86_32_compress(uint* digest, in ubyte* input, uint* M)
+void botan_md4_x86_32_compress(uint* digest, const(ubyte)* input, uint* M)
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 

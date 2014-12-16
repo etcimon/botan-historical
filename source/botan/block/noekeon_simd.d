@@ -25,7 +25,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const SecureVector!uint EK = this.getEK();
         
@@ -82,7 +82,7 @@ public:
     /*
     * Noekeon Encryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         const SecureVector!uint DK = this.getDK();
         

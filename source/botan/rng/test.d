@@ -30,7 +30,7 @@ public:
             output[j] = random();
     }
     
-    void addEntropy(in ubyte* b, size_t s)
+    void addEntropy(const(ubyte)* b, size_t s)
     {
         m_buf.insert(b[0 .. s]);
     }

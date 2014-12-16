@@ -19,7 +19,7 @@ private:
     /*
     * EMSA-Raw Encode Operation
     */
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         m_message += makePair(input, length);
     }

@@ -24,7 +24,7 @@ public:
     /*
     * MARS Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -67,7 +67,7 @@ public:
     /*
     * MARS Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -120,7 +120,7 @@ protected:
     /*
     * MARS Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         SecureVector!uint T = SecureVector!uint(15);
         foreach (size_t i; 0 .. (length / 4))

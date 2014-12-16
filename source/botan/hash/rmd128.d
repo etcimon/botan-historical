@@ -48,7 +48,7 @@ protected:
     /*
     * RIPEMD-128 Compression Function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         
         const uint MAGIC2 = 0x5A827999, MAGIC3 = 0x6ED9EBA1,

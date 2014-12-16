@@ -150,7 +150,7 @@ public:
 
     override size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
         
@@ -218,7 +218,7 @@ public:
     override size_t maxInputBits() const { return (m_n.bits() - 1); }
     override bool withRecovery() const { return true; }
 
-    override SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+    override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
         

@@ -19,7 +19,7 @@ import botan.utils.semaphore;
 */
 final class BitBucket : Filter, Filterable
 {
-    override void write(ubyte*, size_t) {}
+    override void write(const(ubyte)*, size_t) {}
 
     override @property string name() const { return "BitBucket"; }
 }
@@ -33,7 +33,7 @@ final class BitBucket : Filter, Filterable
 final class Chain : FanoutFilter, Filterable
 {
 public:
-    override void write(ubyte* input, size_t length) { send(input, length); }
+    override void write(const(ubyte)* input, size_t length) { send(input, length); }
 
     override @property string name() const
     {
@@ -79,7 +79,7 @@ public:
 class Fork : FanoutFilter, Filterable
 {
 public:
-    override final void write(ubyte* input, size_t length) { send(input, length); }
+    override final void write(const(ubyte)* input, size_t length) { send(input, length); }
     override final void setPort(size_t n) { super.setPort(n); }
 
     override @property string name() const
@@ -173,7 +173,7 @@ protected:
         }
     }
 
-    override void send(ubyte* input, size_t length)
+    override void send(const(ubyte)* input, size_t length)
     {
         if (m_write_queue.length)
             threadDelegateWork(m_write_queue.ptr, m_write_queue.length);
@@ -191,7 +191,7 @@ protected:
     }
 
 private:
-    void threadDelegateWork(ubyte* input, size_t length)
+    void threadDelegateWork(const(ubyte)* input, size_t length)
     {
         //Set the data to do.
         m_thread_data.m_input = input;
@@ -247,7 +247,7 @@ struct ThreadedForkData
     * are NOT running (i.e. before notifying the work condition, after
     * the input_complete_semaphore is completely reset.)
     */
-    ubyte* m_input;
+    const(ubyte)* m_input;
     
     /*
     * The length of the work that needs to be done.

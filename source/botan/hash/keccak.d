@@ -11,12 +11,14 @@ static if (BOTAN_HAS_KECCAK):
 
 import botan.hash.hash;
 import botan.utils.memory.zeroize;
-// import string;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.rotate;
 import botan.utils.xor_buf;
+import botan.utils.get_byte;
+import botan.utils.types;
+import std.conv : to;
 
 /**
 * Keccak[1600], a SHA-3 candidate
@@ -63,7 +65,7 @@ public:
     }
 
 protected:
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         if (length == 0)
             return;
@@ -135,7 +137,7 @@ protected:
 
 
 
-void keccakF1600(ref ulong[25] A) pure
+void keccak_f_1600(ref ulong[25] A) pure
 {
     __gshared immutable ulong[24] RC = [
         0x0000000000000001, 0x0000000000008082, 0x800000000000808A,

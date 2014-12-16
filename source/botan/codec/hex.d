@@ -21,7 +21,7 @@ import std.conv : to;
 * @param uppercase = should output be upper or lower case?
 */
 void hexEncode(char* output,
-                in ubyte* input,
+                const(ubyte)* input,
                 size_t input_length,
                 bool uppercase = true)
 {
@@ -33,7 +33,7 @@ void hexEncode(char* output,
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         'a', 'b', 'c', 'd', 'e', 'f' ];
 
-    const ubyte* tbl = uppercase ? BIN_TO_HEX_UPPER.ptr : BIN_TO_HEX_LOWER.ptr;
+    const(ubyte)* tbl = uppercase ? BIN_TO_HEX_UPPER.ptr : BIN_TO_HEX_LOWER.ptr;
     
     foreach (size_t i; 0 .. input_length)
     {
@@ -50,7 +50,7 @@ void hexEncode(char* output,
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hexEncode(in ubyte* input, size_t input_length, bool uppercase = true)
+string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true)
 {
     char[] output;
     output.length = 2 * input_length;

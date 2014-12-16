@@ -32,7 +32,7 @@ struct CryptoBox {
     * @param passphrase = the passphrase used to encrypt the message
     * @param rng = a ref to a random number generator, such as AutoSeededRNG
     */
-    static string encrypt(in ubyte* input, size_t input_len,
+    static string encrypt(const(ubyte)* input, size_t input_len,
                           in string passphrase,
                           RandomNumberGenerator rng)
     {
@@ -43,7 +43,7 @@ struct CryptoBox {
         
         OctetString master_key = pbkdf.deriveKey(PBKDF_OUTPUT_LEN, passphrase, pbkdf_salt.ptr, pbkdf_salt.length, PBKDF_ITERATIONS);
         
-        const(ubyte*) mk = master_key.ptr;
+        const(const(ubyte)*) mk = master_key.ptr;
         
         SymmetricKey cipher_key = SymmetricKey(mk, CIPHER_KEY_LEN);
         SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
@@ -85,7 +85,7 @@ struct CryptoBox {
     * @param input_len = the length of input in bytes
     * @param passphrase = the passphrase used to encrypt the message
     */
-    static string decrypt(in ubyte* input, size_t input_len, in string passphrase)
+    static string decrypt(const(ubyte)* input, size_t input_len, in string passphrase)
     {
         auto input_src = scoped!DataSourceMemory(input, input_len);
         SecureVector!ubyte ciphertext = PEM.decodeCheckLabel(input_src.Scoped_payload, "BOTAN CRYPTOBOX MESSAGE");
@@ -97,7 +97,7 @@ struct CryptoBox {
             if (ciphertext[i] != get_byte(i, CRYPTOBOX_VERSION_CODE))
                 throw new DecodingError("Bad CryptoBox version");
         
-        const ubyte* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
+        const(ubyte)* pbkdf_salt = &ciphertext[VERSION_CODE_LEN];
         
         auto pbkdf = scoped!PKCS5_PBKDF2(new HMAC(new SHA512));
         
@@ -107,7 +107,7 @@ struct CryptoBox {
                                                  PBKDF_SALT_LEN,
                                                  PBKDF_ITERATIONS);
         
-        const ubyte* mk = master_key.ptr;
+        const(ubyte)* mk = master_key.ptr;
         
         SymmetricKey cipher_key = SymmetricKey(mk, CIPHER_KEY_LEN);
         SymmetricKey mac_key = SymmetricKey(&mk[CIPHER_KEY_LEN], MAC_KEY_LEN);
@@ -138,7 +138,7 @@ struct CryptoBox {
     */
     string decrypt(in string input, in string passphrase)
     {
-        return decrypt(cast(const ubyte*)(input.ptr), input.length, passphrase);
+        return decrypt(cast(const(ubyte)*)(input.ptr), input.length, passphrase);
     }
 
 
@@ -180,7 +180,7 @@ unittest
     {
         string plaintext = CryptoBox.decrypt(ciphertext, "secret password");
         
-        if (plaintext.length != msg.length || !sameMem(cast(const ubyte*)(&plaintext[0]), msg.ptr, msg.length))
+        if (plaintext.length != msg.length || !sameMem(cast(const(ubyte)*)(&plaintext[0]), msg.ptr, msg.length))
             ++fails;
         
     }

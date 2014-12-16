@@ -530,7 +530,7 @@ public:
     /*
     * BERDecoder Constructor
     */
-    this(in ubyte* data, size_t length)
+    this(const(ubyte)* data, size_t length)
     {
         m_source = new DataSourceMemory(data, length);
         m_owns = true;

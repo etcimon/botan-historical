@@ -29,7 +29,7 @@ import std.algorithm;
 /**
 * PKCS #5 v2.0 PBE
 */
-final class PBEPKCS5v20 : PBE
+final class PBEPKCS5v20 : PBE, Filterable
 {
 public:
     /*
@@ -76,7 +76,7 @@ public:
     /*
     * Encrypt some bytes using PBES2
     */
-    void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_pipe.write(input, length);
         flushPipe(true);

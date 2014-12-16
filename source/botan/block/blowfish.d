@@ -24,7 +24,7 @@ public:
     /*
     * Blowfish Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;
@@ -61,7 +61,7 @@ public:
     /*
     * Blowfish Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         import botan.utils.get_byte : get_byte;
         const uint* S1 = m_S.ptr;
@@ -98,7 +98,7 @@ public:
     /**
     * Modified EKSBlowfish key schedule, used for bcrypt password hashing
     */
-    void eksKeySchedule(in ubyte* key, size_t length,
+    void eksKeySchedule(const(ubyte)* key, size_t length,
                         in ubyte[16] salt, size_t workfactor)
     {
         import std.conv : to;
@@ -151,7 +151,7 @@ protected:
     /*
     * Blowfish Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_P.reserve(18);
         m_P ~= P_INIT[0 .. 18];
@@ -165,7 +165,7 @@ protected:
     }
 
 private:
-    void key_expansion(in ubyte* key,
+    void key_expansion(const(ubyte)* key,
                        size_t length,
                        in ubyte[16] salt)
     {

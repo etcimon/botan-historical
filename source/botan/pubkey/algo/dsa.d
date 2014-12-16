@@ -129,7 +129,7 @@ public:
     override size_t messagePartSize() const { return m_q.bytes(); }
     override size_t maxInputBits() const { return m_q.bits(); }
 
-    override SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         import std.concurrency : spawn, receiveOnly, thisTid, send;
         rng.addEntropy(msg, msg_len);
@@ -196,8 +196,7 @@ public:
 
     override bool withRecovery() const { return false; }
 
-    override bool verify(in ubyte* msg, size_t msg_len,
-                in ubyte* sig, size_t sig_len)
+    override bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;
         const BigInt q = mod_q.getModulus();

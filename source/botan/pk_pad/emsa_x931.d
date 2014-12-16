@@ -33,7 +33,7 @@ public:
             throw new EncodingError("EMSA_X931 no hash identifier for " ~ hash.name);
     }
 private:
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }

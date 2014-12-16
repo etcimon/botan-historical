@@ -102,7 +102,7 @@ public:
             throw new Exception("sqlite3_bind_text failed, code " ~ to!string(rc));
     }
 
-    Pair!(const ubyte*, size_t) getBlob(int column)
+    Pair!(const(ubyte)*, size_t) getBlob(int column)
     {
         assert(sqlite3_column_type(m_stmt, 0) == SQLITE_BLOB,
                      "Return value is a blob");
@@ -112,7 +112,7 @@ public:
         
         assert(session_blob_size >= 0, "Blob size is non-negative");
         
-        return Pair(cast(const ubyte*)(session_blob),
+        return Pair(cast(const(ubyte)*)(session_blob),
                     cast(size_t)(session_blob_size));
     }
 

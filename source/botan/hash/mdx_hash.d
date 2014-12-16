@@ -37,7 +37,7 @@ protected:
     /*
     * Update the hash
     */
-    override final void addData(ubyte* input, size_t length)
+    override final void addData(const(ubyte)* input, size_t length)
     {
         m_count += length;
         
@@ -92,7 +92,7 @@ protected:
     * @param blocks = the input
     * @param block_n = the number of blocks
     */
-    abstract void compressN(in ubyte* blocks, size_t block_n);
+    abstract void compressN(const(ubyte)* blocks, size_t block_n);
 
     /*
     * Clear memory of sensitive data

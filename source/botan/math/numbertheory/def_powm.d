@@ -20,7 +20,7 @@ public:
     /*
     * Set the exponent
     */
-    override void setExponent(in BigInt e)
+    override void setExponent(BigInt e)
     {
         m_exp = e;
     }
@@ -28,11 +28,11 @@ public:
     /*
     * Set the base
     */
-    override void setBase(in BigInt base)
+    override void setBase(BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
-        m_g.reserve((1 << window_bits));
+        m_g.reserve((1 << m_window_bits));
         m_g[0] = 1;
         m_g[1] = base;
         
@@ -52,17 +52,21 @@ public:
         for (size_t i = exp_nibbles; i > 0; --i)
         {
             foreach (size_t j; 0 .. m_window_bits)
-                x = reducer.square(x);
+                x = m_reducer.square(x);
             
-            const uint nibble = exp.getSubstring(m_window_bits*(i-1), m_window_bits);
+            const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
-            x = reducer.multiply(x, m_g[nibble]);
+            x = m_reducer.multiply(x, m_g[nibble]);
         }
         return x;
     }
 
     override ModularExponentiator copy() const
-    { return new FixedWindowExponentiator(this); }
+    { 
+        FixedWindowExponentiator ret = new FixedWindowExponentiator;
+        ret.m_reducer = m_reducer.dup;
+
+    }
 
     this(in BigInt n, PowerMod.UsageHints _hints)
     {
@@ -88,7 +92,7 @@ public:
     /*
     * Set the exponent
     */
-    override void setExponent(in BigInt exp)
+    override void setExponent(BigInt exp)
     {
         m_exp = exp;
         m_exp_bits = exp.bits();
@@ -97,7 +101,7 @@ public:
     /*
     * Set the base
     */
-    override void setBase(in BigInt base)
+    override void setBase(BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         

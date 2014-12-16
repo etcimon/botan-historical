@@ -38,7 +38,7 @@ public:
     static SIMDScalar!(T, N) loadLittleEndian(in void* input)
     {
         SIMDScalar!(T, N) output;
-        const ubyte* in_b = cast(const ubyte*)(input);
+        const(ubyte)* in_b = cast(const(ubyte)*)(input);
 
         for (size_t i = 0; i != size(); ++i)
             output.m_v[i] = .loadLittleEndian!T(in_b, i);
@@ -49,7 +49,7 @@ public:
     static SIMDScalar!(T, N) loadBigEndian(in void* input)
     {
         SIMDScalar!(T, N) output;
-        const ubyte* in_b = cast(const ubyte*)(input);
+        const(ubyte)* in_b = cast(const(ubyte)*)(input);
 
         for (size_t i = 0; i != size(); ++i)
             output.m_v[i] = .loadBigEndian!T(in_b, i);

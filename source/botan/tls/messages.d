@@ -1055,7 +1055,7 @@ public:
         if (total_size != buf.length - 3)
             throw new DecodingError("Certificate: Message malformed");
         
-        const ubyte* certs = &buf[3];
+        const(ubyte)* certs = &buf[3];
         
         while (true)
         {
@@ -1775,7 +1775,7 @@ protected:
         Vector!ubyte buf;
         
         appendTlsLengthValue(buf,
-                                cast(const ubyte*)(m_protocol.ptr),
+                                cast(const(ubyte)*)(m_protocol.ptr),
                                 m_protocol.length,
                                 1);
         

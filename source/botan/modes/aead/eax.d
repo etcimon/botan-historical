@@ -25,7 +25,7 @@ import std.algorithm;
 class EAXMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -42,7 +42,7 @@ public:
     }
 
 
-    final override void setAssociatedData(in ubyte* ad, size_t length)
+    final override void setAssociatedData(const(ubyte)* ad, size_t length)
     {
         m_ad_mac = eaxPrf(1, this.blockSize(), *m_cmac, ad, length);
     }
@@ -77,7 +77,7 @@ public:
     }
 
 protected:
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         /*
         * These could share the key schedule, which is one nice part of EAX,
@@ -99,7 +99,7 @@ protected:
         m_cipher = cipher;
         m_ctr = new CTRBE(m_cipher.clone());
         m_cmac = new CMAC(m_cipher.clone());
-        if (m_tag_size < 8 || m_tag_size > m_cmac.output_length)
+        if (m_tag_size < 8 || m_tag_size > m_cmac.outputLength)
             throw new InvalidArgument(name ~ ": Bad tag size " ~ to!string(tag_size));
     }
 
@@ -207,7 +207,7 @@ public:
             m_ctr.cipher(buf, buf, remaining);
         }
         
-        const ubyte* included_tag = &buf[remaining];
+        const(ubyte)* included_tag = &buf[remaining];
         
         SecureVector!ubyte mac = m_cmac.finished();
         mac ^= m_nonce_mac;
@@ -226,7 +226,7 @@ public:
 */
 SecureVector!ubyte eaxPrf(ubyte tag, size_t block_size,
                           MessageAuthenticationCode mac,
-                          in ubyte* input,
+                          const(ubyte)* input,
                           size_t length) pure
 {
     foreach (size_t i; 0 .. (block_size - 1))

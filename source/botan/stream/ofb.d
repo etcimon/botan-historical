@@ -19,7 +19,7 @@ import botan.utils.xor_buf;
 final class OFB : StreamCipher, SymmetricAlgorithm
 {
 public:
-    override void cipher(in ubyte* input, ubyte* output, size_t length)
+    override void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
         while (length >= m_buffer.length - m_buf_pos)
         {
@@ -34,7 +34,7 @@ public:
         m_buf_pos += length;
     }
 
-    override void setIv(in ubyte* iv, size_t iv_len)
+    override void setIv(const(ubyte)* iv, size_t iv_len)
     {
         if (!validIvLength(iv_len))
             throw new InvalidIVLength(name, iv_len);
@@ -79,7 +79,7 @@ public:
         m_buf_pos = 0;
     }
 protected:
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, key_len);
         

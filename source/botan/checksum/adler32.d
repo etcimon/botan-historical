@@ -30,7 +30,7 @@ protected:
     /*
     * Update an Adler32 Checksum
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         __gshared immutable size_t PROCESS_AMOUNT = 5552;
         
@@ -58,7 +58,7 @@ protected:
 
 package:
 
-void adler32Update(ubyte* input, size_t length, ref ushort S1, ref ushort S2)
+void adler32Update(const(ubyte)* input, size_t length, ref ushort S1, ref ushort S2)
 {
     uint S1x = S1;
     uint S2x = S2;

@@ -26,7 +26,7 @@ public:
     /*
     * DES Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -57,7 +57,7 @@ public:
     /*
     * DES Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -97,7 +97,7 @@ protected:
     /*
     * DES Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
         m_round_key.reserve(32);
         des_key_schedule(*cast(uint[32]*) m_round_key.ptr, *cast(ubyte[8]*) key);
@@ -115,7 +115,7 @@ public:
     /*
     * TripleDES Encryption
     */
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -147,7 +147,7 @@ public:
     /*
     * TripleDES Decryption
     */
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -189,7 +189,7 @@ protected:
     /*
     * TripleDES Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_round_key.reserve(3*32);
         des_key_schedule(m_round_key.ptr[0 .. 32], key[0 .. 8]);

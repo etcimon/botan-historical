@@ -17,7 +17,7 @@ import botan.block.block_cipher;
 final class CascadeCipher : BlockCipher, SymmetricAlgorithm
 {
 public:
-    override void encryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
         size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
@@ -26,7 +26,7 @@ public:
         m_cipher2.encryptN(output, output, c2_blocks);
     }
 
-    override void decryptN(ubyte* input, ubyte* output, size_t blocks)
+    override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         size_t c1_blocks = blocks * (this.blockSize() / m_cipher1.blockSize());
         size_t c2_blocks = blocks * (this.blockSize() / m_cipher2.blockSize());
@@ -75,9 +75,9 @@ public:
             throw new InternalError("Failure in " ~ name() ~ " constructor");
     }
 protected:
-    override void keySchedule(in ubyte* key, size_t)
+    override void keySchedule(const(ubyte)* key, size_t)
     {
-        const ubyte* key2 = key + m_cipher1.maximumKeylength();
+        const(ubyte)* key2 = key + m_cipher1.maximumKeylength();
         
         m_cipher1.setKey(key , m_cipher1.maximumKeylength());
         m_cipher2.setKey(key2, m_cipher2.maximumKeylength());

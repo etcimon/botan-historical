@@ -24,10 +24,10 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
     if (y_arg.isZero())
         throw new BigInt.DivideByZero();
     
-    BigInt y = y_arg;
+    BigInt y = BigInt(y_arg);
     const size_t y_words = y.sigWords();
     
-    r = x;
+    r = BigInt(x);
     q = 0;
     
     r.setSign(BigInt.Positive);
@@ -87,7 +87,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
                 q_words[j-t-1] -= 1;
             }
             
-            r -= (q_words[j-t-1] * y) << (MP_WORD_BITS * (j-t-1));
+            r -= (y * q_words[j-t-1]) << (MP_WORD_BITS * (j-t-1));
             
             if (r.isNegative())
             {

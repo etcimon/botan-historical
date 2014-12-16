@@ -453,7 +453,7 @@ struct FreeListRef(T, bool INIT = true)
 
     private @property ref int refCount()
     const {
-        auto ptr = cast(ubyte*)cast(void*)m_object;
+        auto ptr = cast(const(ubyte)*)cast(void*)m_object;
         ptr += ElemSize;
         return *cast(int*)ptr;
     }
@@ -475,7 +475,7 @@ struct FreeListRef(T, bool INIT = true)
 
 private void* extractUnalignedPointer(void* base)
 {
-    ubyte misalign = *(cast(ubyte*)base-1);
+    ubyte misalign = *(cast(const(ubyte)*)base-1);
     assert(misalign <= Allocator.alignment);
     return base - misalign;
 }
@@ -484,7 +484,7 @@ private void* adjustPointerAlignment(void* base)
 {
     ubyte misalign = Allocator.alignment - (cast(size_t)base & Allocator.alignmentMask);
     base += misalign;
-    *(cast(ubyte*)base-1) = misalign;
+    *(cast(const(ubyte)*)base-1) = misalign;
     return base;
 }
 
@@ -492,7 +492,7 @@ unittest {
     void testAlign(void* p, size_t adjustment) {
         void* pa = adjustPointerAlignment(p);
         assert((cast(size_t)pa & Allocator.alignmentMask) == 0, "Non-aligned pointer.");
-        assert(*(cast(ubyte*)pa-1) == adjustment, "Invalid adjustment "~to!string(p)~": "~to!string(*(cast(ubyte*)pa-1)));
+        assert(*(cast(const(ubyte)*)pa-1) == adjustment, "Invalid adjustment "~to!string(p)~": "~to!string(*(cast(const(ubyte)*)pa-1)));
         void* pr = extractUnalignedPointer(pa);
         assert(pr == p, "Recovered base != original");
     }

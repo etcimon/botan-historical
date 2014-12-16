@@ -20,14 +20,14 @@ public:
     * @param output = the ubyte array to hold the output, i.e. the ciphertext
     * @param len = the length of both in and out in bytes
     */
-    abstract void cipher(in ubyte* input, ubyte* output, size_t len);
+    abstract void cipher(const(ubyte)* input, ubyte* output, size_t len);
 
     /**
     * Encrypt or decrypt a message
     * @param buf = the plaintext / ciphertext
     * @param len = the length of buf in bytes
     */
-    final void cipher1(ubyte* buf, size_t len)
+    final void cipher1(const(ubyte)* buf, size_t len)
     { cipher(buf, buf, len); }
 
     /**
@@ -51,7 +51,7 @@ public:
     * @param iv = the initialization vector
     * @param iv_len = the length of the IV in bytes
     */
-    abstract void setIv(const ubyte*, size_t iv_len);
+    abstract void setIv(const(ubyte)*, size_t iv_len);
     // { if (iv_len) throw new InvalidArgument("The stream cipher " ~ name ~ " does not support resyncronization"); }
 
     /**

@@ -13,33 +13,32 @@ import botan.rng.rng;
 /**
 * PKEncryptor Filter
 */
-final class PKEncryptorFilter : Filter
+final class PKEncryptorFilter : Filter, Filterable
 {
 public:
     /*
     * Append to the buffer
     */
-    void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_buffer ~= input[0 .. length];
     }
     /*
     * Encrypt the message
     */
-    void endMsg()
+    override void endMsg()
     {
-        send(m_cipher.encrypt(buffer, m_rng));
+        send(m_cipher.encrypt(m_buffer, m_rng));
         m_buffer.clear();
     }
 
-    this(    PKEncryptor c,
-            RandomNumberGenerator rng_ref) 
+    this(PKEncryptor c, RandomNumberGenerator rng_ref) 
     {
         m_cipher = c;
         m_rng = rng_ref;
     }
 
-    ~this() { delete cipher; }
+    ~this() { delete m_cipher; }
 private:
     PKEncryptor m_cipher;
     RandomNumberGenerator m_rng;
@@ -49,13 +48,13 @@ private:
 /**
 * PKDecryptor Filter
 */
-final class PKDecryptorFilter : Filter
+final class PKDecryptorFilter : Filter, Filterable
 {
 public:
     /*
     * Append to the buffer
     */
-    void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_buffer ~= input[0 .. length];
     }
@@ -63,7 +62,7 @@ public:
     /*
     * Decrypt the message
     */
-    void endMsg()
+    override void endMsg()
     {
         send(m_cipher.decrypt(m_buffer));
         m_buffer.clear();
@@ -79,13 +78,13 @@ private:
 /**
 * PKSigner Filter
 */
-final class PKSignerFilter : Filter
+final class PKSignerFilter : Filter, Filterable
 {
 public:
     /*
     * Add more data
     */
-    void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_signer.update(input, length);
     }
@@ -93,7 +92,7 @@ public:
     /*
     * Sign the message
     */
-    void endMsg()
+    override void endMsg()
     {
         send(m_signer.signature(m_rng));
     }
@@ -102,8 +101,8 @@ public:
     this(ref PKSigner s,
          RandomNumberGenerator rng_ref)
     {
-        signer = &s;
-        rng = rng_ref;
+        m_signer = &s;
+        m_rng = rng_ref;
     }
 
     ~this() {  }
@@ -115,13 +114,13 @@ private:
 /**
 * PKVerifier Filter
 */
-final class PKVerifierFilter : Filter
+final class PKVerifierFilter : Filter, Filterable
 {
 public:
     /*
     * Add more data
     */
-    void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         m_verifier.update(input, length);
     }
@@ -129,18 +128,18 @@ public:
     /*
     * Verify the message
     */
-    void endMsg()
+    override void endMsg()
     {
         if (m_signature.empty)
             throw new InvalidState("PKVerifierFilter: No signature to check against");
-        bool is_valid = verifier.checkSignature(m_signature);
+        bool is_valid = m_verifier.checkSignature(m_signature);
         send((is_valid ? 1 : 0));
     }
 
     /*
     * Set the signature to check
     */
-    void setSignature(in ubyte* sig, size_t length)
+    void setSignature(const(ubyte)* sig, size_t length)
     {
         m_signature[] = sig[0 .. length];
     }
@@ -148,29 +147,27 @@ public:
     /*
     * Set the signature to check
     */
-    void setSignature(in SecureVector!ubyte sig)
+    void setSignature(SecureVector!ubyte sig)
     {
         m_signature = sig;
     }
     
 
 
-    this(ref PKVerifier v) { verifier = v; }
+    this(ref PKVerifier v) { m_verifier = &v; }
     /*
     * PKVerifierFilter Constructor
     */
-    this(ref PKVerifier v, in ubyte* sig,
-         size_t length)
+    this(ref PKVerifier v, const(ubyte)* sig, size_t length)
     {
-        verifier = v;
-        m_signature = SecureVector!ubyte(sig, sig + length);
+        m_verifier = &v;
+        m_signature = SecureVector!ubyte(sig[0 .. length]);
     }
     
     /*
     * PKVerifierFilter Constructor
     */
-    this(ref PKVerifier v,
-         in SecureVector!ubyte sig) 
+    this(ref PKVerifier v, SecureVector!ubyte sig) 
     {
         m_verifier = &v;
         m_signature = sig;
@@ -178,6 +175,6 @@ public:
 
     ~this() {  }
 private:
-    PKVerifier m_verifier;
+    PKVerifier* m_verifier;
     SecureVector!ubyte m_signature;
 }

@@ -10,6 +10,7 @@ module botan.filters.secqueue;
 import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm;
 /**
 * A queue that knows how to zeroize itself
@@ -22,7 +23,7 @@ public:
     /*
     * Add some bytes to the queue
     */
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         if (!m_head)
             m_head = m_tail = new SecureQueueNode;
@@ -33,8 +34,8 @@ public:
             length -= n;
             if (length)
             {
-                m_tail.next = new SecureQueueNode;
-                m_tail = m_tail.next;
+                m_tail.m_next = new SecureQueueNode;
+                m_tail = m_tail.m_next;
             }
         }
     }
@@ -53,7 +54,7 @@ public:
             length -= n;
             if (m_head.length == 0)
             {
-                SecureQueueNode holder = m_head.next;
+                SecureQueueNode holder = m_head.m_next;
                 delete m_head;
                 m_head = holder;
             }
@@ -67,14 +68,14 @@ public:
     */
     size_t peek(ubyte* output, size_t length, size_t offset = 0) const
     {
-        SecureQueueNode current = m_head;
+        SecureQueueNode current = cast(SecureQueueNode) m_head;
         
         while (offset && current)
         {
             if (offset >= current.length)
             {
                 offset -= current.length;
-                current = current.next;
+                current = current.m_next;
             }
             else
                 break;
@@ -88,7 +89,7 @@ public:
             output += n;
             got += n;
             length -= n;
-            current = current.next;
+            current = current.m_next;
         }
         return got;
     }
@@ -120,16 +121,18 @@ public:
     */
     size_t size() const
     {
-        SecureQueueNode current = m_head;
+        SecureQueueNode current = cast(SecureQueueNode) m_head;
         size_t count = 0;
         
         while (current)
         {
             count += current.length;
-            current = current.next;
+            current = current.m_next;
         }
         return count;
     }
+
+	@property size_t length() const { return size(); } 
 
     override bool attachable() { return false; }
 
@@ -139,7 +142,7 @@ public:
     this()
     {
         bytes_read = 0;
-        setNext(null, 0);
+        setNext(Filter.init, 0);
         m_head = m_tail = new SecureQueueNode;
     }
 
@@ -147,17 +150,17 @@ public:
     * SecureQueue copy constructor
     * @param other = the queue to copy
     */
-    this(in SecureQueue input)
+    this(SecureQueue input)
     {
         bytes_read = 0;
-        setNext(null, 0);
+        setNext(Filter.init, 0);
         
         m_head = m_tail = new SecureQueueNode;
         SecureQueueNode temp = input.m_head;
         while (temp)
         {
-            write(&temp.buffer[temp.m_start], temp.m_end - temp.m_start);
-            temp = temp.next;
+            write(&temp.m_buffer[temp.m_start], temp.m_end - temp.m_start);
+            temp = temp.m_next;
         }
     }
 
@@ -202,10 +205,10 @@ public:
         m_start = m_end = 0; 
     }
 
-    size_t write(in ubyte* input, size_t length)
+    size_t write(const(ubyte)* input, size_t length)
     {
         size_t copied = std.algorithm.min(length, m_buffer.length - m_end);
-        copyMem(&m_buffer[end], input, copied);
+        copyMem(&m_buffer[m_end], input, copied);
         m_end += copied;
         return copied;
     }
@@ -228,6 +231,7 @@ public:
     }
     
     size_t size() const { return (m_end - m_start); }
+	@property size_t length() const { return size(); }
 private:
     SecureQueueNode m_next;
     SecureVector!ubyte m_buffer;

@@ -48,7 +48,7 @@ public:
     */
     override Pair!(size_t, OctetString) keyDerivation(size_t key_len,
                                               in string passphrase,
-                                              in ubyte* salt, size_t salt_len,
+                                              const(ubyte)* salt, size_t salt_len,
                                               size_t iterations,
                                               Duration loop_for) const
     {

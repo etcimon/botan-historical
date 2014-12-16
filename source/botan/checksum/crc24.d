@@ -31,7 +31,7 @@ protected:
     /*
     * Update a CRC24 Checksum
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         __gshared immutable uint[256] TABLE = [
             0x00000000, 0x00864CFB, 0x008AD50D, 0x000C99F6, 0x0093E6E1, 0x0015AA1A,

@@ -70,8 +70,7 @@ public:
     {
         assert(queue, "queue was provided");
         
-        assert(m_buffers.length < m_buffers.maxSize(),
-                     "Room was available in container");
+        assert(m_buffers.length < m_buffers.capacity, "Room was available in container");
         
         m_buffers.pushBack(queue);
     }
@@ -90,8 +89,8 @@ public:
         
         while (m_buffers.length && !m_buffers[0])
         {
-            m_buffers.popFront();
-            m_offset = m_offset + Pipe.messageId(1);
+            m_buffers = Vector!SecureQueue(m_buffers[1 .. $]);
+            m_offset = m_offset + Pipe.message_id(1);
         }
     }
 

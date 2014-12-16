@@ -29,7 +29,7 @@ private:
     /*
     * PKCS1 Pad Operation
     */
-    SecureVector!ubyte pad(in ubyte* input, size_t inlen, size_t olen, RandomNumberGenerator rng) const
+    SecureVector!ubyte pad(const(ubyte)* input, size_t inlen, size_t olen, RandomNumberGenerator rng) const
     {
         olen /= 8;
         
@@ -52,7 +52,7 @@ private:
     /*
     * PKCS1 Unpad Operation
     */
-    SecureVector!ubyte unpad(in ubyte* input, size_t inlen, size_t key_len) const
+    SecureVector!ubyte unpad(const(ubyte)* input, size_t inlen, size_t key_len) const
     {
         if (inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
             throw new DecodingError("PKCS1::unpad");

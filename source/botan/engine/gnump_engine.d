@@ -242,7 +242,7 @@ public:
     /*
     * GMP_MPZ Constructor
     */
-    this(in ubyte* input, size_t length)
+    this(const(ubyte)* input, size_t length)
     {
         mpz_init(value);
         mpz_import(value, length, 1, 1, 0, 0, input);
@@ -267,7 +267,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN) {
             m_p = dh.groupP();
         }
         
-        SecureVector!ubyte agree(in ubyte* w, size_t w_len)
+        SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
         {
             GMP_MPZ z = GMP_MPZ(w, w_len);
             mpz_powm(z.value, z.value, m_x.value, m_p.value);
@@ -306,7 +306,7 @@ static if (BOTAN_HAS_DSA) {
         size_t messagePartSize() const { return (m_q_bits + 7) / 8; }
         size_t maxInputBits() const { return m_q_bits; }
         
-        SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+        SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
         {
             const size_t q_bytes = (m_q_bits + 7) / 8;
             
@@ -374,8 +374,8 @@ static if (BOTAN_HAS_DSA) {
         
         bool withRecovery() const { return false; }
         
-        bool verify(in ubyte* msg, size_t msg_len,
-                    in ubyte* sig, size_t sig_len)
+        bool verify(const(ubyte)* msg, size_t msg_len,
+                    const(ubyte)* sig, size_t sig_len)
         {
             const size_t q_bytes = m_q.bytes();
             
@@ -446,14 +446,14 @@ static if (BOTAN_HAS_DSA) {
             
             size_t maxInputBits() const { return (m_n_bits - 1); }
             
-            SecureVector!ubyte sign(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+            SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
             {
                 BigInt m = BigInt(msg, msg_len);
                 BigInt x = privateOp(m);
                 return BigInt.encode1363(x, (m_n_bits + 7) / 8);
             }
             
-            SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encodeLocked(privateOp(m));
@@ -502,14 +502,14 @@ static if (BOTAN_HAS_DSA) {
             size_t maxInputBits() const { return (m_n.bits() - 1); }
             bool withRecovery() const { return true; }
             
-            SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator)
+            SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
             {
 
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encode1363(publicOp(m), m_n.bytes());
             }
             
-            SecureVector!ubyte verifyMr(in ubyte* msg, size_t msg_len)
+            SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
             {
                 BigInt m = BigInt(msg, msg_len);
                 return BigInt.encodeLocked(publicOp(m));

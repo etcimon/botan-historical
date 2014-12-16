@@ -51,7 +51,7 @@ protected:
     /*
     * SHA-384 compression function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         compress(m_digest, input, blocks);
     }
@@ -105,7 +105,7 @@ protected:
     /*
     * SHA-512 compression function
     */
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         compress(m_digest, input, blocks);
     }
@@ -173,7 +173,7 @@ string SHA2_64_F(alias _A, alias _B, alias _C, alias _D, alias _E, alias _F, ali
 * SHA-{384,512} Compression Function
 */
 void compress(ref SecureVector!ulong digest,
-              in ubyte* input, size_t blocks) pure
+              const(ubyte)* input, size_t blocks) pure
 {
     ulong A = digest[0], B = digest[1], C = digest[2],
         D = digest[3], E = digest[4], F = digest[5],

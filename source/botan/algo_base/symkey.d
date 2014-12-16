@@ -120,7 +120,7 @@ public:
     * @param input = is an array
     * @param len = is the length of in in bytes
     */
-    this(in ubyte* input, size_t len)
+    this(const(ubyte)* input, size_t len)
     {
         m_bits = SecureVector!ubyte(input[0 .. len]);
     }
@@ -163,6 +163,12 @@ public:
         else return 1;
     }
 
+	void opOpAssign(string op)(in OctetString other)
+		if (op == "~")
+	{
+		this = this ~ other;
+	}
+
     /**
     * Concatenate two strings
     * @param x = an octet string
@@ -173,8 +179,8 @@ public:
         if (op == "~") 
     {
         SecureVector!ubyte output;
-        output ~= bitsOf();
-        output ~= other.bitsOf();
+        output = cast(SecureVector!ubyte)bitsOf();
+		output ~= cast(SecureVector!ubyte)other.bitsOf();
         return OctetString(output);
     }
     

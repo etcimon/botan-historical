@@ -77,7 +77,7 @@ public:
         
         SymmetricKey keyblock = prf.deriveKey(prf_gen, m_master_sec, salt);
         
-        const ubyte* key_data = keyblock.ptr;
+        const(ubyte)* key_data = keyblock.ptr;
         
         m_c_mac = SymmetricKey(key_data, mac_keylen);
         key_data += mac_keylen;

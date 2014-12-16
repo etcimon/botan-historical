@@ -22,7 +22,7 @@ import botan.utils.rounding;
 class CBCMode : CipherMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(in ubyte* nonce, size_t nonce_len)
+    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name(), nonce_len);
@@ -95,7 +95,7 @@ protected:
 
     final ubyte* statePtr() { return m_state.ptr; }
 
-    final override void keySchedule(in ubyte* key, size_t length)
+    final override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
     }
@@ -128,7 +128,7 @@ public:
         assert(sz % BS == 0, "CBC input is full blocks");
         const size_t blocks = sz / BS;
         
-        const ubyte* prev_block = statePtr();
+        const(ubyte)* prev_block = statePtr();
         
         if (blocks)
         {

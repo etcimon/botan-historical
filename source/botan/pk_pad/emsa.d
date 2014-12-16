@@ -19,7 +19,7 @@ public:
     * @param input = some data
     * @param length = length of input in bytes
     */
-    abstract void update(in ubyte* input, size_t length);
+    abstract void update(const(ubyte)* input, size_t length);
 
     /**
     * @return raw hash

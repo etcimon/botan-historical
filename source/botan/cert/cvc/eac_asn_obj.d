@@ -456,7 +456,7 @@ protected:
     // p. 43
     bool sanityCheck() const
     {
-        const ubyte* rep = cast(const ubyte*) m_iso_8859_str.ptr;
+        const(ubyte)* rep = cast(const(ubyte)*) m_iso_8859_str.ptr;
         const size_t rep_len = m_iso_8859_str.length;
         
         foreach (size_t i; 0 .. rep_len)

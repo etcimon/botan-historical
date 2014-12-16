@@ -34,7 +34,7 @@ public:
     * @param input = the input to process as a ubyte array
     * @param length = of param in in bytes
     */
-    final void update(in ubyte* input, size_t length) { addData(input, length); }
+    final void update(const(ubyte)* input, size_t length) { addData(input, length); }
 
     /**
     * Add new input to process.
@@ -134,7 +134,7 @@ public:
     * @param length = the length of the ubyte array
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(in ubyte* input, size_t length)
+    final SecureVector!ubyte process(const(ubyte)* input, size_t length)
     {
         addData(input, length);
         return finished();
@@ -181,10 +181,10 @@ protected:
     * @param input = is an input buffer
     * @param length = is the length of input in bytes
     */
-    abstract void addData(ubyte* input, size_t length);
+    abstract void addData(const(ubyte)* input, size_t length);
 
     final void addData(T)(in T input, size_t length) {
-        addData(cast(ubyte*)input, length);
+        addData(cast(const(ubyte)*)input, length);
     }
 
     /**

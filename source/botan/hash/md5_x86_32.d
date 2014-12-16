@@ -22,7 +22,7 @@ public:
     override HashFunction clone() const { return new MD5_X86_32; }
 
 protected:
-    override void compressN(in ubyte* input, size_t blocks)
+    override void compressN(const(ubyte)* input, size_t blocks)
     {
         foreach (size_t i; 0 .. blocks)
         {
@@ -33,7 +33,7 @@ protected:
 
 }
 
-void botan_md5_x86_32_compress(uint* digest, in ubyte* input, uint* M) pure
+void botan_md5_x86_32_compress(uint* digest, const(ubyte)* input, uint* M) pure
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 

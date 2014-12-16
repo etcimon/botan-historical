@@ -17,6 +17,8 @@ import botan.filters.out_buf;
 import botan.filters.secqueue;
 import botan.utils.parsing;
 import botan.utils.types;
+import std.conv : to;
+import std.array : Appender;
 
 
 /**
@@ -46,7 +48,7 @@ public:
         * @param msg = the invalid message id that was used
         */
         this(in string where, message_id msg) {
-            super("Pipe::" ~ where ~ ": Invalid message number " ~ to!string(msg));
+            super("Pipe:" ~ where ~ ": Invalid message number " ~ to!string(msg));
         }
     }
 
@@ -65,7 +67,7 @@ public:
     * @param input = the ubyte array to write
     * @param length = the length of the ubyte array in
     */
-    void write(ubyte* input, size_t length)
+    void write(const(ubyte)* input, size_t length)
     {
         if (!m_inside_msg)
             throw new InvalidState("Cannot write to a Pipe while it is not processing");
@@ -90,18 +92,18 @@ public:
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the string containing the data to write
     */
-    void write(in string input)
+    void write(string input)
     {
-        write(cast(const ubyte*)(input.ptr), input.length);
+        write(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the ubyte array containing the data to write
     */
-    void write(in ubyte[] input)
+    void write(ubyte[] input)
     {
-        write(cast(const ubyte*)(input.ptr), input.length);
+		write(cast(const(ubyte)*)(input.ptr), input.length);
     }
 
     /**
@@ -131,9 +133,9 @@ public:
     * Write input to the pipe, i.e. to its first filter.
     * @param input = a ubyte array to be written
     */
-    void write(in ubyte[] input)
+    void write(ubyte[] input)
     {
-        write(input.ptr, input.length);
+		write(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
@@ -141,10 +143,10 @@ public:
     * @param input = the ubyte array containing the data to write
     * @param length = the length of the ubyte array to write
     */
-    void processMsg(in ubyte* input, size_t length)
+    void processMsg(const(ubyte)* input, size_t length)
     {
         startMsg();
-        write(input, length);
+		write(input, length);
         endMsg();
     }
 
@@ -152,27 +154,27 @@ public:
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-    void processMsg(in SecureVector!ubyte input)
+    void processMsg(SecureVector!ubyte input)
     {
-        processMsg(input.ptr, input.length);
+		processMsg(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-    void processMsg(in Vector!ubyte input)
+    void processMsg(Vector!ubyte input)
     {
-        processMsg(input.ptr, input.length);
+		processMsg(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the string containing the data to write
     */
-    void processMsg(in string input)
+    void processMsg(string input)
     {
-        processMsg(cast(const ubyte*)(input.ptr), input.length);
+		processMsg(cast(const(ubyte)*)(input.ptr), input.length);
     }
 
     /**
@@ -287,7 +289,7 @@ public:
             str ~= buffer.ptr[0 .. got];
         }
         
-        return str;
+        return str.data;
     }
 
     /** Read from the default message but do not modify the internal
@@ -338,7 +340,7 @@ public:
     */
     size_t readByte(ref ubyte output)
     {
-        return read(output.ptr[0..1]);
+        return read(&output, 1);
     }
     
     
@@ -350,7 +352,7 @@ public:
     */
     size_t peekByte(ref ubyte output) const
     {
-        return peek(output.ptr[0..1]);
+        return peek(&output, 1, 0);
     }
     
     
@@ -428,7 +430,7 @@ public:
     {
         if (m_inside_msg)
             throw new InvalidState("Pipe::startMsg: Message was already started");
-        if (m_pipe_to == null)
+        if (!m_pipe_to)
             m_pipe_to = new NullFilter;
         findEndpoints(m_pipe_to);
         m_pipe_to.newMsg();
@@ -466,10 +468,10 @@ public:
             return;
         if (cast(SecureQueue)(filter))
             throw new InvalidArgument("Pipe::prepend: SecureQueue cannot be used");
-        if (filter.owned)
+        if (filter.m_owned)
             throw new InvalidArgument("Filters cannot be shared among multiple Pipes");
         
-        filter.owned = true;
+        filter.m_owned = true;
         
         if (m_pipe_to) filter.attach(m_pipe_to);
         m_pipe_to = filter;
@@ -487,10 +489,10 @@ public:
             return;
         if (cast(SecureQueue)(filter))
             throw new InvalidArgument("Pipe::append: SecureQueue cannot be used");
-        if (filter.owned)
+        if (filter.m_owned)
             throw new InvalidArgument("Filters cannot be shared among multiple Pipes");
         
-        filter.owned = true;
+        filter.m_owned = true;
         
         if (!m_pipe_to) m_pipe_to = filter;
         else        m_pipe_to.attach(filter);
@@ -564,7 +566,6 @@ public:
     ~this()
     {
         destruct(m_pipe_to);
-        delete m_outputs;
     }
 private:
     /*
@@ -648,7 +649,7 @@ private:
 final class NullFilter : Filter, Filterable
 {
 public:
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     { send(input, length); }
     
     override @property string name() const { return "Null"; }

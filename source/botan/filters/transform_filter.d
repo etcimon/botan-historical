@@ -11,6 +11,7 @@ import botan.filters.key_filt;
 import botan.filters.transform_filter;
 import botan.stream.stream_cipher;
 import botan.utils.rounding;
+import botan.utils.mem_ops;
 
 /**
 * Filter interface for Transformations
@@ -31,13 +32,13 @@ public:
         
         m_buffer.reserve(2 * m_main_block_mod);
         m_buffer_pos = 0;
-        m_nonce = transform.defaultNonceLength() == 0;
+        m_nonce = NonceState(transform.defaultNonceLength() == 0);
         m_transform = transform;
     }
 
     override final void setIv(in InitializationVector iv)
     {
-        m_nonce.update(iv);
+        m_nonce.update(cast(InitializationVector)iv);
     }
 
     override final void setKey(in SymmetricKey key)
@@ -70,7 +71,7 @@ public:
     * @param input = the input bytes
     * @param input_size = of input in bytes
     */
-    void write(ubyte* input, size_t input_size)
+    override void write(const(ubyte)* input, size_t input_size)
     {
         if (!input_size)
             return;
@@ -93,7 +94,7 @@ public:
             
             m_buffer_pos -= total_to_consume;
             
-            copyMem(m_buffer.ptr, m_buffer.ptr + total_to_consume, buffer_pos);
+            copyMem(m_buffer.ptr, m_buffer.ptr + total_to_consume, m_buffer_pos);
         }
         
         if (input_size >= m_final_minimum)
@@ -110,7 +111,7 @@ public:
             }
         }
         
-        copyMem(&m_buffer[buffer_pos], input, input_size);
+        copyMem(&m_buffer[m_buffer_pos], input, input_size);
         m_buffer_pos += input_size;
     }
     
@@ -169,7 +170,7 @@ private:
 
     final void startMsg()
     {
-        send(m_transform.startVec(m_nonce));
+        send(m_transform.startVec(m_nonce.get()));
     }
 
     /**
@@ -178,7 +179,7 @@ private:
     * @param length = the size of input, guaranteed to be a multiple
     *          of block_size
     */
-    final void bufferedBlock(in ubyte* input, size_t input_length)
+    final void bufferedBlock(const(ubyte)* input, size_t input_length)
     {
         while (input_length)
         {
@@ -200,14 +201,14 @@ private:
     * @param length = the size of input, guaranteed to be at least
     *          final_minimum bytes
     */
-    final void bufferedFinal(in ubyte* input, size_t input_length)
+    final void bufferedFinal(const(ubyte)* input, size_t input_length)
     {
-        SecureVector!ubyte buf = SecureVector!ubyte(input, input + input_length);
+        SecureVector!ubyte buf = SecureVector!ubyte(input[0 .. input_length]);
         m_transform.finish(buf);
         send(buf);
     }
 
-    final class NonceState
+    struct NonceState
     {
     public:
         this(bool allow_null_nonce)
@@ -217,7 +218,7 @@ private:
 
         void update(in InitializationVector iv)
         {
-            m_nonce = unlock(iv.bitsOf());
+            m_nonce = unlock(cast(SecureVector!ubyte)iv.bitsOf());
             m_fresh_nonce = true;
         }
 

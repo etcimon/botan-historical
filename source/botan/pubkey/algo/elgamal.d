@@ -132,7 +132,7 @@ public:
         m_mod_p = ModularReducer(p);
     }
 
-    override SecureVector!ubyte encrypt(in ubyte* msg, size_t msg_len, RandomNumberGenerator rng)
+    override SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         const BigInt p = mod_p.getModulus();
         
@@ -186,7 +186,7 @@ public:
         m_blinder = Blinder(k, m_powermod_x_p(k), p);
     }
 
-    override SecureVector!ubyte decrypt(in ubyte* msg, size_t msg_len)
+    override SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
     {
         const BigInt p = m_mod_p.getModulus();
         

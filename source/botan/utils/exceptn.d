@@ -10,10 +10,10 @@ import botan.utils.types;
 import botan.utils.parsing;
 import std.exception;
 // import string;
-
+@safe pure nothrow :
 class RangeError : Exception
 {
-    this(in string err)
+    @safe pure nothrow this(in string err)
     { super("Out of bounds: " ~ err); }
 }
 
@@ -22,7 +22,7 @@ class RangeError : Exception
 */
 class InvalidArgument : Exception
 {
-    this(in string err)
+    @safe pure nothrow this(in string err)
     { super("Invalid argument: " ~ err); }
 }
 
@@ -31,7 +31,7 @@ class InvalidArgument : Exception
 */
 class InvalidState : Exception
 {
-    this(in string err)
+    @safe pure nothrow this(in string err)
     { super(err); }
 }
 
@@ -40,7 +40,7 @@ class InvalidState : Exception
 */
 final class LogicError : Exception
 {
-    this(in string err)
+    @safe pure nothrow this(in string err)
     { super(err); }
 }
 
@@ -49,7 +49,7 @@ final class LogicError : Exception
 */
 class LookupError : Exception
 {
-    this(in string err)
+    @safe pure nothrow this(in string err)
     { super(err); }
 }
 
@@ -58,7 +58,7 @@ class LookupError : Exception
 */
 class InternalError : Exception
 {
-    this(in string err) 
+    @safe pure nothrow this(in string err) 
     { super("Internal error: " ~ err); }
 }
 
@@ -67,7 +67,7 @@ class InternalError : Exception
 */
 final class InvalidKeyLength : InvalidArgument
 {
-    this(in string name, size_t length) {
+    @safe pure nothrow this(in string name, size_t length) {
         super(name ~ " cannot accept a key of length " ~
               to!string(length));
     }
@@ -78,7 +78,7 @@ final class InvalidKeyLength : InvalidArgument
 */
 final class InvalidIVLength : InvalidArgument
 {
-    this(in string mode, size_t bad_len) {
+    @safe pure nothrow this(in string mode, size_t bad_len) {
         super("IV length " ~ to!string(bad_len) ~ " is invalid for " ~ mode);
     }
 }
@@ -88,7 +88,7 @@ final class InvalidIVLength : InvalidArgument
 */
 final class PRNGUnseeded : InvalidState
 {
-    this(in string algo) {
+    @safe pure nothrow this(in string algo) {
         super("PRNG not seeded: " ~ algo);
     }
 }
@@ -98,7 +98,7 @@ final class PRNGUnseeded : InvalidState
 */
 final class PolicyViolation : InvalidState
 {
-    this(in string err) {
+    @safe pure nothrow this(in string err) {
         super("TLSPolicy violation: " ~ err);
     }
 }
@@ -108,7 +108,7 @@ final class PolicyViolation : InvalidState
 */
 final class AlgorithmNotFound : LookupError
 {
-    this(in string name) {
+    @safe pure nothrow this(in string name) {
         super("Could not find any algorithm named \"" ~ name ~ "\"");
     }
 }
@@ -118,7 +118,7 @@ final class AlgorithmNotFound : LookupError
 */
 final class InvalidAlgorithmName : InvalidArgument
 {
-    this(in string name) {
+    @safe pure nothrow this(in string name) {
         super("Invalid algorithm name: " ~ name);
     }
 }
@@ -128,7 +128,7 @@ final class InvalidAlgorithmName : InvalidArgument
 */
 final class EncodingError : InvalidArgument
 {
-    this(in string name) {
+    @safe pure nothrow this(in string name) {
         super("Encoding error: " ~ name);
     }
 }
@@ -138,7 +138,7 @@ final class EncodingError : InvalidArgument
 */
 class DecodingError : InvalidArgument
 {
-    this(in string name) 
+    @safe pure nothrow this(in string name) 
     {
         super("Decoding error: " ~ name);
     }
@@ -149,7 +149,7 @@ class DecodingError : InvalidArgument
 */
 final class IntegrityFailure : Exception
 {
-    this(in string msg) {
+    @safe pure nothrow this(in string msg) {
         super("Integrity failure: " ~ msg);
     }
 }
@@ -159,7 +159,7 @@ final class IntegrityFailure : Exception
 */
 final class InvalidOID : DecodingError
 {
-    this(in string oid) {
+    @safe pure nothrow this(in string oid) {
         super("Invalid ASN.1 OID: " ~ oid);
     }
 }
@@ -169,7 +169,7 @@ final class InvalidOID : DecodingError
 */
 final class StreamIOError : Exception
 {
-    this(in string err) {
+    @safe pure nothrow this(in string err) {
         super("I/O error: " ~ err);
     }
 }
@@ -179,7 +179,7 @@ final class StreamIOError : Exception
 */
 final class SelfTestFailure : InternalError
 {
-    this(in string err) {
+    @safe pure nothrow this(in string err) {
         super("Self test failed: " ~ err);
     }
 }
@@ -189,10 +189,10 @@ final class SelfTestFailure : InternalError
 */
 final class MemoryExhaustion : Exception
 {
-    this(in string err) {
+    @safe pure nothrow this(in string err) {
         super("Memory Exhaustion: " ~ err);
     }
 
-    string what() const nothrow
+    string what() const nothrow pure
     { return "Ran out of memory, allocation failed"; }
 }

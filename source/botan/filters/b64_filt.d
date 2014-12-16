@@ -27,7 +27,7 @@ public:
     * @param input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         bufferInsert(m_input, m_position, input, length);
         if (m_position + length >= m_input.length)
@@ -81,7 +81,7 @@ private:
     /*
     * Encode and send a block
     */
-    void encodeAndSend(ubyte* input, size_t length,
+    void encodeAndSend(const(ubyte)* input, size_t length,
                          bool final_inputs = false)
     {
         while (length)
@@ -103,7 +103,7 @@ private:
     /*
     * Handle the output
     */
-    void doOutput(ubyte* input, size_t length)
+    void doOutput(const(ubyte)* input, size_t length)
     {
         if (m_line_length == 0)
             send(input, length);
@@ -146,7 +146,7 @@ public:
     * @param input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    override void write(ubyte* input, size_t length)
+    override void write(const(ubyte)* input, size_t length)
     {
         while (length)
         {

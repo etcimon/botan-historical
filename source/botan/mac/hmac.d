@@ -66,7 +66,7 @@ protected:
     /*
     * Update a HMAC Calculation
     */
-    override void addData(ubyte* input, size_t length)
+    override void addData(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
@@ -86,15 +86,15 @@ protected:
     /*
     * HMAC Key Schedule
     */
-    override void keySchedule(in ubyte* key, size_t length)
+    override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_hash.clear();
         
         m_ikey.reserve(m_hash.hashBlockSize);
         m_okey.reserve(m_hash.hashBlockSize);
         
-        std.algorithm.fill(m_ikey.ptr, m_ikey.end(), 0x36);
-        std.algorithm.fill(m_okey.ptr, m_okey.end(), 0x5C);
+        std.algorithm.fill(m_ikey.range, cast(ubyte)0x36);
+        std.algorithm.fill(m_okey.range, cast(ubyte)0x5C);
         
         if (length > m_hash.hashBlockSize)
         {

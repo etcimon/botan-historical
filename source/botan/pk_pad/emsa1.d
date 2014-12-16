@@ -29,7 +29,7 @@ protected:
     size_t hashOutputLength() const { return m_hash.outputLength; }
 
 private:
-    void update(in ubyte* input, size_t length)
+    void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
