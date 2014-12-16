@@ -834,7 +834,7 @@ BigInt decompressPoint(T : CurveGFp)(bool yMod2,
     g += curve.getB();
     g = g % curve.getP();
     
-    BigInt z = ressol(g, curve.getP());
+    BigInt z = ressol(g, curve.getP().dup);
     
     if (z < 0)
         throw new IllegalPoint("error during decompression");

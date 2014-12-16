@@ -457,7 +457,7 @@ public:
     * Unary negation operator
     * @return negative this
     */
-    ref BigInt opUnary(string op)() const
+    ref BigInt opUnary(string op)()
         if (op == "-")
     {
         flipSign();
@@ -897,7 +897,7 @@ public:
     static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, BigInt max)
     {
         BigInt range = max - min;
-        
+
         if (range <= 0)
             throw new InvalidArgument("randomInteger: invalid min/max values");
         
@@ -1288,18 +1288,17 @@ public:
     BigInt opBinary(string op)(size_t shift)
         if (op == ">>")
     {
-        const BigInt x = this;
         if (shift == 0)
-            return x;
-        if (x.bits() <= shift)
-            return 0;
+            return this;
+        if (bits() <= shift)
+            return BigInt(0);
         
         const size_t shift_words = shift / MP_WORD_BITS,
             shift_bits  = shift % MP_WORD_BITS,
-            x_sw = x.sigWords();
+            x_sw = sigWords();
         
-        BigInt y = BigInt(x.sign(), x_sw - shift_words);
-        bigint_shr2(y.mutablePtr(), x.ptr, x_sw, shift_words, shift_bits);
+        BigInt y = BigInt(sign(), x_sw - shift_words);
+        bigint_shr2(y.mutablePtr(), ptr, x_sw, shift_words, shift_bits);
         return y;
     }
 

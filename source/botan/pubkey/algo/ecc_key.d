@@ -202,7 +202,7 @@ public:
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
         if (private_key == 0)
-            m_private_key = BigInt.randomInteger(rng, 1, domain().getOrder());
+            m_private_key = BigInt.randomInteger(rng, BigInt(1), domain().getOrder());
         else
             m_private_key = private_key;
         

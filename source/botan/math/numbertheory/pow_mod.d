@@ -93,7 +93,7 @@ public:
             AlgorithmFactory af = globalState().algorithmFactory();
 
             foreach (Engine engine; af.engines) {
-                m_core = engine.modExp(n, hints);
+                m_core = Unique!ModularExponentiator(engine.modExp(n, hints));
                 
                 if (m_core)
                     break;
@@ -107,27 +107,27 @@ public:
     /*
     * Set the base
     */
-    void setBase(in BigInt b) const
+    void setBase(in BigInt b)
     {
         if (b.isZero() || b.isNegative())
             throw new InvalidArgument("PowerMod.setBase: arg must be > 0");
         
         if (!m_core)
             throw new InternalError("PowerMod.setBase: core was NULL");
-        m_core.setBase(b);
+        m_core.setBase(b.dup);
     }
 
     /*
     * Set the exponent
     */
-    void setExponent(in BigInt e) const
+    void setExponent(in BigInt e)
     {
         if (e.isNegative())
             throw new InvalidArgument("PowerMod.setExponent: arg must be > 0");
         
         if (!m_core)
             throw new InternalError("PowerMod.setExponent: core was NULL");
-        m_core.setExponent(e);
+        m_core.setExponent(e.dup);
     }
 
     /*
@@ -161,10 +161,8 @@ private:
 class FixedExponentPowerModImpl : PowerMod
 {
 public:
-    BigInt opCall(in BigInt b) const
+    BigInt opCall(in BigInt b)
     { setBase(b); return execute(); }
-
-    this() {}
 
     /*
     * FixedExponentPowerMod Constructor
@@ -186,7 +184,7 @@ public:
 class FixedBasePowerModImpl : PowerMod
 {
 public:
-    BigInt opCall(in BigInt e) const
+    BigInt opCall(in BigInt e)
     { setExponent(e); return execute(); }
 
     /*
@@ -207,8 +205,7 @@ public:
 PowerMod.UsageHints chooseBaseHints(in BigInt b, in BigInt n)
 {
     if (b == 2)
-        return PowerMod.usageHints(PowerMod.BASE_IS_2 |
-                                     PowerMod.BASE_IS_SMALL);
+        return cast(PowerMod.UsageHints)(PowerMod.BASE_IS_2 | PowerMod.BASE_IS_SMALL);
     
     const size_t b_bits = b.bits();
     const size_t n_bits = n.bits();
@@ -224,7 +221,7 @@ PowerMod.UsageHints chooseBaseHints(in BigInt b, in BigInt n)
 /*
 * Choose potentially useful hints
 */
-PowerMod.UsageHints chooseExpHints(in BigInt e, in BigInt n) pure
+PowerMod.UsageHints chooseExpHints(in BigInt e, in BigInt n)
 {
     const size_t e_bits = e.bits();
     const size_t n_bits = n.bits();

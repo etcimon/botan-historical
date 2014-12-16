@@ -17,7 +17,10 @@ import std.algorithm;
 import botan.math.numbertheory.reducer;
 import botan.utils.bit_ops;
 import botan.math.mp.mp_core;
+import botan.utils.rounding;
 import botan.algo_factory.algo_factory : AlgorithmFactory;
+import botan.constants;
+import std.conv : to;
 
 /**
 * Fused multiply-add
@@ -60,7 +63,7 @@ BigInt mulAdd(in BigInt a, in BigInt b, in BigInt c)
 * @param c = an integer
 * @return (a-b)*c
 */
-BigInt subMul(in BigInt a, in BigInt b, in BigInt c)
+BigInt subMul(BigInt a, in BigInt b, in BigInt c)
 {
     if (a.isNegative() || b.isNegative())
         throw new InvalidArgument("subMul: First two arguments must be >= 0");
@@ -86,10 +89,10 @@ BigInt subMul(in BigInt a, in BigInt b, in BigInt c)
 */
 BigInt gcd(in BigInt a, in BigInt b)
 {
-    if (a.isZero() || b.isZero()) return 0;
-    if (a == 1 || b == 1)              return 1;
+    if (a.isZero() || b.isZero()) return BigInt(0);
+    if (a == 1 || b == 1)         return BigInt(1);
     
-    BigInt x = a, y = b;
+    BigInt x = a.dup, y = b.dup;
     x.setSign(BigInt.Positive);
     y.setSign(BigInt.Positive);
     size_t shift = std.algorithm.min(lowZeroBits(x), lowZeroBits(y));
@@ -116,7 +119,7 @@ BigInt gcd(in BigInt a, in BigInt b)
 */
 BigInt lcm(in BigInt a, in BigInt b)
 {
-    return ((a * b) / gcd(a, b));
+    return ((a.dup * b) / gcd(a, b));
 }
 
 
@@ -149,12 +152,12 @@ BigInt inverseMod(in BigInt n, in BigInt mod)
         throw new InvalidArgument("inverseMod: arguments must be non-negative");
     
     if (n.isZero() || (n.isEven() && mod.isEven()))
-        return 0; // fast fail checks
+        return BigInt(0); // fast fail checks
     
     if (mod.isOdd())
         return inverseModOddModulus(n, mod);
     
-    BigInt u = mod, v = n;
+    BigInt u = mod.dup, v = n.dup;
     BigInt A = 1, B = 0, C = 0, D = 1;
     
     while (u.isNonzero())
@@ -182,7 +185,7 @@ BigInt inverseMod(in BigInt n, in BigInt mod)
     }
     
     if (v != 1)
-        return 0; // no modular inverse
+        return BigInt(0); // no modular inverse
     
     while (D.isNegative()) D += mod;
     while (D >= mod) D -= mod;
@@ -207,7 +210,7 @@ int jacobi(in BigInt a, in BigInt n)
     if (n.isEven() || n < 2)
         throw new InvalidArgument("jacobi: second argument must be odd and > 1");
     
-    BigInt x = a, y = n;
+    BigInt x = a.dup, y = n.dup;
     int J = 1;
     
     while (y > 1)
@@ -272,7 +275,7 @@ BigInt powerMod(in BigInt base, in BigInt exp, in BigInt mod)
 /*
 * Shanks-Tonnelli algorithm
 */
-BigInt ressol(in BigInt a, in BigInt p)
+BigInt ressol(BigInt a, BigInt p)
 {
     if (a < 0)
         throw new InvalidArgument("ressol(): a to solve for must be positive");
@@ -280,7 +283,7 @@ BigInt ressol(in BigInt a, in BigInt p)
         throw new InvalidArgument("ressol(): prime must be > 1");
     
     if (a == 0)
-        return 0;
+        return BigInt(0);
     if (p == 2)
         return a;
     
@@ -417,10 +420,9 @@ size_t lowZeroBits(in BigInt n)
 * @param is_random = true if n was randomly chosen by us
 * @return true if all primality tests passed, otherwise false
 */
-bool isPrime(in BigInt n, RandomNumberGenerator rng,
-              size_t prob = 56, bool is_random = false)
+bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_random = false)
 {
-    import std.range : assumeSorted, SortedRange, front;
+    import std.range : assumeSorted, SortedRange, empty;
     if (n == 2)
         return true;
     if (n <= 1 || n.isEven())
@@ -429,26 +431,26 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng,
     // Fast path testing for small numbers (<= 65521)
     if (n <= PRIMES[PRIME_TABLE_SIZE-1])
     {
-        const ushort num = n.wordAt(0);
-        auto r = assumeSorted(PRIMES);
-        return r.equalRange(num).front;
+        const ushort num = cast(ushort) n.wordAt(0);
+        auto r = assumeSorted(PRIMES[0..$]);
+        return !r.equalRange(num).empty;
     }
-    
+
     const size_t test_iterations = mrTestIterations(n.bits(), prob, is_random);
     
-    const BigInt n_minus_1 = n - 1;
+    const BigInt n_minus_1 = n.dup - 1;
     const size_t s = lowZeroBits(n_minus_1);
     
-    FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1 >> s, n);
-    ModularReducer reducer = ModularReducer(n);
+    FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1.dup >> s, n);
+    ModularReducer reducer = ModularReducer(n.dup);
     
     foreach (size_t i; 0 .. test_iterations)
     {
-        const BigInt a = BigInt.randomInteger(rng, 2, n_minus_1);
+        const BigInt a = BigInt.randomInteger(rng, BigInt(2), n_minus_1.dup);
         
-        BigInt y = pow_mod(a);
+        BigInt y = (*pow_mod)(a);
         
-        if (mrWitness(std.algorithm.move(y), reducer, n_minus_1, s))
+        if (mrWitness(y, reducer, n_minus_1, s))
             return false;
     }
     
@@ -475,18 +477,17 @@ bool verifyPrime(in BigInt n, RandomNumberGenerator rng)
 * @return random prime with the specified criteria
 */
 BigInt randomPrime(RandomNumberGenerator rng,
-                    size_t bits, in BigInt coprime,
-                    size_t equiv, size_t modulo)
+                    size_t bits, in BigInt coprime = 1,
+                    size_t equiv = 1, size_t modulo = 2)
 {
     if (bits <= 1)
-        throw new InvalidArgument("randomPrime: Can't make a prime of " ~
-                                   to!string(bits) ~ " bits");
+        throw new InvalidArgument("randomPrime: Can't make a prime of " ~ to!string(bits) ~ " bits");
     else if (bits == 2)
-        return ((rng.nextByte() % 2) ? 2 : 3);
+        return ((rng.nextByte() % 2) ? BigInt(2) : BigInt(3));
     else if (bits == 3)
-        return ((rng.nextByte() % 2) ? 5 : 7);
+        return ((rng.nextByte() % 2) ? BigInt(5) : BigInt(7));
     else if (bits == 4)
-        return ((rng.nextByte() % 2) ? 11 : 13);
+        return ((rng.nextByte() % 2) ? BigInt(11) : BigInt(13));
     
     if (coprime <= 0)
         throw new InvalidArgument("randomPrime: coprime must be > 0");
@@ -511,7 +512,7 @@ BigInt randomPrime(RandomNumberGenerator rng,
         SecureVector!ushort sieve = SecureVector!ushort(sieve_size);
         
         for (size_t j = 0; j != sieve.length; ++j)
-            sieve[j] = p % PRIMES[j];
+            sieve[j] = cast(ushort)( p % PRIMES[j]);
         
         size_t counter = 0;
         while (true)
@@ -528,7 +529,7 @@ BigInt randomPrime(RandomNumberGenerator rng,
             
             for (size_t j = 0; j != sieve.length; ++j)
             {
-                sieve[j] = (sieve[j] + modulo) % PRIMES[j];
+                sieve[j] = cast(ushort)((sieve[j] + modulo) % PRIMES[j]);
                 if (sieve[j] == 0)
                     passes_sieve = false;
             }
@@ -601,7 +602,7 @@ bool generateDsaPrimes(RandomNumberGenerator rng,
                          AlgorithmFactory af,
                          ref BigInt p_out, ref BigInt q_out,
                          size_t pbits, size_t qbits,
-                         in Vector!ubyte seed_c)
+                         Vector!ubyte seed_c)
 {
     if (!fips1863ValidSize(pbits, qbits))
         throw new InvalidArgument(
@@ -618,31 +619,31 @@ bool generateDsaPrimes(RandomNumberGenerator rng,
     struct Seed
     {
     public:
-        this(in Vector!ubyte s) { seed = s; }
+        this(Vector!ubyte s) { m_seed = s; }
         
-        T opCast(T : Vector!ubyte)() { return seed; }
+        T opCast(T : Vector!ubyte)() { return m_seed; }
         
-        alias seed this;
+        alias m_seed this;
         
         ref Seed opUnary(string op)()
             if (op == "++")
         {
-            for (size_t j = seed.length; j > 0; --j)
-                if (++seed[j-1])
+            for (size_t j = m_seed.length; j > 0; --j)
+                if (++m_seed[j-1])
                     break;
             return this;
         }
     private:
-        Vector!ubyte seed;
+        Vector!ubyte m_seed;
     }
     
     Seed seed = Seed(seed_c);
     
-    q.binaryDecode(hash.process(seed));
-    q.setBit(qbits-1);
-    q.setBit(0);
+    q_out.binaryDecode(hash.process(seed));
+    q_out.setBit(qbits-1);
+    q_out.setBit(0);
     
-    if (!isPrime(q, rng))
+    if (!isPrime(q_out, rng))
         return false;
     
     const size_t n = (pbits-1) / (HASH_SIZE * 8), b = (pbits-1) % (HASH_SIZE * 8);
@@ -659,11 +660,10 @@ bool generateDsaPrimes(RandomNumberGenerator rng,
             hash.flushInto(&V[HASH_SIZE * (n-k)]);
         }
         
-        X.binaryDecode(&V[HASH_SIZE - 1 - b/8],
-        V.length - (HASH_SIZE - 1 - b/8));
+        X.binaryDecode(&V[HASH_SIZE - 1 - b/8], V.length - (HASH_SIZE - 1 - b/8));
         X.setBit(pbits-1);
         
-        p_out = X - (X % (2*q_out) - 1);
+        p_out = X - (X % (q_out*2) - 1);
         
         if (p_out.bits() == pbits && isPrime(p_out, rng))
             return true;
@@ -696,7 +696,7 @@ bool fips1863ValidSize(size_t pbits, size_t qbits)
 */
 BigInt inverseModOddModulus(in BigInt n, in BigInt mod)
 {
-    BigInt u = mod, v = n;
+    BigInt u = mod.dup, v = n.dup;
     BigInt B = 0, D = 1;
     
     while (u.isNonzero())
@@ -724,7 +724,7 @@ BigInt inverseModOddModulus(in BigInt n, in BigInt mod)
     }
     
     if (v != 1)
-        return 0; // no modular inverse
+        return BigInt(0); // no modular inverse
     
     while (D.isNegative()) D += mod;
     while (D >= mod) D -= mod;
@@ -733,8 +733,8 @@ BigInt inverseModOddModulus(in BigInt n, in BigInt mod)
 }
 
 bool mrWitness(T : ModularReducer)(ref BigInt y,
-                auto ref T reducer_n,
-                in BigInt n_minus_1, size_t s)
+                                   auto ref T reducer_n,
+                                   in BigInt n_minus_1, size_t s)
 {
     if (y == 1 || y == n_minus_1)
         return false;

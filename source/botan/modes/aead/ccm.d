@@ -15,6 +15,8 @@ import botan.stream.stream_cipher;
 import botan.mac.mac;
 import botan.utils.parsing;
 import botan.utils.xor_buf;
+import botan.utils.get_byte;
+import std.conv : to;
 import std.algorithm;
 
 /**
@@ -41,8 +43,8 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        m_msg_buf.insert(m_msg_buf.end(), buf, buf + sz);
-        buffer.reserve(offset); // truncate msg
+        m_msg_buf ~= buf[0 .. sz];
+        buffer.length = offset; // truncate msg
     }
 
     final override void setAssociatedData(const(ubyte)* ad, size_t length)
@@ -54,11 +56,11 @@ public:
             // FIXME: support larger AD using length encoding rules
             assert(length < (0xFFFF - 0xFF), "Supported CCM AD length");
             
-            m_ad_buf.pushBack(get_byte!ushort(0, length));
-            m_ad_buf.pushBack(get_byte!ushort(1, length));
-            m_ad_buf += makePair(ad, length);
+            m_ad_buf.pushBack(get_byte!ushort(0, cast(ushort) length));
+            m_ad_buf.pushBack(get_byte!ushort(1, cast(ushort) length));
+            m_ad_buf ~= ad[0 .. length];
             while (m_ad_buf.length % BS)
-                m_ad_buf.pushBack(0); // pad with zeros to full block size
+                m_ad_buf.pushBack(cast(ubyte)0); // pad with zeros to full block size
         }
     }
 
@@ -124,7 +126,7 @@ protected:
             throw new InvalidArgument("invalid CCM tag length " ~ to!string(tag_size));
     }
 
-    final size_t l() const { return m_L; }
+    final size_t L() const { return m_L; }
 
     final BlockCipher cipher() const { return *m_cipher; }
 
@@ -147,9 +149,9 @@ protected:
                 break;
     }
 
-    final SecureVector!ubyte adBuf() const { return m_ad_buf; }
+    final const(SecureVector!ubyte) adBuf() const { return m_ad_buf; }
 
-    final SecureVector!ubyte msgBuf() { return m_msg_buf; }
+    final const(SecureVector!ubyte) msgBuf() const { return m_msg_buf; }
 
     final SecureVector!ubyte formatB0(size_t sz)
     {

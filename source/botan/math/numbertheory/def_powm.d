@@ -6,10 +6,13 @@
 */
 module botan.math.numbertheory.def_powm;
 
+import botan.math.mp.mp_core;
 import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.reducer;
+import botan.math.numbertheory.numthry;
 import botan.math.bigint.bigint;
 import botan.utils.types;
+import botan.constants;
 
 /**
 * Fixed Window Exponentiator
@@ -65,10 +68,14 @@ public:
     { 
         FixedWindowExponentiator ret = new FixedWindowExponentiator;
         ret.m_reducer = m_reducer.dup;
-
+        ret.m_exp = m_exp.dup;
+        ret.m_window_bits = m_window_bits;
+        ret.m_g = m_g.dup;
+        ret.m_hints = m_hints;
+        return ret;
     }
 
-    this(in BigInt n, PowerMod.UsageHints _hints)
+    this(BigInt n, PowerMod.UsageHints _hints)
     {
         m_reducer = ModularReducer(n);
         m_hints = _hints;
@@ -76,6 +83,7 @@ public:
     }
 
 private:
+    this() { }
     ModularReducer m_reducer;
     BigInt m_exp;
     size_t m_window_bits;
@@ -108,7 +116,7 @@ public:
         m_g.reserve((1 << m_window_bits));
         
         BigInt z = BigInt(BigInt.Positive, 2 * (m_mod_words + 1));
-        SecureVector!word workspace(z.length);
+        SecureVector!word workspace = SecureVector!word(z.length);
         
         m_g[0] = 1;
         
@@ -149,12 +157,12 @@ public:
     {
         const size_t exp_nibbles = (m_exp_bits + m_window_bits - 1) / m_window_bits;
         
-        BigInt x = m_R_mod;
+        BigInt x = m_R_mod.dup;
         
         const size_t z_size = 2*(m_mod_words + 1);
         
         BigInt z = BigInt(BigInt.Positive, z_size);
-        SecureVector!word workspace(z_size);
+        SecureVector!word workspace = SecureVector!word(z_size);
         
         for (size_t i = exp_nibbles; i > 0; --i)
         {
@@ -184,13 +192,25 @@ public:
     }
 
     override ModularExponentiator copy() const
-    { return new MontgomeryExponentiator(this); }
+    { 
+        MontgomeryExponentiator ret = new MontgomeryExponentiator;
+        ret.m_exp = m_exp.dup;
+        ret.m_modulus = m_modulus.dup;
+        ret.m_R_mod = m_R_mod.dup;
+        ret.m_R2_mod = m_R2_mod.dup;
+        ret.m_mod_prime = m_mod_prime;
+        ret.m_mod_words = m_mod_words;
+        ret.m_exp_bits = m_exp_bits;
+        ret.m_window_bits = m_window_bits;
+        ret.m_hints = m_hints;
+        ret.m_g = m_g.dup;
+        return ret;
+    }
 
     /*
     * Montgomery_Exponentiator Constructor
     */
-    this(in BigInt mod,
-         PowerMod.UsageHints hints)
+    this(BigInt mod, PowerMod.UsageHints hints)
     {
         m_modulus = mod;
         m_mod_words = m_modulus.sigWords();
@@ -202,11 +222,12 @@ public:
         
         m_mod_prime = montyInverse(mod.wordAt(0));
         
-        const BigInt r = BigInt.powerOf2(m_mod_words * BOTAN_MP_WORD_BITS);
+        BigInt r = BigInt.powerOf2(m_mod_words * BOTAN_MP_WORD_BITS);
         m_R_mod = r % m_modulus;
         m_R2_mod = (m_R_mod * m_R_mod) % m_modulus;
     }
 private:
+    this() { }
     BigInt m_exp, m_modulus, m_R_mod, m_R2_mod;
     word m_mod_prime;
     size_t m_mod_words, m_exp_bits, m_window_bits;

@@ -234,7 +234,7 @@ public:
         return null;
     }
 
-    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
+    ModularExponentiator modExp(BigInt n, PowerMod.UsageHints hints) const
     {
         if (n.isOdd())
             return new MontgomeryExponentiator(n, hints);

@@ -76,7 +76,7 @@ public:
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg)
     {
         if (x_arg == 0)
-            x_arg = BigInt.randomInteger(rng, 2, grp.getQ() - 1);
+            x_arg = BigInt.randomInteger(rng, BigInt(2), grp.getQ() - 1);
         
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         

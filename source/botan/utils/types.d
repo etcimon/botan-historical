@@ -193,7 +193,7 @@ public:
 
     RefT get() { return _p; }
 
-    bool opCast(T : bool)() {
+    bool opCast(T : bool)() const {
         return !isEmpty;
     }
 

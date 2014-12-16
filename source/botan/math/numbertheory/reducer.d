@@ -37,7 +37,7 @@ public:
             BigInt t1 = x;
             t1.setSign(BigInt.Positive);
             t1 >>= (MP_WORD_BITS * (m_mod_words - 1));
-            t1 *= mu;
+            t1 *= m_mu;
             
             t1 >>= (MP_WORD_BITS * (m_mod_words + 1));
             t1 *= modulus;
@@ -110,6 +110,15 @@ public:
         m_modulus_2 = square(m_modulus);
         
         m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
+    }
+
+    ModularReducer dup() const {
+        ModularReducer ret = ModularReducer.init;
+        ret.m_modulus = m_modulus.dup;
+        ret.m_modulus_2 = m_modulus_2.dup;
+        ret.m_mu = m_mu.dup;
+        ret.m_mod_words = m_mod_words;
+        return ret;
     }
 
 private:

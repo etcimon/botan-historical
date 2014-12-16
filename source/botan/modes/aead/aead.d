@@ -5,11 +5,14 @@
 * Distributed under the terms of the botan license.
 */
 module botan.modes.aead.aead;
+import botan.constants;
+static if (BOTAN_HAS_AEAD_CCM || BOTAN_HAS_AEAD_EAX || BOTAN_HAS_AEAD_GCM || BOTAN_HAS_AEAD_SIV || BOTAN_HAS_AEAD_OCB):
+
 import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.libstate.libstate;
-
-import botan.constants;
+import botan.utils.parsing;
+import std.array : split;
 static if (BOTAN_HAS_AEAD_CCM) import botan.modes.aead.ccm;
 static if (BOTAN_HAS_AEAD_EAX) import botan.modes.aead.eax;
 static if (BOTAN_HAS_AEAD_GCM) import botan.modes.aead.gcm;
@@ -66,7 +69,7 @@ AEADMode getAead(in string algo_spec, CipherDir direction)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    const Vector!string algo_parts = splitter(algo_spec, '/');
+    const Vector!string algo_parts = algo_spec.split('/');
     if (algo_parts.empty)
         throw new InvalidAlgorithmName(algo_spec);
     
