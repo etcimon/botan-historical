@@ -30,7 +30,7 @@ public:
     * Get the prime m_p.
     * @return prime m_p
     */
-    BigInt getP() const
+    const(BigInt) getP() const
     {
         initCheck();
         return m_p;
@@ -40,7 +40,7 @@ public:
     * Get the prime q.
     * @return prime q
     */
-    BigInt getQ() const
+    const(BigInt) getQ() const
     {
         initCheck();
         if (m_q == 0)
@@ -52,7 +52,7 @@ public:
     * Get the base m_g.
     * @return base m_g
     */
-    BigInt getG() const
+    const(BigInt) getG() const
     {
         initCheck();
         return m_g;
@@ -91,7 +91,7 @@ public:
         
         if (m_g < 2 || m_p < 3 || m_q < 0)
             return false;
-        if ((m_q != 0) && ((m_p - 1) % m_q != 0))
+        if ((m_q != 0) && ((m_p.dup - 1) % m_q != 0))
             return false;
         
         const size_t prob = (strong) ? 56 : 10;
@@ -264,7 +264,7 @@ public:
         if (type == Strong)
         {
             m_p = randomSafePrime(rng, pbits);
-            m_q = (m_p - 1) / 2;
+            m_q = (m_p.dup - 1) / 2;
             m_g = 2;
         }
         else if (type == Prime_Subgroup)
@@ -277,7 +277,7 @@ public:
             while (m_p.bits() != pbits || !isPrime(m_p, rng))
             {
                 X.randomize(rng, pbits);
-                m_p = X - (X % (2*m_q) - 1);
+                m_p = X - (X % (m_q.dup*2) - 1);
             }
             
             m_g = makeDsaGenerator(m_p, m_q);
@@ -285,11 +285,11 @@ public:
         else if (type == DSA_Kosherizer)
         {
             qbits = qbits ? qbits : ((pbits <= 1024) ? 160 : 256);
-            
+
             generateDsaPrimes(rng,
-                                globalState().algorithmFactory(),
-                                m_p, m_q,
-                                pbits, qbits);
+                              globalState().algorithmFactory(),
+                              m_p, m_q,
+                              pbits, qbits);
             
             m_g = makeDsaGenerator(m_p, m_q);
         }
@@ -304,7 +304,7 @@ public:
     * @param pbits = the desired bit size of the prime p
     * @param qbits = the desired bit size of the prime q.
     */
-    this(RandomNumberGenerator rng, in Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
+    this(RandomNumberGenerator rng, Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
     {
         if (!generateDsaPrimes(rng, globalState().algorithmFactory(), m_p, m_q, pbits, qbits, seed))
             throw new InvalidArgument("DLGroup: The seed given does not "
@@ -322,7 +322,7 @@ public:
     */
     this(in BigInt p1, in BigInt g1)
     {
-        initialize(p1, 0, g1);
+        initialize(p1, BigInt(0), g1);
     }
 
     /**
@@ -342,14 +342,14 @@ private:
     */
     static BigInt makeDsaGenerator(in BigInt p, in BigInt q)
     {
-        const BigInt e = (p - 1) / q;
+        const BigInt e = (p.dup - 1) / q;
         
-        if (e == 0 || (p - 1) % q > 0)
+        if (e == 0 || (p.dup - 1) % q > 0)
             throw new InvalidArgument("makeDsaGenerator q does not divide p-1");
 
         foreach (size_t i; 0 .. PRIME_TABLE_SIZE)
         {
-            BigInt g = powerMod(PRIMES[i], e, p);
+            BigInt g = powerMod(BigInt(PRIMES[i]), e, p);
             if (g > 1)
                 return g;
         }
@@ -372,9 +372,9 @@ private:
         if (q1 < 0 || q1 >= p1)
             throw new InvalidArgument("DLGroup: Subgroup invalid");
         
-        m_p = p1;
-        m_g = g1;
-        m_q = q1;
+        m_p = p1.dup;
+        m_g = g1.dup;
+        m_q = q1.dup;
         
         m_initialized = true;
     }

@@ -571,9 +571,9 @@ BigInt randomSafePrime(RandomNumberGenerator rng, size_t bits)
 * @return random seed used to generate this parameter set
 */
 Vector!ubyte generateDsaPrimes(RandomNumberGenerator rng,
-                                 AlgorithmFactory af,
-                                 ref BigInt p_out, ref BigInt q_out,
-                                 size_t pbits, size_t qbits)
+                               AlgorithmFactory af,
+                               ref BigInt p_out, ref BigInt q_out,
+                               size_t pbits, size_t qbits)
 {
     while (true)
     {

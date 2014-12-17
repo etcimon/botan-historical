@@ -32,14 +32,14 @@ public:
     */
     Vector!ubyte publicValue() const
     {
-        return unlock(BigInt.encode1363(m_pub.m_y, m_pub.groupP().bytes()));
+        return unlock(BigInt.encode1363(m_pub.getY(), m_pub.groupP().bytes()));
     }
 
     size_t maxInputBits() const { return groupP().bits(); }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_pub = FreeListRef!DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
 
     /**
@@ -49,15 +49,15 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-        m_pub = FreeListRef!DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
 
-    this(PublicKey pkey) { m_pub = FreeListRef!DLSchemePublicKey(cast(DLSchemePublicKey) pkey); }
-    this(PrivateKey pkey) { m_pub = FreeListRef!DLSchemePublicKey(cast(DLSchemePublicKey) pkey); }
+    this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
     alias m_pub this;
 
-    FreeListRef!DLSchemePublicKey m_pub;
+    DLSchemePublicKey m_pub;
 }
 
 /**
@@ -85,11 +85,11 @@ public:
          RandomNumberGenerator rng) 
     {
 
-        m_priv = FreeListRef!DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
-        if (m_priv.m_y == 0)
-            m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
+        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        if (m_priv.getY() == 0)
+            m_priv.setY(powerMod(m_priv.groupG(), m_priv.getX(), m_priv.groupP()));
         m_priv.loadCheck(rng);
-        super(*m_priv);
+        super(m_priv);
     }
 
     /**
@@ -109,20 +109,20 @@ public:
 
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-        m_priv = FreeListRef!DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, null, &maxInputBits);
+        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, (bool delegate(RandomNumberGenerator, bool) const).init, &maxInputBits);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
-        super(*m_priv);
+        super(m_priv);
     }
 
-    this(PrivateKey pkey) { m_priv = FreeListRef!DLSchemePublicKey(cast(DLSchemePrivateKey) pkey); }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
 
-    FreeListRef!DLSchemePrivateKey m_priv;
+    DLSchemePrivateKey m_priv;
 }
 
 /**
@@ -145,17 +145,17 @@ public:
         m_p = dh.groupP();
         m_powermod_x_p = FixedExponentPowerMod(dh.getX(), m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-        m_blinder = Blinder(k, m_powermod_x_p(inverseMod(k, m_p)), m_p);
+        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, m_p)), m_p);
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
         BigInt input = BigInt.decode(w, w_len);
         
-        if (input <= 1 || input >= m_p - 1)
+        if (input <= 1 || input >= m_p.dup - 1)
             throw new InvalidArgument("DH agreement - invalid key provided");
         
-        BigInt r = m_blinder.unblind(m_powermod_x_p(m_blinder.blind(input)));
+        BigInt r = m_blinder.unblind((*m_powermod_x_p)(m_blinder.blind(input)));
         
         return BigInt.encode1363(r, m_p.bytes());
     }

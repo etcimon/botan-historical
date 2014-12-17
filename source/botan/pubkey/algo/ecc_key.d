@@ -53,8 +53,8 @@ public:
         m_msg_compat = msg_compat;
         m_algo_name = algo_name;
         m_msg_parts = msg_parts;
-        m_domain_params = dom_par;
-        m_public_key = pub_point;
+        m_domain_params = dom_par.dup;
+        m_public_key = pub_point.dup;
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         if (domain().getCurve() != publicPoint().getCurve())
             throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
@@ -76,7 +76,7 @@ public:
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
-        m_public_key = OS2ECP(key_bits, domain().getCurve());
+        m_public_key = OS2ECP(key_bits.dup, domain().getCurve().dup);
     }
 
     /**
@@ -85,7 +85,7 @@ public:
     * domain parameters of this point are not set
     * @result the public point of this key
     */
-    final ref PointGFp publicPoint() const { return m_public_key; }
+    final ref const(PointGFp) publicPoint() const { return m_public_key; }
 
     final size_t maxInputBits() const { return domain().getOrder().bits(); }
 
@@ -121,7 +121,7 @@ public:
     * domain parameters of this point are not set
     * @result the domain parameters of this key
     */
-    final ECGroup domain() const { return m_domain_params; }
+    final const(ECGroup) domain() const { return m_domain_params; }
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
@@ -159,12 +159,6 @@ public:
 
 
 protected:
-    this(in PointGFp pub_point) 
-    {
-        m_public_key = pub_point;
-        
-        m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-    }
 
     ECGroup m_domain_params;
     PointGFp m_public_key;
@@ -192,6 +186,7 @@ public:
          in Vector!ubyte delegate() const subject_public_key = null,
          in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
     {
+
         m_check_key = check_key;
         m_algorithm_identifier = algorithm_identifier;
         m_subject_public_key = subject_public_key;

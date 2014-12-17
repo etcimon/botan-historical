@@ -16,6 +16,7 @@ import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
+import std.concurrency;
 
 /**
 * DSA Public Key
@@ -35,7 +36,7 @@ public:
     /*
     * DSAPublicKey Constructor
     */
-    this(in DLGroup grp, in BigInt y1)
+    this(DLGroup grp, BigInt y1)
     {
         m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
@@ -71,24 +72,25 @@ public:
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
+
+        super(dl_group, y1);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     {
-        m_priv = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
-        m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
-        
+        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+        super(m_priv);
         m_priv.loadCheck(rng);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
 
     /*
     * Check Private DSA Parameters
     */
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!m_priv.checkKey(rng, strong, true) || m_priv.m_x >= m_priv.groupQ())
+        if (!m_priv.checkKey(rng, strong) || m_priv.m_x >= m_priv.groupQ())
             return false;
         
         if (!strong)
@@ -118,11 +120,11 @@ public:
 
     this(in DLSchemePrivateKey dsa)
     { 
-        assert(nr.algoName == DSAPublicKey.algoName);
+        assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = dsa.groupQ();
         m_x = dsa.getX();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
-        m_mod_q = dsa.groupQ();
+        m_mod_q = dsa.groupQ().dup;
     }
 
     override size_t messageParts() const { return 2; }
@@ -143,12 +145,20 @@ public:
             do
                 k.randomize(rng, m_q.bits());
             while (k >= m_q);
-            
-            auto tid = spawn((Tid tid, FixedBasePowerMod powermod_g_p2, BigInt k2){ send(tid, m_mod_q.reduce(powermod_g_p2(k2))); }, thisTid, m_powermod_g_p, k);
-            
-            s = inverseMod(k, m_q);
 
-            r = receiveOnly!BigInt();
+            static void handler(shared(Tid) tid, shared(ModularReducer*) mod_q_2, 
+                                shared(FixedBasePowerModImpl) powermod_g_p2, shared(BigInt*) k2, shared(BigInt*) r2){ 
+                BigInt* K = cast(BigInt*) r2;
+                BigInt reduced = (cast(ModularReducer*)mod_q_2).reduce((cast(FixedBasePowerModImpl)powermod_g_p2)(*K));
+                *K = reduced;
+                send(cast(Tid) tid, true); 
+            }
+
+            spawn(&handler, cast(shared(Tid))thisTid(), cast(shared(ModularReducer*))&m_mod_q, 
+                  cast(shared)*m_powermod_g_p, cast(shared(BigInt*))&k, cast(shared(BigInt*))&r);
+
+            s = inverseMod(k, m_q);
+            bool done = receiveOnly!(bool)();
 
             s = m_mod_q.multiply(s, mulAdd(m_x, r, i));
         }
@@ -185,9 +195,9 @@ public:
         m_q = dsa.groupQ();
         m_y = dsa.getY();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
-        m_powermod_y_p = FixedBasePowerMod(y, dsa.groupP());
-        m_mod_p = ModularReducer(dsa.groupP());
-        m_mod_q = ModularReducer(dsa.groupQ());
+        m_powermod_y_p = FixedBasePowerMod(m_y, dsa.groupP());
+        m_mod_p = ModularReducer(dsa.groupP().dup);
+        m_mod_q = ModularReducer(dsa.groupQ().dup);
     }
 
     override size_t messageParts() const { return 2; }
@@ -199,7 +209,7 @@ public:
     override bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;
-        const BigInt q = mod_q.getModulus();
+        const BigInt q = m_mod_q.getModulus();
         
         if (sig_len != 2*q.bytes() || msg_len > q.bytes())
             return false;
@@ -207,18 +217,24 @@ public:
         BigInt r = BigInt(sig, q.bytes());
         BigInt s = BigInt(sig + q.bytes(), q.bytes());
         BigInt i = BigInt(msg, msg_len);
-        
+        BigInt s_i;
         if (r <= 0 || r >= q || s <= 0 || s >= q)
             return false;
         
         s = inverseMod(s, q);
+        static void handler(shared(Tid) tid, shared(FixedBasePowerModImpl) powermod_g_p2, 
+                            shared(ModularReducer*) mod_q2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
+        { 
+            BigInt* K = cast(BigInt*) s_i2;
+            BigInt res = (cast(FixedBasePowerModImpl)powermod_g_p2)((*cast(ModularReducer*)mod_q2).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2));
+            *K = res;
+            send(cast(Tid) tid, true); 
+        }
+        spawn(&handler, cast(shared)thisTid(), cast(shared(FixedBasePowerModImpl))*m_powermod_g_p, cast(shared(ModularReducer*))&m_mod_q, 
+              cast(shared(BigInt*))&s, cast(shared(BigInt*))&i, cast(shared(BigInt*))&s_i);
         
-        auto tid = spawn((Tid tid, FixedBasePowerMod powermod_g_p2, BigInt mod_q2, BigInt s2, BigInt i2) 
-                         { send(tid, powermod_g_p2(mod_q2.multiply(s2, i2))); }, 
-                            thisTid, m_powermod_g_p, m_mod_q, s, i);
-        
-        BigInt s_r = m_powermod_y_p(m_mod_q.multiply(s, r));
-        BigInt s_i = receiveOnly!BigInt();
+        BigInt s_r = (*m_powermod_y_p)(m_mod_q.multiply(s, r));
+        bool done = receiveOnly!bool();
         
         s = m_mod_p.multiply(s_i, s_r);
         

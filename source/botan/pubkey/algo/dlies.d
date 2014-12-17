@@ -26,7 +26,7 @@ public:
     */
     this(in PKKeyAgreementKey key, KDF kdf_obj, MessageAuthenticationCode mac_obj, size_t mac_keylen = 20)
     { 
-        m_ka = PKKeyAgreement(key, "Raw");
+        m_ka = new PKKeyAgreement(key, "Raw");
         m_kdf = kdf_obj;
         m_mac = mac_obj;
         m_mac_keylen = mac_keylen;
@@ -38,9 +38,9 @@ public:
     */
     void setOtherKey(in Vector!ubyte ok)
     {
-        m_other_key = ok;
+        m_other_key = ok.dup;
     }
-private:
+protected:
     /*
     * DLIES Encryption
     */
@@ -55,7 +55,7 @@ private:
         bufferInsert(output, 0, m_my_key);
         bufferInsert(output, m_my_key.length, input, length);
         
-        SecureVector!ubyte vz = SecureVector!(m_my_key.ptr, m_my_key.end());
+        SecureVector!ubyte vz = SecureVector!ubyte(m_my_key.ptr[0 .. m_my_key.length]);
         vz ~= m_ka.deriveKey(0, m_other_key).bitsOf();
         
         const size_t K_LENGTH = length + m_mac_keylen;
@@ -66,13 +66,14 @@ private:
         ubyte* C = &output[m_my_key.length];
         
         xorBuf(C, K.ptr + m_mac_keylen, length);
-        m_mac.setKey(K.ptr, m_mac_keylen);
+        Unique!MessageAuthenticationCode mac = m_mac.clone();
+        mac.setKey(K.ptr, m_mac_keylen);
         
-        m_mac.update(C, length);
+        mac.update(C, length);
         foreach (size_t j; 0 .. 8)
-            m_mac.update(0);
+            mac.update(0);
         
-        m_mac.flushInto(C + length);
+        mac.flushInto(C + length);
         
         return unlock(output);
     }
@@ -87,7 +88,7 @@ private:
 
     Vector!ubyte m_other_key, m_my_key;
 
-    PKKeyAgreement m_ka;
+    Unique!PKKeyAgreement m_ka;
     Unique!KDF m_kdf;
     Unique!MessageAuthenticationCode m_mac;
     size_t m_mac_keylen;
@@ -104,7 +105,7 @@ public:
     */
     this(in PKKeyAgreementKey key, KDF kdf_obj, MessageAuthenticationCode mac_obj, size_t mac_key_len = 20)
     {
-        m_ka = PKKeyAgreement(key, "Raw");
+        m_ka = new PKKeyAgreement(key, "Raw");
         m_kdf = kdf_obj;
         m_mac = mac_obj;
         m_mac_keylen = mac_key_len;
@@ -122,26 +123,25 @@ private:
         
         const size_t CIPHER_LEN = length - m_my_key.length - m_mac.outputLength;
         
-        Vector!ubyte v = Vector!ubyte(msg, msg + m_my_key.length);
+        Vector!ubyte v = Vector!ubyte(msg[0 .. m_my_key.length]);
         
-        SecureVector!ubyte C = SecureVector!ubyte(msg + m_my_key.length, msg + m_my_key.length + CIPHER_LEN);
+        SecureVector!ubyte C = SecureVector!ubyte(msg[m_my_key.length .. m_my_key.length + CIPHER_LEN]);
         
-        SecureVector!ubyte T = SecureVector!ubyte(msg + m_my_key.length + CIPHER_LEN,
-                           msg + m_my_key.length + CIPHER_LEN + m_mac.outputLength);
+        SecureVector!ubyte T = SecureVector!ubyte(msg[m_my_key.length + CIPHER_LEN .. m_my_key.length + CIPHER_LEN + m_mac.outputLength]);
         
-        SecureVector!ubyte vz = SecureVector!ubyte(msg, msg + m_my_key.length);
+        SecureVector!ubyte vz = SecureVector!ubyte(msg[0 .. m_my_key.length]);
         vz ~= m_ka.deriveKey(0, v).bitsOf();
         
         const size_t K_LENGTH = C.length + m_mac_keylen;
         OctetString K = m_kdf.deriveKey(K_LENGTH, vz);
         if (K.length != K_LENGTH)
             throw new EncodingError("DLIES: KDF did not provide sufficient output");
-        
-        m_mac.setKey(K.ptr, m_mac_keylen);
-        m_mac.update(C);
+        Unique!MessageAuthenticationCode mac = m_mac.clone();
+        mac.setKey(K.ptr, m_mac_keylen);
+        mac.update(C);
         foreach (size_t j; 0 .. 8)
-            m_mac.update(0);
-        SecureVector!ubyte T2 = m_mac.finished();
+            mac.update(0);
+        SecureVector!ubyte T2 = mac.finished();
         if (T != T2)
             throw new DecodingError("DLIES: message authentication failed");
         
@@ -152,7 +152,7 @@ private:
 
     Vector!ubyte m_my_key;
 
-    PKKeyAgreement m_ka;
+    Unique!PKKeyAgreement m_ka;
     Unique!KDF m_kdf;
     Unique!MessageAuthenticationCode m_mac;
     size_t m_mac_keylen;

@@ -22,7 +22,7 @@ import botan.asn1.ber_dec;
 class DLSchemePublicKey : PublicKey
 {
 public:
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
+    bool checkKey(RandomNumberGenerator rng, bool strong)
     {
         if (m_check_key) {
             auto tmp = m_check_key;
@@ -42,7 +42,7 @@ public:
     }
 
     final override size_t maxInputBits() const {
-        return m_max_input_bits;
+        return m_max_input_bits();
     }
 
     final size_t messagePartSize() const { 
@@ -64,30 +64,35 @@ public:
     * Get the DL domain parameters of this key.
     * @return DL domain parameters of this key
     */
-    final ref DLGroup getDomain() const { return m_group; }
+    final ref const(DLGroup) getDomain() const { return m_group; }
 
     /**
     * Get the public value m_y with m_y = g^m_x mod p where m_x is the secret key.
     */
-    final BigInt getY() const { return m_y; }
+    final const(BigInt) getY() const { return m_y; }
+
+    /**
+    * Set the value m_y
+    */
+    final void setY(BigInt y) { m_y = y; }
 
     /**
     * Get the prime p of the underlying DL m_group.
     * @return prime p
     */
-    final BigInt groupP() const { return m_group.getP(); }
+    final const(BigInt) groupP() const { return m_group.getP(); }
 
     /**
     * Get the prime q of the underlying DL m_group.
     * @return prime q
     */
-    final BigInt groupQ() const { return m_group.getQ(); }
+    final const(BigInt) groupQ() const { return m_group.getQ(); }
 
     /**
     * Get the generator g of the underlying DL m_group.
     * @return generator g
     */
-    final BigInt groupG() const { return m_group.getG(); }
+    final const(BigInt) groupG() const { return m_group.getG(); }
 
     override final size_t estimatedStrength() const
     {
@@ -99,9 +104,9 @@ public:
          in DLGroup.Format format,
          in string algo_name,
          in short msg_parts = 0,
-         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-         in size_t delegate() const max_input_bits = null,
-         in size_t delegate() const msg_part_size = null)
+         bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         size_t delegate() const max_input_bits = null,
+         size_t delegate() const msg_part_size = null)
     {
         m_format = format;
         m_algo_name = algo_name;
@@ -118,9 +123,9 @@ public:
          in DLGroup.Format format,
          in string algo_name,
          in short msg_parts = 0,
-         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-         in size_t delegate() const max_input_bits = null,
-         in size_t delegate() const msg_part_size = null)
+         bool delegate(RandomNumberGenerator, bool) const check_key = null,
+         size_t delegate() const max_input_bits = null,
+         size_t delegate() const msg_part_size = null)
     {
         m_format = format;
         m_algo_name = algo_name;
@@ -132,7 +137,7 @@ public:
         m_y = y1;
     }
 
-package:
+protected:
     /**
     * The DL public key
     */
@@ -181,7 +186,7 @@ public:
     * Get the secret key m_x.
     * @return secret key
     */
-    BigInt getX() const { return m_x; }
+    const(BigInt) getX() const { return m_x; }
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {
@@ -190,22 +195,18 @@ public:
 
     this(in AlgorithmIdentifier alg_id,
          in SecureVector!ubyte key_bits,
-         DLGroup.Format format,
+         in DLGroup.Format format,
          in string algo_name,
          in short msg_parts = 0,
          in bool delegate(RandomNumberGenerator, bool) const check_key = null,
          in size_t delegate() const max_input_bits = null,
          in size_t delegate() const msg_part_size = null)
     {
-        m_format = format;
-        m_algo_name = algo_name;
-        m_msg_parts = msg_parts;
-        m_max_input_bits = max_input_bits;
-        m_msg_part_size = msg_part_size;
-        m_check_key = check_key;
-        m_group.BER_decode(alg_id.parameters, format);
-        
         BERDecoder(key_bits).decode(m_x);
+        DLGroup grp;
+        grp.BER_decode(alg_id.parameters, format);
+        BigInt y = powerMod(grp.getG(), m_x, grp.getP());
+        super(grp, y, format, algo_name, msg_parts, check_key, max_input_bits, msg_part_size);
     }
 
     this(DLGroup grp, BigInt y1, BigInt x_arg,
@@ -216,15 +217,8 @@ public:
          in size_t delegate() const max_input_bits = null,
          in size_t delegate() const msg_part_size = null)
     {
-        m_format = format;
-        m_algo_name = algo_name;
-        m_msg_parts = msg_parts;
-        m_max_input_bits = max_input_bits;
-        m_msg_part_size = msg_part_size;
-        m_check_key = check_key;
-        m_group = grp;
-        m_y = y1;
         m_x = x_arg;
+        super(grp, y1, format, algo_name, msg_parts, check_key, max_input_bits, msg_part_size);
     }
 
 package:

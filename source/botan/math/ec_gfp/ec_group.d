@@ -235,6 +235,11 @@ public:
                (getCofactor() == other.getCofactor()));
     }
 
+    @property ECGroup dup() const {
+        ECGroup other = ECGroup(m_curve.dup, m_base_point.dup, m_order.dup, m_cofactor.dup);
+        other.m_oid = m_oid.idup;
+        return other;
+    }
 
 private:
     CurveGFp m_curve;
