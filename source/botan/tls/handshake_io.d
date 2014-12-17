@@ -372,7 +372,7 @@ public:
             
             if (m_fragments.length == m_msg_length)
             {
-                m_message.reserve(m_msg_length);
+                m_message.resize(m_msg_length);
                 foreach (size_t i; 0 .. m_msg_length)
                     m_message[i] = m_fragments[i];
                 m_fragments.clear();

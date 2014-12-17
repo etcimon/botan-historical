@@ -71,7 +71,7 @@ public:
             
             assert(iv.length == 4, "Using 4/8 partial implicit nonce");
             m_nonce = iv.bitsOf();
-            m_nonce.reserve(12);
+            m_nonce.resize(12);
             return;
         }
         
@@ -278,13 +278,13 @@ void writeRecord(ref SecureVector!ubyte output,
     
     if (iv_size)
     {
-        output.reserve(output.length + iv_size);
+        output.resize(output.length + iv_size);
         rng.randomize(&output[$- iv_size], iv_size);
     }
     
     output.insert(output.end(), msg.ptr, &msg[msg_length]);
     
-    output.reserve(output.length + mac_size);
+    output.resize(output.length + mac_size);
     cipherstate.mac().flushInto(&output[output.length - mac_size]);
     
     if (block_size)
@@ -377,7 +377,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
             record_sequence = 0;
             record_type = HANDSHAKE;
             
-            record.reserve(4 + readbuf.length - 2);
+            record.resize(4 + readbuf.length - 2);
             
             record[0] = CLIENT_HELLO_SSLV2;
             record[1] = 0;

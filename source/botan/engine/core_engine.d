@@ -96,7 +96,7 @@ static if (BOTAN_HAS_COMB4P)          import botan.hash.comb4p;
 
 /// MAC
 static if (BOTAN_HAS_CBC_MAC)         import botan.mac.cbc_mac;
-static if (BOTAN_HAS_CMAC)            import botan.cmac.cmac;
+static if (BOTAN_HAS_CMAC)            import botan.mac.cmac;
 static if (BOTAN_HAS_HMAC)            import botan.mac.hmac;
 static if (BOTAN_HAS_SSL3_MAC)        import botan.mac.ssl3_mac;
 static if (BOTAN_HAS_ANSI_X919_MAC)   import botan.mac.x919_mac;

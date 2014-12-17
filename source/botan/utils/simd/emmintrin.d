@@ -36,13 +36,14 @@ immutable(__m128i) _mm_set_epi32 (int i, int j, int k, int l)() {
 }
 
 // _mm_set_epi8
-__m128i _mm_set1_epi8 (byte i)() {
+immutable(__m128i) _mm_set1_epi8 (byte i)() {
     return byte16([i, i, i, i, i, i, i, i, i, i, i, i, i, i, i, i]);
 }
 
 // _mm_set_epi8
-__m128i _mm_set1_epi8(byte[] arr)() {
-    return *cast(__m128i*) &byte16(arr);
+immutable(__m128i) _mm_set1_epi8(byte[] arr)() {
+    byte16 b16 = byte16(arr);
+    return *cast(__m128i*) &b16;
 }
 
 // _mm_set1_epi16
@@ -84,6 +85,10 @@ version(GDC) {
     // _mm_min_epu8
     __m128i _mm_min_epu8(__m128i a, in __m128i b) {
         return cast(__m128i) __builtin_ia32_pminub128(a, b);
+    }
+
+    __m128i _mm_shuffle_epi8(__m128i a, in __m128i b) {
+        return cast(__m128i) __builtin_ia32_pshufb128(a, b);
     }
 
     // _mm_subs_epu16
@@ -457,7 +462,22 @@ version(D_InlineAsm_X86_64) {
         }
         return a;
     }
-    
+
+    __m128i _mm_shuffle_epi8(__m128i a, in __m128i b) {
+        __m128i* _a = &a;
+        const(__m128i)* _b = &b;
+        
+        asm {
+            mov RAX, _a;
+            mov RBX, _b;
+            movdqu XMM0, [RAX];
+            movdqu XMM1, [RBX];
+            pshufb XMM0, XMM1;
+            movdqu [RAX], XMM0;
+        }
+        return a;
+    }
+
     // _mm_subs_epu16 ; PSUBUSW
     __m128i _mm_subs_epu16 (__m128i a, in __m128i b) {
 

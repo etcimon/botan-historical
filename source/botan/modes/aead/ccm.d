@@ -157,7 +157,7 @@ protected:
     {
         SecureVector!ubyte B0 = SecureVector!ubyte(BS);
         
-        const ubyte b_flags = (m_ad_buf.length ? 64 : 0) + (((tagSize()/2)-1) << 3) + (L()-1);
+        const ubyte b_flags = cast(ubyte) ((m_ad_buf.length ? 64 : 0) + (((tagSize()/2)-1) << 3) + (L()-1));
         
         B0[0] = b_flags;
         copyMem(&B0[1], m_nonce.ptr, m_nonce.length);
@@ -170,7 +170,7 @@ protected:
     {
         SecureVector!ubyte C = SecureVector!ubyte(BS);
         
-        const ubyte a_flags = L()-1;
+        const ubyte a_flags = cast(ubyte)(L()-1);
         
         C[0] = a_flags;
         copyMem(&C[1], m_nonce.ptr, m_nonce.length);
@@ -212,8 +212,8 @@ public:
     override void finish(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
-        
-        buffer.insert(buffer.ptr + offset, msgBuf().ptr, msgBuf().end());
+        buffer.resize(offset + msgBuf().length);
+        buffer.ptr[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
         
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
@@ -223,7 +223,7 @@ public:
         const SecureVector!ubyte ad = adBuf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
-        const BlockCipher E = cipher();
+        BlockCipher E = cipher();
         
         SecureVector!ubyte T = SecureVector!ubyte(BS);
         E.encrypt(formatB0(sz - tagSize()), T);
@@ -251,19 +251,19 @@ public:
             E.encrypt(C, X);
             xorBuf(buf, X.ptr, to_proc);
             inc(C);
-            
+
             xorBuf(T.ptr, buf, to_proc);
             E.encrypt(T);
             
             buf += to_proc;
         }
         
-        T ^= S0;
+        T.ptr[0 .. T.length] ^= S0.ptr[0 .. T.length];
         
         if (!sameMem(T.ptr, buf_end, tagSize()))
             throw new IntegrityFailure("CCM tag check failed");
         
-        buffer.reserve(buffer.length - tagSize());
+        buffer.resize(buffer.length - tagSize());
     }
 
     override size_t outputLength(size_t input_length) const
@@ -293,8 +293,8 @@ public:
     override void finish(SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
-        
-        buffer.insert(buffer.ptr + offset, msgBuf().ptr, msgBuf().end());
+        buffer.resize(offset + msgBuf().length);
+        buffer.ptr[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
         
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
@@ -302,7 +302,7 @@ public:
         const SecureVector!ubyte ad = adBuf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
-        const BlockCipher E = cipher();
+        BlockCipher E = cipher();
         
         SecureVector!ubyte T = SecureVector!ubyte(BS);
         E.encrypt(formatB0(sz), T);
@@ -336,9 +336,9 @@ public:
             buf += to_proc;
         }
         
-        T ^= S0;
-        
-        buffer += makePair(T.ptr, tagSize());
+        T.ptr[0 .. T.length] ^= S0.ptr[0 .. T.length];
+
+        buffer.ptr[offset .. offset + tagSize()] = T.ptr[0 .. tagSize()];
     }
 
     override size_t outputLength(size_t input_length) const

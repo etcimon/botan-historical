@@ -162,7 +162,7 @@ protected:
         n = m_next.length;
         
         if (n < m_threads.length)
-            m_threads.reserve(n);
+            m_threads.resize(n);
         else
         {
             m_threads.reserve(n);

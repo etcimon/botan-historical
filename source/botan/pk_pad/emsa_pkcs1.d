@@ -10,6 +10,7 @@ import botan.hash.hash;
 import botan.pk_pad.emsa_pkcs1;
 import botan.pk_pad.hash_id;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm : swap;
 
 /**
@@ -83,7 +84,7 @@ final class EMSAPKCS1v15Raw : EMSA
 public:
     override void update(const(ubyte)* input, size_t length)
     {
-        m_message += makePair(input, length);
+        m_message ~= input[0 .. length];
     }
 
     override SecureVector!ubyte rawData()

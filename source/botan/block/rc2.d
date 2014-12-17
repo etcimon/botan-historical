@@ -190,7 +190,7 @@ protected:
         for (size_t i = 127-length; i >= 0; --i)
             L[i] = TABLE[L[i+1] ^ L[i+length]];
         
-        m_K.reserve(64);
+        m_K.resize(64);
         loadLittleEndian!ushort(m_K.ptr, L.ptr, 64);
     }
 

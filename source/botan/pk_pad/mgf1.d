@@ -10,6 +10,7 @@ import botan.kdf.kdf;
 import botan.hash.hash;
 import botan.utils.exceptn;
 import botan.utils.xor_buf;
+import botan.utils.types;
 import std.algorithm;
 
 /**

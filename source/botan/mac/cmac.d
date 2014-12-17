@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.cmac.cmac;
+module botan.mac.cmac;
 
 import botan.constants;
 
@@ -63,11 +63,11 @@ public:
     * @param input = the input
     * @param polynomial = the ubyte value of the polynomial
     */
-    SecureVector!ubyte polyDouble(SecureVector!ubyte input)
+    static SecureVector!ubyte polyDouble(in SecureVector!ubyte input)
     {
         const bool top_carry = (input[0] & 0x80) != 0;
         
-        SecureVector!ubyte output = input;
+        SecureVector!ubyte output = input.dup;
         
         ubyte carry = 0;
         for (size_t i = output.length; i != 0; --i)
@@ -115,10 +115,10 @@ public:
             throw new InvalidArgument("CMAC cannot use the " ~ to!string(m_cipher.blockSize() * 8) ~ " bit cipher " ~ m_cipher.name);
         }
         
-        m_state.reserve(outputLength());
-        m_buffer.reserve(outputLength());
-        m_B.reserve(outputLength());
-        m_P.reserve(outputLength());
+        m_state.resize(outputLength());
+        m_buffer.resize(outputLength());
+        m_B.resize(outputLength());
+        m_P.resize(outputLength());
         m_position = 0;
     }
 

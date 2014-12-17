@@ -14,6 +14,8 @@ import botan.utils.loadstor;
 import botan.block.blowfish;
 import botan.codec.base64;
 import botan.utils.types;
+import std.string : toStringz;
+import std.conv : to;
 
 /**
 * Create a password hash using Bcrypt
@@ -44,10 +46,10 @@ bool checkBcrypt(in string password, in string hash)
         return false;
     }
     
-    const ushort workfactor = to!uint(hash[4 .. 7]);
-    
-    Vector!ubyte salt = bcryptBase64Decode(hash[7 .. 30]);
-    
+    const ushort workfactor = cast(ushort) to!uint(hash[4 .. 7]);
+
+    Vector!ubyte salt = bcryptBase64Decode(hash[7 .. 30].dup);
+
     const string compare = makeBcrypt(password, salt, workfactor);
     
     return (hash == compare);
@@ -84,18 +86,18 @@ string bcryptBase64Encode(const(ubyte)* input, size_t length)
         0x80, 0x80, 0x80, 0x80
     ];
     
-    string b64 = base64Encode(input, length);
-    
+    char[] b64 = base64Encode(input, length).dup;
+
     while (b64.length && b64[b64.length-1] == '=')
         b64 = b64[0 .. $];
     
     foreach (size_t i; 0 .. b64.length)
         b64[i] = OPENBSD_BASE64_SUB[cast(ubyte) b64[i]];
     
-    return b64;
+    return cast(string) b64;
 }
 
-Vector!ubyte bcryptBase64Decode(string input)
+Vector!ubyte bcryptBase64Decode(char[] input)
 {
     __gshared immutable ubyte[256] OPENBSD_BASE64_SUB = [
         0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
@@ -125,7 +127,7 @@ Vector!ubyte bcryptBase64Decode(string input)
     foreach (size_t i; 0 .. input.length)
         input[i] = OPENBSD_BASE64_SUB[cast(ubyte)(input[i])];
     
-    return unlock(base64Decode(input));
+    return unlock(base64Decode(input.to!string));
 }
 
 string makeBcrypt(in string pass,
@@ -143,7 +145,7 @@ string makeBcrypt(in string pass,
     Blowfish blowfish;
     
     // Include the trailing NULL ubyte
-    blowfish.eksKeySchedule(cast(const(ubyte)*) pass.toStringz, pass.length + 1, salt.ptr,    work_factor);
+    blowfish.eksKeySchedule(cast(const(ubyte)*) pass.toStringz, pass.length + 1, salt.ptr[0 .. 16], work_factor);
     
     foreach (size_t i; 0 .. 64)
         blowfish.encryptN(ctext.ptr, ctext.ptr, 3);

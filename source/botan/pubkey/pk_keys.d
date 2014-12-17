@@ -93,7 +93,6 @@ public:
     */
     abstract Vector!ubyte x509SubjectPublicKey() const;
 
-protected:
     /**
     * Self-test after loading a key
     * @param rng = a random number generator
@@ -122,7 +121,6 @@ public:
     */
     abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const;
 
-protected:
     /**
     * Self-test after loading a key
     * @param rng = a random number generator

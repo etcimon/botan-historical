@@ -135,7 +135,7 @@ protected:
             K[i+8] = K[i] ^ RC[i];
         }
         
-        m_EK.reserve(64);
+        m_EK.resize(64);
         
         foreach (size_t i; 0 .. 8)
         {

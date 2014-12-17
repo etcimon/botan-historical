@@ -13,10 +13,11 @@ import botan.modes.aead.aead;
 import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.mac.mac;
-import botan.cmac.cmac;
+import botan.mac.cmac;
 import botan.stream.ctr;
 import botan.utils.parsing;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
@@ -153,8 +154,9 @@ public:
         SecureVector!ubyte data_mac = m_cmac.finished();
         xorBuf(data_mac, m_nonce_mac, data_mac.length);
         xorBuf(data_mac, m_ad_mac, data_mac.length);
-        
-        buffer += makePair(data_mac.ptr, tagSize());
+
+        buffer.resize(offset + tagSize());
+        buffer.ptr[offset .. offset + tagSize()] = data_mac.ptr[0 .. tagSize()];
     }
 }
 
@@ -210,13 +212,13 @@ public:
         const(ubyte)* included_tag = &buf[remaining];
         
         SecureVector!ubyte mac = m_cmac.finished();
-        mac ^= m_nonce_mac;
-        mac ^= m_ad_mac;
+        mac.ptr[0 .. mac.length] ^= m_nonce_mac.ptr[0 .. mac.length];
+        mac.ptr[0 .. mac.length] ^= m_ad_mac.ptr[0 .. mac.length];
         
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("EAX tag check failed");
         
-        buffer.reserve(offset + remaining);
+        buffer.resize(offset + remaining);
     }
 }
 
@@ -227,7 +229,7 @@ public:
 SecureVector!ubyte eaxPrf(ubyte tag, size_t block_size,
                           MessageAuthenticationCode mac,
                           const(ubyte)* input,
-                          size_t length) pure
+                          size_t length)
 {
     foreach (size_t i; 0 .. (block_size - 1))
         mac.update(0);

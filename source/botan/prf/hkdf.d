@@ -12,6 +12,7 @@ static if (BOTAN_HAS_HKDF):
 import botan.mac.mac;
 import botan.hash.hash;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * HKDF, see @rfc 5869 for details
@@ -70,7 +71,7 @@ public:
             T = m_prf.finished();
             
             const size_t to_write = std.algorithm.min(T.length, output_len);
-            copyMem(output.ptr, T.ptr, to_write);
+            copyMem(output, T.ptr, to_write);
             output += to_write;
             output_len -= to_write;
         }

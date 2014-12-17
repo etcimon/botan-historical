@@ -64,7 +64,7 @@ public:
 
     final AlgorithmIdentifier algorithmIdentifier() const
     {
-        return AlgorithmIdentifier(getOid(), AlgorithmIdentifier.USE_NULL_PARAM);
+        return AlgorithmIdentifier(getOid(), AlgorithmIdentifierImpl.USE_NULL_PARAM);
     }
 
     final Vector!ubyte x509SubjectPublicKey() const

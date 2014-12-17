@@ -440,7 +440,7 @@ protected:
             m_suites.pushBack(make_ushort(buf[i+1], buf[i+2]));
         }
         
-        m_random.reserve(challenge_len);
+        m_random.resize(challenge_len);
         copyMem(m_random.ptr, &buf[9+cipher_spec_len+m_session_id_len], challenge_len);
         
         if (offeredSuite(cast(ushort)(TLS_EMPTY_RENEGOTIATION_INFO_SCSV)))

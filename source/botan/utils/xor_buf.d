@@ -108,7 +108,7 @@ void opOpAssign(string op, T, Alloc, Alloc2)(ref Vector!(T, Alloc) output,
         if (op == "^")
 {
     if (output.length < input.length)
-        output.reserve(input.length);
+        output.resize(input.length);
 
     xorBuf(output.ptr, input.ptr, input.length);
 }

@@ -73,7 +73,7 @@ public:
         
         const size_t limbs_needed = T.sizeof / word.sizeof;
         
-        m_reg.reserve(4*limbs_needed);
+        m_reg.resize(4*limbs_needed);
         foreach (size_t i; 0 .. limbs_needed)
             m_reg[i] = ((n >> (i*MP_WORD_BITS)) & MP_WORD_MASK);
     }
@@ -92,7 +92,7 @@ public:
     */
     this(in BigInt other)
     {
-        m_reg = cast(SecureVector!word)other.m_reg;
+        m_reg = other.m_reg.dup;
         m_signedness = cast(Sign)other.m_signedness;
     }
 
@@ -156,7 +156,7 @@ public:
     */
     this(Sign s, size_t size)
     {
-        m_reg.reserve(roundUp!size_t(size, 8));
+        m_reg.resize(roundUp!size_t(size, 8));
         m_signedness = s;
     }
 
@@ -801,7 +801,7 @@ public:
     void growTo(size_t n)
     {
         if (n > size())
-            m_reg.reserve(roundUp!size_t(n, 8));
+            m_reg.resize(roundUp!size_t(n, 8));
     }
 
     /**
@@ -847,7 +847,7 @@ public:
         const size_t WORD_BYTES = (word).sizeof;
         
         clear();
-        m_reg.reserve(roundUp!size_t((length / WORD_BYTES) + 1, 8));
+        m_reg.resize(roundUp!size_t((length / WORD_BYTES) + 1, 8));
         
         foreach (size_t i; 0 .. (length / WORD_BYTES))
         {

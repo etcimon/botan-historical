@@ -264,7 +264,7 @@ public:
         msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
         SecureVector!ubyte buffer = SecureVector!ubyte(remaining(msg));
         size_t got = read(buffer.ptr, buffer.length, msg);
-        buffer.reserve(got);
+        buffer.resize(got);
         return buffer;
     }
 

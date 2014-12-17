@@ -15,6 +15,7 @@ import botan.modes.mode_pad;
 import botan.utils.loadstor;
 import botan.utils.xor_buf;
 import botan.utils.rounding;
+import botan.utils.mem_ops;
 
 /**
 * CBC Mode
@@ -212,8 +213,8 @@ public:
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
-            SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.reserve(full_blocks + offset);
+            SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
+            buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
             xorBuf(last.ptr, statePtr(), BS);
@@ -227,7 +228,7 @@ public:
             
             cipher().encrypt(last.ptr);
             
-            buffer += last;
+            buffer ~= last;
         }
     }
 
@@ -296,7 +297,7 @@ public:
         update(buffer, offset);
         
         const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
-        buffer.reserve(buffer.length - pad_bytes); // remove padding
+        buffer.resize(buffer.length - pad_bytes); // remove padding
     }
 
     override size_t outputLength(size_t input_length) const
@@ -349,8 +350,8 @@ public:
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
-            SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.reserve(full_blocks + offset);
+            SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
+            buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
             cipher().decrypt(last.ptr);
@@ -363,10 +364,9 @@ public:
             cipher().decrypt(last.ptr);
             xorBuf(last.ptr, statePtr(), BS);
             
-            buffer += last;
+            buffer ~= last;
         }
     }
-
 
     override size_t minimumFinalSize() const
     {

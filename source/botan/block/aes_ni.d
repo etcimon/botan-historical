@@ -190,8 +190,8 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t)
     {
-        m_EK.reserve(44);
-        m_DK.reserve(44);
+        m_EK.resize(44);
+        m_DK.resize(44);
         
         __m128i K0  = _mm_loadu_si128(cast(const(__m128i)*)(key));
         mixin(`__m128i K1  = ` ~ AES_128_key_exp!("K0", 0x01)());
@@ -429,8 +429,8 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t)
     {
-        m_EK.reserve(52);
-        m_DK.reserve(52);
+        m_EK.resize(52);
+        m_DK.resize(52);
         
         __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
@@ -671,8 +671,8 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t)
     {
-        m_EK.reserve(60);
-        m_DK.reserve(60);
+        m_EK.resize(60);
+        m_DK.resize(60);
         
         __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 16));

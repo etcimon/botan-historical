@@ -16,12 +16,14 @@ import botan.stream.stream_cipher;
 import botan.stream.ctr;
 import botan.utils.xor_buf;
 import botan.utils.loadstor;
+import botan.utils.mem_ops;
 
 import botan.utils.simd.immintrin;
 import botan.utils.simd.wmmintrin;
 
 import botan.utils.types;
 
+import std.conv : to;
 
 static if (BOTAN_HAS_GCM_CLMUL) {
     import botan.utils.simd.wmmintrin;
@@ -94,7 +96,7 @@ public:
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_ctr.setKey(key, keylen);
+        m_ctr.setKey(key, length);
         
         const Vector!ubyte zeros = Vector!ubyte(BS);
         m_ctr.setIv(zeros.ptr, zeros.length);
@@ -165,7 +167,8 @@ public:
     {
         update(buffer, offset);
         auto mac = m_ghash.finished();
-        buffer ~= makePair(mac.ptr, tagSize());
+        buffer.resize(offset + tagSize());
+        buffer.ptr[offset .. offset + tagSize()] = mac.ptr[0 .. tagSize()];
     }
 }
 
@@ -226,7 +229,7 @@ public:
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("GCM tag check failed");
         
-        buffer.reserve(offset + remaining);
+        buffer.resize(offset + remaining);
     }
 }
 
@@ -280,8 +283,7 @@ public:
         
         SecureVector!ubyte mac;
         mac.swap(m_ghash);
-        
-        mac ^= m_nonce;
+        mac.ptr[0 .. mac.length] ^= m_nonce.ptr[0 .. mac.length];
         m_text_len = 0;
         return mac;
     }
@@ -301,7 +303,7 @@ public:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_H[] = key[0 .. length];
-        m_H_ad.reserve(16);
+        m_H_ad.resize(16);
         m_ad_len = 0;
         m_text_len = 0;
     }
@@ -356,7 +358,7 @@ private:
         {
             const size_t to_proc = std.algorithm.min(length, BS);
             
-            xorBuf(ghash.ptr, input.ptr, to_proc);
+            xorBuf(ghash.ptr, input, to_proc);
             
             gcmMultiply(ghash);
             
@@ -385,7 +387,7 @@ void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) pure
     /*
     * Algorithms 1 and 5 from Intel's CLMUL guide
     */
-    __gshared immutable(__m128i) BSWAP_MASK = _mm_set_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
+    __gshared immutable(__m128i) BSWAP_MASK = _mm_set1_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
 
     __m128i a = _mm_loadu_si128(cast(const(__m128i)*) x);
     __m128i b = _mm_loadu_si128(cast(const(__m128i)*) H);

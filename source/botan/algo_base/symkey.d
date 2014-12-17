@@ -29,7 +29,7 @@ public:
     /**
     * @return this object as a SecureVector!ubyte
     */
-    const(SecureVector!ubyte) bitsOf() const { return m_bits; }
+    SecureVector!ubyte bitsOf() const { return m_bits.dup; }
     
     /**
     * @return start of this string
@@ -101,8 +101,8 @@ public:
     */
     this(in string hex_string)
     {
-        m_bits.reserve(1 + hex_string.length / 2);
-        m_bits.reserve(hexDecode(m_bits.ptr, hex_string));
+        m_bits.resize(1 + hex_string.length / 2);
+        m_bits.resize(hexDecode(m_bits.ptr, hex_string));
     }
 
     /**

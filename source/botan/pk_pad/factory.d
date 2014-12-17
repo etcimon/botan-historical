@@ -100,7 +100,7 @@ EME getEme(in string algo_spec)
     if (request.algoName == "Raw")
         return null; // No padding
     
-    static if (BOTAN_HAS_EME_PKCS1v15) {
+    static if (BOTAN_HAS_EME_PKCS1_V15) {
         if (request.algoName == "PKCS1v15" && request.argCount() == 0)
             return new EMEPKCS1v15;
     }

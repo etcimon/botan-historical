@@ -33,7 +33,7 @@ string ucs2ToLatin1(in string ucs2)
         throw new DecodingError("UCS-2 string has an odd number of bytes");
     
     Appender!string latin1;
-    latin1.reserve(ucs2.length * 2);
+    latin1.resize(ucs2.length * 2);
 
     for (size_t i = 0; i != ucs2.length; i += 2)
     {
@@ -55,7 +55,7 @@ string ucs2ToLatin1(in string ucs2)
 string utf8ToLatin1(in string utf8)
 {
     Appender!string iso8859;
-    iso8859.reserve(utf8.length);
+    iso8859.resize(utf8.length);
     size_t position = 0;
     while (position != utf8.length)
     {
@@ -89,7 +89,7 @@ string utf8ToLatin1(in string utf8)
 string latin1ToUtf8(in string iso8859)
 {
     Appender!string utf8;
-    utf8.reserve(iso8859.length);
+    utf8.resize(iso8859.length);
     for (size_t i = 0; i != iso8859.length; ++i)
     {
         const ubyte c = cast(ubyte)(iso8859[i]);

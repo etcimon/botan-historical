@@ -104,7 +104,7 @@ private:
             m_cipher.setKey(m_prng.randomVec(m_cipher.maximumKeylength()));
             
             if (m_V.length != BLOCK_SIZE)
-                m_V.reserve(BLOCK_SIZE);
+                m_V.resize(BLOCK_SIZE);
             m_prng.randomize(m_V.ptr, m_V.length);
             
             updateBuffer();

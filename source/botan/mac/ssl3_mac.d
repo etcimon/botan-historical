@@ -92,8 +92,8 @@ protected:
         // Quirk to deal with specification bug
         const size_t inner_hash_length = (m_hash.name == "SHA-160") ? 60 : m_hash.hashBlockSize;
         
-        m_ikey.reserve(inner_hash_length);
-        m_okey.reserve(inner_hash_length);
+        m_ikey.resize(inner_hash_length);
+        m_okey.resize(inner_hash_length);
         
         std.algorithm.fill(m_ikey.range, cast(ubyte) 0x36);
         std.algorithm.fill(m_okey.range, cast(ubyte) 0x5C);

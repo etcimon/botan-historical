@@ -43,7 +43,7 @@ public:
             return next;
         
         size_t length = decodeLength(*m_source);
-        next.value.reserve(length);
+        next.value.resize(length);
         if (m_source.read(&next.value[0], length) != length)
             throw new BERDecodingError("Value truncated");
         
@@ -315,7 +315,7 @@ public:
             if (obj.value[0] >= 8)
                 throw new BERDecodingError("Bad number of unused bits in BIT STRING");
             
-            buffer.reserve(obj.value.length - 1);
+            buffer.resize(obj.value.length - 1);
             copyMem(buffer.ptr, &obj.value[1], obj.value.length - 1);
         }
         return this;
@@ -338,7 +338,7 @@ public:
             if (obj.value[0] >= 8)
                 throw new BERDecodingError("Bad number of unused bits in BIT STRING");
             
-            buffer.reserve(obj.value.length - 1);
+            buffer.resize(obj.value.length - 1);
             copyMem(buffer.ptr, &obj.value[1], obj.value.length - 1);
         }
         return this;

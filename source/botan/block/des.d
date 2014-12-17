@@ -99,7 +99,7 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t)
     {
-        m_round_key.reserve(32);
+        m_round_key.resize(32);
         des_key_schedule(*cast(uint[32]*) m_round_key.ptr, *cast(ubyte[8]*) key);
     }
 
@@ -191,7 +191,7 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_round_key.reserve(3*32);
+        m_round_key.resize(3*32);
         des_key_schedule(m_round_key.ptr[0 .. 32], key[0 .. 8]);
         des_key_schedule(m_round_key.ptr[32 .. 64], key[8 .. 16]);
         

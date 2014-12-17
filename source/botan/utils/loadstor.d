@@ -400,7 +400,7 @@ void storeLittleEndian(T)(ubyte* output, T x0, T x1)
 * @param x0 = the first word
 * @param x1 = the second word
 */
-void storeBigEndian(T)(ref ubyte* output, T x0, T x1)
+void storeBigEndian(T)(ubyte* output, T x0, T x1)
 {
     storeBigEndian(x0, output + (0 * T.sizeof));
     storeBigEndian(x1, output + (1 * T.sizeof));

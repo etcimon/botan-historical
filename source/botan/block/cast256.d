@@ -166,8 +166,8 @@ protected:
             0x07, 0x18, 0x09, 0x1A, 0x0B, 0x1C, 0x0D, 0x1E, 0x0F, 0x00,
             0x11, 0x02 ];
         
-        m_MK.reserve(48);
-        m_RK.reserve(48);
+        m_MK.resize(48);
+        m_RK.resize(48);
         
         SecureVector!uint K = SecureVector!uint(8);
         foreach (size_t i; 0 .. length)

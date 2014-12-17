@@ -16,12 +16,9 @@ import botan.utils.types;
 * implementations. Converts a password into a key using a salt
 * and iterated hashing to make brute force attacks harder.
 */
-class PBKDF
+interface PBKDF
 {
 public:
-
-    ~this() {}
-
     /**
     * @return new instance of this same algorithm
     */
@@ -38,16 +35,16 @@ public:
     * @param iterations = the number of iterations to use (use 10K or more)
     */
     final OctetString deriveKey(size_t output_len,
-                           in string passphrase,
-                           const(ubyte)* salt, size_t salt_len,
-                           size_t iterations) const
+                                in string passphrase,
+                                const(ubyte)* salt, size_t salt_len,
+                                size_t iterations) const
     {
         if (iterations == 0)
             throw new InvalidArgument(name ~ ": Invalid iteration count");
         
         auto derived = keyDerivation(output_len, passphrase,
-                                      salt, salt_len, iterations,
-                                      Duration(0));
+                                     salt, salt_len, iterations,
+                                     Duration.zero);
         
         assert(derived.first == iterations,
                      "PBKDF used the correct number of iterations");
@@ -125,10 +122,10 @@ public:
     */
     abstract Pair!(size_t, OctetString)
         keyDerivation(size_t output_len,
-                            in string passphrase,
-                            const(ubyte)* salt, size_t salt_len,
-                            size_t iterations,
-                       Duration loop_for) const;
+                      in string passphrase,
+                      const(ubyte)* salt, size_t salt_len,
+                      size_t iterations,
+                      Duration loop_for) const;
 }
 
 unittest {

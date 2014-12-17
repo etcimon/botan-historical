@@ -107,8 +107,8 @@ protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
 
-        m_MK.reserve(48);
-        m_RK.reserve(48);
+        m_MK.resize(48);
+        m_RK.resize(48);
         
         SecureVector!uint X = SecureVector!uint(4);
         foreach (size_t i; 0 .. length)

@@ -85,8 +85,8 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_state.reserve(256);
-        m_buffer.reserve(roundUp!size_t(DEFAULT_BUFFERSIZE, 4));
+        m_state.resize(256);
+        m_buffer.resize(roundUp!size_t(DEFAULT_BUFFERSIZE, 4));
         
         m_position = m_X = m_Y = 0;
         

@@ -47,18 +47,18 @@ public:
     * Return a PKCS#5 PBKDF1 derived key
     */
     override Pair!(size_t, OctetString) keyDerivation(size_t key_len,
-                                              in string passphrase,
-                                              const(ubyte)* salt, size_t salt_len,
-                                              size_t iterations,
-                                              Duration loop_for) const
+                                                      in string passphrase,
+                                                      const(ubyte)* salt, size_t salt_len,
+                                                      size_t iterations,
+                                                      Duration loop_for) const
     {
         if (key_len > m_hash.outputLength)
             throw new InvalidArgument("PKCS5_PBKDF1: Requested output length too long");
-        
-        m_hash.update(passphrase);
-        m_hash.update(salt, salt_len);
-        SecureVector!ubyte key = m_hash.finished();
-        
+        Unique!HashFunction hash = m_hash.clone();
+        hash.update(passphrase);
+        hash.update(salt, salt_len);
+        SecureVector!ubyte key = hash.finished();
+
         const start = Clock.currTime();
         size_t iterations_performed = 1;
         
@@ -76,14 +76,13 @@ public:
             else if (iterations_performed == iterations)
                 break;
             
-            m_hash.update(key);
-            m_hash.flushInto(key.ptr);
+            hash.update(key);
+            hash.flushInto(key.ptr);
             
             ++iterations_performed;
         }
         
-        return Pair(iterations_performed,
-                    OctetString(key.ptr, std.algorithm.min(key_len, key.length)));
+        return makePair(iterations_performed, OctetString(key.ptr, std.algorithm.min(key_len, key.length)));
     }
 private:
     Unique!HashFunction m_hash;

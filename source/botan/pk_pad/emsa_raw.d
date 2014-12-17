@@ -8,6 +8,7 @@ module botan.pk_pad.emsa_raw;
 
 import botan.pk_pad.emsa;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * EMSA-Raw - sign inputs directly
@@ -15,13 +16,13 @@ import botan.utils.types;
 */
 final class EMSARaw : EMSA
 {
-private:
+public:
     /*
     * EMSA-Raw Encode Operation
     */
     void update(const(ubyte)* input, size_t length)
     {
-        m_message += makePair(input, length);
+        m_message ~= input[0 .. length];
     }
 
     /*
@@ -41,7 +42,7 @@ private:
                                  size_t,
                                  RandomNumberGenerator)
     {
-        return msg;
+        return msg.dup;
     }
 
     /*

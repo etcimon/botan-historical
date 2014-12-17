@@ -25,6 +25,7 @@ import botan.utils.parsing;
 import botan.utils.types;
 import std.datetime;
 import std.algorithm;
+import std.array : split;
 
 /**
 * PKCS #5 v2.0 PBE
@@ -50,18 +51,18 @@ public:
                    .encode(AlgorithmIdentifier("PKCS5.PBKDF2",
                         DEREncoder()
                                .startCons(ASN1Tag.SEQUENCE)
-                               .encode(salt, ASN1Tag.OCTET_STRING)
+                               .encode(m_salt, ASN1Tag.OCTET_STRING)
                                .encode(m_iterations)
                                .encode(m_key_length)
                                .encodeIf (m_prf.name != "HMAC(SHA-160)",
                                           AlgorithmIdentifier(m_prf.name,
-                                                              AlgorithmIdentifier.USE_NULL_PARAM))
+                                                              AlgorithmIdentifierImpl.USE_NULL_PARAM))
                                .endCons()
                                .getContentsUnlocked()
                          )
                  )
                 .encode(
-                    AlgorithmIdentifier(block_cipher.name ~ "/CBC",
+                    AlgorithmIdentifier(m_block_cipher.name ~ "/CBC",
                                         DEREncoder().encode(m_iv, ASN1Tag.OCTET_STRING).getContentsUnlocked())
                  )
                 .endCons()
@@ -87,8 +88,7 @@ public:
     */
     void startMsg()
     {
-        m_pipe.append(getCipher(m_block_cipher.name ~ "/CBC/PKCS7",
-                               m_key, m_iv, m_direction));
+        m_pipe.append(getCipher(m_block_cipher.name ~ "/CBC/PKCS7", SymmetricKey(m_key), InitializationVector(m_iv), cast(CipherDir)m_direction));
         
         m_pipe.startMsg();
         if (m_pipe.messageCount() > 1)
@@ -102,7 +102,7 @@ public:
     {
         m_pipe.endMsg();
         flushPipe(false);
-        m_pipe.clear();
+        m_pipe.reset();
     }
 
     /**
@@ -133,17 +133,17 @@ public:
                 .startCons(ASN1Tag.SEQUENCE)
                 .decode(m_salt, ASN1Tag.OCTET_STRING)
                 .decode(m_iterations)
-                .decodeOptional(m_key_length, INTEGER, ASN1Tag.UNIVERSAL)
+                .decodeOptional(m_key_length, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL)
                 .decodeOptional(prf_algo, ASN1Tag.SEQUENCE, ASN1Tag.CONSTRUCTED,
                                  AlgorithmIdentifier("HMAC(SHA-160)",
-                                 AlgorithmIdentifier.USE_NULL_PARAM))
+                                 AlgorithmIdentifierImpl.USE_NULL_PARAM))
                 .verifyEnd()
                 .endCons();
         
         AlgorithmFactory af = globalState().algorithmFactory();
         
         string cipher = OIDS.lookup(enc_algo.oid);
-        Vector!string cipher_spec = splitter(cipher, '/');
+        Vector!string cipher_spec = Vector!string(cipher.split('/'));
         if (cipher_spec.length != 2)
             throw new DecodingError("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
         
@@ -152,8 +152,8 @@ public:
         
         BERDecoder(enc_algo.parameters).decode(m_iv, ASN1Tag.OCTET_STRING).verifyEnd();
         
-        m_block_cipher = af.makeBlockCipher(cipher_spec[0]);
-        m_prf = af.makeMac(OIDS.lookup(prf_algo.oid));
+        m_block_cipher = Unique!BlockCipher(af.makeBlockCipher(cipher_spec[0]));
+        m_prf = Unique!MessageAuthenticationCode(af.makeMac(OIDS.lookup(prf_algo.oid)));
         
         if (m_key_length == 0)
             m_key_length = m_block_cipher.maximumKeylength();
@@ -188,7 +188,7 @@ public:
         m_iv = rng.randomVec(m_block_cipher.blockSize());
         m_iterations = 0;
         m_key_length = m_block_cipher.maximumKeylength();
-        PKCS5_PBKDF2 pbkdf = PKCS5_PBKDF2(m_prf.clone());
+        auto pbkdf = scoped!PKCS5_PBKDF2(m_prf.clone());
         
         m_key = pbkdf.deriveKey(m_key_length, passphrase,
                                 m_salt.ptr, m_salt.length,

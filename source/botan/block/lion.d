@@ -142,8 +142,8 @@ public:
         if (!m_cipher.validKeylength(leftSize()))
             throw new InvalidArgument(name ~ ": This stream/hash combo is invalid");
         
-        m_key1.reserve(leftSize());
-        m_key2.reserve(leftSize());
+        m_key1.resize(leftSize());
+        m_key2.resize(leftSize());
     }
     override @property size_t parallelism() const { return 1; }
 protected:

@@ -15,7 +15,9 @@ import botan.libstate.libstate;
 import botan.pbkdf.pbkdf2;
 import botan.filters.b64_filt;
 import botan.filters.pipe;
+import botan.utils.get_byte;
 import botan.utils.exceptn;
+import std.string : toStringz;
 
 /**
 * Create a password hash using PBKDF2
@@ -31,9 +33,9 @@ import botan.utils.exceptn;
 *          all other values are currently undefined
 */
 string generatePasshash9(in string pass,
-                          RandomNumberGenerator rng,
-                          ushort work_factor = 10,
-                          ubyte alg_id = 1)
+                         RandomNumberGenerator rng,
+                         ushort work_factor = 10,
+                         ubyte alg_id = 1)
 {
     MessageAuthenticationCode prf = getPbkdfPrf(alg_id);
     
@@ -48,8 +50,8 @@ string generatePasshash9(in string pass,
     const size_t kdf_iterations = WORK_FACTOR_SCALE * work_factor;
     
     SecureVector!ubyte pbkdf2_output = kdf.deriveKey(PASSHASH9_PBKDF_OUTPUT_LEN,
-                                                       pass, salt.ptr, salt.length,
-                                                       kdf_iterations).bitsOf();
+                                                     pass, salt.ptr, salt.length,
+                                                     kdf_iterations).bitsOf();
     
     Pipe pipe = Pipe(new Base64Encoder);
     pipe.startMsg();
@@ -60,7 +62,7 @@ string generatePasshash9(in string pass,
     pipe.write(pbkdf2_output);
     pipe.endMsg();
     
-    return MAGIC_PREFIX + pipe.toString();
+    return MAGIC_PREFIX ~ pipe.toString();
 }
 
 
@@ -84,7 +86,7 @@ bool checkPasshash9(in string password, in string hash)
     
     Pipe pipe = Pipe(new Base64Decoder);
     pipe.startMsg();
-    pipe.write(hash.toStringz + MAGIC_PREFIX.length);
+    pipe.write(cast(const(ubyte)*)hash.toStringz + MAGIC_PREFIX.length, hash.length - MAGIC_PREFIX.length + 1);
     pipe.endMsg();
     
     SecureVector!ubyte bin = pipe.readAll();
@@ -110,11 +112,11 @@ bool checkPasshash9(in string password, in string hash)
     if (!pbkdf_prf)
         return false; // unknown algorithm, reject
     
-    PKCS5_PBKDF2 kdf(pbkdf_prf); // takes ownership of pointer
+    auto kdf = scoped!PKCS5_PBKDF2(pbkdf_prf); // takes ownership of pointer
     
     SecureVector!ubyte cmp = kdf.deriveKey(PASSHASH9_PBKDF_OUTPUT_LEN, password,
-                                             &bin[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
-                                             kdf_iterations).bitsOf();
+                                           &bin[ALGID_BYTES + WORKFACTOR_BYTES], SALT_BYTES,
+                                           kdf_iterations).bitsOf();
     
     return sameMem(cmp.ptr, &bin[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES], PASSHASH9_PBKDF_OUTPUT_LEN);
 }

@@ -109,8 +109,8 @@ HashMap!(string, double)
             const SymmetricKey key = SymmetricKey(rng, enc.keySpec().maximumKeylength());
             HashMap!(string, double) ret;
             ret["key schedule"] = timeOp(runtime / 4, { enc.setKey(key); dec.setKey(key); }) / 2;
-            ret["encrypt"] = mb_mult * timeOp(runtime / 2, { enc.update(buffer, 0); buffer.reserve(buf_size*1024); });
-            ret["decrypt"] = mb_mult * timeOp(runtime / 2, { dec.update(buffer, 0); buffer.reserve(buf_size*1024); });
+            ret["encrypt"] = mb_mult * timeOp(runtime / 2, { enc.update(buffer, 0); buffer.resize(buf_size*1024); });
+            ret["decrypt"] = mb_mult * timeOp(runtime / 2, { dec.update(buffer, 0); buffer.resize(buf_size*1024); });
             return ret;
         }
     }

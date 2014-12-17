@@ -349,7 +349,7 @@ void key_schedule(ref SecureVector!ulong SK, const(ubyte)* key, size_t length)
     
     if (length == 16)
     {
-        SK.reserve(26);
+        SK.resize(26);
         
         SK[ 0] = KL_H;
         SK[ 1] = KL_L;
@@ -380,7 +380,7 @@ void key_schedule(ref SecureVector!ulong SK, const(ubyte)* key, size_t length)
     }
     else
     {
-        SK.reserve(34);
+        SK.resize(34);
         
         SK[ 0] = KL_H;
         SK[ 1] = KL_L;

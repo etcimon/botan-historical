@@ -781,8 +781,8 @@ void aes_key_schedule(const(ubyte)* key, size_t length,
         TD[SE[get_byte(2, XDK[i])] + 512] ^
         TD[SE[get_byte(3, XDK[i])] + 768];
     
-    ME.reserve(16);
-    MD.reserve(16);
+    ME.resize(16);
+    MD.resize(16);
     
     foreach (size_t i; 0 .. 4)
     {
@@ -790,8 +790,8 @@ void aes_key_schedule(const(ubyte)* key, size_t length,
         storeBigEndian(XEK[i], &MD[4*i]);
     }
     
-    EK.reserve(length + 24);
-    DK.reserve(length + 24);
+    EK.resize(length + 24);
+    DK.resize(length + 24);
     copyMem(EK.ptr, XEK.ptr, EK.length);
     copyMem(DK.ptr, XDK.ptr, DK.length);
 }

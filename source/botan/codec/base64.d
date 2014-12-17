@@ -91,7 +91,7 @@ string base64Encode(const(ubyte)* input,
     assert(consumed == input_length, "Consumed the entire input");
     assert(produced == output.length, "Produced expected size");
     
-    return output.to!string;
+    return cast(string)output;
 }
 
 /**
@@ -271,7 +271,7 @@ SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
     bin.reserve((roundUp!size_t(input.length, 4) * 3) / 4);
 
     size_t written = base64Decode(bin.ptr, input.ptr, input.length, ignore_ws);
-
+    bin.resize(written);
     return bin;
 }
 

@@ -129,7 +129,7 @@ protected:
         
         GFUNC G;
         
-        m_K.reserve(32);
+        m_K.resize(32);
         
         foreach (size_t i; iota(0, 16, 2))
         {

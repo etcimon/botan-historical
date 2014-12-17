@@ -129,7 +129,7 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_S.reserve(44);
+        m_S.resize(44);
         
         const size_t WORD_KEYLENGTH = (((length - 1) / 4) + 1);
         const size_t MIX_ROUNDS      = 3 * std.algorithm.max(WORD_KEYLENGTH, m_S.length);

@@ -15,6 +15,7 @@ import botan.utils.get_byte;
 import botan.utils.xor_buf;
 import botan.utils.rounding;
 import std.datetime;
+import std.conv : to;
 
 /**
 * PKCS #5 PBKDF2
@@ -38,18 +39,17 @@ public:
     override 
     Pair!(size_t, OctetString)
         keyDerivation(size_t key_len,
-                       in string passphrase,
-                       const(ubyte)* salt, size_t salt_len,
-                       size_t iterations,
-                       Duration loop_for) const
+                      in string passphrase,
+                      const(ubyte)* salt, size_t salt_len,
+                      size_t iterations,
+                      Duration loop_for) const
     {
         if (key_len == 0)
-            return Pair(iterations, OctetString());
-        
+            return makePair(iterations, OctetString());
+        Unique!MessageAuthenticationCode mac = m_mac.clone();
         try
         {
-            m_mac.setKey(cast(const(ubyte)*)(passphrase.ptr),
-                        passphrase.length);
+            mac.setKey(cast(const(ubyte)*)(passphrase.ptr), passphrase.length);
         }
         catch(InvalidKeyLength)
         {
@@ -60,9 +60,9 @@ public:
         
         ubyte* T = key.ptr;
         
-        SecureVector!ubyte U = SecureVector!ubyte(m_mac.outputLength);
+        SecureVector!ubyte U = SecureVector!ubyte(mac.outputLength);
         
-        const size_t blocks_needed = roundUp(key_len, m_mac.outputLength) / m_mac.outputLength;
+        const size_t blocks_needed = roundUp(key_len, mac.outputLength) / mac.outputLength;
         
         Duration dur_per_block = loop_for / blocks_needed;
         
@@ -71,9 +71,9 @@ public:
         {
             size_t T_size = std.algorithm.min(mac.outputLength, key_len);
             
-            m_mac.update(salt, salt_len);
-            m_mac.updateBigEndian(counter);
-            m_mac.flushInto(U.ptr);
+            mac.update(salt, salt_len);
+            mac.updateBigEndian(counter);
+            mac.flushInto(U.ptr);
             
             xorBuf(T, U.ptr, T_size);
             
@@ -90,8 +90,8 @@ public:
                 
                 while (true)
                 {
-                    m_mac.update(U);
-                    m_mac.flushInto(U.ptr);
+                    mac.update(U);
+                    mac.flushInto(U.ptr);
                     xorBuf(T, U.ptr, T_size);
                     iterations++;
                     
@@ -112,8 +112,8 @@ public:
             {
                 foreach (size_t i; 1 .. iterations)
                 {
-                    m_mac.update(U);
-                    m_mac.flushInto(U.ptr);
+                    mac.update(U);
+                    mac.flushInto(U.ptr);
                     xorBuf(T, U.ptr, T_size);
                 }
             }
@@ -123,7 +123,7 @@ public:
             ++counter;
         }
         
-        return Pair(iterations, key);
+        return makePair(iterations, OctetString(key));
     }
 
     /**

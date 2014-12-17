@@ -25,8 +25,7 @@ Vector!ubyte pkcsHashId(in string name)
         return Vector!ubyte();
     
     if (name == "MD2")
-        return Vector!ubyte(MD2_PKCS_ID,
-                            MD2_PKCS_ID + (MD2PKCSID).length);
+        return Vector!ubyte(MD2_PKCS_ID[0 .. (MD2_PKCS_ID).length]);
     
     if (name == "MD5")
         return Vector!ubyte(MD5_PKCS_ID);

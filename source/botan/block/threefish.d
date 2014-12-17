@@ -119,7 +119,7 @@ protected:
     override void keySchedule(const(ubyte)* key, size_t)
     {
         // todo: define key schedule for smaller keys
-        m_K.reserve(9);
+        m_K.resize(9);
         
         foreach (size_t i; 0 .. 8)
             m_K[i] = loadLittleEndian!ulong(key, i);

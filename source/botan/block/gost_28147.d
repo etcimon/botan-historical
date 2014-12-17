@@ -206,7 +206,7 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t)
     {
-        m_EK.reserve(8);
+        m_EK.resize(8);
         foreach (size_t i; 0 .. 8)
             m_EK[i] = loadLittleEndian!uint(key, i);
     }

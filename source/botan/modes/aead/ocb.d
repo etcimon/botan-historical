@@ -12,10 +12,11 @@ static if (BOTAN_HAS_AEAD_OCB):
 import botan.modes.aead.aead;
 import botan.block.block_cipher;
 
-import botan.cmac.cmac;
+import botan.mac.cmac;
 import botan.utils.xor_buf;
 import botan.utils.bit_ops;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
@@ -47,7 +48,7 @@ public:
     final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         assert(m_L, "A key was set");
-        m_ad_hash = ocbHash(*m_L, *m_cipher, ad.ptr, ad_len);
+        m_ad_hash = ocbHash(*m_L, *m_cipher, ad, ad_len);
     }
 
     final override @property string name() const
@@ -105,7 +106,7 @@ protected:
     final override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
-        m_L = new LComputer(*m_cipher);
+        m_L = Unique!LComputer(new LComputer(*m_cipher));
     }
 
     // fixme make these private
@@ -154,8 +155,8 @@ private:
         SecureVector!ubyte offset = SecureVector!ubyte(BS);
         foreach (size_t i; 0 .. BS)
         {
-            offset[i]  = (m_stretch[i+shift_bytes] << shift_bits);
-            offset[i] |= (m_stretch[i+shift_bytes+1] >> (8-shift_bits));
+            offset[i]  = cast(ubyte)(m_stretch[i+shift_bytes] << shift_bits);
+            offset[i] |= cast(ubyte)(m_stretch[i+shift_bytes+1] >> (8-shift_bits));
         }
         
         return offset;
@@ -214,14 +215,14 @@ public:
                 assert(remainder_bytes < BS, "Only a partial block left");
                 ubyte* remainder = &buf[sz - remainder_bytes];
                 
-                xorBuf(m_checksum.ptr, remainder.ptr, remainder_bytes);
+                xorBuf(m_checksum.ptr, remainder, remainder_bytes);
                 m_checksum[remainder_bytes] ^= 0x80;
                 
-                m_offset ^= m_L.star(); // Offset_*
+                m_offset.ptr[0 .. m_offset.length] ^= m_L.star().ptr[0 .. m_offset.length]; // Offset_*
                 
-                SecureVector!ubyte buf = SecureVector!ubyte(BS);
-                m_cipher.encrypt(m_offset, buf);
-                xorBuf(remainder.ptr, buf.ptr, remainder_bytes);
+                SecureVector!ubyte buf_ = SecureVector!ubyte(BS);
+                m_cipher.encrypt(m_offset, buf_);
+                xorBuf(remainder, buf_.ptr, remainder_bytes);
             }
         }
         
@@ -233,14 +234,14 @@ public:
         
         // now compute the tag
         SecureVector!ubyte mac = m_offset;
-        mac ^= checksum;
-        mac ^= m_L.dollar();
+        mac.ptr[0 .. mac.length] ^= checksum.ptr[0 .. mac.length];
+        mac.ptr[0 .. mac.length] ^= m_L.dollar().ptr[0 .. mac.length];
         
         m_cipher.encrypt(mac);
         
-        mac ^= m_ad_hash;
+        mac.ptr[0 .. mac.length] ^= m_ad_hash.ptr[0 .. mac.length];
         
-        buffer += makePair(mac.ptr, tagSize());
+        buffer ~= mac.ptr[0 .. tagSize()];
         
         zeroise(m_checksum);
         zeroise(m_offset);
@@ -250,7 +251,7 @@ public:
 private:
     void encrypt(ubyte* buffer, size_t blocks)
     {
-        const LComputer L = *m_L; // convenient name
+        LComputer L = *m_L; // convenient name
         
         const size_t par_blocks = m_checksum.length / BS;
         
@@ -261,11 +262,11 @@ private:
             
             const offsets = L.computeOffsets(m_offset, m_block_index, proc_blocks);
             
-            xorBuf(m_checksum.ptr, buffer.ptr, proc_bytes);
+            xorBuf(m_checksum.ptr, buffer, proc_bytes);
             
-            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
-            m_cipher.encryptN(buffer.ptr, buffer.ptr, proc_blocks);
-            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
+            xorBuf(buffer, offsets.ptr, proc_bytes);
+            m_cipher.encryptN(buffer, buffer, proc_blocks);
+            xorBuf(buffer, offsets.ptr, proc_bytes);
             
             buffer += proc_bytes;
             blocks -= proc_blocks;
@@ -320,7 +321,7 @@ public:
             const size_t final_full_blocks = remaining / BS;
             const size_t final_bytes = remaining - (final_full_blocks * BS);
             
-            decrypt(buf.ptr, final_full_blocks);
+            decrypt(buf, final_full_blocks);
             
             if (final_bytes)
             {
@@ -328,14 +329,14 @@ public:
                 
                 ubyte* remainder = &buf[remaining - final_bytes];
                 
-                m_offset ^= m_L.star(); // Offset_*
+                m_offset.ptr[0 .. m_offset.length] ^= m_L.star().ptr[0 .. m_offset.length]; // Offset_*
                 
                 SecureVector!ubyte pad = SecureVector!ubyte(BS);
                 m_cipher.encrypt(m_offset, pad); // P_*
                 
-                xorBuf(remainder.ptr, pad.ptr, final_bytes);
+                xorBuf(remainder, pad.ptr, final_bytes);
                 
-                xorBuf(m_checksum.ptr, remainder.ptr, final_bytes);
+                xorBuf(m_checksum.ptr, remainder, final_bytes);
                 m_checksum[final_bytes] ^= 0x80;
             }
         }
@@ -348,12 +349,12 @@ public:
         
         // compute the mac
         SecureVector!ubyte mac = m_offset;
-        mac ^= checksum;
-        mac ^= m_L.dollar();
+        mac.ptr[0 .. mac.length] ^= checksum.ptr[0 .. mac.length];
+        mac.ptr[0 .. mac.length] ^= m_L.dollar().ptr[0 .. mac.length];
         
         m_cipher.encrypt(mac);
         
-        mac ^= m_ad_hash;
+        mac.ptr[0 .. mac.length] ^= m_ad_hash.ptr[0 .. mac.length];
         
         // reset state
         zeroise(m_checksum);
@@ -367,13 +368,13 @@ public:
             throw new IntegrityFailure("OCB tag check failed");
         
         // remove tag from end of message
-        buffer.reserve(remaining + offset);
+        buffer.length = remaining + offset;
     }
 
 private:
-    void decrypt(const(ubyte)* buffer, size_t blocks)
+    void decrypt(ubyte* buffer, size_t blocks)
     {
-        const LComputer L = *m_L; // convenient name
+        LComputer L = *m_L; // convenient name
         
         const size_t par_bytes = m_cipher.parallelBytes();
         
@@ -388,11 +389,11 @@ private:
             
             const offsets = L.computeOffsets(m_offset, m_block_index, proc_blocks);
             
-            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
-            m_cipher.decryptN(buffer.ptr, buffer.ptr, proc_blocks);
-            xorBuf(buffer.ptr, offsets.ptr, proc_bytes);
+            xorBuf(buffer, offsets.ptr, proc_bytes);
+            m_cipher.decryptN(buffer, buffer, proc_blocks);
+            xorBuf(buffer, offsets.ptr, proc_bytes);
             
-            xorBuf(m_checksum.ptr, buffer.ptr, proc_bytes);
+            xorBuf(m_checksum.ptr, buffer, proc_bytes);
             
             buffer += proc_bytes;
             blocks -= proc_blocks;
@@ -410,29 +411,29 @@ __gshared immutable size_t BS = 16; // intrinsic to OCB definition
 final class LComputer
 {
 public:
-    this(in BlockCipher cipher)
+    this(BlockCipher cipher)
     {
-        m_L_star.reserve(cipher.blockSize());
+        m_L_star.resize(cipher.blockSize());
         cipher.encrypt(m_L_star);
         m_L_dollar = polyDouble(star());
         m_L.pushBack(polyDouble(dollar()));
     }
     
-    SecureVector!ubyte star() const { return m_L_star; }
+    const(SecureVector!ubyte) star() const { return m_L_star; }
     
-    SecureVector!ubyte dollar() const { return m_L_dollar; }
+    const(SecureVector!ubyte) dollar() const { return m_L_dollar; }
     
-    SecureVector!ubyte opCall(size_t i) const { return get(i); }
+    SecureVector!ubyte opCall(size_t i) { return get(i); }
     
     SecureVector!ubyte computeOffsets(SecureVector!ubyte offset,
-                                        size_t block_index,
-                                        size_t blocks) const
+                                      size_t block_index,
+                                      size_t blocks)
     {
-        m_offset_buf.reserve(blocks*BS);
+        m_offset_buf.resize(blocks*BS);
         
         foreach (size_t i; 0 .. blocks)
         { // could be done in parallel
-            offset ^= get(ctz(block_index + 1 + i));
+            offset.ptr[0 .. offset.length] ^= get(ctz(block_index + 1 + i)).ptr[0 .. offset.length];
             copyMem(&m_offset_buf[BS*i], offset.ptr, BS);
         }
         
@@ -440,7 +441,7 @@ public:
     }
     
 private:
-    SecureVector!ubyte get(size_t i) const
+    SecureVector!ubyte get(size_t i)
     {
         while (m_L.length <= i)
             m_L.pushBack(polyDouble(m_L.back()));
@@ -448,8 +449,9 @@ private:
         return m_L[i];
     }
     
-    SecureVector!ubyte polyDouble(in SecureVector!ubyte input) const
+    SecureVector!ubyte polyDouble(in SecureVector!ubyte input)
     {
+        import botan.mac.cmac : CMAC;
         return CMAC.polyDouble(input);
     }
     
@@ -461,9 +463,9 @@ private:
 /*
 * OCB's HASH
 */
-SecureVector!ubyte ocbHash(in LComputer L,
-                          const BlockCipher cipher,
-                          const(ubyte)* ad, size_t ad_len)
+SecureVector!ubyte ocbHash(LComputer L,
+                           BlockCipher cipher,
+                           const(ubyte)* ad, size_t ad_len)
 {
     SecureVector!ubyte sum = SecureVector!ubyte(BS);
     SecureVector!ubyte offset = SecureVector!ubyte(BS);
@@ -476,19 +478,19 @@ SecureVector!ubyte ocbHash(in LComputer L,
     foreach (size_t i; 0 .. ad_blocks)
     {
         // this loop could run in parallel
-        offset ^= L(ctz(i+1));
+        offset.ptr[0 .. offset.length] ^= L(ctz(i+1)).ptr[0 .. offset.length];
         
         buf = offset;
         xorBuf(buf.ptr, &ad[BS*i], BS);
         
         cipher.encrypt(buf);
         
-        sum ^= buf;
+        sum.ptr[0 .. sum.length] ^= buf.ptr[0 .. buf.length];
     }
     
     if (ad_remainder)
     {
-        offset ^= L.star();
+        offset.ptr[0 .. offset.length] ^= L.star().ptr[0 .. offset.length];
         
         buf = offset;
         xorBuf(buf.ptr, &ad[BS*ad_blocks], ad_remainder);
@@ -496,7 +498,7 @@ SecureVector!ubyte ocbHash(in LComputer L,
         
         cipher.encrypt(buf);
         
-        sum ^= buf;
+        sum.ptr[0 .. sum.length] ^= buf.ptr[0 .. sum.length];
     }
     
     return sum;

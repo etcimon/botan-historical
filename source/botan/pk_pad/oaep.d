@@ -41,11 +41,10 @@ public:
         m_Phash = m_hash.process(P);
     }
 
-private:
     /*
     * OAEP Pad Operation
     */
-    SecureVector!ubyte pad(const(ubyte)* input, size_t in_length, size_t key_length,
+    override SecureVector!ubyte pad(const(ubyte)* input, size_t in_length, size_t key_length,
                              RandomNumberGenerator rng) const
     {
         key_length /= 8;
@@ -61,10 +60,10 @@ private:
         output[output.length - in_length - 1] = 0x01;
         bufferInsert(output, output.length - in_length, input, in_length);
         
-        mfg1Mask(*m_hash, output.ptr, m_Phash.length,
+        mgf1Mask(*m_hash, output.ptr, m_Phash.length,
         &output[m_Phash.length], output.length - m_Phash.length);
         
-        mfg1Mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
+        mgf1Mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
         output.ptr, m_Phash.length);
         
         return output;
@@ -73,7 +72,7 @@ private:
     /*
     * OAEP Unpad Operation
     */
-    SecureVector!ubyte unpad(const(ubyte)* input, size_t in_length, size_t key_length) const
+    override SecureVector!ubyte unpad(const(ubyte)* input_, size_t in_length, size_t key_length) const
     {
         /*
         Must be careful about error messages here; if an attacker can
@@ -94,13 +93,13 @@ private:
             in_length = 0;
         
         SecureVector!ubyte input = SecureVector!ubyte(key_length);
-        bufferInsert(input, key_length - in_length, input, in_length);
+        bufferInsert(input, key_length - in_length, input_, in_length);
         
-        mfg1Mask(*m_hash,
+        mgf1Mask(*m_hash,
                   &input[m_Phash.length], input.length - m_Phash.length,
         input.ptr, m_Phash.length);
         
-        mfg1Mask(*m_hash,
+        mgf1Mask(*m_hash,
                   input.ptr, m_Phash.length,
         &input[m_Phash.length], input.length - m_Phash.length);
         

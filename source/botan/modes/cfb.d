@@ -15,6 +15,8 @@ import botan.modes.mode_pad;
 import botan.utils.parsing;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.mem_ops;
+import std.conv : to;
 
 /**
 * CFB Mode
@@ -28,7 +30,7 @@ public:
             throw new InvalidIVLength(name, nonce_len);
         
         m_shift_register[] = nonce[0 .. nonce_len];
-        m_keystream_buf.reserve(m_shift_register.length);
+        m_keystream_buf.length = m_shift_register.length;
         cipher().encrypt(m_shift_register, m_keystream_buf);
         
         return SecureVector!ubyte();
@@ -134,11 +136,11 @@ public:
         while (sz)
         {
             const size_t took = std.algorithm.min(shift, sz);
-            xorBuf(buf.ptr, &keystreamBuf()[0], took);
+            xorBuf(buf, &keystreamBuf()[0], took);
             
             // Assumes feedback-sized block except for last input
             copyMem(state.ptr, &state[shift], BS - shift);
-            copyMem(&state[BS-shift], buf.ptr, took);
+            copyMem(&state[BS-shift], buf, took);
             cipher().encrypt(state, keystreamBuf());
             
             buf += took;
@@ -181,10 +183,10 @@ public:
             
             // first update shift register with ciphertext
             copyMem(state.ptr, &state[shift], BS - shift);
-            copyMem(&state[BS-shift], buf.ptr, took);
+            copyMem(&state[BS-shift], buf, took);
             
             // then decrypt
-            xorBuf(buf.ptr, &keystreamBuf()[0], took);
+            xorBuf(buf, &keystreamBuf()[0], took);
             
             // then update keystream
             cipher().encrypt(state, keystreamBuf());

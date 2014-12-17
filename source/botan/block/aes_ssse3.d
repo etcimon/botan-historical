@@ -76,8 +76,8 @@ protected:
         
         __m128i key = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
         
-        m_EK.reserve(11*4);
-        m_DK.reserve(11*4);
+        m_EK.resize(11*4);
+        m_DK.resize(11*4);
         
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         __m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
@@ -163,8 +163,8 @@ protected:
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();
         
-        m_EK.reserve(13*4);
-        m_DK.reserve(13*4);
+        m_EK.resize(13*4);
+        m_DK.resize(13*4);
         
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         __m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
@@ -274,8 +274,8 @@ protected:
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
                                      0x1F8391B9, 0xAF9DEEB6)();
         
-        m_EK.reserve(15*4);
-        m_DK.reserve(15*4);
+        m_EK.resize(15*4);
+        m_DK.resize(15*4);
         
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         __m128i* DK_mm = cast(__m128i*)(m_DK.ptr);

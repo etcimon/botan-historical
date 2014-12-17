@@ -11,7 +11,7 @@ public import botan.rng.rng;
 /**
 * Encoding Method for Signatures, Appendix
 */
-class EMSA
+interface EMSA
 {
 public:
     /**
@@ -47,5 +47,4 @@ public:
     abstract bool verify(in SecureVector!ubyte coded,
                          in SecureVector!ubyte raw,
                          size_t key_bits);
-    ~this() {}
 }

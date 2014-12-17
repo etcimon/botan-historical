@@ -142,8 +142,8 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_SB.reserve(1024);
-        m_RK.reserve(40);
+        m_SB.resize(1024);
+        m_RK.resize(40);
         
         SecureVector!ubyte S = SecureVector!ubyte(16);
         

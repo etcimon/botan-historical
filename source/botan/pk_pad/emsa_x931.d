@@ -10,6 +10,7 @@ import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.pk_pad.hash_id;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * EMSA from X9.31 (EMSA2 in IEEE 1363)
@@ -32,13 +33,13 @@ public:
         if (!m_hash_id)
             throw new EncodingError("EMSA_X931 no hash identifier for " ~ hash.name);
     }
-private:
-    void update(const(ubyte)* input, size_t length)
+public:
+    override void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
 
-    SecureVector!ubyte rawData()
+    override SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -46,9 +47,9 @@ private:
     /*
     * EMSA_X931 Encode Operation
     */
-    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
-                                 size_t output_bits,
-                                 RandomNumberGenerator)
+    override SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+                                           size_t output_bits,
+                                           RandomNumberGenerator)
     {
         return emsa2Encoding(msg, output_bits, m_empty_hash, m_hash_id);
     }
@@ -71,6 +72,7 @@ private:
         }
     }
 
+private:
     SecureVector!ubyte m_empty_hash;
     Unique!HashFunction m_hash;
     ubyte m_hash_id;

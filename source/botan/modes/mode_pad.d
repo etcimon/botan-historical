@@ -59,7 +59,7 @@ public:
     */
     override void addPadding(SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
     {
-        const ubyte pad_value = block_size - last_byte_pos;
+        const ubyte pad_value = cast(ubyte)( block_size - last_byte_pos );
         
         foreach (size_t i; 0 .. pad_value)
             buffer.pushBack(pad_value);
@@ -100,7 +100,7 @@ public:
                                  size_t last_byte_pos,
                                  size_t block_size) const
     {
-        const ubyte pad_value = block_size - last_byte_pos;
+        const ubyte pad_value = cast(ubyte) (block_size - last_byte_pos);
         
         for (size_t i = last_byte_pos; i < block_size; ++i)
             buffer.pushBack(0);

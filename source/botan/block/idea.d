@@ -60,8 +60,8 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t)
     {
-        m_EK.reserve(52);
-        m_DK.reserve(52);
+        m_EK.resize(52);
+        m_DK.resize(52);
         
         foreach (size_t i; 0 .. 8)
             m_EK[i] = loadBigEndian!ushort(key, i);

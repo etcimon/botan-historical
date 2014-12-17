@@ -173,7 +173,7 @@ public:
                                        m_prf.name);
         
         // First PRF inputs are all zero, as specified in section 2
-        m_K.reserve(m_prf.outputLength);
+        m_K.resize(m_prf.outputLength);
         
         /*
         Normally we want to feedback PRF outputs to the extractor function

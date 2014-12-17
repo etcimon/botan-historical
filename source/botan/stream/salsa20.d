@@ -132,8 +132,8 @@ protected:
         
         const uint[] CONSTANTS = (length == 16) ? TAU : SIGMA;
         
-        m_state.reserve(16);
-        m_buffer.reserve(64);
+        m_state.resize(16);
+        m_buffer.resize(64);
         
         m_state[0] = CONSTANTS[0];
         m_state[5] = CONSTANTS[1];

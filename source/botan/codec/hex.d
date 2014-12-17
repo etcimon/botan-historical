@@ -224,7 +224,7 @@ Vector!ubyte hexDecode(string input, bool ignore_ws = true)
     bin.reserve(1 + input.length / 2);
     
     size_t written = hexDecode(bin.ptr, input.ptr, input.length, ignore_ws);
-    
+    bin.resize(written);
     return bin;
 }
 
@@ -254,7 +254,7 @@ SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool
     bin.reserve(1 + input_length / 2);
     
     size_t written = hexDecode(bin.ptr, input, input_length, ignore_ws = true);
-
+    bin.resize(written);
     return bin;
 }
 

@@ -25,10 +25,8 @@ public:
         m_hash = hash;
     }
 
-protected:
     size_t hashOutputLength() const { return m_hash.outputLength; }
 
-private:
     void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
@@ -84,9 +82,9 @@ private:
 
 private:
 
-SecureVector!ubyte emsa1Encoding(in SecureVector!ubyte msg,
-                                size_t output_bits)
+SecureVector!ubyte emsa1Encoding(in SecureVector!ubyte msg_, size_t output_bits)
 {
+    SecureVector!ubyte msg = msg_.dup;
     if (8*msg.length <= output_bits)
         return msg;
     
@@ -105,7 +103,7 @@ SecureVector!ubyte emsa1Encoding(in SecureVector!ubyte msg,
         {
             ubyte temp = digest[j];
             digest[j] = (temp >> bit_shift) | carry;
-            carry = (temp << (8 - bit_shift));
+            carry = cast(ubyte)(temp << (8 - bit_shift));
         }
     }
     return digest;

@@ -90,8 +90,8 @@ protected:
     {
         m_hash.clear();
         
-        m_ikey.reserve(m_hash.hashBlockSize);
-        m_okey.reserve(m_hash.hashBlockSize);
+        m_ikey.resize(m_hash.hashBlockSize);
+        m_okey.resize(m_hash.hashBlockSize);
         
         std.algorithm.fill(m_ikey.range, cast(ubyte)0x36);
         std.algorithm.fill(m_okey.range, cast(ubyte)0x5C);

@@ -117,10 +117,10 @@ public:
             throw new InvalidArgument("Requested Bcrypt work factor " ~
                                        to!string(workfactor) ~ " too large");
         
-        m_P.reserve(18);
+        m_P.resize(18);
         m_P ~= P_INIT[0 .. 18];
         
-        m_S.reserve(1024);
+        m_S.resize(1024);
         m_S ~= S_INIT[0 .. 1024];
         
         key_expansion(key, length, salt);
@@ -153,10 +153,10 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_P.reserve(18);
+        m_P.resize(18);
         m_P ~= P_INIT[0 .. 18];
         
-        m_S.reserve(1024);
+        m_S.resize(1024);
         m_S ~= S_INIT[0 .. 1024];
         
         immutable ubyte[16] null_salt;

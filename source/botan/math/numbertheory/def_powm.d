@@ -35,7 +35,7 @@ public:
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
-        m_g.reserve((1 << m_window_bits));
+        m_g.resize((1 << m_window_bits));
         m_g[0] = 1;
         m_g[1] = base;
         
@@ -113,7 +113,7 @@ public:
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
-        m_g.reserve((1 << m_window_bits));
+        m_g.resize((1 << m_window_bits));
         
         BigInt z = BigInt(BigInt.Positive, 2 * (m_mod_words + 1));
         SecureVector!word workspace = SecureVector!word(z.length);

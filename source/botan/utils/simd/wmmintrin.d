@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_SIMD_SSE2):
 
 public import botan.utils.simd.emmintrin;
-
+pure:
 // _mm_aesenc_si128
 // _mm_aesenclast_si128
 // _mm_aesdec_si128

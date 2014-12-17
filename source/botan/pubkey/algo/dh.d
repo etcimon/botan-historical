@@ -17,6 +17,7 @@ import botan.pubkey.pk_ops;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.workfactor;
 import botan.rng.rng;
+import botan.utils.memory.memory;
 
 /**
 * This class represents Diffie-Hellman public keys.
@@ -38,7 +39,7 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = FreeListRef!DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
 
     /**
@@ -46,17 +47,17 @@ public:
     * @param grp = the DL group to use in the key
     * @param y = the public value y
     */
-    this(in DLGroup grp, in BigInt y1)
+    this(DLGroup grp, BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = FreeListRef!DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
 
-    this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
-    this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = FreeListRef!DLSchemePublicKey(cast(DLSchemePublicKey) pkey); }
+    this(PrivateKey pkey) { m_pub = FreeListRef!DLSchemePublicKey(cast(DLSchemePublicKey) pkey); }
 
     alias m_pub this;
 
-    DLSchemePublicKey m_pub;
+    FreeListRef!DLSchemePublicKey m_pub;
 }
 
 /**
@@ -83,11 +84,12 @@ public:
          in SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        m_priv = DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+
+        m_priv = FreeListRef!DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
         if (m_priv.m_y == 0)
             m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
-        
         m_priv.loadCheck(rng);
+        super(*m_priv);
     }
 
     /**
@@ -107,19 +109,20 @@ public:
 
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, null, &maxInputBits);
+        m_priv = FreeListRef!DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, null, &maxInputBits);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
+        super(*m_priv);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = FreeListRef!DLSchemePublicKey(cast(DLSchemePrivateKey) pkey); }
 
     alias m_priv this;
 
-    DLSchemePrivateKey m_priv;
+    FreeListRef!DLSchemePrivateKey m_priv;
 }
 
 /**

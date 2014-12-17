@@ -133,7 +133,7 @@ public:
     */
     this()
     {
-        m_next.reserve(1);
+        m_next.resize(1);
         m_port_num = 0;
         m_filter_owns = 0;
         m_owned = false;

@@ -15,6 +15,8 @@ import botan.modes.xts;
 import botan.utils.loadstor;
 import botan.utils.xor_buf;
 import botan.utils.rounding;
+import botan.utils.mem_ops;
+
 /**
 * IEEE P1619 XTS Mode
 */
@@ -80,7 +82,7 @@ protected:
             throw new InvalidArgument("Bad cipher for XTS: " ~ cipher.name);
         
         m_tweak_cipher = m_cipher.clone();
-        m_tweak.reserve(updateGranularity());
+        m_tweak.resize(updateGranularity());
     }
 
     final ubyte* tweak() const { return m_tweak.ptr; }
@@ -107,7 +109,7 @@ protected:
         if (length % 2 == 1 || !m_cipher.validKeylength(key_half))
             throw new InvalidKeyLength(name, length);
         
-        m_cipher.setKey(key.ptr, key_half);
+        m_cipher.setKey(key, key_half);
         m_tweak_cipher.setKey(&key[key_half], key_half);
     }
 
@@ -177,8 +179,8 @@ public:
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
-            SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.reserve(full_blocks + offset);
+            SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
+            buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
             xorBuf(last, tweak(), BS);
@@ -196,7 +198,7 @@ public:
             cipher().encrypt(last);
             xorBuf(last, tweak() + BS, BS);
             
-            buffer += last;
+            buffer ~= last;
         }
     }
 
@@ -267,8 +269,8 @@ public:
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
             
-            SecureVector!ubyte last = SecureVector!ubyte(buf + full_blocks, buf + full_blocks + final_bytes);
-            buffer.reserve(full_blocks + offset);
+            SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
+            buffer.resize(full_blocks + offset);
             update(buffer, offset);
             
             xorBuf(last, tweak() + BS, BS);
@@ -286,7 +288,7 @@ public:
             cipher().decrypt(last);
             xorBuf(last, tweak(), BS);
             
-            buffer += last;
+            buffer ~= last;
         }
     }
 
@@ -326,7 +328,7 @@ void polyDouble64(ubyte* output, const(ubyte)* input) pure
     storeLittleEndian(X, output);
 }
 
-void polyDouble(ubyte* output, const(ubyte)* input) pure
+void polyDouble(ubyte* output, const(ubyte)* input, size_t size) pure
 {
     if (size == 8)
         polyDouble64(output, input);

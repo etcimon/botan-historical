@@ -30,7 +30,7 @@ public:
         if (m_final_minimum > m_main_block_mod)
             throw new InvalidArgument("final_minimum > main_block_mod");
         
-        m_buffer.reserve(2 * m_main_block_mod);
+        m_buffer.resize(2 * m_main_block_mod);
         m_buffer_pos = 0;
         m_nonce = NonceState(transform.defaultNonceLength() == 0);
         m_transform = transform;

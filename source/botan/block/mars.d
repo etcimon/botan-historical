@@ -128,7 +128,7 @@ protected:
         
         T[length / 4] = cast(uint)(length) / 4;
         
-        m_EK.reserve(40);
+        m_EK.resize(40);
         
         for (uint i = 0; i != 4; ++i)
         {

@@ -182,7 +182,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     private Data _data;
 
     this(size_t elms) {
-        reserve(elms);
+        resize(elms);
     }
 
     /**
@@ -592,7 +592,12 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             insertBack(stuff);
         }
     }
-    
+
+    void swap(Vector other) {
+        this = other.dup;
+        other.clear();
+    }
+
     /**
         Removes all contents from the container. The container decides how $(D
         capacity) is affected.
@@ -620,6 +625,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     @property void length(size_t newLength)
     {
         _data.length = newLength;
+    }
+
+    void resize(size_t newLength)
+    {
+        this.length = newLength;
     }
 
     import std.traits : isNumeric;
