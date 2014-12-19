@@ -125,7 +125,7 @@ public:
         }
     }
 
-    override void encodeInto(DEREncoderImpl to) const
+    override void encodeInto(DEREncoder to) const
     {
         to.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -139,7 +139,7 @@ public:
     /*
     * Read a BER encoded X.509 object
     */
-    override void decodeFrom(BERDecoderImpl from)
+    override void decodeFrom(BERDecoder from)
     {
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)

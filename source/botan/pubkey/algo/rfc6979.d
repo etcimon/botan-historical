@@ -53,11 +53,11 @@ import botan.test;
 import botan.codec.hex;
 
 size_t rfc6979Testcase(string q_str,
-                        string x_str,
-                        string h_str,
-                        string exp_k_str,
-                        string hash,
-                        size_t testcase)
+                       string x_str,
+                       string h_str,
+                       string exp_k_str,
+                       string hash,
+                       size_t testcase)
 {
     const BigInt q = BigInt(q_str);
     const BigInt x = BigInt(x_str);

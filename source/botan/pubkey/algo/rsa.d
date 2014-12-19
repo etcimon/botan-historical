@@ -18,6 +18,7 @@ import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;
+import std.concurrency;
 
 /**
 * RSA Public Key
@@ -29,7 +30,7 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
-        m_pub = new IFSchemePublicKey(alg_id, key_bits);
+        m_pub = new IFSchemePublicKey(alg_id, key_bits, algoName);
     }
 
     /**
@@ -37,9 +38,9 @@ public:
     * @arg n the modulus
     * @arg e the exponent
     */
-    this(in BigInt n, in BigInt e)
+    this(BigInt n, BigInt e)
     {
-        m_pub = new IFSchemePublicKey(n, e);
+        m_pub = new IFSchemePublicKey(n, e, algoName);
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
@@ -67,7 +68,7 @@ public:
         if (!strong)
             return true;
         
-        if ((m_e * m_d) % lcm(m_p - 1, m_q - 1) != 1)
+        if ((m_priv.getE().dup * m_priv.getD()) % lcm(m_priv.getP().dup - 1, m_priv.getQ().dup - 1) != 1)
             return false;
         
         return signatureConsistencyCheck(rng, m_priv, "EMSA4(SHA-1)");
@@ -75,7 +76,8 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
     {
-        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, &checkKey);
+        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, algoName, &checkKey);
+        super(m_priv);
     }
 
     /**
@@ -90,9 +92,10 @@ public:
     * @param n = if specified, this must be n = p * q. Leave it as 0
     * if you wish to the constructor to calculate it.
     */
-    this(RandomNumberGenerator rng, in BigInt p, in BigInt q, in BigInt e, in BigInt d = 0, in BigInt n = 0)
+    this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = BigInt(0), BigInt n = BigInt(0))
     {
-        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, &checkKey);
+        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+        super(m_priv);
     }
 
     /**
@@ -107,25 +110,24 @@ public:
             throw new InvalidArgument(algoName ~ ": Can't make a key that is only " ~ to!string(bits) ~ " bits long");
         if (exp < 3 || exp % 2 == 0)
             throw new InvalidArgument(algoName ~ ": Invalid encryption exponent");
-        m_priv = new IFSchemePrivateKey(&checkKey);
-        m_e = exp;
-        
+        BigInt e = exp;
+        BigInt p, q, n, d, d1, d2, c;
+
         do
         {
-            m_p = randomPrime(rng, (bits + 1) / 2, m_e);
-            m_q = randomPrime(rng, bits - m_p.bits(), m_e);
-            m_n = m_p * m_q;
-        } while (m_n.bits() != bits);
+            p = randomPrime(rng, (bits + 1) / 2, e);
+            q = randomPrime(rng, bits - p.bits(), e);
+            n = p.dup * q;
+        } while (n.bits() != bits);
         
-        m_d = inverseMod(e, lcm(m_p - 1, m_q - 1));
-        m_d1 = m_d % (m_p - 1);
-        m_d2 = m_d % (m_q - 1);
-        m_c = inverseMod(m_q, m_p);
-        
+        d = inverseMod(e, lcm(p.dup - 1, q.dup - 1));
+
+        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+        super(m_priv);
         genCheck(rng);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
 
@@ -155,12 +157,12 @@ public:
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
         m_powermod_d1_p = FixedExponentPowerMod(rsa.getD1(), rsa.getP());
         m_powermod_d2_q = FixedExponentPowerMod(rsa.getD2(), rsa.getQ());
-        m_mod_p = rsa.getP();
+        m_mod_p = rsa.getP().dup;
         BigInt k = BigInt(rng, m_n.bits() - 1);
-        m_blinder = Blinder(m_powermod_e_n(k), inverseMod(k, m_n), m_n);
+        m_blinder = Blinder((*m_powermod_e_n)(k), inverseMod(k, m_n), m_n.dup);
     }
 
-    size_t maxInputBits() const { return (n.bits() - 1); }
+    size_t maxInputBits() const { return (m_n.bits() - 1); }
 
     SecureVector!ubyte
         sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
@@ -174,7 +176,7 @@ public:
         
         const BigInt m = BigInt(msg, msg_len);
         const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
-        return BigInt.encode1363(x, n.bytes());
+        return BigInt.encode1363(x, m_n.bytes());
     }
 
     /*
@@ -185,7 +187,7 @@ public:
         const BigInt m = BigInt(msg, msg_len);
         const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
         
-        assert(m == m_powermod_e_n(x), "RSA decrypt passed consistency check");
+        assert(m == (*m_powermod_e_n)(x), "RSA decrypt passed consistency check");
         
         return BigInt.encodeLocked(x);
     }
@@ -194,16 +196,19 @@ private:
     {
         if (m >= m_n)
             throw new InvalidArgument("RSA private op - input is too large");
-
-        import std.concurrency : spawn, receiveOnly, thidTid, send;
-        auto tid = spawn((Tid tid, FixedExponentPowerMod powermod_d1_p2, BigInt m2) { send(tid, powermod_d1_p2(m2)); }, 
-                            thisTid, m_powermod_d1_p, m);
-        BigInt j2 = m_powermod_d2_q(m);
-        BigInt j1 = receiveOnly!BigInt();
+        BigInt j1;
+        auto tid = spawn((shared(Tid) tid, shared(FixedExponentPowerModImpl) powermod_d1_p2, shared(BigInt*) m2, shared(BigInt*) j1_2)
+        { 
+            BigInt* ret = cast(BigInt*) j1_2;
+            *ret = (cast(FixedExponentPowerModImpl)powermod_d1_p2)(*cast(BigInt*)m2);
+            send(cast(Tid)tid, true);
+        }, 
+        cast(shared) thisTid(), cast(shared(FixedExponentPowerModImpl))*m_powermod_d1_p, cast(shared(BigInt*))&m, cast(shared(BigInt*))&j1);
+        BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m.dup);
+        bool done = receiveOnly!bool();
+        j1 = m_mod_p.reduce(subMul(j1, j2, m_c));
         
-        j1 = m_mod_p.reduce(subMul(j1, j2, c));
-        
-        return mulAdd(j1, q, j2);
+        return mulAdd(j1, m_q, j2);
     }
 
     const BigInt m_n;
@@ -235,7 +240,7 @@ public:
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
     }
 
-    size_t maxInputBits() const { return (n.bits() - 1); }
+    size_t maxInputBits() const { return (m_n.bits() - 1); }
     bool withRecovery() const { return true; }
 
     SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
@@ -255,10 +260,10 @@ private:
     {
         if (m >= m_n)
             throw new InvalidArgument("RSA public op - input is too large");
-        return m_powermod_e_n(m);
+        return (cast(FixedExponentPowerModImpl)*m_powermod_e_n)(m.dup);
     }
 
-    const BigInt n;
+    const BigInt m_n;
     FixedExponentPowerMod m_powermod_e_n;
 }
 

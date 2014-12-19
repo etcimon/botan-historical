@@ -6,7 +6,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.data_src;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.types;
 import std.stdio;
 import botan.utils.exceptn;

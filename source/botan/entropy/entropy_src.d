@@ -6,7 +6,7 @@
 */
 module botan.entropy.entropy_src;
 
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.types;
 
 /**
@@ -16,7 +16,7 @@ struct EntropyAccumulator
 {
 public:
     /**
-    * Initialize an Entropy_Accumulator
+    * Initialize an EntropyAccumulator
     * @param goal = is how many bits we would like to collect
     */
     this(bool delegate(const(ubyte)*, size_t len, double) accum)

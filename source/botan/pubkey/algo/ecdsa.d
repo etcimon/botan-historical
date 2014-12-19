@@ -69,7 +69,9 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1, &checkKey);
+        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1);
+		m_priv.setCB(&checkKey);
+        super(m_priv);
     }
 
     /**
@@ -78,12 +80,17 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key (if zero, generate a ney random key)
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0)
+    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0))
     {
-        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1, &checkKey); 
+        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1);
+		m_priv.setCB(&checkKey); 
+        super(m_priv);
     }
 
-    this(PrivateKey pkey) { m_priv = pkey; }
+    this(PrivateKey pkey) { 
+        m_priv = cast(ECPrivateKey)pkey;
+        super(m_priv);
+    }
 
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
@@ -122,7 +129,7 @@ public:
         m_base_point = ecdsa.domain().getBasePoint();
         m_order = ecdsa.domain().getOrder();
         m_x = ecdsa.privateValue();
-        m_mod_order = order;
+        m_mod_order = ModularReducer(m_order.dup);
     }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
@@ -142,7 +149,7 @@ public:
             while (k >= m_order)
                 k.randomize(rng, m_order.bits() - 1);
             
-            PointGFp k_times_P = m_base_point * k;
+            PointGFp k_times_P = m_base_point.dup * k;
             r = m_mod_order.reduce(k_times_P.getAffineX());
             s = m_mod_order.multiply(inverseMod(k, m_order), mulAdd(m_x, r, m));
         }
@@ -208,7 +215,7 @@ public:
         
         BigInt w = inverseMod(s, m_order);
         
-        PointGFp R = w * multiExponentiate(m_base_point, e, m_public_point, r);
+        PointGFp R = PointGFp.multiExponentiate(m_base_point, e, m_public_point, r) * w;
         
         if (R.isZero())
             return false;

@@ -92,7 +92,7 @@ public:
         {
             AlgorithmFactory af = globalState().algorithmFactory();
 
-            foreach (Engine engine; af.engines) {
+            foreach (Engine engine; af.engines[]) {
                 m_core = Unique!ModularExponentiator(engine.modExp(n, hints));
                 
                 if (m_core)

@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.kdf.kdf;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.types;
 // import string;
 import botan.libstate.libstate;
@@ -50,12 +50,10 @@ public:
     */
     
     SecureVector!ubyte deriveKey(Alloc, Alloc2)(size_t key_len,
-                                                 in Vector!( ubyte, Alloc ) secret,
-                                                 in Vector!( ubyte, Alloc2 ) salt) const
+                                                 in FreeListRef!(VectorImpl!( ubyte, Alloc )) secret,
+                                                 in FreeListRef!(VectorImpl!( ubyte, Alloc2 )) salt) const
     {
-        return deriveKey(key_len,
-                                secret.ptr, secret.length,
-                                salt.ptr, salt.length);
+        return deriveKey(key_len, secret.ptr, secret.length, salt.ptr, salt.length);
     }
 
     /**
@@ -66,13 +64,13 @@ public:
     * @param salt_len = size of salt in bytes
     */
     SecureVector!ubyte deriveKey(size_t key_len,
-                                in SecureVector!ubyte secret,
-                                const(ubyte)* salt,
-                                size_t salt_len) const
+                                 in SecureVector!ubyte secret,
+                                 const(ubyte)* salt,
+                                 size_t salt_len) const
     {
         return deriveKey(key_len,
-                            secret.ptr, secret.length,
-                            salt, salt_len);
+                         secret.ptr, secret.length,
+                         salt, salt_len);
     }
 
     /**
@@ -83,13 +81,13 @@ public:
     * @param salt = a diversifier
     */
     SecureVector!ubyte deriveKey(size_t key_len,
-                                const(ubyte)* secret,
-                                size_t secret_len,
-                                in string salt = "") const
+                                 const(ubyte)* secret,
+                                 size_t secret_len,
+                                 in string salt = "") const
     {
         return deriveKey(key_len, secret, secret_len,
-                                cast(const(ubyte)*)(salt.ptr),
-                                salt.length);
+                         cast(const(ubyte)*)(salt.ptr),
+                         salt.length);
     }
 
     /**
@@ -114,8 +112,8 @@ public:
 protected:
     abstract SecureVector!ubyte
         derive(size_t key_len,
-                 const(ubyte)* secret, size_t secret_len,
-                 const(ubyte)* salt, size_t salt_len) const;
+               const(ubyte)* secret, size_t secret_len,
+               const(ubyte)* salt, size_t salt_len) const;
 }
 
 /**

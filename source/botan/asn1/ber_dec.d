@@ -14,13 +14,10 @@ import botan.utils.types;
 import botan.utils.memory.memory;
 
 public:
-
-alias BERDecoder = FreeListRef!BERDecoderImpl;
-
 /**
 * BER Decoding Object
 */
-final class BERDecoderImpl
+struct BERDecoder
 {
 public:
 
@@ -86,7 +83,7 @@ public:
     /*
     * Verify that no bytes remain in the m_source
     */
-    BERDecoderImpl verifyEnd()
+    BERDecoder verifyEnd()
     {
         if (!m_source.endOfData() || (m_pushed.type_tag != ASN1Tag.NO_OBJECT))
             throw new InvalidState("verify_end called, but data remains");
@@ -96,7 +93,7 @@ public:
     /*
     * Discard all the bytes remaining in the m_source
     */
-    BERDecoderImpl discardRemaining()
+    BERDecoder discardRemaining()
     {
         ubyte buf;
         while (m_source.readByte(buf))
@@ -107,32 +104,32 @@ public:
     /*
     * Begin decoding a ASN1Tag.CONSTRUCTED type
     */
-    BERDecoderImpl startCons(ASN1Tag type_tag,
+    BERDecoder startCons(ASN1Tag type_tag,
                              ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
         BERObject obj = getNextObject();
         obj.assertIsA(type_tag, class_tag | ASN1Tag.CONSTRUCTED);
         
         BERDecoder result = BERDecoder(&obj.value[0], obj.value.length);
-        result.m_parent = this;
+        result.m_parent = &this;
         return result;
     }
 
     /*
     * Finish decoding a ASN1Tag.CONSTRUCTED type
     */
-    BERDecoderImpl endCons()
+    BERDecoder endCons()
     {
         if (!m_parent)
             throw new InvalidState("endCons called with NULL m_parent");
         if (!m_source.endOfData())
             throw new DecodingError("endCons called with data left");
-        return m_parent;
+        return *m_parent;
     }
     
 
     
-    BERDecoderImpl getNext(ref BERObject ber)
+    BERDecoder getNext(ref BERObject ber)
     {
         ber = getNextObject();
         return this;
@@ -141,7 +138,7 @@ public:
     /*
     * Save all the bytes remaining in the m_source
     */
-    BERDecoderImpl rawBytes(SecureVector!ubyte output)
+    BERDecoder rawBytes(SecureVector!ubyte output)
     {
         output.clear();
         ubyte buf;
@@ -150,7 +147,7 @@ public:
         return this;
     }
     
-    BERDecoderImpl rawBytes(ref Vector!ubyte output)
+    BERDecoder rawBytes(ref Vector!ubyte output)
     {
         output.clear();
         ubyte buf;
@@ -162,7 +159,7 @@ public:
     /*
     * Decode a BER encoded NULL
     */
-    BERDecoderImpl decodeNull()
+    BERDecoder decodeNull()
     {
         BERObject obj = getNextObject();
         obj.assertIsA(ASN1Tag.NULL_TAG, ASN1Tag.UNIVERSAL);
@@ -171,7 +168,7 @@ public:
         return this;
     }
 
-    BERDecoderImpl decode(T)(auto ref T obj)
+    BERDecoder decode(T)(auto ref T obj)
     {
         obj.decodeFrom(this);
 
@@ -181,7 +178,7 @@ public:
     /*
     * Request for an object to decode itself
     */
-    BERDecoderImpl decode(T : ASN1Object)(auto ref T obj, ASN1Tag type, ASN1Tag tag)
+    BERDecoder decode(T : ASN1Object)(auto ref T obj, ASN1Tag type, ASN1Tag tag)
     {
         obj.decodeFrom(this);
         return this;
@@ -190,7 +187,7 @@ public:
     /*
     * Decode a BER encoded BOOLEAN
     */
-    BERDecoderImpl decode(ref bool output)
+    BERDecoder decode(ref bool output)
     {
         return decode(output, ASN1Tag.BOOLEAN, ASN1Tag.UNIVERSAL);
     }
@@ -198,7 +195,7 @@ public:
     /*
     * Decode a small BER encoded INTEGER
     */
-    BERDecoderImpl decode(ref size_t output)
+    BERDecoder decode(ref size_t output)
     {
         return decode(output, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
     }
@@ -206,7 +203,7 @@ public:
     /*
     * Decode a BER encoded INTEGER
     */
-    BERDecoderImpl decode(ref BigInt output)
+    BERDecoder decode(ref BigInt output)
     {
         return decode(output, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
     }
@@ -215,7 +212,7 @@ public:
     /*
     * Decode a BER encoded BOOLEAN
     */
-    BERDecoderImpl decode(ref bool output,
+    BERDecoder decode(ref bool output,
                           ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
@@ -231,7 +228,7 @@ public:
     /*
     * Decode a small BER encoded INTEGER
     */
-    BERDecoderImpl decode(ref size_t output,
+    BERDecoder decode(ref size_t output,
                        ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BigInt integer;
@@ -249,14 +246,14 @@ public:
     /*
     * Decode a BER encoded INTEGER
     */
-    BERDecoderImpl decode(ref BigInt output,
-                          ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+    BERDecoder decode(BigInt output,
+                      ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
         obj.assertIsA(type_tag, class_tag);
         
         if (obj.value.empty)
-            output = 0;
+            output = BigInt(0);
         else
         {
             const bool negative = (obj.value[0] & 0x80) ? true : false;
@@ -282,7 +279,7 @@ public:
     /*
     * BER decode a BIT STRING or OCTET STRING
     */
-    BERDecoderImpl decode(SecureVector!ubyte output, ASN1Tag real_type)
+    BERDecoder decode(SecureVector!ubyte output, ASN1Tag real_type)
     {
         return decode(output, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -290,7 +287,7 @@ public:
     /*
     * BER decode a BIT STRING or OCTET STRING
     */
-    BERDecoderImpl decode(ref Vector!ubyte output, ASN1Tag real_type)
+    BERDecoder decode(ref Vector!ubyte output, ASN1Tag real_type)
     {
         return decode(output, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -298,7 +295,7 @@ public:
     /*
     * BER decode a BIT STRING or OCTET STRING
     */
-    BERDecoderImpl decode(SecureVector!ubyte buffer,
+    BERDecoder decode(SecureVector!ubyte buffer,
                       ASN1Tag real_type,
                       ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
@@ -321,7 +318,7 @@ public:
         return this;
     }
     
-    BERDecoderImpl decode(ref Vector!ubyte buffer,
+    BERDecoder decode(ref Vector!ubyte buffer,
                           ASN1Tag real_type,
                           ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
@@ -369,12 +366,12 @@ public:
     
 
     
-    BERDecoderImpl decodeIntegerType(T)(ref T output)
+    BERDecoder decodeIntegerType(T)(ref T output)
     {
         return decode_integer_type!T(output, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
     }
     
-    BERDecoderImpl decodeIntegerType(T)(ref T output,
+    BERDecoder decodeIntegerType(T)(ref T output,
                                     ASN1Tag type_tag,
                                     ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
@@ -385,7 +382,7 @@ public:
     /*
     * Decode an OPTIONAL or DEFAULT element
     */
-    BERDecoderImpl decodeOptional(T)(auto ref T output,
+    BERDecoder decodeOptional(T)(auto ref T output,
                                      ASN1Tag type_tag,
                                      ASN1Tag class_tag,
                                      T default_value = T.init)
@@ -415,7 +412,7 @@ public:
     /*
     * Decode an OPTIONAL or DEFAULT element
     */
-    BERDecoderImpl decodeOptionalImplicit(T)(ref T output,
+    BERDecoder decodeOptionalImplicit(T)(ref T output,
                                          ASN1Tag type_tag,
                                          ASN1Tag class_tag,
                                          ASN1Tag real_type,
@@ -444,9 +441,9 @@ public:
     /*
     * Decode a list of homogenously typed values
     */
-    BERDecoderImpl decodeList(T)(Vector!T vec,
-                             ASN1Tag type_tag = ASN1Tag.SEQUENCE,
-                             ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
+    BERDecoder decodeList(T, Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec,
+                                    ASN1Tag type_tag = ASN1Tag.SEQUENCE,
+                                    ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
         BERDecoder list = startCons(type_tag, class_tag);
         
@@ -463,7 +460,7 @@ public:
     }
 
     
-    BERDecoderImpl decodeAndCheck(T)(in T expected,
+    BERDecoder decodeAndCheck(T)(in T expected,
                                  in string error_msg)
     {
         T actual;
@@ -478,10 +475,10 @@ public:
     /*
         * Decode an OPTIONAL string type
         */
-    BERDecoderImpl decodeOptionalString(Alloc)(Vector!( ubyte, Alloc ) output,
-                                               ASN1Tag real_type,
-                                               ushort type_no,
-                                               ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+    BERDecoder decodeOptionalString(Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
+                                           ASN1Tag real_type,
+                                           ushort type_no,
+                                           ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
         
@@ -508,7 +505,7 @@ public:
     
     //BERDecoder operator=(in BERDecoder);
 
-    BERDecoderImpl decodeOctetStringBigint(ref BigInt output)
+    BERDecoder decodeOctetStringBigint(ref BigInt output)
     {
         SecureVector!ubyte out_vec;
         decode(out_vec, ASN1Tag.OCTET_STRING);
@@ -563,7 +560,7 @@ public:
     /*
     * BERDecoder Copy Constructor
     */
-    this(BERDecoderImpl other)
+    this(BERDecoder other)
     {
         m_source = other.m_source;
         m_owns = false;
@@ -577,7 +574,7 @@ public:
     }
 
 protected:
-    BERDecoderImpl m_parent;
+    BERDecoder* m_parent;
     FreeListRef!DataSource m_source;
     BERObject m_pushed;
     bool m_owns;

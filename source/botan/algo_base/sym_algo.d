@@ -53,7 +53,7 @@ public:
         setKey(key.ptr, key.length);
     }
     
-    final void setKey(Alloc)(in Vector!( ubyte, Alloc ) key)
+    final void setKey(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
     {
         setKey(key.ptr, key.length);
     }

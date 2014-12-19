@@ -15,6 +15,7 @@ import botan.entropy.entropy_src;
 import botan.utils.xor_buf;
 import std.algorithm;
 import std.datetime;
+import botan.constants;
 /**
 * HMAC_RNG - based on the design described in "On Extract-then-Expand
 * Key Derivation Functions and an HMAC-based KDF" by Hugo Krawczyk
@@ -25,7 +26,7 @@ import std.datetime;
 * Krawczyk's paper), for instance one could use HMAC(SHA-512) as the
 * extractor and CMAC(AES-256) as the PRF.
 */
-final class HMACRNG : RandomNumberGenerator
+final class HMAC_RNG : RandomNumberGenerator
 {
 public:
     /*
@@ -102,8 +103,8 @@ public:
         
         double bits_collected = 0;
         
-        Entropy_Accumulator accum = Entropy_Accumulator(
-            (const(ubyte)* input, size_t in_len)
+        EntropyAccumulator accum = EntropyAccumulator(
+            (const(ubyte)* input, size_t in_len, double entropy_estimate)
             {
                 m_extractor.update(input, in_len);
                 bits_collected += entropy_estimate;
@@ -142,7 +143,7 @@ public:
         zeroise(m_K);
         m_counter = 0;
         
-        m_collected_entropy_estimate = std.algorithm.min(m_collected_entropy_estimate + bits_collected,
+        m_collected_entropy_estimate = cast(size_t)std.algorithm.min(m_collected_entropy_estimate + bits_collected,
                                                          m_extractor.outputLength * 8);
         
         m_output_since_reseed = 0;

@@ -212,8 +212,8 @@ public:
         const(ubyte)* included_tag = &buf[remaining];
         
         SecureVector!ubyte mac = m_cmac.finished();
-        mac.ptr[0 .. mac.length] ^= m_nonce_mac.ptr[0 .. mac.length];
-        mac.ptr[0 .. mac.length] ^= m_ad_mac.ptr[0 .. mac.length];
+        mac ^= m_nonce_mac;
+        mac ^= m_ad_mac;
         
         if (!sameMem(mac.ptr, included_tag, tagSize()))
             throw new IntegrityFailure("EAX tag check failed");

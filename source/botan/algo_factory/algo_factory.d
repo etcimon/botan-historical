@@ -286,7 +286,7 @@ public:
         m_pbkdf_cache.add(pbkdf, pbkdf.name, provider);
     }
 
-    @property const(Vector!Engine) engines() const {
+    @property Vector!Engine engines() {
         return m_engines;
     }
 
@@ -343,7 +343,7 @@ PBKDF engineGetAlgo(T : PBKDF, U : SCANToken)(Engine engine,
 
 const(T) factoryPrototype(T)(in string algo_spec,
                              in string provider,
-                             in Vector!( Engine ) engines,
+                             Vector!( Engine ) engines,
                              AlgorithmFactoryImpl af,
                              AlgorithmCache!T cache) {
     if (const T cache_hit = cache.get(algo_spec, provider))

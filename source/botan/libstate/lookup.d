@@ -128,7 +128,7 @@ KeyedFilter getCipher(in string algo_spec, CipherDir direction)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
 
-    foreach (Engine engine; af.engines) {
+    foreach (Engine engine; af.engines[]) {
         if (KeyedFilter algo = engine.getCipher(algo_spec, direction, af))
             return algo;
     }

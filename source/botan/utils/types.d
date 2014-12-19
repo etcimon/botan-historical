@@ -7,7 +7,7 @@
 module botan.utils.types;
 
 public import botan.utils.memory.memory;
-public import botan.utils.memory.zeroize;
+public import botan.utils.memory.zeroise;
 public import botan.utils.containers.vector;
 public import botan.utils.exceptn;
 public import std.typecons : scoped;

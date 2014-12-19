@@ -94,7 +94,8 @@ protected:
             }
             
             A = (m_digest[0] ^= A);
-            B = m_digest[1] = B - m_digest[1];
+            m_digest[1] = B - m_digest[1];
+            B = m_digest[1];
             C = (m_digest[2] += C);
             
             input += hashBlockSize;

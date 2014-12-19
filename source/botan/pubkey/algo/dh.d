@@ -98,7 +98,7 @@ public:
     * @param grp = the group to be used in the key
     * @param x_args = the key's secret value (or if zero, generate a new key)
     */
-    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = BigInt(0))
     {
         
         if (x_arg == 0)
@@ -145,7 +145,7 @@ public:
         m_p = dh.groupP();
         m_powermod_x_p = FixedExponentPowerMod(dh.getX(), m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, m_p)), m_p);
+        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, m_p)), m_p.dup);
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)

@@ -1,5 +1,5 @@
 /*
-* HMACDRBG (SP800-90A)
+* HMAC_DRBG (SP800-90A)
 * (C) 2014 Jack Lloyd
 *
 * Distributed under the terms of the botan license.
@@ -12,12 +12,13 @@ static if (BOTAN_HAS_HMAC_DRBG):
 import botan.rng.rng;
 import botan.mac.mac;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**
 * HMAC_DRBG (SP800-90A)
 */
-final class HMACDRBG : RandomNumberGenerator
+final class HMAC_DRBG : RandomNumberGenerator
 {
 public:
     override void randomize(ubyte* output, size_t length)
@@ -32,7 +33,7 @@ public:
         {
             const size_t to_copy = std.algorithm.min(length, m_V.length);
             m_V = m_mac.process(m_V);
-            copyMem(output.ptr, m_V.ptr, to_copy);
+            copyMem(output, m_V.ptr, to_copy);
             
             length -= to_copy;
             output += to_copy;
@@ -91,11 +92,15 @@ public:
     this(MessageAuthenticationCode mac,
          RandomNumberGenerator prng)
     { 
+        import std.algorithm : fill;
         m_mac = mac;
         m_prng = prng;
-        m_V = SecureVector!ubyte(m_mac.outputLength, 0x01);
+        m_V = SecureVector!ubyte(m_mac.outputLength);
+        fill(m_V.ptr[0 .. m_V.length], cast(ubyte)0x01);
         m_reseed_counter = 0;
-        m_mac.setKey(SecureVector!ubyte(m_mac.outputLength, 0x00));
+        auto mac_key = SecureVector!ubyte(m_mac.outputLength);
+        fill(mac_key.ptr[0 .. mac_key.length], cast(ubyte)0x00);
+        m_mac.setKey(mac_key);
     }
 
 private:

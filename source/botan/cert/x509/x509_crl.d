@@ -62,7 +62,7 @@ public:
         
         bool is_revoked = false;
         
-        foreach (const revoked; m_revoked)
+        foreach (const revoked; m_revoked[])
         {
             if (cert_serial == revoked.serialNumber())
             {

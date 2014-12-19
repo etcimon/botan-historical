@@ -37,7 +37,7 @@ public:
          TLSCredentialsManager creds,
          in TLSPolicy policy,
          RandomNumberGenerator rng,
-         in Vector!string next_protocols = Vector!string(),
+         Vector!string next_protocols = Vector!string.init,
          size_t io_buf_sz = 16*1024) 
     {
         super(output_fn, data_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz);

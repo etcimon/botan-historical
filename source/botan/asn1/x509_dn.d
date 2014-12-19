@@ -30,7 +30,7 @@ public:
     /*
     * DER encode a DistinguishedName
     */
-    override void encodeInto(DEREncoderImpl der) const
+    override void encodeInto(DEREncoder der) const
     {
         auto dn_info = getAttributes();
         
@@ -55,7 +55,7 @@ public:
     /*
     * Decode a BER encoded DistinguishedName
     */
-    override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoder source)
     {
         Vector!ubyte bits;
         
@@ -299,7 +299,7 @@ private:
 /*
 * DER encode a RelativeDistinguishedName
 */
-void doAva(DEREncoderImpl encoder,
+void doAva(DEREncoder encoder,
            in MultiMap!(OID, string) dn_info,
            ASN1Tag string_type, in string oid_str,
            bool must_exist = false)

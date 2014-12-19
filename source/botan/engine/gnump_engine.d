@@ -539,7 +539,7 @@ static if (BOTAN_HAS_DSA) {
 */
 void* gmp_malloc(size_t n)
 {
-    import botan.utils.memory.zeroize : SecureAllocator;
+    import botan.utils.memory.zeroise : SecureAllocator;
     import botan.utils.memory.memory : getAllocator;
     return getAllocator!SecureAllocator().alloc(n).ptr;
 }
@@ -549,7 +549,7 @@ void* gmp_malloc(size_t n)
 */
 void gmp_free(void* ptr, size_t n)
 {
-    import botan.utils.memory.zeroize : SecureAllocator;
+    import botan.utils.memory.zeroise : SecureAllocator;
     import botan.utils.memory.memory : getAllocator;
     getAllocator!SecureAllocator().free(ptr[0 .. n]);
 }

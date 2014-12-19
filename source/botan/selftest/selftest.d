@@ -11,14 +11,21 @@ static if (BOTAN_HAS_SELFTESTS):
 
 import botan.algo_factory.algo_factory;
 import botan.algo_base.scan_token;
-import botan.utils.containers.hashmap;
 
 import botan.filters.filters;
+import botan.filters.hex_filt;
 import botan.filters.aead_filt;
 import botan.codec.hex;
+import botan.hash.hash;
+import botan.mac.mac;
+import botan.block.block_cipher;
+import botan.stream.stream_cipher;
 import botan.engine.core_engine;
-import botan.utils.containers.multimap;
 import botan.algo_base.symkey;
+import botan.utils.containers.multimap;
+import botan.utils.containers.hashmap;
+import botan.utils.exceptn;
+import botan.utils.types;
 
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
@@ -99,7 +106,7 @@ void confirmStartupSelfTests(AlgorithmFactory af)
     
     macTest(af, "HMAC(SHA-256)",
              "4869205468657265",
-             ~ "198A607EB44BFBC69903A0F1CF2BBDC5"
+             "198A607EB44BFBC69903A0F1CF2BBDC5"
              ~ "BA0AA3F3D9AE3C1C7A3B1696A0B68CF7",
              "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B"
              ~ "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B");
@@ -142,7 +149,7 @@ HashMap!(string, bool)
     
     HashMap!(string, bool) pass_or_fail;
     
-    foreach (key, val; result)
+    foreach (const ref string key, const ref string val; result)
         pass_or_fail[key] = (val == "passed");
     
     return pass_or_fail;
@@ -257,7 +264,7 @@ private:
 
 void verifyResults(in string algo, in HashMap!(string, string) results)
 {
-    foreach (key, value; results)
+    foreach (const ref string key, const ref string value; results)
     {
         if (value != "passed")
             throw new SelfTestFailure(algo ~ " self-test failed (" ~ value ~ ")" ~
@@ -271,7 +278,7 @@ void hashTest(AlgorithmFactory af, in string name, in string input, in string ou
     vars["input"] = input;
     vars["output"] = output;
     
-    verifyResults(name, algorithmKatDetailed(name, vars, af));
+    verifyResults(name, algorithmKatDetailed(SCANToken(name), vars, af));
 }
 
 void macTest(AlgorithmFactory af,
@@ -285,7 +292,7 @@ void macTest(AlgorithmFactory af,
     vars["output"] = output;
     vars["key"] = key;
     
-    verifyResults(name, algorithmKatDetailed(name, vars, af));
+    verifyResults(name, algorithmKatDetailed(SCANToken(name), vars, af));
 }
 
 /*
@@ -313,20 +320,20 @@ void cipherKat(AlgorithmFactory af,
     HashMap!(string, bool) results;
     
     vars["output"] = ecb_out;
-    verifyResults(algo ~ "/ECB", algorithmKatDetailed(algo ~ "/ECB", vars, af));
+    verifyResults(algo ~ "/ECB", algorithmKatDetailed(SCANToken(algo ~ "/ECB"), vars, af));
     
     vars["output"] = cbc_out;
     verifyResults(algo ~ "/CBC",
-                   algorithmKatDetailed(algo ~ "/CBC/NoPadding", vars, af));
+                  algorithmKatDetailed(SCANToken(algo ~ "/CBC/NoPadding"), vars, af));
     
     vars["output"] = cfb_out;
-    verifyResults(algo ~ "/CFB", algorithmKatDetailed(algo ~ "/CFB", vars, af));
+    verifyResults(algo ~ "/CFB", algorithmKatDetailed(SCANToken(algo ~ "/CFB"), vars, af));
     
     vars["output"] = ofb_out;
-    verifyResults(algo ~ "/OFB", algorithmKatDetailed(algo ~ "/OFB", vars, af));
+    verifyResults(algo ~ "/OFB", algorithmKatDetailed(SCANToken(algo ~ "/OFB"), vars, af));
     
     vars["output"] = ctr_out;
-    verifyResults(algo ~ "/CTR", algorithmKatDetailed(algo ~ "/CTR-BE", vars, af));
+    verifyResults(algo ~ "/CTR", algorithmKatDetailed(SCANToken(algo ~ "/CTR-BE"), vars, af));
 }
 
 

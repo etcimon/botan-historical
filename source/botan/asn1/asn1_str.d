@@ -25,7 +25,7 @@ public:
     /*
     * DER encode an ASN1String
     */
-    override void encodeInto(DEREncoderImpl encoder) const
+    override void encodeInto(DEREncoder encoder) const
     {
         string value = iso8859();
         if (tagging() == ASN1Tag.UTF8_STRING)
@@ -36,7 +36,7 @@ public:
     /*
     * Decode a BER encoded ASN1String
     */
-    override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoder source)
     {
         BERObject obj = source.getNextObject();
         

@@ -218,7 +218,7 @@ public:
                 xorBuf(m_checksum.ptr, remainder, remainder_bytes);
                 m_checksum[remainder_bytes] ^= 0x80;
                 
-                m_offset.ptr[0 .. m_offset.length] ^= m_L.star().ptr[0 .. m_offset.length]; // Offset_*
+                m_offset ^= m_L.star(); // Offset_*
                 
                 SecureVector!ubyte buf_ = SecureVector!ubyte(BS);
                 m_cipher.encrypt(m_offset, buf_);
@@ -234,12 +234,12 @@ public:
         
         // now compute the tag
         SecureVector!ubyte mac = m_offset;
-        mac.ptr[0 .. mac.length] ^= checksum.ptr[0 .. mac.length];
-        mac.ptr[0 .. mac.length] ^= m_L.dollar().ptr[0 .. mac.length];
+        mac ^= checksum;
+        mac ^= m_L.dollar();
         
         m_cipher.encrypt(mac);
         
-        mac.ptr[0 .. mac.length] ^= m_ad_hash.ptr[0 .. mac.length];
+        mac ^= m_ad_hash;
         
         buffer ~= mac.ptr[0 .. tagSize()];
         
@@ -329,7 +329,7 @@ public:
                 
                 ubyte* remainder = &buf[remaining - final_bytes];
                 
-                m_offset.ptr[0 .. m_offset.length] ^= m_L.star().ptr[0 .. m_offset.length]; // Offset_*
+                m_offset ^= m_L.star(); // Offset_*
                 
                 SecureVector!ubyte pad = SecureVector!ubyte(BS);
                 m_cipher.encrypt(m_offset, pad); // P_*
@@ -349,12 +349,12 @@ public:
         
         // compute the mac
         SecureVector!ubyte mac = m_offset;
-        mac.ptr[0 .. mac.length] ^= checksum.ptr[0 .. mac.length];
-        mac.ptr[0 .. mac.length] ^= m_L.dollar().ptr[0 .. mac.length];
+        mac ^= checksum;
+        mac ^= m_L.dollar();
         
         m_cipher.encrypt(mac);
         
-        mac.ptr[0 .. mac.length] ^= m_ad_hash.ptr[0 .. mac.length];
+        mac ^= m_ad_hash;
         
         // reset state
         zeroise(m_checksum);
@@ -433,7 +433,7 @@ public:
         
         foreach (size_t i; 0 .. blocks)
         { // could be done in parallel
-            offset.ptr[0 .. offset.length] ^= get(ctz(block_index + 1 + i)).ptr[0 .. offset.length];
+            offset ^= get(ctz(block_index + 1 + i));
             copyMem(&m_offset_buf[BS*i], offset.ptr, BS);
         }
         
@@ -478,19 +478,19 @@ SecureVector!ubyte ocbHash(LComputer L,
     foreach (size_t i; 0 .. ad_blocks)
     {
         // this loop could run in parallel
-        offset.ptr[0 .. offset.length] ^= L(ctz(i+1)).ptr[0 .. offset.length];
+        offset ^= L(ctz(i+1));
         
         buf = offset;
         xorBuf(buf.ptr, &ad[BS*i], BS);
         
         cipher.encrypt(buf);
         
-        sum.ptr[0 .. sum.length] ^= buf.ptr[0 .. buf.length];
+        sum ^= buf;
     }
     
     if (ad_remainder)
     {
-        offset.ptr[0 .. offset.length] ^= L.star().ptr[0 .. offset.length];
+        offset ^= L.star();
         
         buf = offset;
         xorBuf(buf.ptr, &ad[BS*ad_blocks], ad_remainder);
@@ -498,7 +498,7 @@ SecureVector!ubyte ocbHash(LComputer L,
         
         cipher.encrypt(buf);
         
-        sum.ptr[0 .. sum.length] ^= buf.ptr[0 .. sum.length];
+        sum ^= buf;
     }
     
     return sum;
@@ -559,17 +559,17 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
 }
 
 Vector!ubyte ocbEncrypt(Alloc, Alloc2)(in SymmetricKey key,
-                                        in Vector!ubyte nonce,
-                                        in Vector!(ubyte, Alloc) pt,
-                                        in Vector!(ubyte, Alloc2) ad)
+                                       in Vector!ubyte nonce,
+                                       in FreeListRef!(VectorImpl!(ubyte, Alloc)) pt,
+                                       in FreeListRef!(VectorImpl!(ubyte, Alloc2)) ad)
 {
     return ocbEncrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
 Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
-                                        in Vector!ubyte nonce,
-                                        in Vector!(ubyte, Alloc) pt,
-                                        in Vector!(ubyte, Alloc2) ad)
+                                       in Vector!ubyte nonce,
+                                       in FreeListRef!(VectorImpl!(ubyte, Alloc)) pt,
+                                       in FreeListRef!(VectorImpl!(ubyte, Alloc2)) ad)
 {
     return ocbDecrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }

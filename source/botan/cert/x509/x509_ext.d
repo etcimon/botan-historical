@@ -75,9 +75,9 @@ final class X509ExtensionsImpl : ASN1Object
 {
 public:
 
-    override void encodeInto(DEREncoderImpl to_object) const
+    override void encodeInto(DEREncoder to_object) const
     {
-        foreach (const extension; m_extensions)
+        foreach (const extension; m_extensions[])
         {
             const CertificateExtension ext = extension.first;
             const bool is_critical = extension.second;
@@ -95,7 +95,7 @@ public:
         }
     }
 
-    override void decodeFrom(BERDecoderImpl from_source)
+    override void decodeFrom(BERDecoder from_source)
     {
         CertificateExtension cext;
         foreach (Pair!(CertificateExtension, bool) extension; m_extensions[]) {
@@ -145,9 +145,9 @@ public:
     }
 
     void contentsTo(ref DataStore subject_info,
-                     ref DataStore issuer_info) const
+                    ref DataStore issuer_info) const
     {
-        foreach (extension; m_extensions)
+        foreach (extension; m_extensions[])
             extension.first.contentsTo(subject_info, issuer_info);
     }
 
@@ -180,7 +180,7 @@ public:
     ~this()
     {
         CertificateExtension cext;
-        foreach (extension; m_extensions) {
+        foreach (extension; m_extensions[]) {
             cext = extension.first;
             delete cext;
         }
@@ -603,7 +603,7 @@ protected:
     */
     void contentsTo(ref DataStore subject, ref DataStore) const
     {
-        foreach (oid; m_oids)
+        foreach (oid; m_oids[])
             subject.add("X509v3.ExtendedKeyUsage", oid.toString());
     }
 
@@ -654,7 +654,7 @@ protected:
         BERDecoder(input).decodeList(policies);
         
         m_oids.clear();
-        foreach (policy; policies)
+        foreach (policy; policies[])
             m_oids.pushBack(policy.oid);
     }
 
@@ -663,7 +663,7 @@ protected:
     */
     void contentsTo(ref DataStore info, ref DataStore) const
     {
-        foreach (oid; m_oids)
+        foreach (oid; m_oids[])
             info.add("X509v3.CertificatePolicies", oid.toString());
     }
 
@@ -856,12 +856,12 @@ public:
     final class DistributionPointImpl : ASN1Object
     {
     public:
-        override void encodeInto(DEREncoderImpl) const
+        override void encodeInto(DEREncoder) const
         {
             throw new Exception("CRLDistributionPoints encoding not implemented");
         }
 
-        override void decodeFrom(BERDecoderImpl ber)
+        override void decodeFrom(BERDecoder ber)
         {
             ber.startCons(ASN1Tag.SEQUENCE)
                     .startCons((cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC)
@@ -905,7 +905,7 @@ protected:
 
     void contentsTo(ref DataStore info, ref DataStore) const
     {
-        foreach (distribution_point; m_distribution_points)
+        foreach (distribution_point; m_distribution_points[])
         {
             auto point = distribution_point.point().contents();
             
@@ -932,14 +932,14 @@ public:
     this() {}
     this(OID oid_) { oid = oid_; }
     
-    override void encodeInto(DEREncoderImpl codec) const
+    override void encodeInto(DEREncoder codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)
                 .endCons();
     }
     
-    override void decodeFrom(BERDecoderImpl codec)
+    override void decodeFrom(BERDecoder codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(oid)

@@ -27,6 +27,7 @@ class GOST3410PublicKey
 {
 public:
     __gshared immutable string algoName = "GOST-34.10";
+
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -34,7 +35,8 @@ public:
     */
     this(in ECGroup dom_par, in PointGFp public_point) 
     {
-        m_pub = new ECPublicKey(dom_par, public_point, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey); 
+		m_pub = new ECPublicKey(dom_par, public_point, algoName, true, 2);
+		m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
     }
 
     /**
@@ -64,9 +66,11 @@ public:
         BigInt x = BigInt(bits.ptr, part_size);
         BigInt y = BigInt(&bits[part_size], part_size);
         
-        PointFGp public_point = PointGFp(domain().getCurve(), x, y);
-        m_pub = new ECPublicKey(domain_params, public_point, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
-        assert(m_public_key.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
+        PointGFp public_point = PointGFp(domain().getCurve().dup, x, y);
+        m_pub = new ECPublicKey(domain_params, public_point, algoName, true, 2);
+
+		m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+		assert(public_point.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
     }
 
     AlgorithmIdentifier algorithmIdentifier() const
@@ -120,7 +124,9 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
+        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 2);
+		m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+		super(m_priv);
     }
 
     /**
@@ -129,12 +135,14 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0)
+    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0))
     {
-        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2, null, &algorithmIdentifier, &x509SubjectPublicKey);
+        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2);
+		m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+		super(m_priv);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
+	this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
 
@@ -175,13 +183,13 @@ public:
             k.randomize(rng, m_order.bits()-1);
         while (k >= m_order);
         
-        BigInt e = decode_littleEndian(msg, msg_len);
+        BigInt e = decodeLittleEndian(msg, msg_len);
         
         e %= m_order;
         if (e == 0)
             e = 1;
         
-        PointGFp k_times_P = m_base_point * k;
+        PointGFp k_times_P = m_base_point.dup * k;
         
         assert(k_times_P.onTheCurve(),
                      "GOST 34.10 k*g is on the curve");
@@ -239,7 +247,7 @@ public:
         if (sig_len != m_order.bytes()*2)
             return false;
         
-        BigInt e = decode_littleEndian(msg, msg_len);
+        BigInt e = decodeLittleEndian(msg, msg_len);
         
         BigInt s = BigInt(sig, sig_len / 2);
         BigInt r = BigInt(sig + sig_len / 2, sig_len / 2);
@@ -256,8 +264,8 @@ public:
         BigInt z1 = (s*v) % m_order;
         BigInt z2 = (-r*v) % m_order;
         
-        PointGFp R = multiExponentiate(m_base_point, z1,
-                                       m_public_point, z2);
+        PointGFp R = PointGFp.multiExponentiate(m_base_point, z1,
+                                                m_public_point, z2);
         
         if (R.isZero())
             return false;
@@ -275,7 +283,7 @@ private:
 
 BigInt decodeLittleEndian(const(ubyte)* msg, size_t msg_len)
 {
-    SecureVector!ubyte msg_le = SecureVector!ubyte(msg, msg + msg_len);
+    SecureVector!ubyte msg_le = SecureVector!ubyte(msg[0 .. msg_len]);
     
     for (size_t i = 0; i != msg_le.length / 2; ++i)
         std.algorithm.swap(msg_le[i], msg_le[msg_le.length-1-i]);

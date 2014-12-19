@@ -22,7 +22,7 @@ import botan.rng.rng;
 import botan.pubkey.pkcs8;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.exceptn;
 
 /**
@@ -42,14 +42,11 @@ public:
          in PointGFp pub_point, 
          in string algo_name, 
          in bool msg_compat, 
-         in short msg_parts = 1,
-         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-         in Vector!ubyte delegate() const subject_public_key = null,
-         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+         in short msg_parts = 1) 
     {
-        m_check_key = check_key;
-        m_algorithm_identifier = algorithm_identifier;
-        m_subject_public_key = subject_public_key;
+		m_check_key = null;
+		m_algorithm_identifier = null;
+		m_subject_public_key = null;
         m_msg_compat = msg_compat;
         m_algo_name = algo_name;
         m_msg_parts = msg_parts;
@@ -62,14 +59,11 @@ public:
 
     this(in AlgorithmIdentifier alg_id, 
          in SecureVector!ubyte key_bits, 
-         in string algo_name, in bool msg_compat, in short msg_parts = 1,
-         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-         in Vector!ubyte delegate() const subject_public_key = null,
-         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+         in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {
-        m_check_key = check_key;
-        m_algorithm_identifier = algorithm_identifier;
-        m_subject_public_key = subject_public_key;
+		m_check_key = null;
+		m_algorithm_identifier = null;
+		m_subject_public_key = null;
         m_msg_compat = msg_compat;
         m_algo_name = algo_name;
         m_msg_parts = msg_parts;
@@ -77,6 +71,19 @@ public:
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
         m_public_key = OS2ECP(key_bits.dup, domain().getCurve().dup);
+    }
+
+	final void setCB(in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+	                 in Vector!ubyte delegate() const subject_public_key = null,
+	                 in AlgorithmIdentifier delegate() const algorithm_identifier = null) {
+		m_check_key = check_key;
+		m_algorithm_identifier = algorithm_identifier;
+		m_subject_public_key = subject_public_key;
+	}
+
+    /// Used for object casting to the right type in the factory.
+    final override @property string algoName() const {
+        return m_algo_name;
     }
 
     /**
@@ -163,12 +170,14 @@ protected:
     ECGroup m_domain_params;
     PointGFp m_public_key;
     ECGroupEncoding m_domain_encoding;
+
     const string m_algo_name;
     const bool m_msg_compat;
     const short m_msg_parts;
-    const bool delegate(RandomNumberGenerator, bool) const m_check_key;
-    const Vector!ubyte delegate() const m_subject_public_key;
-    const AlgorithmIdentifier delegate() const m_algorithm_identifier;
+
+    bool delegate(RandomNumberGenerator, bool) const m_check_key;
+    Vector!ubyte delegate() const m_subject_public_key;
+    AlgorithmIdentifier delegate() const m_algorithm_identifier;
 }
 
 /**
@@ -181,46 +190,24 @@ public:
     * ECPrivateKey constructor
     */
     this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key, 
-         in string algo_name, in bool msg_compat, in short msg_parts = 1,
-         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-         in Vector!ubyte delegate() const subject_public_key = null,
-         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
-    {
-
-        m_check_key = check_key;
-        m_algorithm_identifier = algorithm_identifier;
-        m_subject_public_key = subject_public_key;
-        m_msg_compat = msg_compat;
-        m_algo_name = algo_name;
-        m_msg_parts = msg_parts;
-        m_domain_params = ec_group;
-        m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-        
+         in string algo_name, in bool msg_compat, in short msg_parts = 1) 
+    {        
         if (private_key == 0)
-            m_private_key = BigInt.randomInteger(rng, BigInt(1), domain().getOrder());
+            m_private_key = BigInt.randomInteger(rng, BigInt(1), ec_group.getOrder());
         else
-            m_private_key = private_key;
+            m_private_key = private_key.dup;
+
+        PointGFp public_key = ec_group.getBasePoint().dup * m_private_key;
         
-        m_public_key = domain().getBasePoint() * m_private_key;
-        
-        assert(m_public_key.onTheCurve(), "Generated public key point was on the curve");
+        assert(public_key.onTheCurve(), "Generated public key point was on the curve");
+
+        super(ec_group, public_key, algo_name, msg_compat, msg_parts);
     }
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, 
-         in string algo_name, in bool msg_compat, in short msg_parts = 1,
-         in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-         in Vector!ubyte delegate() const subject_public_key = null,
-         in AlgorithmIdentifier delegate() const algorithm_identifier = null) 
+         in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {
-        m_check_key = check_key;
-        m_algorithm_identifier = algorithm_identifier;
-        m_subject_public_key = subject_public_key;
-        m_msg_compat = msg_compat;
-        m_algo_name = algo_name;
-        m_msg_parts = msg_parts;
-        m_domain_params = ECGroup(alg_id.parameters);
-        m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-        
+        PointGFp public_key;
         OID key_parameters;
         SecureVector!ubyte public_key_bits;
         
@@ -237,15 +224,17 @@ public:
         
         if (public_key_bits.empty)
         {
-            m_public_key = domain().getBasePoint() * m_private_key;
+            public_key = domain().getBasePoint().dup * m_private_key;
             
-            assert(m_public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
+            assert(public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
         }
         else
         {
-            m_public_key = OS2ECP(public_key_bits, domain().getCurve());
+            public_key = OS2ECP(public_key_bits, ECGroup(alg_id.parameters).getCurve().dup);
             // OS2ECP verifies that the point is on the curve
         }
+
+        super(ECGroup(alg_id.parameters), public_key, algo_name, msg_compat, msg_parts);
     }
 
     SecureVector!ubyte pkcs8PrivateKey() const
@@ -265,7 +254,7 @@ public:
     * Get the private key value of this key object.
     * @result the private key value of this key object
     */
-    BigInt privateValue() const
+    const(BigInt) privateValue() const
     {
         if (m_private_key == 0)
             throw new InvalidState("ECPrivateKey.private_value - uninitialized");

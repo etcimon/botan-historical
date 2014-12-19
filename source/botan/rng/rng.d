@@ -131,7 +131,7 @@ class SerializedRNG : RandomNumberGenerator
 public:
     override void randomize(ubyte* output, size_t length)
     {
-        synchronized(m_mtx) m_rng.randomize(output, len);
+        synchronized(m_mtx) m_rng.randomize(output, length);
         
     }
 

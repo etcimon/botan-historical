@@ -344,7 +344,7 @@ const(X509Certificate) findIssuingCert(in X509Certificate cert_,
 const(X509CRL) findCrlsFor(in X509Certificate cert,
                            in Vector!CertificateStore certstores)
 {
-    foreach (certstore; certstores)
+    foreach (certstore; certstores[])
     {
         if (const X509CRL crl = certstore.findCrlFor(cert))
             return crl;

@@ -10,7 +10,7 @@ public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
 import botan.utils.containers.multimap;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 import std.traits : isNumeric;

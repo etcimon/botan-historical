@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.exceptn;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.loadstor;
 import botan.utils.types;
 import std.exception;
@@ -196,12 +196,12 @@ void appendTlsLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals,
             buf.pushBack(get_byte(j, vals[i]));
 }
 
-void appendTlsLengthValue(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
+void appendTlsLengthValue(T, Alloc, Alloc2)(Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTlsLengthValue(Alloc)(ref Vector!( ubyte, Alloc ) buf, in string str, size_t tag_size)
+void appendTlsLengthValue(Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, in string str, size_t tag_size)
 {
     appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);
 }

@@ -57,16 +57,87 @@ public:
     */
     this(in Vector!ubyte ber_data)
     {
-        BERDecoder ber = BERDecoder(ber_data);
-        BERObject obj = ber.getNextObject();
         m_curve = CurveGFp.init;
         m_base_point = PointGFp.init;
+        m_order = BigInt(0);
+        m_cofactor = BigInt(0);
+        m_oid = "";
 
+        BER_decode(ber_data);
+    }
+
+    /**
+    * Create an EC domain by OID (or throw new if unknown)
+    * @param oid = the OID of the EC domain to create
+    */
+    this(in OID domain_oid)
+    {
+        m_curve = CurveGFp.init;
+        m_base_point = PointGFp.init;
+        m_order = BigInt(0);
+        m_cofactor = BigInt(0);
+        m_oid = "";
+
+        string pem = getPemForNamedGroup(OIDS.lookup(domain_oid));
+        
+        if (!pem)
+            throw new LookupError("No ECC domain data for " ~ domain_oid.toString());
+
+        Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem, "EC PARAMETERS"));
+        BER_decode(ber);
+        m_oid = domain_oid.toString();
+    }
+
+    /**
+    * Create an EC domain from PEM encoding (as from PEM_encode), or
+    * from an OID name (eg "secp256r1", or "1.2.840.10045.3.1.7")
+    * @param pem_or_oid = PEM-encoded data, or an OID
+    */
+    this(in string pem_or_oid = "")
+    {
+        m_curve = CurveGFp.init;
+        m_base_point = PointGFp.init;
+        m_order = BigInt(0);
+        m_cofactor = BigInt(0);
+        m_oid = "";
+
+        if (pem_or_oid == "")
+            throw new DecodingError("No OID Data for EC Group construction"); // no initialization / uninitialized
+
+        try
+        {
+            Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem_or_oid, "EC PARAMETERS"));
+            
+            BER_decode(ber); // throws if not PEM
+        }
+        catch(DecodingError)
+        {
+            string pem = getPemForNamedGroup(pem_or_oid);
+            
+            if (!pem)
+                throw new LookupError("No ECC domain data for " ~ pem_or_oid);
+            
+            Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem, "EC PARAMETERS"));
+            BER_decode(ber);
+            m_oid = pem_or_oid;
+        }
+    }
+
+    void BER_decode(in Vector!ubyte ber_data) {
+        BERDecoder ber = BERDecoder(ber_data);
+        BERObject obj = ber.getNextObject();
         if (obj.type_tag == ASN1Tag.OBJECT_ID)
         {
             OID dom_par_oid;
             BERDecoder(ber_data).decode(dom_par_oid);
-            this = ECGroup(dom_par_oid);
+            string pem = getPemForNamedGroup(OIDS.lookup(dom_par_oid));
+            
+            if (!pem)
+                throw new LookupError("No ECC domain data for " ~ dom_par_oid.toString());
+            
+            Vector!ubyte new_ber = unlock(PEM.decodeCheckLabel(pem, "EC PARAMETERS"));
+            BER_decode(new_ber);
+            m_oid = dom_par_oid.toString();
         }
         else if (obj.type_tag == ASN1Tag.SEQUENCE)
         {
@@ -74,7 +145,7 @@ public:
             Vector!ubyte sv_base_point;
             
             BERDecoder(ber_data)
-                    .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck!size_t(1, "Unknown ECC param version code")
                     .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck(OID("1.2.840.10045.1.1"), "Only prime ECC fields supported")
@@ -97,47 +168,7 @@ public:
             throw new DecodingError("Cannot handle ImplicitCA ECDSA parameters");
         else
             throw new DecodingError("Unexpected tag while decoding ECC domain params");
-    }
 
-    /**
-    * Create an EC domain by OID (or throw new if unknown)
-    * @param oid = the OID of the EC domain to create
-    */
-    this(in OID domain_oid)
-    {
-        m_curve = CurveGFp.init;
-        m_base_point = PointGFp.init;
-        string pem = getPemForNamedGroup(OIDS.lookup(domain_oid));
-        
-        if (!pem)
-            throw new LookupError("No ECC domain data for " ~ domain_oid.toString());
-        
-        this = ECGroup(pem);
-        m_oid = domain_oid.toString();
-    }
-
-    /**
-    * Create an EC domain from PEM encoding (as from PEM_encode), or
-    * from an OID name (eg "secp256r1", or "1.2.840.10045.3.1.7")
-    * @param pem_or_oid = PEM-encoded data, or an OID
-    */
-    this(in string pem_or_oid = "")
-    {
-        m_curve = CurveGFp.init;
-        m_base_point = PointGFp.init;
-        if (pem_or_oid == "")
-            return; // no initialization / uninitialized
-        
-        try
-        {
-            Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem_or_oid, "EC PARAMETERS"));
-            
-            this = ECGroup(ber);
-        }
-        catch(DecodingError) // hmm, not PEM?
-        {
-            this = ECGroup(OIDS.lookup(pem_or_oid));
-        }
     }
 
     /**

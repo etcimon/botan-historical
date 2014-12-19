@@ -185,8 +185,11 @@ protected:
         
         foreach (size_t i; 0 .. 8)
         {
-            KB[ 8] ^= KB[i] = rotateLeft(key[i], 5);
-            KB[17] ^= KB[i+9] = m_EK[i] = key[i+8];
+            KB[i] = rotateLeft(key[i], 5);
+            KB[ 8] ^= KB[i];
+            m_EK[i] = key[i+8];
+            KB[i+9] = m_EK[i];
+            KB[17] ^= KB[i+9];
         }
         
         foreach (size_t i; 0 .. m_rounds)

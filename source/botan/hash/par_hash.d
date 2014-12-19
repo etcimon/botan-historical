@@ -24,7 +24,7 @@ public:
     */
     override void clear()
     {
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
             hash.clear();
     }
 
@@ -35,7 +35,7 @@ public:
     {
         Vector!string names;
         
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
             names.pushBack(hash.name);
         
         return "Parallel(" ~ stringJoin(names, ',') ~ ")";
@@ -48,7 +48,7 @@ public:
     {
         Vector!HashFunction hash_copies;
         
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
             hash_copies.pushBack(hash.clone());
         
         return new Parallel(hash_copies);
@@ -61,7 +61,7 @@ public:
     {
         size_t sum = 0;
         
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
             sum += hash.outputLength;
         return sum;
     }
@@ -80,7 +80,7 @@ public:
     */
     ~this()
     {
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
             delete hash;
     }
 protected:
@@ -89,7 +89,7 @@ protected:
     */
     override void addData(const(ubyte)* input, size_t length)
     {
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
             hash.update(input, length);
     }
 
@@ -100,7 +100,7 @@ protected:
     {
         uint offset = 0;
         
-        foreach (hash; m_hashes)
+        foreach (hash; m_hashes[])
         {
             hash.flushInto(output + offset);
             offset += hash.outputLength;

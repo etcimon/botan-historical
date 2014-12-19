@@ -111,7 +111,7 @@ public:
     * @result the DER encoded signed generalized CVC object
     */
     static Vector!ubyte makeSigned(ref PKSigner signer,
-                                   in Vector!ubyte tbs_bits,
+                                   Vector!ubyte tbs_bits,
                                    RandomNumberGenerator rng)
     {
         const auto concat_sig = signer.signMessage(tbs_bits, rng);

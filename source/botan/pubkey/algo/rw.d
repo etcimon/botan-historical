@@ -19,6 +19,7 @@ import botan.pubkey.algo.keypair;
 import botan.utils.parsing;
 import botan.utils.types;
 import std.algorithm;
+import std.concurrency;
 
 /**
 * Rabin-Williams Public Key
@@ -30,12 +31,12 @@ public:
 
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
-        m_pub = new IFSchemePublicKey(alg_id, key_bits);
+        m_pub = new IFSchemePublicKey(alg_id, key_bits, algoName);
     }
 
-    this(in BigInt mod, in BigInt exponent)
+    this(BigInt mod, BigInt exponent)
     {
-        m_pub = new IFSchemePublicKey(mod, exponent);
+        m_pub = new IFSchemePublicKey(mod, exponent, algoName);
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
@@ -56,15 +57,17 @@ public:
          in SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, &checkKey);
+        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, algoName, &checkKey);
+        super(m_priv);
     }
 
     this(RandomNumberGenerator rng,
-         in BigInt p, in BigInt q,
-         in BigInt e, in BigInt d = 0,
-         in BigInt n = 0)
+         BigInt p, BigInt q,
+         BigInt e, BigInt d = BigInt(0),
+         BigInt n = BigInt(0))
     {
-        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, &checkKey);
+        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+        super(m_priv);
     }
 
     /*
@@ -73,27 +76,27 @@ public:
     this(RandomNumberGenerator rng, size_t bits, size_t exp = 2)
     {
         if (bits < 1024)
-            throw new InvalidArgument(algo_name ~ ": Can't make a key that is only " ~
+            throw new InvalidArgument(algoName ~ ": Can't make a key that is only " ~
                                        to!string(bits) ~ " bits long");
         if (exp < 2 || exp % 2 == 1)
-            throw new InvalidArgument(algo_name ~ ": Invalid encryption exponent");
-        
-        m_priv = new IFSchemePrivateKey(&checkKey);
+            throw new InvalidArgument(algoName ~ ": Invalid encryption exponent");
 
-        m_e = exp;
+        BigInt p, q, e, d, n, d1, d2;
+
+        e = exp;
         
         do
         {
-            m_p = randomPrime(rng, (bits + 1) / 2, m_e / 2, 3, 4);
-            m_q = randomPrime(rng, bits - m_p.bits(), m_e / 2, ((m_p % 8 == 3) ? 7 : 3), 8);
-            m_n = m_p * m_q;
-        } while (m_n.bits() != bits);
+            p = randomPrime(rng, (bits + 1) / 2, e.dup / 2, 3, 4);
+            q = randomPrime(rng, bits - p.bits(), e.dup / 2, ((p.dup % 8 == 3) ? 7 : 3), 8);
+            n = p.dup * q;
+        } while (n.bits() != bits);
         
-        m_d = inverseMod(m_e, lcm(m_p - 1, m_q - 1) >> 1);
-        m_d1 = m_d % (m_p - 1);
-        m_d2 = m_d % (m_q - 1);
-        m_c = inverseMod(m_q, m_p);
-        
+        d = inverseMod(e, lcm(p.dup - 1, q.dup - 1) >> 1);
+
+        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+
+        super(m_priv);
         genCheck(rng);
     }
 
@@ -108,7 +111,7 @@ public:
         if (!strong)
             return true;
         
-        if ((m_e * m_d) % (lcm(m_p - 1, m_q - 1) / 2) != 1)
+        if ((m_priv.getE().dup * m_priv.getD()) % (lcm(m_priv.getP().dup - 1, m_priv.getQ().dup - 1) / 2) != 1)
             return false;
         
         return signatureConsistencyCheck(rng, m_priv, "EMSA2(SHA-1)");
@@ -116,7 +119,7 @@ public:
 
     alias m_priv this;
 
-    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; super(m_priv); }
 
 
     IFSchemePrivateKey m_priv;
@@ -145,7 +148,8 @@ public:
         m_c = rw.getC();
         m_powermod_d1_p = FixedExponentPowerMod(rw.getD1(), rw.getP());
         m_powermod_d2_q = FixedExponentPowerMod(rw.getD2(), rw.getQ());
-        m_mod_p = FixedExponentPowerMod(rw.getP());
+        m_mod_p = ModularReducer(rw.getP().dup);
+        m_blinder = Blinder.init;
     }
 
     override size_t maxInputBits() const { return (m_n.bits() - 1); }
@@ -153,13 +157,12 @@ public:
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
-        
-        if (!blinder.initialized())
-        {
+
+        if (!m_blinder.initialized()) {
             BigInt k = BigInt(rng, std.algorithm.min(160, m_n.bits() - 1));
-            m_blinder = Blinder(powerMod(k, m_e, m_n), inverseMod(k, m_n), m_n);
+            m_blinder = Blinder(powerMod(k, m_e, m_n), inverseMod(k, m_n), m_n.dup);
         }
-        
+
         BigInt i = BigInt(msg, msg_len);
         
         if (i >= m_n || i % 16 != 12)
@@ -170,18 +173,23 @@ public:
         
         i = m_blinder.blind(i);
 
-        import std.concurrency : spawn, thisTid, send, receiveOnly;
+        BigInt j1;
 
-        auto tid = spawn((Tid tid, FixedExponentPowerMod powermod_d1_p2, BigInt i2) 
-                         { send(tid, powermod_d1_p2(i2)); }, thisTid, m_powermod_d1_p, i);
-        const BigInt j2 = m_powermod_d2_q(i);
-        BigInt j1 = receiveOnly!BigInt();
+        auto tid = spawn((shared Tid tid, shared(FixedExponentPowerModImpl) powermod_d1_p2, shared(BigInt*) i2, shared(BigInt*) j1_2) 
+        {
+            BigInt* ret = cast(BigInt*)j1_2;
+            *ret = (cast(FixedExponentPowerModImpl)powermod_d1_p2)(*cast(BigInt*)i2);
+            send(cast(Tid)tid, true); 
+        }, 
+        cast(shared)thisTid(), cast(shared)*m_powermod_d1_p, cast(shared)&i, cast(shared)&j1);
+        const BigInt j2 = (*m_powermod_d2_q)(i);
+        bool ok = receiveOnly!bool();
         
         j1 = m_mod_p.reduce(subMul(j1, j2, m_c));
         
         const BigInt r = m_blinder.unblind(mulAdd(j1, m_q, j2));
         
-        return BigInt.encode1363(std.algorithm.min(r, m_n - r), n.bytes());
+        return BigInt.encode1363(std.algorithm.min(r, m_n.dup - r), m_n.bytes());
     }
 private:
     const BigInt m_n;
@@ -222,27 +230,27 @@ public:
     {
         BigInt m = BigInt(msg, msg_len);
         
-        if ((m > (m_n >> 1)) || m.isNegative())
+        if ((m > (m_n.dup >> 1)) || m.isNegative())
             throw new InvalidArgument("RW signature verification: m > n / 2 || m < 0");
         
-        BigInt r = m_powermod_e_n(m);
+        BigInt r = (*m_powermod_e_n)(m);
         if (r % 16 == 12)
             return BigInt.encodeLocked(r);
         if (r % 8 == 6)
-            return BigInt.encodeLocked(2*r);
+            return BigInt.encodeLocked(r.dup*2);
         
-        r = m_n - r;
+        r = m_n.dup - r;
         if (r % 16 == 12)
             return BigInt.encodeLocked(r);
         if (r % 8 == 6)
-            return BigInt.encodeLocked(2*r);
+            return BigInt.encodeLocked(r.dup*2);
         
         throw new InvalidArgument("RW signature verification: Invalid signature");
     }
 
 private:
     const BigInt m_n;
-    FixedExponentPowerMod powermod_e_n;
+    FixedExponentPowerMod m_powermod_e_n;
 }
 
 

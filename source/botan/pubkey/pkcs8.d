@@ -24,6 +24,7 @@ import botan.asn1.oids;
 import botan.codec.pem;
 import botan.pubkey.pk_algs;
 import botan.utils.types;
+import botan.pbe.pbe;
 
 /**
 * PKCS #8 General Exception
@@ -152,10 +153,10 @@ PrivateKey loadKey(DataSource source,
 * @return loaded private key object
 */
 PrivateKey loadKey(DataSource source,
-                     RandomNumberGenerator rng,
+                   RandomNumberGenerator rng,
                      in string pass = "")
 {
-    return loadKey(source, rng, Single_Shot_Passphrase(pass));
+    return loadKey(source, rng, SingleShotPassphrase(pass));
 }
 
 /**
@@ -184,7 +185,7 @@ PrivateKey loadKey(in string filename,
                      RandomNumberGenerator rng,
                      in string pass = "")
 {
-    return loadKey(filename, rng, Single_Shot_Passphrase(pass));
+    return loadKey(filename, rng, SingleShotPassphrase(pass));
 }
 
 
@@ -250,7 +251,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
     }
     catch(DecodingError e)
     {
-        throw new DecodingError("PKCS #8 private key decoding failed: " ~ string(e.msg));
+        throw new DecodingError("PKCS #8 private key decoding failed: " ~ e.msg);
     }
     
     if (!is_encrypted)
@@ -314,10 +315,10 @@ public:
         if (first)
         {
             first = false;
-            return Pair(true, passphrase);
+            return makePair(true, passphrase);
         }
         else
-            return Pair(false, "");
+            return makePair(false, "");
     }
     
 private:

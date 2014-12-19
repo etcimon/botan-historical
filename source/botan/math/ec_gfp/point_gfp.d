@@ -51,18 +51,14 @@ public:
     }
 
     /**
-    * Disable an uninitialized PointGFp
-    */
-    @disable this();
-
-    /**
     * Construct the zero point
     * @param curve = The base curve
     */
     this(CurveGFp curve) 
     {
         m_curve = curve;
-        m_ws = 2 * (curve.getPWords() + 2);
+		m_ws = new SecureVector!word;
+        (*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = 0;
         m_coord_y = montyMult(BigInt(1), curve.getR2());
         m_coord_z = 0;
@@ -95,7 +91,8 @@ public:
     this(CurveGFp curve, BigInt x, BigInt y)
     { 
         m_curve = curve;
-        m_ws = 2 * (curve.getPWords() + 2);
+		m_ws = new SecureVector!word;
+		(*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = montyMult(x, curve.getR2());
         m_coord_y = montyMult(y, curve.getR2());
         m_coord_z = montyMult(BigInt(1), curve.getR2());
@@ -147,14 +144,14 @@ public:
     * @param point = the point value
     * @return scalar*point on the curve
     */
-    ref PointGFp opBinary(string op)(in BigInt scalar)
+    PointGFp opBinary(string op)(in BigInt scalar)
         if (op == "*")
     {
         auto point = this;
         const CurveGFp curve = point.getCurve();
         
         if (scalar.isZero())
-            return PointGFp(curve); // zero point
+            return PointGFp(curve.dup); // zero point
         
         Vector!BigInt ws = Vector!BigInt(9);
         
@@ -210,7 +207,7 @@ public:
             const size_t window_size = 4;
             
             Vector!PointGFp Ps = Vector!PointGFp(1 << window_size);
-            Ps[0] = PointGFp(curve);
+            Ps[0] = PointGFp(curve.dup);
             Ps[1] = point;
             
             for (size_t i = 2; i != Ps.length; ++i)
@@ -219,7 +216,7 @@ public:
                 Ps[i].add(point, ws);
             }
             
-            PointGFp H = PointGFp(curve); // create as zero
+            PointGFp H = PointGFp(curve.dup); // create as zero
             size_t bits_left = scalar_bits;
             
             while (bits_left >= window_size)
@@ -259,12 +256,12 @@ public:
     * @param z2 = a scalar
     * @result (p1 * z1 + p2 * z2)
     */
-    PointGFp multiExponentiate(in PointGFp p1, in BigInt z1,
+    static PointGFp multiExponentiate(in PointGFp p1, in BigInt z1,
                                in PointGFp p2, in BigInt z2)
     {
         const PointGFp p3 = p1.dup + p2;
         
-        PointGFp H = PointGFp(p1.dup.m_curve); // create as zero
+        PointGFp H = PointGFp(p1.m_curve.dup); // create as zero
         size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
         
         Vector!BigInt ws = Vector!BigInt(9);
@@ -413,7 +410,9 @@ public:
     {
         PointGFp ret = PointGFp(m_curve.dup, m_coord_x.dup, m_coord_y.dup);
         ret.m_coord_z = m_coord_z.dup;
-        ret.m_ws = SecureVector!word(m_ws[]);
+		ret.m_ws = new SecureVector!word;
+
+		(*ret.m_ws)[] = (*m_ws).ptr[0 .. (*m_ws).length];
         return ret;
     }
 
@@ -579,7 +578,7 @@ private:
                 return;
             }
             
-            this = PointGFp(m_curve); // setting myself to zero
+            this = PointGFp(m_curve.dup); // setting myself to zero
             return;
         }
         
@@ -716,7 +715,7 @@ private:
 
     CurveGFp m_curve;
     BigInt m_coord_x, m_coord_y, m_coord_z;
-    SecureVector!word m_ws; // workspace for Montgomery
+    SecureVector!(word)* m_ws; // workspace for Montgomery
 }
 
 // encoding and decoding
@@ -815,7 +814,7 @@ PointGFp OS2ECP(T : CurveGFp)(const(ubyte)* data, size_t data_len, auto ref T cu
     return result;
 }
 
-PointGFp OS2ECP(Alloc, T : CurveGFp)(in Vector!( ubyte, Alloc ) data, auto ref T curve)
+PointGFp OS2ECP(Alloc, T : CurveGFp)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) data, auto ref T curve)
 { return OS2ECP(data.ptr, data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)

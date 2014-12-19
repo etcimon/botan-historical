@@ -477,7 +477,7 @@ bool verifyPrime(in BigInt n, RandomNumberGenerator rng)
 * @return random prime with the specified criteria
 */
 BigInt randomPrime(RandomNumberGenerator rng,
-                    size_t bits, in BigInt coprime = 1,
+                    size_t bits, in BigInt coprime = BigInt(1),
                     size_t equiv = 1, size_t modulo = 2)
 {
     if (bits <= 1)

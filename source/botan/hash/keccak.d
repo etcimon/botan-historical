@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_KECCAK):
 
 import botan.hash.hash;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import botan.utils.exceptn;

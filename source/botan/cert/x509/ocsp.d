@@ -118,8 +118,8 @@ public:
                     .decodeOptional(responsedata_version, (cast(ASN1Tag) 0), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)
                     .decodeOptional(cast(ASN1Object)*name, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)                    
                     .decodeOptionalString(key_hash, ASN1Tag.OCTET_STRING, 2, ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)
-                    .decode(produced_at)                    
-                    .decodeList(m_responses)                    
+                    .decode(produced_at)
+                    .decodeList(m_responses)
                     .decodeOptional(*extensions, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC);
             
             if (certs.empty)
@@ -139,7 +139,7 @@ public:
     CertificateStatusCode statusFor(in X509Certificate issuer,
                                        in X509Certificate subject) const
     {
-        foreach (response; m_responses)
+        foreach (response; m_responses[])
         {
             if (response.certid().isIdFor(issuer, subject))
             {
@@ -220,7 +220,7 @@ void checkSignature(in Vector!ubyte tbs_response,
                      const AlgorithmIdentifier sig_algo,
                      in Vector!ubyte signature,
                      const CertificateStore trusted_roots,
-                     const ref Vector!X509Certificate certs)
+                     in Vector!X509Certificate certs)
 {
     if (certs.length < 1)
         throw new InvalidArgument("Short cert chain for checkSignature");

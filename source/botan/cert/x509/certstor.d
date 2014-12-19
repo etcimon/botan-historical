@@ -73,7 +73,7 @@ public:
     override Vector!X509DN allSubjects() const
     {
         Vector!X509DN subjects;
-        foreach (ref cert; m_certs)
+        foreach (ref cert; m_certs[])
             subjects.pushBack(cert.subjectDn());
         return subjects;
     }
@@ -106,7 +106,7 @@ public:
     {
         const Vector!ubyte key_id = subject.authorityKeyId();
         
-        foreach (crl; m_crls)
+        foreach (crl; m_crls[])
         {
             // Only compare key ids if set in both call and in the CRL
             if (key_id.length)
@@ -141,7 +141,7 @@ public:
     override Vector!X509DN allSubjects() const
     {
         Vector!X509DN subjects;
-        foreach (cert; m_certs)
+        foreach (cert; m_certs[])
             subjects.pushBack(cert.subjectDn());
         return subjects;
     }

@@ -9,7 +9,7 @@ module botan.constructs.tss;
 import botan.constants;
 static if (BOTAN_HAS_THRESHOLD_SECRET_SHARING):
 
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.hash.hash;
 import botan.rng.rng;
 import botan.utils.loadstor;
@@ -77,7 +77,7 @@ public:
                 ubyte sum = s;
                 ubyte X_i = X;
                 
-                foreach (coefficient; coefficients)
+                foreach (coefficient; coefficients[])
                 {
                     sum ^= gfp_mul(X_i, coefficient);
                     X_i  = gfp_mul(X_i, X);

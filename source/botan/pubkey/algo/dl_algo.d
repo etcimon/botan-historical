@@ -37,6 +37,11 @@ public:
         return true;
     }
 
+    /// Used for object casting to the right type in the factory.
+    final override @property string algoName() const {
+        return m_algo_name;
+    }
+
     final override size_t messageParts() const {
         return m_msg_parts;
     }

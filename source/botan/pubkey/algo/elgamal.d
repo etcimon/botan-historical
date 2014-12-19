@@ -38,7 +38,7 @@ public:
     /*
     * ElGamalPublicKey Constructor
     */
-    this(in DLGroup grp, in BigInt y1)
+    this(DLGroup grp, BigInt y1)
     {
         m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
@@ -62,7 +62,7 @@ public:
     */
     bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (!super.checkKey(rng, strong))
+        if (!m_priv.checkKey(rng, strong))
             return false;
         
         if (!strong)
@@ -74,14 +74,15 @@ public:
     /*
     * ElGamalPrivateKey Constructor
     */
-    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = BigInt(0))
     {        
-        if (x == 0)
+        if (x_arg == 0)
             x_arg.randomize(rng, 2 * dlWorkFactor(grp.getP().bits()));
         
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
         m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
+        super(m_priv);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
@@ -95,11 +96,13 @@ public:
          RandomNumberGenerator rng) 
     {
         m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
-        m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
+        super(m_priv);
+
+        m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
         m_priv.loadCheck(rng);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
 
@@ -112,7 +115,7 @@ public:
 final class ElGamalEncryptionOperation : Encryption
 {
 public:
-    override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
+    override size_t maxInputBits() const { return m_mod_p.getModulus().bits() - 1; }
 
     this(in PublicKey pkey) {
         this(cast(DLSchemePublicKey) pkey);
@@ -129,12 +132,12 @@ public:
         
         m_powermod_g_p = FixedBasePowerMod(key.groupG(), p);
         m_powermod_y_p = FixedBasePowerMod(key.getY(), p);
-        m_mod_p = ModularReducer(p);
+        m_mod_p = ModularReducer(p.dup);
     }
 
     override SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-        const BigInt p = mod_p.getModulus();
+        const BigInt p = m_mod_p.getModulus();
         
         BigInt m = BigInt(msg, msg_len);
         
@@ -143,8 +146,8 @@ public:
 
         BigInt k = BigInt(rng, 2 * dlWorkFactor(p.bits()));
         
-        BigInt a = m_powermod_g_p(k);
-        BigInt b = m_mod_p.multiply(m, m_powermod_y_p(k));
+        BigInt a = (*m_powermod_g_p)(k);
+        BigInt b = m_mod_p.multiply(m, (*m_powermod_y_p)(k));
         
         SecureVector!ubyte output = SecureVector!ubyte(2*p.bytes());
         a.binaryEncode(&output[p.bytes() - a.bytes()]);
@@ -163,7 +166,7 @@ private:
 final class ElGamalDecryptionOperation : Decryption
 {
 public:
-    override size_t maxInputBits() const { return mod_p.getModulus().bits() - 1; }
+    override size_t maxInputBits() const { return m_mod_p.getModulus().bits() - 1; }
 
     this(in PrivateKey pkey, RandomNumberGenerator rng) {
         this(cast(DLSchemePrivateKey) pkey, rng);
@@ -180,10 +183,10 @@ public:
         const BigInt p = key.groupP();
         
         m_powermod_x_p = FixedExponentPowerMod(key.getX(), p);
-        m_mod_p = ModularReducer(p);
+        m_mod_p = ModularReducer(p.dup);
         
         BigInt k = BigInt(rng, p.bits() - 1);
-        m_blinder = Blinder(k, m_powermod_x_p(k), p);
+        m_blinder = Blinder(k, (*m_powermod_x_p)(k), p.dup);
     }
 
     override SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
@@ -203,7 +206,7 @@ public:
         
         a = m_blinder.blind(a);
         
-        BigInt r = m_mod_p.multiply(b, inverseMod(m_powermod_x_p(a), p));
+        BigInt r = m_mod_p.multiply(b, inverseMod((*m_powermod_x_p)(a), p));
         
         return BigInt.encodeLocked(m_blinder.unblind(r));
     }

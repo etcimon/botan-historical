@@ -48,7 +48,7 @@ public:
         SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
         
         ubyte[] io_buf_mutable = io_buffer.ptr[0 .. READ_ATTEMPT];
-        foreach (socket; m_sockets)
+        foreach (socket; m_sockets[])
         {
             size_t got = socket.read(io_buf_mutable);
             

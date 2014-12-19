@@ -60,7 +60,7 @@ public:
     * @param rng = a random number generator
     */
     static Vector!ubyte makeSigned(ref PKSigner signer,
-                                   in Vector!ubyte tbs_bits,
+                                   Vector!ubyte tbs_bits,
                                    RandomNumberGenerator rng)
     {
         const Vector!ubyte concat_sig = signer.signMessage(tbs_bits, rng);

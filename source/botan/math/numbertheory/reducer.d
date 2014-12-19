@@ -29,12 +29,12 @@ public:
         if (x.cmp(modulus, false) < 0)
         {
             if (x.isNegative())
-                return x + modulus; // make positive
+                return x.dup + modulus; // make positive
             return x;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
         {
-            BigInt t1 = x;
+            BigInt t1 = x.dup;
             t1.setSign(BigInt.Positive);
             t1 >>= (MP_WORD_BITS * (m_mod_words - 1));
             t1 *= m_mu;
@@ -44,7 +44,7 @@ public:
             
             t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
-            BigInt t2 = x;
+            BigInt t2 = x.dup;
             t2.setSign(BigInt.Positive);
             t2.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
@@ -66,7 +66,7 @@ public:
         else
         {
             // too big, fall back to normal division
-            return (x % modulus);
+            return (x.dup % modulus);
         }
     }
 

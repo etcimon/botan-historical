@@ -17,6 +17,7 @@ public import botan.utils.types;
 public import botan.rng.rng;
 import botan.pk_pad.eme;
 import botan.pk_pad.emsa;
+import botan.pk_pad.factory;
 import botan.kdf.kdf;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -26,6 +27,7 @@ import botan.libstate.libstate;
 import botan.engine.engine;
 import botan.utils.bit_ops;
 import botan.utils.exceptn;
+import botan.utils.mem_ops;
 
 alias SignatureFormat = bool;
 /**
@@ -67,7 +69,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    final Vector!ubyte encrypt(Alloc)(in Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, RandomNumberGenerator rng) const
     {
         return enc(input.ptr, input.length, rng);
     }
@@ -104,7 +106,7 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    final SecureVector!ubyte decrypt(Alloc)(in Vector!( ubyte, Alloc ) input) const
+    final SecureVector!ubyte decrypt(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input) const
     {
         return dec(input.ptr, input.length);
     }
@@ -231,13 +233,13 @@ public:
         m_op = null;
         m_verify_op = null;
 
-        foreach (Engine engine; af.engines) {
+        foreach (Engine engine; af.engines[]) {
 
             if (!m_op)
-                m_op = engine.getSignatureOp(key, rng);
+                m_op = Unique!Signature(engine.getSignatureOp(key, rng));
             
             if (!m_verify_op && prot == ENABLE_FAULT_PROTECTION)
-                m_verify_op = engine.getVerifyOp(key, rng);
+                m_verify_op = Unique!Verification(engine.getVerifyOp(key, rng));
             
             if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
                 break;
@@ -260,7 +262,7 @@ private:
         
         if (m_verify_op.withRecovery())
         {
-            Vector!ubyte recovered = unlock(m_verify_op.verifyMr(sig.ptr, sig.length));
+            Vector!ubyte recovered = unlock((cast(Verification)*m_verify_op).verifyMr(sig.ptr, sig.length));
             
             if (msg.length > recovered.length)
             {
@@ -276,7 +278,7 @@ private:
             return (recovered == msg);
         }
         else
-            return m_verify_op.verify(msg.ptr, msg.length, sig.ptr, sig.length);
+            return (cast(Verification)*m_verify_op).verify(msg.ptr, msg.length, sig.ptr, sig.length);
     }
 
     Unique!Signature m_op;
@@ -302,7 +304,7 @@ public:
     * @return true if the signature is valid
     */
     bool verifyMessage(const(ubyte)* msg, size_t msg_length,
-                        const(ubyte)* sig, size_t sig_length)
+                       const(ubyte)* sig, size_t sig_length)
     {
         update(msg, msg_length);
         return checkSignature(sig, sig_length);
@@ -314,8 +316,8 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-    bool verifyMessage(Alloc, Alloc2)(in Vector!( ubyte, Alloc ) msg, 
-                                       in Vector!( ubyte, Alloc2 ) sig)
+    bool verifyMessage(Alloc, Alloc2)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) msg, 
+                                      in FreeListRef!(VectorImpl!( ubyte, Alloc2 )) sig)
     {
         return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
     }
@@ -364,7 +366,7 @@ public:
                 BERDecoder ber_sig = decoder.startCons(ASN1Tag.SEQUENCE);
                 
                 size_t count = 0;
-                Vector!ubyte real_sig;
+                SecureVector!ubyte real_sig;
                 while (ber_sig.moreItems())
                 {
                     BigInt sig_part;
@@ -390,7 +392,7 @@ public:
     * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
-    bool checkSignature(Alloc)(in Vector!( ubyte, Alloc ) sig)
+    bool checkSignature(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) sig)
     {
         return checkSignature(sig.ptr, sig.length);
     }
@@ -418,8 +420,8 @@ public:
 
         RandomNumberGenerator rng = globalState().globalRng();
 
-        foreach (Engine engine; af.engines) {
-            m_op = engine.getVerifyOp(key, rng);
+        foreach (Engine engine; af.engines[]) {
+            m_op = Unique!Verification(engine.getVerifyOp(key, rng));
             if (m_op)
                 break;
         }
@@ -473,12 +475,12 @@ public:
                             size_t in_len, const(ubyte)* params,
                             size_t params_len) const
     {
-        SecureVector!ubyte z = m_op.agree(input, in_len);
-        
+        SecureVector!ubyte z = (cast(KeyAgreement)*m_op).agree(input, in_len);
+
         if (!m_kdf)
-            return z;
+            return SymmetricKey(z);
         
-        return m_kdf.deriveKey(key_len, z, params, params_len);
+        return SymmetricKey(m_kdf.deriveKey(key_len, z, params, params_len));
     }
 
     /*
@@ -531,9 +533,9 @@ public:
         AlgorithmFactory af = globalState().algorithmFactory();
         RandomNumberGenerator rng = globalState().globalRng();
 
-        foreach (Engine engine; af.engines)
+        foreach (Engine engine; af.engines[])
         {
-            m_op = engine.getKeyAgreementOp(key, rng);
+            m_op = Unique!KeyAgreement(engine.getKeyAgreementOp(key, rng));
             if (m_op)
                 break;
         }
@@ -576,8 +578,8 @@ public:
         AlgorithmFactory af = globalState().algorithmFactory();
         RandomNumberGenerator rng = globalState().globalRng();
 
-        foreach (Engine engine; af.engines) {
-            m_op = engine.getEncryptionOp(key, rng);
+        foreach (Engine engine; af.engines[]) {
+            m_op = Unique!Encryption(engine.getEncryptionOp(key, rng));
             if (m_op)
                 break;
         }
@@ -598,14 +600,14 @@ private:
             if (8*(encoded.length - 1) + highBit(encoded[0]) > m_op.maxInputBits())
                 throw new InvalidArgument("PKEncryptorEME: Input is too large");
             
-            return unlock(m_op.encrypt(encoded.ptr, encoded.length, rng));
+            return unlock((cast(Encryption)*m_op).encrypt(encoded.ptr, encoded.length, rng));
         }
         else
         {
             if (8*(length - 1) + highBit(input[0]) > m_op.maxInputBits())
                 throw new InvalidArgument("PKEncryptorEME: Input is too large");
             
-            return unlock(m_op.encrypt(input.ptr, length, rng));
+            return unlock((cast(Encryption)*m_op).encrypt(input, length, rng));
         }
     }
 
@@ -629,9 +631,9 @@ public:
         AlgorithmFactory af = globalState().algorithmFactory();
         RandomNumberGenerator rng = globalState().globalRng();
 
-        foreach (Engine engine; af.engines)
+        foreach (Engine engine; af.engines[])
         {
-            m_op = engine.getDecryptionOp(key, rng);
+            m_op = Unique!Decryption(engine.getDecryptionOp(key, rng));
             if (m_op)
                 break;
         }
@@ -649,7 +651,7 @@ private:
     SecureVector!ubyte dec(const(ubyte)* msg, size_t length) const
     {
         try {
-            SecureVector!ubyte decrypted = m_op.decrypt(msg, length);
+            SecureVector!ubyte decrypted = (cast(Decryption)*m_op).decrypt(msg, length);
             if (m_eme)
                 return m_eme.decode(decrypted, m_op.maxInputBits());
             else

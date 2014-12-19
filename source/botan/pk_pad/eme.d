@@ -6,7 +6,7 @@
 */
 module botan.pk_pad.eme;
 
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 public import botan.rng.rng;
 /**
 * Encoding Method for Encryption

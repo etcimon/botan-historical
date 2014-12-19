@@ -14,7 +14,7 @@ import botan.tls.version_;
 import botan.tls.ciphersuite;
 import botan.tls.magic;
 import botan.tls.server_info;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.algo_base.symkey;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;

@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.tls.magic;
 import botan.utils.types;
 // import string;

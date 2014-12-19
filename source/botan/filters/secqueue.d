@@ -13,7 +13,7 @@ import botan.utils.types;
 import botan.utils.mem_ops;
 import std.algorithm;
 /**
-* A queue that knows how to zeroize itself
+* A queue that knows how to zeroise itself
 */
 final class SecureQueue : FanoutFilter, DataSource, Filterable
 {

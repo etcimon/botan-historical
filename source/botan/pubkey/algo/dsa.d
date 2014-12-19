@@ -58,7 +58,7 @@ public:
     /*
     * Create a DSA private key
     */
-    this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
+    this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = BigInt(0))
     {
         
         if (x_arg == 0)

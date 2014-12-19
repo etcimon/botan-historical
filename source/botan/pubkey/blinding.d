@@ -22,10 +22,10 @@ public:
     BigInt blind(in BigInt i)
     {
         if (!m_reducer.initialized())
-            return i;
+            return *cast(BigInt*)&i;
         
-        m_e = m_reducer.square(e);
-        m_d = m_reducer.square(d);
+        m_e = m_reducer.square(m_e);
+        m_d = m_reducer.square(m_d);
         return m_reducer.multiply(i, m_e);
     }
 
@@ -35,13 +35,11 @@ public:
     BigInt unblind(in BigInt i) const
     {
         if (!m_reducer.initialized())
-            return i;
+            return *cast(BigInt*)&i;
         return m_reducer.multiply(i, m_d);
     }
 
     bool initialized() const { return m_reducer.initialized(); }
-
-    @disable this();
 
     /**
     * Construct a blinder
@@ -49,7 +47,7 @@ public:
     * @param d = the inverse of mask (depends on algo)
     * @param n = modulus of the group operations are performed in
     */
-    this(in BigInt e, in BigInt d, in BigInt n)
+    this(BigInt e, BigInt d, BigInt n)
     {
         if (e < 1 || d < 1 || n < 1)
             throw new InvalidArgument("Blinder: Arguments too small");

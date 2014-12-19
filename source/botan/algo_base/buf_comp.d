@@ -7,7 +7,7 @@
 
 module botan.algo_base.buf_comp;
 
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.get_byte;
 import botan.utils.types;
 

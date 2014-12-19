@@ -334,8 +334,12 @@ struct FreeListRef(T, bool INIT = true)
         return ret;
     }
     
-    ~this()
+    ~this() const
     {
+        (cast(FreeListRef)this).dtor();
+    }
+
+    void dtor() {
         //if( m_object ) logInfo("~this!%s(): %d", T.stringof, this.refCount);
         //if( m_object ) logInfo("ref %s destructor %d", T.stringof, refCount);
         //else logInfo("ref %s destructor %d", T.stringof, 0);
@@ -343,9 +347,13 @@ struct FreeListRef(T, bool INIT = true)
         m_magic = 0;
         m_object = null;
     }
-    
-    this(this)
+
+    this(this) const
     {
+        (cast(FreeListRef)this).copyctor();
+    }
+
+    void copyctor() {
         checkInvariants();
         if( m_object ){
             //if( m_object ) logInfo("this!%s(this): %d", T.stringof, this.refCount);
@@ -353,8 +361,12 @@ struct FreeListRef(T, bool INIT = true)
         }
     }
 
-    void opAssign(FreeListRef other)
+    void opAssign(FreeListRef other) const
     {
+        (cast(FreeListRef)this).opAssignImpl(other);
+    }
+
+    void opAssignImpl(FreeListRef other) {
         clear();
         m_object = other.m_object;
         if( m_object ){
@@ -421,6 +433,49 @@ struct FreeListRef(T, bool INIT = true)
         return m_object.opApply(args);
     }
 
+    void opSliceAssign(U...)(U args)
+        if (__traits(hasMember, typeof(m_object), "opSliceAssign"))
+    {
+        m_object.opSliceAssign(args);
+    }
+
+    auto opSlice(U...)(U args) const
+        if (__traits(hasMember, typeof(m_object), "opSlice"))
+    {
+        return (*cast(T*)&m_object).opSlice(args);
+    }
+
+    size_t opDollar() const
+    {
+        static if (__traits(hasMember, typeof(m_object), "opDollar"))
+            return m_object.opDollar();
+        else assert(false, "Cannot call opDollar on object: " ~ T.stringof);
+    }
+
+    void opOpAssign(string op, U...)(U args)
+        if (__traits(compiles, m_object.opOpAssign!op(args)))
+    {
+        m_object.opOpAssign!op(args);
+    }
+
+    //pragma(msg, T.stringof);
+    static if (T.stringof == `VectorImpl!(ubyte, ZeroiseAllocator!(LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)))))`) {
+        void opOpAssign(string op, U)(U input)
+            if (op == "^")
+        {
+            import botan.utils.xor_buf;
+            if (m_object.length < input.length)
+                m_object.resize(input.length);
+            
+            xorBuf(m_object.ptr, input.ptr, input.length);
+        }
+    }
+    auto opBinary(string op, U...)(U args)
+        if (__traits(compiles, m_object.opBinary!op(args)))
+    {
+        return m_object.opBinary!op(args);
+    }
+
     void opIndexAssign(U...)(U args)
         if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
     {
@@ -438,11 +493,11 @@ struct FreeListRef(T, bool INIT = true)
     {
         (cast(UnConst!TR)m_object).opIndexAssign(args);
     }
-    
-    auto opIndex(U...)(U args) const
+
+    auto ref opIndex(U...)(U args) inout
         if (__traits(hasMember, typeof(m_object), "opIndex"))
     {
-        return m_object.opIndex(args);
+        return (*cast(T*)&m_object).opIndex(args);
     }
 
     static if (__traits(compiles, m_object.opBinaryRight!("in")(ReturnType!(m_object.front).init)))

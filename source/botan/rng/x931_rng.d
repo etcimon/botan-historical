@@ -13,6 +13,7 @@ import botan.rng.rng;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm;
 
 /**

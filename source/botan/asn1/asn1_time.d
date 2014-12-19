@@ -27,7 +27,7 @@ public:
     /*
     * DER encode a X509Time
     */
-    override void encodeInto(DEREncoderImpl der) const
+    override void encodeInto(DEREncoder der) const
     {
         if (m_tag != ASN1Tag.GENERALIZED_TIME && m_tag != ASN1Tag.UTC_TIME)
             throw new InvalidArgument("X509Time: Bad encoding m_tag");
@@ -41,7 +41,7 @@ public:
     /*
     * Decode a BER encoded X509Time
     */
-    override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoder source)
     {
         BERObject ber_time = source.getNextObject();
         
@@ -203,12 +203,12 @@ public:
         
         const size_t YEAR_SIZE = (spec_tag == ASN1Tag.UTC_TIME) ? 2 : 4;
         
-        Vector!string params;
+        Vector!(Vector!ubyte) params;
         Vector!ubyte current;
         current.reserve(YEAR_SIZE);
         foreach (size_t j; 0 .. YEAR_SIZE)
             current ~= t_spec[j];
-        params.pushBack(current[]);
+        params.pushBack(current);
         current.clear();
         
         for (size_t j = YEAR_SIZE; j != t_spec.length - 1; ++j)
@@ -216,17 +216,17 @@ public:
             current ~= t_spec[j];
             if (current.length == 2)
             {
-                params.pushBack(current[]);
+                params.pushBack(current);
                 current.clear();
             }
         }
         
-        m_year    = to!uint(params[0]);
-        m_month  = to!uint(params[1]);
-        m_day     = to!uint(params[2]);
-        m_hour    = to!uint(params[3]);
-        m_minute = to!uint(params[4]);
-        m_second = (params.length == 6) ? to!uint(params[5]) : 0;
+        m_year    = to!uint(params[0][]);
+        m_month   = to!uint(params[1][]);
+        m_day     = to!uint(params[2][]);
+        m_hour    = to!uint(params[3][]);
+        m_minute  = to!uint(params[4][]);
+        m_second  = (params.length == 6) ? to!uint(params[5][]) : 0;
         m_tag     = spec_tag;
         
         if (spec_tag == ASN1Tag.UTC_TIME)

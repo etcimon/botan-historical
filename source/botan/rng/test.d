@@ -84,7 +84,7 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
     
     static if (BOTAN_HAS_HMAC_DRBG) {
         if (rng_name == "HMAC_DRBG")
-            return new HMACDRBG(af.makeMac("HMAC(" ~ algo_name[1] ~ ")"), new AllOnceRNG(ikm));
+            return new HMAC_DRBG(af.makeMac("HMAC(" ~ algo_name[1] ~ ")"), new AllOnceRNG(ikm));
     }
     
     static if (BOTAN_HAS_X931_RNG) {

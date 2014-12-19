@@ -232,7 +232,7 @@ public:
     /**
     * Inject plaintext intended for counterparty
     */
-    void send(Alloc)(in Vector!( char, Alloc ) val)
+    void send(Alloc)(in FreeListRef!(VectorImpl!( char, Alloc )) val)
     {
         send(val.ptr, val.length);
     }

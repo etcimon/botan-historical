@@ -60,9 +60,9 @@ public:
     * @param iterations = the number of iterations to use (use 10K or more)
     */
     final OctetString deriveKey(Alloc)(size_t output_len,
-                                  in string passphrase,
-                                  ref const Vector!( ubyte, Alloc ) salt,
-                                  size_t iterations) const
+                                       in string passphrase,
+                                       in FreeListRef!(VectorImpl!( ubyte, Alloc )) salt,
+                                       size_t iterations) const
     {
         return deriveKey(output_len, passphrase, salt.ptr, salt.length, iterations);
     }
@@ -98,10 +98,10 @@ public:
     * @param iterations = is set to the number of iterations used
     */
     final OctetString deriveKey(Alloc)(size_t output_len,
-                                  in string passphrase,
-                                  ref const Vector!( ubyte, Alloc ) salt,
-                                  Duration loop_for,
-                                  ref size_t iterations) const
+                                       in string passphrase,
+                                       in Vector!( ubyte, Alloc ) salt,
+                                       Duration loop_for,
+                                       ref size_t iterations) const
     {
         return deriveKey(output_len, passphrase, salt.ptr, salt.length, loop_for, iterations);
     }

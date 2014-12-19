@@ -62,6 +62,7 @@ public:
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
     {
         m_priv = new ECPrivateKey(alg_id, key_bits, algoName, false);
+        super(m_priv);
     }
 
     /**
@@ -70,14 +71,15 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, in BigInt x = 0) 
+    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0)) 
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, false);
+        super(m_priv);
     }
 
     override Vector!ubyte publicValue() const { return super.publicValue(); }
 
-    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
+    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(m_priv); }
 
     alias m_priv this;
 
@@ -103,14 +105,14 @@ public:
     {
         m_curve = key.domain().getCurve();
         m_cofactor = key.domain().getCofactor();
-        l_times_priv = inverseMod(m_cofactor, key.domain().getOrder()) * key.privateValue();
+        m_l_times_priv = inverseMod(m_cofactor, key.domain().getOrder()) * key.privateValue();
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
-        PointGFp point = OS2ECP(w, w_len, m_curve);
+        PointGFp point = OS2ECP(w, w_len, m_curve.dup);
         
-        PointGFp S = (m_cofactor * point) * m_l_times_priv;
+        PointGFp S = (point * m_cofactor) * m_l_times_priv;
 
         assert(S.onTheCurve(), "ECDH agreed value was on the curve");
         

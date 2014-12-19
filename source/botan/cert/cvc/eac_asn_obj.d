@@ -37,7 +37,7 @@ public:
     /*
     * DER encode a EACTime
     */
-    override void encodeInto(DEREncoderImpl der) const
+    override void encodeInto(DEREncoder der) const
     {
         der.addObject(m_tag, ASN1Tag.APPLICATION,
                        encodedEacTime());
@@ -46,7 +46,7 @@ public:
     /*
     * Decode a BER encoded EACTime
     */
-    override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoder source)
     {
         BERObject obj = source.getNextObject();
         
@@ -157,12 +157,12 @@ public:
             else
             {
                 if (current.length > 0)
-                    params.pushBack(current);
+                    params.pushBack(current[]);
                 current.clear();
             }
         }
         if (current.length > 0)
-            params.pushBack(current);
+            params.pushBack(current[]);
         
         if (params.length != 3)
             throw new InvalidArgument("Invalid time specification " ~ time_str);
@@ -366,7 +366,7 @@ public:
     /*
     * DER encode an ASN1EACString
     */
-    override void encodeInto(DEREncoderImpl encoder) const
+    override void encodeInto(DEREncoder encoder) const
     {
         string value = iso8859();
         encoder.addObject(tagging(), ASN1Tag.APPLICATION, value);
@@ -375,7 +375,7 @@ public:
     /*
     * Decode a BER encoded ASN1EACString
     */
-    override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoder source)
     {
         BERObject obj = source.getNextObject();
         

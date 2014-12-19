@@ -283,7 +283,7 @@ public:
         
         SecureVector!ubyte mac;
         mac.swap(m_ghash);
-        mac.ptr[0 .. mac.length] ^= m_nonce.ptr[0 .. mac.length];
+        mac ^= m_nonce;
         m_text_len = 0;
         return mac;
     }

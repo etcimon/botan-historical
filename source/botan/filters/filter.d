@@ -7,7 +7,7 @@
 */
 module botan.filters.filter;
 
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.types;
 import botan.filters.secqueue;
 import botan.utils.exceptn;

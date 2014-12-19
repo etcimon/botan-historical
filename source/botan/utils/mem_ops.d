@@ -7,7 +7,7 @@
 module botan.utils.mem_ops;
 import botan.utils.types;
 /**
-* Zeroize memory
+* Zeroise memory
 * @param ptr = a pointer to memory to zero out
 * @param n = the number of bytes pointed to by ptr
 */
@@ -17,7 +17,7 @@ void zeroMem(void* ptr, size_t n)
 }
 
 /**
-* Zeroize memory
+* Zeroise memory
 * @param ptr = a pointer to an array
 * @param n = the number of Ts pointed to by ptr
 */

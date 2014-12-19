@@ -115,7 +115,7 @@ public:
 
 
 
-void TOOLHELP32_ITER(alias DATA_TYPE, alias FUNC_FIRST, alias FUNC_NEXT)(ref Entropy_Accumulator accum) {
+void TOOLHELP32_ITER(alias DATA_TYPE, alias FUNC_FIRST, alias FUNC_NEXT)(ref EntropyAccumulator accum) {
     if (!accum.polling_goal_achieved())
     {
         DATA_TYPE info;

@@ -17,6 +17,7 @@ import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;
+import std.concurrency;
 
 /**
 * Nyberg-Rueppel Public Key
@@ -38,11 +39,13 @@ public:
     /*
     * NRPublicKey Constructor
     */
-    this(in DLGroup grp, in BigInt y1)
+    this(DLGroup grp, BigInt y1)
     {
-        m_group = grp;
-        m_y = y1;
+		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
+
+	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
     alias m_pub this;
 
@@ -76,12 +79,13 @@ public:
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg)
     {
         if (x_arg == 0)
-            x_arg = BigInt.randomInteger(rng, BigInt(2), grp.getQ() - 1);
+            x_arg = BigInt.randomInteger(rng, BigInt(2), grp.getQ().dup - 1);
         
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
         m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
 
+		super(m_priv);
         if (x_arg == 0)
             m_priv.genCheck(rng);
         else
@@ -91,7 +95,10 @@ public:
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     { 
         m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
-        m_priv.m_y = powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP());
+       
+		super(m_priv);
+
+		m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
         
         m_priv.loadCheck(rng);
     }
@@ -127,7 +134,7 @@ public:
         m_q = nr.groupQ();
         m_x = nr.getX();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
-        m_mod_q = ModularReducer(nr.groupQ());
+        m_mod_q = ModularReducer(nr.groupQ().dup);
     }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
@@ -148,8 +155,8 @@ public:
                 k.randomize(rng, m_q.bits());
             while (k >= m_q);
             
-            c = m_mod_q.reduce(m_powermod_g_p(k) + f);
-            d = m_mod_q.reduce(k - x * c);
+            c = m_mod_q.reduce((*m_powermod_g_p)(k) + f);
+            d = m_mod_q.reduce(k - m_x.dup * c);
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());
@@ -184,9 +191,9 @@ public:
         m_q = nr.groupQ();
         m_y = nr.getY();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
-        m_powermod_y_p = FixedBasePowerMod(y, nr.groupP());
-        m_mod_p = ModularReducer(nr.groupP());
-        m_mod_q = ModularReducer(nr.groupQ());
+        m_powermod_y_p = FixedBasePowerMod(m_y, nr.groupP());
+        m_mod_p = ModularReducer(nr.groupP().dup);
+        m_mod_q = ModularReducer(nr.groupQ().dup);
     }
 
     override size_t messageParts() const { return 2; }
@@ -198,7 +205,6 @@ public:
     override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
         const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?
-        size_t msg_len = msg.length;
         if (msg_len != 2*q.bytes())
             throw new InvalidArgument("NR verification: Invalid signature");
         
@@ -208,11 +214,20 @@ public:
         if (c.isZero() || c >= q || d >= q)
             throw new InvalidArgument("NR verification: Invalid signature");
         import std.concurrency : spawn, receiveOnly, send, thisTid;
+        BigInt c_dup = c.dup;
+        BigInt res;
+        auto tid = spawn(
+            (shared(Tid) tid, shared(FixedBasePowerModImpl) powermod_y_p2, shared(BigInt*) c2, shared(BigInt*) res2) 
+    		{ 
+    			BigInt* ret = cast(BigInt*) res2;
+                *ret = (cast(FixedBasePowerModImpl)powermod_y_p2)(*cast(BigInt*)c2);
+    			send(cast(Tid)tid, true); 
+            }, 
+        cast(shared)thisTid, cast(shared(FixedBasePowerModImpl))*m_powermod_y_p, cast(shared(BigInt*))&c_dup, cast(shared(BigInt*))&res );
+        BigInt g_d = (*m_powermod_g_p)(d);
 
-        auto tid = spawn((Tid tid, FixedBasePowerMod powermod_y_p2, BigInt c2) { send(tid, powermod_y_p2(c2)); }, thisTid, m_powermod_y_p, c );
-        BigInt g_d = m_powermod_g_p(d);
-        
-        BigInt i = m_mod_p.multiply(g_d, receiveOnly!BigInt());
+        bool done = receiveOnly!bool();
+        BigInt i = m_mod_p.multiply(g_d, res);
         return BigInt.encodeLocked(m_mod_q.reduce(c - i));
     }
 private:

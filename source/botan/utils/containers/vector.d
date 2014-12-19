@@ -16,8 +16,14 @@ bool valueExists(T)(in Vector!T vec, in T val)
     return false;
 }
 
+template Vector(T, ALLOCATOR = VulnerableAllocator) 
+    if (!is (T == FreeListRef!(VectorImpl!(T, ALLOCATOR))))
+{
+    alias Vector = FreeListRef!(VectorImpl!(T, ALLOCATOR));
+}
+
 /// An array that uses a custom allocator.
-struct Vector(T, ALLOCATOR = VulnerableAllocator)
+struct VectorImpl(T, ALLOCATOR)
 {
     // Payload cannot be copied
     private struct Payload
@@ -34,8 +40,6 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
             T[] data = _payload.ptr[0 .. capacity];
             freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
         }
-
-        @disable this(this);
 
         void opAssign(Payload rhs)
         {
@@ -178,7 +182,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         }
     }
 
-    private alias Data = FreeListRef!Payload;
+    private alias Data = Payload;
     private Data _data;
 
     this(size_t elms) {
@@ -211,13 +215,13 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     /**
         Comparison for equality.
      */
-    bool opEquals(const Vector rhs) const
+    bool opEquals(const FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs) const
     {
         return opEquals(rhs);
     }
     
     /// ditto
-    bool opEquals(ref const Vector rhs) const
+    bool opEquals(ref const FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs) const
     {
         if (empty) return rhs.empty;
         if (rhs.empty) return false;
@@ -229,11 +233,11 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     */
     static struct Range
     {
-        private Vector _outer;
+        private VectorImpl!(T, ALLOCATOR) _outer;
         private size_t _a, _b;
         import std.traits : isNarrowString;
 
-        private this(ref Vector data, size_t a, size_t b)
+        private this(VectorImpl!(T, ALLOCATOR) data, size_t a, size_t b)
         {
             _outer = data;
             _a = a;
@@ -360,9 +364,9 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH n).
      */
-    @property Vector dup() const
+    @property auto dup() const
     {
-        return Vector(cast(T[])_data._payload);
+        return FreeListRef!(VectorImpl!(T, ALLOCATOR))(cast(T[])_data._payload);
     }
     
     /**
@@ -451,6 +455,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         return cast(string) _data._payload;
     }
+
     /**
         Returns a range that iterates over elements of the container from
         index $(D a) up to (excluding) index $(D b).
@@ -502,7 +507,12 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     {
         return _data._payload[i];
     }
-    
+
+    void opIndexAssign(U)(U val, size_t i)
+    {
+        _data._payload[i] = cast(T)val;
+    }
+
     ref const(T) opIndex(size_t i) const
     {
         return _data._payload[i];
@@ -520,8 +530,14 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         {
             _data.length = value.length;
             _data._payload.ptr[0 .. value.length] = value[0 .. $];
-        } else
-            _data._payload[] = value;
+        } else static if (is (Stuff == FreeListRef!(VectorImpl!(T, ALLOCATOR)))) {
+			_data.length = value._data.length;
+			_data._payload[] = value._data._payload[];
+		}
+		else {
+			_data.length = value.length;
+			_data._payload[] = value;
+		}
     }
     
     /// ditto
@@ -565,11 +581,10 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         Complexity: $(BIGOH n + m), where m is the number of elements in $(D
         stuff)
      */
-    Vector opBinary(string op, Stuff)(Stuff stuff)
+    auto opBinary(string op, Stuff)(Stuff stuff)
         if (op == "~")
     {
-        // TODO: optimize
-        Vector result;
+        FreeListRef!(VectorImpl!(T, ALLOCATOR)) result;
         // @@@BUG@@ result ~= this[] doesn't work
         auto r = this[];
         result ~= r;
@@ -577,14 +592,14 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         result ~= stuff[];
         return result;
     }
-    
+
     /**
         Forwards to $(D pushBack(stuff)).
      */
     void opOpAssign(string op, Stuff)(Stuff stuff)
         if (op == "~")
     {
-        static if (is (Stuff == typeof(this))) {
+        static if (is (Stuff == FreeListRef!(typeof(this)))) {
             insertBack(cast(T[]) stuff[]);
         }
         else
@@ -593,8 +608,8 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         }
     }
 
-    void swap(Vector other) {
-        this = other.dup;
+    void swap(FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
+        this._data._payload[0 .. $] = other._data._payload[0  .. $];
         other.clear();
     }
 
@@ -635,7 +650,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
     import std.traits : isNumeric;
 
     static if (is(T == ubyte))
-    int opCmp(in Vector!(T, ALLOCATOR) other) {
+    int opCmp(in FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
         if (this[] == other[])
             return 0;
         else if (this[] < other[])
@@ -683,7 +698,7 @@ struct Vector(T, ALLOCATOR = VulnerableAllocator)
         return _data.pushBack(cast(ubyte[]) stuff);
     }
 
-    size_t pushBack(U)(Vector!(U, ALLOCATOR) rhs)
+    size_t pushBack(U)(FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs)
     {
         return pushBack(rhs[]);
     }

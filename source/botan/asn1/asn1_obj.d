@@ -12,7 +12,7 @@ public import botan.asn1.ber_dec;
 public import botan.asn1.alg_id;
 public import botan.filters.data_src;
 import botan.utils.parsing;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.exceptn;
 import std.conv : to;
 import botan.utils.types;
@@ -66,13 +66,13 @@ public:
     * Encode whatever this object is into to
     * @param to = the DEREncoder that will be written to
     */
-    abstract void encodeInto(DEREncoderImpl to) const;
+    abstract void encodeInto(DEREncoder to) const;
 
     /**
     * Decode whatever this object is from from
     * @param from = the BERDecoder that will be read from
     */
-    abstract void decodeFrom(BERDecoderImpl from);
+    abstract void decodeFrom(BERDecoder from);
 
     ~this() {}
 }

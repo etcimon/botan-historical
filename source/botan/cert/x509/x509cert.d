@@ -210,7 +210,8 @@ public:
     */
     bool allowedUsage(in string usage) const
     {
-        foreach (constraint; exConstraints())
+        auto constraints = exConstraints();
+        foreach (constraint; constraints[])
             if (constraint == usage)
                 return true;
         
@@ -650,16 +651,16 @@ Vector!string lookupOids(in Vector!string input)
 {
     Vector!string output;
     
-    foreach (oid_name; input)
+    foreach (oid_name; input[])
         output.pushBack(OIDS.lookup(OID(oid_name)));
     return output;
 }
 
 
 bool certSubjectDnsMatch(in string name,
-                            const Vector!string cert_names)
+                         in Vector!string cert_names)
 {
-    foreach (const cn; cert_names)
+    foreach (const cn; cert_names[])
     {
         if (cn == name)
             return true;

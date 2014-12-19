@@ -26,7 +26,9 @@ class IFSchemePublicKey : PublicKey
 {
 public:
 
-    this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits, bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits, 
+         in string algo_name,
+         bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
         m_check_key = check_key;
         BERDecoder(key_bits)
@@ -35,24 +37,32 @@ public:
                 .decode(m_e)
                 .verifyEnd()
                 .endCons();
+        m_algo_name = algo_name;
     }
 
-    this(in BigInt n, in BigInt e, bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(BigInt n, BigInt e, in string algo_name, 
+         bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
         m_check_key = check_key;
+        m_algo_name = algo_name;
         m_n = n;
         m_e = e; 
+    }
+
+    /// Used for object casting to the right type in the factory.
+    final override @property string algoName() const {
+        return m_algo_name;
     }
 
     /*
     * Check IF Scheme Public Parameters
     */
-    override bool checkKey(RandomNumberGenerator rng, bool b) const
+    override bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
         if (m_check_key) {
             auto tmp = m_check_key;
-            m_check_key = null;
-            scope(exit) m_check_key = tmp;
+            (cast(IFSchemePublicKey)this).m_check_key = null;
+			scope(exit) (cast(IFSchemePublicKey)this).m_check_key = tmp;
             return m_check_key(rng, strong);
         }
 
@@ -80,12 +90,12 @@ public:
     /**
     * @return public modulus
     */
-    final BigInt getN() const { return m_n; }
+    final const(BigInt) getN() const { return m_n; }
 
     /**
     * @return public exponent
     */
-    final BigInt getE() const { return m_e; }
+    final const(BigInt) getE() const { return m_e; }
 
     final size_t maxInputBits() const { return (m_n.bits() - 1); }
 
@@ -102,9 +112,9 @@ public:
         return dlWorkFactor(m_n.bits());
     }
 
-package:
-
+protected:
     BigInt m_n, m_e;
+    const string m_algo_name;
 
     bool delegate(RandomNumberGenerator, bool) const m_check_key;
 }
@@ -116,15 +126,15 @@ package:
 final class IFSchemePrivateKey : IFSchemePublicKey, PrivateKey
 {
 public:
-    this(RandomNumberGenerator rng, in AlgorithmIdentifier, in SecureVector!ubyte key_bits,
-         bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(RandomNumberGenerator rng, in AlgorithmIdentifier aid, in SecureVector!ubyte key_bits,
+         in string algo_name, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-        m_check_key = check_key;
+		BigInt n, e;
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
-                .decode(m_n)
-                .decode(m_e)
+                .decode(n)
+                .decode(e)
                 .decode(m_d)
                 .decode(m_p)
                 .decode(m_q)
@@ -133,31 +143,35 @@ public:
                 .decode(m_c)
                 .endCons();
         
+		super(n, e, algo_name, check_key);
+
         loadCheck(rng);
     }
 
     this(RandomNumberGenerator rng,
-         in BigInt prime1,
-         in BigInt prime2,
-         in BigInt exp,
-         in BigInt d_exp,
-         in BigInt mod, 
+         BigInt prime1,
+         BigInt prime2,
+         BigInt exp,
+         BigInt d_exp,
+         BigInt mod, 
+         in string algo_name,
          bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-        m_check_key = check_key;
+		BigInt e = exp;
         m_p = prime1;
         m_q = prime2;
-        e = exp;
+		BigInt n = mod.isNonzero() ? mod : m_p.dup * m_q;
+		super(n, e, algo_name, check_key);
+
         m_d = d_exp;
-        n = mod.isNonzero() ? mod : m_p * m_q;
         
         if (m_d == 0)
         {
             BigInt inv_for_d = lcm(m_p - 1, m_q - 1);
-            if (e.isEven())
+            if (m_e.isEven())
                 inv_for_d >>= 1;
             
-            m_d = inverseMod(e, inv_for_d);
+            m_d = inverseMod(m_e, inv_for_d);
         }
         
         m_d1 = m_d % (m_p - 1);
@@ -175,15 +189,15 @@ public:
     {
         if (m_check_key) {
             auto tmp = m_check_key;
-            m_check_key = null;
-            scope(exit) m_check_key = tmp;
+            (cast(IFSchemePrivateKey)this).m_check_key = null;
+			scope(exit) (cast(IFSchemePrivateKey)this).m_check_key = tmp;
             return m_check_key(rng, strong);
         }
 
-        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
+        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p.dup*m_q != m_n)
             return false;
         
-        if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
+        if (m_d1 != m_d.dup % (m_p.dup - 1) || m_d2 != m_d.dup % (m_q.dup - 1) || m_c != inverseMod(m_q, m_p))
             return false;
         
         const size_t prob = (strong) ? 56 : 12;
@@ -197,23 +211,23 @@ public:
     * Get the first prime p.
     * @return prime p
     */
-    BigInt getP() const { return m_p; }
+    const(BigInt) getP() const { return m_p; }
 
     /**
     * Get the second prime q.
     * @return prime q
     */
-    BigInt getQ() const { return m_q; }
+	const(BigInt) getQ() const { return m_q; }
 
     /**
     * Get d with exp * d = 1 mod (p - 1, q - 1).
     * @return d
     */
-    BigInt getD() const { return m_d; }
+	const(BigInt) getD() const { return m_d; }
 
-    BigInt getC() const { return m_c; }
-    BigInt getD1() const { return m_d1; }
-    BigInt getD2() const { return m_d2; }
+	const(BigInt) getC() const { return m_c; }
+	const(BigInt) getD1() const { return m_d1; }
+	const(BigInt) getD2() const { return m_d2; }
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {
@@ -232,10 +246,6 @@ public:
                 .getContents();
     }
 
-package:
-    this(bool delegate(RandomNumberGenerator, bool) const check_key = null)
-    {
-        m_check_key = check_key;
-    }
+protected:
     BigInt m_d, m_p, m_q, m_d1, m_d2, m_c;
 }

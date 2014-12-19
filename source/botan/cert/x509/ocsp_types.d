@@ -66,7 +66,7 @@ public:
         return true;
     }
 
-    override void encodeInto(DEREncoderImpl to) const
+    override void encodeInto(DEREncoder to) const
     {
         to.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_hash_id)
@@ -77,7 +77,7 @@ public:
     }
 
 
-    override void decodeFrom(BERDecoderImpl from)
+    override void decodeFrom(BERDecoder from)
     {
         from.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_hash_id)
@@ -122,12 +122,12 @@ public:
 
     const(X509Time) nextUpdate() const { return m_nextupdate; }
 
-    override void encodeInto(DEREncoderImpl) const
+    override void encodeInto(DEREncoder) const
     {
         throw new Exception("Not implemented (SingleResponse::encodeInto)");
     }
 
-    override void decodeFrom(BERDecoderImpl from)
+    override void decodeFrom(BERDecoder from)
     {
         BERObject cert_status;
         X509Extensions extensions;

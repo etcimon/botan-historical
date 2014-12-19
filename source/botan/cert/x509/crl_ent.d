@@ -50,7 +50,7 @@ public:
     /*
     * DER encode a CRLEntry
     */
-    override void encodeInto(DEREncoderImpl to_) const
+    override void encodeInto(DEREncoder to_) const
     {
         X509Extensions extensions;
         
@@ -69,7 +69,7 @@ public:
     /*
     * Decode a BER encoded CRLEntry
     */
-    override void decodeFrom(BERDecoderImpl source)
+    override void decodeFrom(BERDecoder source)
     {
         BigInt serial_number_bn;
         m_reason = CRLCode.UNSPECIFIED;

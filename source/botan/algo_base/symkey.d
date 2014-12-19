@@ -11,7 +11,7 @@ import botan.rng.rng;
 import botan.filters.pipe;
 import botan.codec.hex;
 import std.algorithm;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 import botan.utils.types;
 // import string;
 

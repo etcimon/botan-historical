@@ -12,7 +12,7 @@ static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 public import botan.asn1.alg_id;
 public import botan.rng.rng;
 public import botan.pubkey.pk_keys;
-import botan.utils.memory.zeroize;
+import botan.utils.memory.zeroise;
 
 /**
 * Public key encryption interface

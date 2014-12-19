@@ -4,7 +4,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.utils.memory.zeroize;
+module botan.utils.memory.zeroise;
 
 import botan.utils.mem_ops;
 import std.algorithm;
@@ -13,9 +13,9 @@ import botan.utils.memory.memory;
 import botan.utils.memory.noswap;
 import std.traits : ReturnType;
 
-alias SecureAllocator = ZeroizeAllocator!VulnerableAllocator;
+alias SecureAllocator = ZeroiseAllocator!VulnerableAllocator;
 
-final class ZeroizeAllocator(Base : Allocator)
+final class ZeroiseAllocator(Base : Allocator)
 {
     private {
         shared NoSwapAllocator m_primary;
@@ -47,7 +47,7 @@ final class ZeroizeAllocator(Base : Allocator)
 
 alias SecureVector(T) = Vector!(T, SecureAllocator);
 
-Vector!(T, VulnerableAllocator) unlock(T, ALLOC)(in Vector!(T, ALLOC) input)
+Vector!(T, VulnerableAllocator) unlock(T, ALLOC)(FreeListRef!(VectorImpl!(T, ALLOC)) input)
     if (is(ALLOC == SecureAllocator))
 {
     Vector!(T, VulnerableAllocator) output = Vector!T(input.length);
@@ -55,14 +55,14 @@ Vector!(T, VulnerableAllocator) unlock(T, ALLOC)(in Vector!(T, ALLOC) input)
     return output;
 }
 
-size_t bufferInsert(T, Alloc)(Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
+size_t bufferInsert(T, Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) buf, size_t buf_offset, in T* input, size_t input_length)
 {
     const size_t to_copy = min(input_length, buf.length - buf_offset);
     copyMem(&buf[buf_offset], input, to_copy);
     return to_copy;
 }
 
-size_t bufferInsert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, in Vector!( T, Alloc2 ) input)
+size_t bufferInsert(T, Alloc, Alloc2)(FreeListRef!(VectorImpl!(T, Alloc)) buf, size_t buf_offset, in FreeListRef!(VectorImpl!(T, Alloc2)) input)
 {
     const size_t to_copy = min(input.length, buf.length - buf_offset);
     copyMem(&buf[buf_offset], input.ptr, to_copy);
@@ -73,16 +73,20 @@ size_t bufferInsert(T, Alloc, Alloc2)(Vector!(T, Alloc) buf, size_t buf_offset, 
 * Zeroise the values; length remains unchanged
 * @param vec = the vector to zeroise
 */
-void zeroise(T, Alloc)(Vector!(T, Alloc) vec)
+void zeroise(T, Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec)
 {
     clearMem(vec.ptr, vec.length);
+}
+
+void zeroise(T)(T[] mem) {
+	clearMem(mem.ptr, mem.length);
 }
 
 /**
 * Zeroise the values then free the memory
 * @param vec = the vector to zeroise and free
 */
-void zap(T, Alloc)(Vector!(T, Alloc) vec)
+void zap(T, Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec)
 {
     import std.traits : hasIndirections;
     static if (!hasIndirections!T)

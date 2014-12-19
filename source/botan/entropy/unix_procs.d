@@ -45,7 +45,7 @@ public:
         {
             auto sources = getDefaultSources();
             
-            foreach (src; sources)
+            foreach (src; sources[])
             {
                 const string path = find_full_path_if_exists(m_trusted_paths, src[0]);
                 if (path != "")
@@ -74,7 +74,7 @@ public:
             
             Vector!int fds;
             
-            foreach (ref proc; m_procs)
+            foreach (ref proc; m_procs[])
             {
                 int fd = proc.fd();
                 if (fd > 0)
@@ -100,7 +100,7 @@ public:
             if (select(max_fd + 1, &read_set, null, null, &timeout) < 0)
                 return; // or continue?
             
-            foreach (ref proc; m_procs)
+            foreach (ref proc; m_procs[])
             {
                 int fd = proc.fd();
                 
@@ -318,7 +318,7 @@ private:
 
 string find_full_path_if_exists(in Vector!string trusted_path, in string proc)
 {
-    foreach (dir; trusted_path)
+    foreach (dir; trusted_path[])
     {
         const string full_path = dir ~ "/" ~ proc;
         if (access(full_path.toStringz, X_OK) == 0)
