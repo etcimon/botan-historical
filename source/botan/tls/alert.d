@@ -81,7 +81,7 @@ public:
     */
     string typeString() const
     {
-        switch(type())
+        final switch(type())
         {
             case CLOSE_NOTIFY:
                 return "close_notify";
@@ -151,14 +151,7 @@ public:
             case HEARTBEAT_PAYLOAD:
                 return "heartbeat_payload";
         }
-        
-        /*
-    * This is effectively the default case for the switch above, but we
-    * leave it out so that when an alert type is added to the enum the
-    * compiler can warn us that it is not included in the switch
-    * statement.
-    */
-        return "unrecognized_alert_" ~ to!string(type());
+
     }
 
     /**
@@ -181,14 +174,14 @@ public:
         if (buf.length != 2)
             throw new DecodingError("TLSAlert: Bad size " ~ to!string(buf.length) ~ " for alert message");
         
-        if (buf[0] == 1)        m_fatal = false;
+        if (buf[0] == 1)          m_fatal = false;
         else if (buf[0] == 2)     m_fatal = true;
         else
             throw new DecodingError("TLSAlert: Bad code for alert level");
         
         const ubyte dc = buf[1];
         
-        m_type_code = cast(Type)(dc);
+        m_type_code = cast(TLSAlertType)(dc);
     }
 
     /**

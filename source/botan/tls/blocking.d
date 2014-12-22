@@ -15,8 +15,9 @@ import botan.rng.rng;
 import botan.tls.channel;
 import botan.tls.session_manager;
 import botan.tls.version_;
+import botan.utils.containers.circular_buffer;
 
-alias Secure_Deque(T) = Vector!( T, SecureAllocator);
+alias SecureRingBuffer(T) = CircularBuffer!( T, 0, SecureAllocator);
 
 /**
 * Blocking TLS Client
@@ -24,7 +25,7 @@ alias Secure_Deque(T) = Vector!( T, SecureAllocator);
 class TLSBlockingClient
 {
 public:
-    this(size_t delegate(ref ubyte[]) read_fn,
+    this(size_t delegate(in ubyte[]) read_fn,
          void delegate(in ubyte[]) write_fn,
          TLSSessionManager session_manager,
          TLSCredentialsManager creds,
@@ -35,8 +36,8 @@ public:
          string delegate(string[]) next_protocol = null)
     {
         m_read_fn = read_fn;
-        m_channel = new TLSChannel(write_fn, &data_cb, &alert_cb, &handshake_cb, session_manager, creds,
-                                    policy, rng, server_info, offer_version, next_protocol);
+        m_channel = new TLSClient(write_fn, &dataCb, &alertCb, &handshakeCb, session_manager, creds,
+                                   policy, rng, server_info, offer_version, next_protocol);
     }
 
     /**
@@ -48,7 +49,8 @@ public:
         
         while (!m_channel.isClosed() && !m_channel.isActive())
         {
-            const size_t from_socket = m_read_fn(readbuf[]);
+            ubyte[] readref = readbuf.ptr[0 .. readbuf.length];
+            const size_t from_socket = m_read_fn(readref);
             m_channel.receivedData(readbuf.ptr, from_socket);
         }
     }
@@ -62,38 +64,33 @@ public:
     /**
     * Blocking read, will return at least 1 ubyte or 0 on connection close
     */
-    final size_t read(const(ubyte)* buf, size_t buf_len)
+    final size_t read(ubyte* buf, size_t buf_len)
     {
         Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
         
         while (m_plaintext.empty && !m_channel.isClosed())
         {
-            const size_t from_socket = m_read_fn(readbuf.ptr, readbuf.length);
+            const size_t from_socket = m_read_fn(readbuf.ptr[0 .. readbuf.length]);
             m_channel.receivedData(readbuf.ptr, from_socket);
         }
         
         const size_t returned = std.algorithm.min(buf_len, m_plaintext.length);
-        
-        foreach (size_t i; 0 .. returned)
-            buf[i] = m_plaintext[i];
-        m_plaintext.erase(m_plaintext.ptr, m_plaintext.ptr + returned);
+        m_plaintext.read(buf[0 .. returned]);
 
-        assert(returned == 0 && m_channel.isClosed(),
-                                 "Only return zero if channel is closed");
+        assert(returned == 0 && m_channel.isClosed(), "Only return zero if channel is closed");
         
         return returned;
     }
 
     final void write(const(ubyte)* buf, size_t len) { m_channel.send(buf, len); }
 
-    final TLSChannel underlyingChannel() const { return m_channel; }
-    final TLSChannel underlyingChannel() { return m_channel; }
+    final inout(TLSChannel) underlyingChannel() inout { return m_channel; }
 
     final void close() { m_channel.close(); }
 
     final bool isClosed() const { return m_channel.isClosed(); }
 
-    final X509Certificate[] peerCertChain() const
+    final Vector!X509Certificate peerCertChain() const
     { return m_channel.peerCertChain(); }
 
     ~this() {}
@@ -118,7 +115,7 @@ private:
 
     final void dataCb(in ubyte[] data)
     {
-        m_plaintext.insert(m_plaintext.end(), data.ptr, data.length);
+        m_plaintext.put(data);
     }
 
     final void alertCb(in TLSAlert alert, in ubyte[])
@@ -126,7 +123,7 @@ private:
         this.alertNotification(alert);
     }
 
-    size_t delegate(ref ubyte[]) m_read_fn;
+    size_t delegate(in ubyte[]) m_read_fn;
     TLSClient m_channel;
-    Secure_Deque!ubyte m_plaintext;
+    SecureRingBuffer!ubyte m_plaintext;
 }

@@ -32,7 +32,7 @@ public:
             length -= (m_buffer.length - m_position);
             input += (m_buffer.length - m_position);
             output += (m_buffer.length - m_position);
-            chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(ubyte[64]*) m_state.ptr);
+            chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(uint[16]*) m_state.ptr);
             
             ++m_state[12];
             m_state[13] += (m_state[12] == 0);
@@ -59,7 +59,7 @@ public:
         m_state[14] = loadLittleEndian!uint(iv, 0);
         m_state[15] = loadLittleEndian!uint(iv, 1);
         
-        chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(ubyte[64]*) m_state.ptr);
+        chacha(*cast(ubyte[64]*) m_buffer.ptr, *cast(uint[16]*) m_state.ptr);
         ++m_state[12];
         m_state[13] += (m_state[12] == 0);
         
@@ -171,7 +171,7 @@ protected:
         m_position = 0;
         
         const ubyte[8] ZERO;
-        setIv(ZERO, ZERO.length);
+        setIv(ZERO.ptr, ZERO.length);
     }
 
 

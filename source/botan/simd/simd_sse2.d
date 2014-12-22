@@ -24,17 +24,19 @@ public:
 
     this(uint B0, uint B1, uint B2, uint B3)
     {
-        m_reg = _mm_set_epi32!(B0, B1, B2, B3)();
+        m_reg = _mm_set_epi32(B0, B1, B2, B3);
     }
 
     this(uint B)
     {
-        m_reg = _mm_set1_epi32!(B)();
+        m_reg = _mm_set1_epi32(B);
     }
 
     static SIMDSSE2 loadLittleEndian(const void* input)
     {
-        return _mm_loadu_si128(cast(const(__m128i)*)(input));
+        SIMDSSE2 simd;
+        simd.m_reg = _mm_loadu_si128(cast(const(__m128i)*)(input));
+        return simd;
     }
 
     static SIMDSSE2 loadBigEndian(in void* input)
@@ -164,10 +166,10 @@ public:
     static void transpose(ref SIMDSSE2 B0, ref SIMDSSE2 B1,
                           ref SIMDSSE2 B2, ref SIMDSSE2 B3)
     {
-        __m128i T0 = _mm_unpacklo_epi32(B0.reg, B1.reg);
-        __m128i T1 = _mm_unpacklo_epi32(B2.reg, B3.reg);
-        __m128i T2 = _mm_unpackhi_epi32(B0.reg, B1.reg);
-        __m128i T3 = _mm_unpackhi_epi32(B2.reg, B3.reg);
+        __m128i T0 = _mm_unpacklo_epi32(B0.m_reg, B1.m_reg);
+        __m128i T1 = _mm_unpacklo_epi32(B2.m_reg, B3.m_reg);
+        __m128i T2 = _mm_unpackhi_epi32(B0.m_reg, B1.m_reg);
+        __m128i T3 = _mm_unpackhi_epi32(B2.m_reg, B3.m_reg);
         B0.m_reg = _mm_unpacklo_epi64(T0, T1);
         B1.m_reg = _mm_unpackhi_epi64(T0, T1);
         B2.m_reg = _mm_unpacklo_epi64(T2, T3);

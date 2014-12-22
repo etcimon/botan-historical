@@ -27,8 +27,9 @@ import botan.utils.rounding;
 import botan.utils.containers.multimap;
 import botan.utils.loadstor;
 import botan.utils.types;
-// import string;
+import botan.utils.get_byte;
 import botan.utils.containers.hashmap;
+import std.string : toStringz;
 
 /**
 * Generic interface for TLS endpoint
@@ -60,15 +61,15 @@ public:
                 size_t consumed = 0;
                 
                 const size_t needed = readRecord(m_readbuf,
-                                                  input,
-                                                  input_size,
-                                                  consumed,
-                                                  record,
-                                                  &record_sequence,
-                                                  &record_version,
-                                                  &record_type,
-                                                  sequenceNumbers(),
-                                                  get_cipherstate);
+                                                 input,
+                                                 input_size,
+                                                 consumed,
+                                                 record,
+                                                 record_sequence,
+                                                 record_version,
+                                                 record_type,
+                                                 sequenceNumbers(),
+                                                 get_cipherstate);
                 
                 assert(consumed <= input_size, "Record reader consumed sane amount");
                 
@@ -92,9 +93,7 @@ public:
                             sequenceNumbers().readAccept(record_sequence);
                     }
                     
-                    m_pending_state.handshakeIo().addRecord(unlock(record),
-                                                              record_type,
-                                                              record_sequence);
+                    m_pending_state.handshakeIo().addRecord(unlock(record), record_type, record_sequence);
                     
                     while (true)
                     {
@@ -104,8 +103,8 @@ public:
                             if (msg.first == HANDSHAKE_NONE) // no full handshake yet
                                 break;
                             
-                            processHandshakeMsg(activeState(), *pending,
-                                                  msg.first, msg.second);
+                            processHandshakeMsg(activeState(), pending,
+                                                msg.first, msg.second);
                         } else break;
                     }
                 }
@@ -130,7 +129,7 @@ public:
                     }
                     else
                     {
-                        m_alert_cb(TLSAlert(TLSAlert.HEARTBEAT_PAYLOAD), payload[]);
+                        m_alert_cb(TLSAlert(TLSAlert.HEARTBEAT_PAYLOAD), cast(ubyte[])payload[]);
                     }
                 }
                 else if (record_type == APPLICATION_DATA)
@@ -144,7 +143,7 @@ public:
                     * following record. Avoid spurious callbacks.
                     */
                     if (record.length > 0)
-                        m_data_cb(record[]);
+                        m_data_cb(cast(ubyte[])record[]);
                 }
                 else if (record_type == ALERT)
                 {
@@ -284,7 +283,7 @@ public:
     */
     bool isActive() const
     {
-        return (activeState() != null);
+        return (activeState() !is null);
     }
 
     /**
@@ -301,7 +300,7 @@ public:
         * received a connection. This case is detectable by also lacking
         * m_sequence_numbers
         */
-        return (m_sequence_numbers != null);
+        return (*m_sequence_numbers !is null);
     }
 
     /**
@@ -373,7 +372,7 @@ public:
     Vector!X509Certificate peerCertChain() const
     {
         if (HandshakeState active = activeState())
-            return getPeerCertChain(*active);
+            return getPeerCertChain(active);
         return Vector!X509Certificate();
     }
 
@@ -385,8 +384,8 @@ public:
     * @return key of length bytes
     */
     SymmetricKey keyMaterialExport(in string label,
-                                     in string context,
-                                     size_t length) const
+                                   in string context,
+                                   size_t length) const
     {
         if (auto active = activeState())
         {
@@ -398,7 +397,7 @@ public:
             salt ~= label;
             salt ~= active.clientHello().random();
             salt ~= active.serverHello().random();
-            
+
             if (context != "")
             {
                 size_t context_size = context.length;
@@ -444,9 +443,9 @@ public:
 protected:
 
     abstract void processHandshakeMsg(in HandshakeState active_state,
-                                                  HandshakeState pending_state,
-                                                  HandshakeType type,
-                                                  in Vector!ubyte contents);
+                                      HandshakeState pending_state,
+                                      HandshakeType type,
+                                      in Vector!ubyte contents);
 
     abstract void initiateHandshake(HandshakeState state,
                                               bool force_full_renegotiation);
@@ -534,10 +533,10 @@ protected:
         
         // flip side as we are reading
         ConnectionCipherState read_state = ConnectionCipherState(pending.Version(),
-                                                                     (side == CLIENT) ? SERVER : CLIENT,
-                                                                     false,
-                                                                     pending.ciphersuite(),
-                                                                     pending.sessionKeys());
+                                                                 (side == CLIENT) ? SERVER : CLIENT,
+                                                                 false,
+                                                                 pending.ciphersuite(),
+                                                                 pending.sessionKeys());
         
         m_read_cipher_states[epoch] = read_state;
     }
@@ -558,10 +557,10 @@ protected:
         assert(m_write_cipher_states.count(epoch) == 0, "No write cipher state currently set for next epoch");
         
         ConnectionCipherState write_state = new ConnectionCipherState(pending.Version(),
-                                                                          side,
-                                                                          true,
-                                                                          pending.ciphersuite(),
-                                                                          pending.sessionKeys());
+                                                                      side,
+                                                                      true,
+                                                                      pending.ciphersuite(),
+                                                                      pending.sessionKeys());
         
         m_write_cipher_states[epoch] = write_state;
     }

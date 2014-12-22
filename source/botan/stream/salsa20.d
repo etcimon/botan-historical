@@ -156,7 +156,7 @@ protected:
         m_position = 0;
         
         const ubyte[8] ZERO;
-        setIv(ZERO, ZERO.length);
+        setIv(ZERO.ptr, ZERO.length);
     }
 
     SecureVector!uint m_state;

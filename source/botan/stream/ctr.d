@@ -97,7 +97,7 @@ public:
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_cipher.setKey(key, key_len);
+        m_cipher.setKey(key, length);
         
         // Set a default all-zeros IV
         setIv(null, 0);

@@ -340,8 +340,8 @@ size_t readRecord(SecureVector!ubyte readbuf,
                    ref size_t consumed,
                    SecureVector!ubyte record,
                    ref ulong record_sequence,
-                   TLSProtocolVersion record_version,
-                   RecordType record_type,
+                   ref TLSProtocolVersion record_version,
+                   ref RecordType record_type,
                    ConnectionSequenceNumbers sequence_numbers,
                    ConnectionCipherState delegate(ushort) get_cipherstate)
 {
@@ -366,8 +366,8 @@ size_t readRecord(SecureVector!ubyte readbuf,
             const size_t record_len = make_ushort(readbuf[0], readbuf[1]) & 0x7FFF;
             
             if (size_t needed = fillBufferTo(readbuf,
-                                               input, input_sz, consumed,
-                                               record_len + 2))
+                                             input, input_sz, consumed,
+                                             record_len + 2))
                 return needed;
             
             assert(readbuf.length == (record_len + 2), "Have the entire SSLv2 hello");

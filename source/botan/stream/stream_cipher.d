@@ -28,7 +28,7 @@ public:
     * @param len = the length of buf in bytes
     */
     final void cipher1(const(ubyte)* buf, size_t len)
-    { cipher(buf, buf, len); }
+    { cipher(buf, cast(ubyte*)buf, len); }
 
     /**
     * Encrypt or decrypt a message

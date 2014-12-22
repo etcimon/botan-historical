@@ -29,8 +29,20 @@ __m128i _mm_set1_epi32 (int i)() {
     return *cast(__m128i*) &vec;
 }
 
+// _mm_set1_epi32
+__m128i _mm_set1_epi32 (int i) {
+    int4 vec = [i, i, i, i];
+    return *cast(__m128i*) &vec;
+}
+
 // _mm_set_epi32
 immutable(__m128i) _mm_set_epi32 (int i, int j, int k, int l)() {
+    int4 vec = [i, j, k, l];
+    return *cast(immutable(__m128i)*) &vec;
+}
+
+// _mm_set_epi32
+immutable(__m128i) _mm_set_epi32 (int i, int j, int k, int l) {
     int4 vec = [i, j, k, l];
     return *cast(immutable(__m128i)*) &vec;
 }

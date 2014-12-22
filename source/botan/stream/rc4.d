@@ -13,6 +13,7 @@ import botan.stream.stream_cipher;
 import botan.utils.types;
 import botan.utils.xor_buf;
 import botan.utils.rounding;
+import std.conv : to;
 
 /**
 * RC4 stream cipher
@@ -53,7 +54,7 @@ public:
     @property string name() const
     {
         if (m_SKIP == 0)    return "RC4";
-        if (m_SKIP == 256) return "MARK-4";
+        if (m_SKIP == 256)  return "MARK-4";
         else                return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
     }
 
