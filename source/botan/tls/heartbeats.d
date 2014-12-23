@@ -29,15 +29,15 @@ public:
     {
         Vector!ubyte send_buf = Vector!ubyte(3 + m_payload.length + 16);
         send_buf[0] = m_type;
-        send_buf[1] = get_byte!ushort(0, m_payload.length);
-        send_buf[2] = get_byte!ushort(1, m_payload.length);
+		send_buf[1] = get_byte(0, cast(ushort) m_payload.length);
+		send_buf[2] = get_byte(1, cast(ushort) m_payload.length);
         copyMem(&send_buf[3], m_payload.ptr, m_payload.length);
         // leave padding as all zeros
         
         return send_buf;
     }
 
-    Vector!ubyte payload() const { return m_payload; }
+    const(Vector!ubyte) payload() const { return m_payload; }
 
     bool isRequest() const { return m_type == REQUEST; }
 
@@ -63,7 +63,7 @@ public:
          size_t payload_len) 
     {
         m_type = type;
-        m_payload = Vector!ubyte(payload, payload + payload_len);
+        m_payload = Vector!ubyte(payload[0 .. payload_len]);
     }
 private:
     MessageType m_type;

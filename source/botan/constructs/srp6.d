@@ -6,6 +6,8 @@
 */
 module botan.constructs.srp6;
 
+import botan.constants;
+static if (BOTAN_HAS_SRP6):
 import botan.math.bigint.bigint;
 import botan.hash.hash;
 import botan.rng.rng;
@@ -14,8 +16,6 @@ import botan.pubkey.algo.dl_group;
 import botan.libstate.libstate;
 import botan.math.numbertheory.numthry;
 import botan.utils.types;
-
-// import string;
 
 /**
 * SRP6a Client side

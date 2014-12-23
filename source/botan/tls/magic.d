@@ -13,7 +13,7 @@ package:
 /**
 * Protocol Constants for SSL/TLS
 */
-alias SizeLimits = uint;
+alias SizeLimits = size_t;
 enum : SizeLimits {
     TLS_HEADER_SIZE     = 5,
     DTLS_HEADER_SIZE    = TLS_HEADER_SIZE + 8,

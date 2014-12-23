@@ -368,7 +368,7 @@ public:
     
     BERDecoder decodeIntegerType(T)(ref T output)
     {
-        return decode_integer_type!T(output, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
+        return decodeIntegerType!T(output, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
     }
     
     BERDecoder decodeIntegerType(T)(ref T output,

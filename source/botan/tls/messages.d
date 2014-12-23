@@ -29,6 +29,8 @@ import botan.constructs.srp6;
 import botan.utils.loadstor;
 import botan.constructs.srp6;
 import botan.math.bigint.bigint;
+import botan.math.ec_gfp.ec_group;
+import botan.math.ec_gfp.point_gfp;
 import botan.pubkey.pkcs8;
 import botan.pubkey.pubkey;
 import botan.pubkey.algo.dh;
@@ -59,7 +61,7 @@ interface HandshakeMessage
 public:
     abstract HandshakeType type() const;
     
-    abstract Vector!ubyte serialize() const;
+    abstract const(Vector!ubyte) serialize() const;
 }
 
 /**
@@ -68,26 +70,26 @@ public:
 final class HelloVerifyRequest : HandshakeMessage
 {
 public:
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         /* DTLS 1.2 server implementations SHOULD use DTLS version 1.0
             regardless of the version of TLS that is expected to be
             negotiated (RFC 6347, section 4.2.1)
         */
             
-        TLSProtocolVersion format_version = TLSProtocolVersion(TLSProtocolVersion.DTLSV10);
+        TLSProtocolVersion format_version = TLSProtocolVersion(TLSProtocolVersion.DTLS_V10);
         
         Vector!ubyte bits;
         bits.pushBack(format_version.majorVersion());
         bits.pushBack(format_version.minorVersion());
         bits.pushBack(cast(ubyte) m_cookie.length);
-        bits ~= m_cookie;
+        bits ~= m_cookie[];
         return bits;
     }
 
     override HandshakeType type() const { return HELLO_VERIFY_REQUEST; }
 
-    Vector!ubyte cookie() const { return m_cookie; }
+    const(Vector!ubyte) cookie() const { return m_cookie; }
 
     this(in Vector!ubyte buf)
     {
@@ -110,7 +112,7 @@ public:
 
     this(in Vector!ubyte client_hello_bits, in string client_identity, in SymmetricKey secret_key)
     {
-        Unique!MessageAuthenticationCode hmac = getMac("HMAC(SHA-256)");
+        Unique!MessageAuthenticationCode hmac = retrieveMac("HMAC(SHA-256)").clone();
         hmac.setKey(secret_key);
         
         hmac.updateBigEndian(client_hello_bits.length);
@@ -132,15 +134,15 @@ final class ClientHello : HandshakeMessage
 public:
     override HandshakeType type() const { return CLIENT_HELLO; }
 
-    TLSProtocolVersion Version() const { return m_version; }
+    const(TLSProtocolVersion) Version() const { return m_version; }
 
-    Vector!ubyte random() const { return m_random; }
+    const(Vector!ubyte) random() const { return m_random; }
 
-    Vector!ubyte sessionId() const { return m_session_id; }
+    const(Vector!ubyte) sessionId() const { return m_session_id; }
 
-    Vector!ushort ciphersuites() const { return m_suites; }
+    const(Vector!ushort) ciphersuites() const { return m_suites; }
 
-    Vector!ubyte compressionMethods() const { return m_comp_methods; }
+    const(Vector!ubyte) compressionMethods() const { return m_comp_methods; }
 
     /*
     * Check if we offered this ciphersuite
@@ -153,14 +155,14 @@ public:
         return false;
     }
 
-    Vector!( Pair!(string, string) ) supportedAlgos() const
+    const(Vector!( Pair!(string, string) )) supportedAlgos() const
     {
         if (SignatureAlgorithms sigs = m_extensions.get!SignatureAlgorithms())
             return sigs.supportedSignatureAlgorthms();
         return Vector!( Pair!(string, string) )();
     }
 
-    Vector!string supportedEccCurves() const
+    const(Vector!string) supportedEccCurves() const
     {
         if (SupportedEllipticCurves ecc = m_extensions.get!SupportedEllipticCurves())
             return ecc.curves();
@@ -183,10 +185,10 @@ public:
 
     bool secureRenegotiation() const
     {
-        return m_extensions.get!RenegotiationExtension();
+        return m_extensions.get!RenegotiationExtension() !is null;
     }
 
-    Vector!ubyte renegotiationInfo() const
+    const(Vector!ubyte) renegotiationInfo() const
     {
         if (RenegotiationExtension reneg = m_extensions.get!RenegotiationExtension())
             return reneg.renegotiationInfo();
@@ -195,7 +197,7 @@ public:
 
     bool nextProtocolNotification() const
     {
-        return m_extensions.get!NextProtocolNotification();
+        return m_extensions.get!NextProtocolNotification() !is null;
     }
 
     size_t fragmentSize() const
@@ -207,10 +209,10 @@ public:
 
     bool supportsSessionTicket() const
     {
-        return m_extensions.get!SessionTicket();
+        return m_extensions.get!SessionTicket() !is null;
     }
 
-    Vector!ubyte sessionTicket() const
+    const(Vector!ubyte) sessionTicket() const
     {
         if (SessionTicket ticket = m_extensions.get!SessionTicket())
             return ticket.contents();
@@ -219,7 +221,7 @@ public:
 
     bool supportsHeartbeats() const
     {
-        return m_extensions.get!HeartbeatSupportIndicator();
+        return m_extensions.get!HeartbeatSupportIndicator() !is null;
     }
 
     bool peerCanSendHeartbeats() const
@@ -234,10 +236,10 @@ public:
         if (!m_version.isDatagramProtocol())
             throw new Exception("Cannot use hello cookie with stream protocol");
         
-        m_hello_cookie = hello_verify.cookie();
+        m_hello_cookie = hello_verify.cookie().dup;
     }
 
-    HandshakeExtensionType[] extensionTypes() const
+    const(Vector!HandshakeExtensionType) extensionTypes() const
     { return m_extensions.extensionTypes(); }
 
     /*
@@ -248,7 +250,7 @@ public:
          TLSProtocolVersion _version,
          in TLSPolicy policy,
          RandomNumberGenerator rng,
-         in Vector!ubyte reneg_info,
+         Vector!ubyte reneg_info,
          bool next_protocol,
          in string hostname,
          in string srp_identifier) 
@@ -284,12 +286,12 @@ public:
          HandshakeHash hash,
          in TLSPolicy policy,
          RandomNumberGenerator rng,
-         in Vector!ubyte reneg_info,
+         Vector!ubyte reneg_info,
          const TLSSession session,
          bool next_protocol = false)
     { 
         m_version = session.Version();
-        m_session_id = session.sessionId();
+        m_session_id = session.sessionId().dup;
         m_random = makeHelloRandom(rng);
         m_suites = policy.ciphersuiteList(m_version, (session.srpIdentifier() != ""));
         m_comp_methods = policy.compression();
@@ -302,7 +304,7 @@ public:
         m_extensions.add(new RenegotiationExtension(reneg_info));
         m_extensions.add(new SRPIdentifier(session.srpIdentifier()));
         m_extensions.add(new ServerNameIndicator(session.serverInfo().hostname()));
-        m_extensions.add(new SessionTicket(session.sessionTicket()));
+        m_extensions.add(new SessionTicket(session.sessionTicket().dup));
         m_extensions.add(new SupportedEllipticCurves(policy.allowedEccCurves()));
         
         if (policy.negotiateHeartbeatSupport())
@@ -329,20 +331,20 @@ public:
         if (type == CLIENT_HELLO)
             deserialize(buf);
         else
-            deserialize_sslv2(buf);
+            deserializeSslv2(buf);
     }
 
 protected:
     /*
     * Serialize a TLSClient Hello message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf;
         
         buf.pushBack(m_version.majorVersion());
         buf.pushBack(m_version.minorVersion());
-        buf ~= m_random;
+        buf ~= m_random[];
         
         appendTlsLengthValue(buf, m_session_id, 1);
         
@@ -358,7 +360,7 @@ protected:
         * renegotiating with a modern server)
         */
         
-        buf += m_extensions.serialize();
+        buf ~= m_extensions.serialize()[];
         
         return buf;
     }
@@ -381,7 +383,7 @@ protected:
         
         m_version = TLSProtocolVersion(major_version, minor_version);
         
-        m_random = reader.get_fixed!ubyte(32);
+        m_random = reader.getFixed!ubyte(32);
         
         if (m_version.isDatagramProtocol())
             m_hello_cookie = reader.getRange!ubyte(1, 0, 255);
@@ -464,13 +466,13 @@ private:
 final class ServerHello : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return SERVER_HELLO; }
+    override const(HandshakeType) type() const { return SERVER_HELLO; }
 
     TLSProtocolVersion Version() const { return m_version; }
 
-    Vector!ubyte random() const { return m_random; }
+    const(Vector!ubyte) random() const { return m_random; }
 
-    Vector!ubyte sessionId() const { return m_session_id; }
+    const(Vector!ubyte) sessionId() const { return m_session_id; }
 
     ushort ciphersuite() const { return m_ciphersuite; }
 
@@ -478,10 +480,10 @@ public:
 
     bool secureRenegotiation() const
     {
-        return m_extensions.get!RenegotiationExtension();
+        return m_extensions.get!RenegotiationExtension() !is null;
     }
 
-    Vector!ubyte renegotiationInfo() const
+    const(Vector!ubyte) renegotiationInfo() const
     {
         if (RenegotiationExtension reneg = m_extensions.get!RenegotiationExtension())
             return reneg.renegotiationInfo();
@@ -490,10 +492,10 @@ public:
 
     bool nextProtocolNotification() const
     {
-        return m_extensions.get!NextProtocolNotification();
+        return m_extensions.get!NextProtocolNotification() !is null;
     }
 
-    Vector!string nextProtocols() const
+    const(Vector!string) nextProtocols() const
     {
         if (NextProtocolNotification npn = m_extensions.get!NextProtocolNotification())
             return npn.protocols();
@@ -509,12 +511,12 @@ public:
 
     bool supportsSessionTicket() const
     {
-        return m_extensions.get!SessionTicket();
+        return m_extensions.get!SessionTicket() !is null;
     }
 
     bool supportsHeartbeats() const
     {
-        return m_extensions.get!HeartbeatSupportIndicator();
+        return m_extensions.get!HeartbeatSupportIndicator() !is null;
     }
 
     bool peerCanSendHeartbeats() const
@@ -524,7 +526,7 @@ public:
         return false;
     }
 
-    HandshakeExtensionType[] extensionTypes() const
+    const(Vector!HandshakeExtensionType) extensionTypes() const
     { return m_extensions.extensionTypes(); }
 
     /*
@@ -533,16 +535,16 @@ public:
     this(HandshakeIO io,
          HandshakeHash hash,
          in TLSPolicy policy,
-         in Vector!ubyte session_id,
+         Vector!ubyte session_id,
          TLSProtocolVersion ver,
          ushort ciphersuite,
          ubyte compression,
          size_t max_fragment_size,
          bool client_has_secure_renegotiation,
-         in Vector!ubyte reneg_info,
+         Vector!ubyte reneg_info,
          bool offer_session_ticket,
          bool client_has_npn,
-         const Vector!string next_protocols,
+         Vector!string next_protocols,
          bool client_has_heartbeat,
          RandomNumberGenerator rng) 
     {
@@ -589,7 +591,7 @@ public:
         
         m_version = TLSProtocolVersion(major_version, minor_version);
         
-        m_random = reader.get_fixed!ubyte(32);
+        m_random = reader.getFixed!ubyte(32);
         
         m_session_id = reader.getRange!ubyte(1, 0, 32);
         
@@ -604,13 +606,13 @@ protected:
     /*
     * Serialize a TLSServer Hello message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf;
         
         buf.pushBack(m_version.majorVersion());
         buf.pushBack(m_version.minorVersion());
-        buf ~= m_random;
+        buf ~= m_random[];
         
         appendTlsLengthValue(buf, m_session_id, 1);
         
@@ -619,7 +621,7 @@ protected:
         
         buf.pushBack(m_comp_method);
         
-        buf ~= m_extensions.serialize();
+        buf ~= m_extensions.serialize()[];
         
         return buf;
     }
@@ -641,15 +643,15 @@ final class ClientKeyExchange : HandshakeMessage
 public:
     override HandshakeType type() const { return CLIENT_KEX; }
 
-    SecureVector!ubyte preMasterSecret() const
+    const(SecureVector!ubyte) preMasterSecret() const
     { return m_pre_master; }
 
     /*
     * Read a TLSClient Key Exchange message
     */
     this(in Vector!ubyte contents,
-         const HandshakeState state,
-         const PrivateKey server_rsa_kex_key,
+         in HandshakeState state,
+         in PrivateKey server_rsa_kex_key,
          TLSCredentialsManager creds,
          in TLSPolicy policy,
          RandomNumberGenerator rng)
@@ -667,7 +669,7 @@ public:
             if (!cast(const RSAPrivateKey)(server_rsa_kex_key))
                 throw new InternalError("Expected RSA key but got " ~ server_rsa_kex_key.algoName);
             
-            auto decryptor = scoped!PKDecryptorEME(*server_rsa_kex_key, "PKCS1v15");
+            auto decryptor = scoped!PKDecryptorEME(server_rsa_kex_key, "PKCS1v15");
             
             TLSProtocolVersion client_version = state.clientHello().Version();
             
@@ -742,7 +744,7 @@ public:
             }
             else if (kex_algo == "SRP_SHA")
             {
-                SRP6ServerSession srp = state.serverKex().serverSrpParams();
+                SRP6ServerSession srp = cast(SRP6ServerSession) state.serverKex().serverSrpParams();
                 
                 m_pre_master = srp.step2(BigInt.decode(reader.getRange!ubyte(2, 0, 65535))).bitsOf();
             }
@@ -820,15 +822,15 @@ public:
                 identity_hint = reader.getString(2, 0, 65535);
             }
             
-            const string hostname = state.clientHello().sniHostname();
+            const string hostname_ = state.clientHello().sniHostname();
             
             const string psk_identity = creds.pskIdentity("tls-client",
-                                                           hostname,
+                                                           hostname_,
                                                            identity_hint);
             
             appendTlsLengthValue(m_key_material, psk_identity, 2);
             
-            SymmetricKey psk = creds.psk("tls-client", hostname, psk_identity);
+            SymmetricKey psk = creds.psk("tls-client", hostname_, psk_identity);
             
             Vector!ubyte zeros = Vector!ubyte(psk.length);
             
@@ -845,15 +847,15 @@ public:
             {
                 string identity_hint = reader.getString(2, 0, 65535);
                 
-                const string hostname = state.clientHello().sniHostname();
+                const string hostname_ = state.clientHello().sniHostname();
                 
                 const string psk_identity = creds.pskIdentity("tls-client",
-                                                               hostname,
+                                                               hostname_,
                                                                identity_hint);
                 
                 appendTlsLengthValue(m_key_material, psk_identity, 2);
                 
-                psk = creds.psk("tls-client", hostname, psk_identity);
+                psk = creds.psk("tls-client", hostname_, psk_identity);
             }
             
             if (kex_algo == "DH" || kex_algo == "DHE_PSK")
@@ -923,7 +925,7 @@ public:
                 
                 Vector!ubyte ecdh_key = reader.getRange!ubyte(1, 1, 255);
                 
-                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve()));
+                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve().dup));
                 
                 auto priv_key = scoped!ECDHPrivateKey(rng, group);
                 
@@ -1012,7 +1014,7 @@ public:
 
 
 protected:
-    override Vector!ubyte serialize() const { return m_key_material; }
+    override const(Vector!ubyte) serialize() const { return m_key_material; }
 
 private:
     Vector!ubyte m_key_material;
@@ -1025,8 +1027,8 @@ private:
 final class Certificate : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return CERTIFICATE; }
-    Vector!X509Certificate certChain() const { return m_certs; }
+    override const(HandshakeType) type() const { return CERTIFICATE; }
+    const(Vector!X509Certificate) certChain() const { return m_certs; }
 
     size_t count() const { return m_certs.length; }
     @property bool empty() const { return m_certs.empty; }
@@ -1036,7 +1038,7 @@ public:
     */
     this(HandshakeIO io,
          HandshakeHash hash,
-         in Vector!X509Certificate cert_list)
+         Vector!X509Certificate cert_list)
     {
         m_certs = cert_list;
         hash.update(io.send(this));
@@ -1071,7 +1073,7 @@ public:
                 throw new DecodingError("Certificate: Message malformed");
             
             auto cert_buf = scoped!DataSourceMemory(&certs[3], cert_size);
-            m_certs.pushBack(X509Certificate(cert_buf));
+            m_certs.pushBack(X509Certificate(cert_buf.Scoped_payload));
             
             certs += cert_size + 3;
         }
@@ -1081,7 +1083,7 @@ protected:
     /**
     * Serialize a Certificate message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(3);
         
@@ -1089,14 +1091,14 @@ protected:
         {
             Vector!ubyte raw_cert = m_certs[i].BER_encode();
             const size_t cert_size = raw_cert.length;
-            foreach (size_t i; 0 .. 3)
-                buf.pushBack(get_byte!uint(i+1, cert_size));
-            buf += raw_cert;
+            foreach (size_t j; 0 .. 3)
+                buf.pushBack(get_byte!uint(j+1, cast(uint) cert_size));
+            buf ~= raw_cert;
         }
         
         const size_t buf_size = buf.length - 3;
         foreach (size_t i; 0 .. 3)
-            buf[i] = get_byte!uint(i+1, buf_size);
+            buf[i] = get_byte!uint(i+1, cast(uint) buf_size);
         
         return buf;
     }
@@ -1111,14 +1113,14 @@ private:
 final class CertificateReq : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return CERTIFICATE_REQUEST; }
+    override const(HandshakeType) type() const { return CERTIFICATE_REQUEST; }
 
-    Vector!string acceptableCertTypes() const
+    const(Vector!string) acceptableCertTypes() const
     { return m_cert_key_types; }
 
-    Vector!X509DN acceptableCAs() const { return m_names; }
+    const(Vector!X509DN) acceptableCAs() const { return m_names; }
 
-    Vector!( Pair!(string, string)  ) supportedAlgos() const
+    const(Vector!( Pair!(string, string) )) supportedAlgos() const
     { return m_supported_algos; }
 
     /**
@@ -1127,7 +1129,7 @@ public:
     this(HandshakeIO io,
          HandshakeHash hash,
          in TLSPolicy policy,
-         in Vector!X509DN ca_certs,
+         Vector!X509DN ca_certs,
          TLSProtocolVersion _version) 
     {
         m_names = ca_certs;
@@ -1139,7 +1141,7 @@ public:
             
             for (size_t i = 0; i != hashes.length; ++i)
                 for (size_t j = 0; j != sigs.length; ++j)
-                    m_supported_algos.pushBack(Pair(hashes[i], sigs[j]));
+                    m_supported_algos.pushBack(makePair(hashes[i], sigs[j]));
         }
         
         hash.update(io.send(this));
@@ -1178,7 +1180,7 @@ public:
             {
                 string hash = SignatureAlgorithms.hashAlgoName(sig_hash_algs[i]);
                 string sig = SignatureAlgorithms.sigAlgoName(sig_hash_algs[i+1]);
-                m_supported_algos.pushBack(Pair(hash, sig));
+                m_supported_algos.pushBack(makePair(hash, sig));
             }
         }
         
@@ -1203,7 +1205,7 @@ protected:
     /**
     * Serialize a Certificate Request message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf;
         
@@ -1211,11 +1213,11 @@ protected:
         
         for (size_t i = 0; i != m_cert_key_types.length; ++i)
             cert_types.pushBack(certTypeNameToCode(m_cert_key_types[i]));
-        
+
         appendTlsLengthValue(buf, cert_types, 1);
         
         if (!m_supported_algos.empty)
-            buf += SignatureAlgorithms(m_supported_algos).serialize();
+            buf ~= scoped!SignatureAlgorithms(m_supported_algos.dup).serialize();
         
         Vector!ubyte encoded_names;
         
@@ -1245,7 +1247,7 @@ private:
 final class CertificateVerify : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return CERTIFICATE_VERIFY; }
+    override const(HandshakeType) type() const { return CERTIFICATE_VERIFY; }
 
     /**
     * Check the signature on a certificate verify message
@@ -1324,7 +1326,7 @@ protected:
     /*
     * Serialize a Certificate Verify message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf;
         
@@ -1334,10 +1336,10 @@ protected:
             buf.pushBack(SignatureAlgorithms.sigAlgoCode(m_sig_algo));
         }
         
-        const ushort sig_len = m_signature.length;
+        const ushort sig_len = cast(ushort) m_signature.length;
         buf.pushBack(get_byte(0, sig_len));
         buf.pushBack(get_byte(1, sig_len));
-        buf += m_signature;
+        buf ~= m_signature[];
         
         return buf;
     }
@@ -1354,9 +1356,9 @@ private:
 final class Finished : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return FINISHED; }
+    override const(HandshakeType) type() const { return FINISHED; }
 
-    Vector!ubyte verifyData() const
+    const(Vector!ubyte) verifyData() const
     { return m_verification_data; }
 
     /*
@@ -1381,7 +1383,7 @@ public:
     /*
     * Deserialize a Finished message
     */
-    this(in Vector!ubyte buf)
+    this(Vector!ubyte buf)
     {
         m_verification_data = buf;
     }
@@ -1390,7 +1392,7 @@ protected:
     /*
     * Serialize a Finished message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         return m_verification_data;
     }
@@ -1405,7 +1407,7 @@ private:
 final class HelloRequest : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return HELLO_REQUEST; }
+    override const(HandshakeType) type() const { return HELLO_REQUEST; }
 
     /*
     * Create a new Hello Request message
@@ -1428,7 +1430,7 @@ protected:
     /*
     * Serialize a Hello Request message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         return Vector!ubyte();
     }
@@ -1440,9 +1442,9 @@ protected:
 final class ServerKeyExchange : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return SERVER_KEX; }
+    override const(HandshakeType) type() const { return SERVER_KEX; }
 
-    Vector!ubyte params() const { return m_params; }
+    const(Vector!ubyte) params() const { return m_params; }
 
     /**
     * Verify a TLSServer Key Exchange message
@@ -1461,14 +1463,14 @@ public:
     }
 
     // Only valid for certain kex types
-    PrivateKey serverKexKey() const
+    const(PrivateKey) serverKexKey() const
     {
         assert(m_kex_key, "PrivateKey cannot be null");
         return *m_kex_key;
     }
 
     // Only valid for SRP negotiation
-    SRP6ServerSession serverSrpParams() const
+    const(SRP6ServerSession) serverSrpParams() const
     {
         assert(m_srp_params, "SRP6ServerSession cannot be null");
         return *m_srp_params;
@@ -1615,7 +1617,7 @@ public:
             if (domain == "")
                 throw new InternalError("Could not find name of ECDH domain " ~ ecdh_domain_oid);
             
-            const ushort named_curve_id = SupportedEllipticCurves.nameToCurveId(domainput);
+            const ushort named_curve_id = SupportedEllipticCurves.nameToCurveId(domain);
             
             m_params.pushBack(3); // named curve
             m_params.pushBack(get_byte(0, named_curve_id));
@@ -1676,9 +1678,9 @@ protected:
     /**
     * Serialize a TLSServer Key Exchange message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
-        Vector!ubyte buf = params();
+        Vector!ubyte buf = params().dup;
         
         if (m_signature.length)
         {
@@ -1713,7 +1715,7 @@ private:
 final class ServerHelloDone : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return SERVER_HELLO_DONE; }
+    override const(HandshakeType) type() const { return SERVER_HELLO_DONE; }
 
     /*
     * Create a new TLSServer Hello Done message
@@ -1735,7 +1737,7 @@ protected:
     /*
     * Serialize a TLSServer Hello Done message
     */
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         return Vector!ubyte();
     }
@@ -1747,7 +1749,7 @@ protected:
 final class NextProtocol : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return NEXT_PROTOCOL; }
+    override const(HandshakeType) type() const { return NEXT_PROTOCOL; }
 
     string protocol() const { return m_protocol; }
 
@@ -1770,7 +1772,7 @@ public:
 
 protected:
 
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf;
         
@@ -1799,17 +1801,18 @@ private:
 final class NewSessionTicket : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return NEW_SESSION_TICKET; }
+    override const(HandshakeType) type() const { return NEW_SESSION_TICKET; }
 
-    uint ticketLifetimeHint() const { return m_ticket_lifetime_hint; }
-    Vector!ubyte ticket() const { return m_ticket; }
+    const(Duration) ticketLifetimeHint() const { return m_ticket_lifetime_hint; }
+    const(Vector!ubyte) ticket() const { return m_ticket; }
 
     this(HandshakeIO io,
          HandshakeHash hash,
-         in Vector!ubyte ticket,
+         Vector!ubyte ticket,
          Duration lifetime) 
         
-    {    m_ticket_lifetime_hint = lifetime;
+    {   
+        m_ticket_lifetime_hint = lifetime;
         m_ticket = ticket;
         hash.update = io.send(this);
     }
@@ -1821,7 +1824,7 @@ public:
         
         TLSDataReader reader = TLSDataReader("SessionTicket", buf);
         
-        m_ticket_lifetime_hint = reader.get_uint();
+        m_ticket_lifetime_hint = reader.get_uint().seconds;
         m_ticket = reader.getRange!ubyte(2, 0, 65535);
     }
 
@@ -1831,10 +1834,10 @@ public:
     }
 
 protected:
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(4);
-        storeBigEndian(m_ticket_lifetime_hint.seconds, buf.ptr);
+        storeBigEndian(m_ticket_lifetime_hint.total!"seconds", buf.ptr);
         appendTlsLengthValue(buf, m_ticket, 2);
         return buf;
     }
@@ -1850,14 +1853,14 @@ private:
 final class ChangeCipherSpec : HandshakeMessage
 {
 public:
-    override HandshakeType type() const { return HANDSHAKE_CCS; }
+    override const(HandshakeType) type() const { return HANDSHAKE_CCS; }
 
-    override Vector!ubyte serialize() const
-    { return Vector!ubyte(1, 1); }
+    override const(Vector!ubyte) serialize() const
+    { return Vector!ubyte(cast(ubyte[])[1]); }
 }
 
 
-private:
+package:
 
 string certTypeCodeToName(ubyte code)
 {
@@ -1907,21 +1910,21 @@ SecureVector!ubyte stripLeadingZeros(in SecureVector!ubyte input)
 * Compute the verifyData
 */
 Vector!ubyte finishedComputeVerify(in HandshakeState state,
-                                     ConnectionSide side)
+                                   ConnectionSide side)
 {
     if (state.Version() == TLSProtocolVersion.SSL_V3)
     {
         __gshared immutable const(ubyte)[] SSL_CLIENT_LABEL = [ 0x43, 0x4C, 0x4E, 0x54 ];
         __gshared immutable const(ubyte)[] SSL_SERVER_LABEL = [ 0x53, 0x52, 0x56, 0x52 ];
         
-        Handshake_Hash hash = state.hash(); // don't modify state
-        
+        HandshakeHash hash = state.hash().dup; // don't modify state
+
         Vector!ubyte ssl3_finished;
         
         if (side == CLIENT)
-            hash.update(SSL_CLIENT_LABEL, SSL_CLIENT_LABEL.length);
+            hash.update(SSL_CLIENT_LABEL.ptr, SSL_CLIENT_LABEL.length);
         else
-            hash.update(SSL_SERVER_LABEL, SSL_SERVER_LABEL.length);
+            hash.update(SSL_SERVER_LABEL.ptr, SSL_SERVER_LABEL.length);
         
         return unlock(hash.finalSSL3(state.sessionKeys().masterSecret()));
     }
@@ -1943,7 +1946,7 @@ Vector!ubyte finishedComputeVerify(in HandshakeState state,
         else
             input ~= TLS_SERVER_LABEL;
         
-        input ~= state.hash().flushInto(state.Version(), state.ciphersuite().prfAlgo());
+        input ~= state.hash().flushInto(state.Version(), state.ciphersuite().prfAlgo())[];
         
         return unlock(prf.deriveKey(12, state.sessionKeys().masterSecret(), input));
     }

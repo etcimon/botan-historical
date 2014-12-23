@@ -13,12 +13,14 @@ package:
 import botan.utils.memory.zeroise;
 import botan.tls.magic;
 import botan.utils.types;
-// import string;
 import botan.utils.containers.hashmap;
-
 import botan.tls.reader;
 import botan.tls.exceptn;
+import botan.tls.alert;
 import botan.utils.types : Unique;
+import botan.utils.get_byte;
+import std.conv : to;
+import std.array : Appender;
 
 alias ushort HandshakeExtensionType;
 enum : HandshakeExtensionType {
@@ -45,7 +47,7 @@ enum : HandshakeExtensionType {
 /**
 * Base class representing a TLS extension of some kind
 */
-class Extension
+interface Extension
 {
 public:
     /**
@@ -56,14 +58,12 @@ public:
     /**
     * @return serialized binary for the extension
     */
-    abstract Vector!ubyte serialize() const;
+    abstract const(Vector!ubyte) serialize() const;
 
     /**
     * @return if we should encode this extension or not
     */
     abstract @property bool empty() const;
-
-    ~this() {}
 }
 
 /**
@@ -120,12 +120,12 @@ public:
         
         size_t name_len = m_sni_host_name.length;
         
-        buf.pushBack(get_byte!ushort(0, name_len+3));
-        buf.pushBack(get_byte!ushort(1, name_len+3));
+        buf.pushBack(get_byte(0, cast(ushort) (name_len+3)));
+        buf.pushBack(get_byte(1, cast(ushort) (name_len+3)));
         buf.pushBack(0); // DNS
         
-        buf.pushBack(get_byte!ushort(0, name_len));
-        buf.pushBack(get_byte!ushort(1, name_len));
+		buf.pushBack(get_byte(0, cast(ushort) name_len));
+		buf.pushBack(get_byte(1, cast(ushort) name_len));
         
         buf ~= (cast(const(ubyte)*)m_sni_host_name.ptr)[0 .. m_sni_host_name.length];
         
@@ -193,7 +193,7 @@ public:
 
     this() {}
 
-    this(in Vector!ubyte bits)
+    this(Vector!ubyte bits)
     {
         m_reneg_data = bits;
     }
@@ -206,7 +206,7 @@ public:
             throw new DecodingError("Bad encoding for secure renegotiation extn");
     }
 
-    Vector!ubyte renegotiationInfo() const { return m_reneg_data; }
+    const(Vector!ubyte) renegotiationInfo() const { return m_reneg_data; }
 
     override Vector!ubyte serialize() const
     {
@@ -244,7 +244,7 @@ public:
         if (i == 0)
             throw new InvalidArgument("Bad setting " ~ to!string(m_max_fragment) ~ " for maximum fragment size");
         
-        return Vector!ubyte(1, i);
+        return Vector!ubyte([i]);
     }
 
     /**
@@ -264,13 +264,15 @@ public:
             throw new DecodingError("Bad size for maximum fragment extension");
         ubyte val = reader.get_byte();
 
-        
-        auto i = code_to_fragment.get(cast(size_t) val, 0);
+        if (val < code_to_fragment.length) {
 
-        if (i == 0)
-            throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
-        
-        m_max_fragment = i;
+	        auto i = code_to_fragment[val];
+	        
+	        m_max_fragment = i;
+		}
+		else
+			throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
+
     }
 
 private:
@@ -292,7 +294,7 @@ public:
 
     override HandshakeExtensionType type() const { return staticType(); }
 
-    Vector!string protocols() const { return m_protocols; }
+    const(Vector!string) protocols() const { return m_protocols; }
 
     /**
     * Empty extension, used by client
@@ -302,7 +304,7 @@ public:
     /**
     * List of protocols, used by server
     */
-    this(in Vector!string protocols) 
+    this(Vector!string protocols) 
     {
         m_protocols = protocols; 
     }
@@ -360,7 +362,7 @@ public:
     /**
     * @return contents of the session ticket
     */
-    Vector!ubyte contents() const { return m_ticket; }
+    const(Vector!ubyte) contents() const { return m_ticket; }
 
     /**
     * Create empty extension, used by both client and server
@@ -370,7 +372,7 @@ public:
     /**
     * Extension with ticket, used by client
     */
-    this(in Vector!ubyte session_ticket)
+    this(Vector!ubyte session_ticket)
     {
         m_ticket = session_ticket;
     }
@@ -380,10 +382,10 @@ public:
     */
     this(ref TLSDataReader reader, ushort extension_size)
     {
-        m_ticket = reader.get_elem!(ubyte, Vector!ubyte)(extension_size);
+        m_ticket = reader.getElem!(ubyte, Vector!ubyte)(extension_size);
     }
 
-    override Vector!ubyte serialize() const { return m_ticket; }
+    override const(Vector!ubyte) serialize() const { return m_ticket; }
 
     override @property bool empty() const { return false; }
 private:
@@ -471,9 +473,9 @@ public:
         throw new InvalidArgument("name_to_curve_id unknown name " ~ name);
     }
 
-    Vector!string curves() const { return m_curves; }
+    const(Vector!string) curves() const { return m_curves; }
 
-    override Vector!ubyte serialize() const
+    override const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(2);
         
@@ -484,13 +486,13 @@ public:
             buf.pushBack(get_byte(1, id));
         }
         
-        buf[0] = get_byte!ushort(0, buf.length-2);
-        buf[1] = get_byte!ushort(1, buf.length-2);
+        buf[0] = get_byte(0, cast(ushort) (buf.length-2));
+		buf[1] = get_byte(1, cast(ushort) (buf.length-2));
         
         return buf;
     }
 
-    this(in Vector!string curves) 
+    this(Vector!string curves) 
     {
         m_curves = curves;
     }
@@ -607,7 +609,7 @@ public:
         throw new InternalError("Unknown sig ID " ~ name ~ " for signature_algorithms");
     }
 
-    Vector!( Pair!(string, string)  ) supportedSignatureAlgorthms() const
+    const(Vector!( Pair!(string, string)  )) supportedSignatureAlgorthms() const
     {
         return m_supported_algos;
     }
@@ -630,8 +632,8 @@ public:
             {}
         }
         
-        buf[0] = get_byte!ushort(0, buf.length-2);
-        buf[1] = get_byte!ushort(1, buf.length-2);
+		buf[0] = get_byte(0, cast(ushort) (buf.length-2));
+		buf[1] = get_byte(1, cast(ushort) (buf.length-2));
         
         return buf;
     }
@@ -642,7 +644,7 @@ public:
     {
         for (size_t i = 0; i != hashes.length; ++i)
             for (size_t j = 0; j != sigs.length; ++j)
-                m_supported_algos.pushBack(Pair(hashes[i], sigs[j]));
+                m_supported_algos.pushBack(makePair(hashes[i], sigs[j]));
     }
     
     this(TLSDataReader reader,
@@ -664,11 +666,11 @@ public:
             if (hash_code == "" || sig_code == "")
                 continue;
             
-            m_supported_algos.pushBack(Pair(hash_code, sig_code));
+            m_supported_algos.pushBack(makePair(hash_code, sig_code));
         }
     }
 
-    this(in Vector!( Pair!(string, string)  ) algos) 
+    this(Vector!( Pair!(string, string)  ) algos) 
     {
         m_supported_algos = algos;
     }
@@ -726,12 +728,12 @@ private:
 struct TLSExtensions
 {
 public:
-    HandshakeExtensionType[] extensionTypes() const
+    Vector!HandshakeExtensionType extensionTypes() const
     {
-        Appender!HandshakeExtensionType offers;
-        foreach (t, ext; extensions)
+        Vector!HandshakeExtensionType offers;
+        foreach (const ref HandshakeExtensionType t, const ref Extension ext; extensions)
             offers ~= t;
-        return offers.data;
+        return offers;
     }
 
 
@@ -739,7 +741,7 @@ public:
     {
         HandshakeExtensionType type = T.staticType();
 
-        return extensions.get(type, null);
+        return cast(T)extensions.get(type, T.init);
     }
 
     void add(Extension extn)
@@ -750,29 +752,29 @@ public:
         extensions[extn.type()] = extn;
     }
 
-    Vector!ubyte serialize() const
+    const(Vector!ubyte) serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(2); // 2 bytes for length field
         
-        foreach (ref extn; extensions)
+        foreach (const ref Extension extn; extensions)
         {
-            if (extn.second.empty)
+            if (!extn)
                 continue;
             
-            const ushort extn_code = extn.second.type();
+            const ushort extn_code = extn.type();
             
-            Vector!ubyte extn_val = extn.second.serialize();
+            const Vector!ubyte extn_val = extn.serialize();
             
             buf.pushBack(get_byte(0, extn_code));
             buf.pushBack(get_byte(1, extn_code));
             
-            buf.pushBack(get_byte!ushort(0, extn_val.length));
-            buf.pushBack(get_byte!ushort(1, extn_val.length));
+			buf.pushBack(get_byte(0, cast(ushort) extn_val.length));
+			buf.pushBack(get_byte(1, cast(ushort) extn_val.length));
             
-            buf ~= extn_val;
+            buf ~= extn_val[];
         }
         
-        const ushort extn_size = buf.length - 2;
+        const ushort extn_size = cast(ushort) (buf.length - 2);
         
         buf[0] = get_byte(0, extn_size);
         buf[1] = get_byte(1, extn_size);

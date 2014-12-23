@@ -14,7 +14,7 @@ import botan.utils.types;
 import std.exception;
 
 
-class ConnectionSequenceNumbers
+interface ConnectionSequenceNumbers
 {
 public:
     abstract void newReadCipherState();

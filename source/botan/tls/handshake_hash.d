@@ -24,14 +24,14 @@ import botan.utils.types;
 /**
 * TLS Handshake Hash
 */
-class HandshakeHash
+struct HandshakeHash
 {
 public:
     void update(const(ubyte)* input, size_t length)
     { m_data ~= input[0 .. length]; }
 
     void update(in Vector!ubyte input)
-    { m_data ~= input; }
+    { m_data ~= input[]; }
 
     /**
     * Return a TLS Handshake Hash
@@ -45,12 +45,12 @@ public:
         if (_version.supportsCiphersuiteSpecificPrf())
         {
             if (mac_algo == "MD5" || mac_algo == "SHA-1")
-                hash = af.makeHashFunction("SHA-256");
+                hash = Unique!HashFunction(af.makeHashFunction("SHA-256"));
             else
-                hash = af.makeHashFunction(mac_algo);
+				hash = Unique!HashFunction(af.makeHashFunction(mac_algo));
         }
         else
-            hash = af.makeHashFunction("Parallel(MD5,SHA-160)");
+			hash = Unique!HashFunction(af.makeHashFunction("Parallel(MD5,SHA-160)"));
         
         hash.update(m_data);
         return hash.finished();
@@ -98,10 +98,17 @@ public:
         return output;
     }
 
-    Vector!ubyte getContents() const
+    const(Vector!ubyte) getContents() const
     { return m_data; }
 
     void reset() { m_data.clear(); }
+
+    HandshakeHash dup() const 
+    { 
+        HandshakeHash ret;
+        ret.m_data = m_data.dup;
+        return ret;
+    }
 private:
     Vector!ubyte m_data;
 }

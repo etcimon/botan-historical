@@ -13,8 +13,9 @@ import botan.utils.exceptn;
 import botan.utils.memory.zeroise;
 import botan.utils.loadstor;
 import botan.utils.types;
+import botan.utils.get_byte;
 import std.exception;
-
+import std.conv : to;
 /**
 * Helper class for decoding TLS protocol messages
 */
@@ -53,8 +54,8 @@ public:
     ushort get_uint()
     {
         assertAtLeast(4);
-        ushort result = make_uint(m_buf[m_offset  ], m_buf[m_offset+1],
-                                             m_buf[m_offset+2], m_buf[m_offset+3]);
+        ushort result = cast(ushort) make_uint(m_buf[m_offset  ], m_buf[m_offset+1],
+                                               m_buf[m_offset+2], m_buf[m_offset+3]);
         m_offset += 4;
         return result;
     }
@@ -80,7 +81,7 @@ public:
     {
         assertAtLeast(num_elems * T.sizeof);
 
-        Container result(num_elems);
+        Container result = Container(num_elems);
 
         foreach (size_t i; 0 .. num_elems)
             result[i] = loadBigEndian!T(&m_buf[m_offset], i);
@@ -91,12 +92,12 @@ public:
     }
 
     Vector!T getRange(T)(size_t len_bytes,
-                            size_t min_elems,
-                            size_t max_elems)
+                         size_t min_elems,
+                         size_t max_elems)
     {
         const size_t num_elems = getNumElems(len_bytes, T.sizeof, min_elems, max_elems);
 
-        return get_elem!(T, Vector!T)(num_elems);
+        return getElem!(T, Vector!T)(num_elems);
     }
 
     Vector!T getRangeVector(T)(size_t len_bytes,
@@ -105,7 +106,7 @@ public:
     {
         const size_t num_elems = getNumElems(len_bytes, T.sizeof, min_elems, max_elems);
 
-        return get_elem!(T, Vector!T)(num_elems);
+        return getElem!(T, Vector!T)(num_elems);
     }
 
     string getString(size_t len_bytes,
@@ -114,12 +115,12 @@ public:
     {
         Vector!ubyte v = getRangeVector!ubyte(len_bytes, min_bytes, max_bytes);
 
-        return string(cast(char*)(v.ptr), v.length);
+        return (cast(immutable(char)*) v.ptr)[0 .. v.length];
     }
 
     Vector!T getFixed(T)(size_t size)
     {
-        return get_elem!(T, Vector!T)(size);
+        return getElem!(T, Vector!T)(size);
     }
 
 private:
@@ -156,15 +157,13 @@ private:
     void assertAtLeast(size_t n) const
     {
         if (m_buf.length - m_offset < n)
-            throw decodeError("Expected " ~ to!string(n) ~
-                                     " bytes remaining, only " ~
-                                     to!string(m_buf.length-m_offset) ~
-                                     " left");
+            throw decodeError("Expected " ~ to!string(n) ~ " bytes remaining, only " ~
+                              to!string(m_buf.length-m_offset) ~ " left");
     }
 
     DecodingError decodeError(in string why) const
     {
-        return new DecodingError("Invalid " ~ string(m_typename) ~ ": " ~ why);
+        return new DecodingError("Invalid " ~ m_typename ~ ": " ~ why);
     }
 
     string m_typename;
@@ -175,7 +174,7 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void appendTlsLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
+void appendTlsLengthValue(T, Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, in T* vals, 
                                        size_t vals_size, size_t tag_size)
 {
     const size_t T_size = T.sizeof;
@@ -196,12 +195,15 @@ void appendTlsLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals,
             buf.pushBack(get_byte(j, vals[i]));
 }
 
-void appendTlsLengthValue(T, Alloc, Alloc2)(Vector!( ubyte, Alloc ) buf, in Vector!( T, Alloc2 ) vals, size_t tag_size)
+void appendTlsLengthValue(T, Alloc, Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
+                                            in FreeListRef!(VectorImpl!( T, Alloc2 )) vals, 
+                                            size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTlsLengthValue(Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, in string str, size_t tag_size)
+void appendTlsLengthValue(Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
+                                 in string str, size_t tag_size)
 {
     appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);
 }

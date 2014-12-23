@@ -174,7 +174,7 @@ public:
     {
         return (m_version == other.m_version);
     }
-
+    
     /**
     * @return if this version is not equal to other
     */
@@ -182,6 +182,24 @@ public:
     {
         if (m_version == other.m_version) return 0;
         else if (isGreaterThan(other)) return 1;
+        else return -1;
+    }
+
+    /**
+    * @return if this version is equal to other
+    */
+    bool opEquals(in ushort other) const
+    {
+        return (m_version == other);
+    }
+    
+    /**
+    * @return if this version is not equal to other
+    */
+    bool opCmp(in ushort other) const
+    {
+        if (m_version == other) return 0;
+        else if (isGreaterThan(TLSProtocolVersion(other))) return 1;
         else return -1;
     }
 

@@ -8,7 +8,7 @@ import botan.utils.memory.memory;
 /**
 * Existence check for values
 */
-bool valueExists(T)(in Vector!T vec, in T val)
+bool valueExists(T, Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) vec, in T val)
 {
     for (size_t i = 0; i != vec.length; ++i)
         if (vec[i] == val)
@@ -884,9 +884,9 @@ struct VectorImpl(T, ALLOCATOR)
         immutable offset2 = r._b;
         immutable tailLength = length - offset2;
         // Use copy here, not a[] = b[] because the ranges may overlap
-        copy(this[offset2 .. length], this[offset1 .. offset1 + tailLength]);
+        copy(this.ptr[offset2 .. length], this.ptr[offset1 .. offset1 + tailLength]);
         length = offset1 + tailLength;
-        return this[length - tailLength .. length];
+        return Range(this, length - tailLength, length);
     }
 
     alias remove = linearRemove;

@@ -56,8 +56,8 @@ public:
             // FIXME: support larger AD using length encoding rules
             assert(length < (0xFFFF - 0xFF), "Supported CCM AD length");
             
-            m_ad_buf.pushBack(get_byte!ushort(0, cast(ushort) length));
-            m_ad_buf.pushBack(get_byte!ushort(1, cast(ushort) length));
+            m_ad_buf.pushBack(get_byte(0, cast(ushort) length));
+            m_ad_buf.pushBack(get_byte(1, cast(ushort) length));
             m_ad_buf ~= ad[0 .. length];
             while (m_ad_buf.length % BS)
                 m_ad_buf.pushBack(cast(ubyte)0); // pad with zeros to full block size

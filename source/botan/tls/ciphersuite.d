@@ -10,8 +10,6 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.types;
-// import string;
-import botan.utils.types;
 import botan.libstate.libstate;
 import botan.utils.parsing;
 import std.array : Appender;
@@ -478,10 +476,9 @@ public:
                 
             case 0xC020: // SRP_SHA_WITH_AES_256_CBC_SHA
                 return TLSCiphersuite(0xC020, "", "SRP_SHA", "AES-256", 32, 16, "SHA-1", 20);
-                
+			default:
+				return TLSCiphersuite.init; // some unknown ciphersuite
         }
-        
-        return TLSCiphersuite(); // some unknown ciphersuite
     }
 
     /**
@@ -491,13 +488,13 @@ public:
     */
     static TLSCiphersuite byName(in string name)
     {
-        foreach (suite; allKnownCiphersuites())
+        foreach (const ref TLSCiphersuite suite; allKnownCiphersuites()[])
         {
             if (suite.toString() == name)
                 return suite;
         }
         
-        return TLSCiphersuite(); // some unknown ciphersuite
+        return TLSCiphersuite.init; // some unknown ciphersuite
     }
 
     /**
@@ -507,7 +504,12 @@ public:
     */
     static Vector!TLSCiphersuite allKnownCiphersuites()
     {
-        static Vector!TLSCiphersuite all_ciphersuites = Vector!TLSCiphersuite(gatherKnownCiphersuites());
+		static Vector!TLSCiphersuite all_ciphersuites;
+		static bool initialized;
+		if (!initialized) {
+			initialized = true;
+			all_ciphersuites = gatherKnownCiphersuites();
+		}
         return all_ciphersuites;
     }
 
@@ -727,7 +729,7 @@ private:
          size_t cipher_ivlen,
          string mac_algo,
          size_t mac_keylen,
-         string prf_algo)
+         string prf_algo = "")
     {
         m_ciphersuite_code = ciphersuite_code;
         m_sig_algo = sig_algo;
@@ -750,7 +752,7 @@ private:
         
         for (size_t i = 0; i <= 0xFFFF; ++i)
         {
-            TLSCiphersuite suite = byId(i);
+            TLSCiphersuite suite = byId(cast(ushort)i);
             
             if (suite.valid())
                 ciphersuites.pushBack(suite);

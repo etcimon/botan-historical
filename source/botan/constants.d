@@ -33,10 +33,13 @@ else static if (BOTAN_HAS_ARM_ARCH)
 version(D_SIMD) const BOTAN_HAS_SIMD = true;
 else            const BOTAN_HAS_SIMD = false;
 
+
 const BOTAN_KARAT_MUL_THRESHOLD = 32;
 const BOTAN_KARAT_SQR_THRESHOLD = 32;
 const BOTAN_RNG_MAX_OUTPUT_BEFORE_RESEED = 512;
 const BOTAN_RNG_RESEED_POLL_BITS = 128;
+
+// todo: Make version specifiers for the below constants
 const BOTAN_HAS_CIPHER_MODE_PADDING = true;
 const BOTAN_HAS_AUTO_SEEDING_RNG = true;
 const BOTAN_HAS_CODEC_FILTERS = true;
@@ -48,8 +51,10 @@ const BOTAN_HAS_HKDF = true;
 const BOTAN_HAS_RFC3394_KEYWRAP = true;
 const BOTAN_HAS_PASSHASH9 = true;
 const BOTAN_HAS_BCRYPT = true;
+const BOTAN_HAS_SRP6 = true;
 const BOTAN_HAS_THRESHOLD_SECRET_SHARING = true;
 const BOTAN_HAS_SELFTESTS = true;
+
 version (unittest)     const BOTAN_TEST = true;
 else                   const BOTAN_TEST = false;
 

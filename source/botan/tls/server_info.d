@@ -50,7 +50,7 @@ public:
 
     ushort port() const { return m_port; }
 
-    @property bool empty() const { return m_hostname.empty; }
+    @property bool empty() const { return m_hostname == string.init; }
 
     bool opEquals(in TLSServerInformation b) const
     {
@@ -67,7 +67,7 @@ public:
         else return 1;
     }
 
-    bool isLessthan(in TLSServerInformation b) const
+    bool isLessThan(in TLSServerInformation b) const
     {
         if (hostname() != b.hostname())
             return (hostname() < b.hostname());

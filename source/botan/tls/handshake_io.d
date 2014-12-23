@@ -25,28 +25,24 @@ import std.typecons : Tuple;
 /**
 * Handshake IO Interface
 */
-class HandshakeIO
+interface HandshakeIO
 {
 public:
     abstract TLSProtocolVersion initialRecordVersion() const;
 
     abstract Vector!ubyte send(in HandshakeMessage msg);
 
-    abstract Vector!ubyte format(in Vector!ubyte handshake_msg,
-                                 HandshakeType handshake_type) const;
+    abstract const(Vector!ubyte) format(in Vector!ubyte handshake_msg,
+                                        HandshakeType handshake_type) const;
 
     abstract void addRecord(in Vector!ubyte record,
-                             RecordType type,
-                             ulong sequence_number);
+                            RecordType type,
+                            ulong sequence_number);
 
     /**
     * Returns (HANDSHAKE_NONE, Vector!(  )()) if no message currently available
     */
     abstract Pair!(HandshakeType, Vector!ubyte ) getNextRecord(bool expecting_ccs);
-
-    this() {}
-
-    ~this() {}
 }
 
 /**
@@ -62,7 +58,7 @@ public:
 
     override TLSProtocolVersion initialRecordVersion() const
     {
-        return TLSProtocolVersion.TLS_V10;
+        return cast(TLSProtocolVersion)TLSProtocolVersion.TLS_V10;
     }
 
     override Vector!ubyte send(in HandshakeMessage msg)
@@ -75,12 +71,12 @@ public:
             return Vector!ubyte(); // not included in handshake hashes
         }
         
-        const Vector!ubyte buf = format(msg_bits, msg.type());
+        Vector!ubyte buf = format(msg_bits, msg.type()).dup;
         m_send_hs(HANDSHAKE, buf);
         return buf;
     }
 
-    override Vector!ubyte format(in Vector!ubyte msg, HandshakeType type) const
+    override const(Vector!ubyte) format(in Vector!ubyte msg, HandshakeType type) const
     {
         Vector!ubyte send_buf = Vector!ubyte(4 + msg.length);
         
@@ -88,7 +84,7 @@ public:
         
         send_buf[0] = type;
         
-        storeBigEndian24(&send_buf[1], buf_size);
+        storeBigEndian24(send_buf.ptr[1 .. 4], buf_size);
         
         copyMem(&send_buf[4], msg.ptr, msg.length);
         
@@ -99,7 +95,7 @@ public:
     {
         if (record_type == HANDSHAKE)
         {
-            m_queue.insert(record);
+            m_queue ~= record[];
         }
         else if (record_type == CHANGE_CIPHER_SPEC)
         {
@@ -125,14 +121,15 @@ public:
                 HandshakeType type = cast(HandshakeType)(m_queue[0]);
                 
                 Vector!ubyte contents = Vector!ubyte(m_queue.ptr[4 .. 4 + length]);
+
+                Vector!ubyte ret = Vector!ubyte(m_queue.ptr[4 + length .. m_queue.length]);
+                m_queue = ret;
                 
-                m_queue.remove(m_queue[0 .. 4 + length]);
-                
-                return Pair(type, contents);
+                return makePair(type, contents);
             }
         }
 
-        return Pair(HANDSHAKE_NONE, Vector!ubyte());
+        return makePair(HANDSHAKE_NONE, Vector!ubyte());
     }
 
 private:
@@ -155,14 +152,14 @@ public:
 
     override TLSProtocolVersion initialRecordVersion() const
     {
-        return TLSProtocolVersion.DTLS_V10;
+        return cast(TLSProtocolVersion)TLSProtocolVersion.DTLS_V10;
     }
 
     override Vector!ubyte send(in HandshakeMessage msg)
     {
-        const Vector!ubyte msg_bits = msg.serialize();
-        const ushort epoch = m_seqs.currentWriteEpoch();
-        const HandshakeType msg_type = msg.type();
+        Vector!ubyte msg_bits = msg.serialize().dup;
+        ushort epoch = m_seqs.currentWriteEpoch();
+        HandshakeType msg_type = msg.type();
         
         Tuple!(ushort, ubyte, Vector!ubyte) msg_info = Tuple!(ushort, ubyte, Vector!ubyte)(epoch, msg_type, msg_bits);
         
@@ -189,12 +186,12 @@ public:
                 const size_t frag_len =    std.algorithm.min(msg_bits.length - frag_offset, parts_size);
                 
                 m_send_hs(epoch, HANDSHAKE, 
-                          formatFragment(&msg_bits[frag_offset],
-                                            frag_len,
-                                            frag_offset,
-                                            msg_bits.length,
-                                            msg_type,
-                                            m_out_message_seq));
+                          formatFragment(cast(const(ubyte)*)&msg_bits[frag_offset],
+                                         frag_len,
+                                         cast(ushort)frag_offset,
+                                         cast(ushort)msg_bits.length,
+                                         msg_type,
+                                         m_out_message_seq));
                 
                 frag_offset += frag_len;
             }
@@ -206,12 +203,12 @@ public:
         
         m_out_message_seq += 1;
         
-        return no_fragment;
+        return no_fragment.dup;
     }
 
-    override Vector!ubyte format(in Vector!ubyte msg, HandshakeType type) const
+    override const(Vector!ubyte) format(in Vector!ubyte msg, HandshakeType type) const
     {
-        return formatWSeq(msg, type, m_in_message_seq - 1);
+        return formatWSeq(msg, type, cast(ushort) (m_in_message_seq - 1));
     }
 
     override void addRecord(in Vector!ubyte record,
@@ -238,10 +235,10 @@ public:
                 return; // completely bogus? at least degenerate/weird
             
             const ubyte msg_type = record_bits[0];
-            const size_t msg_len = loadBigEndian24(&record_bits[1]);
+            const size_t msg_len = loadBigEndian24((&record_bits[1])[0 .. 3]);
             const ushort message_seq = loadBigEndian!ushort(&record_bits[4], 0);
-            const size_t fragment_offset = loadBigEndian24(&record_bits[6]);
-            const size_t fragment_length = loadBigEndian24(&record_bits[9]);
+            const size_t fragment_offset = loadBigEndian24((&record_bits[6])[0 .. 3]);
+            const size_t fragment_length = loadBigEndian24((&record_bits[9])[0 .. 3]);
             
             const size_t total_size = DTLS_HANDSHAKE_HEADER_LEN + fragment_length;
             
@@ -270,25 +267,25 @@ public:
         
         if (expecting_ccs)
         {
-            if (!m_messages.empty)
+            if (m_messages.length > 0)
             {
-                const ushort current_epoch = m_messages.ptr.second.epoch();
+                const ushort current_epoch = m_messages[cast(ushort)0].epoch();
 
                 if (m_ccs_epochs.canFind(current_epoch))
-                    return Pair(HANDSHAKE_CCS, Vector!ubyte());
+                    return makePair(HANDSHAKE_CCS, Vector!ubyte());
             }
             
-            return Pair(HANDSHAKE_NONE, Vector!ubyte());
+            return makePair(HANDSHAKE_NONE, Vector!ubyte());
         }
         
-        auto i = m_messages.find(m_in_message_seq);
+        auto rec = m_messages.get(m_in_message_seq, HandshakeReassembly.init);
         
-        if (i == m_messages.end() || !i.second.complete())
-            return Pair(HANDSHAKE_NONE, Vector!ubyte());
+        if (rec is HandshakeReassembly.init || !rec.complete())
+            return makePair(HANDSHAKE_NONE, Vector!ubyte());
         
         m_in_message_seq += 1;
         
-        return i.second.message();
+        return rec.message();
     }
 
 private:
@@ -304,14 +301,14 @@ Vector!ubyte formatFragment(const(ubyte)* fragment,
     
     send_buf[0] = type;
     
-    storeBigEndian24(&send_buf[1], msg_len);
+    storeBigEndian24((&send_buf[1])[0 .. 3], msg_len);
     
     storeBigEndian(msg_sequence, &send_buf[4]);
     
-    storeBigEndian24(&send_buf[6], frag_offset);
-    storeBigEndian24(&send_buf[9], frag_len);
+    storeBigEndian24((&send_buf[6])[0 .. 3], frag_offset);
+    storeBigEndian24((&send_buf[9])[0 .. 3], frag_len);
     
-    copyMem(&send_buf[12], fragment.ptr, frag_len);
+    copyMem(&send_buf[12], fragment, frag_len);
     
     return send_buf;
 }
@@ -320,7 +317,7 @@ Vector!ubyte formatWSeq(in Vector!ubyte msg,
                  HandshakeType type,
                  ushort msg_sequence) const
 {
-    return formatFragment(msg.ptr, msg.length, 0, msg.length, type, msg_sequence);
+    return formatFragment(msg.ptr, msg.length, cast(ushort)  0, cast(ushort) msg.length, type, msg_sequence);
 }
 
 class HandshakeReassembly
@@ -368,7 +365,7 @@ public:
             * and IDS evasion attacks on IP fragmentation.
             */
             foreach (size_t i; 0 .. fragment_length)
-                m_fragments[fragment_offset+i] = fragment[i];
+                m_fragments[fragment_offset+i] = cast(ubyte)fragment[i];
             
             if (m_fragments.length == m_msg_length)
             {
@@ -392,7 +389,7 @@ public:
         if (!complete())
             throw new InternalError("DatagramHandshakeIO - message not complete");
         
-        return Pair(cast(HandshakeType)(m_msg_type), m_message);
+        return makePair(cast(HandshakeType)(m_msg_type), m_message.dup);
     }
 
     private:
@@ -427,9 +424,9 @@ size_t loadBigEndian24(in ubyte[3] q)
 
 void storeBigEndian24(ubyte[3] output, size_t val)
 {
-    output[0] = get_byte!uint(1, val);
-    output[1] = get_byte!uint(2, val);
-    output[2] = get_byte!uint(3, val);
+    output[0] = get_byte!uint(1, cast(uint) val);
+    output[1] = get_byte!uint(2, cast(uint) val);
+    output[2] = get_byte!uint(3, cast(uint) val);
 }
 
 size_t splitForMtu(size_t mtu, size_t msg_size)

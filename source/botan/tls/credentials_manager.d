@@ -59,14 +59,14 @@ public:
     */
     abstract void verifyCertificateChain(in string type,
                                          in string purported_hostname,
-                                         in Vector!X509Certificate cert_chainput)
+                                         in Vector!X509Certificate cert_chain)
     {
         if (cert_chain.empty)
             throw new InvalidArgument("Certificate chain was empty");
         
         auto trusted_CAs = trustedCertificateAuthorities(type, purported_hostname);
         
-        Path_Validation_Restrictions restrictions;
+        PathValidationRestrictions restrictions;
         
         auto result = x509PathValidate(cert_chain,
                                        restrictions,
@@ -78,7 +78,7 @@ public:
         if (!certInSomeStore(trusted_CAs, result.trustRoot()))
             throw new Exception("Certificate chain roots in unknown/untrusted CA");
         
-        if (purported_hostname != "" && !cert_chainput[0].matchesDnsName(purported_hostname))
+        if (purported_hostname != "" && !cert_chain[0].matchesDnsName(purported_hostname))
             throw new Exception("Certificate did not match hostname");
     }
 
@@ -235,7 +235,7 @@ private:
 
 bool certInSomeStore(in Vector!CertificateStore trusted_CAs, in X509Certificate trust_root)
 {
-    foreach (CAs; trusted_CAs)
+    foreach (const ref CertificateStore CAs; trusted_CAs[])
         if (CAs.certificateKnown(trust_root))
             return true;
     return false;

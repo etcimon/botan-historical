@@ -57,10 +57,10 @@ public:
                 ulong record_sequence = 0;
                 RecordType record_type = NO_RECORD;
                 TLSProtocolVersion record_version;
-                
+
                 size_t consumed = 0;
                 
-                const size_t needed = readRecord(m_readbuf,
+                const size_t needed = .readRecord(m_readbuf,
                                                  input,
                                                  input_size,
                                                  consumed,
@@ -68,7 +68,7 @@ public:
                                                  record_sequence,
                                                  record_version,
                                                  record_type,
-                                                 sequenceNumbers(),
+                                                 *m_sequence_numbers,
                                                  get_cipherstate);
                 
                 assert(consumed <= input_size, "Record reader consumed sane amount");
@@ -90,7 +90,7 @@ public:
                     {
                         createHandshakeState(record_version);
                         if (record_version.isDatagramProtocol())
-                            sequenceNumbers().readAccept(record_sequence);
+                            (*m_sequence_numbers).readAccept(record_sequence);
                     }
                     
                     m_pending_state.handshakeIo().addRecord(unlock(record), record_type, record_sequence);
@@ -313,7 +313,7 @@ public:
         if (pendingState()) // currently in handshake?
             return;
         
-        if (HandshakeState active = activeState())
+        if (const HandshakeState active = activeState())
             initiateHandshake(createHandshakeState(active.Version()),
                                force_full_renegotiation);
         else
@@ -325,7 +325,7 @@ public:
     */
     bool peerSupportsHeartbeats() const
     {
-        if (HandshakeState active = activeState())
+        if (const HandshakeState active = activeState())
             return active.serverHello().supportsHeartbeats();
         return false;
     }
@@ -335,16 +335,10 @@ public:
     */
     bool heartbeatSendingAllowed() const
     {
-        if (HandshakeState active = activeState())
+        if (const HandshakeState active = activeState())
             return active.serverHello().peerCanSendHeartbeats();
         return false;
     }
-
-    /**
-    * @return true iff the counterparty supports the secure
-    * renegotiation extensions.
-    */
-    bool secureRenegotiationSupported() const;
 
     /**
     * Attempt to send a heartbeat message (if negotiated with counterparty)
@@ -369,9 +363,9 @@ public:
     /**
     * @return certificate chain of the peer (may be empty)
     */
-    Vector!X509Certificate peerCertChain() const
+    const(Vector!X509Certificate) peerCertChain() const
     {
-        if (HandshakeState active = activeState())
+        if (const HandshakeState active = activeState())
             return getPeerCertChain(active);
         return Vector!X509Certificate();
     }
@@ -383,7 +377,7 @@ public:
     * @param length = the length of the desired key in bytes
     * @return key of length bytes
     */
-    SymmetricKey keyMaterialExport(in string label,
+    const(SymmetricKey) keyMaterialExport(in string label,
                                    in string context,
                                    size_t length) const
     {
@@ -391,24 +385,24 @@ public:
         {
             Unique!KDF prf = active.protocolSpecificPrf();
             
-            const SecureVector!ubyte master_secret = active.sessionKeys().masterSecret();
+            const(SecureVector!ubyte) master_secret = active.sessionKeys().masterSecret();
             
             Vector!ubyte salt;
             salt ~= label;
-            salt ~= active.clientHello().random();
-            salt ~= active.serverHello().random();
+            salt ~= active.clientHello().random()[];
+            salt ~= active.serverHello().random()[];
 
             if (context != "")
             {
                 size_t context_size = context.length;
                 if (context_size > 0xFFFF)
                     throw new Exception("key_material_export context is too long");
-                salt.pushBack(get_byte!ushort(0, context_size));
-                salt.pushBack(get_byte!ushort(1, context_size));
+                salt.pushBack(get_byte(0, cast(ushort) context_size));
+                salt.pushBack(get_byte(1, cast(ushort) context_size));
                 salt ~= context;
             }
             
-            return prf.deriveKey(length, master_secret, salt);
+            return SymmetricKey(prf.deriveKey(length, master_secret, salt));
         }
         else
             throw new Exception("key_material_export connection not active");
@@ -429,8 +423,8 @@ public:
         m_rng = rng;
         m_session_manager = session_manager;
         /* epoch 0 is plaintext, thus null cipher state */
-        m_write_cipher_states[0] = null;
-        m_read_cipher_states[0] = null;
+        m_write_cipher_states[cast(ushort)0] = ConnectionCipherState.init;
+        m_read_cipher_states[cast(ushort)0] = ConnectionCipherState.init;
         
         m_writebuf.reserve(reserved_io_buffer_size);
         m_readbuf.reserve(reserved_io_buffer_size);
@@ -438,7 +432,7 @@ public:
 
     ~this()
     {
-        // So unique_ptr destructors run correctly
+
     }
 protected:
 
@@ -448,9 +442,9 @@ protected:
                                       in Vector!ubyte contents);
 
     abstract void initiateHandshake(HandshakeState state,
-                                              bool force_full_renegotiation);
+                                    bool force_full_renegotiation);
 
-    abstract Vector!X509Certificate
+    abstract const(Vector!X509Certificate)
         getPeerCertChain(in HandshakeState state) const;
 
     abstract HandshakeState newHandshakeState(HandshakeIO io);
@@ -460,7 +454,7 @@ protected:
         if (pendingState())
             throw new InternalError("createHandshakeState called during handshake");
         
-        if (HandshakeState active = activeState())
+        if (const HandshakeState active = activeState())
         {
             TLSProtocolVersion active_version = active.Version();
             
@@ -472,18 +466,18 @@ protected:
         if (!m_sequence_numbers)
         {
             if (_version.isDatagramProtocol())
-                m_sequence_numbers = new DatagramSequenceNumbers;
+                m_sequence_numbers = Unique!ConnectionSequenceNumbers(new DatagramSequenceNumbers);
             else
-                m_sequence_numbers = new StreamSequenceNumbers;
+                m_sequence_numbers = Unique!ConnectionSequenceNumbers(new StreamSequenceNumbers);
         }
         
         Unique!HandshakeIO io;
         if (_version.isDatagramProtocol())
-            io = new DatagramHandshakeIO(sequenceNumbers(), &sendRecordUnderEpoch);
+            io = Unique!HandshakeIO(new DatagramHandshakeIO(*m_sequence_numbers, &sendRecordUnderEpoch));
         else
-            io = new StreamHandshakeIO(&sendRecord);
-        
-        m_pending_state = newHandshakeState(*io);
+            io = Unique!HandshakeIO(new StreamHandshakeIO(&sendRecord));
+
+        m_pending_state = Unique!HandshakeState(newHandshakeState(*io));
         
         if (auto active = activeState())
             m_pending_state.setVersion(active.Version());
@@ -505,11 +499,11 @@ protected:
             // TLS is easy just remove all but the current state
             auto current_epoch = sequenceNumbers().currentWriteEpoch();
 
-            foreach (k, v; m_write_cipher_states) {
+            foreach (const ref ushort k, const ref ConnectionCipherState v; m_write_cipher_states) {
                 if (k != current_epoch)
                     m_write_cipher_states.remove(k);
             }
-            foreach (k, v; m_read_cipher_states) {
+            foreach (const ref ushort k, const ref ConnectionCipherState v; m_read_cipher_states) {
                 if (k != current_epoch)
                     m_write_cipher_states.remove(k);
             }
@@ -525,14 +519,15 @@ protected:
         if (pending.serverHello().compressionMethod() != NO_COMPRESSION)
             throw new InternalError("Negotiated unknown compression algorithm");
         
-        sequenceNumbers().newReadCipherState();
+        (*m_sequence_numbers).newReadCipherState();
         
         const ushort epoch = sequenceNumbers().currentReadEpoch();
-        
-        assert(m_read_cipher_states.count(epoch) == 0, "No read cipher state currently set for next epoch");
+
+        assert(m_read_cipher_states.get(epoch, ConnectionCipherState.init) is ConnectionCipherState.init, 
+               "No read cipher state currently set for next epoch");
         
         // flip side as we are reading
-        ConnectionCipherState read_state = ConnectionCipherState(pending.Version(),
+        ConnectionCipherState read_state = new ConnectionCipherState(pending.Version(),
                                                                  (side == CLIENT) ? SERVER : CLIENT,
                                                                  false,
                                                                  pending.ciphersuite(),
@@ -550,11 +545,11 @@ protected:
         if (pending.serverHello().compressionMethod() != NO_COMPRESSION)
             throw new InternalError("Negotiated unknown compression algorithm");
         
-        sequenceNumbers().newWriteCipherState();
+        (*m_sequence_numbers).newWriteCipherState();
         
         const ushort epoch = sequenceNumbers().currentWriteEpoch();
         
-        assert(m_write_cipher_states.count(epoch) == 0, "No write cipher state currently set for next epoch");
+        assert(m_write_cipher_states.get(epoch, ConnectionCipherState.init) is ConnectionCipherState.init, "No write cipher state currently set for next epoch");
         
         ConnectionCipherState write_state = new ConnectionCipherState(pending.Version(),
                                                                       side,
@@ -608,7 +603,7 @@ protected:
         }
     }
 
-    Vector!ubyte secureRenegotiationDataForClientHello() const
+    const(Vector!ubyte) secureRenegotiationDataForClientHello() const
     {
         if (auto active = activeState())
             return active.clientFinished().verifyData();
@@ -619,14 +614,18 @@ protected:
     {
         if (auto active = activeState())
         {
-            Vector!ubyte buf = active.clientFinished().verifyData();
-            buf ~= active.serverFinished().verifyData();
+            Vector!ubyte buf = active.clientFinished().verifyData().dup;
+            buf ~= active.serverFinished().verifyData()[];
             return buf;
         }
         
         return Vector!ubyte();
     }
 
+	/**
+    * @return true iff the counterparty supports the secure
+    * renegotiation extensions.
+    */
     bool secureRenegotiationSupported() const
     {
         if (auto active = activeState())
@@ -692,11 +691,11 @@ private:
         * See http://www.openssl.org/~bodo/tls-cbc.txt for background.
         */
         
-        auto cipher_state = writeCipherStateEpoch(epoch);
+        auto cipher_state = cast(ConnectionCipherState)writeCipherStateEpoch(epoch);
         
         if (type == APPLICATION_DATA && cipher_state.cbcWithoutExplicitIv())
         {
-            writeRecord(cipher_state, type, input.ptr, 1);
+            writeRecord(cipher_state, type, input, 1);
             input += 1;
             length -= 1;
         }
@@ -706,7 +705,7 @@ private:
         while (length)
         {
             const size_t sending = std.algorithm.min(length, max_fragment_size);
-            writeRecord(cipher_state, type, input.ptr, sending);
+            writeRecord(cipher_state, type, input, sending);
             
             input += sending;
             length -= sending;
@@ -722,40 +721,40 @@ private:
         TLSProtocolVersion record_version =
             (m_pending_state) ? (m_pending_state.Version()) : (m_active_state.Version());
         
-        writeRecord(m_writebuf,
+        .writeRecord(m_writebuf,
                      record_type,
                      input,
                      length,
                      record_version,
-                     sequenceNumbers().nextWriteSequence(),
+                     (*m_sequence_numbers).nextWriteSequence(),
                      cipher_state,
                      m_rng);
         
-        m_output_fn(m_writebuf[]);
+        m_output_fn(cast(ubyte[]) m_writebuf[]);
     }
 
-    ConnectionSequenceNumbers sequenceNumbers() const
+    const(ConnectionSequenceNumbers) sequenceNumbers() const
     {
         assert(m_sequence_numbers, "Have a sequence numbers object");
         return *m_sequence_numbers;
     }
 
-    ConnectionCipherState readCipherStateEpoch(ushort epoch) const
+    const(ConnectionCipherState) readCipherStateEpoch(ushort epoch) const
     {
-        auto i = m_read_cipher_states.get(epoch, ConnectionCipherState.init);
+        auto state = m_read_cipher_states.get(epoch, ConnectionCipherState.init);
         
-        assert(i != ConnectionCipherState.init, "Have a cipher state for the specified epoch");
+        assert(state !is ConnectionCipherState.init, "Have a cipher state for the specified epoch");
         
-        return i;
+        return state;
     }
 
-    ConnectionCipherState writeCipherStateEpoch(ushort epoch) const
+    const(ConnectionCipherState) writeCipherStateEpoch(ushort epoch) const
     {
-        auto i = m_write_cipher_states.get(epoch, ConnectionCipherState.init);
+        auto state = m_write_cipher_states.get(epoch, ConnectionCipherState.init);
         
-        assert(i != ConnectionCipherState.init, "Have a cipher state for the specified epoch");
+        assert(state !is ConnectionCipherState.init, "Have a cipher state for the specified epoch");
         
-        return i;
+        return state;
     }
 
     void resetState()
@@ -767,9 +766,9 @@ private:
         m_read_cipher_states.clear();
     }
 
-    HandshakeState activeState() const { return *m_active_state; }
+    const(HandshakeState) activeState() const { return *m_active_state; }
 
-    HandshakeState pendingState() const { return *m_pending_state; }
+    const(HandshakeState) pendingState() const { return *m_pending_state; }
 
     /* callbacks */
     bool delegate(in TLSSession) m_handshake_cb;

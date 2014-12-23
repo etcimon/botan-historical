@@ -29,7 +29,7 @@ public:
     /**
     * TLSServer initialization
     */
-    this(void delegate(ref ubyte[]) output_fn,
+    this(void delegate(in ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
          void delegate(in TLSAlert, in ubyte[]) alert_cb,
          bool delegate(in TLSSession) handshake_cb,
@@ -53,7 +53,7 @@ public:
     string nextProtocol() const { return m_next_protocol; }
 
 protected:
-    override Vector!X509Certificate getPeerCertChain(in HandshakeState state) const
+	override const(Vector!X509Certificate) getPeerCertChain(in HandshakeState state) const
     {
         if (state.clientCerts())
             return state.clientCerts().certChain();
@@ -172,10 +172,10 @@ protected:
             TLSSession session_info;
             const bool resuming = state.allow_session_resumption &&
                                     checkForResume(session_info,
-                                                     sessionManager(),
-                                                     m_creds,
-                                                     state.clientHello(),
-                                                     TickDuration.from!"seconds"(m_policy.sessionTicketLifetime()).to!Duration);
+                                                   sessionManager(),
+                                                   m_creds,
+                                                   state.clientHello(),
+                                                   m_policy.sessionTicketLifetime());
             
             bool have_session_ticket_key = false;
             
@@ -194,20 +194,20 @@ protected:
                                                         have_session_ticket_key);
                 
                 state.serverHello(new ServerHello(state.handshakeIo(),
-                                                    state.hash(),
-                                                    m_policy,
-                                                    state.clientHello().sessionId(),
-                                                    TLSProtocolVersion(session_info.Version()),
-                                                    session_info.ciphersuiteCode(),
-                                                    session_info.compressionMethod(),
-                                                    session_info.fragmentSize(),
-                                                    state.clientHello().secureRenegotiation(),
-                                                    secureRenegotiationDataForServerHello(),
-                                                    offer_new_session_ticket,
-                                                    state.clientHello().nextProtocolNotification(),
-                                                    m_possible_protocols,
-                                                    state.clientHello().supportsHeartbeats(),
-                                                    rng()));
+                                                  state.hash(),
+                                                  m_policy,
+                                                  state.clientHello().sessionId().dup,
+                                                  session_info.Version(),
+                                                  session_info.ciphersuiteCode(),
+                                                  session_info.compressionMethod(),
+                                                  session_info.fragmentSize(),
+                                                  state.clientHello().secureRenegotiation(),
+                                                  secureRenegotiationDataForServerHello(),
+                                                  offer_new_session_ticket,
+                                                  state.clientHello().nextProtocolNotification(),
+                                                  m_possible_protocols,
+                                                  state.clientHello().supportsHeartbeats(),
+                                                  rng()));
                 
                 secureRenegotiationCheck(state.serverHello());
                 
@@ -258,7 +258,7 @@ protected:
                 
                 cert_chains = getServerCerts(sni_hostname, m_creds);
                 
-                if (sni_hostname != "" && cert_chains.empty)
+                if (sni_hostname != "" && cert_chains.length == 0)
                 {
                     cert_chains = getServerCerts("", m_creds);
                         
@@ -269,7 +269,7 @@ protected:
                     * unrecognized_name when a server is configured for purely
                     * anonymous operation.
                     */
-                    if (!cert_chains.empty)
+                    if (cert_chains.length != 0)
                         sendAlert(TLSAlert(TLSAlert.UNRECOGNIZED_NAME));
                    }
                 state.serverHello(
@@ -316,10 +316,9 @@ protected:
                 
                 if (kex_algo == "RSA" || sig_algo != "")
                 {
-                    priv_key = m_creds.privateKeyFor(    state.serverCerts().certChain()[0],
-                                                            "tls-server",
-                                                            sniHostname
-                    );
+                    priv_key = m_creds.privateKeyFor(state.serverCerts().certChain()[0],
+                                                     "tls-server",
+                                                     sni_hostname );
                     
                     if (!priv_key)
                         throw new InternalError("No private key located for associated server cert");
@@ -341,16 +340,14 @@ protected:
                         );
                 }
                 
-                auto trusted_CAs = m_creds.trustedCertificateAuthorities("tls-server", sniHostname);
+                auto trusted_CAs = m_creds.trustedCertificateAuthorities("tls-server", sni_hostname);
                 
                 Vector!X509DN client_auth_CAs;
                 
-                foreach (store; trusted_CAs)
+                foreach (store; trusted_CAs[])
                 {
                     auto subjects = store.allSubjects();
-                    client_auth_CAs.insert(client_auth_CAs.end(),
-                                           subjects.ptr,
-                                           subjects.end());
+                    client_auth_CAs ~= subjects[];
                 }
                 
                 if (!client_auth_CAs.empty && state.ciphersuite().sigAlgo() != "")
@@ -446,7 +443,7 @@ protected:
         {
             state.setExpectedNext(HANDSHAKE_NONE);
             
-            state.clientFinished(new Finished(contents));
+			state.clientFinished(new Finished(contents.dup));
             
             if (!state.clientFinished().verify(state, CLIENT))
                 throw new TLSException(TLSAlert.DECRYPT_ERROR, "Finished message didn't verify");
@@ -457,18 +454,17 @@ protected:
                 
                 state.hash().update(state.handshakeIo().format(contents, type));
                 
-                TLSSession session_info = TLSSession(
-                        state.serverHello().sessionId(),
-                        state.sessionKeys().masterSecret(),
-                        state.serverHello().Version(),
-                        state.serverHello().ciphersuite(),
-                        state.serverHello().compressionMethod(),
-                        SERVER,
-                        state.serverHello().fragmentSize(),
-                        getPeerCertChain(state),
-                        Vector!ubyte(),
-                        TLSServerInformation(state.clientHello().sniHostname()),
-                        state.srpIdentifier()
+                TLSSession session_info = TLSSession(state.serverHello().sessionId().dup,
+							                         state.sessionKeys().masterSecret().dup,
+							                         state.serverHello().Version(),
+							                         state.serverHello().ciphersuite(),
+							                         state.serverHello().compressionMethod(),
+							                         SERVER,
+							                         state.serverHello().fragmentSize(),
+							                         getPeerCertChain(state).dup,
+							                         Vector!ubyte(),
+							                         TLSServerInformation(state.clientHello().sniHostname()),
+							                         state.srpIdentifier()
                     );
                 
                 if (saveSession(session_info))
@@ -620,13 +616,13 @@ ushort chooseCiphersuite(in TLSPolicy policy,
     
     const bool have_shared_ecc_curve = (policy.chooseCurve(client_hello.supportedEccCurves()) != "");
     
-    Vector!ushort pref_list = server_suites;
-    Vector!ushort other_list = client_suites;
+    Vector!ushort pref_list = server_suites.dup;
+    Vector!ushort other_list = client_suites.dup;
     
     if (!our_choice)
         std.algorithm.swap(pref_list, other_list);
     
-    foreach (suite_id; pref_list)
+    foreach (suite_id; pref_list[])
     {
         if (!valueExists(other_list, suite_id))
             continue;
@@ -636,7 +632,7 @@ ushort chooseCiphersuite(in TLSPolicy policy,
         if (!have_shared_ecc_curve && suite.eccCiphersuite())
             continue;
         
-        if (suite.sigAlgo() != "" && cert_chains.count(suite.sigAlgo()) == 0)
+        if (suite.sigAlgo() != "" && cert_chains.get(suite.sigAlgo(), Vector!X509Certificate(0)) == Vector!X509Certificate(0))
             continue;
         
         /*

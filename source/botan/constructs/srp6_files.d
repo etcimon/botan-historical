@@ -6,6 +6,8 @@
 */
 module botan.constructs.srp6_files;
 
+import botan.constants;
+static if (BOTAN_HAS_SRP6):
 import botan.math.bigint.bigint;
 import botan.utils.parsing;
 import botan.codec.base64;

@@ -271,7 +271,7 @@ public:
         
         Appender!(TLSCiphersuite[]) ciphersuites;
         
-        foreach (suite; TLSCiphersuite.allKnownCiphersuites())
+        foreach (const ref TLSCiphersuite suite; TLSCiphersuite.allKnownCiphersuites()[])
         {
             if (!acceptableCiphersuite(suite))
                 continue;
@@ -305,10 +305,10 @@ public:
             ciphersuites ~= suite;
         }
         
-        if (ciphersuites.data.empty)
+        if (ciphersuites.data.length == 0)
             throw new LogicError("TLSPolicy does not allow any available cipher suite");
         Vector!ushort ciphersuite_codes;
-        foreach (TLSCiphersuite i; ciphersuites.data.uniq.sort!((a,b){ return order.compare(a, b); }).array.to!(TLSCiphersuite[]))
+        foreach (TLSCiphersuite i; ciphersuites.data.uniq.array.sort!((a,b){ return order.compare(a, b); }).array.to!(TLSCiphersuite[]))
             ciphersuite_codes.pushBack(i.ciphersuiteCode());
         return ciphersuite_codes;
     }
@@ -428,5 +428,5 @@ public:
         return false; // equal (?!?)
     }
 private:
-    Vector!string m_ciphers, m_macs, m_kex, m_sigs;
+    const Vector!string m_ciphers, m_macs, m_kex, m_sigs;
 }

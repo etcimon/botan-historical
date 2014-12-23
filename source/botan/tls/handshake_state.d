@@ -34,6 +34,8 @@ public:
     */
     this(HandshakeIO io, void delegate(in HandshakeMessage) msg_callback = null) 
     {
+        m_ciphersuite = TLSCiphersuite.init;
+        m_session_keys = TLSSessionKeys.init;
         m_msg_callback = msg_callback;
         m_handshake_io = io;
         m_version = m_handshake_io.initialRecordVersion();
@@ -51,7 +53,7 @@ public:
     {
         const uint mask = bitmaskForHandshakeType(handshake_msg);
         
-        return (m_hand_received_mask & mask);
+        return cast(bool)(m_hand_received_mask & mask);
     }
 
     /**
@@ -64,7 +66,7 @@ public:
         
         m_hand_received_mask |= mask;
         
-        const bool ok = (m_hand_expecting_mask & mask); // overlap?
+        const bool ok = cast(bool)(m_hand_expecting_mask & mask); // overlap?
         
         if (!ok)
             throw new TLSUnexpectedMessage("Unexpected state transition in handshake, got " ~
@@ -90,12 +92,12 @@ public:
 
     Pair!(HandshakeType, Vector!ubyte) getNextHandshakeMsg()
     {
-        const bool expecting_ccs = (bitmaskForHandshakeType(HANDSHAKE_CCS) & m_hand_expecting_mask);
+        const bool expecting_ccs = cast(bool)(bitmaskForHandshakeType(HANDSHAKE_CCS) & m_hand_expecting_mask);
         
         return m_handshake_io.getNextRecord(expecting_ccs);
     }
 
-    Vector!ubyte sessionTicket() const
+    const(Vector!ubyte) sessionTicket() const
     {
         if (newSessionTicket() && !newSessionTicket().ticket().empty())
             return newSessionTicket().ticket();
@@ -103,7 +105,7 @@ public:
         return clientHello().sessionTicket();
     }
 
-    Pair!(string, SignatureFormat)
+    const(Pair!(string, SignatureFormat))
         understandSigFormat(in PublicKey key, string hash_algo, string sig_algo, bool for_client_auth) const
     {
         const string algo_name = key.algoName;
@@ -142,7 +144,7 @@ public:
             }
             
             const string padding = "EMSA3(" ~ hash_algo ~ ")";
-            return Pair(padding, IEEE_1363);
+            return makePair(padding, IEEE_1363);
         }
         else if (algo_name == "DSA" || algo_name == "ECDSA")
         {
@@ -157,13 +159,13 @@ public:
             
             const string padding = "EMSA1(" ~ hash_algo ~ ")";
             
-            return Pair(padding, DER_SEQUENCE);
+            return makePair(padding, DER_SEQUENCE);
         }
         
         throw new InvalidArgument(algo_name ~ " is invalid/unknown for TLS signatures");
     }
 
-    Pair!(string, SignatureFormat)
+    const(Pair!(string, SignatureFormat))
         chooseSigFormat(in PrivateKey key,
                           ref string hash_algo_out,
                           ref string sig_algo_out,
@@ -189,19 +191,19 @@ public:
         {
             const string padding = "EMSA3(" ~ hash_algo ~ ")";
             
-            return Pair(padding, IEEE_1363);
+            return makePair(padding, IEEE_1363);
         }
         else if (sig_algo == "DSA" || sig_algo == "ECDSA")
         {
             const string padding = "EMSA1(" ~ hash_algo ~ ")";
             
-            return Pair(padding, DER_SEQUENCE);
+            return makePair(padding, DER_SEQUENCE);
         }
         
         throw new InvalidArgument(sig_algo ~ " is invalid/unknown for TLS signatures");
     }
 
-    string srpIdentifier() const
+    const(string) srpIdentifier() const
     {
         if (ciphersuite().valid() && ciphersuite().kexAlgo() == "SRP_SHA")
             return clientHello().srpIdentifier();
@@ -230,10 +232,10 @@ public:
             return getKdf("TLS-PRF");
         }
         
-        throw new InternalError("Unknown version code " ~ Version().toString());
+        // throw new InternalError("Unknown version code " ~ Version().toString());
     }
 
-    TLSProtocolVersion Version() const { return m_version; }
+    const(TLSProtocolVersion) Version() const { return m_version; }
 
     void setVersion(in TLSProtocolVersion _version)
     {
@@ -245,7 +247,7 @@ public:
         noteMessage(hello_verify);
         
         m_client_hello.updateHelloCookie(hello_verify);
-        hash().clear();
+        hash().reset();
         hash().update(handshakeIo().send(*m_client_hello));
         noteMessage(*m_client_hello);
     }
@@ -302,7 +304,7 @@ public:
     
     void clientVerify(CertificateVerify client_verify)
     {
-        m_client_verify.reset(client_verify);
+        m_client_verify = Unique!CertificateVerify(client_verify);
         noteMessage(*m_client_verify);
     }
     
@@ -330,48 +332,48 @@ public:
         noteMessage(*m_client_finished);
     }
 
-    ClientHello clientHello() const
+    const(ClientHello) clientHello() const
     { return *m_client_hello; }
 
-    ServerHello serverHello() const
+    const(ServerHello) serverHello() const
     { return *m_server_hello; }
 
-    Certificate serverCerts() const
+    const(Certificate) serverCerts() const
     { return *m_server_certs; }
 
-    ServerKeyExchange serverKex() const
+    const(ServerKeyExchange) serverKex() const
     { return *m_server_kex; }
 
-    CertificateReq certReq() const
+    const(CertificateReq) certReq() const
     { return *m_cert_req; }
 
-    ServerHelloDone serverHelloDone() const
+    const(ServerHelloDone) serverHelloDone() const
     { return *m_server_hello_done; }
 
-    Certificate clientCerts() const
+    const(Certificate) clientCerts() const
     { return *m_client_certs; }
 
-    ClientKeyExchange clientKex() const
+    const(ClientKeyExchange) clientKex() const
     { return *m_client_kex; }
 
-    CertificateVerify clientVerify() const
+    const(CertificateVerify) clientVerify() const
     { return *m_client_verify; }
 
-    NextProtocol nextProtocol() const
+    const(NextProtocol) nextProtocol() const
     { return *m_next_protocol; }
 
-    NewSessionTicket newSessionTicket() const
+    const(NewSessionTicket) newSessionTicket() const
     { return *m_new_session_ticket; }
 
-    Finished serverFinished() const
+    const(Finished) serverFinished() const
     { return *m_server_finished; }
 
-    Finished clientFinished() const
+    const(Finished) clientFinished() const
     { return *m_client_finished; }
 
-    TLSCiphersuite ciphersuite() const { return m_ciphersuite; }
+    const(TLSCiphersuite) ciphersuite() const { return m_ciphersuite; }
 
-    TLSSessionKeys sessionKeys() const { return m_session_keys; }
+    const(TLSSessionKeys) sessionKeys() const { return m_session_keys; }
 
     void computeSessionKeys()
     {
@@ -385,7 +387,7 @@ public:
 
     HandshakeHash hash() { return m_handshake_hash; }
 
-    HandshakeHash hash() const { return m_handshake_hash; }
+    const(HandshakeHash) hash() const { return m_handshake_hash; }
 
     void noteMessage(in HandshakeMessage msg)
     {
@@ -483,9 +485,10 @@ uint bitmaskForHandshakeType(HandshakeType type)
             // allow explicitly disabling new handshakes
         case HANDSHAKE_NONE:
             return 0;
+
+        default:
+            throw new InternalError("Unknown handshake type " ~ to!string(type));
     }
-    
-    throw new InternalError("Unknown handshake type " ~ to!string(type));
 }
 
 
@@ -514,9 +517,7 @@ string chooseHash(in string sig_algo,
         throw new InternalError("Unknown TLS signature algo " ~ sig_algo);
     }
     
-    const Vector!(Pair!(string, string)) supported_algos = for_client_auth ?
-        cert_req.supportedAlgos() :
-            client_hello.supportedAlgos();
+    const Vector!(Pair!(string, string)) supported_algos = for_client_auth ? cert_req.supportedAlgos() : client_hello.supportedAlgos();
     
     if (!supported_algos.empty())
     {
@@ -526,9 +527,9 @@ string chooseHash(in string sig_algo,
         * Choose our most preferred hash that the counterparty supports
         * in pairing with the signature algorithm we want to use.
         */
-        foreach (hash; hashes)
+        foreach (hash; hashes[])
         {
-            foreach (algo; supported_algos)
+            foreach (algo; supported_algos[])
             {
                 if (algo.first == hash && algo.second == sig_algo)
                     return hash;
