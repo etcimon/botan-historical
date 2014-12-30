@@ -54,15 +54,15 @@ public:
         bswap().storeLittleEndian(output);
     }
 
-    void rotateLeft(size_t rot)
+    void rotateLeft(int ROT)()
     {
-        m_reg = _mm_or_si128(_mm_slli_epi32(m_reg, cast(int)(rot)),
-                             _mm_srli_epi32(m_reg, cast(int)(32-rot)));
+        m_reg = _mm_or_si128(_mm_slli_epi32!ROT(m_reg),
+                             _mm_srli_epi32!(32-ROT)(m_reg));
     }
 
-    void rotateRight(size_t rot)
+    void rotateRight(int rot)()
     {
-        rotateLeft(32 - rot);
+        rotateLeft!(32 - rot)();
     }
 
     void opOpAssign(string op)(in SIMDSSE2 other)
@@ -123,17 +123,15 @@ public:
         m_reg = _mm_and_si128(m_reg, other.m_reg);
     }
 
-    SIMDSSE2 opBinary(string op)(size_t shift)
-        if (op == "<<")
+    SIMDSSE2 lshift(size_t shift)()
     {
-        m_reg = _mm_slli_epi32(m_reg, cast(int)(shift));
+        m_reg = _mm_slli_epi32!shift(m_reg);
         return this;
     }
 
-    SIMDSSE2 opBinary(string op)(size_t shift)
-        if (op == ">>")
+    SIMDSSE2 rshift(size_t shift)()
     {
-        m_reg = _mm_srli_epi32(m_reg, cast(int)(shift));
+        m_reg = _mm_srli_epi32!shift(m_reg);
         return this;
     }
 
@@ -155,11 +153,12 @@ public:
     {
         __m128i T = m_reg;
 
-        T = _mm_shufflehi_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
-        T = _mm_shufflelo_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
+        const SHUF = _MM_SHUFFLE(2, 3, 0, 1);
+        T = _mm_shufflehi_epi16!SHUF(T);
+        T = _mm_shufflelo_epi16!SHUF(T);
 
-        m_reg = _mm_or_si128(_mm_srli_epi16(T, 8),
-                            _mm_slli_epi16(T, 8));
+        m_reg = _mm_or_si128(_mm_srli_epi16!8(T),
+                             _mm_slli_epi16!8(T));
         return this;
     }
 

@@ -294,7 +294,7 @@ extern(C) void* bzip_malloc(void* info_ptr, int n, int size) nothrow
     const size_t total_sz = n * size;
     
     void* ptr = .malloc(total_sz);
-	try info.current_allocs[ptr] = total_sz; catch {}
+    try info.current_allocs[ptr] = total_sz; catch {}
     return ptr;
 }
 
@@ -304,13 +304,13 @@ extern(C) void* bzip_malloc(void* info_ptr, int n, int size) nothrow
 extern(C) void bzip_free(void* info_ptr, void* ptr) nothrow
 {
     Bzip_Alloc_Info* info = cast(Bzip_Alloc_Info*)(info_ptr);
-	try {
-	    auto val = (cast(const)info.current_allocs).get(ptr, -1);
-	    if (val == -1)
-	        throw new InvalidArgument("bzip_free: Got pointer not allocated by us");
-	    
-	    memset(ptr, 0, val);
-	} catch {}
+    try {
+        auto val = (cast(const)info.current_allocs).get(ptr, -1);
+        if (val == -1)
+            throw new InvalidArgument("bzip_free: Got pointer not allocated by us");
+        
+        memset(ptr, 0, val);
+    } catch {}
     .free(ptr);
 }
 

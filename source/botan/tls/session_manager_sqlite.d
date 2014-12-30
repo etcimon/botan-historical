@@ -111,7 +111,7 @@ public:
             
             stmt.bind(1, salt);
             stmt.bind(2, iterations);
-            stmt.bind(3, check_val);
+            stmt.bind(3, cast(int) check_val);
             
             stmt.spin();
         }
@@ -194,7 +194,7 @@ public:
         
         stmt.spin();
         
-        prune_session_cache();
+        pruneSessionCache();
     }
 
     override Duration sessionLifetime() const
@@ -219,7 +219,7 @@ private:
             sqlite3_statement remove_some = sqlite3_statement(m_db, "delete from tls_sessions where session_id in "
                                           ~ "(select session_id from tls_sessions limit ?1)");
             
-            remove_some.bind(1, sessions - m_max_sessions);
+            remove_some.bind(1, cast(int)(sessions - m_max_sessions));
             remove_some.spin();
         }
     }

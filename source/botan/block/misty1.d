@@ -129,6 +129,8 @@ public:
     @property string name() const { return "MISTY1"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new MISTY1; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 
     /**
     * @param rounds = the number of rounds. Must be 8 with the current

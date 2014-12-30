@@ -32,6 +32,7 @@ alias EAC11ADO = FreeListRef!EAC11ADOImpl;
 final class EAC11ADOImpl : EAC11obj!EAC11ADOImpl, SignedObject
 {
 public:
+    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Construct a CVC ADO request from a DER encoded CVC ADO request file.
     * @param str = the path to the DER encoded file
@@ -139,7 +140,7 @@ protected:
     ASN1Car m_car;
     EAC11Req m_req;
 
-    void forceDecode()
+    override void forceDecode()
     {
         Vector!ubyte inner_cert;
         BERDecoder(m_tbs_bits)

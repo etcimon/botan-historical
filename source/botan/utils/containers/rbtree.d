@@ -487,7 +487,7 @@ struct RBNode(V)
         _left = _right = _parent = null;
 
         /// this node object can now be safely deleted
-        FreeListObjectAlloc!(RBNode!Elem).free(&this);
+        FreeListObjectAlloc!(RBNode!V).free(&this);
 
         return ret;
     }
@@ -551,8 +551,8 @@ struct RBNode(V)
         else
             return n.left.rightmost;
     }
-    
-    Node dup(scope Node delegate(V v) alloc)
+    /*
+    Node dup(scope Node delegate(V v) alloc) const
     {
         //
         // duplicate this and all child nodes
@@ -568,11 +568,12 @@ struct RBNode(V)
             copy.right = _right.dup(alloc);
         return copy;
     }
+    */
     
-    Node dup()
+    Node dup() const
     {
         Node copy = new RBNode!V;
-        copy.value = value;
+        copy.value = cast(V)value;
         copy.color = color;
         if(_left !is null)
             copy.left = _left.dup();
@@ -1240,7 +1241,11 @@ assert(equal(rbt[], [5]));
     this(Elem[] elems...)
     {
         _setup();
-        stableInsert(elems);
+        static if (is(Elem == void[])) {
+            foreach(elem;elems) stableInsert(elem);
+        }
+        else
+            stableInsert(elems);
     }
     
     /**

@@ -10,6 +10,7 @@ module botan.utils.simd.emmintrin;
 import botan.constants;
 static if (BOTAN_HAS_SIMD_SSE2):
 import core.simd;
+import std.conv : to;
 
 pure:
 nothrow:
@@ -18,7 +19,7 @@ nothrow:
 alias __m128i = byte16;
 alias __m64 = ulong;
 
-int _MM_SHUFFLE(int a, int b, int c, int d)
+int _MM_SHUFFLE(int z, int y, int x, int w)
 {
     return (z<<6) | (y<<4) | (x<<2) | w;
 }
@@ -135,22 +136,22 @@ version(GDC) {
     }
 
     // _mm_srli_epi16 ; PSRLW
-    __m128i _mm_srli_epi16 (__m128i a, in int imm) {
+    __m128i _mm_srli_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_psrlwi128(cast(short8) a, imm);
     }
 
     // _mm_slli_epi16 ; PSLLW
-    __m128i _mm_slli_epi16 (__m128i a, in int imm) {
+    __m128i _mm_slli_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_psllwi128(cast(short8) a, imm);
     }
 
     // _mm_shufflehi_epi16 ; PSHUFHW
-    __m128i _mm_shufflehi_epi16 (__m128i a, in int imm) {
+    __m128i _mm_shufflehi_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pshufhw(cast(short8) a, imm);
     }
 
     // _mm_shufflelo_epi16 ; PSHUFLW
-    __m128i _mm_shufflelo_epi16 (__m128i a, in int imm) {
+    __m128i _mm_shufflelo_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pshuflw(cast(short8) a, imm);
     }
 
@@ -170,7 +171,7 @@ version(GDC) {
     }
 
     // _mm_shuffle_epi32
-    __m128i _mm_shuffle_epi32 (__m128i a, in int imm) {
+    __m128i _mm_shuffle_epi32(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pshufd(cast(int4) a, imm);
     }
 
@@ -235,12 +236,12 @@ version(GDC) {
     }
 
     // _mm_srli_si128 ; PSRLDQ
-    __m128i _mm_srli_si128 (__m128i a, in int imm) {
+    __m128i _mm_srli_si128(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_psrldqi128(a, imm*8);
     }
 
     // _mm_slli_si128 ; PSLLDQ
-    __m128i _mm_slli_si128 (__m128i a, in int imm) {
+    __m128i _mm_slli_si128(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pslldqi128(a, imm*8);
     }
 }
@@ -316,22 +317,22 @@ version(LDC) {
     }
     
     // _mm_srli_epi16 ; PSRLW
-    __m128i _mm_srli_epi16 (__m128i a, in int imm) {
+    __m128i _mm_srli_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_psrlwi128(cast(short8) a, imm);
     }
     
     // _mm_slli_epi16 ; PSLLW
-    __m128i _mm_slli_epi16 (__m128i a, in int imm) {
+    __m128i _mm_slli_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_psllwi128(cast(short8) a, imm);
     }
     
     // _mm_shufflehi_epi16 ; PSHUFHW
-    __m128i _mm_shufflehi_epi16 (__m128i a, in int imm) {
+    __m128i _mm_shufflehi_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pshufhw(cast(short8) a, imm);
     }
     
     // _mm_shufflelo_epi16 ; PSHUFLW
-    __m128i _mm_shufflelo_epi16 (__m128i a, in int imm) {
+    __m128i _mm_shufflelo_epi16(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pshuflw(cast(short8) a, imm);
     }
     
@@ -351,7 +352,7 @@ version(LDC) {
     }
 
     // _mm_shuffle_epi32
-    __m128i _mm_shuffle_epi32 (__m128i a, in int imm) {
+    __m128i _mm_shuffle_epi32(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pshufd(cast(int4) a, imm);
     }
     
@@ -416,12 +417,12 @@ version(LDC) {
     }
     
     // _mm_srli_si128 ; PSRLDQ
-    __m128i _mm_srli_si128 (__m128i a, in int imm) {
+    __m128i _mm_srli_si128(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_psrldqi128(a, imm*8);
     }
     
     // _mm_slli_si128 ; PSLLDQ
-    __m128i _mm_slli_si128 (__m128i a, in int imm) {
+    __m128i _mm_slli_si128(int imm)(__m128i a) {
         return cast(__m128i) __builtin_ia32_pslldqi128(a, imm*8);
     }
     
@@ -591,95 +592,75 @@ version(D_InlineAsm_X86_64) {
     }
 
     // _mm_srli_epi16 ; PSRLW
-    __m128i _mm_srli_epi16 (__m128i a, in int imm) {
+    __m128i _mm_srli_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            psrlw XMM0, [RBX];
+            psrlw XMM0, ` ~ imm.to!string ~ `;
             movdqu [RAX], XMM0;
-        }
+        }`);
         return a;
     }    
 
     // _mm_srli_epi32 ; PSRLD
-    __m128i _mm_srli_epi32 (__m128i a, in int imm) {
+    __m128i _mm_srli_epi32(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
         
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            psrld XMM0, [RBX];
+            psrld XMM0, ` ~ imm.to!string ~ `;
             movdqu [RAX], XMM0;
-        }
+        }`);
         return a;
     }
 
     // _mm_slli_epi32 ; PSLLD
-    __m128i _mm_slli_epi32 (__m128i a, in int imm) {
-        __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        
-        asm {
+    __m128i _mm_slli_epi32(int imm)(__m128i a) {
+        __m128i* _a = &a;        
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            pslld XMM0, [RBX];
+            pslld XMM0, ` ~ imm.to!string ~ `;
             movdqu [RAX], XMM0;
-        }
+        }`);
         return a;
     }
     
     // _mm_slli_epi16 ; PSLLW
-    __m128i _mm_slli_epi16(__m128i a, in int imm) {
+    __m128i _mm_slli_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            psllw XMM0, [RBX];
+            psllw XMM0, ` ~ imm.to!string ~ `;
             movdqu [RAX], XMM0;
-        }
+        }`);
         return a;
     }
     
     // _mm_shufflehi_epi16 ; PSHUFHW
-    __m128i _mm_shufflehi_epi16 (__m128i a, in int imm) {
+    __m128i _mm_shufflehi_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            pshufhw XMM0, [RBX];
-            movdqu [RAX], XMM0;
-        }
+            pshufhw XMM1, XMM0, ` ~ imm.to!string ~ `;
+            movdqu [RAX], XMM1;
+            }`);
         return a;
     }
     
     // _mm_shufflelo_epi16 ; PSHUFLW
-    __m128i _mm_shufflelo_epi16 (__m128i a, in int imm) {
+    __m128i _mm_shufflelo_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            pshuflw XMM0, [RBX];
-            movdqu [RAX], XMM0;
-        }
+            pshuflw XMM1, XMM0, ` ~ imm.to!string ~ `;
+            movdqu [RAX], XMM1;
+        }`);
         return a;
     }
     
@@ -733,37 +714,34 @@ version(D_InlineAsm_X86_64) {
     }
 
     // _mm_shuffle_epi32 ;  PSHUFD
-    __m128i _mm_shuffle_epi32 (__m128i a, in int imm) {
+    __m128i _mm_shuffle_epi32(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            pshufd XMM0, [RBX];
-            movdqu [RAX], XMM0;
-        }
+            pshufd XMM1, XMM0, ` ~ imm.to!string ~ `;
+            movdqu [RAX], XMM1;
+        }`);
         return a;
     }
     
     // _mm_extract_epi32 ; pextrd
-    int _mm_extract_epi32(__m128i a, in int ndx) {
+    int _mm_extract_epi32(int ndx)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) ndx;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        int b;
+        int* _b = &b;
+        mixin(`asm {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
-            pextrd XMM0, [RBX];
-            movdqu [RAX], XMM0;
-        }
+            pextrd ECX, XMM0, ` ~ ndx.to!string ~ `;
+            mov [RBX], ECX;
+        }`);
         return a;
     }
     
     // _mm_unpackhi_epi32 ; PUNPCKHDQ
-    __m128i _mm_unpackhi_epi32 (__m128i a, in __m128i b) {
+    __m128i _mm_unpackhi_epi32(__m128i a, in __m128i b) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
@@ -852,7 +830,7 @@ version(D_InlineAsm_X86_64) {
     
     // _mm_storeu_si128 ; MOVDQU
     void _mm_storeu_si128 (in __m128i* p, in __m128i a) {
-        __m128i* _a = &a;
+        const(__m128i)* _a = &a;
         
         asm {
             mov RAX, _a;
@@ -932,32 +910,26 @@ version(D_InlineAsm_X86_64) {
     }
     
     // _mm_srli_si128 ; PSRLDQ
-    __m128i _mm_srli_si128 (__m128i a, in int imm) {
+    __m128i _mm_srli_si128(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            psrldq XMM0, [RBX];
+            psrldq XMM0, ` ~ imm.to!string ~ `;
             movdqu [RAX], XMM0;
-        }
+        }`);
         return a;
     }
     
     // _mm_slli_si128 ; PSLLDQ
-    __m128i _mm_slli_si128 (__m128i a, in int imm) {
+    __m128i _mm_slli_si128(int imm)(__m128i a) {
         __m128i* _a = &a;
-        const(byte) b = cast(const byte) imm;
-        const(byte)* _b = cast(const(byte)*)&b;
-        asm {
+        mixin(`asm {
             mov RAX, _a;
-            mov RBX, _b;
             movdqu XMM0, [RAX];
-            pslldq XMM0, [RBX];
+            pslldq XMM0, ` ~ imm.to!string ~ `;
             movdqu [RAX], XMM0;
-        }
+        }`);
         return a;
     }
 }

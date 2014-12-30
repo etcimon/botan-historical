@@ -104,6 +104,9 @@ public:
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new RC5(m_rounds); }
 
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
+
     /**
     * RC5 Constructor
     * @param rounds = the number of RC5 rounds to run. Must be between

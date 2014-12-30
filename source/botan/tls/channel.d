@@ -622,7 +622,7 @@ protected:
         return Vector!ubyte();
     }
 
-	/**
+    /**
     * @return true iff the counterparty supports the secure
     * renegotiation extensions.
     */

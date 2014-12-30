@@ -175,6 +175,8 @@ public:
 
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new GOST2814789(m_SBOX); }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 
     this(in string params) {
         this(scoped!GOST2814789Params(params).Scoped_payload);

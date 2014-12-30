@@ -29,8 +29,8 @@ public:
     {
         Vector!ubyte send_buf = Vector!ubyte(3 + m_payload.length + 16);
         send_buf[0] = m_type;
-		send_buf[1] = get_byte(0, cast(ushort) m_payload.length);
-		send_buf[2] = get_byte(1, cast(ushort) m_payload.length);
+        send_buf[1] = get_byte(0, cast(ushort) m_payload.length);
+        send_buf[2] = get_byte(1, cast(ushort) m_payload.length);
         copyMem(&send_buf[3], m_payload.ptr, m_payload.length);
         // leave padding as all zeros
         

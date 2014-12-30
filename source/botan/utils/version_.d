@@ -26,13 +26,13 @@ string versionString()
     It is intentional that this string is a compile-time constant;
     it makes it much easier to find in binaries.
     */
-    return "Botan " ~ BOTAN_VERSION_MAJOR ~ "."
-            ~ BOTAN_VERSION_MINOR ~ "." 
-            ~ BOTAN_VERSION_PATCH ~ " ("
-            ~ BOTAN_VERSION_RELEASE_TYPE
-            ~ ", dated " ~ BOTAN_VERSION_DATESTAMP
-            ~ ", revision " ~ BOTAN_VERSION_VC_REVISION
-            ~ ", distribution " ~ BOTAN_DISTRIBUTION_INFO ~ ")";
+    return "Botan " ~ BOTAN_VERSION_MAJOR.to!string ~ "."
+        ~ BOTAN_VERSION_MINOR.to!string ~ "." 
+            ~ BOTAN_VERSION_PATCH.to!string ~ " ("
+            ~ BOTAN_VERSION_RELEASE_TYPE.to!string
+            ~ ", dated " ~ BOTAN_VERSION_DATESTAMP.to!string
+            ~ ", revision " ~ BOTAN_VERSION_VC_REVISION.to!string
+            ~ ", distribution " ~ BOTAN_DISTRIBUTION_INFO.to!string ~ ")";
 }
 
 /**

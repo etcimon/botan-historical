@@ -19,6 +19,10 @@ final class IDEASSE2 : IDEA, SymmetricAlgorithm
 {
 public:
     override @property size_t parallelism() const { return 8; }
+    override void clear()
+    {
+        super.clear();
+    }
 
     /*
     * IDEA Encryption
@@ -57,8 +61,11 @@ public:
         if (blocks)
             super.decryptN(input, output, blocks);
     }
-
+    override void keySchedule(const(ubyte)* key, size_t sz) { return super.keySchedule(key, sz); }
+    override @property string name() const { return "IDEA"; }
     override BlockCipher clone() const { return new IDEASSE2; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 }
 
 package:
@@ -80,7 +87,7 @@ __m128i mul(__m128i X, ushort K_16) pure
     
     // Unsigned compare; cmp = 1 if mul_lo < mul_hi else 0
     const(__m128i) subs = _mm_subs_epu16(mul_hi, mul_lo);
-    const(__m128i) cmp = _mm_min_epu8(_mm_or_si128(subs, _mm_srli_epi16(subs, 8)), ones);
+    const(__m128i) cmp = _mm_min_epu8(_mm_or_si128(subs, _mm_srli_epi16!8(subs)), ones);
     
     T = _mm_add_epi16(T, cmp);
     
@@ -122,20 +129,22 @@ void transpose_in(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B3
     __m128i T6 = _mm_unpacklo_epi32(T2, T3);
     __m128i T7 = _mm_unpackhi_epi32(T2, T3);
     
-    T0 = _mm_shufflehi_epi16(T4, _MM_SHUFFLE(1, 3, 0, 2));
-    T1 = _mm_shufflehi_epi16(T5, _MM_SHUFFLE(1, 3, 0, 2));
-    T2 = _mm_shufflehi_epi16(T6, _MM_SHUFFLE(1, 3, 0, 2));
-    T3 = _mm_shufflehi_epi16(T7, _MM_SHUFFLE(1, 3, 0, 2));
+    const SHUF = _MM_SHUFFLE(1, 3, 0, 2);
+    T0 = _mm_shufflehi_epi16!SHUF(T4);
+    T1 = _mm_shufflehi_epi16!SHUF(T5);
+    T2 = _mm_shufflehi_epi16!SHUF(T6);
+    T3 = _mm_shufflehi_epi16!SHUF(T7);
     
-    T0 = _mm_shufflelo_epi16(T0, _MM_SHUFFLE(1, 3, 0, 2));
-    T1 = _mm_shufflelo_epi16(T1, _MM_SHUFFLE(1, 3, 0, 2));
-    T2 = _mm_shufflelo_epi16(T2, _MM_SHUFFLE(1, 3, 0, 2));
-    T3 = _mm_shufflelo_epi16(T3, _MM_SHUFFLE(1, 3, 0, 2));
+    T0 = _mm_shufflelo_epi16!SHUF(T0);
+    T1 = _mm_shufflelo_epi16!SHUF(T1);
+    T2 = _mm_shufflelo_epi16!SHUF(T2);
+    T3 = _mm_shufflelo_epi16!SHUF(T3);
     
-    T0 = _mm_shuffle_epi32(T0, _MM_SHUFFLE(3, 1, 2, 0));
-    T1 = _mm_shuffle_epi32(T1, _MM_SHUFFLE(3, 1, 2, 0));
-    T2 = _mm_shuffle_epi32(T2, _MM_SHUFFLE(3, 1, 2, 0));
-    T3 = _mm_shuffle_epi32(T3, _MM_SHUFFLE(3, 1, 2, 0));
+    const SHUF2 = _MM_SHUFFLE(3, 1, 2, 0);
+    T0 = _mm_shuffle_epi32!SHUF2(T0);
+    T1 = _mm_shuffle_epi32!SHUF2(T1);
+    T2 = _mm_shuffle_epi32!SHUF2(T2);
+    T3 = _mm_shuffle_epi32!SHUF2(T3);
     
     B0 = _mm_unpacklo_epi64(T0, T2);
     B1 = _mm_unpackhi_epi64(T0, T2);
@@ -153,20 +162,21 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
     __m128i T2 = _mm_unpackhi_epi64(B0, B1);
     __m128i T3 = _mm_unpackhi_epi64(B2, B3);
     
-    T0 = _mm_shuffle_epi32(T0, _MM_SHUFFLE(3, 1, 2, 0));
-    T1 = _mm_shuffle_epi32(T1, _MM_SHUFFLE(3, 1, 2, 0));
-    T2 = _mm_shuffle_epi32(T2, _MM_SHUFFLE(3, 1, 2, 0));
-    T3 = _mm_shuffle_epi32(T3, _MM_SHUFFLE(3, 1, 2, 0));
+    const SHUF = _MM_SHUFFLE(3, 1, 2, 0);
+    T0 = _mm_shuffle_epi32!SHUF(T0);
+    T1 = _mm_shuffle_epi32!SHUF(T1);
+    T2 = _mm_shuffle_epi32!SHUF(T2);
+    T3 = _mm_shuffle_epi32!SHUF(T3);
     
-    T0 = _mm_shufflehi_epi16(T0, _MM_SHUFFLE(3, 1, 2, 0));
-    T1 = _mm_shufflehi_epi16(T1, _MM_SHUFFLE(3, 1, 2, 0));
-    T2 = _mm_shufflehi_epi16(T2, _MM_SHUFFLE(3, 1, 2, 0));
-    T3 = _mm_shufflehi_epi16(T3, _MM_SHUFFLE(3, 1, 2, 0));
+    T0 = _mm_shufflehi_epi16!SHUF(T0);
+    T1 = _mm_shufflehi_epi16!SHUF(T1);
+    T2 = _mm_shufflehi_epi16!SHUF(T2);
+    T3 = _mm_shufflehi_epi16!SHUF(T3);
     
-    T0 = _mm_shufflelo_epi16(T0, _MM_SHUFFLE(3, 1, 2, 0));
-    T1 = _mm_shufflelo_epi16(T1, _MM_SHUFFLE(3, 1, 2, 0));
-    T2 = _mm_shufflelo_epi16(T2, _MM_SHUFFLE(3, 1, 2, 0));
-    T3 = _mm_shufflelo_epi16(T3, _MM_SHUFFLE(3, 1, 2, 0));
+    T0 = _mm_shufflelo_epi16!SHUF(T0);
+    T1 = _mm_shufflelo_epi16!SHUF(T1);
+    T2 = _mm_shufflelo_epi16!SHUF(T2);
+    T3 = _mm_shufflelo_epi16!SHUF(T3);
     
     B0 = _mm_unpacklo_epi32(T0, T1);
     B1 = _mm_unpackhi_epi32(T0, T1);
@@ -189,10 +199,10 @@ void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
     transpose_in(B0, B1, B2, B3);
     
     // ubyte swap
-    B0 = _mm_or_si128(_mm_slli_epi16(B0, 8), _mm_srli_epi16(B0, 8));
-    B1 = _mm_or_si128(_mm_slli_epi16(B1, 8), _mm_srli_epi16(B1, 8));
-    B2 = _mm_or_si128(_mm_slli_epi16(B2, 8), _mm_srli_epi16(B2, 8));
-    B3 = _mm_or_si128(_mm_slli_epi16(B3, 8), _mm_srli_epi16(B3, 8));
+    B0 = _mm_or_si128(_mm_slli_epi16!8(B0), _mm_srli_epi16!8(B0));
+    B1 = _mm_or_si128(_mm_slli_epi16!8(B1), _mm_srli_epi16!8(B1));
+    B2 = _mm_or_si128(_mm_slli_epi16!8(B2), _mm_srli_epi16!8(B2));
+    B3 = _mm_or_si128(_mm_slli_epi16!8(B3), _mm_srli_epi16!8(B3));
     
     foreach (size_t i; 0 .. 8)
     {
@@ -226,10 +236,10 @@ void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
     B3 = mul(B3, EK[51]);
     
     // ubyte swap
-    B0 = _mm_or_si128(_mm_slli_epi16(B0, 8), _mm_srli_epi16(B0, 8));
-    B1 = _mm_or_si128(_mm_slli_epi16(B1, 8), _mm_srli_epi16(B1, 8));
-    B2 = _mm_or_si128(_mm_slli_epi16(B2, 8), _mm_srli_epi16(B2, 8));
-    B3 = _mm_or_si128(_mm_slli_epi16(B3, 8), _mm_srli_epi16(B3, 8));
+    B0 = _mm_or_si128(_mm_slli_epi16!8(B0), _mm_srli_epi16!8(B0));
+    B1 = _mm_or_si128(_mm_slli_epi16!8(B1), _mm_srli_epi16!8(B1));
+    B2 = _mm_or_si128(_mm_slli_epi16!8(B2), _mm_srli_epi16!8(B2));
+    B3 = _mm_or_si128(_mm_slli_epi16!8(B3), _mm_srli_epi16!8(B3));
     
     transpose_out(B0, B2, B1, B3);
     

@@ -6,6 +6,7 @@
 */
 module botan.utils.mem_ops;
 import botan.utils.types;
+
 /**
 * Zeroise memory
 * @param ptr = a pointer to memory to zero out
@@ -13,7 +14,8 @@ import botan.utils.types;
 */
 void zeroMem(void* ptr, size_t n)
 {
-    ptr[0 .. n] = 0;
+    ubyte[] mem = cast(ubyte[])ptr[0 .. n];
+    foreach (ref ubyte ub; mem) ub = 0;
 }
 
 /**

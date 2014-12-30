@@ -69,13 +69,13 @@ public:
             .storeBigEndian(m_v[i], output + i*T.sizeof);
     }
 
-    void rotateLeft(size_t rot)
+    void rotateLeft(int rot)()
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] = .rotateLeft(m_v[i], rot);
     }
 
-    void rotateRight(size_t rot)
+    void rotateRight(int rot)()
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] = .rotateRight(m_v[i], rot);
@@ -145,7 +145,7 @@ public:
         return this;
     }
 
-    ref SIMDScalar!(T, N) opBinary(string op)(size_t shift)
+    ref SIMDScalar!(T, N) lshift(size_t shift)()
         if (op == "<<")
     {
         for (size_t i = 0; i != size(); ++i)
@@ -153,7 +153,7 @@ public:
         return this;
     }
 
-    ref SIMDScalar!(T, N) opBinary(string op)(size_t shift)
+    ref SIMDScalar!(T, N) rshift(size_t shift)()
         if (op == ">>")
     {
         for (size_t i = 0; i != size(); ++i)

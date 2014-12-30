@@ -103,7 +103,7 @@ public:
     */
     void write(ubyte[] input)
     {
-		write(cast(const(ubyte)*)(input.ptr), input.length);
+        write(cast(const(ubyte)*)(input.ptr), input.length);
     }
 
     /**
@@ -135,7 +135,7 @@ public:
     */
     void write(ubyte[] input)
     {
-		write(cast(const(ubyte)*)input.ptr, input.length);
+        write(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
@@ -146,7 +146,7 @@ public:
     void processMsg(const(ubyte)* input, size_t length)
     {
         startMsg();
-		write(input, length);
+        write(input, length);
         endMsg();
     }
 
@@ -156,7 +156,7 @@ public:
     */
     void processMsg(SecureVector!ubyte input)
     {
-		processMsg(cast(const(ubyte)*)input.ptr, input.length);
+        processMsg(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
@@ -165,7 +165,7 @@ public:
     */
     void processMsg(Vector!ubyte input)
     {
-		processMsg(cast(const(ubyte)*)input.ptr, input.length);
+        processMsg(cast(const(ubyte)*)input.ptr, input.length);
     }
 
     /**
@@ -174,7 +174,7 @@ public:
     */
     void processMsg(string input)
     {
-		processMsg(cast(const(ubyte)*)(input.ptr), input.length);
+        processMsg(cast(const(ubyte)*)(input.ptr), input.length);
     }
 
     /**

@@ -531,13 +531,13 @@ struct VectorImpl(T, ALLOCATOR)
             _data.length = value.length;
             _data._payload.ptr[0 .. value.length] = value[0 .. $];
         } else static if (is (Stuff == FreeListRef!(VectorImpl!(T, ALLOCATOR)))) {
-			_data.length = value._data.length;
-			_data._payload[] = value._data._payload[];
-		}
-		else {
-			_data.length = value.length;
-			_data._payload[] = value;
-		}
+            _data.length = value._data.length;
+            _data._payload[] = value._data._payload[];
+        }
+        else {
+            _data.length = value.length;
+            _data._payload[] = value;
+        }
     }
     
     /// ditto
@@ -864,32 +864,6 @@ struct VectorImpl(T, ALLOCATOR)
         return 1;
     }
     
-    /**
-    Removes all elements belonging to $(D r), which must be a range
-    obtained originally from this container. The stable version behaves
-    the same, but guarantees that ranges iterating over the container are
-    never invalidated.
-
-    Returns: A range spanning the remaining elements in the container that
-    initially were right after $(D r).
-
-    Complexity: $(BIGOH n - m), where $(D m) is the number of elements in
-    $(D r)
-     */
-    Range linearRemove(Range r)
-    {
-        enforce(r._outer._data is _data);
-        enforce(r._a <= r._b && r._b <= length);
-        immutable offset1 = r._a;
-        immutable offset2 = r._b;
-        immutable tailLength = length - offset2;
-        // Use copy here, not a[] = b[] because the ranges may overlap
-        copy(this.ptr[offset2 .. length], this.ptr[offset1 .. offset1 + tailLength]);
-        length = offset1 + tailLength;
-        return Range(this, length - tailLength, length);
-    }
-
-    alias remove = linearRemove;
 }
 
 private template UnConst(T) {

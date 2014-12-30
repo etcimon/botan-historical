@@ -88,9 +88,9 @@ public:
     this(bool newlines = false, size_t line_length = 72, Case the_case = Uppercase)
     {
         m_casing = the_case;
-		m_line_length = newlines ? line_length : 0;
+        m_line_length = newlines ? line_length : 0;
         m_input.resize(HEX_CODEC_BUFFER_SIZE);
-		m_output.resize(2*HEX_CODEC_BUFFER_SIZE);
+        m_output.resize(2*HEX_CODEC_BUFFER_SIZE);
         m_counter = m_position = 0;
     }
 private:
@@ -110,13 +110,13 @@ private:
             {
                 size_t sent = std.algorithm.min(m_line_length - m_counter, remaining);
                 send(&m_output[offset], sent);
-				m_counter += sent;
+                m_counter += sent;
                 remaining -= sent;
                 offset += sent;
-				if (m_counter == m_line_length)
+                if (m_counter == m_line_length)
                 {
                     send('\n');
-					m_counter = 0;
+                    m_counter = 0;
                 }
             }
         }
@@ -202,7 +202,7 @@ public:
     {
         m_checking = c;
         m_input.resize(HEX_CODEC_BUFFER_SIZE);
-		m_output.resize(HEX_CODEC_BUFFER_SIZE / 2);
+        m_output.resize(HEX_CODEC_BUFFER_SIZE / 2);
         m_position = 0;
     }
 private:

@@ -37,6 +37,8 @@ public:
     @property string name() const { return "Camellia-128"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Camellia128; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
@@ -69,6 +71,8 @@ public:
     @property string name() const { return "Camellia-192"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Camellia192; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
@@ -101,6 +105,8 @@ public:
     @property string name() const { return "Camellia-256"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Camellia256; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {

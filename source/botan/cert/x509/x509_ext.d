@@ -247,6 +247,8 @@ public:
     }
 
 protected:
+    override bool shouldEncode() const { return true; }
+
     string oidName() const { return "X509v3.BasicConstraints"; }
 
     /*

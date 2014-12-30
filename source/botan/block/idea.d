@@ -44,6 +44,8 @@ public:
     @property string name() const { return "IDEA"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new IDEA; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /**
     * @return const reference to encryption subkeys

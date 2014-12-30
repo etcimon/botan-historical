@@ -37,7 +37,7 @@ public:
     {
         MultiMap!(string, string) output;
 
-        foreach (key, val; m_contents)
+        foreach (const ref string key, const ref string val; m_contents)
             if (predicate(key, val))
                 output.insert(key, val);
         
@@ -50,9 +50,9 @@ public:
     Vector!string get(in string looking_for) const
     {
         Vector!string output;
-        foreach (el; m_contents)
-            if (looking_for == el.first)
-                output.pushBack(el.second);
+        foreach (const ref string k, const ref string v; m_contents)
+            if (looking_for == k)
+                output.pushBack(v);
         return output;
     }
 
@@ -125,7 +125,7 @@ public:
     */
     bool hasValue(in string key) const
     {
-        return (m_contents.lowerBound(key) != m_contents.end());
+        return (m_contents.get(key, string.init) != string.init);
     }
 
 
@@ -165,7 +165,7 @@ public:
     */
     void add(in MultiMap!(string, string) input)
     {
-        foreach (k, const ref v; input)
+        foreach (const ref string k, const ref string v; input)
             m_contents.insert(k, v);
     }
 

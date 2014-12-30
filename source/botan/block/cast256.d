@@ -119,6 +119,8 @@ public:
     @property string name() const { return "CAST-256"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new CAST256; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
 
     /*

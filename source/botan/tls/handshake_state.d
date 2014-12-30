@@ -377,10 +377,10 @@ public:
 
     void computeSessionKeys()
     {
-        m_session_keys = TLSSessionKeys(this, clientKex().preMasterSecret(), false);
+        m_session_keys = TLSSessionKeys(this, clientKex().preMasterSecret().dup, false);
     }
 
-    void computeSessionKeys(in SecureVector!ubyte resume_master_secret)
+    void computeSessionKeys(SecureVector!ubyte resume_master_secret)
     {
         m_session_keys = TLSSessionKeys(this, resume_master_secret, true);
     }

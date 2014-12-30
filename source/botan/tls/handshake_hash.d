@@ -47,10 +47,10 @@ public:
             if (mac_algo == "MD5" || mac_algo == "SHA-1")
                 hash = Unique!HashFunction(af.makeHashFunction("SHA-256"));
             else
-				hash = Unique!HashFunction(af.makeHashFunction(mac_algo));
+                hash = Unique!HashFunction(af.makeHashFunction(mac_algo));
         }
         else
-			hash = Unique!HashFunction(af.makeHashFunction("Parallel(MD5,SHA-160)"));
+            hash = Unique!HashFunction(af.makeHashFunction("Parallel(MD5,SHA-160)"));
         
         hash.update(m_data);
         return hash.finished();

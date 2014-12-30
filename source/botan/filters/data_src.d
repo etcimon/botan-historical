@@ -211,14 +211,14 @@ public:
     {
         if (endOfData())
             throw new InvalidState("DataSourceStream: Cannot peek when out of data");
-		File file = cast(File)m_source;
+        File file = cast(File)m_source;
         size_t got = 0;
         
         if (offset)
         {
             SecureVector!ubyte buf = SecureVector!ubyte(offset);
             ubyte[] data;
-			ubyte[] output_buf = buf.ptr[0 .. offset];
+            ubyte[] output_buf = buf.ptr[0 .. offset];
             try data = file.rawRead(output_buf);
             catch (Exception e)
                 throw new StreamIOError("peek: Source failure..." ~ e.toString());
@@ -229,18 +229,18 @@ public:
         if (got == offset)
         {
             ubyte[] data;
-			ubyte[] output_buf = output[0 .. length];
-			try data = file.rawRead(output_buf);
+            ubyte[] output_buf = output[0 .. length];
+            try data = file.rawRead(output_buf);
             catch (Exception e)
                 throw new StreamIOError("peek: Source failure" ~ e.toString());
             got = data.length;
         }
         
-		if (file.eof) {
-			file.clearerr();
-			file.rewind();
+        if (file.eof) {
+            file.clearerr();
+            file.rewind();
         }
-		file.seek(m_total_read, SEEK_SET);
+        file.seek(m_total_read, SEEK_SET);
         
         return got;
     }

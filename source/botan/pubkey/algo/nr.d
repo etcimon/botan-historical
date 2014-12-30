@@ -41,11 +41,11 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
 
-	this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
-	this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
+    this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
     alias m_pub this;
 
@@ -85,7 +85,7 @@ public:
         
         m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
 
-		super(m_priv);
+        super(m_priv);
         if (x_arg == 0)
             m_priv.genCheck(rng);
         else
@@ -96,9 +96,9 @@ public:
     { 
         m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
        
-		super(m_priv);
+        super(m_priv);
 
-		m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
+        m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
         
         m_priv.loadCheck(rng);
     }
@@ -218,10 +218,10 @@ public:
         BigInt res;
         auto tid = spawn(
             (shared(Tid) tid, shared(FixedBasePowerModImpl) powermod_y_p2, shared(BigInt*) c2, shared(BigInt*) res2) 
-    		{ 
-    			BigInt* ret = cast(BigInt*) res2;
+            { 
+                BigInt* ret = cast(BigInt*) res2;
                 *ret = (cast(FixedBasePowerModImpl)powermod_y_p2)(*cast(BigInt*)c2);
-    			send(cast(Tid)tid, true); 
+                send(cast(Tid)tid, true); 
             }, 
         cast(shared)thisTid, cast(shared(FixedBasePowerModImpl))*m_powermod_y_p, cast(shared(BigInt*))&c_dup, cast(shared(BigInt*))&res );
         BigInt g_d = (*m_powermod_g_p)(d);

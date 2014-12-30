@@ -147,6 +147,8 @@ public:
     override @property string name() const { return "Blowfish"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Blowfish; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /*
     * Blowfish Key Schedule

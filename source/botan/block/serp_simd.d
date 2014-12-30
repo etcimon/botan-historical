@@ -184,30 +184,30 @@ private:
 */
 string transform()
 {
-    return `B0.rotateLeft(13);                
-            B2.rotateLeft(3);
+    return `B0.rotateLeft!13();                
+            B2.rotateLeft!3();
             B1 ^= B0 ^ B2;
-            B3 ^= B2 ^ (B0 << 3);
-            B1.rotateLeft(1);
-            B3.rotateLeft(7);
+            B3 ^= B2 ^ (B0.lshift!3());
+            B1.rotateLeft!1();
+            B3.rotateLeft!7();
             B0 ^= B1 ^ B3;
-            B2 ^= B3 ^ (B1 << 7);
-            B0.rotateLeft(5);
-            B2.rotateLeft(22);`;
+            B2 ^= B3 ^ (B1.lshift!7());
+            B0.rotateLeft!5();
+            B2.rotateLeft!22();`;
 }
 
 string i_transform()
 {
-    return `B2.rotateRight(22);
-            B0.rotateRight(5);
-            B2 ^= B3 ^ (B1 << 7);
+    return `B2.rotateRight!22();
+            B0.rotateRight!5();
+            B2 ^= B3 ^ (B1.lshift!7());
             B0 ^= B1 ^ B3;
-            B3.rotateRight(7);
-            B1.rotateRight(1);
-            B3 ^= B2 ^ (B0 << 3);
+            B3.rotateRight!7();
+            B1.rotateRight!1();
+            B3 ^= B2 ^ (B0.lshift!3());
             B1 ^= B0 ^ B2;
-            B2.rotateRight(3);
-            B0.rotateRight(13);`;
+            B2.rotateRight!3();
+            B0.rotateRight!13();`;
 }
 
 string key_xor(uint round)()

@@ -34,16 +34,13 @@ public:
 
         m_x86_processor_flags[0] = (cast(ulong)(miscfeatures) << 32) | features;
         
-        if (is_intel)
-            m_cache_line_size = 8 * get_byte(2, brand);
+        m_cache_line_size = get_byte(3, l1cache); 
         
         if (max_cpuid >= 7)
             m_x86_processor_flags[1] = (cast(ulong)(extreserved) << 32) | extfeatures;
         
         if (is_amd)
-        {
-            m_cache_line_size = get_byte(3, l1cache);            
-            
+        {            
             version(X86_64) {
                 /*
                 * If we don't have access to CPUID, we can still safely assume that
@@ -158,27 +155,28 @@ public:
         
         app ~= "CPUID flags: ";
         
-        app ~= CPUID.has_sse2;
-        app ~= CPUID.has_ssse3;
-        app ~= CPUID.has_sse41;
-        app ~= CPUID.has_sse42;
-        app ~= CPUID.has_avx2;
-        app ~= CPUID.has_avx512f;
-        app ~= CPUID.has_altivec;
+        app ~= CPUID.hasSse2;
+        app ~= CPUID.hasSsse3;
+        app ~= CPUID.hasSse41;
+        app ~= CPUID.hasSse42;
+        app ~= CPUID.hasAvx2;
+        app ~= CPUID.hasAvx512f;
+        app ~= CPUID.hasAltivec;
         
-        app ~= CPUID.has_rdtsc;
-        app ~= CPUID.has_bmi2;
-        app ~= CPUID.has_clmul;
-        app ~= CPUID.has_aes_ni;
-        app ~= CPUID.has_rdrand;
-        app ~= CPUID.has_rdseed;
-        app ~= CPUID.has_intel_sha;
-        app ~= CPUID.has_adx;
+        app ~= CPUID.hasRdtsc;
+        app ~= CPUID.hasBmi2;
+        app ~= CPUID.hasClmul;
+        app ~= CPUID.hasAesNi;
+        app ~= CPUID.hasRdrand;
+        app ~= CPUID.hasRdseed;
+        app ~= CPUID.hasIntelSha;
+        app ~= CPUID.hasAdx;
 
         return app.data;
     }
 private:
-    enum CPUIDbits {
+    alias CPUIDbits = int;
+    enum : CPUIDbits {
         CPUID_RDTSC_BIT = 4,
         CPUID_SSE2_BIT = 26,
         CPUID_CLMUL_BIT = 33,

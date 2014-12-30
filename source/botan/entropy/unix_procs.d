@@ -88,11 +88,11 @@ public:
                 break;
             
 
-			int max_fd;
-			foreach (fd; fds[]) {
-				if (fd > max_fd)
-					max_fd = fd;
-			}
+            int max_fd;
+            foreach (fd; fds[]) {
+                if (fd > max_fd)
+                    max_fd = fd;
+            }
             timeval timeout;
             timeout.tv_sec = (MS_WAIT_TIME / 1000);
             timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
@@ -348,10 +348,10 @@ void do_exec(in string[] args)
 {
     // cleaner way to do this?
     immutable(char*) arg0 = (args.length > 0) ? args[0].toStringz : null;
-	immutable(char*) arg1 = (args.length > 1) ? args[1].toStringz : null;
-	immutable(char*) arg2 = (args.length > 2) ? args[2].toStringz : null;
-	immutable(char*) arg3 = (args.length > 3) ? args[3].toStringz : null;
-	immutable(char*) arg4 = (args.length > 4) ? args[4].toStringz : null;
+    immutable(char*) arg1 = (args.length > 1) ? args[1].toStringz : null;
+    immutable(char*) arg2 = (args.length > 2) ? args[2].toStringz : null;
+    immutable(char*) arg3 = (args.length > 3) ? args[3].toStringz : null;
+    immutable(char*) arg4 = (args.length > 4) ? args[4].toStringz : null;
     
     execl(arg0, arg0, arg1, arg2, arg3, arg4, null);
 }

@@ -49,15 +49,15 @@ public:
                 
                 mixin(NOK_SIMD_THETA());
                 
-                A1.rotateLeft(1);
-                A2.rotateLeft(5);
-                A3.rotateLeft(2);
+                A1.rotateLeft!1();
+                A2.rotateLeft!5();
+                A3.rotateLeft!2();
 
                 mixin(NOK_SIMD_GAMMA());
                 
-                A1.rotateRight(1);
-                A2.rotateRight(5);
-                A3.rotateRight(2);
+                A1.rotateRight!1();
+                A2.rotateRight!5();
+                A3.rotateRight!2();
             }
             
             A0 ^= SIMD32(cast(uint) m_RC[16]);
@@ -106,15 +106,15 @@ public:
                 
                 A0 ^= SIMD32(cast(uint) m_RC[16-i]);
                 
-                A1.rotateLeft(1);
-                A2.rotateLeft(5);
-                A3.rotateLeft(2);
+                A1.rotateLeft!1();
+                A2.rotateLeft!5();
+                A3.rotateLeft!2();
                 
                 mixin(NOK_SIMD_GAMMA());
                 
-                A1.rotateRight(1);
-                A2.rotateRight(5);
-                A3.rotateRight(2);
+                A1.rotateRight!1();
+                A2.rotateRight!5();
+                A3.rotateRight!2();
             }
             
             mixin(NOK_SIMD_THETA());
@@ -146,8 +146,8 @@ string NOK_SIMD_THETA() {
     return `{SIMD32 T = A0 ^ A2;
     SIMD32 T_l8 = T;
     SIMD32 T_r8 = T;
-    T_l8.rotateLeft(8);
-    T_r8.rotateRight(8);
+    T_l8.rotateLeft!8();
+    T_r8.rotateRight!8();
     T ^= T_l8;
     T ^= T_r8;
     A1 ^= T;            
@@ -159,8 +159,8 @@ string NOK_SIMD_THETA() {
     T = A1 ^ A3;            
     T_l8 = T;                
     T_r8 = T;                
-    T_l8.rotateLeft(8);
-    T_r8.rotateRight(8);
+    T_l8.rotateLeft!8();
+    T_r8.rotateRight!8();
     T ^= T_l8;
     T ^= T_r8;
     A0 ^= T;            

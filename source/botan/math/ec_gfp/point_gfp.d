@@ -57,7 +57,7 @@ public:
     this(CurveGFp curve) 
     {
         m_curve = curve;
-		m_ws = new SecureVector!word;
+        m_ws = new SecureVector!word;
         (*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = 0;
         m_coord_y = montyMult(BigInt(1), curve.getR2());
@@ -91,8 +91,8 @@ public:
     this(CurveGFp curve, BigInt x, BigInt y)
     { 
         m_curve = curve;
-		m_ws = new SecureVector!word;
-		(*m_ws).resize(2 * (curve.getPWords() + 2));
+        m_ws = new SecureVector!word;
+        (*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = montyMult(x, curve.getR2());
         m_coord_y = montyMult(y, curve.getR2());
         m_coord_z = montyMult(BigInt(1), curve.getR2());
@@ -410,9 +410,9 @@ public:
     {
         PointGFp ret = PointGFp(m_curve.dup, m_coord_x.dup, m_coord_y.dup);
         ret.m_coord_z = m_coord_z.dup;
-		ret.m_ws = new SecureVector!word;
+        ret.m_ws = new SecureVector!word;
 
-		(*ret.m_ws)[] = (*m_ws).ptr[0 .. (*m_ws).length];
+        (*ret.m_ws)[] = (*m_ws).ptr[0 .. (*m_ws).length];
         return ret;
     }
 

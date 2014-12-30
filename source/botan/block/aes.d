@@ -21,6 +21,8 @@ import botan.utils.types;
 class AES128 : BlockCipherFixedParams!(16, 16), BlockCipher, SymmetricAlgorithm
 {
 public:
+
+
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
@@ -42,6 +44,8 @@ public:
     override @property string name() const { return "AES-128"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES128; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
@@ -79,6 +83,8 @@ public:
     override @property string name() const { return "AES-192"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES192; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:    
     override void keySchedule(const(ubyte)* key, size_t length)
     {
@@ -116,6 +122,8 @@ public:
     override @property string name() const { return "AES-256"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new AES256; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {

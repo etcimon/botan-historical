@@ -132,6 +132,8 @@ public:
     override @property string name() const { return "Serpent"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Serpent; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /**
     * For use by subclasses using SIMD, asm, etc

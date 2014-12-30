@@ -23,9 +23,9 @@ public:
     /**
     * Subject DN and (optionally) key identifier
     */
-    abstract X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const;
+    X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const;
 
-    abstract X509CRL findCrlFor(in X509Certificate subject) const;
+    X509CRL findCrlFor(in X509Certificate subject) const;
 
 
     final bool certificateKnown(in X509Certificate cert) const
@@ -34,7 +34,7 @@ public:
     }
 
     // remove this (used by TLSServer)
-    abstract Vector!X509DN allSubjects() const;
+    Vector!X509DN allSubjects() const;
 }
 
 /**
@@ -137,6 +137,8 @@ public:
     {
         m_certs = certs;
     }
+
+    override X509CRL findCrlFor(in X509Certificate subject) const { return X509CRL.init; }
 
     override Vector!X509DN allSubjects() const
     {

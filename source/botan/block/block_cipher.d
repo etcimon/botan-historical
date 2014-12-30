@@ -69,7 +69,7 @@ public:
     * Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
-	final void decrypt(ubyte* block) { decryptN(cast(const(ubyte)*)block, block, 1); }
+    final void decrypt(ubyte* block) { decryptN(cast(const(ubyte)*)block, block, 1); }
 
     /**
     * Encrypt a block.
@@ -177,7 +177,7 @@ public:
 /**
 * Represents a block cipher with a single fixed block size
 */ 
-class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
+abstract class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
 {
 public:
     enum { BLOCK_SIZE = BS }

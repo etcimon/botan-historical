@@ -72,9 +72,9 @@ public:
         
         const size_t limbs_needed = T.sizeof / word.sizeof;
         
-		(*m_reg).resize(4*limbs_needed);
+        (*m_reg).resize(4*limbs_needed);
         foreach (size_t i; 0 .. limbs_needed)
-			(*m_reg)[i] = ((n >> (i*MP_WORD_BITS)) & MP_WORD_MASK);
+            (*m_reg)[i] = ((n >> (i*MP_WORD_BITS)) & MP_WORD_MASK);
     }
 
     ref BigInt opAssign(size_t other)
@@ -91,8 +91,8 @@ public:
     */
     this(in BigInt other)
     {
-		m_reg = new SecureVector!word;
-		*m_reg = other.m_reg.dup;
+        m_reg = new SecureVector!word;
+        *m_reg = other.m_reg.dup;
         m_signedness = cast(Sign)other.m_signedness;
     }
 
@@ -156,8 +156,8 @@ public:
     */
     this(Sign s, size_t size)
     {
-		m_reg = new SecureVector!word;
-		(*m_reg).resize(roundUp!size_t(size, 8));
+        m_reg = new SecureVector!word;
+        (*m_reg).resize(roundUp!size_t(size, 8));
         m_signedness = s;
     }
 
@@ -175,8 +175,8 @@ public:
 
     
     this(SecureVector!word reg, in Sign sign) {
-		m_reg = new SecureVector!word;
-		*m_reg ~= reg[];
+        m_reg = new SecureVector!word;
+        *m_reg ~= reg[];
         m_signedness = sign;
     }
 
@@ -222,18 +222,18 @@ public:
             bigint_add2(mutablePtr(), reg_size - 1, y.ptr, y_sw);
         else
         {
-			int relative_size = bigint_cmp((*m_reg).ptr, x_sw, y.ptr, y_sw);
+            int relative_size = bigint_cmp((*m_reg).ptr, x_sw, y.ptr, y_sw);
             
             if (relative_size < 0)
             {
                 SecureVector!word z = SecureVector!word(reg_size - 1);
-				bigint_sub3(z.ptr, y.ptr, reg_size - 1, (*m_reg).ptr, x_sw);
-				(*m_reg)[] = z;
+                bigint_sub3(z.ptr, y.ptr, reg_size - 1, (*m_reg).ptr, x_sw);
+                (*m_reg)[] = z;
                 setSign(y.sign());
             }
             else if (relative_size == 0)
             {
-				zeroise((*m_reg));
+                zeroise((*m_reg));
                 setSign(Positive);
             }
             else if (relative_size > 0)
@@ -257,7 +257,7 @@ public:
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
-		int relative_size = bigint_cmp((*m_reg).ptr, x_sw, y.ptr, y_sw);
+        int relative_size = bigint_cmp((*m_reg).ptr, x_sw, y.ptr, y_sw);
         
         const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
         growTo(reg_size);
@@ -387,7 +387,7 @@ public:
             word result = (wordAt(0) & (mod - 1));
             clear();
             growTo(2);
-			(*m_reg)[0] = result;
+            (*m_reg)[0] = result;
             return result;
         }
         
@@ -399,9 +399,9 @@ public:
         growTo(2);
         
         if (remainder && sign() == Negative)
-			(*m_reg)[0] = mod - remainder;
+            (*m_reg)[0] = mod - remainder;
         else
-			(*m_reg)[0] = remainder;
+            (*m_reg)[0] = remainder;
         
         setSign(Positive);
     }
@@ -472,6 +472,8 @@ public:
     */
     T opCast(T : bool)() const { return isNonzero(); }
 
+    T opCast(T : BigInt)() const { return cast(BigInt)this; }
+
     /**
     * Zeroize the BigInt. The size of the underlying register is not
     * modified.
@@ -496,10 +498,10 @@ public:
                 return 1;
             
             if (other.isNegative() && this.isNegative())
-				return (-bigint_cmp((*m_reg).ptr, this.sigWords(), other.ptr, other.sigWords()));
+                return (-bigint_cmp((*m_reg).ptr, this.sigWords(), other.ptr, other.sigWords()));
         }
         
-		return bigint_cmp((*m_reg).ptr, this.sigWords(), other.ptr, other.sigWords());
+        return bigint_cmp((*m_reg).ptr, this.sigWords(), other.ptr, other.sigWords());
     }
     /*
     * Comparison Operators
@@ -552,7 +554,7 @@ public:
         const size_t sw = sigWords();
 
         foreach (size_t i; 0 .. sw)
-			if ((*m_reg)[i])
+            if ((*m_reg)[i])
                 return false;
         return true;
     }
@@ -566,7 +568,7 @@ public:
         const size_t which = n / MP_WORD_BITS;
         const word mask = cast(word)(1) << (n % MP_WORD_BITS);
         if (which >= size()) growTo(which + 1);
-		(*m_reg)[which] |= mask;
+        (*m_reg)[which] |= mask;
     }
 
     /**
@@ -578,7 +580,7 @@ public:
         const size_t which = n / MP_WORD_BITS;
         const word mask = cast(word)(1) << (n % MP_WORD_BITS);
         if (which < size())
-			(*m_reg)[which] &= ~mask;
+            (*m_reg)[which] &= ~mask;
     }
 
     /**
@@ -594,9 +596,9 @@ public:
         const word mask = (cast(word)(1) << (n % MP_WORD_BITS)) - 1;
         
         if (top_word < size())
-			clearMem(&(*m_reg)[top_word+1], size() - (top_word + 1));
+            clearMem(&(*m_reg)[top_word+1], size() - (top_word + 1));
         
-		(*m_reg)[top_word] &= mask;
+        (*m_reg)[top_word] &= mask;
     }
 
     /**
@@ -663,7 +665,7 @@ public:
         if (word_num >= size())
             return 0;
         else
-			return get_byte(WORD_BYTES - byte_num - 1, (*m_reg)[word_num]);
+            return get_byte(WORD_BYTES - byte_num - 1, (*m_reg)[word_num]);
     }
 
     /**
@@ -672,7 +674,7 @@ public:
     * @return value at position n
     */
     word wordAt(size_t n) const
-	{ return ((n < size()) ? (*m_reg)[n] : 0); }
+    { return ((n < size()) ? (*m_reg)[n] : 0); }
 
     /**
     * Tests if the sign of the integer is negative
@@ -736,7 +738,7 @@ public:
     * Give size of internal register
     * @result size of internal register in words
     */
-	size_t size() const { return (*m_reg).length; }
+    size_t size() const { return (*m_reg).length; }
 
     // ditto
     size_t length() const { return size(); }
@@ -747,8 +749,8 @@ public:
     */
     size_t sigWords() const
     {
-		const word* x = (*m_reg).ptr;
-		size_t sig = (*m_reg).length;
+        const word* x = (*m_reg).ptr;
+        size_t sig = (*m_reg).length;
 
         while (sig && (x[sig-1] == 0))
             sig--;
@@ -788,13 +790,13 @@ public:
     * Return a mutable pointer to the register
     * @result a pointer to the start of the internal register
     */
-	word* mutablePtr() { return (*m_reg).ptr; }
+    word* mutablePtr() { return (*m_reg).ptr; }
 
     /**
     * Return a const pointer to the register
     * @result a pointer to the start of the internal register
     */
-	@property const(word*) ptr() const { return (*m_reg).ptr; }
+    @property const(word*) ptr() const { return (*m_reg).ptr; }
 
     /**
     * Increase internal register buffer to at least n words
@@ -803,7 +805,7 @@ public:
     void growTo(size_t n)
     {
         if (n > size())
-			(*m_reg).resize(roundUp!size_t(n, 8));
+            (*m_reg).resize(roundUp!size_t(n, 8));
     }
 
     /**
@@ -849,17 +851,17 @@ public:
         const size_t WORD_BYTES = (word).sizeof;
         
         clear();
-		(*m_reg).resize(roundUp!size_t((length / WORD_BYTES) + 1, 8));
+        (*m_reg).resize(roundUp!size_t((length / WORD_BYTES) + 1, 8));
         
         foreach (size_t i; 0 .. (length / WORD_BYTES))
         {
             const size_t top = length - WORD_BYTES*i;
             for (size_t j = WORD_BYTES; j > 0; --j)
-				(*m_reg)[i] = ((*m_reg)[i] << 8) | buf[top - j];
+                (*m_reg)[i] = ((*m_reg)[i] << 8) | buf[top - j];
         }
         
         foreach (size_t i; 0 .. (length % WORD_BYTES))
-			(*m_reg)[length / WORD_BYTES] = ((*m_reg)[length / WORD_BYTES] << 8) | buf[i];
+            (*m_reg)[length / WORD_BYTES] = ((*m_reg)[length / WORD_BYTES] << 8) | buf[i];
     }
 
 
@@ -1308,7 +1310,7 @@ public:
         return BigInt((*m_reg).dup, m_signedness);
     }
 private:
-	SecureVector!(word)* m_reg;
+    SecureVector!(word)* m_reg;
     Sign m_signedness = Positive;
 }
 

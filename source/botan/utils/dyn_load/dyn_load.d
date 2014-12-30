@@ -5,17 +5,15 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.dyn_load.dyn_load;
-// import string;
 //todo : Mac OSX
 import std.exception;
-
+import std.string : toStringz, fromStringz;
 version(linux)
     import core.sys.linux.dlfcn;
 version(Windows)
     import std.c.windows.windows;
 
-void raiseRuntimeLoaderException(in string lib_name,
-                                    string msg)
+void raiseRuntimeLoaderException(in string lib_name, string msg)
 {
     throw new Exception("Failed to load " ~ lib_name ~ ": " ~ (msg ? msg : "Unknown error"));
 }
@@ -43,7 +41,7 @@ public:
             lib = dlopen(lib_name.toStringz, RTLD_LAZY);
             
             if (!lib)
-                raiseRuntimeLoaderException(lib_name, dlerror());
+                raiseRuntimeLoaderException(lib_name, cast(string)fromStringz(dlerror()));
             
         }
         version(Windows) {

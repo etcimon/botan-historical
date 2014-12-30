@@ -108,6 +108,8 @@ public:
     final override @property string name() const { return "Threefish-512"; }
     override @property size_t parallelism() const { return 1; }
     override BlockCipher clone() const { return new Threefish512; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 
     this() {
         m_T = 3;

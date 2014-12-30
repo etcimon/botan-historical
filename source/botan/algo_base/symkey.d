@@ -163,11 +163,11 @@ public:
         else return 1;
     }
 
-	void opOpAssign(string op)(in OctetString other)
-		if (op == "~")
-	{
-		this = this ~ other;
-	}
+    void opOpAssign(string op)(in OctetString other)
+        if (op == "~")
+    {
+        this = this ~ other;
+    }
 
     /**
     * Concatenate two strings
@@ -180,7 +180,7 @@ public:
     {
         SecureVector!ubyte output;
         output = cast(SecureVector!ubyte)bitsOf();
-		output ~= cast(SecureVector!ubyte)other.bitsOf();
+        output ~= cast(SecureVector!ubyte)other.bitsOf();
         return OctetString(output);
     }
     
@@ -198,6 +198,13 @@ public:
         copyMem(ret.ptr, k1.ptr, k1.length);
         xorBuf(ret.ptr, k2.ptr, k2.length);
         return OctetString(ret);
+    }
+
+    OctetString dup() const
+    {
+        OctetString ret;
+        ret.m_bits = m_bits.dup;
+        return ret;
     }
 
 private:

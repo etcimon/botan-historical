@@ -31,7 +31,7 @@ public:
     override void write(const(ubyte)* input, size_t length)
     {
         m_zlib.m_stream.next_in = cast(ubyte*)input;
-		m_zlib.m_stream.avail_in = cast(uint)length;
+        m_zlib.m_stream.avail_in = cast(uint)length;
         
         while (m_zlib.m_stream.avail_in != 0)
         {
@@ -75,7 +75,7 @@ public:
         while (rc != Z_STREAM_END)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
+            m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             
             rc = deflate(m_zlib.m_stream, Z_FINISH);
             send(m_buffer.ptr, m_buffer.length - m_zlib.m_stream.avail_out);
@@ -94,7 +94,7 @@ public:
         
         while (true)
         {
-			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
+            m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
             
             deflate(m_zlib.m_stream, Z_FULL_FLUSH);
@@ -163,12 +163,12 @@ public:
         const(ubyte)* input = cast(const(ubyte)*)(input_arr);
         
         m_zlib.m_stream.next_in = cast(ubyte*)input;
-		m_zlib.m_stream.avail_in = cast(uint)length;
+        m_zlib.m_stream.avail_in = cast(uint)length;
         
         while (m_zlib.m_stream.avail_in != 0)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
+            m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             
             int rc = inflate(m_zlib.m_stream, Z_SYNC_FLUSH);
             
@@ -192,8 +192,8 @@ public:
                 size_t read_from_block = length - m_zlib.m_stream.avail_in;
                 startMsg();
                 
-				m_zlib.m_stream.next_in = cast(ubyte*)( input + read_from_block);
-				m_zlib.m_stream.avail_in = cast(uint)(length - read_from_block);
+                m_zlib.m_stream.next_in = cast(ubyte*)( input + read_from_block);
+                m_zlib.m_stream.avail_in = cast(uint)(length - read_from_block);
                 
                 input += read_from_block;
                 length -= read_from_block;
@@ -227,7 +227,7 @@ public:
         while (rc != Z_STREAM_END)
         {
             m_zlib.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
-			m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
+            m_zlib.m_stream.avail_out = cast(uint)m_buffer.length;
             rc = inflate(m_zlib.m_stream, Z_SYNC_FLUSH);
             
             if (rc != Z_OK && rc != Z_STREAM_END)
@@ -335,7 +335,7 @@ public:
     */
     this()
     {
-		m_stream = new z_stream;
+        m_stream = new z_stream;
         memset(m_stream, 0, (z_stream).sizeof);
         m_stream.zalloc = &zlib_malloc;
         m_stream.zfree = &zlib_free;
@@ -350,6 +350,6 @@ public:
         Zlib_Alloc_Info info = cast(Zlib_Alloc_Info)(m_stream.opaque);
         delete info;
         memset(m_stream, 0, (z_stream).sizeof);
-		delete m_stream;
+        delete m_stream;
     }
 }

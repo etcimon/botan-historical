@@ -211,8 +211,8 @@ private:
 
     static void threadEntry(shared(ThreadedFork) This_, shared(Filter) filter_)
     {
-		ThreadedFork This = cast(ThreadedFork) This_;
-		Filter filter = cast(Filter) filter_;
+        ThreadedFork This = cast(ThreadedFork) This_;
+        Filter filter = cast(Filter) filter_;
         while (true)
         {
             This.m_thread_data.m_input_ready_semaphore.acquire();

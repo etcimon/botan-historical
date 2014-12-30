@@ -476,8 +476,8 @@ public:
                 
             case 0xC020: // SRP_SHA_WITH_AES_256_CBC_SHA
                 return TLSCiphersuite(0xC020, "", "SRP_SHA", "AES-256", 32, 16, "SHA-1", 20);
-			default:
-				return TLSCiphersuite.init; // some unknown ciphersuite
+            default:
+                return TLSCiphersuite.init; // some unknown ciphersuite
         }
     }
 
@@ -504,12 +504,12 @@ public:
     */
     static Vector!TLSCiphersuite allKnownCiphersuites()
     {
-		static Vector!TLSCiphersuite all_ciphersuites;
-		static bool initialized;
-		if (!initialized) {
-			initialized = true;
-			all_ciphersuites = gatherKnownCiphersuites();
-		}
+        static Vector!TLSCiphersuite all_ciphersuites;
+        static bool initialized;
+        if (!initialized) {
+            initialized = true;
+            all_ciphersuites = gatherKnownCiphersuites();
+        }
         return all_ciphersuites;
     }
 
@@ -717,9 +717,6 @@ public:
         
         return true;
     }
-
-    @disable this();
-
 private:
     this(ushort ciphersuite_code,
          string sig_algo,

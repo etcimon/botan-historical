@@ -461,16 +461,16 @@ protected:
                 session_id = makeHelloRandom(rng());
             
             TLSSession session_info = TLSSession(session_id,
-	                                             state.sessionKeys().masterSecret().dup,
-	                                             state.serverHello().Version(),
-	                                             state.serverHello().ciphersuite(),
-	                                             state.serverHello().compressionMethod(),
-	                                             CLIENT,
-	                                             state.serverHello().fragmentSize(),
-	                                             getPeerCertChain(state).dup,
-	                                             session_ticket.dup,
-	                                             m_info,
-	                                            "");
+                                                 state.sessionKeys().masterSecret().dup,
+                                                 state.serverHello().Version(),
+                                                 state.serverHello().ciphersuite(),
+                                                 state.serverHello().compressionMethod(),
+                                                 CLIENT,
+                                                 state.serverHello().fragmentSize(),
+                                                 getPeerCertChain(state).dup,
+                                                 session_ticket.dup,
+                                                 m_info,
+                                                "");
             
             const bool should_save = saveSession(session_info);
             

@@ -24,7 +24,7 @@ public:
                                const(ubyte)* P, 
                                size_t P_len) const
     {
-		HashFunction hash = cast(HashFunction)*m_hash;
+        HashFunction hash = cast(HashFunction)*m_hash;
         SecureVector!ubyte output;
         uint counter = 1;
         

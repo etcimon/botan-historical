@@ -132,7 +132,7 @@ public:
         return count;
     }
 
-	@property size_t length() const { return size(); } 
+    @property size_t length() const { return size(); } 
 
     override bool attachable() { return false; }
 
@@ -231,7 +231,7 @@ public:
     }
     
     size_t size() const { return (m_end - m_start); }
-	@property size_t length() const { return size(); }
+    @property size_t length() const { return size(); }
 private:
     SecureQueueNode m_next;
     SecureVector!ubyte m_buffer;

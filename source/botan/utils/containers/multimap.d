@@ -9,6 +9,7 @@ module botan.utils.containers.multimap;
 
 import botan.utils.memory.memory;
 import botan.utils.types;
+import std.conv : to;
 import std.exception : enforce;
 
 alias MultiMap(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_FIELDS = 8) = FreeListRef!(DictionaryList!(KEY, VALUE, case_sensitive, NUM_STATIC_FIELDS));
@@ -142,7 +143,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
     inout(ValueType) opIndex(KeyType key)
     inout {
         auto pitm = key in this;
-        enforce(pitm !is null, "Accessing non-existent key '"~key~"'.");
+        enforce(pitm !is null, "Accessing non-existent key '"~ key.to!string ~"'.");
         return *pitm;
     }
     
@@ -270,6 +271,8 @@ void removeFromArrayIdx(T)(ref T[] array, size_t idx)
 /// Special version of icmp() with optimization for ASCII characters
 int icmp2(in string a, in string b)
 @safe pure {
+    import std.algorithm : min;
+    import std.utf : decode;
     size_t i = 0, j = 0;
     
     // fast skip equal prefix

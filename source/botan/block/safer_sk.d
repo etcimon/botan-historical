@@ -133,6 +133,8 @@ public:
     }
 
     override @property size_t parallelism() const { return 1; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /*
     * SAFER-SK Key Schedule

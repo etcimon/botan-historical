@@ -21,7 +21,7 @@ import botan.utils.exceptn;
 * TR03110 v1.1 EAC CV Certificate
 */
 // CRTP is used enable the call sequence:
-class EAC11obj(Derived) : EACSignedObject, SignedObject
+abstract class EAC11obj(Derived) : EACSignedObject, SignedObject
 {
 public:
     /**

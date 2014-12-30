@@ -44,13 +44,13 @@ public:
     */
     abstract bool attachable();
 
-	/**
+    /**
     * @param filters = the filters to set
     * @param count = number of items in filters
     */
-	abstract void setNext(Filter* filters, size_t size);
+    abstract void setNext(Filter* filters, size_t size);
 
-	abstract void setNext(Filter f, size_t n);
+    abstract void setNext(Filter f, size_t n);
 }
 
 /**
@@ -65,9 +65,9 @@ public:
     */
     final void write(const(ubyte)[] input) { write(input.ptr, input.length); }
 
-	override void write(const(ubyte)* input, size_t length) {
-		Filterable.write(input, length);
-	}
+    override void write(const(ubyte)* input, size_t length) {
+        Filterable.write(input, length);
+    }
 
     /**
     * @param input = some input for the filter
@@ -251,9 +251,9 @@ protected:
 
     override void setPort(size_t n) { setPort(n); }
 
-	override void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
+    override void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
 
-	override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
+    override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
 
     override void attach(Filter f) { attach(f); }
 

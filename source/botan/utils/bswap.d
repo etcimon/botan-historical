@@ -39,7 +39,8 @@ ulong reverseBytes(ulong val)
     static if (is(typeof(bswap64)))
         return bswap64(val);
     else {
-        union { ulong u64; uint[2] u32; } input, output;
+        union T { ulong u64; uint[2] u32; }
+        T input, output;
         input.u64 = val;
         output.u32[0] = reverseBytes(input.u32[1]);
         output.u32[1] = reverseBytes(input.u32[0]);
@@ -67,10 +68,11 @@ static if (BOTAN_HAS_SIMD_SSE2) {
     {
         __m128i T = _mm_loadu_si128(cast(const(__m128i)*)(x.ptr));
 
-        T = _mm_shufflehi_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
-        T = _mm_shufflelo_epi16(T, _MM_SHUFFLE(2, 3, 0, 1));
+        const SHUF = _MM_SHUFFLE(2, 3, 0, 1);
+        T = _mm_shufflehi_epi16!SHUF(T);
+        T = _mm_shufflelo_epi16!SHUF(T);
 
-        T =  _mm_or_si128(_mm_srli_epi16(T, 8), _mm_slli_epi16(T, 8));
+        T =  _mm_or_si128(_mm_srli_epi16!8(T), _mm_slli_epi16!8(T));
 
         _mm_storeu_si128(cast(__m128i*)(x.ptr), T);
     }

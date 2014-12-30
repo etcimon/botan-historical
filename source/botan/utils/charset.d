@@ -32,7 +32,7 @@ string ucs2ToLatin1(in string ucs2)
     if (ucs2.length % 2 == 1)
         throw new DecodingError("UCS-2 string has an odd number of bytes");
     
-    Appender!string latin1;
+    Vector!char latin1;
     latin1.resize(ucs2.length * 2);
 
     for (size_t i = 0; i != ucs2.length; i += 2)
@@ -46,7 +46,7 @@ string ucs2ToLatin1(in string ucs2)
         latin1 ~= cast(char)(c2);
     }
     
-    return latin1;
+    return latin1.ptr[0 .. latin1.length].idup;
 }
 
 /*
@@ -54,7 +54,7 @@ string ucs2ToLatin1(in string ucs2)
 */
 string utf8ToLatin1(in string utf8)
 {
-    Appender!string iso8859;
+    Vector!char iso8859;
     iso8859.resize(utf8.length);
     size_t position = 0;
     while (position != utf8.length)
@@ -69,7 +69,7 @@ string utf8ToLatin1(in string utf8)
                 throw new DecodingError("UTF-8: sequence truncated");
             
             const ubyte c2 = cast(ubyte)(utf8[position++]);
-            const ubyte iso_char = ((c1 & 0x07) << 6) | (c2 & 0x3F);
+            const ubyte iso_char = cast(ubyte)((c1 & 0x07) << 6) | (c2 & 0x3F);
             
             if (iso_char <= 0x7F)
                 throw new DecodingError("UTF-8: sequence longer than needed");
@@ -80,7 +80,7 @@ string utf8ToLatin1(in string utf8)
             throw new DecodingError("UTF-8: Unicode chars not in Latin1 used");
     }
     
-    return iso8859.data;
+    return iso8859.ptr[0 .. iso8859.length].idup;
 }
 
 /*
@@ -88,7 +88,7 @@ string utf8ToLatin1(in string utf8)
 */
 string latin1ToUtf8(in string iso8859)
 {
-    Appender!string utf8;
+    Vector!char utf8;
     utf8.resize(iso8859.length);
     for (size_t i = 0; i != iso8859.length; ++i)
     {
@@ -102,7 +102,7 @@ string latin1ToUtf8(in string iso8859)
             utf8 ~= cast(char)((0x80 | (c & 0x3F)));
         }
     }
-    return utf8.data;
+    return utf8.ptr[0 .. utf8.length].idup;
 }
 
 /*
@@ -125,7 +125,7 @@ string transcode(in string str, CharacterSet to, CharacterSet from)
     if (from == UCS2_CHARSET && to == LATIN1_CHARSET)
         return ucs2ToLatin1(str);
     
-    throw new InvalidArgument("Unknown transcoding operation from " ~ to!string(from) ~ " to " ~ to!string(to));
+    throw new InvalidArgument("Unknown transcoding operation from " ~ .to!string(from) ~ " to " ~ .to!string(to));
 }
 
 /*
@@ -166,9 +166,10 @@ ubyte char2digit(char c)
         case '7': return 7;
         case '8': return 8;
         case '9': return 9;
+        default: 
+            throw new InvalidArgument("char2digit: Input is not a digit character");
     }
     
-    throw new InvalidArgument("char2digit: Input is not a digit character");
 }
 
 /*
@@ -188,9 +189,10 @@ char digit2char(ubyte b)
         case 7: return '7';
         case 8: return '8';
         case 9: return '9';
+        default:
+            throw new InvalidArgument("digit2char: Input is not a digit");
     }
     
-    throw new InvalidArgument("digit2char: Input is not a digit");
 }
 
 /*

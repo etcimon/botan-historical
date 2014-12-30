@@ -25,11 +25,13 @@ Vector!string parseAlgorithmName(in string scan_name)
 {
     import std.array : Appender;
     if (scan_name.find('(') == -1 &&
-        scan_name.find(')') == -1)
-        return Vector!string(1, scan_name);
-    
+        scan_name.find(')') == -1) {
+        Vector!string str;
+        str ~= scan_name;
+        return str;
+    }
     string name = scan_name;
-    Appender!string substring;
+    Vector!ubyte substring;
     Vector!string elems;
     size_t level = 0;
     
@@ -46,9 +48,9 @@ Vector!string parseAlgorithmName(in string scan_name)
             if (level == 1 && pos == (name.length - 1))
             {
                 if (elems.length == 1)
-                    elems.pushBack(substring.data[1 .. $]);
+                    elems.pushBack(substring[1 .. $]);
                 else
-                    elems.pushBack(substring.data);
+                    elems.pushBack(substring[]);
                 return elems;
             }
             
@@ -60,9 +62,9 @@ Vector!string parseAlgorithmName(in string scan_name)
         if (c == ',' && level == 1)
         {
             if (elems.length == 1)
-                elems.pushBack(substring.data[1 .. $]);
+                elems.pushBack(substring[1 .. $]);
             else
-                elems.pushBack(substring.data);
+                elems.pushBack(substring[]);
             substring.clear();
         }
         else
@@ -96,13 +98,13 @@ Vector!string splitOnPred(in string str,
     Vector!string elems;
     if (str == "") return elems;
     import std.array : Appender;
-    string substr;
+    Vector!ubyte substr;
     foreach(const char c; str)
     {
         if (pred(c))
         {
             if (substr.length > 0)
-                elems.pushBack(substr.data);
+                elems.pushBack(substr[]);
             substr.clear();
         }
         else
@@ -111,7 +113,7 @@ Vector!string splitOnPred(in string str,
     
     if (substr.length > 0)
         throw new InvalidArgument("Unable to split string: " ~ str);
-    elems.pushBack(substr.data);
+    elems.pushBack(substr[]);
     
     return elems;
 }
@@ -140,14 +142,13 @@ string eraseChars(in string str, in char[] chars)
 * @return str with all instances of from_char replaced by to_char
 */
 string replaceChar(in string str, in char from_char, in char to_char)
-{
-    string output = str.dup;
-    
+{   
+    char[] output = str.dup;
     foreach (ref char c; output)
         if (c == from_char)
             c = to_char;
     
-    return output;
+    return cast(string)output;
 }
 
 /**
@@ -159,17 +160,16 @@ string replaceChar(in string str, in char from_char, in char to_char)
 */
 
 string replaceChars(in string str,
-                     in char[] chars,
-                     in char to_char)
+                    in char[] chars,
+                    in char to_char)
 {
     import std.algorithm : canFind;
-    string output = str.dup;
-    
+    char[] output = str.dup;
     foreach (ref char c; output)
         if (chars.canFind(c))
             c = to_char;
     
-    return output;
+    return cast(string)output;
 }
 
 /**
@@ -180,18 +180,9 @@ string replaceChars(in string str,
 */
 string stringJoin(in Vector!string strs, char delim)
 {
-    import std.array : Appender;
-    Appender!string output;
-    bool first = true;
-    foreach (str; strs)
-    {
-        if (!first)
-            output ~= delim;
-        else first = false;
-        output ~= str;
-    }
-    
-    return output.data;
+    import std.algorithm : joiner;
+    import std.array : array;
+    return strs[].array.joiner(delim.to!string).to!string;
 }
 
 /**
@@ -202,7 +193,7 @@ string stringJoin(in Vector!string strs, char delim)
 Vector!uint parseAsn1Oid(in string oid)
 {
     import std.array : Appender;
-    Appender!string substring;
+    Vector!ubyte substring;
     Vector!uint oid_elems;
     
     foreach (char c; oid)
@@ -212,7 +203,7 @@ Vector!uint parseAsn1Oid(in string oid)
         {
             if (substring.length == 0)
                 throw new InvalidOID(oid);
-            oid_elems.pushBack(to!uint(substring.data));
+            oid_elems.pushBack(to!uint(substring[]));
             substring.clear();
         }
         else
@@ -221,7 +212,7 @@ Vector!uint parseAsn1Oid(in string oid)
     
     if (substring.length == 0)
         throw new InvalidOID(oid);
-    oid_elems.pushBack(to!uint(substring.data));
+    oid_elems.pushBack(to!uint(substring[]));
     
     if (oid_elems.length < 2)
         throw new InvalidOID(oid);
@@ -240,20 +231,20 @@ bool x500NameCmp(in string name1, in string name2)
     auto p1 = name1.ptr;
     auto p2 = name2.ptr;
     
-    while ((p1 != name1.length) && isSpace(*p1)) ++p1;
-    while ((p2 != name2.length) && isSpace(*p2)) ++p2;
+    while ((p1 != name1.ptr + name1.length) && isSpace(*p1)) ++p1;
+    while ((p2 != name2.ptr + name2.length) && isSpace(*p2)) ++p2;
     
-    while (p1 != name1.length && p2 != name2.length)
+    while (p1 != name1.ptr + name1.length && p2 != name2.ptr + name2.length)
     {
         if (isSpace(*p1))
         {
             if (!isSpace(*p2))
                 return false;
             
-            while ((p1 != name1.length) && isSpace(*p1)) ++p1;
-            while ((p2 != name2.length) && isSpace(*p2)) ++p2;
+            while ((p1 != name1.ptr + name1.length) && isSpace(*p1)) ++p1;
+            while ((p2 != name2.ptr + name2.length) && isSpace(*p2)) ++p2;
             
-            if (p1 == name1.length && p2 == name2.length)
+            if (p1 == name1.ptr + name1.length && p2 == name2.ptr + name2.length)
                 return true;
         }
         
@@ -263,10 +254,10 @@ bool x500NameCmp(in string name1, in string name2)
         ++p2;
     }
     
-    while ((p1 != name1.length) && isSpace(*p1)) ++p1;
-    while ((p2 != name2.length) && isSpace(*p2)) ++p2;
+    while ((p1 != name1.ptr + name1.length) && isSpace(*p1)) ++p1;
+    while ((p2 != name2.ptr + name2.length) && isSpace(*p2)) ++p2;
     
-    if ((p1 != name1.length) || (p2 != name2.length))
+    if ((p1 != name1.ptr + name1.length) || (p2 != name2.ptr + name2.length))
         return false;
     return true;
 }
@@ -285,7 +276,7 @@ uint stringToIpv4(in string str)
     
     uint ip = 0;
     
-    foreach (const string part; parts)
+    foreach (const string part; parts[])
     {
         uint octet = to!uint(part);
         

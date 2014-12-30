@@ -22,7 +22,7 @@ import botan.utils.types;
 final class LzmaCompression : Filter, Filterable
 {
 public:
-	override @property string name() const { return "LzmaCompression"; }
+    override @property string name() const { return "LzmaCompression"; }
 
     /*
     * Compress Input with Lzma
@@ -39,9 +39,9 @@ public:
             
             lzma_ret ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_RUN);
             
-			if (ret == lzma_ret.LZMA_MEM_ERROR)
+            if (ret == lzma_ret.LZMA_MEM_ERROR)
                 throw new MemoryExhaustion("Couldn't write input in Lzma");
-			else if (ret != lzma_ret.LZMA_OK)
+            else if (ret != lzma_ret.LZMA_OK)
                 throw new Exception("Lzma compression: Error writing");
             
             send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
@@ -51,34 +51,34 @@ public:
     /*
     * Start Compressing with Lzma
     */
-	override void startMsg()
+    override void startMsg()
     {
         clear();
         m_lzma = new Lzma_Stream;
         
         lzma_ret ret = lzma_easy_encoder(m_lzma.m_stream, cast(uint) m_level, lzma_check.LZMA_CHECK_CRC64);
         
-		if (ret == lzma_ret.LZMA_MEM_ERROR)
+        if (ret == lzma_ret.LZMA_MEM_ERROR)
             throw new MemoryExhaustion("Couldn't start message in Lzma");
-		else if (ret != lzma_ret.LZMA_OK)
+        else if (ret != lzma_ret.LZMA_OK)
             throw new InvalidArgument("Bad setting in lzma_easy_encoder");
     }
 
     /*
     * Finish Compressing with Lzma
     */
-	override void endMsg()
+    override void endMsg()
     {
         m_lzma.m_stream.next_in = null;
         m_lzma.m_stream.avail_in = 0;
         
-		int ret = lzma_ret.LZMA_OK;
-		while (ret != lzma_ret.LZMA_STREAM_END)
+        int ret = lzma_ret.LZMA_OK;
+        while (ret != lzma_ret.LZMA_STREAM_END)
         {
             m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
             m_lzma.m_stream.avail_out = m_buffer.length;
             
-			ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_FINISH);
+            ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_FINISH);
             send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
         }
         
@@ -98,11 +98,11 @@ public:
             m_lzma.m_stream.next_out = cast(ubyte*)(m_buffer.ptr);
             m_lzma.m_stream.avail_out = m_buffer.length;
             
-			lzma_ret ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_FULL_FLUSH);
+            lzma_ret ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_FULL_FLUSH);
             
-			if (ret == lzma_ret.LZMA_MEM_ERROR)
+            if (ret == lzma_ret.LZMA_MEM_ERROR)
                 throw new MemoryExhaustion("Couldn't finish Lzma, out of memory.");
-			else if (ret != lzma_ret.LZMA_OK && ret != lzma_ret.LZMA_STREAM_END)
+            else if (ret != lzma_ret.LZMA_OK && ret != lzma_ret.LZMA_STREAM_END)
                 throw new Exception("Lzma compression: Error flushing");
             
             send(m_buffer.ptr, m_buffer.length - m_lzma.m_stream.avail_out);
@@ -168,12 +168,12 @@ public:
             
             lzma_ret ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_RUN);
             
-			if (ret != lzma_ret.LZMA_OK && ret != lzma_ret.LZMA_STREAM_END)
+            if (ret != lzma_ret.LZMA_OK && ret != lzma_ret.LZMA_STREAM_END)
             {
                 clear();
-				if (ret == lzma_ret.LZMA_DATA_ERROR)
+                if (ret == lzma_ret.LZMA_DATA_ERROR)
                     throw new DecodingError("LzmaDecompression: Data integrity error");
-				else if (ret == lzma_ret.LZMA_MEM_ERROR)
+                else if (ret == lzma_ret.LZMA_MEM_ERROR)
                     throw new MemoryExhaustion("Couldn't write decompression");
                 else
                     throw new Exception("Lzma decompression: Unknown error");
@@ -228,7 +228,7 @@ public:
             m_lzma.m_stream.avail_out = m_buffer.length;
             ret = lzma_code(m_lzma.m_stream, lzma_action.LZMA_FINISH);
             
-			if (ret != lzma_ret.LZMA_OK && ret != lzma_ret.LZMA_STREAM_END)
+            if (ret != lzma_ret.LZMA_OK && ret != lzma_ret.LZMA_STREAM_END)
             {
                 clear();
                 throw new DecodingError("LzmaDecompression: Error finalizing");
@@ -340,10 +340,10 @@ extern(C) void lzma_free(void *opaque, void *ptr)
     
     Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(opaque);
     size_t len = (cast(const)info.current_allocs).get(ptr);
-	if (!len)
+    if (!len)
         throw new InvalidArgument("lzma_free: Got pointer not allocated by us");
     
-	memset(ptr, 0, len);
+    memset(ptr, 0, len);
     free(ptr);
 }
 

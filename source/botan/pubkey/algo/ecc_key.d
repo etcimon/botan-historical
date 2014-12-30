@@ -44,9 +44,9 @@ public:
          in bool msg_compat, 
          in short msg_parts = 1) 
     {
-		m_check_key = null;
-		m_algorithm_identifier = null;
-		m_subject_public_key = null;
+        m_check_key = null;
+        m_algorithm_identifier = null;
+        m_subject_public_key = null;
         m_msg_compat = msg_compat;
         m_algo_name = algo_name;
         m_msg_parts = msg_parts;
@@ -61,9 +61,9 @@ public:
          in SecureVector!ubyte key_bits, 
          in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {
-		m_check_key = null;
-		m_algorithm_identifier = null;
-		m_subject_public_key = null;
+        m_check_key = null;
+        m_algorithm_identifier = null;
+        m_subject_public_key = null;
         m_msg_compat = msg_compat;
         m_algo_name = algo_name;
         m_msg_parts = msg_parts;
@@ -73,13 +73,13 @@ public:
         m_public_key = OS2ECP(key_bits.dup, domain().getCurve().dup);
     }
 
-	final void setCB(in bool delegate(RandomNumberGenerator, bool) const check_key = null,
-	                 in Vector!ubyte delegate() const subject_public_key = null,
-	                 in AlgorithmIdentifier delegate() const algorithm_identifier = null) {
-		m_check_key = check_key;
-		m_algorithm_identifier = algorithm_identifier;
-		m_subject_public_key = subject_public_key;
-	}
+    final void setCB(in bool delegate(RandomNumberGenerator, bool) const check_key = null,
+                     in Vector!ubyte delegate() const subject_public_key = null,
+                     in AlgorithmIdentifier delegate() const algorithm_identifier = null) {
+        m_check_key = check_key;
+        m_algorithm_identifier = algorithm_identifier;
+        m_subject_public_key = subject_public_key;
+    }
 
     /// Used for object casting to the right type in the factory.
     final override @property string algoName() const {

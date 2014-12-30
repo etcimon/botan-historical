@@ -15,20 +15,25 @@ import std.traits : ReturnType;
 
 alias SecureAllocator = ZeroiseAllocator!VulnerableAllocator;
 
+__gshared NoSwapAllocator gs_zeroise;
+
+shared static this() { 
+    if (!gs_zeroise)
+        gs_zeroise = new NoSwapAllocator;
+}
+
 final class ZeroiseAllocator(Base : Allocator)
 {
     private {
-        shared NoSwapAllocator m_primary;
         Base m_secondary;
     }
 
     this() {
-        m_primary = new shared NoSwapAllocator;
     }
 
     void[] alloc(size_t n)
     {
-        if (void[] p = m_primary.alloc(n))
+        if (void[] p = gs_zeroise.alloc(n))
             return p;
         void[] p = m_secondary.alloc(n);
         clearMem(p.ptr, n);
@@ -38,7 +43,7 @@ final class ZeroiseAllocator(Base : Allocator)
     void free(void[] mem)
     {
         clearMem(mem.ptr, mem.length);
-        if (m_primary.free(mem))
+        if (gs_zeroise.free(mem))
             return;
         m_secondary.free(mem);
     }
@@ -79,7 +84,7 @@ void zeroise(T, Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec)
 }
 
 void zeroise(T)(T[] mem) {
-	clearMem(mem.ptr, mem.length);
+    clearMem(mem.ptr, mem.length);
 }
 
 /**

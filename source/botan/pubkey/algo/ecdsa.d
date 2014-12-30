@@ -70,7 +70,7 @@ public:
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
         m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1);
-		m_priv.setCB(&checkKey);
+        m_priv.setCB(&checkKey);
         super(m_priv);
     }
 
@@ -83,7 +83,7 @@ public:
     this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0))
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1);
-		m_priv.setCB(&checkKey); 
+        m_priv.setCB(&checkKey); 
         super(m_priv);
     }
 

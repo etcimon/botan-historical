@@ -25,10 +25,10 @@ import botan.utils.types;
 /**
 *  This class represents TR03110 (EAC) v1.1 generalized CV Certificates
 */
-class EAC11genCVC(Derived) : EAC11obj!Derived, SignedObject // CRTP continuation from EAC11obj
+abstract class EAC11genCVC(Derived) : EAC11obj!Derived, SignedObject // CRTP continuation from EAC11obj
 {
 public:
-
+    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Get this certificates public key.
     * @result this certificates public key

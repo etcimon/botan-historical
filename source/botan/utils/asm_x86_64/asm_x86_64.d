@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.asm_x86_64.asm_x86_64;
+import std.conv : to;
+
+// todo : LDC / GDC asm
+
 /*
 * General/Global Macros
 */
@@ -74,8 +78,8 @@ enum TEMP_9 = R0;
 /*
 * Memory Access Operations
 */
-string ARRAY4(string REG, int NUM) { return `[` ~ REG ~ ` + 4*` ~ NUM ~ `]`; }
-string ARRAY8(string REG, int NUM) { return `[` ~ REG ~ ` + 8*` ~ NUM ~ `]`; }
+string ARRAY4(string REG, int NUM) { return `[` ~ REG ~ ` + 4*` ~ NUM.to!string ~ `]`; }
+string ARRAY8(string REG, int NUM) { return `[` ~ REG ~ ` + 8*` ~ NUM.to!string ~ `]`; }
 string ASSIGN(string TO, string FROM) { return `mov ` ~ TO ~ `, ` ~ FROM ~ `;`; }
 
 
@@ -101,4 +105,4 @@ string ZEROIZE(string REG) { return XOR(REG, REG); }
 
 string ROTL_IMM(string REG, int NUM) { return `rol ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;`; }
 string ROTR_IMM(string REG, int NUM) { return `ror ` ~ REG ~ `, ` ~ IMM(NUM) ~ `;`; }
-string ADD3_IMM(string TO, string FROM, int NUM) { return `lea ` ~ TO ~ `, ` ~ NUM ~ `[` ~ TO ~ `+` ~ FROM ~ `];`; }
+string ADD3_IMM(string TO, string FROM, int NUM) { return `lea ` ~ TO ~ `, ` ~ NUM.to!string ~ `[` ~ TO ~ `+` ~ FROM ~ `];`; }

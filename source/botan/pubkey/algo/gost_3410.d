@@ -35,8 +35,8 @@ public:
     */
     this(in ECGroup dom_par, in PointGFp public_point) 
     {
-		m_pub = new ECPublicKey(dom_par, public_point, algoName, true, 2);
-		m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+        m_pub = new ECPublicKey(dom_par, public_point, algoName, true, 2);
+        m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
     }
 
     /**
@@ -69,8 +69,8 @@ public:
         PointGFp public_point = PointGFp(domain().getCurve().dup, x, y);
         m_pub = new ECPublicKey(domain_params, public_point, algoName, true, 2);
 
-		m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
-		assert(public_point.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
+        m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+        assert(public_point.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
     }
 
     AlgorithmIdentifier algorithmIdentifier() const
@@ -125,8 +125,8 @@ public:
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
     {
         m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 2);
-		m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
-		super(m_priv);
+        m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+        super(m_priv);
     }
 
     /**
@@ -138,11 +138,11 @@ public:
     this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0))
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2);
-		m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
-		super(m_priv);
+        m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
+        super(m_priv);
     }
 
-	this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(pkey); }
+    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
 

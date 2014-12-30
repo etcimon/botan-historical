@@ -168,8 +168,8 @@ protected:
         m_threefish.setKey(zeros.ptr, zeros.length);
         
         // ASCII("SHA3") followed by version (0x0001) code
-		ubyte[32] config_str;
-		config_str[0 .. 7] = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
+        ubyte[32] config_str;
+        config_str[0 .. 7] = [0x53, 0x48, 0x41, 0x33, 0x01, 0x00, 0 ];
         storeLittleEndian(cast(uint) m_output_bits, config_str.ptr + 8);
         
         resetTweak(type_code.SKEIN_CONFIG, true);

@@ -27,7 +27,7 @@ interface SignedObject {
     * Get the TBS (to-be-signed) data in this object.
     * @return DER encoded TBS data of this object
     */
-    abstract const(Vector!ubyte) tbsData() const;
+    const(Vector!ubyte) tbsData() const;
     
     /**
     * Get the signature of this object as a concatenation, i.e. if the
@@ -35,21 +35,21 @@ interface SignedObject {
     * these will be concatenated.
     * @return signature as a concatenation of its parts
     */
-    abstract const(Vector!ubyte) getConcatSig() const;
+    const(Vector!ubyte) getConcatSig() const;
     /**
     * Write this object DER encoded into a specified pipe.
     * @param pipe = the pipe to write the encoded object to
     * @param encoding = the encoding type to use
     */
-    abstract void encode(Pipe pipe, X509Encoding encoding = PEM_) const;
+    void encode(Pipe pipe, X509Encoding encoding = PEM_) const;
 protected:
-    abstract void forceDecode();
+    void forceDecode();
 }
 
 /**
 * This class represents abstract signed EAC object
 */
-class EACSignedObject : SignedObject
+abstract class EACSignedObject : SignedObject
 {
 public:
 

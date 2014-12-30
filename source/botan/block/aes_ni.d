@@ -184,6 +184,8 @@ public:
 
     @property string name() const { return "AES-128"; }
     override BlockCipher clone() const { return new AES128NI; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /*
     * AES-128 Key Schedule
@@ -423,6 +425,8 @@ public:
     }
     @property string name() const { return "AES-192"; }
     override BlockCipher clone() const { return new AES192NI; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /*
     * AES-192 Key Schedule
@@ -434,7 +438,7 @@ protected:
         
         __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
-        K1 = _mm_srli_si128(K1, 8);
+        K1 = _mm_srli_si128!8(K1);
         
         loadLittleEndian(m_EK.ptr, key, 6);
         
@@ -665,6 +669,8 @@ public:
 
     @property string name() const { return "AES-256"; }
     override BlockCipher clone() const { return new AES256NI; }
+    override size_t blockSize() const { return super.blockSize(); }
+    override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 protected:
     /*
     * AES-256 Key Schedule
@@ -677,25 +683,25 @@ protected:
         __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
         __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 16));
         
-        __m128i K2 = aes_128_key_expansion(K0, _mm_aeskeygenassist_si128(K1, 0x01));
+        __m128i K2 = aes_128_key_expansion(K0, _mm_aeskeygenassist_si128!0x01(K1));
         __m128i K3 = aes_256_key_expansion(K1, K2);
         
-        __m128i K4 = aes_128_key_expansion(K2, _mm_aeskeygenassist_si128(K3, 0x02));
+        __m128i K4 = aes_128_key_expansion(K2, _mm_aeskeygenassist_si128!0x02(K3));
         __m128i K5 = aes_256_key_expansion(K3, K4);
         
-        __m128i K6 = aes_128_key_expansion(K4, _mm_aeskeygenassist_si128(K5, 0x04));
+        __m128i K6 = aes_128_key_expansion(K4, _mm_aeskeygenassist_si128!0x04(K5));
         __m128i K7 = aes_256_key_expansion(K5, K6);
         
-        __m128i K8 = aes_128_key_expansion(K6, _mm_aeskeygenassist_si128(K7, 0x08));
+        __m128i K8 = aes_128_key_expansion(K6, _mm_aeskeygenassist_si128!0x08(K7));
         __m128i K9 = aes_256_key_expansion(K7, K8);
         
-        __m128i K10 = aes_128_key_expansion(K8, _mm_aeskeygenassist_si128(K9, 0x10));
+        __m128i K10 = aes_128_key_expansion(K8, _mm_aeskeygenassist_si128!0x10(K9));
         __m128i K11 = aes_256_key_expansion(K9, K10);
         
-        __m128i K12 = aes_128_key_expansion(K10, _mm_aeskeygenassist_si128(K11, 0x20));
+        __m128i K12 = aes_128_key_expansion(K10, _mm_aeskeygenassist_si128!0x20(K11));
         __m128i K13 = aes_256_key_expansion(K11, K12);
         
-        __m128i K14 = aes_128_key_expansion(K12, _mm_aeskeygenassist_si128(K13, 0x40));
+        __m128i K14 = aes_128_key_expansion(K12, _mm_aeskeygenassist_si128!0x40(K13));
         
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         _mm_storeu_si128(EK_mm      , K0);
@@ -739,10 +745,10 @@ protected:
 
 __m128i aes_128_key_expansion(__m128i key, __m128i key_with_rcon)
 {
-    key_with_rcon = _mm_shuffle_epi32(key_with_rcon, _MM_SHUFFLE(3,3,3,3));
-    key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
-    key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
-    key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
+    key_with_rcon = _mm_shuffle_epi32!(_MM_SHUFFLE(3,3,3,3))(key_with_rcon);
+    key = _mm_xor_si128(key, _mm_slli_si128!4(key));
+    key = _mm_xor_si128(key, _mm_slli_si128!4(key));
+    key = _mm_xor_si128(key, _mm_slli_si128!4(key));
     return _mm_xor_si128(key, key_with_rcon);
 }
 
@@ -752,10 +758,10 @@ void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
     __m128i key1 = *K1;
     __m128i key2 = *K2;
     
-    key2_with_rcon  = _mm_shuffle_epi32(key2_with_rcon, _MM_SHUFFLE(1,1,1,1));
-    key1 = _mm_xor_si128(key1, _mm_slli_si128(key1, 4));
-    key1 = _mm_xor_si128(key1, _mm_slli_si128(key1, 4));
-    key1 = _mm_xor_si128(key1, _mm_slli_si128(key1, 4));
+    key2_with_rcon  = _mm_shuffle_epi32!(_MM_SHUFFLE(1,1,1,1))(key2_with_rcon);
+    key1 = _mm_xor_si128(key1, _mm_slli_si128!4(key1));
+    key1 = _mm_xor_si128(key1, _mm_slli_si128!4(key1));
+    key1 = _mm_xor_si128(key1, _mm_slli_si128!4(key1));
     key1 = _mm_xor_si128(key1, key2_with_rcon);
     
     *K1 = key1;
@@ -764,12 +770,12 @@ void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
     if (last)
         return;
     
-    key2 = _mm_xor_si128(key2, _mm_slli_si128(key2, 4));
-    key2 = _mm_xor_si128(key2, _mm_shuffle_epi32(key1, _MM_SHUFFLE(3,3,3,3)));
+    key2 = _mm_xor_si128(key2, _mm_slli_si128!4(key2));
+    key2 = _mm_xor_si128(key2, _mm_shuffle_epi32!(_MM_SHUFFLE(3,3,3,3))(key1));
     
     *K2 = key2;
     output[4] = _mm_cvtsi128_si32(key2);
-    output[5] = _mm_cvtsi128_si32(_mm_srli_si128(key2, 4));
+    output[5] = _mm_cvtsi128_si32(_mm_srli_si128!4(key2));
 }
 
 /*
@@ -777,12 +783,12 @@ void aes_192_key_expansion(__m128i* K1, __m128i* K2, __m128i key2_with_rcon,
 */
 __m128i aes_256_key_expansion(__m128i key, __m128i key2)
 {
-    __m128i key_with_rcon = _mm_aeskeygenassist_si128(key2, 0x00);
-    key_with_rcon = _mm_shuffle_epi32(key_with_rcon, _MM_SHUFFLE(2,2,2,2));
+    __m128i key_with_rcon = _mm_aeskeygenassist_si128!0x00(key2);
+    key_with_rcon = _mm_shuffle_epi32!(_MM_SHUFFLE(2,2,2,2))(key_with_rcon);
     
-    key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
-    key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
-    key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
+    key = _mm_xor_si128(key, _mm_slli_si128!4(key));
+    key = _mm_xor_si128(key, _mm_slli_si128!4(key));
+    key = _mm_xor_si128(key, _mm_slli_si128!4(key));
     return _mm_xor_si128(key, key_with_rcon);
 }
 
@@ -823,11 +829,11 @@ string AES_DEC_4_LAST_ROUNDS(alias K)()
 }
 
 string AES_128_key_exp(string K, ubyte RCON)() {
-    return `aes_128_key_expansion(` ~ K ~ `, _mm_aeskeygenassist_si128(` ~ K ~ `, ` ~ RCON.stringof ~ `));`;
+    return `aes_128_key_expansion(` ~ K ~ `, _mm_aeskeygenassist_si128!` ~ RCON.to!string ~ `(` ~ K ~ `));`;
 }
 
 string AES_192_key_exp(ubyte RCON, size_t EK_OFF)() {
     return `aes_192_key_expansion(&K0, &K1, 
-                                  _mm_aeskeygenassist_si128(K1, ` ~ RCON.stringof ~ `),
+                                  _mm_aeskeygenassist_si128! ` ~ RCON.to!string ~ `(K1),
                                   &m_EK[` ~ EK_OFF.stringof ~ `], ` ~ EK_OFF.stringof ~ ` == 48);`;
 }

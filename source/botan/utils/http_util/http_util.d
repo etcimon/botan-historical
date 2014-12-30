@@ -14,6 +14,7 @@ import std.datetime;
 import std.stdio;
 import std.conv;
 import std.string;
+import std.array : Appender;
 
 version (Have_vibe_d) {
     import vibe.core.net;
@@ -31,8 +32,7 @@ struct HTTPResponse
 public:
 
     this(uint status_code, in string status_message,
-                in string _body,
-                const HashMap!(string, string) headers)
+         in string _body, HashMap!(string, string) headers)
     {
         m_status_code = status_code;
         m_status_message = status_message;
@@ -44,24 +44,24 @@ public:
 
     string _body() const { return m_body; }
 
-    HashMap!(string, string) headers() const { return m_headers; }
+    const(HashMap!(string, string)) headers() const { return m_headers; }
 
     string statusMessage() const { return m_status_message; }
 
     void throwUnlessOk()
     {
         if (statusCode() != 200)
-            throw new Exception("HTTP error: " ~ status_message());
+            throw new Exception("HTTP error: " ~ statusMessage());
     }
 
     string toString()
     {
         Appender!string output;
-        output ~= "HTTP " ~ statusCode() ~ " " ~ status_message() ~ "";
-        foreach (k, v; headers())
-            output ~= "Header '" ~ k ~ "' = '" ~ v ~ "'";
-        output ~= "Body " ~ to!string(resp.Body().length) ~ " bytes:";
-        output ~= cast(string) resp.Body();
+        output ~= "HTTP " ~ statusCode().to!string ~ " " ~ statusMessage() ~ "\n";
+        foreach (const ref string k, const ref string v; headers())
+            output ~= "Header '" ~ k ~ "' = '" ~ v ~ "'\n";
+        output ~= "Body " ~ to!string(_body().length) ~ " bytes:\n";
+        output ~= cast(string) _body();
         return output.data;
     }
 
@@ -112,7 +112,7 @@ HTTPResponse httpSync(in string verb,
         outbuf ~= "Cache-Control: no-cache\r";
     }
     else if (verb == "POST")
-        outbuf ~= "Content-Length: " ~ _body.length ~ "\r";
+        outbuf ~= "Content-Length: " ~ _body.length.to!string ~ "\r";
     
     if (content_type != "")
         outbuf ~= "Content-Type: " ~ content_type ~ "\r";
@@ -139,14 +139,15 @@ HTTPResponse httpSync(in string verb,
     if (http_version.length == 0 || http_version[0 .. 5] != "HTTP/")
         throw new Exception("Not an HTTP response");
 
-    status_code = parse!uint(reply[idx + 1 .. $]);
+    string reply_front = reply[idx + 1 .. $];
+    status_code = parse!uint(reply_front);
 
     idx = reply.indexOf('\r');
 
     if (idx == -1)
         throw new Exception("Not an HTTP response");
 
-    status_message = reply[status_code.length + http_version.length + 2 .. idx];
+    status_message = reply[status_code.to!string.length + http_version.to!string.length + 2 .. idx];
 
     reply = reply[idx + 1 .. $];
     
@@ -189,7 +190,7 @@ HTTPResponse httpSync(in string verb,
                                 header_size ~ " got " ~ to!string(resp_body.length));
     }
     
-    return Response(status_code, status_message, resp_body, headers);
+    return HTTPResponse(status_code, status_message, resp_body, headers);
 }
 
 string urlEncode(in string input)
@@ -246,7 +247,6 @@ string httpTransact(in string hostname, in string message)
         scope(exit) socket.close();
         SocketStream stream = new SocketStream(socket);
         stream.writeString(message);
-        stream.finished();
 
         Appender!string in_buf;
         // Skip HTTP header.

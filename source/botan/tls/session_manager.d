@@ -18,6 +18,7 @@ import std.datetime;
 import core.sync.mutex;
 import std.datetime;
 import botan.utils.containers.hashmap;
+import botan.tls.magic;
 
 /**
 * TLSSessionManager is an interface to systems which can save
@@ -115,59 +116,62 @@ public:
         
     }
 
-    override bool loadFromSessionId(
-        in Vector!ubyte session_id, ref TLSSession session)
+    override bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session)
     {
         
         return loadFromSessionStr(hexEncode(session_id), session);
     }
 
-    override bool loadFromServerInfo(
-        const TLSServerInformation info, ref TLSSession session)
+    override bool loadFromServerInfo(const TLSServerInformation info, ref TLSSession session)
     {
         
-        auto i = m_info_sessions.find(info);
+        auto str = m_info_sessions.get(info);
         
-        if (i == m_info_sessions.end())
+        if (!str)
             return false;
         
-        if (loadFromSessionStr(i.second, session))
+        if (loadFromSessionStr(str, session))
             return true;
         
         /*
         * It existed at one point but was removed from the sessions map,
         * remove m_info_sessions entry as well
         */
-        m_info_sessions.erase(i);
+        m_info_sessions.remove(info);
         
         return false;
     }
 
     override void removeEntry(in Vector!ubyte session_id)
     {        
-        auto i = m_sessions.find(hexEncode(session_id));
+        auto key = hexEncode(session_id);
+        auto val = m_sessions.get(key);
         
-        if (i != m_sessions.end())
-            m_sessions.erase(i);
+        if (val.length > 0) {
+            m_sessions.remove(key);
+            removeFromOrdered(key);
+        }
     }
 
     override void save(in TLSSession session)
     {
         
+        // make some space if too many sessions are found
         if (m_max_sessions != 0)
         {
-            /*
-            We generate new session IDs with the first 4 bytes being a
-            timestamp, so this actually removes the oldest sessions first.
-            */
-            while (m_sessions.length >= m_max_sessions)
-                m_sessions.erase(m_sessions.ptr);
+            int to_remove = cast(int)(m_max_sessions - m_sessions.length);
+
+            foreach (sess_id; m_sessions_ordered[0 .. to_remove])
+                m_sessions.remove(sess_id);
+
+            m_sessions_ordered = Vector!string(m_sessions_ordered[to_remove .. $][]);
         }
         
         const string session_id_str = hexEncode(session.sessionId());
-        
+
         m_sessions[session_id_str] = session.encrypt(m_session_key, m_rng);
-        
+        m_sessions_ordered ~= session_id_str;
+
         if (session.side() == CLIENT && !session.serverInfo().empty)
             m_info_sessions[session.serverInfo()] = session_id_str;
     }
@@ -178,16 +182,17 @@ public:
 private:
     bool loadFromSessionStr(in string session_str, ref TLSSession session)
     {
+        TLSSession sess;
         // assert(lock is held)
 
-        auto i = m_sessions.find(session_str);
+        auto val = m_sessions.get(session_str, Vector!ubyte.init);
         
-        if (i == m_sessions.end())
+        if (val == Vector!ubyte.init)
             return false;
         
         try
         {
-            session = TLSSession.decrypt(i.second, m_session_key);
+            sess = TLSSession.decrypt(val, m_session_key);
         }
         catch (Throwable)
         {
@@ -199,11 +204,25 @@ private:
         
         if (session.startTime() + sessionLifetime() < now)
         {
-            m_sessions.erase(i);
+            m_sessions.remove(session_str);
+            removeFromOrdered(session_str);
             return false;
         }
-        
+
+        session = sess;
         return true;
+    }
+
+    void removeFromOrdered(string val) {
+
+        import std.algorithm : countUntil;
+        auto i = m_sessions_ordered[].countUntil(val);
+        
+        if (i != m_sessions_ordered.length)
+            m_sessions_ordered[] = Vector!string(m_sessions_ordered[0 .. i]) ~ m_sessions_ordered[i+1 .. $];
+        else
+            m_sessions_ordered.length = m_sessions_ordered.length - 1;
+
     }
 
     size_t m_max_sessions;
@@ -214,5 +233,6 @@ private:
     SymmetricKey m_session_key;
 
     HashMap!(string, Vector!ubyte) m_sessions; // hex(session_id) . session
+    Vector!string m_sessions_ordered;
     HashMap!(TLSServerInformation, string) m_info_sessions;
 }

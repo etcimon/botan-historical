@@ -9,7 +9,7 @@ module botan.utils.exceptn;
 import botan.utils.types;
 import botan.utils.parsing;
 import std.exception;
-// import string;
+import std.conv : to;
 @safe pure nothrow :
 class RangeError : Exception
 {

@@ -62,7 +62,7 @@ public:
         if (m_check_key) {
             auto tmp = m_check_key;
             (cast(IFSchemePublicKey)this).m_check_key = null;
-			scope(exit) (cast(IFSchemePublicKey)this).m_check_key = tmp;
+            scope(exit) (cast(IFSchemePublicKey)this).m_check_key = tmp;
             return m_check_key(rng, strong);
         }
 
@@ -129,7 +129,7 @@ public:
     this(RandomNumberGenerator rng, in AlgorithmIdentifier aid, in SecureVector!ubyte key_bits,
          in string algo_name, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-		BigInt n, e;
+        BigInt n, e;
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
@@ -143,7 +143,7 @@ public:
                 .decode(m_c)
                 .endCons();
         
-		super(n, e, algo_name, check_key);
+        super(n, e, algo_name, check_key);
 
         loadCheck(rng);
     }
@@ -157,11 +157,11 @@ public:
          in string algo_name,
          bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-		BigInt e = exp;
+        BigInt e = exp;
         m_p = prime1;
         m_q = prime2;
-		BigInt n = mod.isNonzero() ? mod : m_p.dup * m_q;
-		super(n, e, algo_name, check_key);
+        BigInt n = mod.isNonzero() ? mod : m_p.dup * m_q;
+        super(n, e, algo_name, check_key);
 
         m_d = d_exp;
         
@@ -190,7 +190,7 @@ public:
         if (m_check_key) {
             auto tmp = m_check_key;
             (cast(IFSchemePrivateKey)this).m_check_key = null;
-			scope(exit) (cast(IFSchemePrivateKey)this).m_check_key = tmp;
+            scope(exit) (cast(IFSchemePrivateKey)this).m_check_key = tmp;
             return m_check_key(rng, strong);
         }
 
@@ -217,17 +217,17 @@ public:
     * Get the second prime q.
     * @return prime q
     */
-	const(BigInt) getQ() const { return m_q; }
+    const(BigInt) getQ() const { return m_q; }
 
     /**
     * Get d with exp * d = 1 mod (p - 1, q - 1).
     * @return d
     */
-	const(BigInt) getD() const { return m_d; }
+    const(BigInt) getD() const { return m_d; }
 
-	const(BigInt) getC() const { return m_c; }
-	const(BigInt) getD1() const { return m_d1; }
-	const(BigInt) getD2() const { return m_d2; }
+    const(BigInt) getC() const { return m_c; }
+    const(BigInt) getD1() const { return m_d1; }
+    const(BigInt) getD2() const { return m_d2; }
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {

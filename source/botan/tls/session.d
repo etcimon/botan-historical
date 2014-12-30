@@ -108,8 +108,8 @@ public:
         m_connection_side = cast(ConnectionSide)(side_code);
         
         m_server_info = TLSServerInformation(server_hostname.value(),
-                                           server_service.value(),
-                                           server_port);
+                                             server_service.value(),
+                                             cast(ushort) server_port);
         
         m_srp_identifier = srp_identifier_str.value();
         
@@ -117,7 +117,7 @@ public:
         {
             auto certs = scoped!DataSourceMemory(peer_cert_bits.ptr, peer_cert_bits.length);
             while (!certs.endOfData())
-                m_peer_certs.pushBack(X509Certificate(certs));
+                m_peer_certs.pushBack(X509Certificate(certs.Scoped_payload));
         }
     }
 
@@ -227,7 +227,7 @@ public:
     /**
     * Get the ciphersuite info of the saved session
     */
-	const(TLSCiphersuite) ciphersuite() const { return TLSCiphersuite.byId(m_ciphersuite); }
+    const(TLSCiphersuite) ciphersuite() const { return TLSCiphersuite.byId(m_ciphersuite); }
 
     /**
     * Get the compression method used in the saved session
@@ -238,7 +238,7 @@ public:
     * Get which side of the connection the resumed session we are/were
     * acting as.
     */
-	const(ConnectionSide) side() const { return m_connection_side; }
+    const(ConnectionSide) side() const { return m_connection_side; }
 
     /**
     * Get the SRP identity (if sent by the client in the initial handshake)
@@ -253,7 +253,7 @@ public:
     /**
     * Get the session identifier
     */
-	const(Vector!ubyte) sessionId() const { return m_identifier; }
+    const(Vector!ubyte) sessionId() const { return m_identifier; }
 
     /**
     * Get the negotiated maximum fragment size (or 0 if default)
@@ -263,7 +263,7 @@ public:
     /**
     * Return the certificate chain of the peer (possibly empty)
     */
-	const(Vector!X509Certificate) peerCerts() const { return m_peer_certs; }
+    const(Vector!X509Certificate) peerCerts() const { return m_peer_certs; }
 
     /**
     * Get the wall clock time this session began
@@ -273,7 +273,7 @@ public:
     /**
     * Return how long this session has existed (in seconds)
     */
-	const(Duration) sessionAge() const
+    const(Duration) sessionAge() const
     {
         return Clock.currTime() - m_start_time;
     }
@@ -281,7 +281,7 @@ public:
     /**
     * Return the session ticket the server gave us
     */
-	const(Vector!ubyte) sessionTicket() const { return m_session_ticket; }
+    const(Vector!ubyte) sessionTicket() const { return m_session_ticket; }
 
     TLSServerInformation serverInfo() const { return m_server_info; }
 

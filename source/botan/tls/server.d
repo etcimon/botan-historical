@@ -53,7 +53,7 @@ public:
     string nextProtocol() const { return m_next_protocol; }
 
 protected:
-	override const(Vector!X509Certificate) getPeerCertChain(in HandshakeState state) const
+    override const(Vector!X509Certificate) getPeerCertChain(in HandshakeState state) const
     {
         if (state.clientCerts())
             return state.clientCerts().certChain();
@@ -211,7 +211,7 @@ protected:
                 
                 secureRenegotiationCheck(state.serverHello());
                 
-                state.computeSessionKeys(session_info.masterSecret());
+                state.computeSessionKeys(session_info.masterSecret().dup);
                 
                 if (!saveSession(session_info))
                 {
@@ -443,7 +443,7 @@ protected:
         {
             state.setExpectedNext(HANDSHAKE_NONE);
             
-			state.clientFinished(new Finished(contents.dup));
+            state.clientFinished(new Finished(contents.dup));
             
             if (!state.clientFinished().verify(state, CLIENT))
                 throw new TLSException(TLSAlert.DECRYPT_ERROR, "Finished message didn't verify");
@@ -455,16 +455,16 @@ protected:
                 state.hash().update(state.handshakeIo().format(contents, type));
                 
                 TLSSession session_info = TLSSession(state.serverHello().sessionId().dup,
-							                         state.sessionKeys().masterSecret().dup,
-							                         state.serverHello().Version(),
-							                         state.serverHello().ciphersuite(),
-							                         state.serverHello().compressionMethod(),
-							                         SERVER,
-							                         state.serverHello().fragmentSize(),
-							                         getPeerCertChain(state).dup,
-							                         Vector!ubyte(),
-							                         TLSServerInformation(state.clientHello().sniHostname()),
-							                         state.srpIdentifier()
+                                                     state.sessionKeys().masterSecret().dup,
+                                                     state.serverHello().Version(),
+                                                     state.serverHello().ciphersuite(),
+                                                     state.serverHello().compressionMethod(),
+                                                     SERVER,
+                                                     state.serverHello().fragmentSize(),
+                                                     getPeerCertChain(state).dup,
+                                                     Vector!ubyte(),
+                                                     TLSServerInformation(state.clientHello().sniHostname()),
+                                                     state.srpIdentifier()
                     );
                 
                 if (saveSession(session_info))

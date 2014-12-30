@@ -100,7 +100,7 @@ private:
             }
         }
         
-        return Pair!(dirent*, string)(null, ""); // nothing left
+        return Pair!(dirent*, string)(); // nothing left
     }
     
     Pair!(DIR*, string) m_cur_dir;
@@ -139,7 +139,7 @@ public:
             // If we've exhaused this walk of the directory, halt the poll
             if (fd == -1)
             {
-				delete m_dir;
+                delete m_dir;
                 m_dir = null;
                 break;
             }
@@ -160,7 +160,7 @@ public:
         m_path = root_dir;
     }
 
-	~this() { if (m_dir) delete m_dir; }
+    ~this() { if (m_dir) delete m_dir; }
 
 private:
     const string m_path;

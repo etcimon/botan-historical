@@ -124,8 +124,8 @@ public:
         buf.pushBack(get_byte(1, cast(ushort) (name_len+3)));
         buf.pushBack(0); // DNS
         
-		buf.pushBack(get_byte(0, cast(ushort) name_len));
-		buf.pushBack(get_byte(1, cast(ushort) name_len));
+        buf.pushBack(get_byte(0, cast(ushort) name_len));
+        buf.pushBack(get_byte(1, cast(ushort) name_len));
         
         buf ~= (cast(const(ubyte)*)m_sni_host_name.ptr)[0 .. m_sni_host_name.length];
         
@@ -266,12 +266,12 @@ public:
 
         if (val < code_to_fragment.length) {
 
-	        auto i = code_to_fragment[val];
-	        
-	        m_max_fragment = i;
-		}
-		else
-			throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
+            auto i = code_to_fragment[val];
+            
+            m_max_fragment = i;
+        }
+        else
+            throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Bad value in maximum fragment extension");
 
     }
 
@@ -487,7 +487,7 @@ public:
         }
         
         buf[0] = get_byte(0, cast(ushort) (buf.length-2));
-		buf[1] = get_byte(1, cast(ushort) (buf.length-2));
+        buf[1] = get_byte(1, cast(ushort) (buf.length-2));
         
         return buf;
     }
@@ -632,8 +632,8 @@ public:
             {}
         }
         
-		buf[0] = get_byte(0, cast(ushort) (buf.length-2));
-		buf[1] = get_byte(1, cast(ushort) (buf.length-2));
+        buf[0] = get_byte(0, cast(ushort) (buf.length-2));
+        buf[1] = get_byte(1, cast(ushort) (buf.length-2));
         
         return buf;
     }
@@ -768,8 +768,8 @@ public:
             buf.pushBack(get_byte(0, extn_code));
             buf.pushBack(get_byte(1, extn_code));
             
-			buf.pushBack(get_byte(0, cast(ushort) extn_val.length));
-			buf.pushBack(get_byte(1, cast(ushort) extn_val.length));
+            buf.pushBack(get_byte(0, cast(ushort) extn_val.length));
+            buf.pushBack(get_byte(1, cast(ushort) extn_val.length));
             
             buf ~= extn_val[];
         }

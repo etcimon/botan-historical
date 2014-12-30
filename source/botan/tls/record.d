@@ -48,15 +48,15 @@ public:
         
         if (side == CLIENT)
         {
-            cipher_key = keys.clientCipherKey();
-            iv = keys.clientIv();
-            mac_key = keys.clientMacKey();
+            cipher_key = keys.clientCipherKey().dup;
+            iv = keys.clientIv().dup;
+            mac_key = keys.clientMacKey().dup;
         }
         else
         {
-            cipher_key = keys.serverCipherKey();
-            iv = keys.serverIv();
-            mac_key = keys.serverMacKey();
+            cipher_key = keys.serverCipherKey().dup;
+            iv = keys.serverIv().dup;
+            mac_key = keys.serverMacKey().dup;
         }
         
         const string cipher_algo = suite.cipherAlgo();
@@ -214,8 +214,8 @@ void writeRecord(ref SecureVector!ubyte output,
     
     if (!cipherstate) // initial unencrypted handshake records
     {
-		output.pushBack(get_byte(0, cast(ushort) msg_length));
-		output.pushBack(get_byte(1, cast(ushort) msg_length));
+        output.pushBack(get_byte(0, cast(ushort) msg_length));
+        output.pushBack(get_byte(1, cast(ushort) msg_length));
         
         output ~= msg[0 .. msg_length];
         
@@ -237,8 +237,8 @@ void writeRecord(ref SecureVector!ubyte output,
 
         assert(rec_size <= 0xFFFF, "Ciphertext length fits in field");
         
-		output.pushBack(get_byte!ushort(0, cast(ushort) rec_size));
-		output.pushBack(get_byte!ushort(1, cast(ushort) rec_size));
+        output.pushBack(get_byte!ushort(0, cast(ushort) rec_size));
+        output.pushBack(get_byte!ushort(1, cast(ushort) rec_size));
         
         aead.setAssociatedDataVec(cipherstate.formatAd(msg_sequence, msg_type, _version, cast(ushort) msg_length));
         
@@ -269,8 +269,8 @@ void writeRecord(ref SecureVector!ubyte output,
     if (buf_size > MAX_CIPHERTEXT_SIZE)
         throw new InternalError("Output record is larger than allowed by protocol");
     
-	output.pushBack(get_byte!ushort(0, cast(ushort) buf_size));
-	output.pushBack(get_byte!ushort(1, cast(ushort) buf_size));
+    output.pushBack(get_byte!ushort(0, cast(ushort) buf_size));
+    output.pushBack(get_byte!ushort(1, cast(ushort) buf_size));
     
     const size_t header_size = output.length;
     

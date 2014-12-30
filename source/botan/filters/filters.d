@@ -215,7 +215,7 @@ public:
 
     override KeyLengthSpecification keySpec() const { return m_mac.keySpec(); }
 
-	override bool validIvLength(size_t length) const { return length == 0; }
+    override bool validIvLength(size_t length) const { return length == 0; }
 
     /**
     * Construct a MAC filter. The MAC key will be left empty.

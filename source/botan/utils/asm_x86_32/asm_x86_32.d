@@ -177,9 +177,9 @@ else {
     /*
     * Memory Access Operations
     */
-    string ARRAY4(string REG, int NUM) { return `4*(` ~ NUM ~ `)(` ~ REG ~ `)`; }
-    string ARRAY4_INDIRECT(string BASE, string OFFSET, int NUM) { return `4*(` ~ NUM ~ `)(` ~ BASE ~ `, ` ~ OFFSET ~ `, 4)`; }
-    string ARG(int PUSHED, int NUM) { return `4*(` ~ PUSHED ~ `) + ` ~ ARRAY4(ESP, NUM); }
+    string ARRAY4(string REG, int NUM) { return `4*(` ~ NUM.to!string ~ `)(` ~ REG ~ `)`; }
+    string ARRAY4_INDIRECT(string BASE, string OFFSET, int NUM) { return `4*(` ~ NUM.to!string ~ `)(` ~ BASE ~ `, ` ~ OFFSET ~ `, 4)`; }
+    string ARG(int PUSHED, int NUM) { return `4*(` ~ PUSHED.to!string ~ `) + ` ~ ARRAY4(ESP, NUM); }
     
     string ASSIGN(string TO, string FROM) { return `"movl ` ~ FROM ~ `, ` ~ TO ~ `\n"`; }
     string ASSIGN_BYTE(string TO, string FROM) { return `"movzbl ` ~ FROM ~ `, ` ~ TO ~ `\n"`; }
@@ -211,8 +211,8 @@ else {
     string ADD_W_CARRY(string TO1, string TO2, string FROM) { return `"addl ` ~ FROM ~ `, ` ~ TO1 ~ `\n"
                                                                       "adcl ` ~ IMM(0) ~ `, ` ~ TO2 ~ `\n"`; }
     string SUB_IMM(string TO, int NUM) { return `"subl ` ~ IMM(NUM) ~ `, ` ~ TO ~ `\n"`; }
-    string ADD2_IMM(string TO, string FROM, int NUM) { return `"leal `  ~ NUM ~ `(` ~ FROM ~ `)` ~ `, ` ~ TO ~ `\n"`; }
-    string ADD3_IMM(string TO, string FROM, int NUM) { return `"leal ` ~ NUM ~ `(` ~ TO ~ `, ` ~ FROM ~ `, 1), ` ~ TO ~ `\n"`; }
+    string ADD2_IMM(string TO, string FROM, int NUM) { return `"leal `  ~ NUM.to!string ~ `(` ~ FROM ~ `)` ~ `, ` ~ TO ~ `\n"`; }
+    string ADD3_IMM(string TO, string FROM, int NUM) { return `"leal ` ~ NUM.to!string ~ `(` ~ TO ~ `, ` ~ FROM ~ `, 1), ` ~ TO ~ `\n"`; }
     string MUL(string REG) { return `"mull ` ~ REG ~ `\n"`; }
     
     string SHL_IMM(string REG, int SHIFT) { return `"shll ` ~ IMM(SHIFT) ~ `, ` ~ REG ~ `\n"`; }

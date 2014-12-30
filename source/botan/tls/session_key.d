@@ -20,23 +20,23 @@ import botan.tls.messages;
 struct TLSSessionKeys
 {
 public:
-    SymmetricKey clientCipherKey() const { return m_c_cipher; }
-    SymmetricKey serverCipherKey() const { return s_cipher; }
+    const(SymmetricKey) clientCipherKey() const { return m_c_cipher; }
+    const(SymmetricKey) serverCipherKey() const { return m_s_cipher; }
 
-    SymmetricKey clientMacKey() const { return m_c_mac; }
-    SymmetricKey serverMacKey() const { return m_s_mac; }
+    const(SymmetricKey) clientMacKey() const { return m_c_mac; }
+    const(SymmetricKey) serverMacKey() const { return m_s_mac; }
 
-    InitializationVector clientIv() const { return m_c_iv; }
-    InitializationVector serverIv() const { return m_s_iv; }
+    const(InitializationVector) clientIv() const { return m_c_iv; }
+    const(InitializationVector) serverIv() const { return m_s_iv; }
 
-    SecureVector!ubyte masterSecret() const { return m_master_sec; }
+    const(SecureVector!ubyte) masterSecret() const { return m_master_sec; }
 
     @disable this();
 
     /**
     * TLSSessionKeys Constructor
     */
-    this(in HandshakeState state, in SecureVector!ubyte pre_master_secret, bool resuming)
+    this(in HandshakeState state, SecureVector!ubyte pre_master_secret, bool resuming)
     {
         const size_t cipher_keylen = state.ciphersuite().cipherKeylen();
         const size_t mac_keylen = state.ciphersuite().macKeylen();
@@ -63,8 +63,8 @@ public:
             if (state.Version() != TLSProtocolVersion.SSL_V3)
                 salt ~= MASTER_SECRET_MAGIC;
             
-            salt ~= state.clientHello().random();
-            salt ~= state.serverHello().random();
+            salt ~= state.clientHello().random()[];
+            salt ~= state.serverHello().random()[];
             
             m_master_sec = prf.deriveKey(48, pre_master_secret, salt);
         }
@@ -72,8 +72,8 @@ public:
         SecureVector!ubyte salt;
         if (state.Version() != TLSProtocolVersion.SSL_V3)
             salt ~= KEY_GEN_MAGIC;
-        salt ~= state.serverHello().random();
-        salt ~= state.clientHello().random();
+        salt ~= state.serverHello().random()[];
+        salt ~= state.clientHello().random()[];
         
         SymmetricKey keyblock = prf.deriveKey(prf_gen, m_master_sec, salt);
         

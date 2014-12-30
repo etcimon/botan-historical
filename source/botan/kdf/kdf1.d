@@ -23,8 +23,8 @@ public:
                             const(ubyte)* secret, size_t secret_len,
                             const(ubyte)* P, size_t P_len) const
     {
-		HashFunction hash = (cast(HashFunction)*m_hash);
-		hash.update(secret, secret_len);
+        HashFunction hash = (cast(HashFunction)*m_hash);
+        hash.update(secret, secret_len);
         hash.update(P, P_len);
         return hash.finished();
     }

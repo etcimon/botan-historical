@@ -83,17 +83,17 @@ void xtea_encrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK)
         SIMD32 K2 = SIMD32(EK[2*i+2]);
         SIMD32 K3 = SIMD32(EK[2*i+3]);
         
-        L0 += (((R0 << 4) ^ (R0 >> 5)) + R0) ^ K0;
-        L1 += (((R1 << 4) ^ (R1 >> 5)) + R1) ^ K0;
+        L0 += (((R0.lshift!4()) ^ (R0.rshift!5())) + R0) ^ K0;
+        L1 += (((R1.lshift!4()) ^ (R1.rshift!5())) + R1) ^ K0;
         
-        R0 += (((L0 << 4) ^ (L0 >> 5)) + L0) ^ K1;
-        R1 += (((L1 << 4) ^ (L1 >> 5)) + L1) ^ K1;
+        R0 += (((L0.lshift!4()) ^ (L0.rshift!5())) + L0) ^ K1;
+        R1 += (((L1.lshift!4()) ^ (L1.rshift!5())) + L1) ^ K1;
         
-        L0 += (((R0 << 4) ^ (R0 >> 5)) + R0) ^ K2;
-        L1 += (((R1 << 4) ^ (R1 >> 5)) + R1) ^ K2;
+        L0 += (((R0.lshift!4()) ^ (R0.rshift!5())) + R0) ^ K2;
+        L1 += (((R1.lshift!4()) ^ (R1.rshift!5())) + R1) ^ K2;
         
-        R0 += (((L0 << 4) ^ (L0 >> 5)) + L0) ^ K3;
-        R1 += (((L1 << 4) ^ (L1 >> 5)) + L1) ^ K3;
+        R0 += (((L0.lshift!4()) ^ (L0.rshift!5())) + L0) ^ K3;
+        R1 += (((L1.lshift!4()) ^ (L1.rshift!5())) + L1) ^ K3;
     }
     
     SIMD32.transpose(L0, R0, L1, R1);
@@ -120,17 +120,17 @@ void xtea_decrypt_8(in ubyte[64] input, ref ubyte[64] output, in uint[64] EK)
         SIMD32 K2 = SIMD32(EK[61 - 2*i]);
         SIMD32 K3 = SIMD32(EK[60 - 2*i]);
         
-        R0 -= (((L0 << 4) ^ (L0 >> 5)) + L0) ^ K0;
-        R1 -= (((L1 << 4) ^ (L1 >> 5)) + L1) ^ K0;
+        R0 -= (((L0.lshift!4()) ^ (L0.rshift!5())) + L0) ^ K0;
+        R1 -= (((L1.lshift!4()) ^ (L1.rshift!5())) + L1) ^ K0;
         
-        L0 -= (((R0 << 4) ^ (R0 >> 5)) + R0) ^ K1;
-        L1 -= (((R1 << 4) ^ (R1 >> 5)) + R1) ^ K1;
+        L0 -= (((R0.lshift!4()) ^ (R0.rshift!5())) + R0) ^ K1;
+        L1 -= (((R1.lshift!4()) ^ (R1.rshift!5())) + R1) ^ K1;
         
-        R0 -= (((L0 << 4) ^ (L0 >> 5)) + L0) ^ K2;
-        R1 -= (((L1 << 4) ^ (L1 >> 5)) + L1) ^ K2;
+        R0 -= (((L0.lshift!4()) ^ (L0.rshift!5())) + L0) ^ K2;
+        R1 -= (((L1.lshift!4()) ^ (L1.rshift!5())) + L1) ^ K2;
         
-        L0 -= (((R0 << 4) ^ (R0 >> 5)) + R0) ^ K3;
-        L1 -= (((R1 << 4) ^ (R1 >> 5)) + R1) ^ K3;
+        L0 -= (((R0.lshift!4()) ^ (R0.rshift!5())) + R0) ^ K3;
+        L1 -= (((R1.lshift!4()) ^ (R1.rshift!5())) + R1) ^ K3;
     }
     
     SIMD32.transpose(L0, R0, L1, R1);

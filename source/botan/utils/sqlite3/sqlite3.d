@@ -9,8 +9,9 @@ module botan.utils.sqlite3.sqlite3;
 import std.exception;
 import etc.c.sqlite3;
 import botan.utils.types;
-import std.datetime;
 import botan.utils.types;
+import std.string : toStringz, fromStringz;
+import std.datetime;
 
 class sqlite3_database
 {
@@ -21,7 +22,7 @@ public:
         
         if (rc)
         {
-            const string err_msg = sqlite3_errmsg(m_db);
+            const string err_msg = fromStringz(sqlite3_errmsg(m_db)).to!string;
             sqlite3_close(m_db);
             m_db = null;
             throw new Exception("sqlite3_open failed - " ~ err_msg);
@@ -53,7 +54,7 @@ public:
         
         if (rc != SQLITE_OK)
         {
-            const string err_msg = errmsg;
+            const string err_msg = fromStringz(errmsg).to!string;
             sqlite3_free(errmsg);
             sqlite3_close(m_db);
             m_db = null;
@@ -97,7 +98,7 @@ public:
 
     void bind(int column, in Vector!ubyte val)
     {
-        int rc = sqlite3_bind_blob(m_stmt, column, val.ptr, val.length, SQLITE_TRANSIENT);
+        int rc = sqlite3_bind_blob(m_stmt, column, cast(void*)val.ptr, cast(int)val.length, SQLITE_TRANSIENT);
         if (rc != SQLITE_OK)
             throw new Exception("sqlite3_bind_text failed, code " ~ to!string(rc));
     }
@@ -112,7 +113,7 @@ public:
         
         assert(session_blob_size >= 0, "Blob size is non-negative");
         
-        return Pair(cast(const(ubyte)*)(session_blob),
+        return makePair(cast(const(ubyte)*)(session_blob),
                     cast(size_t)(session_blob_size));
     }
 

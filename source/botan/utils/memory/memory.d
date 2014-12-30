@@ -123,7 +123,7 @@ final class DebugAllocator(Base) : Allocator {
     {
         auto ret = m_baseAlloc.alloc(sz);
         assert(ret.length == sz, "base.alloc() returned block with wrong size.");
-        assert(m_blocks.get(ret.ptr, size_t.max) == size_t.max, "base.alloc() returned block that is already allocated.");
+        assert(m_blocks.get(cast(const)ret.ptr, size_t.max) == size_t.max, "base.alloc() returned block that is already allocated.");
         m_blocks[ret.ptr] = sz;
         m_bytes += sz;
         if( m_bytes > m_maxBytes ){
@@ -135,7 +135,7 @@ final class DebugAllocator(Base) : Allocator {
 
     void free(void[] mem)
     {
-        auto sz = m_blocks.get(mem.ptr, size_t.max);
+        auto sz = m_blocks.get(cast(const)mem.ptr, size_t.max);
         assert(sz != size_t.max, "free() called with non-allocated object.");
         assert(sz == mem.length, "free() called with block of wrong size.");
         m_baseAlloc.free(mem);
@@ -539,7 +539,7 @@ private void* adjustPointerAlignment(void* base)
 {
     ubyte misalign = Allocator.alignment - (cast(size_t)base & Allocator.alignmentMask);
     base += misalign;
-    *(cast(const(ubyte)*)base-1) = misalign;
+    *(cast(ubyte*)base-1) = misalign;
     return base;
 }
 

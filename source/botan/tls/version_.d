@@ -11,9 +11,10 @@ static if (BOTAN_HAS_TLS):
 
 import botan.utils.get_byte;
 import botan.tls.exceptn;
+import botan.tls.alert;
 import botan.utils.parsing;
 import botan.utils.types;
-// import string;
+import std.conv : to;
 
 /**
 * TLS Protocol Version
@@ -102,10 +103,10 @@ public:
             return "TLS v1." ~ to!string(min-1);
         
         if (maj == 254) // DTLS 1.x
-            return "DTLS v1." ~ to!string(255 - minput);
+            return "DTLS v1." ~ to!string(255 - min);
         
         // Some very new or very old protocol (or bogus data)
-        return "Unknown " ~ to!string(maj) ~ "." ~ to!string(minput);
+        return "Unknown " ~ to!string(maj) ~ "." ~ to!string(min);
     }
 
     /**
@@ -119,9 +120,9 @@ public:
             return this; // known version is its own best match
         
         if (isDatagramProtocol())
-            return TLSProtocolVersion.DTLS_V12;
+            return cast(TLSProtocolVersion) TLSProtocolVersion.DTLS_V12;
         else
-            return TLSProtocolVersion.TLS_V12;
+            return cast(TLSProtocolVersion) TLSProtocolVersion.TLS_V12;
     }
 
     /**
@@ -178,7 +179,7 @@ public:
     /**
     * @return if this version is not equal to other
     */
-    bool opCmp(in TLSProtocolVersion other) const
+    int opCmp(in TLSProtocolVersion other) const
     {
         if (m_version == other.m_version) return 0;
         else if (isGreaterThan(other)) return 1;
@@ -196,7 +197,7 @@ public:
     /**
     * @return if this version is not equal to other
     */
-    bool opCmp(in ushort other) const
+    int opCmp(in ushort other) const
     {
         if (m_version == other) return 0;
         else if (isGreaterThan(TLSProtocolVersion(other))) return 1;

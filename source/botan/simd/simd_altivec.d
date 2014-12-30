@@ -91,16 +91,16 @@ public:
         .storeBigEndian(output, vec.R[0], vec.R[1], vec.R[2], vec.R[3]);
     }
 
-    void rotateLeft(size_t rot)
+    void rotateLeft(int rot)()
     {
         vector_uint rot_vec = vector_uint([rot, rot, rot, rot]);
 
         m_reg = vec_rl(m_reg, rot_vec);
     }
 
-    void rotateRight(size_t rot)
+    void rotateRight(int rot)()
     {
-        this.rotateLeft(32 - rot);
+        this.rotateLeft!(32 - rot)();
     }
 
     void opOpAssign(string op)(in SIMDAltivec other)
@@ -157,8 +157,7 @@ public:
         m_reg = vec_and(m_reg, other.m_reg);
     }
 
-    SIMDAltivec opBinary(string op)(size_t shift_)
-        if (op == "<<")
+    SIMDAltivec lshift(int shift_)()
     {
         uint shift = cast(uint) shift_;
         vector_uint shift_vec = vector_uint([shift, shift, shift, shift]);
@@ -166,8 +165,7 @@ public:
         return vec_sl(m_reg, shift_vec);
     }
 
-    SIMDAltivec opBinary(string op)(size_t shift_)
-        if (op == ">>")
+    SIMDAltivec rshift(int shift_)()
     {
         uint shift = cast(uint) shift_;
         vector_uint shift_vec = vector_uint([shift, shift, shift, shift]);

@@ -224,11 +224,12 @@ string GET_P_32(alias P, ubyte i)()
 string prep00_15(alias P, alias _W)()
 {
     enum W = __traits(identifier, _W);
-    return W ~ ` = _mm_shufflehi_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
-           W ~ ` = _mm_shufflelo_epi16(` ~ W ~ `, _MM_SHUFFLE(2, 3, 0, 1));` ~
-           W ~ ` = _mm_or_si128(_mm_slli_epi16(` ~ W ~ `, 8),
-                                _mm_srli_epi16(` ~ W ~ `, 8));
-               ` ~ __traits(identifier, P) ~ `.u128 = _mm_add_epi32(` ~ W ~ `, K00_19);`;
+    return `{ const SHUF = _MM_SHUFFLE(2, 3, 0, 1);` ~
+            W ~ ` = _mm_shufflehi_epi16!SHUF(` ~ W ~ `);` ~
+            W ~ ` = _mm_shufflelo_epi16!SHUF(` ~ W ~ `);` ~
+            W ~ ` = _mm_or_si128(_mm_slli_epi16!8(` ~ W ~ `),
+                                 _mm_srli_epi16!8(` ~ W ~ `));
+            ` ~ __traits(identifier, P) ~ `.u128 = _mm_add_epi32(` ~ W ~ `, K00_19);}`;
 }
 
 /*
@@ -288,10 +289,10 @@ string prep(alias _prep, alias _XW0, alias _XW1, alias _XW2, alias _XW3, alias _
                 __m128i r0, r1, r2, r3;
 
                 /* load W[t-4] 16-ubyte aligned, and shift */
-                r3 = _mm_srli_si128(` ~ XW3 ~ `, 4);
+                r3 = _mm_srli_si128!4(` ~ XW3 ~ `);
                 r0 = ` ~ XW0 ~ `;
                 /* get high 64-bits of XW0 into low 64-bits */
-                r1 = _mm_shuffle_epi32(` ~ XW0 ~ `, _MM_SHUFFLE(1,0,3,2));
+                r1 = _mm_shuffle_epi32!(_MM_SHUFFLE(1,0,3,2))(` ~ XW0 ~ `);
                 /* load high 64-bits of r1 */
                 r1 = _mm_unpacklo_epi64(r1, ` ~ XW1 ~ `);
                 r2 = ` ~ XW2 ~ `;
@@ -300,13 +301,13 @@ string prep(alias _prep, alias _XW0, alias _XW1, alias _XW2, alias _XW3, alias _
                 r0 = _mm_xor_si128(r2, r0);
                 /* unrotated W[t]..W[t+2] in r0 ... still need W[t+3] */
 
-                r2 = _mm_slli_si128(r0, 12);
+                r2 = _mm_slli_si128!12(r0);
                 r1 = _mm_cmplt_epi32(r0, _mm_setzero_si128());
                 r0 = _mm_add_epi32(r0, r0);    /* shift left by 1 */
                 r0 = _mm_sub_epi32(r0, r1);    /* r0 has W[t]..W[t+2] */
 
-                r3 = _mm_srli_epi32(r2, 30);
-                r2 = _mm_slli_epi32(r2, 2);
+                r3 = _mm_srli_epi32!30(r2);
+                r2 = _mm_slli_epi32!2(r2);
                 r0 = _mm_xor_si128(r0, r3);
                 r0 = _mm_xor_si128(r0, r2);    /* r0 now has W[t+3] */
                 ` ~ XW0 ~ ` = r0;
