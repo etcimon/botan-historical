@@ -237,7 +237,9 @@ public:
 
     override Vector!ubyte serialize() const
     {
-        __gshared immutable ubyte[size_t] fragment_to_code = [ 512: 1, 1024: 2, 2048: 3, 4096: 4 ];
+        static ubyte[size_t] fragment_to_code;
+        if (fragment_to_code.length == 0)
+            fragment_to_code = [ 512: 1, 1024: 2, 2048: 3, 4096: 4 ];
         
         auto i = fragment_to_code.get(m_max_fragment, 0);
         

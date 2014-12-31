@@ -19,10 +19,10 @@ import std.algorithm;
 /**
 * Base class for SIV encryption and decryption (@see RFC 5297)
 */
-class SIVMode : AEADMode, Transformation
+abstract class SIVMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -37,7 +37,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -54,17 +54,17 @@ public:
         m_ad_macs[n] = m_cmac.process(ad, length);
     }
 
-    final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
+    override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         setAssociatedDataN(0, ad, ad_len);
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         return m_name;
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         /*
         This value does not particularly matter as regardless update
@@ -75,17 +75,17 @@ public:
         return 128;
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return m_cmac.keySpec().multiple(2);
     }
 
-    final override bool validNonceLength(size_t) const
+    override bool validNonceLength(size_t) const
     {
         return true;
     }
 
-    final override void clear()
+    override void clear()
     {
         m_ctr.clear();
         m_nonce.clear();
@@ -93,7 +93,9 @@ public:
         m_ad_macs.clear();
     }
 
-    final override size_t tagSize() const { return 16; }
+    override size_t tagSize() const { return 16; }
+	
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
 
 protected:
     this(BlockCipher cipher) 
@@ -202,6 +204,16 @@ public:
     { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 }
 
 /**
@@ -250,4 +262,14 @@ public:
     }
 
     override size_t minimumFinalSize() const { return tagSize(); }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 }

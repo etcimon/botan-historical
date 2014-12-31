@@ -18,16 +18,16 @@ public:
     /**
     * @return new object representing the same algorithm as this
     */
-    abstract HashFunction clone() const;
+    HashFunction clone() const;
 
-    abstract void clear();
+    void clear();
 
-    abstract @property string name() const;
+    @property string name() const;
 
     /**
     * @return hash block size as defined for this algorithm
     */
-    abstract @property size_t hashBlockSize() const;
+	@property size_t hashBlockSize() const;
 }
 
 static if (BOTAN_TEST):

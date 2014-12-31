@@ -39,6 +39,9 @@ public:
     }
 
     ~this() { delete m_cipher; }
+
+	// Interface fallthrough
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     PKEncryptor m_cipher;
     RandomNumberGenerator m_rng;
@@ -70,6 +73,9 @@ public:
 
     this(PKDecryptor c) {  m_cipher = c; }
     ~this() { delete m_cipher; }
+
+	// Interface fallthrough
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     PKDecryptor m_cipher;
     SecureVector!ubyte m_buffer;
@@ -106,6 +112,9 @@ public:
     }
 
     ~this() {  }
+
+	// Interface fallthrough
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     PKSigner* m_signer;
     RandomNumberGenerator m_rng;
@@ -174,6 +183,9 @@ public:
     }
 
     ~this() {  }
+
+	// Interface fallthrough
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     PKVerifier* m_verifier;
     SecureVector!ubyte m_signature;

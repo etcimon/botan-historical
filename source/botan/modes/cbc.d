@@ -20,10 +20,10 @@ import botan.utils.mem_ops;
 /**
 * CBC Mode
 */
-class CBCMode : CipherMode, Transformation
+abstract class CBCMode : CipherMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name(), nonce_len);
@@ -39,7 +39,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         if (m_padding)
             return cipher().name ~ "/CBC/" ~ padding().name;
@@ -47,17 +47,17 @@ public:
             return cipher().name ~ "/CBC/CTS";
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         return cipher().parallelBytes();
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return cipher().keySpec();
     }
 
-    final override size_t defaultNonceLength() const
+    override size_t defaultNonceLength() const
     {
         return cipher().blockSize();
     }
@@ -67,7 +67,7 @@ public:
         return (n == 0 || n == cipher().blockSize());
     }
 
-    final override void clear()
+    override void clear()
     {
         m_cipher.clear();
         m_state.clear();
@@ -118,7 +118,7 @@ public:
         super(cipher, padding);
     }
 
-    final override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -170,6 +170,15 @@ public:
     {
         return 0;
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 }
 
 /**
@@ -242,6 +251,15 @@ public:
         return (n == cipher().blockSize());
     }
 
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+
 }
 
 /**
@@ -256,7 +274,7 @@ public:
         m_tempbuf = updateGranularity();
     }
 
-    final override void update(SecureVector!ubyte buffer, size_t offset)
+    override void update(SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -308,7 +326,16 @@ public:
     override size_t minimumFinalSize() const
     {
         return cipher().blockSize();
-    }     
+    }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 private:
     SecureVector!ubyte m_tempbuf;
 }
@@ -377,4 +404,14 @@ public:
     {
         return (n == cipher().blockSize());
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
 }

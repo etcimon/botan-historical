@@ -202,6 +202,11 @@ public:
 
     override bool withRecovery() const { return true; }
 
+    override bool verify(const(ubyte)*, size_t, const(ubyte)*, size_t)
+    {
+        throw new InvalidState("Message recovery required");
+    }
+
     override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
         const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?

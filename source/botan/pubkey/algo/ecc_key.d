@@ -94,27 +94,27 @@ public:
     */
     final ref const(PointGFp) publicPoint() const { return m_public_key; }
 
-    final size_t maxInputBits() const { return domain().getOrder().bits(); }
+    final override size_t maxInputBits() const { return domain().getOrder().bits(); }
 
-    final size_t messagePartSize() const { if (!m_msg_compat) return 0; return domain().getOrder().bytes(); }
+    final override size_t messagePartSize() const { if (!m_msg_compat) return 0; return domain().getOrder().bytes(); }
 
-    final size_t messageParts() const { return m_msg_parts; }
+    final override size_t messageParts() const { return m_msg_parts; }
 
-    final AlgorithmIdentifier algorithmIdentifier() const
+    final override AlgorithmIdentifier algorithmIdentifier() const
     {
         if (m_algorithm_identifier)
             return m_algorithm_identifier();
         return AlgorithmIdentifier(getOid(), DER_domain());
     }
 
-    final Vector!ubyte x509SubjectPublicKey() const
+    final override Vector!ubyte x509SubjectPublicKey() const
     {
         if (m_subject_public_key)
             return m_subject_public_key();
         return unlock(EC2OSP(publicPoint(), PointGFp.COMPRESSED));
     }
 
-    final bool checkKey(RandomNumberGenerator rng, bool b) const
+    final override bool checkKey(RandomNumberGenerator rng, bool b) const
     {
         if (m_check_key) {
             return m_check_key(rng, b);
@@ -164,7 +164,11 @@ public:
         return domain().getCurve().getP().bits() / 2;
     }
 
-
+	/**
+    * @return public point value
+    */
+	Vector!ubyte publicValue() const
+	{ return unlock(EC2OSP(publicPoint(), PointGFp.UNCOMPRESSED)); }
 protected:
 
     ECGroup m_domain_params;
@@ -183,7 +187,7 @@ protected:
 /**
 * This abstract class represents ECC private keys
 */
-final class ECPrivateKey : ECPublicKey, PrivateKey
+final class ECPrivateKey : ECPublicKey, PrivateKey, PKKeyAgreementKey
 {
 public:
     /**
@@ -248,7 +252,7 @@ public:
                 .getContents();
     }
 
-    AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
+    override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
 
     /**
     * Get the private key value of this key object.
@@ -261,6 +265,8 @@ public:
         
         return m_private_key;
     }
+
+	override Vector!ubyte publicValue() const { return super.publicValue(); }
 
 private:
 

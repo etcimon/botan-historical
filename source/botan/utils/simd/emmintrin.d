@@ -32,8 +32,8 @@ __m128i _mm_set1_epi32 (int i)() {
 
 // _mm_set1_epi32
 __m128i _mm_set1_epi32 (int i) {
-    int4 vec = [i, i, i, i];
-    return *cast(__m128i*) &vec;
+    align(16) int[4] vec = [i, i, i, i];
+    return _mm_loadu_si128(cast(__m128i*)&vec);
 }
 
 // _mm_set_epi32
@@ -44,8 +44,9 @@ immutable(__m128i) _mm_set_epi32 (int i, int j, int k, int l)() {
 
 // _mm_set_epi32
 immutable(__m128i) _mm_set_epi32 (int i, int j, int k, int l) {
-    int4 vec = [i, j, k, l];
-    return *cast(immutable(__m128i)*) &vec;
+
+    align(16) int[4] vec = [i, j, k, l];
+    return _mm_loadu_si128(cast(__m128i*)&vec);
 }
 
 // _mm_set_epi8

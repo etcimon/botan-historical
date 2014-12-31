@@ -22,8 +22,13 @@ import botan.asn1.ber_dec;
 class DLSchemePublicKey : PublicKey
 {
 public:
-    bool checkKey(RandomNumberGenerator rng, bool strong)
-    {
+	override bool checkKey(RandomNumberGenerator rng, bool strong) const
+	{    
+		return (cast(DLSchemePublicKey)this).checkKey(rng, strong);
+	}
+
+	private bool checkKey(RandomNumberGenerator rng, bool strong)
+	{
         if (m_check_key) {
             auto tmp = m_check_key;
             m_check_key = null;
@@ -64,6 +69,14 @@ public:
     {
         return DEREncoder().encode(m_y).getContentsUnlocked();
     }
+
+	/*
+    * Return the public value for key agreement
+    */
+	Vector!ubyte publicValue() const
+	{
+		return unlock(BigInt.encode1363(getY(), groupP().bytes()));
+	}
 
     /**
     * Get the DL domain parameters of this key.
@@ -164,9 +177,11 @@ protected:
 /**
 * This class represents discrete logarithm (DL) private keys.
 */
-final class DLSchemePrivateKey : DLSchemePublicKey, PrivateKey
+final class DLSchemePrivateKey : DLSchemePublicKey, PrivateKey, PKKeyAgreementKey
 {
 public:
+
+    override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
 
     override bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
@@ -225,6 +240,15 @@ public:
         m_x = x_arg;
         super(grp, y1, format, algo_name, msg_parts, check_key, max_input_bits, msg_part_size);
     }
+
+	/*
+    * Return the public value for key agreement
+    */
+	override Vector!ubyte publicValue() const
+	{
+		return super.publicValue();
+	}
+
 
 package:
     /**

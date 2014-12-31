@@ -97,11 +97,11 @@ public:
     * Self-test after loading a key
     * @param rng = a random number generator
     */
-    abstract void loadCheck(RandomNumberGenerator rng) const;
-    /*{
+    final void loadCheck(RandomNumberGenerator rng) const
+    {
         if (!checkKey(rng, BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD))
-            throw new InvalidArgument(algo_name ~ ": Invalid public key");
-    }*/
+            throw new InvalidArgument(algoName ~ ": Invalid public key");
+    }
 }
 
 /**

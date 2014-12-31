@@ -590,8 +590,8 @@ public:
         m_eme = getEme(eme_name);
     }
 
-private:
-    Vector!ubyte enc(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
+protected:
+    override Vector!ubyte enc(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
     {
         if (m_eme)
         {
@@ -611,6 +611,7 @@ private:
         }
     }
 
+private:
     Unique!Encryption m_op;
     Unique!EME m_eme;
 }
@@ -644,11 +645,11 @@ public:
         m_eme = getEme(eme_name);
     }
 
-private:
+protected:
     /*
     * Decrypt a message
     */
-    SecureVector!ubyte dec(const(ubyte)* msg, size_t length) const
+    override SecureVector!ubyte dec(const(ubyte)* msg, size_t length) const
     {
         try {
             SecureVector!ubyte decrypted = (cast(Decryption)*m_op).decrypt(msg, length);
@@ -662,7 +663,8 @@ private:
             throw new DecodingError("PKDecryptorEME: Input is invalid");
         }
     }
-
+   
+private:
     Unique!Decryption m_op;
     Unique!EME m_eme;
 }

@@ -33,14 +33,14 @@ public:
     * @param nonce = the per message nonce
     * @param nonce_len = length of nonce
     */
-    abstract SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len);
+    SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len);
 
     /**
     * Process some data. Input must be in size updateGranularity() ubyte blocks.
     * @param blocks = in/out paramter which will possibly be resized
     * @param offset = an offset into blocks to begin processing
     */
-    abstract void update(SecureVector!ubyte blocks, size_t offset = 0);
+    void update(SecureVector!ubyte blocks, size_t offset = 0);
 
     /**
     * Complete processing of a message.
@@ -49,35 +49,35 @@ public:
     *          minimumFinalSize() bytes, and will be set to any final output
     * @param offset = an offset into final_block to begin processing
     */
-    abstract void finish(SecureVector!ubyte final_block, size_t offset = 0);
+    void finish(SecureVector!ubyte final_block, size_t offset = 0);
 
     /**
     * Returns the size of the output if this transform is used to process a
     * message with input_length bytes. Will throw new if unable to give a precise
     * answer.
     */
-    abstract size_t outputLength(size_t input_length) const;
+    size_t outputLength(size_t input_length) const;
 
     /**
     * @return size of required blocks to update
     */
-    abstract size_t updateGranularity() const;
+    size_t updateGranularity() const;
 
     /**
     * @return required minimium size to finalize() - may be any
     *            length larger than this.
     */
-    abstract size_t minimumFinalSize() const;
+    size_t minimumFinalSize() const;
 
     /**
     * Return the default size for a nonce
     */
-    abstract size_t defaultNonceLength() const;
+    size_t defaultNonceLength() const;
 
     /**
     * Return true iff nonce_len is a valid length for the nonce
     */
-    abstract bool validNonceLength(size_t nonce_len) const;
+    bool validNonceLength(size_t nonce_len) const;
 
     /**
     * Return some short name describing the provider of this tranformation.
@@ -85,11 +85,11 @@ public:
     * different implementations of AES). Default "core" is used for the
     * 'standard' implementation included in the library.
     */
-    abstract string provider() const;
+    string provider() const;
 
-    abstract @property string name() const;
+    @property string name() const;
 
-    abstract void clear();
+    void clear();
 }
 
 class KeyedTransform : Transformation
@@ -143,7 +143,7 @@ import botan.test;
 import botan.codec.hex;
 import core.atomic;
 
-__gshared size_t total_tests;
+shared size_t total_tests;
 
 Transformation getTransform(string algo)
 {
@@ -151,16 +151,16 @@ Transformation getTransform(string algo)
 }
 
 SecureVector!ubyte transformTest(string algo,
-                                   in SecureVector!ubyte nonce,
-                                   in SecureVector!ubyte /*key*/,
-                                   in SecureVector!ubyte input)
+                                 in SecureVector!ubyte nonce,
+                                 in SecureVector!ubyte /*key*/,
+                                 in SecureVector!ubyte input)
 {
     Unique!Transformation transform = getTransform(algo);
-    
+
     //transform.setKey(key);
     transform.startVec(nonce);
     
-    SecureVector!ubyte output = input;
+    SecureVector!ubyte output = input.dup;
     transform.update(output, 0);
     
     return output;

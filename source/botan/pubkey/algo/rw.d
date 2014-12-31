@@ -151,7 +151,8 @@ public:
         m_mod_p = ModularReducer(rw.getP().dup);
         m_blinder = Blinder.init;
     }
-
+    override size_t messageParts() const { return 1; }
+    override size_t messagePartSize() const { return 0; }
     override size_t maxInputBits() const { return (m_n.bits() - 1); }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
@@ -222,9 +223,15 @@ public:
         m_n = rw.getN();
         m_powermod_e_n = FixedExponentPowerMod(rw.getE(), rw.getN());
     }
-
+    override size_t messageParts() const { return 1; }
+    override size_t messagePartSize() const { return 0; }
     override size_t maxInputBits() const { return (m_n.bits() - 1); }
     override bool withRecovery() const { return true; }
+
+    override bool verify(const(ubyte)*, size_t, const(ubyte)*, size_t)
+    {
+        throw new InvalidState("Message recovery required");
+    }
 
     override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {

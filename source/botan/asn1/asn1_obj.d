@@ -58,7 +58,7 @@ enum ASN1Tag {
 /**
 * Basic ASN.1 Object Interface
 */
-class ASN1Object
+interface ASN1Object
 {
 
 public:
@@ -66,15 +66,13 @@ public:
     * Encode whatever this object is into to
     * @param to = the DEREncoder that will be written to
     */
-    abstract void encodeInto(DEREncoder to) const;
+    void encodeInto(DEREncoder to) const;
 
     /**
     * Decode whatever this object is from from
     * @param from = the BERDecoder that will be read from
     */
-    abstract void decodeFrom(BERDecoder from);
-
-    ~this() {}
+    void decodeFrom(BERDecoder from);
 }
 
 /**

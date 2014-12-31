@@ -70,7 +70,7 @@ public:
     * @return true if the signature was created by the private key
     * associated with this public key
     */
-    bool checkSignature(ref PublicKey pub_key, Vector!ubyte sig) const
+    bool checkSignature(PublicKey pub_key, Vector!ubyte sig) const
     {
         try
         {

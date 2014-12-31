@@ -195,8 +195,9 @@ import botan.test;
 import botan.libstate.libstate;
 import botan.algo_factory.algo_factory;
 import botan.codec.hex;
+import core.atomic;
 
-__gshared size_t total_tests;
+shared size_t total_tests;
 
 size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
 {
@@ -212,7 +213,7 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
     if (providers.empty)
         throw new Exception("Unknown block cipher " ~ algo);
     
-    foreach (provider; providers)
+    foreach (provider; providers[])
     {
 
         atomicOp!"+="(total_tests, 1);
@@ -227,7 +228,7 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         
         Unique!BlockCipher cipher = proto.clone();
         cipher.setKey(key);
-        SecureVector!ubyte buf = pt;
+        SecureVector!ubyte buf = pt.dup;
         
         cipher.encrypt(buf);
 
@@ -236,7 +237,7 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         {
             writeln(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
             ++fails;
-            buf = ct;
+            buf = ct.dup;
         }
         
         cipher.decrypt(buf);
@@ -253,17 +254,17 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
 }
 
 unittest {
-    auto test_bc = (string input)
+    size_t test_bc(string input)
     {
         File vec = File(input, "r");
         
         return runTestsBb(vec, "BlockCipher", "Out", true,
-                            (string[string] m) {
-                                return blockTest(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
-                            });
-    };
+                          (string[string] m) {
+                              return blockTest(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
+                          });
+    }
     
-    size_t fails = runTestsInDir("test_data/block", test_bc);
+    size_t fails = runTestsInDir("test_data/block", &test_bc);
 
 
     testReport("block_cipher", total_tests, fails);

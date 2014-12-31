@@ -20,6 +20,8 @@ import botan.utils.types;
 final class RIPEMD128 : MDxHashFunction, HashFunction
 {
 public:
+	
+	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override @property string name() const { return "RIPEMD-128"; }
     override @property size_t outputLength() const { return 16; }
     override HashFunction clone() const { return new RIPEMD128; }

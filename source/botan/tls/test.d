@@ -26,12 +26,12 @@ public:
         m_stores.pushBack(store);
     }
     
-    override Vector!CertificateStore trustedCertificateAuthorities(string, string)
+    override Vector!CertificateStore trustedCertificateAuthorities(in string, in string)
     {
         return m_stores;
     }
-    
-    override Vector!X509Certificate certChain( in Vector!string cert_key_types, string type, string) 
+
+    override Vector!X509Certificate certChain(in Vector!string cert_key_types, in string type, in string) 
     {
         Vector!X509Certificate chain;
         
@@ -52,7 +52,8 @@ public:
         return chain;
     }
     
-    override void verifyCertificateChain(string type, string purported_hostname, in Vector!X509Certificate cert_chain)
+    override void verifyCertificateChain(in string type, in string purported_hostname,
+                                         in Vector!X509Certificate cert_chain)
     {
         try
         {
@@ -64,7 +65,7 @@ public:
         }
     }
     
-    override PrivateKey privateKeyFor(in X509Certificate, string, string)
+    override PrivateKey privateKeyFor(in X509Certificate, in string, in string)
     {
         return m_key;
     }
@@ -234,7 +235,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
 class TestPolicy : TLSPolicy
 {
 public:
-    bool acceptableProtocolVersion(TLSProtocolVersion) const { return true; }
+    override bool acceptableProtocolVersion(TLSProtocolVersion) const { return true; }
 }
 
 unittest

@@ -33,10 +33,10 @@ static if (BOTAN_HAS_GCM_CLMUL) {
 /**
 * GCM Mode
 */
-class GCMMode : AEADMode, Transformation
+abstract class GCMMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -63,36 +63,39 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
+    override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         m_ghash.setAssociatedData(ad, ad_len);
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         return (m_cipher_name ~ "/GCM");
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         return 4096; // CTR-BE's internal block size
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return m_ctr.keySpec();
     }
 
     // GCM supports arbitrary nonce lengths
-    final override bool validNonceLength(size_t) const { return true; }
+    override bool validNonceLength(size_t) const { return true; }
 
-    final override size_t tagSize() const { return m_tag_size; }
+    override size_t tagSize() const { return m_tag_size; }
 
-    final override void clear()
+    override void clear()
     {
         m_ctr.clear();
         m_ghash.clear();
     }
+
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
@@ -170,6 +173,15 @@ public:
         buffer.resize(offset + tagSize());
         buffer.ptr[offset .. offset + tagSize()] = mac.ptr[0 .. tagSize()];
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 }
 
 /**
@@ -231,6 +243,15 @@ public:
         
         buffer.resize(offset + remaining);
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 }
 
 /**

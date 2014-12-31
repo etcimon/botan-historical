@@ -19,6 +19,9 @@ import botan.utils.parsing;
 class Parallel : HashFunction
 {
 public:
+
+	override @property size_t hashBlockSize() const { return 0; }
+
     /*
     * Clear memory of sensitive data
     */

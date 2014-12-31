@@ -21,6 +21,8 @@ import botan.utils.types;
 class MD5 : MDxHashFunction, HashFunction
 {
 public:
+	
+	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     final override @property string name() const { return "MD5"; }
     override final @property size_t outputLength() const { return 16; }
     override HashFunction clone() const { return new MD5; }

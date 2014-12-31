@@ -20,6 +20,8 @@ import botan.utils.types;
 final class Whirlpool : MDxHashFunction, HashFunction
 {
 public:
+	
+	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override @property string name() const { return "Whirlpool"; }
     override @property size_t outputLength() const { return 64; }
     override HashFunction clone() const { return new Whirlpool; }

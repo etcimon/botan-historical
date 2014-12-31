@@ -225,6 +225,11 @@ public:
             throw new InvalidOID(oid_str);
 
     }
+
+    this(const ref OID other)
+    {
+        m_id = other.m_id.dup;
+    }
 private:
     Vector!uint m_id;
 }

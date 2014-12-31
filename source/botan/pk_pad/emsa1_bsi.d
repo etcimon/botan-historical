@@ -42,5 +42,17 @@ public:
         
         throw new EncodingError("EMSA1_BSI::encodingOf: max key input size exceeded");
     }
+
+	// Interface fallthrough
+	override SecureVector!ubyte rawData() { return super.rawData(); }
+	override bool verify(in SecureVector!ubyte coded,
+	                     in SecureVector!ubyte raw, size_t key_bits)
+	{
+		return super.verify(coded, raw, key_bits);
+	}
+	override void update(const(ubyte)* input, size_t length)
+	{
+		super.update(input, length);
+	}
 }
 

@@ -39,12 +39,6 @@ public:
         m_pub = new ECPublicKey(dom_par, public_point, algoName, false);
     }
 
-    /**
-    * @return public point value
-    */
-    Vector!ubyte publicValue() const
-    { return unlock(EC2OSP(m_pub.publicPoint(), PointGFp.UNCOMPRESSED)); }
-
     this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
     this(PublicKey pkey) { m_pub = cast(ECPublicKey) pkey; }
 
@@ -56,7 +50,7 @@ public:
 /**
 * This class represents ECDH Private Keys.
 */
-final class ECDHPrivateKey : ECDHPublicKey, PKKeyAgreementKey
+final class ECDHPrivateKey : ECDHPublicKey
 {
 public:
     this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
@@ -76,8 +70,6 @@ public:
         m_priv = new ECPrivateKey(rng, domain, x, algoName, false);
         super(m_priv);
     }
-
-    override Vector!ubyte publicValue() const { return super.publicValue(); }
 
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(m_priv); }
 

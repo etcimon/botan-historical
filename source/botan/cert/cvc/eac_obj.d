@@ -30,7 +30,7 @@ public:
     */
     override const(Vector!ubyte) getConcatSig() const { return m_sig.getConcatenation(); }
 
-    bool checkSignature(ref PublicKey key) const
+    bool checkSignature(PublicKey key) const
     {
         return super.checkSignature(key, m_sig.DER_encode());
     }

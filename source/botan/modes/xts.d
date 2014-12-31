@@ -20,15 +20,15 @@ import botan.utils.mem_ops;
 /**
 * IEEE P1619 XTS Mode
 */
-class XTSMode : CipherMode, Transformation
+abstract class XTSMode : CipherMode, Transformation
 {
 public:
-    final override @property string name() const
+    override @property string name() const
     {
         return cipher().name ~ "/XTS";
     }
 
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -41,39 +41,39 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         return cipher().parallelBytes();
     }
 
-    final override size_t minimumFinalSize() const
+    override size_t minimumFinalSize() const
     {
         return cipher().blockSize() + 1;
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return cipher().keySpec().multiple(2);
     }
 
-    final override size_t defaultNonceLength() const
+    override size_t defaultNonceLength() const
     {
         return cipher().blockSize();
     }
 
-    final override bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return cipher().blockSize() == n;
     }
 
-    final override void clear()
+    override void clear()
     {
         m_cipher.clear();
         m_tweak_cipher.clear();
         zeroise(m_tweak);
     }
 
-    final override bool authenticated() const { return true; }
+	override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher) 
     {
@@ -206,6 +206,18 @@ public:
     {
         return roundUp(input_length, cipher().blockSize());
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+	override bool validNonceLength(size_t n) const {
+		return super.validNonceLength(n);
+	}
 }
 
 /**
@@ -297,6 +309,18 @@ public:
         // might be less
         return input_length;
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+	override bool validNonceLength(size_t n) const {
+		return super.validNonceLength(n);
+	}
 }
 
 

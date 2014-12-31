@@ -32,7 +32,7 @@ public:
         m_count = m_position = 0;
     }
 
-    final override @property size_t hashBlockSize() const { return m_buffer.length; }
+    override @property size_t hashBlockSize() const { return m_buffer.length; }
 protected:
     /*
     * Update the hash

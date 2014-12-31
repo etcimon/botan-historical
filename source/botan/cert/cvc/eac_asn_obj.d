@@ -24,13 +24,14 @@ alias ASN1Car = FreeListRef!ASN1CarImpl;
 alias ASN1Chr = FreeListRef!ASN1ChrImpl;
 alias ASN1Cex = FreeListRef!ASN1CexImpl;
 alias ASN1Ced = FreeListRef!ASN1CedImpl;
+alias EACTime = FreeListRef!EACTimeImpl;
 
 /**
 * This class represents CVC EAC Time objects.
 * It only models year, month and day. Only limited sanity checks of
 * the inputted date value are performed.
 */
-class EACTime : ASN1Object
+class EACTimeImpl : ASN1Object
 {
 public:
 
@@ -115,7 +116,7 @@ public:
     * other, +1 in the opposite case, and 0 if both dates are
     * equal.
     */
-    int cmp(in EACTime other) const
+    int cmp(in EACTimeImpl other) const
     {
         if (timeIsSet() == false)
             throw new InvalidState("cmp: No time set");
@@ -126,8 +127,8 @@ public:
         if (year > other.year)      return LATER;
         if (month < other.month)    return EARLIER;
         if (month > other.month)    return LATER;
-        if (day < other.day)         return EARLIER;
-        if (day > other.day)         return LATER;
+        if (day < other.day)        return EARLIER;
+        if (day > other.day)        return LATER;
         
         return SAME_TIME;
     }
@@ -253,12 +254,12 @@ public:
     /*
     * Compare two EACTimes for in various ways
     */
-    bool opEquals(in EACTime t2) const
+    bool opEquals(in EACTimeImpl t2) const
     {
         return (cmp(t2) == 0);
     }
     
-    int opCmp(in EACTime t2) const
+    int opCmp(in EACTimeImpl t2) const
     {
         return cmp(t2);
     }
@@ -299,7 +300,7 @@ private:
 * This class represents CVC CEDs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-final class ASN1CedImpl : EACTime
+final class ASN1CedImpl : EACTimeImpl
 {
 public:
     /**
@@ -326,13 +327,22 @@ public:
     {
         super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)37));
     }
+
+    this(const ref EACTime other)
+    {
+        super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)37));
+    }
+
+    this(const ref ASN1Ced other) {
+        super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)37));
+    }
 }
 
 /**
 * This class represents CVC CEXs. Only limited sanity checks of
 * the inputted date value are performed.
 */
-final class ASN1CexImpl : EACTime
+final class ASN1CexImpl : EACTimeImpl
 {
 public:
     /**
@@ -350,10 +360,18 @@ public:
         super(time, (cast(ASN1Tag)36));
     }
 
-    this(in EACTime other)
+    this(const ref EACTime other)
     {
-        super(other.getYear(), other.getMonth(), other.getDay(),
-              (cast(ASN1Tag)36));
+        super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)36));
+    }
+
+    this(in EACTimeImpl other)
+    {
+        super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)36));
+    }
+    
+    this(const ref ASN1Cex other) {
+        super(other.getYear(), other.getMonth(), other.getDay(), (cast(ASN1Tag)36));
     }
 }
 
@@ -468,7 +486,6 @@ protected:
         return true;
     }
 
-private:
     string m_iso_8859_str;
     ASN1Tag m_tag;
 }
@@ -488,6 +505,10 @@ public:
         super(str, (cast(ASN1Tag)2));
 
     }
+
+    this(const ref ASN1Car other) {
+        super(m_iso_8859_str, m_tag);
+    }
         
 }
 
@@ -504,6 +525,10 @@ public:
     this(in string str)
     {
         super(str, (cast(ASN1Tag)32));
+    }
+
+    this(const ref ASN1Chr other) {
+        super(m_iso_8859_str, m_tag);
     }
 
 }

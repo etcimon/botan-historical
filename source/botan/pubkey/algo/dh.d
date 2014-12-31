@@ -27,13 +27,6 @@ class DHPublicKey
 public:
     __gshared immutable string algoName = "DH";
 
-    /*
-    * Return the public value for key agreement
-    */
-    Vector!ubyte publicValue() const
-    {
-        return unlock(BigInt.encode1363(m_pub.getY(), m_pub.groupP().bytes()));
-    }
 
     size_t maxInputBits() const { return groupP().bits(); }
 
@@ -63,17 +56,9 @@ public:
 /**
 * This class represents Diffie-Hellman private keys.
 */
-class DHPrivateKey : DHPublicKey, PKKeyAgreementKey
+class DHPrivateKey : DHPublicKey
 {
 public:
-    /*
-    * Return the public value for key agreement
-    */
-    override Vector!ubyte publicValue() const
-    {
-        return super.publicValue();
-    }
-
     /**
     * Load a DH private key
     * @param alg_id = the algorithm id
@@ -123,6 +108,8 @@ public:
     alias m_priv this;
 
     DLSchemePrivateKey m_priv;
+
+
 }
 
 /**

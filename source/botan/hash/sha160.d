@@ -21,6 +21,8 @@ import botan.utils.types;
 class SHA160 : MDxHashFunction, HashFunction
 {
 public:
+	
+	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override final @property string name() const { return "SHA-160"; }
     override final @property size_t outputLength() const { return 20; }
     override HashFunction clone() const { return new SHA160; }

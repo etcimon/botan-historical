@@ -9,8 +9,8 @@ module botan.cert.x509.x509path;
 import botan.constants;
 static if (BOTAN_HAS_X509_CERTIFICATES):
 
-import botan.cert.x509.ocsp;
-import botan.cert.x509.x509_crl;
+public import botan.cert.x509.ocsp;
+public import botan.cert.x509.x509_crl;
 import botan.cert.x509.key_constraint;
 import botan.utils.http_util.http_util;
 import botan.utils.parsing;
@@ -29,7 +29,7 @@ else {
 }
 import botan.cert.x509.cert_status;
 import botan.cert.x509.x509cert;
-import botan.cert.x509.certstor;
+import core.sync.mutex;
 
 /**
 * Specifies restrictions on the PKIX path validation
@@ -385,6 +385,10 @@ Vector!( RedBlackTree!CertificateStatusCode )
     X509Time current_time = X509Time(Clock.currTime());
     
     Vector!( Tid ) ocsp_responses;
+
+	Vector!(OCSPResponse) ocsp_data;
+
+	Mutex mtx = new Mutex;
     
     Vector!( RedBlackTree!CertificateStatusCode ) cert_status = Vector!( RedBlackTree!CertificateStatusCode )( cert_path.length );
     
@@ -401,11 +405,14 @@ Vector!( RedBlackTree!CertificateStatusCode )
         const CertificateStore trusted = certstores[0]; // fixme
         
         if (i == 0 || restrictions.ocspAllIntermediates()) {
-            version(Have_vibe_d)
-                ocsp_responses.pushBack(runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(immutable)issuer, cast(immutable)subject, cast(immutable)trusted));
-            else
-                ocsp_responses.pushBack(spawn(&onlineCheck, cast(shared)thisTid(), cast(immutable)issuer, cast(immutable)subject, cast(immutable)trusted));
 
+			ocsp_data.length = i;
+
+            version(Have_vibe_d)
+				Tid id_ = runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
+            else
+				Tid id_ = spawn(&onlineCheck, cast(shared)thisTid(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
+			ocsp_responses ~= id_;
         }
         // Check all certs for valid time range
         if (current_time < X509Time(subject.startTime()))
@@ -451,7 +458,11 @@ Vector!( RedBlackTree!CertificateStatusCode )
         {
             try
             {
-                OCSPResponse ocsp = receiveOnly!(OCSPResponse)();
+
+				OCSPResponse ocsp;
+
+				synchronized(mtx)
+					ocsp = ocsp_data[receiveOnly!(size_t)()];
                 
                 auto ocsp_status = ocsp.statusFor(ca, subject);
                 
@@ -467,7 +478,8 @@ Vector!( RedBlackTree!CertificateStatusCode )
             }
             catch(Exception e)
             {
-                //std::cout << "OCSP error: " << e.msg << "";
+				import std.stdio : writeln;
+                writeln("OCSP error: " ~ e.msg ~ "");
             }
         }
         

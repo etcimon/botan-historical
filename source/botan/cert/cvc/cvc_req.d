@@ -16,6 +16,7 @@ import botan.asn1.ber_dec;
 import botan.utils.types;
 import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.ecdsa_sig;
+import botan.pubkey.algo.ecdsa;
 
 alias EAC11Req = FreeListRef!EAC11ReqImpl;
 /**
@@ -63,6 +64,32 @@ public:
         init(stream);
         m_self_signed = true;
         doDecode();
+    }
+
+    // copy
+    this(const ref EAC11Req other)
+    {
+        m_sig = other.m_sig.dup;
+        m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
+        m_tbs_bits = other.m_tbs_bits.dup;
+        m_PEM_label_pref = other.m_PEM_label_pref;
+        m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
+    
+        m_pk = cast(ECDSAPublicKey)other.m_pk; // no copy of this...
+        m_chr = ASN1Chr(other.m_chr);
+        m_self_signed = other.m_self_signed;
+    }
+
+    // assign
+    void opAssign(ref EAC11Req other) {
+        m_sig = other.m_sig;
+        m_sig_algo = other.m_sig_algo;
+        m_tbs_bits = other.m_tbs_bits;
+        m_PEM_label_pref = other.m_PEM_label_pref;
+        m_PEM_labels_allowed = other.m_PEM_labels_allowed;
+        m_pk = other.m_pk;
+        m_chr = other.m_chr;
+        m_self_signed = other.m_self_signed;
     }
 
 protected:

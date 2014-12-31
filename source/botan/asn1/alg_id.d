@@ -91,6 +91,14 @@ public:
     }
 
     /*
+     * Make a copy of another AlgorithmIdentifier
+     */
+    this(const ref AlgorithmIdentifier other) {
+        m_oid = OID(other.m_oid);
+        m_parameters = other.m_parameters.dup;
+    }
+
+    /*
     * Compare two AlgorithmIdentifiers
     */
     bool opEquals(in AlgorithmIdentifier a2) const

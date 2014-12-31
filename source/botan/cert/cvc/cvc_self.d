@@ -14,17 +14,17 @@ static assert(BOTAN_HAS_ECDSA, "CVC requires ECDSA");
 
 alias cvc_self = botan.cert.cvc.cvc_self;
 
+public import botan.pubkey.algo.ecc_key;
 import botan.pubkey.pkcs8;
 import botan.asn1.oids;
 import botan.asn1.asn1_obj;
 import botan.cert.cvc.cvc_cert;
-import botan.cert.cvc.cvc_req;
+public import botan.cert.cvc.cvc_req;
 import botan.cert.cvc.cvc_ado;
 import botan.cert.cvc.cvc_gen_cert;
-import botan.pubkey.pubkey;
-import botan.pubkey.algo.ecc_key;
-import botan.pubkey.algo.ecdsa;
 import botan.math.ec_gfp.curve_gfp;
+import botan.pubkey.pubkey;
+import botan.pubkey.algo.ecdsa;
 import botan.cert.cvc.eac_asn_obj;
 import botan.rng.rng;
 import botan.utils.types;
@@ -223,7 +223,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
     
     ASN1Ced ced = ASN1Ced(Clock.currTime());
     ASN1Cex cex = ASN1Cex(signee.getCex());
-    if (*cast(EACTime*)(&ced) > *cast(EACTime*)(&cex))
+    if (cast(EACTimeImpl)(*ced) > cast(EACTimeImpl)(*cex))
     {
         Appender!string detail = "linkCvca(): validity periods of provided certificates don't overlap: currend time = ced = ";
         detail ~= ced.toString();

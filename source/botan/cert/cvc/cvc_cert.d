@@ -10,8 +10,8 @@ module botan.cert.cvc.cvc_cert;
 import botan.constants;
 static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
-import botan.cert.cvc.cvc_gen_cert;
-import botan.cert.cvc.eac_asn_obj;
+public import botan.cert.cvc.cvc_gen_cert;
+public import botan.cert.cvc.eac_asn_obj;
 import botan.asn1.oids;
 import botan.asn1.asn1_obj;
 import botan.pubkey.algo.ecdsa;
@@ -99,6 +99,50 @@ public:
         init(stream);
         m_self_signed = false;
         doDecode();
+    }
+
+    /**
+    * Construct a CVC from the copy of another CVC
+    * @param other = the other CVC
+    */
+    this(const ref EAC11CVC other) {
+        m_sig = other.m_sig.dup;
+        m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
+        m_tbs_bits = other.m_tbs_bits.dup;
+        m_PEM_label_pref = other.m_PEM_label_pref;
+        m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
+        
+        m_pk = cast(ECDSAPublicKey) other.m_pk; // no copy of this...
+        m_chr = ASN1Chr(other.m_chr);
+        m_self_signed = other.m_self_signed;
+
+        m_car = ASN1Car(other.m_car);
+        m_ced = ASN1Ced(other.m_ced);
+        m_cex = ASN1Cex(other.m_cex);
+        m_chat_val = other.m_chat_val;
+        m_chat_oid = OID(other.m_chat_oid);
+
+    }
+
+    /**
+    * Assign references to another CVC object
+    * @param other = the other CVC object
+    */
+    void opAssign(ref EAC11CVC other) {
+        m_sig = other.m_sig;
+        m_sig_algo = other.m_sig_algo;
+        m_tbs_bits = other.m_tbs_bits;
+        m_PEM_label_pref = other.m_PEM_label_pref;
+        m_PEM_labels_allowed = other.m_PEM_labels_allowed;
+        m_pk = other.m_pk;
+        m_chr = other.m_chr;
+        m_self_signed = other.m_self_signed;
+
+        m_car = other.m_car;
+        m_ced = other.m_ced;
+        m_cex = other.m_cex;
+        m_chat_val = other.m_chat_val;
+        m_chat_oid = other.m_chat_oid;
     }
 
     ~this() {}

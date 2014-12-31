@@ -98,8 +98,8 @@ public:
     * @param context = specifies a context relative to type.
     */
     abstract Vector!X509Certificate certChain(in Vector!string cert_key_types,
-                                                    in string type,
-                                                    in string context)
+                                              in string type,
+                                              in string context)
     {
         return Vector!X509Certificate();
     }
@@ -124,9 +124,9 @@ public:
     *
     * @param context = specifies a context relative to type.
     */
-    abstract Vector!X509Certificate certChainSingleType( in string cert_key_type,
-                                                                in string type,
-                                                                in string context)
+    abstract Vector!X509Certificate certChainSingleType(in string cert_key_type,
+                                                        in string type,
+                                                        in string context)
     {
         Vector!string cert_types;
         cert_types.pushBack(cert_key_type);

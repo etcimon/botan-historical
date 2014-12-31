@@ -10,7 +10,7 @@ import core.atomic;
 class FixedOutputRNG : RandomNumberGenerator
 {
 public:
-    bool isSeeded() const { return !buf.empty; }
+    override bool isSeeded() const { return !buf.empty; }
     
     ubyte random()
     {
@@ -22,22 +22,22 @@ public:
         return output;
     }
     
-    void reseed(size_t) {}
+    override void reseed(size_t) {}
     
-    void randomize(ubyte* output, size_t len)
+    override void randomize(ubyte* output, size_t len)
     {
         for(size_t j = 0; j != len; j++)
             output[j] = random();
     }
     
-    void addEntropy(const(ubyte)* b, size_t s)
+    override void addEntropy(const(ubyte)* b, size_t s)
     {
         m_buf.insert(b[0 .. s]);
     }
     
-    @property string name() const { return "Fixed_Output_RNG"; }
+    override @property string name() const { return "Fixed_Output_RNG"; }
     
-    void clear() {}
+    override void clear() {}
     
     this(in Vector!ubyte input)
     {

@@ -11,31 +11,33 @@ public import botan.libstate.libstate;
 import std.file;
 import std.exception;
 
-string CHECK_MESSAGE (bool expr, string print) {
-    return `
+@property bool ok(File f) { return f.isOpen && !f.eof() && !f.error(); }
+
+string CHECK_MESSAGE (string expr, string print) {
+    return "
     {
         try { 
-            if (!(expr)) { 
+            if (!(" ~ expr ~ ")) { 
                 ++fails; 
-                writeln( q{ ` ~ print ~ ` } ); 
+                writeln( `" ~ print ~ "` ); 
             } 
         } 
         catch(Exception e) 
         { 
-            writeln(__FUNCTION__, " : " ~ e.msg); 
+            writeln(__FUNCTION__, ` : ` ~ e.msg); 
         }
-    }`;
+    }";
 }
 
 string CHECK (string expr) {
     return `
     {
         mixin( q{
-            bool sucess = ` ~ expr ~ `;
+            bool success = ` ~ expr ~ `;
         } );
         try { 
             if (!success)
-            { ++fails; writeln( q { ` ~ expr ~ ` } ); } 
+            { ++fails; writeln( q{ ` ~ expr ~ ` } ); } 
         } 
         catch(Exception e) 
         { 

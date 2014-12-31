@@ -6,8 +6,8 @@
 */
 module botan.filters.transform_filter;
 
-import botan.algo_base.transform;
-import botan.filters.key_filt;
+public import botan.algo_base.transform;
+public import botan.filters.key_filt;
 import botan.filters.transform_filter;
 import botan.stream.stream_cipher;
 import botan.utils.rounding;
@@ -61,7 +61,7 @@ public:
         return m_transform.validNonceLength(length);
     }
 
-    override final @property string name() const
+    override @property string name() const
     {
         return m_transform.name;
     }
@@ -120,6 +120,10 @@ public:
         write(input.ptr, input.length);
     }
 
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+
 protected:
     /**
     * @return block size of inputs
@@ -145,7 +149,7 @@ protected:
     * Will throw new an exception if less than final_minimum bytes were
     * written into the filter.
     */
-    final void endMsg()
+    override void endMsg()
     {
         if (m_buffer_pos < m_final_minimum)
             throw new Exception("Buffered filter endMsg without enough input");
@@ -166,12 +170,12 @@ protected:
         m_buffer_pos = 0;
     }
 
-private:
-
-    final void startMsg()
+	override void startMsg()
     {
         send(m_transform.startVec(m_nonce.get()));
     }
+
+private:
 
     /**
     * The block processor, implemented by subclasses

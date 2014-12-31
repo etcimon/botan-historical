@@ -17,46 +17,45 @@ public:
     /**
     * @return descriptive name for this filter
     */
-    abstract @property string name() const;
+    @property string name() const;
     
     /**
     * Write a portion of a message to this filter.
     * @param input = the input as a ubyte array
     * @param length = the length of the ubyte array input
     */
-    abstract void write(const(ubyte)* input, size_t length);
+    void write(const(ubyte)* input, size_t length);
     
     /**
     * Start a new message. Must be closed by endMsg() before another
     * message can be started.
     */
-    abstract void startMsg();
+    void startMsg();
     
     /**
     * Notify that the current message is finished; flush buffers and
     * do end-of-message processing (if any).
     */
-    abstract void endMsg();
+    void endMsg();
     
     /**
     * Check whether this filter is an attachable filter.
     * @return true if this filter is attachable, false otherwise
     */
-    abstract bool attachable();
+    bool attachable();
 
     /**
     * @param filters = the filters to set
     * @param count = number of items in filters
     */
-    abstract void setNext(Filter* filters, size_t size);
+    void setNext(Filter* filters, size_t size);
 
-    abstract void setNext(Filter f, size_t n);
 }
 
 /**
 * This class represents general abstract filter objects.
 */
-class Filter : Filterable
+abstract class Filter : Filterable
 {
 public:
     /**
@@ -230,6 +229,11 @@ public:
         return null;
     }
 
+	abstract bool attachable() { return true; }
+	abstract void startMsg() {}
+	abstract void endMsg() {}
+	abstract @property string name() const;
+
     SecureVector!ubyte m_write_queue;
     Vector!Filter m_next;
     size_t m_port_num, m_filter_owns;
@@ -249,13 +253,15 @@ protected:
     */
     void incrOwns() { ++m_filter_owns; }
 
-    override void setPort(size_t n) { setPort(n); }
+	void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
 
-    override void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
+    override void setPort(size_t n) { setPort(n); }
 
     override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
 
     override void attach(Filter f) { attach(f); }
+
+	override void write(const(ubyte)* input, size_t len) { super.write(input, len); }
 
 }
 

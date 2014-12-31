@@ -9,10 +9,10 @@ module botan.cert.x509.ocsp;
 import botan.constants;
 static if (BOTAN_HAS_X509_CERTIFICATES):
 
-import botan.cert.x509.cert_status;
+public import botan.cert.x509.cert_status;
+public import botan.cert.x509.certstor;
+public import botan.cert.x509.x509cert;
 import botan.cert.x509.ocsp_types;
-import botan.cert.x509.certstor;
-import botan.cert.x509.x509cert;
 import botan.asn1.asn1_time;
 import botan.asn1.x509_dn;
 import botan.asn1.der_enc;
@@ -27,6 +27,7 @@ import botan.utils.http_util.http_util;
 import botan.utils.types;
 import std.datetime;
 import std.algorithm : splitter;
+import core.sync.mutex;
 
 struct OCSPRequest
 {
@@ -164,7 +165,6 @@ public:
         return CertificateStatusCode.OCSP_CERT_NOT_LISTED;
     }
 
-
 private:
     Vector!( SingleResponse ) m_responses;
 }
@@ -250,24 +250,27 @@ version(Have_vibe_d) import vibe.core.concurrency : Tid, send;
 else import std.concurrency : Tid, send;
 /// Checks the certificate online
 void onlineCheck(shared(Tid) sender,
-                 immutable X509Certificate issuer,
-                 immutable X509Certificate subject,
-                 immutable CertificateStore trusted_roots)
+                 shared(size_t) id,
+                 shared(Mutex*) mtx,
+                 shared(OCSPResponse*) resp,
+                 shared(const(X509Certificate)*) issuer,
+                 shared(const(X509Certificate)*) subject,
+                 shared(const(CertificateStore)*) trusted_roots)
 {
-    const string responder_url = subject.ocspResponder();
+    const string responder_url = (cast(X509Certificate*)subject).ocspResponder();
     
     if (responder_url == "")
         throw new Exception("No OCSP responder specified");
     
-    OCSPRequest req = OCSPRequest(cast(X509Certificate)issuer, cast(X509Certificate)subject);
+    OCSPRequest req = OCSPRequest(*cast(X509Certificate*)issuer, *cast(X509Certificate*)subject);
     
     HTTPResponse res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
     
     res.throwUnlessOk();
     
     // Check the MIME type?
+    synchronized(cast(Mutex)*mtx)
+	    *cast(OCSPResponse*)resp = OCSPResponse(*(cast(CertificateStore*)trusted_roots), res._body());
     
-    immutable(OCSPResponse) response = cast(immutable)OCSPResponse(trusted_roots, res._body());
-    
-    send(cast(Tid)sender, response);
+    send(cast(Tid)sender, cast(size_t)id);
 }

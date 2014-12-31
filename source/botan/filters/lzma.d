@@ -125,6 +125,9 @@ public:
     }
 
     ~this() { clear(); }
+
+	// Interface fallthrough
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     void clear()
     {
@@ -249,6 +252,9 @@ public:
     }
 
     ~this() { clear(); }
+
+	// Interface fallthrough
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     /*
     * Clean up Decompression Context

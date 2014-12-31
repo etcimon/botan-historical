@@ -113,7 +113,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
 
         Note that the version returning an array will allocate for each call.
     */
-    const(ValueType)[] equalRange(in KeyType key)
+    const(ValueType)[] equalRange(const ref KeyType key)
     const {
         import std.array;
         auto ret = appender!(const(ValueType)[])();

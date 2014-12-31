@@ -136,6 +136,38 @@ public:
         else return -1; // no comparison support
     }
 
+    /**
+    * Construct a CVC ADO request from a copy of another ADO object
+    * @param other = the other object
+    */
+    this(ref EAC11ADO other)
+    {
+        m_sig = other.m_sig.dup;
+        m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
+        m_tbs_bits = other.m_tbs_bits.dup;
+        m_PEM_label_pref = other.m_PEM_label_pref;
+        m_PEM_labels_allowed = other.m_PEM_labels_allowed;
+
+        m_car = ASN1Car(other.m_car);
+        m_req = EAC11Req(other.m_req);
+    }
+
+    /**
+    * Replace this ADO request with references to another one
+    * @param other = the other object
+    */
+    void opAssign(ref EAC11ADO other)
+    {
+        m_sig = other.m_sig;
+        m_sig_algo = other.m_sig_algo;
+        m_tbs_bits = other.m_tbs_bits;
+        m_PEM_label_pref = other.m_PEM_label_pref;
+        m_PEM_labels_allowed = other.m_PEM_labels_allowed;
+
+        m_car = other.m_car;
+        m_req = other.m_req;
+    }
+
 protected:
     ASN1Car m_car;
     EAC11Req m_req;

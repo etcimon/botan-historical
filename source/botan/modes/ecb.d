@@ -20,10 +20,10 @@ import botan.utils.types;
 /**
 * ECB mode
 */
-class ECBMode : CipherMode, Transformation
+abstract class ECBMode : CipherMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)*, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)*, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name(), nonce_len);
@@ -31,37 +31,37 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         return cipher().name ~ "/ECB/" ~ padding().name;
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         return cipher().parallelBytes();
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return cipher().keySpec();
     }
 
-    final override size_t defaultNonceLength() const
+    override size_t defaultNonceLength() const
     {
         return 0;
     }
 
-    final override bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return (n == 0);
     }
 
-    final override void clear()
+    override void clear()
     {
         m_cipher.clear();
     }
 
-    final override bool authenticated() const { return true; }
+    override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)
     {
@@ -136,6 +136,17 @@ public:
     {
         return 0;
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override bool validNonceLength(size_t n) const {
+		return super.validNonceLength(n);
+	}
 }
 
 /**
@@ -188,4 +199,15 @@ public:
     {
         return cipher().blockSize();
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override bool validNonceLength(size_t n) const {
+		return super.validNonceLength(n);
+	}
 }

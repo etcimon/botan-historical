@@ -182,6 +182,8 @@ public:
 
     }
 
+    override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
+
     /*
     * Check IF Scheme Private Parameters
     */

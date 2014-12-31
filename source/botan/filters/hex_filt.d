@@ -93,6 +93,12 @@ public:
         m_output.resize(2*HEX_CODEC_BUFFER_SIZE);
         m_counter = m_position = 0;
     }
+
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void startMsg() { super.startMsg(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+
 private:
     /*
     * Encode and send a block
@@ -122,11 +128,11 @@ private:
         }
     }
 
-
     const Case m_casing;
     const size_t m_line_length;
     Vector!ubyte m_input, m_output;
     size_t m_position, m_counter;
+
 }
 
 /**
@@ -205,6 +211,11 @@ public:
         m_output.resize(HEX_CODEC_BUFFER_SIZE / 2);
         m_position = 0;
     }
+
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void startMsg() { super.startMsg(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     const DecoderChecking m_checking;
     Vector!ubyte m_input, m_output;

@@ -28,10 +28,10 @@ import std.algorithm;
 * @see Free Licenses http://www.cs.ucdavis.edu/~rogaway/ocb/license.htm
 * @see OCB home page http://www.cs.ucdavis.edu/~rogaway/ocb
 */
-class OCBMode : AEADMode, Transformation
+abstract class OCBMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -45,35 +45,35 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
+    override void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {
         assert(m_L, "A key was set");
         m_ad_hash = ocbHash(*m_L, *m_cipher, ad, ad_len);
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         return m_cipher.name ~ "/OCB"; // include tag size
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         return m_cipher.parallelBytes();
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return m_cipher.keySpec();
     }
 
-    final override bool validNonceLength(size_t length) const
+    override bool validNonceLength(size_t length) const
     {
         return (length > 0 && length < 16);
     }
 
-    final override size_t tagSize() const { return m_tag_size; }
+    override size_t tagSize() const { return m_tag_size; }
 
-    final override void clear()
+    override void clear()
     {
         m_cipher.clear();
         m_L.clear();
@@ -84,6 +84,8 @@ public:
     }
 
     ~this() { /* for unique_ptr destructor */ }
+
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
 protected:
     /**
     * @param cipher = the 128-bit block cipher to use
@@ -248,6 +250,15 @@ public:
         m_block_index = 0;
     }
 
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+
 private:
     void encrypt(ubyte* buffer, size_t blocks)
     {
@@ -370,6 +381,15 @@ public:
         // remove tag from end of message
         buffer.length = remaining + offset;
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
 
 private:
     void decrypt(ubyte* buffer, size_t blocks)

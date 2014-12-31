@@ -161,10 +161,11 @@ public:
         BigInt k = BigInt(rng, m_n.bits() - 1);
         m_blinder = Blinder((*m_powermod_e_n)(k), inverseMod(k, m_n), m_n.dup);
     }
+    override size_t messageParts() const { return 1; }
+    override size_t messagePartSize() const { return 0; }
+    override size_t maxInputBits() const { return (m_n.bits() - 1); }
 
-    size_t maxInputBits() const { return (m_n.bits() - 1); }
-
-    SecureVector!ubyte
+    override SecureVector!ubyte
         sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
         rng.addEntropy(msg, msg_len);
@@ -182,7 +183,7 @@ public:
     /*
     * RSA Decryption Operation
     */
-    SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
+    override SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
     {
         const BigInt m = BigInt(msg, msg_len);
         const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
@@ -239,17 +240,23 @@ public:
         m_n = rsa.getN();
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
     }
+    override size_t messageParts() const { return 1; }
+    override size_t messagePartSize() const { return 0; }
+    override size_t maxInputBits() const { return (m_n.bits() - 1); }
+    override bool withRecovery() const { return true; }
 
-    size_t maxInputBits() const { return (m_n.bits() - 1); }
-    bool withRecovery() const { return true; }
-
-    SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
+    override SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator)
     {
         BigInt m = BigInt(msg, msg_len);
         return BigInt.encode1363(publicOp(m), m_n.bytes());
     }
 
-    SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
+    override bool verify(const(ubyte)*, size_t, const(ubyte)*, size_t)
+    {
+        throw new InvalidState("Message recovery required");
+    }
+
+    override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
         BigInt m = BigInt(msg, msg_len);
         return BigInt.encodeLocked(publicOp(m));

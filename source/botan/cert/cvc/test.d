@@ -20,8 +20,12 @@ import botan.asn1.oids;
 import botan.cert.cvc.cvc_self;
 import botan.cert.cvc.cvc_ado;
 import botan.cert.cvc.cvc_cert;
+import botan.cert.cvc.signed_obj;
 import botan.utils.types;
 import botan.utils.memory.memory;
+import std.datetime;
+
+size_t fails;
 
 // helper functions
 void helperWriteFile(in EACSignedObject to_write, in string file_path)
@@ -31,26 +35,27 @@ void helperWriteFile(in EACSignedObject to_write, in string file_path)
     cert_file.write(sv.ptr[0 .. sv.length]);
 }
 
+
 bool helperFilesEqual(in string file_path1, in string file_path2)
 {
     File cert_1_in = File(file_path1, "r");
     File cert_2_in = File(file_path2, "r");
     Vector!ubyte sv1;
     Vector!ubyte sv2;
-    if (!cert_1_in || !cert_2_in)
+    if (!cert_1_in.ok || !cert_2_in.ok)
     {
         return false;
     }
     while (!cert_1_in.eof && !cert_1_in.error)
     {
         ubyte[16] now;
-        auto data = cert_1_in.read(now.ptr[0 .. now.length]);
+        auto data = cert_1_in.rawRead(now.ptr[0 .. now.length]);
         sv1.pushBack(data);
     }
     while (!cert_2_in.eof && !cert_2_in.error)
     {
         ubyte[16] now;
-        auto data = cert_2_in.read(now.ptr[0 .. now.length]);
+        auto data = cert_2_in.rawRead(now.ptr[0 .. now.length]);
         sv2.pushBack(data);
     }
     if (sv1.length == 0)
@@ -97,24 +102,24 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
         File cert_2_in = File("test_data/ecc/my_cv_cert2.ber", "r");
         Vector!ubyte sv1;
         Vector!ubyte sv2;
-        if (!cert_1_in || !cert_2_in)
+        if (!cert_1_in.ok || !cert_2_in.ok)
         {
-            mixin( CHECK_MESSAGE( false, "could not read certificate files" ) );
+            mixin( CHECK_MESSAGE( `false`, "could not read certificate files" ) );
         }
         while (!cert_1_in.eof && !cert_1_in.error)
         {
             ubyte[16] now;
-            auto data = cert_1_in.read(now.ptr[0 .. now.length]);
+            auto data = cert_1_in.rawRead(now.ptr[0 .. now.length]);
             sv1.pushBack(data);
         }
         while (!cert_2_in.eof && !cert_2_in.error)
         {
             ubyte[16] now;
-            auto data = cert_2_in.read(now.ptr[0 .. now.length]);
+            auto data = cert_2_in.rawRead(now.ptr[0 .. now.length]);
             sv2.pushBack(data);
         }
         mixin( CHECK(` sv1.length > 10 `) );
-        mixin( CHECK_MESSAGE( sv1 == sv2, "reencoded file of cert without domain parameters is different from original" ) );
+        mixin( CHECK_MESSAGE( `sv1 == sv2`, "reencoded file of cert without domain parameters is different from original" ) );
     }
     //cout " ~reading cert again");
     mixin( CHECK(` cert_in.getCar().value() == "my_opt_car" `) );
@@ -154,7 +159,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     bool exc = false;
     try
     {
-        writeln("order = " ~ p_ecdsa_pk.domain().getOrder());
+        writeln("order = ", p_ecdsa_pk.domain().getOrder().dup.toString());
     }
     catch (InvalidState)
     {
@@ -168,7 +173,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     //p_ecdsa_pk2 -> setDomainParameters(dom_pars);
     mixin( CHECK(` p_ecdsa_pk2.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = cert_in.checkSignature(*p_pk2);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned cvc certificate" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned cvc certificate" ) );
 }
 
 void testEncGenReq(RandomNumberGenerator rng)
@@ -198,7 +203,7 @@ void testEncGenReq(RandomNumberGenerator rng)
     //p_ecdsa_pk.setDomainParameters(dom_pars);
     mixin( CHECK(` p_ecdsa_pk.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = req_in.checkSignature(*p_pk);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned (created by myself) cvc request" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned (created by myself) cvc request" ) );
 }
 
 void testCvcReqExt(RandomNumberGenerator)
@@ -211,7 +216,7 @@ void testCvcReqExt(RandomNumberGenerator)
     //p_ecdsa_pk.setDomainParameters(dom_pars);
     mixin( CHECK(` p_ecdsa_pk.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = req_in.checkSignature(*p_pk);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned (external testdata) cvc request" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned (external testdata) cvc request" ) );
 }
 
 void testCvcAdoExt(RandomNumberGenerator)
@@ -250,7 +255,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     
     //EAC11ADO ado = createAdoReq(ado_key, req, ado_opts);
     EAC11ADO ado = createAdoReq(ado_key, req, ado_opts.car, rng);
-    mixin( CHECK_MESSAGE( ado.checkSignature(ado_key), "failure of ado verification after creation" ) );
+    mixin( CHECK_MESSAGE( `ado.checkSignature(ado_key)`, "failure of ado verification after creation" ) );
     
     {
         File ado_file = File("test_data/ecc/ado", "wb+");
@@ -263,7 +268,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     //ECDSAPublicKey p_ado_pk = cast(ECDSAPublicKey)(&ado_key);
     //bool ver = ado2.checkSignature(*p_ado_pk);
     bool ver = ado2.checkSignature(ado_key);
-    mixin( CHECK_MESSAGE( ver, "failure of ado verification after reloading" ) );
+    mixin( CHECK_MESSAGE( `ver`, "failure of ado verification after reloading" ) );
 }
 
 void testCvcAdoComparison(RandomNumberGenerator rng)
@@ -287,7 +292,7 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
     ado_opts.hash_alg = "SHA-224"; // must be equal to req's hash alg, because ado takes his sig_algo from it's request
     //EAC11ADO ado = createAdoReq(ado_key, req, ado_opts);
     EAC11ADO ado = createAdoReq(ado_key, req, ado_opts.car, rng);
-    mixin( CHECK_MESSAGE( ado.checkSignature(ado_key), "failure of ado verification after creation" ) );
+    mixin( CHECK_MESSAGE( `ado.checkSignature(ado_key)`, "failure of ado verification after creation" ) );
     // make a second one for comparison
     EAC11CVCOptions opts2;
     //opts2.cpi = 0;
@@ -303,9 +308,9 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
     ado_opts2.hash_alg = "SHA-160"; // must be equal to req's hash alg, because ado takes his sig_algo from it's request
     
     EAC11ADO ado2 = createAdoReq(ado_key2, req2, ado_opts2.car, rng);
-    mixin( CHECK_MESSAGE( ado2.checkSignature(ado_key2), "failure of ado verification after creation" ) );
+    mixin( CHECK_MESSAGE( `ado2.checkSignature(ado_key2)`, "failure of ado verification after creation" ) );
     
-    mixin( CHECK_MESSAGE( ado != ado2, "ado's found to be equal where they are not" ) );
+    mixin( CHECK_MESSAGE( `ado != ado2`, "ado s found to be equal where they are not" ) );
     //      std::ofstream ado_file("test_data/ecc/ado");
     //      Vector!ubyte ado_der(ado.BER_encode());
     //      ado_file.write((char*)&ado_der[0], ado_der.length);
@@ -336,7 +341,7 @@ void testEacTime(RandomNumberGenerator)
     ASN1Cex my_cex = ASN1Cex("2007 08 01");
     my_cex.addMonths(12);
     mixin( CHECK(` my_cex.getYear() == 2008 `) );
-    mixin( CHECK_MESSAGE( my_cex.getMonth() == 8, "shoult be 8, was " ~ my_cex.getMonth() ) );
+    mixin( CHECK_MESSAGE( ` my_cex.getMonth() == 8 `, "shoult be 8, was `, my_cex.getMonth(), `" ) );
     
     my_cex.addMonths(4);
     mixin( CHECK(` my_cex.getYear() == 2008 `) );
@@ -363,7 +368,7 @@ void testVerCvca(RandomNumberGenerator)
     Unique!PublicKey p_pk2 = req_in.subjectPublicKey();
     ECDSAPublicKey p_ecdsa_pk2 = cast(ECDSAPublicKey)(*p_pk2);
     bool ver_ec = req_in.checkSignature(*p_pk2);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned cvca certificate" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned cvca certificate" ) );
     
     try
     {
@@ -512,12 +517,12 @@ void testCvcChain(RandomNumberGenerator rng)
     
     mixin( CHECK(` dvca_ado2.checkSignature(dvca_priv_key) `) ); // must also work
     
-    EAC11Req dvca_req2b = dvca_ado2.getRequest();
+    EAC11Req dvca_req2b = EAC11Req(dvca_ado2.getRequest());
     helperWriteFile(dvca_req2b, "test_data/ecc/cvc_chain_dvca_req2b.cer");
     mixin( CHECK(` helperFilesEqual("test_data/ecc/cvc_chain_dvca_req2b.cer", "test_data/ecc/cvc_chain_dvca_req2.cer") `) );
     EAC11CVC dvca_cert2 = cvc_self.signRequest(cvca_cert, cvca_privk, dvca_req2b, 2, 5, true, 3, 1, rng);
     mixin( CHECK(` dvca_cert2.getCar().iso8859() == "DECVCA00001" `) );
-    CHECK_MESSAGE(dvca_cert2.getChr().iso8859() == "DEDVCAEPASS00002", "chr = " ~ dvca_cert2.getChr().iso8859());
+    CHECK_MESSAGE(`dvca_cert2.getChr().iso8859() == "DEDVCAEPASS00002"`, "chr = ` ~ dvca_cert2.getChr().iso8859() ~ `");
     
     // make a first round IS request
     auto is_priv_key = scoped!ECDSAPrivateKey(rng, dom_pars);
@@ -527,7 +532,7 @@ void testCvcChain(RandomNumberGenerator rng)
     // sign the IS request
     //dvca_cert1.setDomainParameters(dom_pars);
     EAC11CVC is_cert1 = cvc_self.signRequest(dvca_cert1, dvca_priv_key, is_req, 1, 5, true, 3, 1, rng);
-    mixin( CHECK_MESSAGE( is_cert1.getCar().iso8859() == "DEDVCAEPASS00001", "car = " ~ is_cert1.getCar().iso8859() ) );
+    mixin( CHECK_MESSAGE( `is_cert1.getCar().iso8859() == "DEDVCAEPASS00001"`, "car = ` ~ is_cert1.getCar().iso8859() ~ `" ) );
     mixin( CHECK(` is_cert1.getChr().iso8859() == "DEIS00001" `) );
     helperWriteFile(is_cert1, "test_data/ecc/cvc_chain_is_cert.cer");
     

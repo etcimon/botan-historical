@@ -23,10 +23,10 @@ import std.algorithm;
 * Base class for CCM encryption and decryption
 * @see RFC 3610
 */
-class CCMMode : AEADMode, Transformation
+abstract class CCMMode : AEADMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -37,7 +37,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -47,7 +47,7 @@ public:
         buffer.length = offset; // truncate msg
     }
 
-    final override void setAssociatedData(const(ubyte)* ad, size_t length)
+    override void setAssociatedData(const(ubyte)* ad, size_t length)
     {
         m_ad_buf.clear();
         
@@ -64,12 +64,12 @@ public:
         }
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         return (m_cipher.name ~ "/CCM(" ~ to!string(tagSize()) ~ "," ~ to!string(L())) ~ ")";
     }
 
-    final size_t updateGranularity() const
+    size_t updateGranularity() const
     {
         /*
         This value does not particularly matter as regardless update
@@ -81,29 +81,29 @@ public:
     }
 
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return m_cipher.keySpec();
     }
 
-    final override bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return (n == (15-L()));
     }
 
-    final override size_t defaultNonceLength() const
+    override size_t defaultNonceLength() const
     {
         return (15-L());
     }
 
-    final override void clear()
+    override void clear()
     {
         m_cipher.clear();
         m_msg_buf.clear();
         m_ad_buf.clear();
     }
 
-    override final size_t tagSize() const { return m_tag_size; }
+    override size_t tagSize() const { return m_tag_size; }
 
 protected:
     __gshared immutable size_t BS = 16; // intrinsic to CCM definition
@@ -270,6 +270,17 @@ public:
     { return input_length + tagSize(); }
 
     override size_t minimumFinalSize() const { return 0; }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+
 }
 
 /**
@@ -348,4 +359,14 @@ public:
     }
 
     override size_t minimumFinalSize() const { return tagSize(); }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 }

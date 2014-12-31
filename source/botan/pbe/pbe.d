@@ -15,7 +15,7 @@ import botan.utils.types;
 /**
 * Password Based Encryption (PBE) Filter.
 */
-class PBE : Filter, Filterable
+abstract class PBE : Filter, Filterable
 {
 public:
     /**
@@ -29,4 +29,12 @@ public:
     * @return object identifier
     */
     abstract OID getOid() const;
+
+	override void write(const(ubyte)* input, size_t len) {
+		super.write(input, len);
+	}
+
+	override void setNext(Filter* filters, size_t size) {
+		super.setNext(filters, size);
+	}
 }

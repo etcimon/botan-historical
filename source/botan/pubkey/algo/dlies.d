@@ -86,6 +86,7 @@ protected:
         return 32;
     }
 
+private:
     Vector!ubyte m_other_key, m_my_key;
 
     Unique!PKKeyAgreement m_ka;
@@ -112,7 +113,7 @@ public:
         m_my_key = key.publicValue();
     }
 
-private:
+protected:
     /*
     * DLIES Decryption
     */
@@ -150,6 +151,7 @@ private:
         return C;
     }
 
+private:
     Vector!ubyte m_my_key;
 
     Unique!PKKeyAgreement m_ka;

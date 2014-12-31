@@ -69,7 +69,7 @@ public:
                 .getContentsUnlocked();
     }
 
-    @property string name() const
+	override @property string name() const
     {
         return "PBE-PKCS5v20(" ~ m_block_cipher.name ~ "," ~ m_prf.name ~ ")";
     }
@@ -86,7 +86,7 @@ public:
     /*
     * Start encrypting with PBES2
     */
-    void startMsg()
+	override void startMsg()
     {
         m_pipe.append(getCipher(m_block_cipher.name ~ "/CBC/PKCS7", SymmetricKey(m_key), InitializationVector(m_iv), cast(CipherDir)m_direction));
         
@@ -98,7 +98,7 @@ public:
     /*
     * Finish encrypting with PBES2
     */
-    void endMsg()
+	override void endMsg()
     {
         m_pipe.endMsg();
         flushPipe(false);
@@ -195,6 +195,11 @@ public:
                                 msec, m_iterations).bitsOf();
     }
 
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void setNext(Filter* filters, size_t size) {
+		super.setNext(filters, size);
+	}
 private:
     /*
     * Flush the pipe

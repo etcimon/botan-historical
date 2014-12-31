@@ -16,21 +16,13 @@ import botan.stream.stream_cipher;
 import botan.hash.hash;
 import botan.mac.mac;
 import botan.pbkdf.pbkdf;
-
+import botan.utils.types;
 import std.algorithm;
-
-import botan.utils.types;
-// import string;
-import botan.utils.types;
-import botan.utils.memory.memory : FreeListRef;
-
-
-alias AlgorithmFactory = FreeListRef!AlgorithmFactoryImpl;
 
 /**
 * Algorithm Factory
 */
-final class AlgorithmFactoryImpl
+final class AlgorithmFactory
 {
 public:
     /**
@@ -41,7 +33,7 @@ public:
     /**
     * Destructor
     */
-    ~this()    { }
+    ~this() { }
     
     /**
     * @param engine = to add (AlgorithmFactory takes ownership)
@@ -313,38 +305,38 @@ private:
 /*
 * Template functions for the factory prototype/search algorithm
 */
-T engineGetAlgo(T)(Engine, in SCANToken, AlgorithmFactoryImpl)
+T engineGetAlgo(T)(Engine, in SCANToken, AlgorithmFactory)
 { static assert(false, "Invalid engine"); }
 
 BlockCipher engineGetAlgo(T : BlockCipher, U : SCANToken)(Engine engine, 
                                                           auto ref U request, 
-                                                          AlgorithmFactoryImpl af)
+                                                          AlgorithmFactory af)
 { return engine.findBlockCipher(request, af); }
 
 StreamCipher engineGetAlgo(T : StreamCipher, U : SCANToken)(Engine engine, 
                                                             auto ref U request, 
-                                                            AlgorithmFactoryImpl af)
+                                                            AlgorithmFactory af)
 { return engine.findStreamCipher(request, af); }
 
 HashFunction engineGetAlgo(T : HashFunction, U : SCANToken)(Engine engine, 
                                                             auto ref U request, 
-                                                            AlgorithmFactoryImpl af)
+                                                            AlgorithmFactory af)
 { return engine.findHash(request, af); }
 
 MessageAuthenticationCode engineGetAlgo(T : MessageAuthenticationCode, U : SCANToken)(Engine engine, 
                                                                                       auto ref U request,
-                                                                                      AlgorithmFactoryImpl af)
+                                                                                      AlgorithmFactory af)
 { return engine.findMac(request, af); }
 
 PBKDF engineGetAlgo(T : PBKDF, U : SCANToken)(Engine engine, 
                                               auto ref U request, 
-                                              AlgorithmFactoryImpl af)
+                                              AlgorithmFactory af)
 { return engine.findPbkdf(request, af); }
 
 const(T) factoryPrototype(T)(in string algo_spec,
                              in string provider,
                              Vector!( Engine ) engines,
-                             AlgorithmFactoryImpl af,
+                             AlgorithmFactory af,
                              AlgorithmCache!T cache) {
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;

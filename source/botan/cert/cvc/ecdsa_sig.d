@@ -35,6 +35,11 @@ public:
                 .verifyEnd();
     }
 
+    ECDSASignature dup() const
+    {
+        return new ECDSASignature(m_r.dup, m_s.dup);
+    }
+
     const(BigInt) getR() const { return m_r; }
     const(BigInt) getS() const { return m_s; }
 

@@ -567,6 +567,7 @@ public:
     {
         destruct(m_pipe_to);
     }
+
 private:
     /*
     * Initialize the Pipe
@@ -641,6 +642,7 @@ private:
     OutputBuffers m_outputs;
     message_id m_default_read;
     bool m_inside_msg;
+
 }
 
 /*
@@ -653,4 +655,10 @@ public:
     { send(input, length); }
     
     override @property string name() const { return "Null"; }
+
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void startMsg() { super.startMsg(); }
+	override void endMsg() { super.endMsg(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 }

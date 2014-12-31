@@ -123,6 +123,12 @@ public:
     }
 
     ~this() { delete m_cipher; }
+
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void startMsg() { super.startMsg(); }
+	override void endMsg() { super.endMsg(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     SecureVector!ubyte m_buffer;
     StreamCipher m_cipher;
@@ -180,6 +186,11 @@ public:
     }
 
     ~this() { delete m_hash; }
+
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void startMsg() { super.startMsg(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     const size_t m_OUTPUT_LENGTH;
     HashFunction m_hash;
@@ -280,6 +291,11 @@ public:
     }
 
     ~this() { delete m_mac; }
+
+	// Interface fallthrough
+	override bool attachable() { return super.attachable(); }
+	override void startMsg() { super.startMsg(); }
+	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     const size_t m_OUTPUT_LENGTH;
     MessageAuthenticationCode m_mac;

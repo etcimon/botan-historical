@@ -476,7 +476,7 @@ protected:
 /**
 * Alternative Name Extension Base Class
 */
-class AlternativeNameExt : CertificateExtension
+abstract class AlternativeNameExt : CertificateExtension
 {
 public:
     const(AlternativeName) getAltName() const { return m_alt_name; }
@@ -489,7 +489,6 @@ protected:
         m_oid_name_str = oid_name_str;
     }
 
-protected:
     string oidName() const { return m_oid_name_str; }
 
     bool shouldEncode() const { return m_alt_name.hasItems(); }
@@ -539,6 +538,28 @@ protected:
 final class SubjectAlternativeName : AlternativeNameExt, CertificateExtension
 {
 public:
+
+    override void contentsTo(ref DataStore subject, ref DataStore issuer) const {
+        super.contentsTo(subject, issuer);
+    }
+
+    override string oidName() const {
+        return super.oidName();
+    }
+
+    override bool shouldEncode() const {
+        return super.shouldEncode();
+    }
+
+    override Vector!ubyte encodeInner() const
+    {
+        return super.encodeInner();
+    }
+
+    override void decodeInner(in Vector!ubyte input) {
+        super.decodeInner(input);
+    }
+
     override SubjectAlternativeName copy() const
     { return new SubjectAlternativeName(cast(AlternativeName) getAltName()); }
 
@@ -553,6 +574,27 @@ public:
 final class IssuerAlternativeName : AlternativeNameExt, CertificateExtension
 {
 public:
+    override void contentsTo(ref DataStore subject, ref DataStore issuer) const {
+        super.contentsTo(subject, issuer);
+    }
+    
+    override string oidName() const {
+        return super.oidName();
+    }
+    
+    override bool shouldEncode() const {
+        return super.shouldEncode();
+    }
+    
+    override Vector!ubyte encodeInner() const
+    {
+        return super.encodeInner();
+    }
+    
+    override void decodeInner(in Vector!ubyte input) {
+        super.decodeInner(input);
+    }
+
     override IssuerAlternativeName copy() const
     { return new IssuerAlternativeName(cast(AlternativeName)getAltName()); }
 
@@ -692,7 +734,7 @@ protected:
         ASN1String url = ASN1String(m_ocsp_responder, ASN1Tag.IA5_STRING);
 
         return DEREncoder()
-            .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .encode(OIDS.lookup("PKIX.OCSP"))
                 .addObject((cast(ASN1Tag)6), ASN1Tag.CONTEXT_SPECIFIC, url.iso8859())

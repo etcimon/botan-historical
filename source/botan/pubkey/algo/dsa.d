@@ -52,7 +52,7 @@ public:
 /**
 * DSA Private Key
 */
-final class DSAPrivateKey : DSAPublicKey, PrivateKey
+final class DSAPrivateKey : DSAPublicKey
 {
 public:
     /*
@@ -206,6 +206,7 @@ public:
 
     override bool withRecovery() const { return false; }
 
+    override SecureVector!ubyte verifyMr(const(ubyte)*, size_t) { throw new InvalidState("Message recovery not supported"); }
     override bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;

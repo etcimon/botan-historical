@@ -234,17 +234,17 @@ public:
         return null;
     }
 
-    ModularExponentiator modExp(BigInt n, PowerMod.UsageHints hints) const
+    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
     {
         if (n.isOdd())
-            return new MontgomeryExponentiator(n, hints);
-        return new FixedWindowExponentiator(n, hints);
+            return new MontgomeryExponentiator(n.dup, hints);
+        return new FixedWindowExponentiator(n.dup, hints);
     }
 
 
     KeyedFilter getCipher(in string algo_spec,
-                            CipherDir direction,
-                            AlgorithmFactory af)
+                          CipherDir direction,
+                          AlgorithmFactory af) const
     {
         Vector!string algo_parts = splitter(algo_spec, '/');
         if (algo_parts.empty)

@@ -21,10 +21,10 @@ import std.conv : to;
 /**
 * CFB Mode
 */
-class CFBMode : CipherMode, Transformation
+abstract class CFBMode : CipherMode, Transformation
 {
 public:
-    final override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
@@ -36,7 +36,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    final override @property string name() const
+    override @property string name() const
     {
         if (feedback() == cipher().blockSize())
             return cipher().name ~ "/CFB";
@@ -44,43 +44,43 @@ public:
             return cipher().name ~ "/CFB(" ~ to!string(feedback()*8) ~ ")";
     }
 
-    final override size_t updateGranularity() const
+    override size_t updateGranularity() const
     {
         return feedback();
     }
 
-    final override size_t minimumFinalSize() const
+    override size_t minimumFinalSize() const
     {
         return 0;
     }
 
-    final override KeyLengthSpecification keySpec() const
+    override KeyLengthSpecification keySpec() const
     {
         return cipher().keySpec();
     }
 
-    final override size_t outputLength(size_t input_length) const
+    override size_t outputLength(size_t input_length) const
     {
         return input_length;
     }
 
-    final override size_t defaultNonceLength() const
+    override size_t defaultNonceLength() const
     {
         return cipher().blockSize();
     }
 
-    final override bool validNonceLength(size_t n) const
+    override bool validNonceLength(size_t n) const
     {
         return (n == cipher().blockSize());
     }
 
-    final override void clear()
+    override void clear()
     {
         m_cipher.clear();
         m_shift_register.clear();
     }
 
-    final override bool authenticated() const { return true; }
+    override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher, size_t feedback_bits)
     { 
@@ -153,6 +153,19 @@ public:
     {
         update(buffer, offset);
     }
+
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
+	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+	override bool validNonceLength(size_t n) const {
+		return super.validNonceLength(n);
+	}
 }
 
 /**
@@ -201,4 +214,16 @@ public:
         update(buffer, offset);
     }
 
+	// Interface fallthrough
+	override string provider() const { return "core"; }
+	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+	override size_t updateGranularity() const { return super.updateGranularity(); }
+	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+	override @property string name() const { return super.name; }
+	override void clear() { return super.clear(); }
+	override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
+	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+	override bool validNonceLength(size_t n) const {
+		return super.validNonceLength(n);
+	}
 }
