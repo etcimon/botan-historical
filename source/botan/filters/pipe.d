@@ -99,15 +99,6 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the ubyte array containing the data to write
-    */
-    void write(ubyte[] input)
-    {
-        write(cast(const(ubyte)*)(input.ptr), input.length);
-    }
-
-    /**
-    * Write input to the pipe, i.e. to its first filter.
     * @param input = the DataSource to read the data from
     */
     void write(DataSource source)

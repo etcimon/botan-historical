@@ -167,10 +167,11 @@ static if (BOTAN_TEST):
 
 import botan.libstate.lookup;
 import botan.codec.hex;
+import botan.test;
 
 unittest
 {
-    auto test = (string input) {
+    auto test = delegate(string input) {
         return runTests(input, "KDF", "Output", true,
                          (string[string] vec)
                          {

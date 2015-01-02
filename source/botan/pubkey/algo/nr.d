@@ -76,7 +76,7 @@ public:
     /*
     * Create a NR private key
     */
-    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg)
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
         if (x_arg == 0)
             x_arg = BigInt.randomInteger(rng, BigInt(2), grp.getQ().dup - 1);
@@ -253,18 +253,18 @@ import botan.codec.hex;
 import botan.rng.auto_rng;
 import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t testPkKeygen(RandomNumberGenerator rng)
 {    
     size_t fails;
     string[] nr_list = ["dsa/jce/1024", "dsa/botan/2048", "dsa/botan/3072"];
-    
+
     foreach (nr; nr_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!ElGamalPrivateKey(rng, ECGroup(OIDS.lookup(nr)));
+        auto key = scoped!NRPrivateKey(rng, DLGroup(nr));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(&key, rng);
+        fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
     
     return fails;

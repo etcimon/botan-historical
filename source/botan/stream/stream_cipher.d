@@ -73,7 +73,7 @@ import botan.libstate.libstate;
 import botan.codec.hex;
 import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t streamTest(string algo,
                    string key_hex,
@@ -97,10 +97,10 @@ size_t streamTest(string algo,
         ++fails;
     }
     
-    foreach (provider; providers)
+    foreach (provider; providers[])
     {
         atomicOp!"+="(total_tests, 1);
-        const StreamCipher* proto = af.prototypeStreamCipher(algo, provider);
+        const StreamCipher proto = af.prototypeStreamCipher(algo, provider);
         
         if (!proto)
         {
@@ -111,11 +111,11 @@ size_t streamTest(string algo,
         
         Unique!StreamCipher cipher = proto.clone();
         cipher.setKey(key);
-        
+
         if (nonce.length)
             cipher.setIv(&nonce[0], nonce.length);
         
-        SecureVector!ubyte buf = pt;
+        SecureVector!ubyte buf = pt.dup;
         
         cipher.encrypt(buf);
         
@@ -131,7 +131,7 @@ size_t streamTest(string algo,
 
 unittest
 {
-    auto test = (string input)
+    auto test = delegate(string input)
     {
         File vec = File(input, "r");
         

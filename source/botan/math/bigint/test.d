@@ -4,6 +4,7 @@ import botan.constants;
 static if (BOTAN_TEST):
 
 import botan.rng.rng;
+import botan.rng.auto_rng;
 import botan.utils.exceptn;
 import botan.math.numbertheory.numthry;
 import botan.test;
@@ -48,7 +49,7 @@ Vector!string parse(string line)
 }
 
 // c==expected, d==a op b, e==a op= b
-size_t results(string op, in BigInt a, in BigInt b,    in BigInt c, in BigInt d, in BigInt e)
+size_t results(string op, in BigInt a, in BigInt b, in BigInt c, in BigInt d, in BigInt e)
 {
     string op1 = "operator" ~ op;
     string op2 = op1 ~ "=";
@@ -82,15 +83,15 @@ size_t checkAdd(in Vector!string args)
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a + b;
-    BigInt e = a;
+    BigInt d = a.dup + b;
+    BigInt e = a.dup;
     e += b;
     
     if (results("+", a, b, c, d, e))
         return 1;
     
-    d = b + a;
-    e = b;
+    d = b.dup + a;
+    e = b.dup;
     e += a;
     
     return results("+", a, b, c, d, e);
@@ -102,8 +103,8 @@ size_t checkSub(in Vector!string args)
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a - b;
-    BigInt e = a;
+    BigInt d = a.dup - b;
+    BigInt e = a.dup;
     e -= b;
     
     return results("-", a, b, c, d, e);
@@ -126,15 +127,15 @@ size_t checkMul(in Vector!string args)
     a.growTo(64);
     b.growTo(64);
     
-    BigInt d = a * b;
-    BigInt e = a;
+    BigInt d = a.dup * b;
+    BigInt e = a.dup;
     e *= b;
     
     if (results("*", a, b, c, d, e))
         return 1;
     
-    d = b * a;
-    e = b;
+    d = b.dup * a;
+    e = b.dup;
     e *= a;
     
     return results("*", a, b, c, d, e);
@@ -149,7 +150,7 @@ size_t checkSqr(in Vector!string args)
     b.growTo(64);
     
     BigInt c = square(a);
-    BigInt d = a * a;
+    BigInt d = a.dup * a;
     
     return results("sqr", a, a, b, c, d);
 }
@@ -173,8 +174,8 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a % b;
-    BigInt e = a;
+    BigInt d = a.dup % b;
+    BigInt e = a.dup;
     e %= b;
     
     size_t got = results("%", a, b, c, d, e);
@@ -190,13 +191,13 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     
     b = b_word;
     
-    c = a % b; /* we declare the BigInt % BigInt version to be correct here */
+    c = a.dup % b; /* we declare the BigInt % BigInt version to be correct here */
     
-    word d2 = a % b_word;
-    e = a;
+    word d2 = a.dup % b_word;
+    e = a.dup;
     e %= b_word;
     
-    return results("%(word)", a, b, c, d2, e);
+    return results("%(word)", a, b, c, BigInt(d2), e);
 }
 
 size_t checkShl(in Vector!string args)
@@ -205,11 +206,11 @@ size_t checkShl(in Vector!string args)
     size_t b = args[1].to!size_t;
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a << b;
-    BigInt e = a;
+    BigInt d = a.dup << b;
+    BigInt e = a.dup;
     e <<= b;
     
-    return results("<<", a, b, c, d, e);
+    return results("<<", a, BigInt(b), c, d, e);
 }
 
 size_t checkShr(in Vector!string args)
@@ -218,11 +219,11 @@ size_t checkShr(in Vector!string args)
     size_t b = args[1].to!size_t;
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a >> b;
-    BigInt e = a;
+    BigInt d = a.dup >> b;
+    BigInt e = a.dup;
     e >>= b;
     
-    return results(">>", a, b, c, d, e);
+    return results(">>", a, BigInt(b), c, d, e);
 }
 
 /* Make sure that (a^b)%m == r */
@@ -259,7 +260,7 @@ size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
     if (isPrime != should_be_prime)
     {
         writeln("ERROR: isPrime");
-        writeln("n = " ~ n);
+        writeln("n = ", n);
         writeln(isPrime ~ " != " ~ should_be_prime);
     }
     return 0;
@@ -288,7 +289,7 @@ unittest
         if (test_data.error)
             throw new StreamIOError("File I/O error reading from " ~ filename);
         
-        string line = test_data.readln().strip();
+        Vector!ubyte line = test_data.readln().strip();
         
         if (line.length == 0) continue;
         
@@ -317,7 +318,7 @@ unittest
             continue;
         }
         
-        Vector!string substr = parse(line);
+        Vector!string substr = parse(line[]);
         
         writeln("Testing: " ~ algorithm);
         

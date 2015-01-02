@@ -2,23 +2,26 @@ module botan.rng.test;
 
 import botan.constants;
 static if (BOTAN_TEST):
+import botan.test;
 import botan.libstate.libstate;
 import botan.codec.hex;
 import botan.rng.rng;
+import botan.utils.parsing;
 import core.atomic;
+import std.stdio;
 
 class FixedOutputRNG : RandomNumberGenerator
 {
 public:
-    override bool isSeeded() const { return !buf.empty; }
+    override bool isSeeded() const { return !m_buf.empty; }
     
     ubyte random()
     {
         if (!isSeeded())
             throw new Exception("Out of bytes");
-        
+
         ubyte output = m_buf.front();
-        m_buf.popFront();
+        m_buf.removeFront();
         return output;
     }
     
@@ -38,6 +41,8 @@ public:
     override @property string name() const { return "Fixed_Output_RNG"; }
     
     override void clear() {}
+
+    override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
     
     this(in Vector!ubyte input)
     {
@@ -59,14 +64,14 @@ private:
 
 RandomNumberGenerator getRng(string algo_str, string ikm_hex)
 {
-    class AllOnceRNG : Fixed_Output_RNG
+    class AllOnceRNG : FixedOutputRNG
     {
     public:
         this(in Vector!ubyte input) {
             super(input);
         }
         
-        SecureVector!ubyte randomVec(size_t)
+        override SecureVector!ubyte randomVec(size_t)
         {
             SecureVector!ubyte vec = SecureVector!ubyte(this.remaining());
             this.randomize(&vec[0], vec.length);
@@ -83,11 +88,13 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
     const string rng_name = algo_name[0];
     
     static if (BOTAN_HAS_HMAC_DRBG) {
+        import botan.rng.hmac_drbg;
         if (rng_name == "HMAC_DRBG")
             return new HMAC_DRBG(af.makeMac("HMAC(" ~ algo_name[1] ~ ")"), new AllOnceRNG(ikm));
     }
     
     static if (BOTAN_HAS_X931_RNG) {
+        import botan.rng.x931_rng;
         if (rng_name == "X9.31-RNG")
             return new ANSIX931RNG(af.makeBlockCipher(algo_name[1]), new FixedOutputRNG(ikm));
     }
@@ -96,7 +103,7 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
 }
 
 
-__gshared size_t total_tests;
+shared size_t total_tests;
 static if (BOTAN_HAS_X931_RNG)
 size_t x931Test(string algo,
                  string ikm,
@@ -161,8 +168,9 @@ unittest
     File x931_vec = File("test_data/x931.vec", "r");
     
     size_t fails = 0;
-    
-    fails += runTestsBb(hmac_drbg_vec, "RNG", "Out", true, hmacDrbgTest);
+
+    import std.functional : toDelegate;
+    fails += runTestsBb(hmac_drbg_vec, "RNG", "Out", true, toDelegate(&hmacDrbgTest));
     
     fails += runTestsBb(x931_vec, "RNG", "Out", true,
                           (string[string] m) {

@@ -100,7 +100,7 @@ import botan.test;
 import botan.codec.hex;
 import botan.libstate.libstate;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 SecureVector!ubyte hkdf(string hkdf_algo,
                          in SecureVector!ubyte ikm,

@@ -87,6 +87,8 @@ public:
         super(m_priv);
     }
 
+    this(RandomNumberGenerator rng, in ECGroup domain) { this(rng, domain, BigInt(0)); }
+
     this(PrivateKey pkey) { 
         m_priv = cast(ECPrivateKey)pkey;
         super(m_priv);
@@ -126,7 +128,7 @@ public:
     this(in ECPrivateKey ecdsa)
     {
         assert(ecdsa.algoName == ECDSAPublicKey.algoName);
-        m_base_point = ecdsa.domain().getBasePoint();
+        m_base_point = ecdsa.domain().getBasePoint().dup;
         m_order = ecdsa.domain().getOrder();
         m_x = ecdsa.privateValue();
         m_mod_order = ModularReducer(m_order.dup);
@@ -165,7 +167,7 @@ public:
     override size_t maxInputBits() const { return m_order.bits(); }
 
 private:
-    const PointGFp m_base_point;
+    PointGFp m_base_point;
     const BigInt m_order;
     const BigInt m_x;
     ModularReducer m_mod_order;
@@ -188,8 +190,8 @@ public:
     this(in ECPublicKey ecdsa) 
     {
         assert(ecdsa.algoName == ECDSAPublicKey.algoName);
-        m_base_point = ecdsa.domain().getBasePoint();
-        m_public_point = ecdsa.publicPoint();
+        m_base_point = ecdsa.domain().getBasePoint().dup;
+        m_public_point = ecdsa.publicPoint().dup;
         m_order = ecdsa.domain().getOrder();
     }
 
@@ -225,8 +227,8 @@ public:
     }
 
 private:
-    const PointGFp m_base_point;
-    const PointGFp m_public_point;
+    PointGFp m_base_point;
+    PointGFp m_public_point;
     const BigInt m_order;
 }
 
@@ -246,11 +248,12 @@ import botan.rng.auto_rng;
 import botan.pubkey.pubkey;
 static if (BOTAN_HAS_RSA) import botan.pubkey.algo.rsa;
 import botan.cert.x509.x509cert;
+import botan.pubkey.pkcs8;
 import botan.asn1.oids;
 import botan.utils.memory.memory;
 import botan.codec.hex;
 import core.atomic;
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 string toHex(const Vector!ubyte bin)
 {
@@ -325,15 +328,15 @@ size_t testDecodeEcdsaX509()
     X509Certificate cert = X509Certificate("test_data/ecc/CSCA.CSCA.csca-germany.1.crt");
     size_t fails = 0;
     
-    mixin( CHECK_MESSAGE( OIDS.lookup(cert.signatureAlgorithm().oid) == "ECDSA/EMSA1(SHA-224)", "error reading signature algorithm from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `OIDS.lookup(cert.signatureAlgorithm().oid) == "ECDSA/EMSA1(SHA-224)"`, "error reading signature algorithm from x509 ecdsa certificate" ) );
     
-    mixin( CHECK_MESSAGE( toHex(cert.serialNumber()) == "01", "error reading serial from x509 ecdsa certificate" ) );
-    mixin( CHECK_MESSAGE( toHex(cert.authorityKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7", "error reading authority key id from x509 ecdsa certificate" ) );
-    mixin( CHECK_MESSAGE( toHex(cert.subjectKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7", "error reading Subject key id from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `toHex(cert.serialNumber()) == "01"`, "error reading serial from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `toHex(cert.authorityKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7"`, "error reading authority key id from x509 ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `toHex(cert.subjectKeyId()) == "0096452DE588F966C4CCDF161DD1F3F5341B71E7"`, "error reading Subject key id from x509 ecdsa certificate" ) );
     
     Unique!X509PublicKey pubkey = cert.subjectPublicKey();
     bool ver_ec = cert.checkSignature(*pubkey);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct selfsigned x509-ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned x509-ecdsa certificate" ) );
     
     return fails;
 }
@@ -348,7 +351,7 @@ size_t testDecodeVerLinkSHA256()
     size_t fails = 0;
     Unique!X509PublicKey pubkey = root_cert.subjectPublicKey();
     bool ver_ec = link_cert.checkSignature(*pubkey);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct SHA256 link x509-ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct SHA256 link x509-ecdsa certificate" ) );
     return fails;
 }
 
@@ -362,7 +365,7 @@ size_t testDecodeVerLinkSHA1()
     size_t fails = 0;
     Unique!X509PublicKey pubkey = root_cert.subjectPublicKey();
     bool ver_ec = link_cert.checkSignature(*pubkey);
-    mixin( CHECK_MESSAGE( ver_ec, "could not positively verify correct SHA1 link x509-ecdsa certificate" ) );
+    mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct SHA1 link x509-ecdsa certificate" ) );
     return fails;
 }
 
@@ -500,12 +503,12 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     priv_key.write( pkcs8.PEM_encode(key) );
     
     Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
-    ECDSAPrivateKey* loaded_ec_key = cast(ECDSAPrivateKey)(*loaded_key);
-    mixin( CHECK_MESSAGE( loaded_ec_key, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
+    ECDSAPrivateKey loaded_ec_key = cast(ECDSAPrivateKey)(*loaded_key);
+    mixin( CHECK_MESSAGE( `loaded_ec_key`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
     
     Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("test_data/ecc/rsa_private.pkcs8.pem", rng);
     ECDSAPrivateKey loaded_rsa_key = cast(ECDSAPrivateKey)(*loaded_key_1);
-    mixin( CHECK_MESSAGE( !loaded_rsa_key, "the loaded key is ECDSAPrivateKey -> shouldn't be, is a RSA-Key" ) );
+    mixin( CHECK_MESSAGE( `!loaded_rsa_key`, "the loaded key is ECDSAPrivateKey -> shouldn't be, is a RSA-Key" ) );
     
     //calc a curve which is not in the registry
     
@@ -623,7 +626,7 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
     {
         Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
         ECDSAPrivateKey ecdsa = cast(ECDSAPrivateKey)(*loaded_key);
-        mixin( CHECK_MESSAGE( ecdsa, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
+        mixin( CHECK_MESSAGE( `ecdsa`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
         
         PKSigner signer = PKSigner(ecdsa, "EMSA1(SHA-1)");
         
@@ -631,7 +634,7 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
         
         PKVerifier verifier = PKVerifier(ecdsa, "EMSA1(SHA-1)");
         
-        mixin( CHECK_MESSAGE(verifier.verifyMessage(msg, sig), "generated sig could not be verified positively"));
+        mixin( CHECK_MESSAGE(`verifier.verifyMessage(msg, sig)`, "generated sig could not be verified positively"));
     }
     catch (Exception e)
     {
@@ -644,14 +647,14 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
         Unique!PKCS8PrivateKey loaded_key_nodp = pkcs8.loadKey("test_data/ecc/nodompar_private.pkcs8.pem", rng);
         // anew in each test with unregistered domain-parameters
         ECDSAPrivateKey ecdsa_nodp = cast(ECDSAPrivateKey)(*loaded_key_nodp);
-        mixin( CHECK_MESSAGE( ecdsa_nodp, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
+        mixin( CHECK_MESSAGE( `ecdsa_nodp`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
         
         PKSigner signer = PKSigner(ecdsa_nodp, "EMSA1(SHA-1)");
         PKVerifier verifier = PKVerifier(ecdsa_nodp, "EMSA1(SHA-1)");
         
         Vector!ubyte signature_nodp = signer.signMessage(msg, rng);
         
-        mixin( CHECK_MESSAGE(verifier.verifyMessage(msg, signature_nodp),
+        mixin( CHECK_MESSAGE(`verifier.verifyMessage(msg, signature_nodp)`,
                              "generated signature could not be verified positively (no_dom)"));
         
         try
@@ -706,7 +709,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!ECDSAPrivateKey(rng, ECGroup(OIDS.lookup(ecdsa)));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(&key, rng);
+        fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
 
     return fails;

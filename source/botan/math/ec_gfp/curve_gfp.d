@@ -131,6 +131,8 @@ public:
         ret.m_p_dash = m_p_dash;
         return ret;
     }
+
+    const ~this() { }
 private:
     // Curve parameters
     BigInt m_p, m_a, m_b;

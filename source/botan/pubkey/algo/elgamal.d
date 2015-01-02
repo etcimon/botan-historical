@@ -74,7 +74,7 @@ public:
     /*
     * ElGamalPrivateKey Constructor
     */
-    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = BigInt(0))
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {        
         if (x_arg == 0)
             x_arg.randomize(rng, 2 * dlWorkFactor(grp.getP().bits()));
@@ -225,7 +225,7 @@ import botan.pubkey.algo.dl_group;
 import botan.rng.auto_rng;
 import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t testPkKeygen(RandomNumberGenerator rng)
 {
@@ -235,9 +235,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     
     foreach (elg; elg_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!ElGamalPrivateKey(rng, ECGroup(OIDS.lookup(elg)));
+        auto key = scoped!ElGamalPrivateKey(rng, DLGroup(elg));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(&key, rng);
+        fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
     
     return fails;
@@ -259,7 +259,7 @@ size_t elgamalKat(string p,
     const BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, g_bn);
-    auto privkey = scoped!ElGamalPrivateKey(rng, group, x_bn);
+    auto privkey = scoped!ElGamalPrivateKey(rng, group, x_bn.dup);
     
     auto pubkey = scoped!ElGamalPublicKey(privkey);
     

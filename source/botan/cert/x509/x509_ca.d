@@ -9,11 +9,11 @@ module botan.cert.x509.x509_ca;
 import botan.constants;
 static if (BOTAN_HAS_X509_CERTIFICATES):
 
+public import botan.cert.x509.crl_ent;
 import botan.asn1.asn1_time;
 import botan.cert.x509.x509cert;
 import botan.cert.x509.x509_crl;
 import botan.cert.x509.x509_ext;
-import botan.cert.x509.crl_ent;
 import botan.pubkey.pkcs8;
 import botan.pubkey.pubkey;
 import botan.cert.x509.pkcs10;

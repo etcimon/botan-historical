@@ -213,7 +213,7 @@ public:
     * Decode a BER encoded BOOLEAN
     */
     BERDecoder decode(ref bool output,
-                          ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                      ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
         obj.assertIsA(type_tag, class_tag);
@@ -243,6 +243,7 @@ public:
         
         return this;
     }
+
     /*
     * Decode a BER encoded INTEGER
     */

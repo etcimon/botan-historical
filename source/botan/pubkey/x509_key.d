@@ -141,9 +141,10 @@ import botan.pubkey.algo.ecdsa;
 import botan.cert.x509.x509self;
 import botan.cert.x509.x509path;
 import botan.cert.x509.x509_ca;
+import botan.asn1.asn1_time;
 import botan.cert.x509.pkcs10;
 
-ulong keyId(const PublicKey* key)
+ulong keyId(in PublicKey key)
 {
     Pipe pipe = Pipe(new HashFilter("SHA-1", 8));
     pipe.startMsg();
@@ -167,7 +168,7 @@ ulong keyId(const PublicKey* key)
 /* Return some option sets */
 X509CertOptions caOpts()
 {
-    X509_Cert_Options opts = X509_Cert_Options("Test CA/US/Botan Project/Testing");
+    X509CertOptions opts = X509CertOptions("Test CA/US/Botan Project/Testing");
     
     opts.uri = "http://botan.randombit.net";
     opts.dns = "botan.randombit.net";
@@ -180,7 +181,7 @@ X509CertOptions caOpts()
 
 X509CertOptions reqOpts1()
 {
-    X509_Cert_Options opts = X509_Cert_Options("Test User 1/US/Botan Project/Testing");
+    X509CertOptions opts = X509CertOptions("Test User 1/US/Botan Project/Testing");
     
     opts.uri = "http://botan.randombit.net";
     opts.dns = "botan.randombit.net";
@@ -191,7 +192,7 @@ X509CertOptions reqOpts1()
 
 X509CertOptions reqOpts2()
 {
-    X509_Cert_Options opts = X509_Cert_Options("Test User 2/US/Botan Project/Testing");
+    X509CertOptions opts = X509CertOptions("Test User 2/US/Botan Project/Testing");
     
     opts.uri = "http://botan.randombit.net";
     opts.dns = "botan.randombit.net";
@@ -208,10 +209,10 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
     PublicKey copy_pub = x509_key.copyKey(orig);
     
     const string passphrase = "I need work! -Mr. T";
-    DataSourceMemory enc_source = pkcs8.PEM_encode(orig, rng, passphrase);
+    auto enc_source = scoped!DataSourceMemory(pkcs8.PEM_encode(orig, rng, passphrase));
     PrivateKey copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
     
-    ulong orig_id = keyId(&orig);
+    ulong orig_id = keyId(orig);
     ulong pub_id = keyId(copy_pub);
     ulong priv_id = keyId(copy_priv);
     ulong priv_enc_id = keyId(copy_priv_enc);
@@ -255,7 +256,7 @@ unittest
     PKCS10Request user2_req = x509self.createCertReq(reqOpts2(), user2_key, hash_fn, rng);
     
     /* Create the CA object */
-    X509_CA ca = X509_CA(ca_cert, ca_key, hash_fn);
+    X509CA ca = X509CA(ca_cert, ca_key, hash_fn);
     
     /* Sign the requests to create the certs */
     X509Certificate user1_cert = ca.signRequest(user1_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
@@ -268,16 +269,16 @@ unittest
     
     store.addCertificate(ca_cert);
     
-    Path_Validation_Restrictions restrictions = Path_Validation_Restrictions(false);
+    PathValidationRestrictions restrictions = PathValidationRestrictions(false);
     
-    Path_Validation_Result result_u1 = x509PathValidate(user1_cert, restrictions, store);
+    PathValidationResult result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (!result_u1.successfulValidation())
     {
         writeln("FAILED: User cert #1 did not validate - " ~ result_u1.resultString());
         ++fails;
     }
     
-    Path_Validation_Result result_u2 = x509PathValidate(user2_cert, restrictions, store);
+    PathValidationResult result_u2 = x509PathValidate(user2_cert, restrictions, store);
     if (!result_u2.successfulValidation())
     {
         writeln("FAILED: User cert #2 did not validate - " ~ result_u2.resultString());
@@ -288,7 +289,7 @@ unittest
     
     Vector!CRLEntry revoked;
     revoked.pushBack(CRLEntry(user1_cert, CESSATION_OF_OPERATION));
-    revoked.pushBack(user2_cert);
+    revoked.pushBack(CRLEntry(user2_cert));
     
     X509CRL crl2 = ca.updateCRL(crl1, revoked, rng);
     

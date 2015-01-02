@@ -27,9 +27,13 @@ import botan.test;
 import botan.codec.hex;
 import botan.libstate.lookup;
 import botan.filters.filters;
+import core.atomic;
 
-private __gshared size_t total_tests;
-SecureVector!ubyte runMode(string algo, CipherDir dir, in SecureVector!ubyte pt, in SecureVector!ubyte nonce, in SecureVector!ubyte key)
+private shared size_t total_tests;
+SecureVector!ubyte runMode(string algo, CipherDir dir, 
+                           in SecureVector!ubyte pt, 
+                           in SecureVector!ubyte nonce, 
+                           in SecureVector!ubyte key)
 {
     /*
     Unique!CipherMode cipher = getCipher(algo, dir);
@@ -41,9 +45,9 @@ SecureVector!ubyte runMode(string algo, CipherDir dir, in SecureVector!ubyte pt,
     cipher.finish(ct);
     */
     
-    Pipe pipe = Pipe(getCipher(algo, SymmetricKey(key), InitializationVector(nonce), dir));
+    Pipe pipe = Pipe(getCipher(algo, SymmetricKey(key.dup), InitializationVector(nonce.dup), dir));
     
-    pipe.processMsg(pt);
+    pipe.processMsg(pt.ptr, pt.length);
     
     return pipe.readAll();
 }
@@ -75,7 +79,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
 }
 
 unittest {
-    auto test = (string input)
+    auto test = delegate(string input)
     {
         File vec = File(input, "r");
         

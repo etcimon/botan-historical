@@ -21,10 +21,11 @@ import std.datetime;
 
 alias CRLEntry = FreeListRef!CRLEntryImpl;
 
+alias CRLCode = uint;
 /**
 * X.509v2 CRL Reason Code.
 */
-enum CRLCode {
+enum : CRLCode {
     UNSPECIFIED             = 0,
     KEY_COMPROMISE          = 1,
     CA_COMPROMISE           = 2,
@@ -72,7 +73,7 @@ public:
     override void decodeFrom(BERDecoder source)
     {
         BigInt serial_number_bn;
-        m_reason = CRLCode.UNSPECIFIED;
+        m_reason = UNSPECIFIED;
         
         BERDecoder entry = source.startCons(ASN1Tag.SEQUENCE);
         
@@ -116,7 +117,7 @@ public:
     this(bool throw_on_unknown_critical_extension)
     {
         m_throw_on_unknown_critical = throw_on_unknown_critical_extension;
-        m_reason = CRLCode.UNSPECIFIED;
+        m_reason = UNSPECIFIED;
     }
 
     /**
@@ -124,7 +125,7 @@ public:
     * @param cert = the certificate to revoke
     * @param reason = the reason code to set in the entry
     */
-    this(in X509CertificateImpl cert, CRLCode why = CRLCode.UNSPECIFIED)
+    this(in X509CertificateImpl cert, CRLCode why = UNSPECIFIED)
     {
         m_throw_on_unknown_critical = false;
         m_serial = cert.serialNumber();

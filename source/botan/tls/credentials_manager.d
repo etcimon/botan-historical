@@ -23,10 +23,9 @@ import botan.utils.types;
 * and "tls-server". Context represents a hostname, email address,
 * username, or other identifier.
 */
-class TLSCredentialsManager
+abstract class TLSCredentialsManager
 {
 public:
-    ~this() {}
 
     /**
     * Return a list of the certificates of CAs that we trust in this
@@ -149,7 +148,7 @@ public:
     * @param context = specifies a context relative to type.
     * @return true if we should attempt SRP authentication
     */
-    abstract bool attemptSrp(in string, in string)
+    abstract bool attemptSrp(in string type, in string context)
     {
         return false;
     }

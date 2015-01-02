@@ -58,7 +58,7 @@ public:
     /*
     * Create a DSA private key
     */
-    this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = BigInt(0))
+    this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
     {
         
         if (x_arg == 0)
@@ -260,7 +260,7 @@ import botan.pubkey.pubkey;
 import botan.codec.hex;
 
 import core.atomic;
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t testPkKeygen(RandomNumberGenerator rng) {
     size_t fails;
@@ -269,7 +269,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!DSAPrivateKey(rng, DLGroup(dsa));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(&key, rng);
+        fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
     
     return fails;

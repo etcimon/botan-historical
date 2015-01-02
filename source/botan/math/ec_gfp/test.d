@@ -18,16 +18,16 @@ import botan.utils.types;
 
 string toString(PointGFp point) {
     import std.array : Appender;
-    Appender!string output;
-    output ~= "(" ~ point.getAffineX() ~ " " ~ point.getAffineY() ~ " )";
-    return output.data;
+    Vector!ubyte output;
+    output ~= "(" ~ point.getAffineX().toString() ~ " " ~ point.getAffineY().toString() ~ " )";
+    return output[].idup;
 }
 
-PointGFp createRandomPoint(RandomNumberGenerator rng, const CurveGFp curve)
+PointGFp createRandomPoint(RandomNumberGenerator rng, in CurveGFp curve)
 {
     const BigInt p = curve.getP();
     
-    ModularReducer mod_p = ModularReducer(p);
+    ModularReducer mod_p = ModularReducer(p.dup);
     
     while(true)
     {
@@ -36,13 +36,13 @@ PointGFp createRandomPoint(RandomNumberGenerator rng, const CurveGFp curve)
         BigInt x3 = mod_p.multiply(x, mod_p.square(x));
         
         BigInt ax = mod_p.multiply(curve.getA(), x);
-        
+
         BigInt bx3 = mod_p.multiply(curve.getB(), x3);
         
         BigInt y = mod_p.reduce(ax + bx3);
         
-        if (ressol(y, p) > 0)
-            return PointGFp(curve, x, y);
+        if (ressol(y, p.dup) > 0)
+            return PointGFp(curve.dup, x, y);
     }
 }
 
@@ -72,43 +72,43 @@ size_t testPointTurnOnSpRedMul()
     
     BigInt d = BigInt("459183204582304");
     
-    PointGFp r1 = d * p_G;
+    PointGFp r1 = p_G.dup * d;
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
-    PointGFp p_G2 = PointGFp(p_G);
+    PointGFp p_G2 = PointGFp(p_G.dup);
     
-    PointGFp r2 = d * p_G2;
-    mixin( CHECK_MESSAGE( r1 == r2, "error with point mul after extra turn on sp red mul" ) );
+    PointGFp r2 = p_G2.dup * d;
+    mixin( CHECK_MESSAGE( `r1 == r2`, "error with point mul after extra turn on sp red mul" ) );
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
-    PointGFp p_r1 = r1;
-    PointGFp p_r2 = r2;
+    PointGFp p_r1 = r1.dup;
+    PointGFp p_r2 = r2.dup;
     
-    p_r1 *= 2;
-    p_r2 *= 2;
-    mixin( CHECK_MESSAGE( p_r1.getAffineX() == p_r2.getAffineX(), "error with mult2 after extra turn on sp red mul" ) );
+    p_r1 *= BigInt(2);
+    p_r2 *= BigInt(2);
+    mixin( CHECK_MESSAGE( `p_r1.getAffineX() == p_r2.getAffineX()`, "error with mult2 after extra turn on sp red mul" ) );
     mixin( CHECK(` p_r1.getAffineX() != 0 `) );
     mixin( CHECK(` p_r2.getAffineX() != 0 `) );
-    r1 *= 2;
+    r1 *= BigInt(2);
     
-    r2 *= 2;
+    r2 *= BigInt(2);
     
-    mixin( CHECK_MESSAGE( r1 == r2, "error with mult2 after extra turn on sp red mul" ) );
-    mixin( CHECK_MESSAGE( r1.getAffineX() == r2.getAffineX(), "error with mult2 after extra turn on sp red mul" ) );
+    mixin( CHECK_MESSAGE( `r1 == r2`, "error with mult2 after extra turn on sp red mul" ) );
+    mixin( CHECK_MESSAGE( `r1.getAffineX() == r2.getAffineX()`, "error with mult2 after extra turn on sp red mul" ) );
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     r1 += p_G;
     r2 += p_G2;
     
-    mixin( CHECK_MESSAGE( r1 == r2, "error with op+= after extra turn on sp red mul" ) );
+    mixin( CHECK_MESSAGE( `r1 == r2`, "error with op+= after extra turn on sp red mul" ) );
     
     r1 += p_G;
     r2 += p_G2;
     
-    mixin( CHECK_MESSAGE( r1 == r2, "error with op+= after extra turn on sp red mul for both operands" ) );
+    mixin( CHECK_MESSAGE( `r1 == r2`, "error with op+= after extra turn on sp red mul for both operands" ) );
     r1 += p_G;
     r2 += p_G2;
     
-    mixin( CHECK_MESSAGE( r1 == r2, "error with op+= after extra turn on sp red mul for both operands" ) );
+    mixin( CHECK_MESSAGE( `r1 == r2`, "error with op+= after extra turn on sp red mul for both operands" ) );
     return fails;
 }
 
@@ -133,15 +133,15 @@ size_t testCoordinates()
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1 );
+    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1.dup );
     PointGFp p0 = p_G;
-    PointGFp p1 = p_G * 2;
+    PointGFp p1 = p_G * BigInt(2);
     PointGFp point_exp = PointGFp(secp160r1, exp_affine_x, exp_affine_y);
     if (!point_exp.onTheCurve())
         throw new InternalError("Point not on the curve");
     
-    mixin( CHECK_MESSAGE(  p1.getAffineX() == exp_affine_x, " p1_x = " ~ p1.getAffineX() ~ " \n" ~ "exp_x = " ~ exp_affine_x ~ " \n" ) );
-    mixin( CHECK_MESSAGE(  p1.getAffineY() == exp_affine_y, " p1_y = " ~ p1.getAffineY() ~ " \n" ~ "exp_y = " ~ exp_affine_y ~ " \n" ) );
+    mixin( CHECK_MESSAGE(  `p1.getAffineX() == exp_affine_x`, " p1_x = ` ~ p1.getAffineX().toString() ~ ` \n` ~ `exp_x = ` ~ exp_affine_x.toString() ~ ` \n" ) );
+    mixin( CHECK_MESSAGE(  `p1.getAffineY() == exp_affine_y`, " p1_y = ` ~ p1.getAffineY().toString() ~ ` \n` ~ `exp_y = ` ~ exp_affine_y.toString() ~ ` \n" ) );
     return fails;
 }
 
@@ -164,13 +164,13 @@ size_t testPointTransformation ()
     
     // get a vailid point
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
-    PointGFp p = dom_pars.getBasePoint();
+    PointGFp p = dom_pars.getBasePoint().dup;
     
     // get a copy
     PointGFp q = p;
     
-    mixin( CHECK_MESSAGE(  p.getAffineX() == q.getAffineX(), "affine_x changed during copy" ) );
-    mixin( CHECK_MESSAGE(  p.getAffineY() == q.getAffineY(), "affine_y changed during copy" ) );
+    mixin( CHECK_MESSAGE(  `p.getAffineX() == q.getAffineX()`, "affine_x changed during copy" ) );
+    mixin( CHECK_MESSAGE(  `p.getAffineY() == q.getAffineY()`, "affine_y changed during copy" ) );
     return fails;
 }
 
@@ -184,10 +184,10 @@ size_t testPointMult ()
     
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
     Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
-    PointGFp p_G = OS2ECP(sv_G_secp_comp, curve);
+    PointGFp p_G = OS2ECP(sv_G_secp_comp, curve.dup);
     
     BigInt d_U = BigInt("0xaa374ffc3ce144e6b073307972cb6d57b2a4e982");
-    PointGFp Q_U = d_U * p_G;
+    PointGFp Q_U = p_G * d_U;
     
     mixin( CHECK(` Q_U.getAffineX() == BigInt("466448783855397898016055842232266600516272889280") `) );
     mixin( CHECK(` Q_U.getAffineY() == BigInt("1110706324081757720403272427311003102474457754220") `) );
@@ -212,8 +212,8 @@ size_t testPointNegative()
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1 );
-    
-    PointGFp p1 = p_G *= 2;
+    p_G *= BigInt(2);
+    PointGFp p1 = p_G;
     
     mixin( CHECK(` p1.getAffineX() == BigInt("16984103820118642236896513183038186009872590470") `) );
     mixin( CHECK(` p1.getAffineY() == BigInt("1373093393927139016463695321221277758035357890939") `) );
@@ -244,7 +244,7 @@ size_t testZeropoint()
         throw new InternalError("Point not on the curve");
     p1 -= p1;
     
-    mixin( CHECK_MESSAGE( p1.isZero(), "p - q with q = p is not zero!" ) );
+    mixin( CHECK_MESSAGE( `p1.isZero()`, "p - q with q = p is not zero!" ) );
     return fails;
 }
 
@@ -257,21 +257,21 @@ size_t testZeropointEncDec()
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     
-    PointGFp p = PointGFp(curve);
-    mixin( CHECK_MESSAGE( p.isZero(), "by constructor created zeropoint is no zeropoint!" ) );
+    PointGFp p = PointGFp(curve.dup);
+    mixin( CHECK_MESSAGE( `p.isZero()`, "by constructor created zeropoint is no zeropoint!" ) );
     
     
-    Vector!ubyte sv_p = unlock(EC2OSP(p, PointGFp.UNCOMPRESSED));
-    PointGFp p_encdec = OS2ECP(sv_p, curve);
-    mixin( CHECK_MESSAGE( p == p_encdec, "encoded-decoded (uncompressed) point is not equal the original!" ) );
+    Vector!ubyte sv_p = unlock(EC2OSP(p.dup, PointGFp.UNCOMPRESSED));
+    PointGFp p_encdec = OS2ECP(sv_p, curve.dup);
+    mixin( CHECK_MESSAGE( `p == p_encdec`, "encoded-decoded (uncompressed) point is not equal the original!" ) );
     
-    sv_p = unlock(EC2OSP(p, PointGFp.UNCOMPRESSED));
+    sv_p = unlock(EC2OSP(p.dup, PointGFp.UNCOMPRESSED));
+    p_encdec = OS2ECP(sv_p, curve.dup);
+    mixin( CHECK_MESSAGE( `p == p_encdec`, "encoded-decoded (compressed) point is not equal the original!" ) );
+    
+    sv_p = unlock(EC2OSP(p.dup, PointGFp.HYBRID));
     p_encdec = OS2ECP(sv_p, curve);
-    mixin( CHECK_MESSAGE( p == p_encdec, "encoded-decoded (compressed) point is not equal the original!" ) );
-    
-    sv_p = unlock(EC2OSP(p, PointGFp.HYBRID));
-    p_encdec = OS2ECP(sv_p, curve);
-    mixin( CHECK_MESSAGE( p == p_encdec, "encoded-decoded (hybrid) point is not equal the original!" ) );
+    mixin( CHECK_MESSAGE( `p == p_encdec`, "encoded-decoded (hybrid) point is not equal the original!" ) );
     return fails;
 }
 
@@ -286,25 +286,25 @@ size_t testCalcWithZeropoint()
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     
-    PointGFp p = PointGFp(curve,
+    PointGFp p = PointGFp(curve.dup,
                           BigInt("16984103820118642236896513183038186009872590470"),
                           BigInt("1373093393927139016463695321221277758035357890939"));
     
     if (!p.onTheCurve())
         throw new InternalError("Point not on the curve");
-    mixin( CHECK_MESSAGE( !p.isZero(), "created is zeropoint, shouldn't be!" ) );
+    mixin( CHECK_MESSAGE( `!p.isZero()`, "created is zeropoint, shouldn't be!" ) );
     
     PointGFp zero = PointGFp(curve);
-    mixin( CHECK_MESSAGE( zero.isZero(), "by constructor created zeropoint is no zeropoint!" ) );
+    mixin( CHECK_MESSAGE( `zero.isZero()`, "by constructor created zeropoint is no zeropoint!" ) );
     
     PointGFp res = p + zero;
-    mixin( CHECK_MESSAGE( res == p, "point + zeropoint is not equal the point" ) );
+    mixin( CHECK_MESSAGE( `res == p`, "point + zeropoint is not equal the point" ) );
     
     res = p - zero;
-    mixin( CHECK_MESSAGE( res == p, "point - zeropoint is not equal the point" ) );
+    mixin( CHECK_MESSAGE( `res == p`, "point - zeropoint is not equal the point" ) );
     
-    res = zero * 32432243;
-    mixin( CHECK_MESSAGE( res.isZero(), "zeropoint * skalar is not a zero-point!" ) );
+    res = zero * BigInt(32432243);
+    mixin( CHECK_MESSAGE( `res.isZero()`, "zeropoint * skalar is not a zero-point!" ) );
     return fails;
 }
 
@@ -325,10 +325,11 @@ size_t testAddPoint()
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1 );
+    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1.dup );
     
-    PointGFp p0 = p_G;
-    PointGFp p1 = p_G *= 2;
+    PointGFp p0 = p_G.dup;
+    p_G *= BigInt(2);
+    PointGFp p1 = p_G;
     
     p1 += p0;
     
@@ -362,10 +363,11 @@ size_t testSubPoint()
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1 );
+    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1.dup );
     
-    PointGFp p0 = p_G;
-    PointGFp p1 = p_G *= 2;
+    PointGFp p0 = p_G.dup;
+    p_G *= BigInt(2);
+    PointGFp p1 = p_G;
     
     p1 -= p0;
     
@@ -398,10 +400,11 @@ size_t testMultPoint()
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1 );
+    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1.dup );
     
-    PointGFp p0 = p_G;
-    PointGFp p1 = p_G *= 2;
+    PointGFp p0 = p_G.dup;
+    p_G *= BigInt(2);
+    PointGFp p1 = p_G;
     
     p1 *= p0.getAffineX();
     
@@ -429,27 +432,27 @@ size_t testBasicOperations()
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     
-    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1 );
+    PointGFp p_G = OS2ECP( sv_G_secp_comp, secp160r1.dup );
     
-    PointGFp p0 = p_G;
+    PointGFp p0 = p_G.dup;
     
-    PointGFp expected = PointGFp(secp160r1,
+    PointGFp expected = PointGFp(secp160r1.dup,
                                  BigInt("425826231723888350446541592701409065913635568770"),
                                  BigInt("203520114162904107873991457957346892027982641970"));
     
     mixin( CHECK(` p0 == expected `) );
-    
-    PointGFp p1 = p_G *= 2;
+    p_G *= BigInt(2);
+    PointGFp p1 = p_G;
     
     mixin( CHECK(` p1.getAffineX() == BigInt("16984103820118642236896513183038186009872590470") `) );
     mixin( CHECK(` p1.getAffineY() == BigInt("1373093393927139016463695321221277758035357890939") `) );
     
     PointGFp simplePlus = p1 + p0;
-    PointGFp exp_simplePlus = PointGFp(secp160r1,
+    PointGFp exp_simplePlus = PointGFp(secp160r1.dup,
                                        BigInt("704859595002530890444080436569091156047721708633"),
                                        BigInt("1147993098458695153857594941635310323215433166682"));
     if (simplePlus != exp_simplePlus)
-        writeln(simplePlus ~ " != " ~ exp_simplePlus);
+        writeln(simplePlus.toString() ~ " != " ~ exp_simplePlus.toString());
     
     PointGFp simpleMinus= p1 - p0;
     PointGFp exp_simpleMinus = PointGFp(secp160r1,
@@ -458,7 +461,7 @@ size_t testBasicOperations()
     
     mixin( CHECK(` simpleMinus == exp_simpleMinus `) );
     
-    PointGFp simpleMult= p1 * 123456789;
+    PointGFp simpleMult= p1.dup * BigInt(123456789);
     
     mixin( CHECK(` simpleMult.getAffineX() == BigInt("43638877777452195295055270548491599621118743290") `) );
     mixin( CHECK(` simpleMult.getAffineY() == BigInt("56841378500012376527163928510402662349220202981") `) );
@@ -589,7 +592,7 @@ size_t testEncDecUncompressed521()
     string result = hexEncode(&sv_result[0], sv_result.length);
     string exp_result = hexEncode(&sv_G_secp_uncomp[0], sv_G_secp_uncomp.length);
     
-    mixin( CHECK_MESSAGE(  sv_result == sv_G_secp_uncomp, "\ncalc. result = " ~ result ~ "\nexp. result = " ~ exp_result ~ " \n" ) );
+    mixin( CHECK_MESSAGE(  `sv_result == sv_G_secp_uncomp`, "\ncalc. result = ` ~ result ~ `\nexp. result = ` ~ exp_result ~ ` \n" ) );
     return fails;
 }
 
@@ -613,7 +616,7 @@ size_t testEncDecUncompressed521PrimeTooLarge()
     BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
     BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
     
-    CurveGFp secp521r1 (bi_p_secp, bi_a_secp, bi_b_secp);
+    CurveGFp secp521r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     Unique!PointGFp p_G;
     bool exc = false;
     try
@@ -627,7 +630,7 @@ size_t testEncDecUncompressed521PrimeTooLarge()
         exc = true;
     }
     
-    mixin( CHECK_MESSAGE( exc, "attempt of creation of point on curve with too high prime did not throw an exception" ) );
+    mixin( CHECK_MESSAGE( `exc`, "attempt of creation of point on curve with too high prime did not throw an exception" ) );
     return fails;
 }
 
@@ -639,13 +642,13 @@ size_t testGfpStoreRestore()
     //ECGroup dom_pars = global_config().get_ec_dompar("1.3.132.0.8");
     //ECGroup dom_pars = ECGroup("1.3.132.0.8");
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
-    PointGFp p = dom_pars.getBasePoint();
+    PointGFp p = dom_pars.getBasePoint().dup;
     
     //store point (to string)
     Vector!ubyte sv_mes = unlock(EC2OSP(p, PointGFp.COMPRESSED));
-    PointGFp new_p = OS2ECP(sv_mes, dom_pars.getCurve());
+    PointGFp new_p = OS2ECP(sv_mes, dom_pars.getCurve().dup);
     
-    mixin( CHECK_MESSAGE(  p == new_p, "original and restored point are different!" ) );
+    mixin( CHECK_MESSAGE(  `p == new_p`, "original and restored point are different!" ) );
     return fails;
 }
 
@@ -692,7 +695,7 @@ size_t testMoreZeropoint()
     BigInt bi_b = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p, bi_a, bi_b);
     
-    PointGFp p1 = PointGFp(curve,
+    PointGFp p1 = PointGFp(curve.dup,
                            BigInt("16984103820118642236896513183038186009872590470"),
                            BigInt("1373093393927139016463695321221277758035357890939"));
     
@@ -706,19 +709,19 @@ size_t testMoreZeropoint()
         throw new InternalError("Point not on the curve");
     
     BigInt y1 = p1.getAffineY();
-    y1 = curve.getP() - y1;
+    y1 = curve.getP().dup - y1;
     
-    CHECK_MESSAGE(p1.getAffineX() == minus_p1.getAffineX(),
+    CHECK_MESSAGE(`p1.getAffineX() == minus_p1.getAffineX()`,
                   "problem with minus_p1 : x");
-    CHECK_MESSAGE(minus_p1.getAffineY() == y1,
+    CHECK_MESSAGE(`minus_p1.getAffineY() == y1`,
                   "problem with minus_p1 : y");
     
     PointGFp zero = PointGFp(curve);
     if (!zero.onTheCurve())
         throw new InternalError("Point not on the curve");
-    mixin( CHECK_MESSAGE( p1 + zero == p1, "addition of zero modified point" ) );
+    mixin( CHECK_MESSAGE( `p1 + zero == p1`, "addition of zero modified point" ) );
     
-    mixin( CHECK_MESSAGE( shouldBeZero.isZero(), "p - q with q = p is not zero!" ) );
+    mixin( CHECK_MESSAGE( `shouldBeZero.isZero()`, "p - q with q = p is not zero!" ) );
     return fails;
 }
 
@@ -728,10 +731,10 @@ size_t testMultByOrder()
     
     // generate point
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
-    PointGFp p = dom_pars.getBasePoint();
+    PointGFp p = dom_pars.getBasePoint().dup;
     PointGFp shouldBeZero = p * dom_pars.getOrder();
     
-    mixin( CHECK_MESSAGE( shouldBeZero.isZero(), "G * order != O" ) );
+    mixin( CHECK_MESSAGE( `shouldBeZero.isZero()`, "G * order != O" ) );
     return fails;
 }
 
@@ -771,8 +774,8 @@ size_t testMultSecMass()
     {
         PointGFp a = PointGFp(createRandomPoint(rng, dom_pars.getCurve()));
         BigInt scal = BigInt(BigInt(rng, 40));
-        PointGFp b = a * scal;
-        PointGFp c = PointGFp(a);
+        PointGFp b = a.dup * scal;
+        PointGFp c = PointGFp(a.dup);
         
         c *= scal;
         mixin( CHECK(` b == c `) );
@@ -785,7 +788,7 @@ size_t testCurveCpCtor()
     try
     {
         ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
-        CurveGFp curve = CurveGFp(dom_pars.getCurve());
+        CurveGFp curve = dom_pars.getCurve().dup;
     }
     catch (Throwable)
     {

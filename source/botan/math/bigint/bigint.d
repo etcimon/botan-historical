@@ -388,7 +388,7 @@ public:
             clear();
             growTo(2);
             (*m_reg)[0] = result;
-            return result;
+            return;
         }
         
         word remainder = 0;
@@ -1308,6 +1308,11 @@ public:
 
     BigInt dup() const {
         return BigInt((*m_reg).dup, m_signedness);
+    }
+
+    const ~this() { 
+        SecureVector!(word)* reg_ = cast(SecureVector!(word)*)m_reg;
+        delete reg_; 
     }
 private:
     SecureVector!(word)* m_reg;

@@ -71,6 +71,8 @@ public:
         super(m_priv);
     }
 
+    this(RandomNumberGenerator rng, in ECGroup domain) { this(rng, domain, BigInt(0)); }
+
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(m_priv); }
 
     alias m_priv this;
@@ -95,7 +97,7 @@ public:
 
     this(in ECPrivateKey key) 
     {
-        m_curve = key.domain().getCurve();
+        m_curve = key.domain().getCurve().dup;
         m_cofactor = key.domain().getCofactor();
         m_l_times_priv = inverseMod(m_cofactor, key.domain().getOrder()) * key.privateValue();
     }
@@ -112,7 +114,7 @@ public:
                                   m_curve.getP().bytes());
     }
 private:
-    const CurveGFp m_curve;
+    CurveGFp m_curve;
     const BigInt m_cofactor;
     BigInt m_l_times_priv;
 }
@@ -123,6 +125,7 @@ import botan.test;
 import botan.pubkey.pubkey;
 import botan.cert.x509.x509self;
 import botan.asn1.der_enc;
+import botan.rng.auto_rng;
 
 size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
 {
@@ -160,9 +163,9 @@ size_t testEcdhSomeDp(RandomNumberGenerator rng)
     oids.pushBack("1.3.132.0.8");
     oids.pushBack("1.2.840.10045.3.1.1");
     // 3 tests
-    foreach (oid_str; oids)
+    foreach (oid_str; oids[])
     {
-        OID oid = OID(oids_str);
+        OID oid = OID(oid_str);
         ECGroup dom_pars = ECGroup(oid);
         
         ECDHPrivateKey private_a = scoped!ECDHPrivateKey(rng, dom_pars);
@@ -174,7 +177,7 @@ size_t testEcdhSomeDp(RandomNumberGenerator rng)
         SymmetricKey alice_key = ka.deriveKey(32, private_b.publicValue());
         SymmetricKey bob_key = kb.deriveKey(32, private_a.publicValue());
         
-        mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.toString() ~ ", Bob's key was: " ~ bob_key.toString() ) );
+        mixin( CHECK_MESSAGE( `alice_key == bob_key`, "different keys - Alice s key was: ` ~ alice_key.toString() ~ `, Bob's key was: ` ~ bob_key.toString() ~ `" ) );
     }
     
     return fails;
@@ -189,7 +192,7 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
     oids.pushBack("1.3.132.0.8");
     oids.pushBack("1.2.840.10045.3.1.1");
     // 3 tests
-    foreach (oid_str; oids)
+    foreach (oid_str; oids[])
     {
         OID oid = OID(oid_str);
         ECGroup dom_pars = ECGroup(oid);
@@ -206,7 +209,7 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
         SymmetricKey alice_key = ka.deriveKey(32, key_b);
         SymmetricKey bob_key = kb.deriveKey(32, key_a);
         
-        mixin( CHECK_MESSAGE( alice_key == bob_key, "different keys - " ~ "Alice's key was: " ~ alice_key.toString() ~ ", Bob's key was: " ~ bob_key.toString() ) );
+        mixin( CHECK_MESSAGE( `alice_key == bob_key`, "different keys - Alice's key was: ` ~ alice_key.toString() ~ `, Bob's key was: ` ~ bob_key.toString() ~ `" ) );
         
     }
     

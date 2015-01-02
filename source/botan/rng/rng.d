@@ -17,7 +17,7 @@ import botan.utils.types : Unique;
 /**
 * This class represents a random number (RNG) generator object.
 */
-class RandomNumberGenerator
+abstract class RandomNumberGenerator
 {
 public:
     /**
@@ -54,7 +54,7 @@ public:
     * @param bytes = number of bytes in the result
     * @return randomized vector of length bytes
     */
-    final SecureVector!ubyte randomVec(size_t bytes)
+    abstract SecureVector!ubyte randomVec(size_t bytes)
     {
         SecureVector!ubyte output = SecureVector!ubyte(bytes);
         randomize(output.ptr, output.length);
@@ -102,8 +102,6 @@ public:
     */
     abstract void addEntropy(const(ubyte)* input, size_t length);
 
-    this() {}
-    ~this() {}
 }
 
 /**
@@ -145,20 +143,22 @@ public:
         synchronized(m_mtx) m_rng.clear();
     }
 
-    override   @property string name() const
+    override @property string name() const
     {
         synchronized(m_mtx) return m_rng.name;
     }
 
-    override  void reseed(size_t poll_bits)
+    override void reseed(size_t poll_bits)
     {
         synchronized(m_mtx) m_rng.reseed(poll_bits);
     }
 
-    override  void addEntropy(const(ubyte)* input, size_t len)
+    override void addEntropy(const(ubyte)* input, size_t len)
     {
         synchronized(m_mtx) m_rng.addEntropy(input, len);
     }
+
+    override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
 
     this()
     {

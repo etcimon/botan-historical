@@ -850,14 +850,14 @@ final class CRLReasonCode : CertificateExtension
 public:
     override CRLReasonCode copy() const { return new CRLReasonCode(m_reason); }
 
-    this(CRLCode r = CRLCode.UNSPECIFIED) { m_reason = r; }
+    this(CRLCode r = UNSPECIFIED) { m_reason = r; }
 
     CRLCode getReason() const { return m_reason; }
 
 protected:
     override string oidName() const { return "X509v3.ReasonCode"; }
 
-    override bool shouldEncode() const { return (m_reason != CRLCode.UNSPECIFIED); }
+    override bool shouldEncode() const { return (m_reason != UNSPECIFIED); }
     /*
     * Encode the extension
     */

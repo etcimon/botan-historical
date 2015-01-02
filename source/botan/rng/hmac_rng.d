@@ -158,6 +158,8 @@ public:
         reseed(BOTAN_RNG_RESEED_POLL_BITS);
     }
 
+    override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
+
     /**
     * @param extractor = a MAC used for extracting the entropy
     * @param prf = a MAC used as a PRF using HKDF construction
@@ -203,6 +205,7 @@ public:
         */
         m_extractor.setKey(prf.process("Botan HMAC_RNG XTS"));
     }
+
 private:
     Unique!MessageAuthenticationCode m_extractor;
     Unique!MessageAuthenticationCode m_prf;

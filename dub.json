@@ -23,11 +23,7 @@
             "Entropy_HRTimer", "Entropy_Rdrand", "Entropy_DevRand", "Entropy_EGD", "Entropy_UnixProc", "Entropy_CAPI", 
             "Entropy_Win32", "Entropy_ProcWalk", "EMSA1", "EMSA1_BSI", "EMSA_X931", "EMSA_PKCS1", "EMSA_PSSR", "EMSA_RAW", "EME_OAEP", 
             "EME_PKCS1v15", "PBE_PKCSv20", "GCM_CLMUL", "X931_RNG", "HMAC_DRBG", "KDF1", "KDF2", "SSL_V3_PRF", "TLS_V10_PRF", "TLS_V12_PRF", "X942_PRF"]
-        },
-        {
-            "name": "openssl",
-            "dependencies": { "openssl": "1.1.3+1.0.1g" },
-            "versions": ["OpenSSL"]
         }
-    ]
+    ],
+	"libs": ["sqlite3", "dl", "bz2", "lzma"]
 }

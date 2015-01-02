@@ -78,6 +78,8 @@ public:
         rekey();
     }
 
+    override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
+
     /**
     * @param cipher = the block cipher to use in this PRNG
     * @param rng = the underlying PRNG for generating inputs

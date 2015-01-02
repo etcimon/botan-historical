@@ -2,6 +2,7 @@ module botan.tls.test;
 import botan.constants;
 static if (BOTAN_TEST && BOTAN_HAS_TLS):
 
+import botan.test;
 import botan.rng.auto_rng;
 import botan.tls.server;
 import botan.tls.client;
@@ -12,11 +13,13 @@ import botan.pubkey.algo.rsa;
 import botan.codec.hex;
 import botan.utils.memory.memory;
 import botan.utils.types;
+import std.stdio;
+import std.datetime;
 
 class TLSCredentialsManagerTest : TLSCredentialsManager
 {
 public:
-    this(in X509Certificate server_cert, in X509Certificate ca_cert, PrivateKey server_key) 
+    this(X509Certificate server_cert, X509Certificate ca_cert, PrivateKey server_key) 
     {
         m_server_cert = server_cert;
         m_ca_cert = ca_cert;
@@ -69,6 +72,41 @@ public:
     {
         return m_key;
     }
+
+    // Interface fallthrough
+
+    override Vector!X509Certificate certChainSingleType(in string cert_key_type,
+                                                        in string type,
+                                                        in string context)
+    { return super.certChainSingleType(cert_key_type, type, context); }
+
+    override bool attemptSrp(in string type, in string context)
+    { return super.attemptSrp(type, context); }
+
+    override string srpIdentifier(in string type, in string context)
+    { return super.srpIdentifier(type, context); }
+
+    override string srpPassword(in string type, in string context, in string identifier)
+    { return super.srpPassword(type, context, identifier); }
+
+    override bool srpVerifier(in string type,
+                              in string context,
+                              in string identifier,
+                              ref string group_name,
+                              ref BigInt verifier,
+                              ref Vector!ubyte salt,
+                              bool generate_fake_on_unknown)
+    { return super.srpVerifier(type, context, identifier, group_name, verifier, salt, generate_fake_on_unknown); }
+
+    override string pskIdentityHint(in string type, in string context)
+    { return super.pskIdentityHint(type, context); }
+
+    override string pskIdentity(in string type, in string context, in string identity_hint)
+    { return super.pskIdentity(type, context, identity_hint); }
+
+    override SymmetricKey psk(in string type, in string context, in string identity)
+    { return super.psk(type, context, identity); }
+
 public:
     X509Certificate m_server_cert, m_ca_cert;
     PrivateKey m_key;
@@ -79,7 +117,7 @@ TLSCredentialsManager createCreds(RandomNumberGenerator rng)
 {
     PrivateKey ca_key = new RSAPrivateKey(rng, 1024);
     
-    X509_Cert_Options ca_opts;
+    X509CertOptions ca_opts;
     ca_opts.common_name = "Test CA";
     ca_opts.country = "US";
     ca_opts.cAKey(1);
@@ -88,17 +126,17 @@ TLSCredentialsManager createCreds(RandomNumberGenerator rng)
     
     PrivateKey server_key = new RSAPrivateKey(rng, 1024);
     
-    X509_Cert_Options server_opts;
+    X509CertOptions server_opts;
     server_opts.common_name = "localhost";
     server_opts.country = "US";
     
     PKCS10Request req = x509self.createCertReq(server_opts, server_key, "SHA-256", rng);
     
-    X509_CA ca = X509_CA(ca_cert, ca_key, "SHA-256");
+    X509CA ca = X509CA(ca_cert, ca_key, "SHA-256");
     
     auto now = Clock.currTime(UTC());
     X509Time start_time = X509Time(now);
-    X509Time end_time = X509Time(now + 1.years);
+    X509Time end_time = X509Time(now + 365.days);
     
     X509Certificate server_cert = ca.signRequest(req, rng, start_time, end_time);
     
@@ -110,32 +148,32 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
                             TLSCredentialsManager creds,
                             TLSPolicy policy)
 {
-    auto server_sessions = scoped!TLSSessionManagerInMemory(rng);
-    auto client_sessions = scoped!TLSSessionManagerInMemory(rng);
+    auto server_sessions = new TLSSessionManagerInMemory(rng);
+    auto client_sessions = new TLSSessionManagerInMemory(rng);
     
     Vector!ubyte c2s_q, s2c_q, c2s_data, s2c_data;
     
-    auto handshake_complete = (in TLSSession session) {
+    auto handshake_complete = delegate(in TLSSession session) {
         if (session.Version() != offer_version)
             writeln("Wrong version negotiated");
         return true;
     };
     
-    auto print_alert = (TLSAlert alert, in ubyte[])
+    auto print_alert = delegate(in TLSAlert alert, in ubyte[])
     {
         if (alert.isValid())
             writeln("TLSServer recvd alert " ~ alert.typeString());
     };
     
-    auto save_server_data = (in ubyte[] buf) {
+    auto save_server_data = delegate(in ubyte[] buf) {
         c2s_data.insert(buf);
     };
     
-    auto save_client_data = (in ubyte[] buf) {
+    auto save_client_data = delegate(in ubyte[] buf) {
         s2c_data.insert(buf);
     };
     
-    auto server = scoped!TLSServer((in ubyte[] buf) { s2c_q.insert(buf); },
+    auto server = new TLSServer((in ubyte[] buf) { s2c_q.insert(buf); },
                                 save_server_data,
                                 print_alert,
                                 handshake_complete,
@@ -143,9 +181,9 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
                                 creds,
                                 policy,
                                 rng,
-                                ["test/1", "test/2"]);
+                                Vector!string(["test/1", "test/2"]));
     
-    auto next_protocol_chooser = (Vector!string protos) {
+    auto next_protocol_chooser = delegate(in Vector!string protos) {
         if (protos.length != 2)
             writeln("Bad protocol size");
         if (protos[0] != "test/1" || protos[1] != "test/2")
@@ -153,7 +191,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         return "test/3";
     };
     
-    auto client = scoped!TLSClient((in ubyte[] buf) { c2s_q.insert(buf); },
+    auto client = new TLSClient((in ubyte[] buf) { c2s_q.insert(buf); },
                                     save_client_data,
                                     print_alert,
                                     handshake_complete,
@@ -182,7 +220,8 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         * handshake.
         */
         Vector!ubyte input;
-        swap(c2s_q, input);
+
+        c2s_q.swap(input);
         
         try
         {
@@ -195,7 +234,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         }
         
         input.clear();
-        swap(s2c_q, input);
+        s2c_q.swap(input);
         
         try
         {
@@ -242,14 +281,14 @@ unittest
 {
     size_t errors = 0;
     
-    Test_Policy default_policy;
+    TestPolicy default_policy;
     AutoSeededRNG rng;
     TLSCredentialsManager basic_creds = createCreds(rng);
     
-    errors += basicTestHandshake(rng, TLSProtocolVersion.SSL_V3, basic_creds, default_policy);
-    errors += basicTestHandshake(rng, TLSProtocolVersion.TLS_V10, basic_creds, default_policy);
-    errors += basicTestHandshake(rng, TLSProtocolVersion.TLS_V11, basic_creds, default_policy);
-    errors += basicTestHandshake(rng, TLSProtocolVersion.TLS_V12, basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion(TLSProtocolVersion.SSL_V3), basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion(TLSProtocolVersion.TLS_V10), basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion(TLSProtocolVersion.TLS_V11), basic_creds, default_policy);
+    errors += basicTestHandshake(rng, TLSProtocolVersion(TLSProtocolVersion.TLS_V12), basic_creds, default_policy);
     
     testReport("TLS", 4, errors);
 

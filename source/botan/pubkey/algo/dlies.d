@@ -163,15 +163,17 @@ private:
 
 static if (BOTAN_TEST):
 import botan.test;
+import botan.utils.parsing;
 import botan.pubkey.test;
 import botan.codec.hex;
 import botan.rng.auto_rng;
 import botan.pubkey.pubkey;
 import botan.libstate.lookup;
 import botan.pubkey.algo.dh;
+import std.conv : to;
 import core.atomic;
 
-__gshared size_t total_tests;
+shared size_t total_tests;
 
 size_t dliesKat(string p,
                  string g,
@@ -194,17 +196,17 @@ size_t dliesKat(string p,
     auto to = scoped!DHPrivateKey(rng, domain, x2_bn);
     
     const string opt_str = "KDF2(SHA-1)/HMAC(SHA-1)/16";
-    
-    Vector!string options = splitOn(opt_str, '/');
+
+    Vector!string options = splitter(opt_str, '/');
     
     if (options.length != 3)
         throw new Exception("DLIES needs three options: " ~ opt_str);
     
-    const size_t mac_key_len = to!uint(options[2]);
+    const size_t mac_key_len = .to!uint(options[2]);
     
-    auto e = scoped!DLIESEncryptor(from, getKdf(options[0]), getMac(options[1]), mac_key_len);
+    auto e = scoped!DLIESEncryptor(from, getKdf(options[0]), retrieveMac(options[1]).clone(), mac_key_len);
     
-    auto d = scoped!DLIESDecryptor(to, getKdf(options[0]), getMac(options[1]), mac_key_len);
+    auto d = scoped!DLIESDecryptor(to, getKdf(options[0]), retrieveMac(options[1]).clone(), mac_key_len);
     
     e.setOtherKey(to.publicValue());
     

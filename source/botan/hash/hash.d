@@ -37,7 +37,7 @@ import botan.libstate.libstate;
 import botan.codec.hex;
 import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t hashTest(string algo, string in_hex, string out_hex)
 {
@@ -45,7 +45,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
     
     const auto providers = af.providersOf(algo);
     size_t fails = 0;
-    atomicOp!"+="(total_tests, 1);
+    atomicOp!"+="(total_tests, cast(size_t)1);
     if (providers.empty)
     {
         writeln("Unknown algo " ~ algo);
@@ -101,7 +101,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
 unittest
 {
-    auto test = (string input)
+    auto test = delegate(string input)
     {
         File vec = File(input, "r");
 

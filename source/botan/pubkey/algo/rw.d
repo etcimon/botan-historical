@@ -63,8 +63,8 @@ public:
 
     this(RandomNumberGenerator rng,
          BigInt p, BigInt q,
-         BigInt e, BigInt d = BigInt(0),
-         BigInt n = BigInt(0))
+         BigInt e, BigInt d = 0,
+         BigInt n = 0)
     {
         m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
         super(m_priv);
@@ -268,7 +268,7 @@ import botan.rng.auto_rng;
 import botan.codec.hex;
 import core.atomic;
 
-__gshared size_t total_tests;
+shared size_t total_tests;
 __gshared immutable string padding = "EMSA2(SHA-1)";
 
 size_t testPkKeygen(RandomNumberGenerator rng)
@@ -277,7 +277,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     size_t fails;
     auto rw1024 = scoped!RWPrivateKey(rng, 1024);
     rw1024.checkKey(rng, true);
-    fails += validateSaveAndLoad(&rw1024, rng);
+    fails += validateSaveAndLoad(rw1024.Scoped_payload, rng);
     return fails;
 }
 size_t rwSigKat(string e,

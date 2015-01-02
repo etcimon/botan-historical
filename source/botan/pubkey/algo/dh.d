@@ -11,6 +11,7 @@ static if (BOTAN_HAS_DIFFIE_HELLMAN):
 
 public import botan.pubkey.algo.dl_algo;
 public import botan.pubkey.pubkey;
+public import botan.math.ec_gfp.ec_group;
 import botan.math.numbertheory.pow_mod;
 import botan.pubkey.blinding;
 import botan.pubkey.pk_ops;
@@ -83,7 +84,7 @@ public:
     * @param grp = the group to be used in the key
     * @param x_args = the key's secret value (or if zero, generate a new key)
     */
-    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = BigInt(0))
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
         
         if (x_arg == 0)
@@ -103,6 +104,7 @@ public:
         super(m_priv);
     }
 
+    this(RandomNumberGenerator rng, DLGroup grp) { this(rng, grp, BigInt(0)); }
     this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
@@ -163,9 +165,10 @@ import botan.rng.auto_rng;
 import botan.pubkey.pubkey;
 import botan.pubkey.algo.dh;
 import botan.codec.hex;
+import botan.asn1.oids;
 import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t testPkKeygen(RandomNumberGenerator rng)
 {
@@ -175,9 +178,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (dh; dh_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!DHPrivateKey(rng, ECGroup(OIDS.lookup(dh)));
+        auto key = scoped!DHPrivateKey(rng, DLGroup(dh));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(&key, rng);
+        fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
     
     return fails;

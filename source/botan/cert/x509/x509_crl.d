@@ -66,7 +66,7 @@ public:
         {
             if (cert_serial == revoked.serialNumber())
             {
-                if (revoked.reasonCode() == CRLCode.REMOVE_FROM_CRL)
+                if (revoked.reasonCode() == REMOVE_FROM_CRL)
                     is_revoked = false;
                 else
                     is_revoked = true;

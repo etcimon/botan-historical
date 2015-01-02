@@ -136,7 +136,7 @@ struct CryptoBox {
     * @param input = the input data
     * @param passphrase = the passphrase used to encrypt the message
     */
-    string decrypt(in string input, in string passphrase)
+    static string decrypt(in string input, in string passphrase)
     {
         return decrypt(cast(const(ubyte)*)(input.ptr), input.length, passphrase);
     }

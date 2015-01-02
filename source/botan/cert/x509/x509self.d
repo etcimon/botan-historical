@@ -12,10 +12,10 @@ alias x509self = botan.cert.x509.x509self;
 
 public import botan.cert.x509.x509_ca;
 public import botan.cert.x509.x509cert;
+public import botan.asn1.asn1_time;
 import botan.cert.x509.pkcs10;
 import botan.cert.x509.x509_ext;
 import botan.cert.x509.key_constraint;
-import botan.asn1.asn1_time;
 import botan.asn1.oids;
 import botan.asn1.der_enc;
 import botan.asn1.asn1_attribute;

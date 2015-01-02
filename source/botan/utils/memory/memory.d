@@ -334,7 +334,7 @@ struct FreeListRef(T, bool INIT = true)
         return ret;
     }
     
-    ~this() const
+    const ~this()
     {
         (cast(FreeListRef)this).dtor();
     }

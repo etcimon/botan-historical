@@ -17,20 +17,20 @@ static if (BOTAN_TEST && BOTAN_HAS_X509_CERTIFICATES):
 import botan.test;
 import botan.cert.x509.x509path;
 import botan.utils.types;
+import std.file;
+import std.array;
 
 Vector!string dirListing(string dir_name)
 {
     Vector!string paths;
     
-    foreach (file; dirEntries(dir_name, "*.vec").sort!`a.name < b.name`())
+    foreach (file; dirEntries(dir_name, "*.vec", SpanMode.depth).array.sort!`a.name < b.name`())
     {    
         paths.pushBack(file.name);
     }
     
     return paths;
 }
-
-CertificateStatusCode[size_t] getExpected();
 
 /*
   The expected results are essentially the error codes that best coorespond
@@ -41,9 +41,10 @@ CertificateStatusCode[size_t] getExpected();
   what they "should" be: these changes are marked as such, and have comments
   explaining the problem at hand.
 */
-CertificateStatusCode[size_t] getExpected()
+CertificateStatusCode[] getExpected()
 {
-    CertificateStatusCode[size_t] expected_results;
+    CertificateStatusCode[] expected_results;
+    expected_results.length = 75;
     
     /* OK, not a super great way of doing this... */
     expected_results[1] = CertificateStatusCode.VERIFIED;
@@ -170,7 +171,7 @@ unittest
     size_t skipped = 0;
     size_t ran = 0;
     
-    auto expected_results = getExpected();
+    CertificateStatusCode[] expected_results = getExpected();
     
     try {
         
@@ -220,19 +221,19 @@ unittest
             foreach(crl; crls[])
             {
                 DataSourceStream input = scoped!DataSourceStream(crl);
-                X509CRL crl = X509CRL(input);
-                store.addCrl(crl);
+                X509CRL crl_ = X509CRL(input);
+                store.addCrl(crl_);
             }
             
-            auto restrictions = Path_Validation_Restrictions(true);
+            auto restrictions = PathValidationRestrictions(true);
             
-            Path_Validation_Result validation_result = x509PathValidate(end_user,restrictions, store);
+            PathValidationResult validation_result = x509PathValidate(end_user,restrictions, store);
             auto expected = expected_results[test_no];
             CertificateStatusCode result = validation_result.result();
             if (result != expected)
-                writeln("NIST X.509 test #" ~ test_no ~ " : ");
-            const string result_str = Path_Validation_Result.statusString(result);
-            const string exp_str = Path_Validation_Result.statusString(expected);
+                writeln("NIST X.509 test #", test_no, " : ");
+            const string result_str = PathValidationResult.statusString(result);
+            const string exp_str = PathValidationResult.statusString(expected);
             if (expected == CertificateStatusCode.VERIFIED) {
                 writeln("unexpected failure: " ~ result_str);
                 unexp_failure++;

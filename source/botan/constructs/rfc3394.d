@@ -145,9 +145,9 @@ import botan.test;
 import botan.codec.hex;
 import botan.libstate.libstate;
 
-size_t keywrapTest(const char* key_str,
-                    const char* expected_str,
-                    const char* kek_str)
+size_t keywrapTest(string key_str,
+                   string expected_str,
+                   string kek_str)
 {
     size_t fail = 0;
     
@@ -163,8 +163,7 @@ size_t keywrapTest(const char* key_str,
         
         if (enc != expected.bitsOf())
         {
-            writeln("NIST key wrap encryption failure: "
-                    << hexEncode(enc) ~ " != " ~ hexEncode(expected.bitsOf()));
+            writeln("NIST key wrap encryption failure: ", hexEncode(enc), " != ", hexEncode(expected.bitsOf()));
             fail++;
         }
         
@@ -185,7 +184,7 @@ size_t keywrapTest(const char* key_str,
     return fail;
 }
 
-size_t testKeywrap()
+unittest
 {
     size_t fails = 0;
     
@@ -214,4 +213,5 @@ size_t testKeywrap()
                           "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F");
     
     testReport("rfc3394", 6, fails);
+
 }

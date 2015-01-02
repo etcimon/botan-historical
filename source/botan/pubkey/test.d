@@ -16,17 +16,19 @@ import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
 import botan.pubkey.pubkey;
 import botan.rng.auto_rng;
+import botan.utils.mem_ops;
 import botan.filters.filters;
+import botan.filters.hex_filt;
 import botan.math.numbertheory.numthry;
 
 void dumpData(in Vector!ubyte output, in Vector!ubyte expected)
 {
     Pipe pipe = Pipe(new HexEncoder);
     
-    pipe.processMsg(output);
-    pipe.processMsg(expected);
-    writeln("Got: " ~ pipe.readAllAsString(0));
-    writeln("Exp: " ~ pipe.readAllAsString(1));
+    pipe.processMsg(output.dup);
+    pipe.processMsg(expected.dup);
+    writeln("Got: " ~ pipe.toString(0));
+    writeln("Exp: " ~ pipe.toString(1));
 }
 
 size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
@@ -95,14 +97,14 @@ ubyte nonzeroByte(RandomNumberGenerator rng)
     return b;
 }
 
-string pKTEST(string expr, string msg) 
+string PKTEST(string expr, string msg) 
 {
     return `
         {
             const bool test_result = ` ~ expr ~ `;
             if (!test_result)
             {
-                writeln("Test " ~ ` ~ expr ~ ` ~ " failed: " ~ msg);
+                writeln("Test " ~ ` ~ expr ~ ` ~ " failed: ` ~ msg ~ `");
                 ++fails;
             }
         }
@@ -115,7 +117,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
 {
     Vector!ubyte message = hexDecode(input);
     Vector!ubyte expected = hexDecode(exp);
-    Fixed_Output_RNG rng = scoped!Fixed_Output_RNG(hexDecode(random));
+    FixedOutputRNG rng = scoped!FixedOutputRNG(hexDecode(random));
     
     size_t fails = 0;
     
@@ -138,13 +140,13 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     
     if (algo.canFind("/Raw") == -1)
     {
-        AutoSeededRNG rng;
+        AutoSeededRNG arng;
         
         for(size_t i = 0; i != ctext.length; ++i)
         {
-            Vector!ubyte bad_ctext = ctext;
+            Vector!ubyte bad_ctext = ctext.dup;
             
-            bad_ctext[i] ^= nonzeroByte(rng);
+            bad_ctext[i] ^= nonzeroByte(arng);
             
             assert(bad_ctext != ctext, "Made them different");
             
@@ -163,19 +165,19 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     return fails;
 }
 
-size_t validateSignature(PKVerifier v, PKSigner s, string algo,
-                          string input,
-                          RandomNumberGenerator rng,
-                          string exp)
+size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
+                         string input,
+                         RandomNumberGenerator rng,
+                         string exp)
 {
     return validateSignature(v, s, algo, input, rng, rng, exp);
 }
 
-size_t validateSignature(PKVerifier v, PKSigner s, string algo,
-                          string input,
-                          RandomNumberGenerator signer_rng,
-                          RandomNumberGenerator test_rng,
-                          string exp)    
+size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
+                         string input,
+                         RandomNumberGenerator signer_rng,
+                         RandomNumberGenerator test_rng,
+                         string exp)    
 {
     Vector!ubyte message = hexDecode(input);
     Vector!ubyte expected = hexDecode(exp);
@@ -209,13 +211,13 @@ size_t validateSignature(PKVerifier v, PKSigner s, string algo,
     return fails;
 }
 
-size_t validateSignature(PKVerifier v, PKSigner s, string algo,
-                          string input,
-                          RandomNumberGenerator rng,
-                          string random,
-                          string exp)
+size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
+                         string input,
+                         RandomNumberGenerator rng,
+                         string random,
+                         string exp)
 {
-    Fixed_Output_RNG fixed_rng = scoped!Fixed_Output_RNG(hexDecode(random));
+    FixedOutputRNG fixed_rng = scoped!FixedOutputRNG(hexDecode(random));
     
     return validateSignature(v, s, algo, input, fixed_rng, rng, exp);
 }

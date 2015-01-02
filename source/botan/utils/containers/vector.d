@@ -721,6 +721,8 @@ struct VectorImpl(T, ALLOCATOR)
         
         _data._payload = _data._payload[0 .. $ - 1];
     }
+
+    void removeFront() { this.length = this.length - 1; }
     /// ditto
     alias stableRemoveBack = removeBack;
     

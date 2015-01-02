@@ -543,7 +543,7 @@ Vector!ubyte ocbDecrypt(in SymmetricKey key,
     
     ocb.start(&nonce[0], nonce.length);
     
-    SecureVector!ubyte buf = SecureVector!ubyte(ct[0 .. ct+ct_len]);
+    SecureVector!ubyte buf = SecureVector!ubyte(ct[0 .. ct_len]);
     ocb.finish(buf, 0);
     
     return unlock(buf);
@@ -561,7 +561,7 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     
     ocb.start(&nonce[0], nonce.length);
     
-    SecureVector!ubyte buf = SecureVector!ubyte(pt[0 .. pt+pt_len]);
+    SecureVector!ubyte buf = SecureVector!ubyte(pt[0 .. pt_len]);
     ocb.finish(buf, 0);
     
     try
@@ -602,8 +602,8 @@ Vector!ubyte ocbEncrypt(OCBEncryption ocb,
     ocb.setAssociatedData(&ad[0], ad.length);
     
     ocb.start(&nonce[0], nonce.length);
-    
-    SecureVector!ubyte buf = SecureVector!ubyte(pt.ptr[0 .. $]);
+
+    SecureVector!ubyte buf = SecureVector!ubyte(pt.ptr[0 .. pt.length]);
     ocb.finish(buf, 0);
     
     return unlock(buf);

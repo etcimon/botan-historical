@@ -36,9 +36,9 @@ public:
     * @param rng = the random number generator to use
     */
     static Vector!RTSS split(ubyte M, ubyte N,
-                                   const(ubyte)* S, ushort S_len,
-                                   in ubyte[16] identifier,
-                                   RandomNumberGenerator rng)
+                             const(ubyte)* S, size_t S_len,
+                             in ubyte[16] identifier,
+                             RandomNumberGenerator rng)
     {
         if (M == 0 || N == 0 || M > N)
             throw new EncodingError("split: M == 0 or N == 0 or M > N");
@@ -317,11 +317,11 @@ unittest
     
     ubyte[16] id;
     for(int i = 0; i != 16; ++i)
-        id[i] = i;
+        id[i] = cast(ubyte)i;
     
     const SecureVector!ubyte S = hexDecodeLocked("7465737400");
     
-    Vector!RTSS shares = RTSS.split(2, 4, &S[0], S.length, id, rng);
+    Vector!RTSS shares = RTSS.split(cast(ubyte)2, cast(ubyte)4, cast(const(ubyte)*)&S[0], S.length, id, rng);
     
     auto back = RTSS.reconstruct(shares);
     

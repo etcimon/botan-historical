@@ -92,7 +92,7 @@ public:
     * @param n = if specified, this must be n = p * q. Leave it as 0
     * if you wish to the constructor to calculate it.
     */
-    this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = BigInt(0), BigInt n = BigInt(0))
+    this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = 0, BigInt n = 0)
     {
         m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
         super(m_priv);
@@ -283,7 +283,7 @@ import botan.pubkey.pubkey;
 import botan.codec.hex;
 import core.atomic;
 
-__gshared size_t total_tests;
+shared size_t total_tests;
 
 
 size_t rsaesKat(string e,
@@ -361,16 +361,20 @@ size_t rsaSigVerify(string e,
 size_t testPkKeygen(RandomNumberGenerator rng)
 {
 
+    size_t fails;
+
     auto rsa1024 = scoped!RSAPrivateKey(rng, 1024);
     rsa1024.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
-    fails += validateSaveAndLoad(&rsa1024, rng);
+
+    fails += validateSaveAndLoad(rsa1024.Scoped_payload, rng);
     
     auto rsa2048 = scoped!RSAPrivateKey(rng, 2048);
     rsa2048.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
-    fails += validateSaveAndLoad(&rsa2048, rng);
+    fails += validateSaveAndLoad(rsa2048.Scoped_payload, rng);
 
+    return fails;
 }
 
 unittest

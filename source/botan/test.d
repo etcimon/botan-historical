@@ -9,6 +9,7 @@ public import std.string : indexOf, lastIndexOf;
 public import botan.utils.types;
 public import botan.libstate.libstate;
 import std.file;
+import std.array;
 import std.exception;
 
 @property bool ok(File f) { return f.isOpen && !f.eof() && !f.error(); }
@@ -51,7 +52,7 @@ Vector!string listDir(string dir_path)
 {
     Vector!string paths;
     
-    foreach (file; dirEntries(dir_path, "*.vec").sort!`a.name < b.name`())
+    foreach (file; dirEntries(dir_path, "*.vec", SpanMode.depth).array.sort!`a.name < b.name`())
     {    
         paths.pushBack(file.name);
     }
@@ -65,7 +66,7 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
     import core.atomic;
     shared(size_t) shared_fails;
     
-    foreach (vec; parallel(listDir(dir))) {
+    foreach (vec; parallel(listDir(dir)[])) {
         size_t local_fails = fn(vec);
         atomicOp!"+="(shared_fails, local_fails);
     }
@@ -78,10 +79,10 @@ void testReport(string name, size_t ran, size_t failed)
     writeln(name);
     
     if(ran > 0)
-        writeln(" " ~ ran ~ " tests");
+        writeln(" ", ran, " tests");
     
     if(failed)
-        writeln(" " ~ failed ~ " FAILs");
+        writeln(" ", failed, " FAILs");
     else
         writeln(" all ok");
 }
@@ -135,7 +136,7 @@ size_t runTestsBb(ref File src,
         vars[key] = val;
         
         if(key == name_key)
-            fixed_name.clear();
+            fixed_name.length = 0;
         
         if(key == output_key)
         {
@@ -147,19 +148,19 @@ size_t runTestsBb(ref File src,
                 
                 if(fails)
                 {
-                    writeln(vars[name_key] ~ " test " ~ algo_count ~ " : " ~ fails ~ " failure");
+                    writeln(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
                     algo_fail += fails;
                 }
             }
             catch(Exception e)
             {
-                writeln(vars[name_key] ~ " test " ~ algo_count ~ " failed: " ~ e.msg);
+                writeln(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
                 ++algo_fail;
             }
             
             if(clear_between_cb)
             {
-                vars.clear();
+                vars = string[string].init;
                 vars[name_key] = fixed_name;
             }
         }

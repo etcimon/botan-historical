@@ -50,8 +50,9 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.libstate.libstate;
 import botan.codec.hex;
+import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
 {
@@ -67,7 +68,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
         ++fails;
     }
     
-    foreach (provider; providers)
+    foreach (provider; providers[])
     {
         atomicOp!"+="(total_tests, 1);
         auto proto = af.prototypeMac(algo, provider);
@@ -98,7 +99,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
 }
 
 unittest {    
-    auto test = (string input) {
+    auto test = delegate(string input) {
         File vec = File(input, "r");
         
         return runTestsBb(vec, "Mac", "Out", true,

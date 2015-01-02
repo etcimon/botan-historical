@@ -118,7 +118,7 @@ public:
     void opOpAssign(string op)(in PointGFp rhs)
         if (op == "-")
     {
-        PointGFp minus_rhs = PointGFp(rhs).negate();
+        PointGFp minus_rhs = PointGFp(rhs.dup).negate();
         
         if (isZero())
             this = minus_rhs;
@@ -135,7 +135,7 @@ public:
     void opOpAssign(string op)(in BigInt scalar)
         if (op == "*")
     {
-        this = scalar * this;
+        this = this * scalar;
     }
 
     /**
@@ -427,10 +427,12 @@ public:
         // If this is zero, only equal if other is also zero
         if (isZero())
             return other.isZero();
-        
+
         return (getAffineX() == other.getAffineX() &&
                 getAffineY() == other.getAffineY());
     }
+
+    @trusted const ~this() { }
 
 private:
 

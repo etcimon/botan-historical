@@ -159,14 +159,14 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.codec.hex;
 import core.atomic;
-size_t total_tests;
+shared size_t total_tests;
 
 size_t aeadTest(string algo, string input, string expected, string nonce_hex, string ad_hex, string key_hex)
 {
     atomicOp!"+="(total_tests, 5);
-    const auto nonce = hexDecodeLocked(nonce_hex);
-    const auto ad = hexDecodeLocked(ad_hex);
-    const auto key = hexDecodeLocked(key_hex);
+    const SecureVector!ubyte nonce = hexDecodeLocked(nonce_hex);
+    const SecureVector!ubyte ad = hexDecodeLocked(ad_hex);
+    const SecureVector!ubyte key = hexDecodeLocked(key_hex);
     
     Unique!CipherMode enc = getAead(algo, ENCRYPTION);
     Unique!CipherMode dec = getAead(algo, DECRYPTION);
@@ -184,10 +184,10 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     size_t fail = 0;
     
-    const auto pt = hexDecodeLocked(input);
-    const auto expected_ct = hexDecodeLocked(expected);
+    const SecureVector!ubyte pt = hexDecodeLocked(input);
+    const SecureVector!ubyte expected_ct = hexDecodeLocked(expected);
     
-    auto vec = pt;
+    SecureVector!ubyte vec = pt.dup;
     enc.startVec(nonce);
     // should first update if possible
     enc.finish(vec);
@@ -199,7 +199,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
         ++fail;
     }
     
-    vec = expected_ct;
+    vec = expected_ct.dup;
     
     dec.startVec(nonce);
     dec.finish(vec);
@@ -212,7 +212,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     if (enc.authenticated())
     {
-        vec = expected_ct;
+        vec = expected_ct.dup;
         vec[0] ^= 1;
         dec.startVec(nonce);
         try
@@ -227,7 +227,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
         {
             auto bad_nonce = nonce;
             bad_nonce[0] ^= 1;
-            vec = expected_ct;
+            vec = expected_ct.dup;
             
             dec.startVec(bad_nonce);
             
@@ -242,7 +242,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
         
         if (auto aead_dec = cast(AEADMode)(*dec))
         {
-            auto bad_ad = ad;
+            SecureVector!ubyte bad_ad = ad.dup;
             
             if (ad.length)
                 bad_ad[0] ^= 1;
@@ -251,7 +251,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             
             aead_dec.setAssociatedDataVec(bad_ad);
             
-            vec = expected_ct;
+            vec = expected_ct.dup;
             dec.startVec(nonce);
             
             try
@@ -269,7 +269,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
 
 unittest
 {
-    auto test = (string input)
+    auto test = delegate(string input)
     {
         File vec = File(input, "r");
         

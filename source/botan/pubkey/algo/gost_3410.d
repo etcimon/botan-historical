@@ -135,7 +135,7 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0))
+    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = 0)
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2);
         m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
@@ -166,7 +166,7 @@ public:
     this(in ECPrivateKey gost_3410)
     {
         assert(gost_3410.algoName == GOST3410PublicKey.algoName);
-        m_base_point = gost_3410.domain().getBasePoint();
+        m_base_point = gost_3410.domain().getBasePoint().dup;
         m_order = gost_3410.domain().getOrder();
         m_x = gost_3410.privateValue();
     }
@@ -208,7 +208,7 @@ public:
     }
 
 private:
-    const PointGFp m_base_point;
+    PointGFp m_base_point;
     const BigInt m_order;
     const BigInt m_x;
 }
@@ -230,8 +230,8 @@ public:
     this(in ECPublicKey gost) 
     {
         assert(gost.algoName == GOST3410PublicKey.algoName);
-        m_base_point = gost.domain().getBasePoint();
-        m_public_point = gost.publicPoint();
+        m_base_point = gost.domain().getBasePoint().dup;
+        m_public_point = gost.publicPoint().dup;
         m_order = gost.domain().getOrder();
     }
 
@@ -273,9 +273,10 @@ public:
         
         return (R.getAffineX() == r);
     }
+    const ~this() { destroy(cast(GOST3410VerificationOperation)this); }
 private:
-    const PointGFp m_base_point;
-    const PointGFp m_public_point;
+    PointGFp m_base_point;
+    PointGFp m_public_point;
     const BigInt m_order;
 }
 
@@ -303,7 +304,7 @@ import botan.asn1.oids;
 import botan.codec.hex;
 import core.atomic;
 
-private __gshared size_t total_tests;
+private shared size_t total_tests;
 
 size_t testPkKeygen(RandomNumberGenerator rng)
 {
@@ -315,7 +316,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
         atomicOp!"+="(total_tests, 1);
         auto key = scoped!GOST3410PrivateKey(rng, ECGroup(OIDS.lookup(gost)));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(&key, rng);
+        fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
     
     return fails;
@@ -331,7 +332,7 @@ size_t gostVerify(string group_id,
     AutoSeededRNG rng;
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-    PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve());
+    PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve().dup);
     
     auto gost = scoped!GOST3410PublicKey(group, public_point);
     
