@@ -279,6 +279,8 @@ public:
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing tls/test.d ...");
     size_t errors = 0;
     
     TestPolicy default_policy;

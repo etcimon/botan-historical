@@ -215,13 +215,15 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing dh.d ...");
     size_t fails = 0;
 
     AutoSeededRNG rng;
 
     fails += testPkKeygen(rng);
 
-    File dh_sig = File("test_data/pubkey/dh.vec", "r");
+    File dh_sig = File("../test_data/pubkey/dh.vec", "r");
     
     fails += runTestsBb(dh_sig, "DH Kex", "K", true,
                           (string[string] m) {

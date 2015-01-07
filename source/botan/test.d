@@ -4,7 +4,7 @@ import botan.constants;
 static if (BOTAN_TEST):
 
 public import std.stdio : File, writeln;
-public import std.algorithm : sort, canFind;
+public import std.algorithm : sort, canFind, walkLength;
 public import std.string : indexOf, lastIndexOf;
 public import botan.utils.types;
 public import botan.libstate.libstate;
@@ -48,26 +48,29 @@ string CHECK (string expr) {
 }
 
 
-Vector!string listDir(string dir_path)
+string[] listDir(string dir_path)
 {
-    Vector!string paths;
-    
-    foreach (file; dirEntries(dir_path, "*.vec", SpanMode.depth).array.sort!`a.name < b.name`())
-    {    
-        paths.pushBack(file.name);
-    }
-    
-    return paths;
+	auto dirfiles = dirEntries(dir_path, "*.vec", SpanMode.depth);
+	string[] files;
+	foreach(file; dirfiles) {
+		files ~= file.name;
+	}
+	files.sort();
+    return files;
 }
 
 size_t runTestsInDir(string dir, size_t delegate(string) fn)
 {
+	assert(exists(cast(char[])dir), "Directory `" ~ dir ~ "` does not exist");
+	writeln("Running tests for directory: " ~ dir);
     import std.parallelism;
     import core.atomic;
     shared(size_t) shared_fails;
-    
-    foreach (vec; parallel(listDir(dir)[])) {
+	auto dirs = listDir(dir);
+	writeln("Found ", dirs.length, " files");
+    foreach (vec; dirs) {
         size_t local_fails = fn(vec);
+		writeln(vec, " fails: ", local_fails);
         atomicOp!"+="(shared_fails, local_fails);
     }
     
@@ -93,6 +96,7 @@ size_t runTestsBb(ref File src,
                     bool clear_between_cb,
                     size_t delegate(string[string]) cb)
 {
+	scope(failure) { writeln("failure in file: ", src.name); }
     if(src.eof || src.error)
     {
         writeln("Could not open input file for " ~ name_key);
@@ -108,9 +112,11 @@ size_t runTestsBb(ref File src,
     string line;
     while(!src.eof && !src.error)
     {
-        line = src.readln();
-        
-        if(line == "")
+
+		line = src.readln();
+		if (line.length > 0)
+			line = line[0 .. $-1];
+		else
             continue;
         
         if(line[0] == '#')
@@ -129,9 +135,9 @@ size_t runTestsBb(ref File src,
             vars[name_key] = fixed_name;
             continue;
         }
-        
-        const string key = line[0 .. line.indexOf(' ')];
-        const string val = line[line.lastIndexOf(' ') + 1 .. $];
+		assert(line[line.indexOf('=') - 1] == ' ' && line[line.indexOf('=') + 1] == ' ', "= must be wrapped with spaces");
+        const string key = line[0 .. line.indexOf('=') - 1];
+        const string val = line[line.indexOf('=') + 2 .. $];
         
         vars[key] = val;
         

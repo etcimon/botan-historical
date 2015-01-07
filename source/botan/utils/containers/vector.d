@@ -5,6 +5,10 @@ import core.exception, core.memory, core.stdc.stdlib, core.stdc.string,
     std.traits, std.typecons;
 import botan.utils.memory.memory;
 
+void TRACE(T...)(T t) {
+	//import std.stdio : writeln;
+	//writeln(t);
+}
 /**
 * Existence check for values
 */
@@ -117,7 +121,7 @@ struct VectorImpl(T, ALLOCATOR)
         // reserve
         void reserve(size_t elements)
         {
-            if (elements <= capacity) return;
+			if (elements <= capacity) return;
             immutable sz = elements * T.sizeof;
             /* Because of the transactional nature of this
              * relative to the garbage collector, ensure no
@@ -125,22 +129,32 @@ struct VectorImpl(T, ALLOCATOR)
              * than realloc.
              */
             immutable oldLength = length;
+			TRACE("Oldlength = ", oldLength);
             auto newPayload = allocArray!(T, ALLOCATOR, false)(elements)[0 .. oldLength];
-
             static if ( hasIndirections!T ) {
                 // Zero out unused capacity to prevent gc from seeing
                 // false pointers
+				TRACE("Zeroing from ", newPayload.ptr + oldLength, "length: ", (elements - oldLength) * T.sizeof);
                 memset(newPayload.ptr + oldLength, 0, (elements - oldLength) * T.sizeof);
                 GC.addRange(newPayload.ptr, sz);
             }
+
             // copy old data over to new array
-            memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
+            if (_payload) {
+				TRACE("Copying from : ", _payload.ptr, " to: ", newPayload.ptr, " length: ", T.sizeof * oldLength);
+				memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
+			}
+
+			TRACE("New payload: ", newPayload);
             auto ub = _payload.ptr[0 .. _capacity];
-            freeArray!(T, ALLOCATOR, false)(ub);
+			if (ub) {
+				TRACE("Freeing old payload");
+				freeArray!(T, ALLOCATOR, false)(ub);
 
-            static if ( hasIndirections!T )
-                GC.removeRange(cast(void*) _payload.ptr);
-
+	            static if ( hasIndirections!T )
+	                GC.removeRange(cast(void*) _payload.ptr);
+			}
+			TRACE("Reservation done. ");
             _payload = newPayload;
             _capacity = elements;
         }
@@ -149,6 +163,7 @@ struct VectorImpl(T, ALLOCATOR)
         size_t pushBack(Stuff)(Stuff stuff)
             if (isImplicitlyConvertible!(Stuff, T))
         {
+			TRACE("Vector.append");
             if (_capacity == length)
             {
                 reserve(1 + capacity * 3 / 2);
@@ -163,6 +178,7 @@ struct VectorImpl(T, ALLOCATOR)
         size_t pushBack(Stuff)(Stuff stuff)
             if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
         {
+			TRACE("Vector.append 2");
             static if (hasLength!Stuff)
             {
                 immutable oldLength = length;
@@ -410,7 +426,7 @@ struct VectorImpl(T, ALLOCATOR)
 
         Complexity: $(BIGOH 1)
      */
-    @property size_t capacity()
+    @property size_t capacity() const
     {
         return _data._capacity;
     }
@@ -584,6 +600,7 @@ struct VectorImpl(T, ALLOCATOR)
     auto opBinary(string op, Stuff)(Stuff stuff)
         if (op == "~")
     {
+		TRACE("Appending stuff");
         FreeListRef!(VectorImpl!(T, ALLOCATOR)) result;
         // @@@BUG@@ result ~= this[] doesn't work
         auto r = this[];
@@ -623,6 +640,7 @@ struct VectorImpl(T, ALLOCATOR)
      */
     void clear()
     {
+		TRACE("Vector.clear()");
         _data.length = 0;
         _data = Data.init;
     }

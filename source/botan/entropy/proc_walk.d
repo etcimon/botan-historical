@@ -13,7 +13,7 @@ import botan.entropy.entropy_src;
 import botan.utils.memory.zeroise;
 import botan.utils.types;
 import core.stdc.string;
-
+import core.stdc.config;
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.stat;
 import core.sys.posix.fcntl;
@@ -166,3 +166,8 @@ private:
     const string m_path;
     FileDescriptorSource m_dir;
 }
+
+@nogc nothrow pure private:
+bool S_ISTYPE( mode_t mode, uint mask ) { return ( mode & S_IFMT ) == mask; }
+bool S_ISDIR( mode_t mode )  { return S_ISTYPE( mode, S_IFDIR );  }
+bool S_ISREG( mode_t mode )  { return S_ISTYPE( mode, S_IFREG );  }

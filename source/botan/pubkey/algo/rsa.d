@@ -379,14 +379,16 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing rsa.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
 
     
-    File rsa_enc = File("test_data/pubkey/rsaes.vec", "r");
-    File rsa_sig = File("test_data/pubkey/rsa_sig.vec", "r");
-    File rsa_verify = File("test_data/pubkey/rsa_verify.vec", "r");
+    File rsa_enc = File("../test_data/pubkey/rsaes.vec", "r");
+    File rsa_sig = File("../test_data/pubkey/rsa_sig.vec", "r");
+    File rsa_verify = File("../test_data/pubkey/rsa_verify.vec", "r");
     
     
     fails += runTestsBb(rsa_enc, "RSA Encryption", "Ciphertext", true,

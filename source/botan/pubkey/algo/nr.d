@@ -297,13 +297,15 @@ size_t nrSigKat(string p, string q, string g, string x,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing nr.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     
-    File nr_sig = File("test_data/pubkey/nr.vec", "r");
+    File nr_sig = File("../test_data/pubkey/nr.vec", "r");
     
     fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
                           (string[string] m) {

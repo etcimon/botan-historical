@@ -311,6 +311,8 @@ import botan.codec.hex;
 
 unittest
 {    
+	import std.stdio : writeln;
+	writeln("Testing tss.d ...");
     AutoSeededRNG rng;
     
     size_t fails = 0;

@@ -23,6 +23,9 @@ http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 struct SCANToken
 {
 public:
+	static this() {
+		s_alias_map = HashMap!(string, string)();
+	}
     /**
     * @param algo_spec = A SCAN-format name
     */
@@ -205,34 +208,34 @@ public:
     static void setDefaultAliases()
     {
         // common variations worth supporting
-        addAlias("EME-PKCS1-v1_5",    "PKCS1v15");
+        addAlias("EME-PKCS1-v1_5",  "PKCS1v15");
         addAlias("3DES",            "TripleDES");
-        addAlias("DES-EDE",        "TripleDES");
-        addAlias("CAST5",            "CAST-128");
+        addAlias("DES-EDE",         "TripleDES");
+        addAlias("CAST5",           "CAST-128");
         addAlias("SHA1",            "SHA-160");
-        addAlias("SHA-1",            "SHA-160");
-        addAlias("MARK-4",            "RC4(256)");
-        addAlias("ARC4",              "RC4");
-        addAlias("OMAC",              "CMAC");
+        addAlias("SHA-1",           "SHA-160");
+        addAlias("MARK-4",          "RC4(256)");
+        addAlias("ARC4",            "RC4");
+        addAlias("OMAC",            "CMAC");
             
         addAlias("EMSA-PSS",        "PSSR");
         addAlias("PSS-MGF1",        "PSSR");
         addAlias("EME-OAEP",        "OAEP");
             
-        addAlias("EMSA2",            "EMSA_X931");
-        addAlias("EMSA3",            "EMSA_PKCS1");
-        addAlias("EMSA-PKCS1-v1_5","EMSA_PKCS1");
+        addAlias("EMSA2",           "EMSA_X931");
+        addAlias("EMSA3",           "EMSA_PKCS1");
+        addAlias("EMSA-PKCS1-v1_5", "EMSA_PKCS1");
             
             // should be renamed in sources
-        addAlias("X9.31",            "EMSA2");
+        addAlias("X9.31",           "EMSA2");
             
             // kept for compatability with old library versions
-        addAlias("EMSA4",            "PSSR");
+        addAlias("EMSA4",           "PSSR");
         addAlias("EME1",            "OAEP");
             
             // probably can be removed
         addAlias("GOST",            "GOST-28147-89");
-        addAlias("GOST-34.11",        "GOST-R-34.11-94");
+        addAlias("GOST-34.11",      "GOST-R-34.11-94");
     }
     
 

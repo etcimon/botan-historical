@@ -131,6 +131,8 @@ size_t streamTest(string algo,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing stream_cipher.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");
@@ -141,7 +143,7 @@ unittest
                             });
     };
     
-    size_t fails = runTestsInDir("test_data/stream", test);
+    size_t fails = runTestsInDir("../test_data/stream", test);
     
     testReport("stream", total_tests, fails);
 }

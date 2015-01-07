@@ -170,6 +170,10 @@ public:
 package:
     this()
     {
+
+		m_freelist = new RedBlackTree!(void[], "a.ptr < b.ptr");
+
+		version(unittest) { import std.stdio : writeln; writeln("Loading NoSwapAllocator instance ..."); }
         m_mtx = new Mutex;
         
         auto pool_size = mlock_limit();

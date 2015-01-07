@@ -65,10 +65,12 @@ public:
     override final void encode(Pipe output, X509Encoding encoding) const
     {
         const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
+		// fixme: this should be EAC11obj!Derived.tbsData() but linker fails...
+		auto tbsdata = tbsData();
         Vector!ubyte der = DEREncoder()
                             .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                             .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
-                            .rawBytes(EAC11obj!Derived.tbsData())
+                            .rawBytes(tbsdata)
                             .endCons()
                             .encode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                             .endCons()

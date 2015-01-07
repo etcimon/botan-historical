@@ -268,6 +268,8 @@ size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing bigint/test.d ...");
     import std.array;
     import std.string : strip;
     const string filename = "test_data/mp_valid.dat";

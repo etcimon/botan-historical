@@ -192,31 +192,32 @@ string stringJoin(in Vector!string strs, char delim)
 */
 Vector!uint parseAsn1Oid(in string oid)
 {
-    import std.array : Appender;
+    import std.array : Appender, array;
     Vector!ubyte substring;
     Vector!uint oid_elems;
     
+
     foreach (char c; oid)
     {
-        
         if (c == '.')
         {
             if (substring.length == 0)
                 throw new InvalidOID(oid);
-            oid_elems.pushBack(to!uint(substring[]));
+            oid_elems ~= to!uint(substring[]);
             substring.clear();
         }
-        else
+        else {
             substring ~= c;
+		}
     }
     
     if (substring.length == 0)
         throw new InvalidOID(oid);
-    oid_elems.pushBack(to!uint(substring[]));
-    
+    oid_elems ~= to!uint(substring[]);    
+	substring.clear();
+
     if (oid_elems.length < 2)
         throw new InvalidOID(oid);
-    
     return oid_elems;
 }
 

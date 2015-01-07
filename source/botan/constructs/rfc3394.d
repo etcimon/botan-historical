@@ -186,6 +186,9 @@ size_t keywrapTest(string key_str,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing rfc3394.d ...");
+
     size_t fails = 0;
     
     fails += keywrapTest("00112233445566778899AABBCCDDEEFF",

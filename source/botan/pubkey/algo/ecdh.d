@@ -218,6 +218,8 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing ecdh.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

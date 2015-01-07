@@ -168,7 +168,9 @@ SecureVector!ubyte transformTest(string algo,
 
 unittest
 {
-    File vec = File("test_data/transform.vec", "r");
+	import std.stdio : writeln;
+	writeln("Testing transform.d ...");
+    File vec = File("../test_data/transform.vec", "r");
     
     size_t fails = runTests(vec, "Transform", "Output", true,
                      (string[string] m) {

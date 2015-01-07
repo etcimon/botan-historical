@@ -169,6 +169,8 @@ import botan.rng.auto_rng;
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing cryptobox.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

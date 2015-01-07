@@ -18,6 +18,7 @@ alias SecureAllocator = ZeroiseAllocator!VulnerableAllocator;
 __gshared NoSwapAllocator gs_zeroise;
 
 shared static this() { 
+	version(unittest) { import std.stdio : writeln; writeln("Loading NoSwapAllocator ..."); }
     if (!gs_zeroise)
         gs_zeroise = new NoSwapAllocator;
 }

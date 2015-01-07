@@ -171,6 +171,8 @@ import botan.test;
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing kdf.d ...");
     auto test = delegate(string input) {
         return runTests(input, "KDF", "Output", true,
                          (string[string] vec)
@@ -187,7 +189,7 @@ unittest
         });
     };
     
-    size_t fails = runTestsInDir("test_data/kdf", test);
+    size_t fails = runTestsInDir("../test_data/kdf", test);
     
     testReport("kdf", 1, fails);
 }

@@ -58,30 +58,38 @@ static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
     import botan.entropy.proc_walk;
 
 
-alias LibraryState = FreeListRef!LibraryStateImpl;
 
 /**
 * Global Library State
 */
-class LibraryStateImpl
+final class LibraryState
 {
 public:
-    shared this()
+    this()
     {
+		import std.stdio : writeln;
+		writeln("create a mutex");
         m_entropy_src_mutex = new Mutex;
-        m_global_prng = new SerializedRNG();
     }
 
     void initialize()
     {
+		import std.stdio : writeln;
+		writeln("LibraryState.initialize()");
         if (m_initialized)
             return;
 
+		writeln("SCANToken.setDefaultAliases()");
         SCANToken.setDefaultAliases();
+		writeln("OIDS.setDefaults()");
         OIDS.setDefaults();
 
+		writeln("AlgorithmFactory.init");
         m_algorithm_factory = AlgorithmFactory.init;
         
+		writeln("new SerializedRNG()");
+		m_global_prng = new SerializedRNG();
+
         static if (BOTAN_HAS_ENGINE_GNU_MP)
             algorithmFactory().addEngine(new GMPEngine);
         

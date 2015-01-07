@@ -36,6 +36,7 @@ public:
     }
 
     ECDSASignature m_sig;
+
 protected:
 
     void init(DataSource input)

@@ -215,9 +215,11 @@ size_t dliesKat(string p,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing dlies.d ...");
     size_t fails = 0;
     
-    File dlies = File("test_data/pubkey/dlies.vec", "r");
+    File dlies = File("../test_data/pubkey/dlies.vec", "r");
     
     fails += runTestsBb(dlies, "DLIES Encryption", "Ciphertext", true,
                           (string[string] m) {

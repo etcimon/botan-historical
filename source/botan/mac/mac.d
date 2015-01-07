@@ -98,7 +98,9 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
     return fails;
 }
 
-unittest {    
+unittest {  
+	import std.stdio : writeln;
+	writeln("Testing mac.d ...");  
     auto test = delegate(string input) {
         File vec = File(input, "r");
         
@@ -108,7 +110,7 @@ unittest {
                             });
     };
     
-    size_t fails = runTestsInDir("test_data/mac", test);
+    size_t fails = runTestsInDir("../test_data/mac", test);
 
     testReport("mac", total_tests, fails);
 }

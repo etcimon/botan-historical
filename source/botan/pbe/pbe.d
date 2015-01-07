@@ -30,10 +30,6 @@ public:
     */
     abstract OID getOid() const;
 
-	override void write(const(ubyte)* input, size_t len) {
-		super.write(input, len);
-	}
-
 	override void setNext(Filter* filters, size_t size) {
 		super.setNext(filters, size);
 	}

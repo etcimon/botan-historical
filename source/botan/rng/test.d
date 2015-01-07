@@ -164,8 +164,10 @@ size_t hmacDrbgTest(string[string] m)
 
 unittest
 {
-    File hmac_drbg_vec = File("test_data/hmac_drbg.vec", "r");
-    File x931_vec = File("test_data/x931.vec", "r");
+	import std.stdio : writeln;
+	writeln("Testing rng/test.d ...");
+    File hmac_drbg_vec = File("../test_data/hmac_drbg.vec", "r");
+    File x931_vec = File("../test_data/x931.vec", "r");
     
     size_t fails = 0;
 

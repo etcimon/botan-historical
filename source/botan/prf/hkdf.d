@@ -149,7 +149,9 @@ size_t hkdfTest(string algo, string ikm, string salt, string info, string okm, s
 
 unittest
 {
-    File vec = File("test_data/hkdf.vec", "r");
+	import std.stdio : writeln;
+	writeln("Testing hkdf.d ...");
+    File vec = File("../test_data/hkdf.vec", "r");
     
     size_t fails = runTestsBb(vec, "HKDF", "OKM", true,
                                 (string[string] m)

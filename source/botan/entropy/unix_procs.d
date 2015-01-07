@@ -13,6 +13,7 @@ import botan.entropy.entropy_src;
 import botan.utils.types;
 import botan.utils.parsing;
 import std.algorithm;
+import core.stdc.config;
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.stat;
 import core.sys.posix.unistd;
@@ -354,4 +355,42 @@ void do_exec(in string[] args)
     immutable(char*) arg4 = (args.length > 4) ? args[4].toStringz : null;
     
     execl(arg0, arg0, arg1, arg2, arg3, arg4, null);
+}
+
+
+@nogc nothrow pure private:
+
+alias __fd_mask = c_long;
+enum uint __NFDBITS = 8 * __fd_mask.sizeof;
+
+auto __FDELT( int d )
+{
+	return d / __NFDBITS;
+}
+
+auto __FDMASK( int d )
+{
+	return cast(__fd_mask) 1 << ( d % __NFDBITS );
+}
+
+enum FD_SETSIZE = 1024;
+
+void FD_CLR( int fd, fd_set* fdset )
+{
+	fdset.fds_bits[__FDELT( fd )] &= ~__FDMASK( fd );
+}
+
+bool FD_ISSET( int fd, const(fd_set)* fdset )
+{
+	return (fdset.fds_bits[__FDELT( fd )] & __FDMASK( fd )) != 0;
+}
+
+void FD_SET( int fd, fd_set* fdset )
+{
+	fdset.fds_bits[__FDELT( fd )] |= __FDMASK( fd );
+}
+
+void FD_ZERO( fd_set* fdset )
+{
+	fdset.fds_bits[0 .. $] = 0;
 }

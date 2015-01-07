@@ -79,6 +79,8 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
 }
 
 unittest {
+	import std.stdio : writeln;
+	writeln("Testing cipher_mode.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");
@@ -89,7 +91,7 @@ unittest {
                             });
     };
     
-    size_t fails = runTestsInDir("test_data/modes", test);
+    size_t fails = runTestsInDir("../test_data/modes", test);
 
     testReport("cipher_mode", total_tests, fails);
 }

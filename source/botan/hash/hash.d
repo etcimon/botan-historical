@@ -101,6 +101,8 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing hash.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");
@@ -111,7 +113,7 @@ unittest
                             });
     };
     
-    size_t fails = runTestsInDir("test_data/hash", test);
+    size_t fails = runTestsInDir("../test_data/hash", test);
 
     testReport("hash", total_tests, fails);
 }

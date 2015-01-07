@@ -322,6 +322,8 @@ protected:
 }
 
 shared static this() {
+	version(unittest) { import std.stdio : writeln; writeln("Loading AES SSSE3 ..."); }
+
     low_nibs = _mm_set1_epi8!(0x0F)();
     k_ipt1 = _mm_set_epi32!(0xCABAE090, 0x52227808, 0xC2B2E898, 0x5A2A7000)();
     k_ipt2 = _mm_set_epi32!(0xCD80B1FC, 0xB0FDCC81, 0x4C01307D, 0x317C4D00)();
@@ -334,11 +336,12 @@ shared static this() {
         _mm_set_epi32!(0x00030201, 0x0C0F0E0D, 0x080B0A09, 0x04070605)(),
         _mm_set_epi32!(0x04070605, 0x00030201, 0x0C0F0E0D, 0x080B0A09)(),
         _mm_set_epi32!(0x080B0A09, 0x04070605, 0x00030201, 0x0C0F0E0D)()];
-    sr = [
+    __m128i[4] sr_ = [
         _mm_set_epi32!(0x0F0E0D0C, 0x0B0A0908, 0x07060504, 0x03020100)(),
         _mm_set_epi32!(0x0B06010C, 0x07020D08, 0x030E0904, 0x0F0A0500)(),
         _mm_set_epi32!(0x070E050C, 0x030A0108, 0x0F060D04, 0x0B020900)(),
         _mm_set_epi32!(0x0306090C, 0x0F020508, 0x0B0E0104, 0x070A0D00)()];
+	sr = sr_;
 }
 
 __gshared immutable __m128i low_nibs;
@@ -352,9 +355,9 @@ __gshared immutable __m128i k_inv2;
 __gshared immutable __m128i sb1u;
 __gshared immutable __m128i sb1t;
 
-__gshared immutable __m128i[4] mc_forward;
+__gshared immutable(__m128i)[4] mc_forward;
 
-__gshared immutable __m128i[4] sr;
+__gshared immutable(__m128i)[4] sr;
 
 package:
 

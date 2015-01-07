@@ -201,12 +201,17 @@ shared size_t total_tests;
 
 size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
 {
+	writeln("Hex decode: ", key_hex, ", ", in_hex, ", ", out_hex);
     const SecureVector!ubyte key = hexDecodeLocked(key_hex);
+	writeln("Key: ", key[]);
     const SecureVector!ubyte pt = hexDecodeLocked(in_hex);
+	writeln("Plaintext: ", pt[]);
     const SecureVector!ubyte ct = hexDecodeLocked(out_hex);
-    
+	writeln("Cryptext: ", ct[]);
+	writeln("Fetch algorithm factory");
     AlgorithmFactory af = globalState().algorithmFactory();
     
+	writeln("Fetching providers");
     const auto providers = af.providersOf(algo);
     size_t fails = 0;
     
@@ -217,7 +222,8 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
     {
 
         atomicOp!"+="(total_tests, 1);
-        const BlockCipher proto = af.prototypeBlockCipher(algo, provider);
+		writeln("Fetching block cipher");
+		const BlockCipher proto = af.prototypeBlockCipher(algo, provider);
         
         if (!proto)
         {
@@ -230,6 +236,7 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         cipher.setKey(key);
         SecureVector!ubyte buf = pt.dup;
         
+		writeln("Encrypting");
         cipher.encrypt(buf);
 
         atomicOp!"+="(total_tests, 1);
@@ -239,7 +246,7 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
             ++fails;
             buf = ct.dup;
         }
-        
+		writeln("Decrypting");
         cipher.decrypt(buf);
 
         atomicOp!"+="(total_tests, 1);
@@ -249,22 +256,25 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
             ++fails;
         }
     }
-    
+	writeln("Finished ", algo, " Fails: ", fails);
     return fails;
 }
 
 unittest {
+	import std.stdio : writeln;
+	writeln("Testing block_cipher.d ...");
     size_t test_bc(string input)
     {
+		writeln("Testing file `" ~ input ~ " ...");
         File vec = File(input, "r");
-        
         return runTestsBb(vec, "BlockCipher", "Out", true,
                           (string[string] m) {
                               return blockTest(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
                           });
     }
     
-    size_t fails = runTestsInDir("test_data/block", &test_bc);
+	writeln("Running tests ...");
+    size_t fails = runTestsInDir("../test_data/block", &test_bc);
 
 
     testReport("block_cipher", total_tests, fails);

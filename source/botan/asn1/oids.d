@@ -13,6 +13,8 @@ import botan.utils.containers.hashmap;
 auto globalOidMap()
 {
     static OIDMap map;
+	if (!map.init)
+		map = OIDMap(true);
     return map;
 }
 
@@ -25,6 +27,8 @@ private:
 private static:
     void addOidstr(string oidstr, string name)
     {
+		import std.stdio : writeln;
+		writeln("addOidstr(", oidstr, ", ", name, ")");
         addOid(OID(oidstr), name);
     }    
     
@@ -94,7 +98,7 @@ public:
     /*
     * Load all of the default OIDs
     */
-    void setDefaults()
+    static void setDefaults()
     {
         /* Public key types */
         addOidstr("1.2.840.113549.1.1.1", "RSA");
@@ -324,8 +328,11 @@ public:
     
     void addStr2oid(in OID oid, in string str)
     {
+		import std.stdio : writeln;
+		writeln("addStr2oid");
         if (m_str2oid.get(str) == OID())
             m_str2oid[str] = oid;
+
     }
     
     void addOid2str(in OID oid, in string str)
@@ -364,7 +371,13 @@ public:
         return (str in m_str2oid) !is null;
     }
     
+	this(bool init_ = false) {
+		init = true;
+		m_str2oid = HashMap!(string, OID)();
+		m_oid2str = HashMap!(OID, string)();
+	}
 private:
+	bool init;
     HashMap!(string, OID) m_str2oid;
     HashMap!(OID, string) m_oid2str;
 }

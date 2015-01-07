@@ -321,14 +321,16 @@ size_t rwSigVerify(string e,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing rw.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     
-    File rw_sig = File("test_data/pubkey/rw_sig.vec", "r");
-    File rw_verify = File("test_data/pubkey/rw_verify.vec", "r");
+    File rw_sig = File("../test_data/pubkey/rw_sig.vec", "r");
+    File rw_verify = File("../test_data/pubkey/rw_verify.vec", "r");
     
     fails += runTestsBb(rw_sig, "RW Signature", "Signature", true,
                           (string[string] m) {

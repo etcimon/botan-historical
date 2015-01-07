@@ -308,13 +308,16 @@ size_t dsaSigKat(string p,
 
 unittest
 {
+
+	import std.stdio : writeln;
+	writeln("Testing dsa.d ...");
     size_t fails;
     
     AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     
-    File dsa_sig = File("test_data/pubkey/dsa.vec", "r");
+    File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
     
     fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
                           (string[string] m)

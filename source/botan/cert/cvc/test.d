@@ -83,7 +83,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     EAC11CVC cert = createSelfSignedCert(key, opts, rng);
     {
         Vector!ubyte der = cert.BER_encode();
-        File cert_file = File("test_data/ecc/my_cv_cert.ber", "wb+");
+        File cert_file = File("../test_data/ecc/my_cv_cert.ber", "wb+");
         //cert_file << der; // this is bad !!!
         cert_file.write(cast(string) der.ptr[0 .. der.length]);
     }
@@ -93,13 +93,13 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     // encoding it again while it has no dp
     {
         Vector!ubyte der2 = cert_in.BER_encode();
-        File cert_file2 = File("test_data/ecc/my_cv_cert2.ber", "wb+");
+        File cert_file2 = File("../test_data/ecc/my_cv_cert2.ber", "wb+");
         cert_file2.write(der2.ptr[0 .. der2.length]);
     }
     // read both and compare them
     {
-        File cert_1_in = File("test_data/ecc/my_cv_cert.ber", "r");
-        File cert_2_in = File("test_data/ecc/my_cv_cert2.ber", "r");
+        File cert_1_in = File("../test_data/ecc/my_cv_cert.ber", "r");
+        File cert_2_in = File("../test_data/ecc/my_cv_cert2.ber", "r");
         Vector!ubyte sv1;
         Vector!ubyte sv2;
         if (!cert_1_in.ok || !cert_2_in.ok)
@@ -191,7 +191,7 @@ void testEncGenReq(RandomNumberGenerator rng)
     EAC11Req req = createCvcReq(key, opts.chr, opts.hash_alg, rng);
     {
         Vector!ubyte der = req.BER_encode();
-        File req_file = File("test_data/ecc/my_cv_req.ber", "wb+");
+        File req_file = File("../test_data/ecc/my_cv_req.ber", "wb+");
         req_file.write(der.ptr[0 .. der.length]);
     }
     
@@ -243,7 +243,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     EAC11Req req = createCvcReq(req_key, opts.chr, opts.hash_alg, rng);
     {
         Vector!ubyte der = req.BER_encode();
-        File req_file = File("test_data/ecc/my_cv_req.ber", "wb+");
+        File req_file = File("../test_data/ecc/my_cv_req.ber", "wb+");
         req_file.write(der.ptr[0 .. der.length]);
     }
     
@@ -258,7 +258,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     mixin( CHECK_MESSAGE( `ado.checkSignature(ado_key)`, "failure of ado verification after creation" ) );
     
     {
-        File ado_file = File("test_data/ecc/ado", "wb+");
+        File ado_file = File("../test_data/ecc/ado", "wb+");
         Vector!ubyte ado_der = ado.BER_encode();
         ado_file.write(ado_der.ptr[0 .. ado_der.length]);
     }
@@ -456,7 +456,7 @@ void testCvcChain(RandomNumberGenerator rng)
     ASN1Car car = ASN1Car("DECVCA00001");
     EAC11CVC cvca_cert = cvc_self.createCvca(cvca_privk, hash, car, true, true, 12, rng);
     {
-        File cvca_file = File("test_data/ecc/cvc_chain_cvca.cer","wb+");
+        File cvca_file = File("../test_data/ecc/cvc_chain_cvca.cer","wb+");
         Vector!ubyte cvca_sv = cvca_cert.BER_encode();
         cvca_file.write(cast(string) cvca_sv.ptr[0 .. cvca_sv.length]);
     }
@@ -467,7 +467,7 @@ void testCvcChain(RandomNumberGenerator rng)
     EAC11CVC link12 = cvc_self.linkCvca(cvca_cert, cvca_privk, cvca_cert2, rng);
     {
         Vector!ubyte link12_sv = link12.BER_encode();
-        File link12_file = File("test_data/ecc/cvc_chain_link12.cer", "wb+");
+        File link12_file = File("../test_data/ecc/cvc_chain_link12.cer", "wb+");
         link12_file.write(link12_sv.ptr[0 .. link12_sv.length]);
     }
     
@@ -482,7 +482,7 @@ void testCvcChain(RandomNumberGenerator rng)
     auto dvca_priv_key = scoped!ECDSAPrivateKey(rng, dom_pars);
     EAC11Req dvca_req = cvc_self.createCvcReq(dvca_priv_key, ASN1Chr("DEDVCAEPASS"), hash, rng);
     {
-        File dvca_file = File("test_data/ecc/cvc_chain_dvca_req.cer", "wb+");
+        File dvca_file = File("../test_data/ecc/cvc_chain_dvca_req.cer", "wb+");
         Vector!ubyte dvca_sv = dvca_req.BER_encode();
         dvca_file.write(dvca_sv.ptr[0 .. dvca_sv.length]);
     }
@@ -497,7 +497,7 @@ void testCvcChain(RandomNumberGenerator rng)
     auto dvca_priv_key2 = scoped!ECDSAPrivateKey(rng, dom_pars);
     EAC11Req dvca_req2 = cvc_self.createCvcReq(dvca_priv_key2, ASN1Chr("DEDVCAEPASS"), hash, rng);
     {
-        File dvca_file2 = File("test_data/ecc/cvc_chain_dvca_req2.cer", "wb+");
+        File dvca_file2 = File("../test_data/ecc/cvc_chain_dvca_req2.cer", "wb+");
         Vector!ubyte dvca_sv2 = dvca_req2.BER_encode();
         dvca_file2.write(dvca_sv2.ptr[0 .. dvca_sv2.length]);
     }
@@ -542,6 +542,8 @@ void testCvcChain(RandomNumberGenerator rng)
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing cvc/test.d ...");
     AutoSeededRNG rng;
     
     testEncGenSelfsigned(rng);

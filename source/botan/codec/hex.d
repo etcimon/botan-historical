@@ -250,10 +250,8 @@ Vector!ubyte hexDecode(in Vector!ubyte input, bool ignore_ws = true)
 */
 SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool ignore_ws = true)
 {
-    SecureVector!ubyte bin;
-    bin.reserve(1 + input_length / 2);
-    
-    size_t written = hexDecode(bin.ptr, input, input_length, ignore_ws = true);
+	SecureVector!ubyte bin = SecureVector!ubyte(1 + input_length / 2);
+    size_t written = hexDecode(bin.ptr, input, input_length, ignore_ws);
     bin.resize(written);
     return bin;
 }

@@ -64,9 +64,7 @@ public:
     */
     final void write(const(ubyte)[] input) { write(input.ptr, input.length); }
 
-    override void write(const(ubyte)* input, size_t length) {
-        Filterable.write(input, length);
-    }
+	abstract void write(const(ubyte)* input, size_t length);
 
     /**
     * @param input = some input for the filter
@@ -260,8 +258,6 @@ protected:
     override void setNext(Filter* f, size_t n) { super.setNext(f, n); }
 
     override void attach(Filter f) { attach(f); }
-
-	override void write(const(ubyte)* input, size_t len) { super.write(input, len); }
 
 }
 

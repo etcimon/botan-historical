@@ -269,6 +269,8 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing aead.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");
@@ -281,7 +283,7 @@ unittest
         });
     };
     
-    size_t fails = runTestsInDir("test_data/aead", test);
+    size_t fails = runTestsInDir("../test_data/aead", test);
 
     testReport("aead", total_tests, fails);
 }

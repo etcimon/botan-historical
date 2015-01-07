@@ -26,6 +26,8 @@ public:
     */
     static RandomNumberGenerator makeRng()
     {
+		import std.stdio : writeln;
+		writeln("makeRng()");
         return makeRng(globalState().algorithmFactory());
     }
 
@@ -163,7 +165,7 @@ public:
     this()
     {
         m_mtx = new Mutex;
-        synchronized(m_mtx) m_rng = RandomNumberGenerator.makeRng();
+        m_rng = RandomNumberGenerator.makeRng();
     }
 
 private:

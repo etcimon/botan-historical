@@ -129,6 +129,8 @@ public:
 }
 
 unittest {
+	import std.stdio : writeln;
+	writeln("Testing pbkdf.d ...");
     import botan.test;
     import botan.codec.hex;
 
@@ -147,7 +149,7 @@ unittest {
                         });
     };
     
-    size_t fails = runTestsInDir("test_data/pbkdf", test);
+    size_t fails = runTestsInDir("../test_data/pbkdf", test);
 
     testReport("pbkdf", 1, fails);
 }

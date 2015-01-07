@@ -283,6 +283,7 @@ version(LDC) {
 
 shared static this() {
     
+	version(unittest) { import std.stdio : writeln; writeln("Loading CPUID ..."); }
     string processorName;
     char[12] vendorID;
     uint unused;

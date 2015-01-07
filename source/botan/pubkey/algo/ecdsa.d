@@ -472,14 +472,14 @@ size_t testCreatePkcs8(RandomNumberGenerator rng)
         //cout " ~\nequal: " ~  (rsa_key == rsa_key2));
         //DSAPrivateKey key(DLGroup("dsa/jce/1024"));
 
-        File rsa_priv_key = File("test_data/ecc/rsa_private.pkcs8.pem", "wb+");
+        File rsa_priv_key = File("../test_data/ecc/rsa_private.pkcs8.pem", "wb+");
         rsa_priv_key.write(pkcs8.PEM_encode(rsa_key));
         
         ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
         auto key = scoped!ECDSAPrivateKey(rng, dom_pars);
         
         // later used by other tests :(
-        File priv_key = File("test_data/ecc/wo_dompar_private.pkcs8.pem", "wb+");
+        File priv_key = File("../test_data/ecc/wo_dompar_private.pkcs8.pem", "wb+");
         priv_key.write( pkcs8.PEM_encode(key) );
     }
     catch (Exception e)
@@ -499,7 +499,7 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     auto key = scoped!ECDSAPrivateKey(rng, dom_pars);
-    File priv_key = File("test_data/ecc/dompar_private.pkcs8.pem");
+    File priv_key = File("../test_data/ecc/dompar_private.pkcs8.pem");
     priv_key.write( pkcs8.PEM_encode(key) );
     
     Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
@@ -739,6 +739,8 @@ size_t ecdsaSigKat(string group_id,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing ecdsa.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
@@ -764,7 +766,7 @@ unittest
 
 
 
-    File ecdsa_sig = File("test_data/pubkey/ecdsa.vec", "r");
+    File ecdsa_sig = File("../test_data/pubkey/ecdsa.vec", "r");
 
     fails += runTestsBb(ecdsa_sig, "ECDSA Signature", "Signature", true,
                               (string[string] m) {

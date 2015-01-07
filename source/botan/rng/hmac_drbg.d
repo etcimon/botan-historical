@@ -79,14 +79,13 @@ public:
         }
     }
 
-    void ddEntropy(const(ubyte)* input, size_t length)
+    override void addEntropy(const(ubyte)* input, size_t length)
     {
         update(input, length);
         m_reseed_counter = 1;
     }
 
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
-    override void addEntropy(const(ubyte)* input, size_t length) { super.addEntropy(input, length); }
     /**
     * @param mac = the underlying mac function (eg HMAC(SHA-512))
     * @param underlying_rng = RNG used generating inputs (eg HMAC_RNG)

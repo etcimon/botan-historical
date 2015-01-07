@@ -223,7 +223,6 @@ public:
             throw new InvalidOID(oid_str);
         if ((m_id[0] == 0 || m_id[0] == 1) && m_id[1] > 39)
             throw new InvalidOID(oid_str);
-
     }
 
     this(const ref OID other)

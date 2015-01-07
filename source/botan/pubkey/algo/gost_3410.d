@@ -348,13 +348,16 @@ size_t gostVerify(string group_id,
 
 unittest
 {
+
+	import std.stdio : writeln;
+	writeln("Testing gost_3410.d ...");
     size_t fails = 0;
 
     AutoSeededRNG rng;
 
     fails += testPkKeygen(rng);
 
-    File ecdsa_sig = File("test_data/pubkey/gost_3410.vec", "r");
+    File ecdsa_sig = File("../test_data/pubkey/gost_3410.vec", "r");
     
     fails += runTestsBb(ecdsa_sig, "GOST-34.10 Signature", "Signature", true,
                           (string[string] m) {

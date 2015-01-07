@@ -801,6 +801,8 @@ size_t testCurveCpCtor()
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing ec_gfp/test.d ...");
     size_t fails = 0;
     
     fails += testPointTurnOnSpRedMul();

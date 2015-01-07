@@ -274,13 +274,15 @@ size_t elgamalKat(string p,
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing elgamal.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
     
     fails += testPkKeygen(rng);
     
-    File elgamal_enc = File("test_data/pubkey/elgamal.vec", "r");
+    File elgamal_enc = File("../test_data/pubkey/elgamal.vec", "r");
     
     fails += runTestsBb(elgamal_enc, "ElGamal Encryption", "Ciphertext", true,
                           (string[string] m) {

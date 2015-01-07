@@ -12,7 +12,7 @@ static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM):
 
 import botan.entropy.entropy_src;
 import botan.utils.types;
-// import string;
+import core.stdc.config;
 import core.sys.posix.sys.types;
 import core.sys.posix.sys.select;
 import core.sys.posix.sys.stat;
@@ -56,7 +56,7 @@ public:
         timeout.tv_sec = (MS_WAIT_TIME / 1000);
         timeout.tv_usec = (MS_WAIT_TIME % 1000) * 1000;
         
-        if (select(max_fd + 1, &read_set, null, null, &timeout) < 0)
+        if (select(max_fd + 1, &read_set, (fd_set*).init, (fd_set*).init, &timeout) < 0)
             return;
         
         SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
@@ -104,4 +104,41 @@ private:
     alias FDType = int;
 
     Vector!FDType m_devices;
+}
+
+@nogc nothrow pure private:
+
+alias __fd_mask = c_long;
+enum uint __NFDBITS = 8 * __fd_mask.sizeof;
+
+auto __FDELT( int d )
+{
+	return d / __NFDBITS;
+}
+
+auto __FDMASK( int d )
+{
+	return cast(__fd_mask) 1 << ( d % __NFDBITS );
+}
+
+enum FD_SETSIZE = 1024;
+
+void FD_CLR( int fd, fd_set* fdset )
+{
+	fdset.fds_bits[__FDELT( fd )] &= ~__FDMASK( fd );
+}
+
+bool FD_ISSET( int fd, const(fd_set)* fdset )
+{
+	return (fdset.fds_bits[__FDELT( fd )] & __FDMASK( fd )) != 0;
+}
+
+void FD_SET( int fd, fd_set* fdset )
+{
+	fdset.fds_bits[__FDELT( fd )] |= __FDMASK( fd );
+}
+
+void FD_ZERO( fd_set* fdset )
+{
+	fdset.fds_bits[0 .. $] = 0;
 }

@@ -158,6 +158,8 @@ import botan.rng.auto_rng;
 
 unittest
 {
+	import std.stdio : writeln;
+	writeln("Testing passhash9.d ...");
     size_t fails = 0;
     
     const string input = "secret";

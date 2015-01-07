@@ -16,10 +16,13 @@ private LibraryState g_lib_state;
 */
 LibraryState globalState()
 {
-    /* Lazy initialization. Botan still needs to be deinitialized later
-        on or memory might leak.
-    */
-    g_lib_state.initialize();
+	if (!g_lib_state) {
+		g_lib_state = new LibraryState;
+	    /* Lazy initialization. Botan still needs to be deinitialized later
+	        on or memory might leak.
+	    */
+	    g_lib_state.initialize();
+	}
     return g_lib_state;
 }
 

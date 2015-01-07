@@ -336,14 +336,14 @@ struct FreeListRef(T, bool INIT = true)
     
     const ~this()
     {
-        (cast(FreeListRef)this).dtor();
+        (cast(FreeListRef*)&this).dtor();
     }
 
     void dtor() {
         //if( m_object ) logInfo("~this!%s(): %d", T.stringof, this.refCount);
         //if( m_object ) logInfo("ref %s destructor %d", T.stringof, refCount);
         //else logInfo("ref %s destructor %d", T.stringof, 0);
-        clear();
+        if (m_object) clear();
         m_magic = 0;
         m_object = null;
     }
@@ -363,12 +363,13 @@ struct FreeListRef(T, bool INIT = true)
 
     void opAssign(FreeListRef other) const
     {
-        (cast(FreeListRef)this).opAssignImpl(other);
+        (cast(FreeListRef*)&this).opAssignImpl(other);
     }
 
     void opAssignImpl(FreeListRef other) {
-        clear();
+        if (m_object) clear();
         m_object = other.m_object;
+		other.m_object = null;
         if( m_object ){
             //logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
             refCount++;
@@ -396,8 +397,16 @@ struct FreeListRef(T, bool INIT = true)
         m_magic = 0x1EE75817;
     }
     
-    @property const(TR) opStar() const { checkInvariants(); return m_object; }
-    @property TR opStar() { checkInvariants(); return m_object; }
+    @property const(TR) opStar() const {
+		checkInvariants(); 
+		return m_object; 
+	}
+
+	@property TR opStar() {
+		defaultInit();
+		checkInvariants();
+		return m_object; 
+	}
     
     alias opStar this;
 
@@ -439,11 +448,28 @@ struct FreeListRef(T, bool INIT = true)
         m_object.opSliceAssign(args);
     }
 
-    auto opSlice(U...)(U args) const
-        if (__traits(hasMember, typeof(m_object), "opSlice"))
-    {
-        return (*cast(T*)&m_object).opSlice(args);
-    }
+	void defaultInit() inout {
+
+		static if (is(TR == T*)) {
+			if (!m_object) {
+				auto newObj = this.opCall();
+				(cast(FreeListRef*)&this).m_object = newObj.m_object;
+				newObj.m_object = null;
+			}
+		}
+
+	}
+
+	auto opSlice(U...)(U args) const
+		if (__traits(hasMember, typeof(m_object), "opSlice"))
+	{
+		defaultInit();
+		static if (is(U == void))
+			return (cast(TR)m_object).opSlice();
+		else
+			return (cast(TR)m_object).opSlice(args);
+
+	}
 
     size_t opDollar() const
     {
@@ -455,6 +481,7 @@ struct FreeListRef(T, bool INIT = true)
     void opOpAssign(string op, U...)(U args)
         if (__traits(compiles, m_object.opOpAssign!op(args)))
     {
+		defaultInit();
         m_object.opOpAssign!op(args);
     }
 
@@ -473,36 +500,46 @@ struct FreeListRef(T, bool INIT = true)
     auto opBinary(string op, U...)(U args)
         if (__traits(compiles, m_object.opBinary!op(args)))
     {
+
+		defaultInit();
         return m_object.opBinary!op(args);
     }
 
     void opIndexAssign(U...)(U args)
         if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
     {
+
+		defaultInit();
         m_object.opIndexAssign(args);
     }
 
     void opIndexAssign(U, V)(in U arg1, in V arg2)
         if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
     {
+
+		defaultInit();
         m_object.opIndexAssign(arg1, arg2);
     }
     
     void opIndexAssign(U...)(in U args) const
         if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
     {
+
+		defaultInit();
         (cast(UnConst!TR)m_object).opIndexAssign(args);
     }
 
     auto ref opIndex(U...)(U args) inout
         if (__traits(hasMember, typeof(m_object), "opIndex"))
     {
-        return (*cast(T*)&m_object).opIndex(args);
+        return (cast(TR)m_object).opIndex(args);
     }
 
     static if (__traits(compiles, m_object.opBinaryRight!("in")(ReturnType!(m_object.front).init)))
     bool opBinaryRight(string op, U)(U e) const if (op == "in") 
     {
+
+		defaultInit();
         return m_object.opBinaryRight!("in")(e);
     }
 
@@ -544,6 +581,9 @@ private void* adjustPointerAlignment(void* base)
 }
 
 unittest {
+
+	import std.stdio : writeln;
+	writeln("Testing memory/memory.d ...");
     void testAlign(void* p, size_t adjustment) {
         void* pa = adjustPointerAlignment(p);
         assert((cast(size_t)pa & Allocator.alignmentMask) == 0, "Non-aligned pointer.");
@@ -578,6 +618,8 @@ private size_t alignedSize(size_t sz)
 }
 
 unittest {
+	import std.stdio : writeln;
+	writeln("Testing memory.d ...");
     foreach( i; 0 .. 20 ){
         auto ia = alignedSize(i);
         assert(ia >= i);
