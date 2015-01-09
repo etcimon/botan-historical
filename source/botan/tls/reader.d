@@ -174,7 +174,7 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void appendTlsLengthValue(T, Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, in T* vals, 
+void appendTlsLengthValue(T, int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, in T* vals, 
                                        size_t vals_size, size_t tag_size)
 {
     const size_t T_size = T.sizeof;
@@ -195,14 +195,14 @@ void appendTlsLengthValue(T, Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) bu
             buf.pushBack(get_byte(j, vals[i]));
 }
 
-void appendTlsLengthValue(T, Alloc, Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
-                                            in FreeListRef!(VectorImpl!( T, Alloc2 )) vals, 
-                                            size_t tag_size)
+void appendTlsLengthValue(T, int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
+                                           			in FreeListRef!(VectorImpl!( T, Alloc2 )) vals, 
+                                            		size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTlsLengthValue(Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
+void appendTlsLengthValue(int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
                                  in string str, size_t tag_size)
 {
     appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);

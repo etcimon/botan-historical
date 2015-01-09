@@ -218,11 +218,11 @@ public:
             MultiMap!(OID, string) map1 = getAttributes();
             MultiMap!(OID, string) map2 = dn2.getAttributes();
             foreach (const ref OID oid, const ref string val; map1) {
-                attr1 ~= makePair(oid, val);
+                attr1 ~= makePair(oid.dup, val);
             }
 
             foreach (const ref OID oid, const ref string val; map2) {
-                attr2 ~= makePair(oid, val);
+				attr2 ~= makePair(oid.dup, val);
             }
         }
 

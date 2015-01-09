@@ -19,7 +19,7 @@ import botan.utils.exceptn;
 * a padding mode for CBC, which happens to consume the last
 * two block (and requires use of the block cipher).
 */
-class BlockCipherModePaddingMethod
+interface BlockCipherModePaddingMethod
 {
 public:
     abstract void addPadding(SecureVector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
@@ -42,10 +42,6 @@ public:
     */
     abstract @property string name() const;
 
-    /**
-    * abstract destructor
-    */
-    ~this() {}
 }
 
 /**

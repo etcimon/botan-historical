@@ -19,7 +19,7 @@ public:
 
     this(in uint[4] B)
     {
-        m_reg = _mm_loadu_si128(cast(const(__m128i)*)(B.ptr));
+        m_reg = _mm_loadu_si128(cast(const(__m128i*))(B.ptr));
     }
 
     this(uint B0, uint B1, uint B2, uint B3)
@@ -35,7 +35,7 @@ public:
     static SIMDSSE2 loadLittleEndian(const void* input)
     {
         SIMDSSE2 simd;
-        simd.m_reg = _mm_loadu_si128(cast(const(__m128i)*)(input));
+        simd.m_reg = _mm_loadu_si128(cast(const(__m128i*))(input));
         return simd;
     }
 

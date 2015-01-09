@@ -10,7 +10,7 @@ import botan.constants;
 
 static if (BOTAN_HAS_DMD_X86_INLINE_ASM) {
 
-    enum START_ASM = "asm {";
+    enum START_ASM = "asm pure nothrow {";
     enum END_ASM = "}";
 
     /*
@@ -118,10 +118,10 @@ static if (BOTAN_HAS_DMD_X86_INLINE_ASM) {
 }
 else {
     version(GNU) {
-        enum START_ASM = "asm {";
+        enum START_ASM = "asm pure nothrow {";
     }
     version(LDC) {
-        enum START_ASM = "__asm {";
+        enum START_ASM = "__asm pure nothrow {";
     }
     enum END_ASM = "::}";
 

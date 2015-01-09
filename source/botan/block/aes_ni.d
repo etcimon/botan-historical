@@ -25,10 +25,10 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) key_mm = cast(const(__m128i*))(m_EK.ptr);
         
         __m128i K0  = _mm_loadu_si128(key_mm);
         __m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -101,10 +101,10 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+		__m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK.ptr);
+        const(__m128i*) key_mm = cast(const(__m128i*))(m_DK.ptr);
         
         __m128i K0  = _mm_loadu_si128(key_mm);
         __m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -195,7 +195,7 @@ protected:
         m_EK.resize(44);
         m_DK.resize(44);
         
-        __m128i K0  = _mm_loadu_si128(cast(const(__m128i)*)(key));
+        __m128i K0  = _mm_loadu_si128(cast(const(__m128i*))(key));
         mixin(`__m128i K1  = ` ~ AES_128_key_exp!("K0", 0x01)());
         mixin(`__m128i K2  = ` ~ AES_128_key_exp!("K1", 0x02)());
         mixin(`__m128i K3  = ` ~  AES_128_key_exp!("K2", 0x04)());
@@ -254,10 +254,10 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+		__m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) key_mm = cast(const(__m128i*))(m_EK.ptr);
         
         __m128i K0  = _mm_loadu_si128(key_mm);
         __m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -336,10 +336,10 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+		__m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK.ptr);
+        const(__m128i*) key_mm = cast(const(__m128i*))(m_DK.ptr);
         
         __m128i K0  = _mm_loadu_si128(key_mm);
         __m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -436,8 +436,8 @@ protected:
         m_EK.resize(52);
         m_DK.resize(52);
         
-        __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
-        __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 8));
+        __m128i K0 = _mm_loadu_si128(cast(const(__m128i*))(key));
+        __m128i K1 = _mm_loadu_si128(cast(const(__m128i*))(key + 8));
         K1 = _mm_srli_si128!8(K1);
         
         loadLittleEndian(m_EK.ptr, key, 6);
@@ -452,7 +452,7 @@ protected:
         mixin(AES_192_key_exp!(0x80, 48)());
         
         // Now generate decryption keys
-        const(__m128i)* EK_mm = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) EK_mm = cast(const(__m128i*))(m_EK.ptr);
         
         __m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
         _mm_storeu_si128(DK_mm      , _mm_loadu_si128(EK_mm + 12));
@@ -487,10 +487,10 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+		__m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* key_mm = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) key_mm = cast(const(__m128i*))(m_EK.ptr);
         
         __m128i K0  = _mm_loadu_si128(key_mm);
         __m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -575,10 +575,10 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+		__m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* key_mm = cast(const(__m128i)*)(m_DK.ptr);
+        const(__m128i*) key_mm = cast(const(__m128i*))(m_DK.ptr);
         
         __m128i K0  = _mm_loadu_si128(key_mm);
         __m128i K1  = _mm_loadu_si128(key_mm + 1);
@@ -680,8 +680,8 @@ protected:
         m_EK.resize(60);
         m_DK.resize(60);
         
-        __m128i K0 = _mm_loadu_si128(cast(const(__m128i)*)(key));
-        __m128i K1 = _mm_loadu_si128(cast(const(__m128i)*)(key + 16));
+        __m128i K0 = _mm_loadu_si128(cast(const(__m128i*))(key));
+        __m128i K1 = _mm_loadu_si128(cast(const(__m128i*))(key + 16));
         
         __m128i K2 = aes_128_key_expansion(K0, _mm_aeskeygenassist_si128!0x01(K1));
         __m128i K3 = aes_256_key_expansion(K1, K2);

@@ -442,7 +442,7 @@ public:
     /*
     * Decode a list of homogenously typed values
     */
-    BERDecoder decodeList(T, Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec,
+    BERDecoder decodeList(T, int Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec,
                                     ASN1Tag type_tag = ASN1Tag.SEQUENCE,
                                     ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
@@ -476,7 +476,7 @@ public:
     /*
         * Decode an OPTIONAL string type
         */
-    BERDecoder decodeOptionalString(Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
+    BERDecoder decodeOptionalString(int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
                                            ASN1Tag real_type,
                                            ushort type_no,
                                            ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)

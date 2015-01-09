@@ -18,6 +18,7 @@ import botan.algo_base.scan_token;
 import botan.algo_factory.algo_factory;
 import std.algorithm : canFind;
 import std.conv : to;
+import std.stdio : writeln;
 
 import botan.constants;
 static if (BOTAN_HAS_MODE_CFB)        import botan.modes.cfb;
@@ -246,6 +247,7 @@ public:
                           CipherDir direction,
                           AlgorithmFactory af) const
     {
+		writeln("getCipher Core");
         Vector!string algo_parts = splitter(algo_spec, '/');
         if (algo_parts.empty)
             throw new InvalidAlgorithmName(algo_spec);
@@ -293,6 +295,7 @@ public:
 
     BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
     {
+		writeln("FindBlockCipher Core");
         
         static if (BOTAN_HAS_AES) {
             if (request.algoName == "AES-128")
@@ -445,6 +448,7 @@ public:
 
     StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
     {
+		writeln("FindStreamCipher Core");
         static if (BOTAN_HAS_OFB) {
             if (request.algoName == "OFB" && request.argCount() == 1)
             {
@@ -483,6 +487,7 @@ public:
 
     HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
     {
+		writeln("FindHash Core");
         static if (BOTAN_HAS_ADLER32) {
             if (request.algoName == "Adler32")
                 return new Adler32;
@@ -617,7 +622,7 @@ public:
 
     MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
     {
-        
+		writeln("FindMac Core");
         static if (BOTAN_HAS_CBC_MAC) {
             if (request.algoName == "CBC-MAC" && request.argCount() == 1)
                 return new CBCMAC(af.makeBlockCipher(request.arg(0)));
@@ -649,6 +654,7 @@ public:
 
     PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
+		writeln("FindPbkdf Core");
         static if (BOTAN_HAS_PBKDF1) {
             if (algo_spec.algoName == "PBKDF1" && algo_spec.argCount() == 1)
                 return new PKCS5_PBKDF1(af.makeHashFunction(algo_spec.arg(0)));

@@ -7,28 +7,16 @@
 module botan.asn1.oids;
 
 public import botan.asn1.asn1_oid;
-import botan.utils.types;
 import botan.utils.containers.hashmap;
-
-auto globalOidMap()
-{
-    static OIDMap map;
-	if (!map.init)
-		map = OIDMap(true);
-    return map;
-}
+import botan.utils.types;
+import core.sys.posix.signal;
+import core.sys.posix.unistd;
 
 struct OIDS {
-
-private:
-
-
 
 private static:
     void addOidstr(string oidstr, string name)
     {
-		import std.stdio : writeln;
-		writeln("addOidstr(", oidstr, ", ", name, ")");
         addOid(OID(oidstr), name);
     }    
     
@@ -328,9 +316,7 @@ public:
     
     void addStr2oid(in OID oid, in string str)
     {
-		import std.stdio : writeln;
-		writeln("addStr2oid");
-        if (m_str2oid.get(str) == OID())
+        if (!haveOid(str))
             m_str2oid[str] = oid;
 
     }
@@ -347,7 +333,7 @@ public:
         if (str)
             return str;
         
-        return "";
+        return string.init;
     }
     
     OID lookup(in string str)
@@ -361,7 +347,7 @@ public:
         {
             return OID(str);
         }
-        catch (Throwable) {}
+        catch {}
         
         throw new LookupError("No object identifier found for " ~ str);
     }
@@ -371,13 +357,14 @@ public:
         return (str in m_str2oid) !is null;
     }
     
-	this(bool init_ = false) {
-		init = true;
-		m_str2oid = HashMap!(string, OID)();
-		m_oid2str = HashMap!(OID, string)();
-	}
 private:
-	bool init;
     HashMap!(string, OID) m_str2oid;
     HashMap!(OID, string) m_oid2str;
+}
+
+OIDMap globalOidMap()
+{
+	import std.stdio : writeln;
+	static OIDMap map;
+	return map;
 }

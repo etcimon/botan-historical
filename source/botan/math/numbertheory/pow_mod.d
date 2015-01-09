@@ -87,7 +87,7 @@ public:
     */
     void setModulus(in BigInt n, UsageHints hints = NO_HINTS)
     {
-        m_core.clear();
+        m_core.free();
         if (n != 0)
         {
             AlgorithmFactory af = globalState().algorithmFactory();

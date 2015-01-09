@@ -4,7 +4,7 @@ import std.algorithm;
 /**
 TODO: clear ring buffer fields upon removal (to run struct destructors, if T is a struct)
 */
-struct CircularBuffer(T, size_t N = 0, ALLOCATOR = VulnerableAllocator) {
+struct CircularBuffer(T, size_t N = 0, int ALLOCATOR = VulnerableAllocator) {
     private {
         static if( N > 0 ) T[N] m_buffer;
         else T[] m_buffer;

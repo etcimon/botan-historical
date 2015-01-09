@@ -106,7 +106,7 @@ SecureVector!ubyte rfc3394Keyunwrap(in SecureVector!ubyte key,
             const uint t = cast(uint)( (5 - j) * n + i );
             
             ubyte[4] t_buf;
-            storeBigEndian(t, t_buf);
+            storeBigEndian(t, &t_buf);
             
             xorBuf(&A[4], t_buf.ptr, 4);
             

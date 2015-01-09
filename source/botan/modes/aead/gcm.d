@@ -410,8 +410,8 @@ void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) pure
     */
     __gshared immutable(__m128i) BSWAP_MASK = _mm_set1_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
 
-    __m128i a = _mm_loadu_si128(cast(const(__m128i)*) x);
-    __m128i b = _mm_loadu_si128(cast(const(__m128i)*) H);
+    __m128i a = _mm_loadu_si128(cast(const(__m128i*)) x);
+    __m128i b = _mm_loadu_si128(cast(const(__m128i*)) H);
     
     a = _mm_shuffle_epi8(a, BSWAP_MASK);
     b = _mm_shuffle_epi8(b, BSWAP_MASK);

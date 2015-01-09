@@ -100,8 +100,11 @@ public:
         {
             m_aliases[requested_name] = algo.name;
         }
-        
-        if (!m_algorithms[algo.name].get(provider))
+		import std.stdio : writeln;
+		if (!m_algorithms || m_algorithms.get(algo.name).length == 0)
+			m_algorithms[algo.name] = HashMap!(string, T).init;
+
+		if (!(m_algorithms[algo.name].get(provider)))
             m_algorithms[algo.name][provider] = algo;
 
     }
@@ -170,10 +173,10 @@ private:
     HashMap!(string, T) findAlgorithm(in string algo_spec) const
     {
         HashMap!(string, T) algo = m_algorithms.get(algo_spec);
-        
         // Not found? Check if a known alias
         if (!algo)
         {
+
             string _alias = m_aliases.get(algo_spec);
 
             if (_alias)

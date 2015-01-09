@@ -42,7 +42,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -60,7 +60,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _b = &b;
 
         mixin(`
-            asm {
+            asm pure nothrow {
                 mov RAX, _a;
                 mov RBX, _b;
                 movdqu XMM0, [RAX];

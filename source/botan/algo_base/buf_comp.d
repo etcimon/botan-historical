@@ -18,10 +18,6 @@ import botan.utils.types;
 interface BufferedComputation
 {
 public:
-    /**
-    * @return length of the output of this function in bytes
-    */
-    abstract @property size_t outputLength() const;
 
     /**
     * Add new input to process.
@@ -175,6 +171,16 @@ public:
         update(input);
         return finished();
     }
+
+	final void addData(T)(in T input, size_t length) {
+		addData(cast(const(ubyte)*)input, length);
+	}
+
+	/**
+    * @return length of the output of this function in bytes
+    */
+	abstract @property size_t outputLength() const;
+
 protected:
     /**
     * Add more data to the computation
@@ -182,10 +188,6 @@ protected:
     * @param length = is the length of input in bytes
     */
     abstract void addData(const(ubyte)* input, size_t length);
-
-    final void addData(T)(in T input, size_t length) {
-        addData(cast(const(ubyte)*)input, length);
-    }
 
     /**
     * Write the final output to out

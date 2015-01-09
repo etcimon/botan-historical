@@ -120,10 +120,16 @@ public:
     * Compare two OIDs.
     * @return true if they are equal, false otherwise
     */
-    bool opEquals(in OID oid) const
+    bool opEquals(in OID oid_) const
     {
+		OIDImpl oid = *oid_;
+		if ((!oid || !oid.m_id || oid.m_id.length == 0) && (!m_id || m_id.length == 0)) return true;
+		else if (!oid) return false;
+		else if (!m_id) return false;
+
         if (m_id.length != oid.m_id.length)
             return false;
+
         foreach (size_t i; 0 .. m_id.length)
             if (m_id[i] != oid.m_id[i])
                 return false;
@@ -229,6 +235,12 @@ public:
     {
         m_id = other.m_id.dup;
     }
+
+	OID dup() const {
+		OID oid;
+		oid.m_id = m_id.dup;
+		return oid;
+	}
 private:
     Vector!uint m_id;
 }

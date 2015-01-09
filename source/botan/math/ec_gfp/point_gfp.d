@@ -816,7 +816,7 @@ PointGFp OS2ECP(T : CurveGFp)(const(ubyte)* data, size_t data_len, auto ref T cu
     return result;
 }
 
-PointGFp OS2ECP(Alloc, T : CurveGFp)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) data, auto ref T curve)
+PointGFp OS2ECP(int Alloc, T : CurveGFp)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) data, auto ref T curve)
 { return OS2ECP(data.ptr, data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)

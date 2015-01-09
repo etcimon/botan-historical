@@ -23,9 +23,6 @@ http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 struct SCANToken
 {
 public:
-	static this() {
-		s_alias_map = HashMap!(string, string)();
-	}
     /**
     * @param algo_spec = A SCAN-format name
     */
@@ -35,7 +32,7 @@ public:
         
         Vector!( Pair!(size_t, string)  ) names;
         size_t level = 0;
-        Appender!string def_buf;
+        Vector!ubyte def_buf;
         def_buf.reserve(8);
         auto accum = makePair(level, def_buf);
         
@@ -43,6 +40,8 @@ public:
         
         algo_spec = derefAlias(algo_spec);
         
+		import std.stdio : writeln;
+		writeln("SCANToken init: ", algo_spec);
         foreach (immutable(char) c; algo_spec)
         {
 
@@ -57,24 +56,28 @@ public:
                     --level;
                 }
                 
-                if (c == '/' && level > 0)
+                if (c == '/' && level > 0) {
                     accum.second ~= c;
+
+				}
                 else
                 {
-                    if (accum.second.data.length > 0)
-                        names.pushBack(makePair(accum.first, derefAlias(accum.second.data)));
-                    Appender!string str;
+                    if (accum.second.length > 0) {
+                        names ~= makePair(accum.first, derefAlias(accum.second[]));
+					}
+                    Vector!ubyte str;
                     str.reserve(8);
                     accum = makePair(level, str);
                 }
             }
-            else
+            else {
                 accum.second ~= c;
+			}
         }
         
-        if (accum.second.data.length > 0)
-            names.pushBack(makePair(accum.first, derefAlias(accum.second.data)));
-        
+        if (accum.second.length > 0) {
+            names ~= makePair(accum.first, derefAlias(accum.second[]));
+		}
         if (level != 0)
             throw new DecodingError(decoding_error ~ "Missing close paren");
         
@@ -82,18 +85,24 @@ public:
             throw new DecodingError(decoding_error ~ "Empty name");
         
         m_alg_name = names[0].second;
-        
+
+        if (names.length == 1)
+			return;
+
         bool in_modes;
-        size_t i;
-        foreach (name; names[])
+        size_t i = 1;
+        foreach (name; names[1 .. $])
         {
             if (name.first == 0)
             {
-                m_mode_info.pushBack(makeArg(names, i));
+				string val = makeArg(names, i);
+                m_mode_info.pushBack(val);
                 in_modes = true;
             }
-            else if (name.first == 1 && !in_modes)
-                m_args.pushBack(makeArg(names, i));
+            else if (name.first == 1 && !in_modes) { 
+				string val = makeArg(names, i);
+                m_args.pushBack(val);
+			}
             i++;
         }
     }
@@ -202,7 +211,11 @@ public:
     
     static string derefAlias(string input)
     {
-        return s_alias_map.get(input, null);
+		auto name = s_alias_map.get(input, null);
+		if (name)
+			return name;
+		else
+			return input;
     }
 
     static void setDefaultAliases()

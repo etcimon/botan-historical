@@ -66,7 +66,7 @@ static if (BOTAN_HAS_SIMD_SSE2) {
     */
     void bswap4(ref uint[4] x)
     {
-        __m128i T = _mm_loadu_si128(cast(const(__m128i)*)(x.ptr));
+        __m128i T = _mm_loadu_si128(cast(const(__m128i*))(x.ptr));
 
         const SHUF = _MM_SHUFFLE(2, 3, 0, 1);
         T = _mm_shufflehi_epi16!SHUF(T);

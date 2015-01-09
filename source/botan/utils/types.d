@@ -40,7 +40,7 @@ struct Pair(T, U) {
     }
 
     this(in T a, in U b) {
-        m_obj = Tuple!(T,U)(cast(T) a,cast(U) b);
+        m_obj = Tuple!(T,U)(*cast(T*) &a,*cast(U*) &b);
     }
 
     alias m_obj this;
@@ -123,11 +123,11 @@ public:
         u._p = null;
     }
 
-    void clear()
-    {
-        RefT p = null;
-        opAssign(p);
-    }
+	void free()
+	{
+		RefT p = null;
+		opAssign(p);
+	}
 
     void opAssign(ref RefT p)
     {

@@ -121,7 +121,6 @@ protected:
 }
 
 package:
-pure:
 
 void xtea_encrypt_4(in ubyte[32] input, ref ubyte[32] output, in uint[64] EK)
 {

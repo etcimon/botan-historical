@@ -80,8 +80,8 @@ protected:
         m_cipher = cipher;
         m_padding = padding;
         m_state = m_cipher.blockSize();
-        if (m_padding && !m_padding.validBlocksize(cipher.blockSize()))
-            throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/CBC");
+		if (!m_padding.isEmpty && !m_padding.validBlocksize(m_cipher.blockSize()))
+			throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/CBC");
     }
 
     final BlockCipher cipher() const { return *m_cipher; }

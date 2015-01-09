@@ -34,6 +34,8 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         static char[256] s_keyBuffer;
     }
 
+	@disable this(this);
+
     alias KeyType = KEY;
     alias ValueType = VALUE;
     
@@ -90,8 +92,8 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
     {
         auto keysum = computeCheckSumI(key);
         if (m_fieldCount < m_fields.length)
-            m_fields[m_fieldCount++] = Field(keysum, cast(KeyType) key, value);
-        else m_extendedFields ~= Field(keysum, cast(KeyType) key, value);
+            m_fields[m_fieldCount++] = Field(keysum, *cast(KeyType*) &key, value);
+        else m_extendedFields ~= Field(keysum, *cast(KeyType*) &key, value);
     }
 
     /** Returns the first field that matches the given key.

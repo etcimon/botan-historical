@@ -150,7 +150,7 @@ public:
                     TLSAlert alert_msg = TLSAlert(record);
                     
                     if (alert_msg.type() == TLSAlert.NO_RENEGOTIATION)
-                    m_pending_state.clear();
+                    m_pending_state.free();
                 
                 m_alert_cb(alert_msg, null);
                 
@@ -231,7 +231,7 @@ public:
     /**
     * Inject plaintext intended for counterparty
     */
-    void send(Alloc)(in FreeListRef!(VectorImpl!( char, Alloc )) val)
+    void send(int Alloc)(in FreeListRef!(VectorImpl!( char, Alloc )) val)
     {
         send(val.ptr, val.length);
     }
@@ -253,7 +253,7 @@ public:
         }
         
         if (alert.type() == TLSAlert.NO_RENEGOTIATION)
-            m_pending_state.clear();
+            m_pending_state.free();
         
         if (alert.isFatal())
             if (auto active = activeState())
@@ -488,7 +488,7 @@ protected:
     void activateSession()
     {
         std.algorithm.swap(m_active_state, m_pending_state);
-        m_pending_state.clear();
+        m_pending_state.free();
         
         if (m_active_state.Version().isDatagramProtocol())
         {
@@ -759,8 +759,8 @@ private:
 
     void resetState()
     {
-        m_active_state.clear();
-        m_pending_state.clear();
+        m_active_state.free();
+        m_pending_state.free();
         m_readbuf.clear();
         m_write_cipher_states.clear();
         m_read_cipher_states.clear();

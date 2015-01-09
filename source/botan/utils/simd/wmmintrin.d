@@ -86,7 +86,7 @@ version(D_Version2) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -102,7 +102,7 @@ version(D_Version2) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -118,7 +118,7 @@ version(D_Version2) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -135,7 +135,7 @@ version(D_Version2) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -150,7 +150,7 @@ version(D_Version2) {
     __m128i _mm_aesimc_si128(__m128i a) {
         __m128i* _a = &a;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             movdqu XMM1, [RAX];
             aesimc XMM0, XMM1;
@@ -163,7 +163,7 @@ version(D_Version2) {
     __m128i _mm_aeskeygenassist_si128(int b)(__m128i a) {
         __m128i* _a = &a;
         
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             aeskeygenassist XMM1, XMM0, ` ~ b.to!string ~ `;
@@ -175,11 +175,10 @@ version(D_Version2) {
     
     __m128i _mm_clmulepi64_si128(int imm)(__m128i a, __m128i b) {
         /// todo: Enable this after adding PCLMULQDQ in dmd
-        assert(false, "PCLMULQDQ not supported yet in DMD");
         __m128i* _a = &a;
-        const(__m128i)* _b = &b;
+		__m128i* _b = &b;
                 
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM1, [RAX];

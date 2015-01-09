@@ -67,7 +67,7 @@ protected:
             
             ubyte[32] S;
             
-            ulong[4] U, V;
+			ulong[4] U, V;
             loadBigEndian(U.ptr, m_hash.ptr, 4);
             loadBigEndian(V.ptr, input + 32*i, 4);
             

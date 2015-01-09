@@ -16,13 +16,13 @@ import botan.utils.xor_buf;
 /**
 * HMAC
 */
-final class HMAC : MessageAuthenticationCode, BufferedComputation, SymmetricAlgorithm
+final class HMAC : MessageAuthenticationCode
 {
 public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+    override void clear()
     {
         m_hash.clear();
         zap(m_ikey);

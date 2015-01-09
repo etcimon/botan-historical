@@ -19,7 +19,6 @@ import botan.engine.core_engine;
 import botan.utils.containers.multimap;
 import std.algorithm;
 import core.sync.mutex;
-import std.typecons;
 import botan.entropy.entropy_src;
 import botan.utils.containers.hashmap;
 
@@ -67,8 +66,6 @@ final class LibraryState
 public:
     this()
     {
-		import std.stdio : writeln;
-		writeln("create a mutex");
         m_entropy_src_mutex = new Mutex;
     }
 
@@ -79,36 +76,36 @@ public:
         if (m_initialized)
             return;
 
-		writeln("SCANToken.setDefaultAliases()");
         SCANToken.setDefaultAliases();
-		writeln("OIDS.setDefaults()");
         OIDS.setDefaults();
 
-		writeln("AlgorithmFactory.init");
-        m_algorithm_factory = AlgorithmFactory.init;
+        m_algorithm_factory = Unique!AlgorithmFactory(new AlgorithmFactory);
         
-		writeln("new SerializedRNG()");
-		m_global_prng = new SerializedRNG();
-
-        static if (BOTAN_HAS_ENGINE_GNU_MP)
+        static if (BOTAN_HAS_ENGINE_GNU_MP) {
+			writeln("Loading GNU MP Engine");
             algorithmFactory().addEngine(new GMPEngine);
+		}
         
-        
-        static if (BOTAN_HAS_ENGINE_OPENSSL)
+        static if (BOTAN_HAS_ENGINE_OPENSSL) {
+			writeln("Loading OpenSSL Engine");
             algorithmFactory().addEngine(new OpenSSLEngine);
+		}
         
+        static if (BOTAN_HAS_ENGINE_AES_ISA) {         	
+			writeln("Loading AES ISA Engine");
+			algorithmFactory().addEngine(new AESISAEngine);        
+		}
         
-        static if (BOTAN_HAS_ENGINE_AES_ISA)
-            algorithmFactory().addEngine(new AESISAEngine);
-        
-        
-        static if (BOTAN_HAS_ENGINE_SIMD)
+        static if (BOTAN_HAS_ENGINE_SIMD) {
+			writeln("Loading SIMD Engine");
             algorithmFactory().addEngine(new SIMDEngine);
+		}
         
+        static if (BOTAN_HAS_ENGINE_ASSEMBLER) {
+			writeln("Loading Assembler Engine");
+			algorithmFactory().addEngine(new AssemblerEngine);
         
-        static if (BOTAN_HAS_ENGINE_ASSEMBLER)
-            algorithmFactory().addEngine(new AssemblerEngine);
-        
+		}
         
         algorithmFactory().addEngine(new CoreEngine);
 
@@ -116,9 +113,14 @@ public:
             if (m_sources.length == 0)
                 m_sources = entropySources();
 
-        static if (BOTAN_HAS_SELFTESTS)
-            confirmStartupSelfTests(algorithmFactory());
+		writeln("new SerializedRNG()");
 
+		m_global_prng = new SerializedRNG();
+
+        static if (BOTAN_HAS_SELFTESTS) {        
+			writeln("Startup Self-Tests");
+			confirmStartupSelfTests(algorithmFactory());
+		}
         m_initialized = true;
 
     }
@@ -131,7 +133,7 @@ public:
     {
         if (!m_algorithm_factory)
             throw new InvalidState("Uninitialized in algorithmFactory");
-        return m_algorithm_factory;
+        return *m_algorithm_factory;
     }
 
     /**
@@ -209,6 +211,6 @@ private:
     __gshared Mutex m_entropy_src_mutex;
     __gshared Vector!( EntropySource ) m_sources;
 
-    AlgorithmFactory m_algorithm_factory;
+    Unique!AlgorithmFactory m_algorithm_factory;
     bool m_initialized;
 }

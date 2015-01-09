@@ -26,16 +26,6 @@ final class AlgorithmFactory
 {
 public:
     /**
-    * Constructor
-    */
-    this() { }
-    
-    /**
-    * Destructor
-    */
-    ~this() { }
-    
-    /**
     * @param engine = to add (AlgorithmFactory takes ownership)
     */
     void addEngine(Engine engine)
@@ -338,14 +328,13 @@ const(T) factoryPrototype(T)(in string algo_spec,
                              Vector!( Engine ) engines,
                              AlgorithmFactory af,
                              AlgorithmCache!T cache) {
+	import std.stdio : writeln;
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
-
     SCANToken scan_name = SCANToken(algo_spec);
-
+	writeln("Searching for algo ", scan_name);
     if (scan_name.cipherMode() != "")
         return null;
-
     foreach (engine; engines[])
     {
         if (provider == "" || engine.providerName() == provider)

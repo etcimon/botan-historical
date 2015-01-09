@@ -149,7 +149,7 @@ ushort mul_inv(ushort x) pure
 /**
 * IDEA is involutional, depending only on the key schedule
 */
-void idea_op(const(ubyte)* input, ubyte* output, size_t blocks, in const(ushort)* K) pure
+void idea_op(const(ubyte)* input, ubyte* output, size_t blocks, in const(ushort)* K)
 {
     __gshared immutable size_t BLOCK_SIZE = 8;
     

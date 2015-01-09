@@ -72,7 +72,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    final Vector!ubyte encrypt(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, RandomNumberGenerator rng) const
     {
         return enc(input.ptr, input.length, rng);
     }
@@ -109,7 +109,7 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    final SecureVector!ubyte decrypt(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input) const
+    final SecureVector!ubyte decrypt(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input) const
     {
         return dec(input.ptr, input.length);
     }
@@ -319,7 +319,7 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-    bool verifyMessage(Alloc, Alloc2)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) msg, 
+    bool verifyMessage(int Alloc, int Alloc2)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) msg, 
                                       in FreeListRef!(VectorImpl!( ubyte, Alloc2 )) sig)
     {
         return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
@@ -395,7 +395,7 @@ public:
     * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
-    bool checkSignature(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) sig)
+    bool checkSignature(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) sig)
     {
         return checkSignature(sig.ptr, sig.length);
     }

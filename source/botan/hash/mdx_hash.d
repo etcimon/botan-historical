@@ -23,9 +23,9 @@ public:
     * @param bit_end = specifies if the hash uses big-endian bits
     * @param cnt_size = specifies the size of the counter var in bytes
     */
-    this(size_t block_len, bool byte_end, bool bit_end, size_t cnt_size = 0)
+    this(size_t block_len, bool byte_end, bool bit_end, size_t cnt_size = 8)
     {
-        m_buffer = block_len;
+        m_buffer.length = block_len;
         m_BIG_BYTE_ENDIAN = byte_end;
         m_BIG_BIT_ENDIAN = bit_end;
         m_COUNT_SIZE = cnt_size;
@@ -79,9 +79,7 @@ protected:
             compressN(m_buffer.ptr, 1);
             zeroise(m_buffer);
         }
-        
-        writeCount(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
-        
+		writeCount(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
         compressN(m_buffer.ptr, 1);
         copyOut(output);
         clear();
@@ -121,7 +119,6 @@ protected:
             throw new InvalidArgument("MDxHashFunction: COUNT_SIZE is too big");
         
         const ulong bit_count = m_count * 8;
-        
         if (m_BIG_BYTE_ENDIAN)
             storeBigEndian(bit_count, output + m_COUNT_SIZE - 8);
         else

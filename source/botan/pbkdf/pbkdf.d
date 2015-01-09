@@ -59,7 +59,7 @@ public:
     * @param salt = a randomly chosen salt
     * @param iterations = the number of iterations to use (use 10K or more)
     */
-    final OctetString deriveKey(Alloc)(size_t output_len,
+    final OctetString deriveKey(int Alloc)(size_t output_len,
                                        in string passphrase,
                                        in FreeListRef!(VectorImpl!( ubyte, Alloc )) salt,
                                        size_t iterations) const
@@ -97,7 +97,7 @@ public:
     * @param loop_for = is how long to run the PBKDF
     * @param iterations = is set to the number of iterations used
     */
-    final OctetString deriveKey(Alloc)(size_t output_len,
+    final OctetString deriveKey(int Alloc)(size_t output_len,
                                        in string passphrase,
                                        in Vector!( ubyte, Alloc ) salt,
                                        Duration loop_for,

@@ -120,11 +120,11 @@ public:
     }
 
     @property OID oid() const {
-        return cast(OID) m_oid;
+        return *cast(OID*) &m_oid;
     }
 
     @property Vector!ubyte parameters() const {
-        return cast(Vector!ubyte) m_parameters;
+        return *cast(Vector!ubyte*) &m_parameters;
     }
 
     @property void oid(OID oid) {

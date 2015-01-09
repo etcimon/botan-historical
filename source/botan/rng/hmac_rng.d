@@ -164,21 +164,27 @@ public:
     * @param extractor = a MAC used for extracting the entropy
     * @param prf = a MAC used as a PRF using HKDF construction
     */
-    this(MessageAuthenticationCode extractor,
-         MessageAuthenticationCode prf)
+    this(MessageAuthenticationCode extractor, MessageAuthenticationCode prf)
     {
-        m_extractor = extractor; 
-        m_prf = prf;
-        if (!m_prf.validKeylength(m_extractor.outputLength) ||
-            !m_extractor.validKeylength(m_prf.outputLength))
-            throw new InvalidArgument("HMAC_RNG: Bad algo combination " ~
-                                       m_extractor.name ~ " and " ~
-                                       m_prf.name);
-        
-        // First PRF inputs are all zero, as specified in section 2
-        m_K.resize(m_prf.outputLength);
-        
-        /*
+        m_extractor = extractor; // swap
+        m_prf = prf; // swap
+		this();
+    }
+
+private:
+	this() {
+		assert(!m_prf.isEmpty && !m_extractor.isEmpty);
+
+		if (!m_prf.validKeylength(m_extractor.outputLength) ||
+			!m_extractor.validKeylength(m_prf.outputLength))
+			throw new InvalidArgument("HMAC_RNG: Bad algo combination " ~
+				m_extractor.name ~ " and " ~
+				m_prf.name);
+		
+		// First PRF inputs are all zero, as specified in section 2
+		m_K.resize(m_prf.outputLength);
+		
+		/*
         Normally we want to feedback PRF outputs to the extractor function
         to ensure a single bad poll does not reduce entropy. Thus in reseed
         we'll want to invoke the PRF before we reset the PRF key, but until
@@ -191,10 +197,10 @@ public:
         The PRF key will not be used to generate outputs until after reseed
         sets m_seeded to true.
         */
-        SecureVector!ubyte prf_key = SecureVector!ubyte(m_extractor.outputLength);
-        m_prf.setKey(prf_key);
-        
-        /*
+		SecureVector!ubyte prf_key = SecureVector!ubyte(m_extractor.outputLength);
+		m_prf.setKey(prf_key);
+		
+		/*
         Use PRF("Botan HMAC_RNG XTS") as the intitial XTS key.
 
         This will be used during the first extraction sequence; XTS values
@@ -203,10 +209,10 @@ public:
         If I understand the E-t-E paper correctly (specifically Section 4),
         using this fixed extractor key is safe to do.
         */
-        m_extractor.setKey(prf.process("Botan HMAC_RNG XTS"));
-    }
+		m_extractor.setKey(m_prf.process("Botan HMAC_RNG XTS"));
 
-private:
+	}
+
     Unique!MessageAuthenticationCode m_extractor;
     Unique!MessageAuthenticationCode m_prf;
 

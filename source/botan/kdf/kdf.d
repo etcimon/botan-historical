@@ -49,7 +49,7 @@ public:
     * @param salt = a diversifier
     */
     
-    SecureVector!ubyte deriveKey(Alloc, Alloc2)(size_t key_len,
+    SecureVector!ubyte deriveKey(int Alloc, int Alloc2)(size_t key_len,
                                                 in FreeListRef!(VectorImpl!( ubyte, Alloc )) secret,
                                                 in FreeListRef!(VectorImpl!( ubyte, Alloc2 )) salt) const
     {

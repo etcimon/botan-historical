@@ -152,16 +152,16 @@ public:
 
     override TLSProtocolVersion initialRecordVersion() const
     {
-        return cast(TLSProtocolVersion)TLSProtocolVersion.DTLS_V10;
+        return TLSProtocolVersion(TLSProtocolVersion.DTLS_V10);
     }
 
     override Vector!ubyte send(in HandshakeMessage msg)
     {
-        Vector!ubyte msg_bits = msg.serialize().dup;
+        Vector!ubyte msg_bits = msg.serialize();
         ushort epoch = m_seqs.currentWriteEpoch();
         HandshakeType msg_type = msg.type();
         
-        Tuple!(ushort, ubyte, Vector!ubyte) msg_info = Tuple!(ushort, ubyte, Vector!ubyte)(epoch, msg_type, msg_bits);
+        FlightData msg_info = FlightData(epoch, msg_type, msg_bits);
         
         if (msg_type == HANDSHAKE_CCS)
         {
@@ -247,12 +247,13 @@ public:
             
             if (message_seq >= m_in_message_seq)
             {
-                m_messages[message_seq].addFragment(&record_bits[DTLS_HANDSHAKE_HEADER_LEN],
-                                                        fragment_length,
-                                                        fragment_offset,
-                                                        epoch,
-                                                        msg_type,
-                                                        msg_len);
+				m_messages[message_seq] = HandshakeReassembly.init;
+				m_messages[message_seq].addFragment(&record_bits[DTLS_HANDSHAKE_HEADER_LEN],
+                                                    fragment_length,
+                                                    fragment_offset,
+                                                    epoch,
+                                                    msg_type,
+                                                    msg_len);
             }
             
             record_bits += total_size;
@@ -290,128 +291,134 @@ public:
 
 private:
 
-Vector!ubyte formatFragment(const(ubyte)* fragment,
-                             size_t frag_len,
-                             ushort frag_offset,
-                             ushort msg_len,
-                             HandshakeType type,
-                             ushort msg_sequence) const
-{
-    Vector!ubyte send_buf = Vector!ubyte(12 + frag_len);
-    
-    send_buf[0] = type;
-    
-    storeBigEndian24((&send_buf[1])[0 .. 3], msg_len);
-    
-    storeBigEndian(msg_sequence, &send_buf[4]);
-    
-    storeBigEndian24((&send_buf[6])[0 .. 3], frag_offset);
-    storeBigEndian24((&send_buf[9])[0 .. 3], frag_len);
-    
-    copyMem(&send_buf[12], fragment, frag_len);
-    
-    return send_buf;
-}
+	Vector!ubyte formatFragment(const(ubyte)* fragment,
+	                             size_t frag_len,
+	                             ushort frag_offset,
+	                             ushort msg_len,
+	                             HandshakeType type,
+	                             ushort msg_sequence) const
+	{
+	    Vector!ubyte send_buf = Vector!ubyte(12 + frag_len);
+	    
+	    send_buf[0] = type;
+	    
+	    storeBigEndian24((&send_buf[1])[0 .. 3], msg_len);
+	    
+	    storeBigEndian(msg_sequence, &send_buf[4]);
+	    
+	    storeBigEndian24((&send_buf[6])[0 .. 3], frag_offset);
+	    storeBigEndian24((&send_buf[9])[0 .. 3], frag_len);
+	    
+	    copyMem(&send_buf[12], fragment, frag_len);
+	    
+	    return send_buf;
+	}
 
-Vector!ubyte formatWSeq(in Vector!ubyte msg,
-                 HandshakeType type,
-                 ushort msg_sequence) const
-{
-    return formatFragment(msg.ptr, msg.length, cast(ushort)  0, cast(ushort) msg.length, type, msg_sequence);
-}
+	Vector!ubyte formatWSeq(in Vector!ubyte msg,
+	                 HandshakeType type,
+	                 ushort msg_sequence) const
+	{
+	    return formatFragment(msg.ptr, msg.length, cast(ushort)  0, cast(ushort) msg.length, type, msg_sequence);
+	}
 
-class HandshakeReassembly
-{
-public:
-    void addFragment(const(ubyte)* fragment,
-                        size_t fragment_length,
-                        size_t fragment_offset,
-                        ushort epoch,
-                        ubyte msg_type,
-                        size_t msg_length)
-    {
-        if (complete())
-            return; // already have entire message, ignore this
-        
-        if (m_msg_type == HANDSHAKE_NONE)
-        {
-            m_epoch = epoch;
-            m_msg_type = msg_type;
-            m_msg_length = msg_length;
-        }
-        
-        if (msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
-            throw new DecodingError("Inconsistent values in DTLS handshake header");
-        
-        if (fragment_offset > m_msg_length)
-            throw new DecodingError("Fragment offset past end of message");
-        
-        if (fragment_offset + fragment_length > m_msg_length)
-            throw new DecodingError("Fragment overlaps past end of message");
-        
-        if (fragment_offset == 0 && fragment_length == m_msg_length)
-        {
-            m_fragments.clear();
-            m_message[] = fragment[0 .. fragment_length];
-        }
-        else
-        {
-            /*
-            * FIXME. This is a pretty lame way to do defragmentation, huge
-            * overhead with a tree node per ubyte.
-            *
-            * Also should confirm that all overlaps have no changes,
-            * otherwise we expose ourselves to the classic fingerprinting
-            * and IDS evasion attacks on IP fragmentation.
-            */
-            foreach (size_t i; 0 .. fragment_length)
-                m_fragments[fragment_offset+i] = cast(ubyte)fragment[i];
-            
-            if (m_fragments.length == m_msg_length)
-            {
-                m_message.resize(m_msg_length);
-                foreach (size_t i; 0 .. m_msg_length)
-                    m_message[i] = m_fragments[i];
-                m_fragments.clear();
-            }
-        }
-    }
+	struct HandshakeReassembly
+	{
+	public:
+	    void addFragment(const(ubyte)* fragment,
+	                        size_t fragment_length,
+	                        size_t fragment_offset,
+	                        ushort epoch,
+	                        ubyte msg_type,
+	                        size_t msg_length)
+	    {
+	        if (complete())
+	            return; // already have entire message, ignore this
+	        
+	        if (m_msg_type == HANDSHAKE_NONE)
+	        {
+	            m_epoch = epoch;
+	            m_msg_type = msg_type;
+	            m_msg_length = msg_length;
+	        }
+	        
+	        if (msg_type != m_msg_type || msg_length != m_msg_length || epoch != m_epoch)
+	            throw new DecodingError("Inconsistent values in DTLS handshake header");
+	        
+	        if (fragment_offset > m_msg_length)
+	            throw new DecodingError("Fragment offset past end of message");
+	        
+	        if (fragment_offset + fragment_length > m_msg_length)
+	            throw new DecodingError("Fragment overlaps past end of message");
+	        
+	        if (fragment_offset == 0 && fragment_length == m_msg_length)
+	        {
+	            m_fragments.clear();
+	            m_message[] = fragment[0 .. fragment_length];
+	        }
+	        else
+	        {
+	            /*
+	            * FIXME. This is a pretty lame way to do defragmentation, huge
+	            * overhead with a tree node per ubyte.
+	            *
+	            * Also should confirm that all overlaps have no changes,
+	            * otherwise we expose ourselves to the classic fingerprinting
+	            * and IDS evasion attacks on IP fragmentation.
+	            */
+	            foreach (size_t i; 0 .. fragment_length)
+	                m_fragments[fragment_offset+i] = cast(ubyte)fragment[i];
+	            
+	            if (m_fragments.length == m_msg_length)
+	            {
+	                m_message.resize(m_msg_length);
+	                foreach (size_t i; 0 .. m_msg_length)
+	                    m_message[i] = m_fragments[i];
+	                m_fragments.clear();
+	            }
+	        }
+	    }
 
-    bool complete() const
-    {
-        return (m_msg_type != HANDSHAKE_NONE && m_message.length == m_msg_length);
-    }
+	    bool complete() const
+	    {
+	        return (m_msg_type != HANDSHAKE_NONE && m_message.length == m_msg_length);
+	    }
 
-    ushort epoch() const { return m_epoch; }
+	    ushort epoch() const { return m_epoch; }
 
-    Pair!(HandshakeType, Vector!ubyte) message() const
-    {
-        if (!complete())
-            throw new InternalError("DatagramHandshakeIO - message not complete");
-        
-        return makePair(cast(HandshakeType)(m_msg_type), m_message.dup);
-    }
+	    Pair!(HandshakeType, Vector!ubyte) message() const
+	    {
+	        if (!complete())
+	            throw new InternalError("DatagramHandshakeIO - message not complete");
+	        
+	        return makePair(cast(HandshakeType)(m_msg_type), m_message.dup);
+	    }
 
-    private:
-        ubyte m_msg_type = HANDSHAKE_NONE;
-        size_t m_msg_length = 0;
-        ushort m_epoch = 0;
+	    private:
+	        ubyte m_msg_type = HANDSHAKE_NONE;
+	        size_t m_msg_length = 0;
+	        ushort m_epoch = 0;
 
-        HashMap!(size_t, ubyte) m_fragments;
-        Vector!ubyte m_message;
-    }
+	        HashMap!(size_t, ubyte) m_fragments;
+	        Vector!ubyte m_message;
+	}
 
     ConnectionSequenceNumbers m_seqs;
     HashMap!(ushort, HandshakeReassembly) m_messages;
     ushort[] m_ccs_epochs;
     Vector!( Vector!ushort ) m_flights;
-    HashMap!(ushort, Tuple!(ushort, ubyte, Vector!ubyte) ) m_flight_data;
+    HashMap!(ushort, FlightData ) m_flight_data;
 
     // default MTU is IPv6 min MTU minus UDP/IP headers
     ushort m_mtu = 1280 - 40 - 8;
     ushort m_in_message_seq = 0;
     ushort m_out_message_seq = 0;
     void delegate(ushort, ubyte, in Vector!ubyte) m_send_hs;
+
+	static struct FlightData {
+		ushort epoch;
+		ubyte msg_type;
+		Vector!ubyte msg_bits;
+	}
 }
 
 

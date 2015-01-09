@@ -270,7 +270,7 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
     
     extensions.add(new SubjectAlternativeName(subject_alt));
     
-    extensions.add(new ExtendedKeyUsage(cast(Vector!OID) opts.ex_constraints));
+    extensions.add(new ExtendedKeyUsage(*cast(Vector!OID*) &opts.ex_constraints));
     
     return X509CA.makeCert(signer, rng, sig_algo, pub_key,
                            opts.start, opts.end,
@@ -307,7 +307,7 @@ PKCS10Request createCertReq(in X509CertOptions opts,
     
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
     extensions.add(new KeyUsage(opts.is_CA ? KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN : findConstraints(key, opts.constraints)));
-    extensions.add(new ExtendedKeyUsage(cast(Vector!OID)opts.ex_constraints));
+    extensions.add(new ExtendedKeyUsage(*cast(Vector!OID*)&opts.ex_constraints));
     extensions.add(new SubjectAlternativeName(subject_alt));
     
     DEREncoder tbs_req;

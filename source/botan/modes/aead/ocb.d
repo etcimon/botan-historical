@@ -75,8 +75,8 @@ public:
 
     override void clear()
     {
-        m_cipher.clear();
-        m_L.clear();
+        m_cipher.free();
+        m_L.free();
         
         zeroise(m_ad_hash);
         zeroise(m_offset);
@@ -578,7 +578,7 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     return unlock(buf);
 }
 
-Vector!ubyte ocbEncrypt(Alloc, Alloc2)(in SymmetricKey key,
+Vector!ubyte ocbEncrypt(int Alloc, int Alloc2)(in SymmetricKey key,
                                        in Vector!ubyte nonce,
                                        in FreeListRef!(VectorImpl!(ubyte, Alloc)) pt,
                                        in FreeListRef!(VectorImpl!(ubyte, Alloc2)) ad)
@@ -586,7 +586,7 @@ Vector!ubyte ocbEncrypt(Alloc, Alloc2)(in SymmetricKey key,
     return ocbEncrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
-Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
+Vector!ubyte ocbDecrypt(int Alloc, int Alloc2)(in SymmetricKey key,
                                        in Vector!ubyte nonce,
                                        in FreeListRef!(VectorImpl!(ubyte, Alloc)) pt,
                                        in FreeListRef!(VectorImpl!(ubyte, Alloc2)) ad)

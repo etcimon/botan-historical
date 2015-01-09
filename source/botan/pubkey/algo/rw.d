@@ -190,7 +190,13 @@ public:
         
         const BigInt r = m_blinder.unblind(mulAdd(j1, m_q, j2));
         
-        return BigInt.encode1363(std.algorithm.min(r, m_n.dup - r), m_n.bytes());
+		BigInt min_val = r.dup;
+		BigInt cmp2 = m_n.dup - r;
+
+		if (cmp2 < min_val)
+			min_val = cmp2;
+
+        return BigInt.encode1363(min_val, m_n.bytes());
     }
 private:
     const BigInt m_n;

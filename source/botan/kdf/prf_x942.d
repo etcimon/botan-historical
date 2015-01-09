@@ -93,6 +93,6 @@ private:
 Vector!ubyte encodeX942Int(uint n)
 {
     ubyte[4] n_buf;
-    storeBigEndian(n, n_buf);
+    storeBigEndian(n, &n_buf);
     return DEREncoder().encode(n_buf.ptr, 4, ASN1Tag.OCTET_STRING).getContentsUnlocked();
 }

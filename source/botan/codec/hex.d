@@ -67,7 +67,7 @@ string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hexEncode(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, bool uppercase = true)
+string hexEncode(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, bool uppercase = true)
 {
     return hexEncode(input.ptr, input.length, uppercase);
 }

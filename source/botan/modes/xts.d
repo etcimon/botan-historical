@@ -326,7 +326,7 @@ public:
 
 private:
 
-void polyDouble128(ubyte* output, const(ubyte)* input) pure
+void polyDouble128(ubyte* output, const(ubyte)* input)
 {
     ulong X0 = loadLittleEndian!ulong(input, 0);
     ulong X1 = loadLittleEndian!ulong(input, 1);
@@ -342,7 +342,7 @@ void polyDouble128(ubyte* output, const(ubyte)* input) pure
     storeLittleEndian(output, X0, X1);
 }
 
-void polyDouble64(ubyte* output, const(ubyte)* input) pure
+void polyDouble64(ubyte* output, const(ubyte)* input)
 {
     ulong X = loadLittleEndian!ulong(input, 0);
     const bool carry = (X >> 63);
@@ -352,7 +352,7 @@ void polyDouble64(ubyte* output, const(ubyte)* input) pure
     storeLittleEndian(X, output);
 }
 
-void polyDouble(ubyte* output, const(ubyte)* input, size_t size) pure
+void polyDouble(ubyte* output, const(ubyte)* input, size_t size)
 {
     if (size == 8)
         polyDouble64(output, input);

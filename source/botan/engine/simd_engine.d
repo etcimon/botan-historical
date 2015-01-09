@@ -82,32 +82,32 @@ public:
 
 
 	StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactory af) const
-	{ assert(false); }
+	{ return null; }
 	
 	MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactory af) const
-	{ assert(false); }
+	{ return null; }
 	
 	PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
-	{ assert(false); }
+	{ return null; }
 	
 	ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
-	{ assert(false); }
+	{ return null; }
 	
 	KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const
-	{ assert(false); }
+	{ return null; }
 	
 	KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{ assert(false); }
+	{ return null; }
 	
 	Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{ assert(false); }
+	{ return null; }
 	
 	Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
-	{ assert(false); }
+	{ return null; }
 	
 	Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator rng) const
-	{ assert(false); }
+	{ return null; }
 	
 	Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{ assert(false); }
+	{ return null; }
 }

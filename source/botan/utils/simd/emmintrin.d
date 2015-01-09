@@ -79,7 +79,7 @@ version(GDC) {
         short[8]* _a = &a;
         __m128i* _b = &b;
         mixin( q{
-            asm {
+            asm pure nothrow {
                 "movdqu (%0), %xmm0\n"
                 "movdqu %xmm0, (%1)\n"
                 : : "0" (_a), "1" (_b) : "xmm0"
@@ -259,7 +259,7 @@ version(LDC) {
         short[8]* _a = &a;
         __m128i* _b = &b;
         mixin( q{
-            __asm {
+            __asm pure nothrow {
                 "movdqu (%0), %xmm0\n"
                 ~ "movdqu %xmm0, (%1)\n"
                 : : "0" (_a), "1" (_b) : "xmm0"
@@ -438,7 +438,7 @@ version(D_InlineAsm_X86_64) {
         __m128i b;
         short[8]* _a = &a;
         __m128i* _b = &b;
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -451,7 +451,7 @@ version(D_InlineAsm_X86_64) {
         int ret;
         int* _ret = &ret;
         const(__m128i)* _a = &a;
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _ret;
             movdqu XMM0, [RAX];
@@ -466,7 +466,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
 
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -481,7 +481,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -498,7 +498,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -514,7 +514,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -531,7 +531,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -548,7 +548,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -565,7 +565,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -581,7 +581,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -595,7 +595,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_srli_epi16 ; PSRLW
     __m128i _mm_srli_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             psrlw XMM0, ` ~ imm.to!string ~ `;
@@ -608,7 +608,7 @@ version(D_InlineAsm_X86_64) {
     __m128i _mm_srli_epi32(int imm)(__m128i a) {
         __m128i* _a = &a;
         
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             psrld XMM0, ` ~ imm.to!string ~ `;
@@ -620,7 +620,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_slli_epi32 ; PSLLD
     __m128i _mm_slli_epi32(int imm)(__m128i a) {
         __m128i* _a = &a;        
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             pslld XMM0, ` ~ imm.to!string ~ `;
@@ -632,7 +632,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_slli_epi16 ; PSLLW
     __m128i _mm_slli_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             psllw XMM0, ` ~ imm.to!string ~ `;
@@ -644,7 +644,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_shufflehi_epi16 ; PSHUFHW
     __m128i _mm_shufflehi_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             pshufhw XMM1, XMM0, ` ~ imm.to!string ~ `;
@@ -656,7 +656,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_shufflelo_epi16 ; PSHUFLW
     __m128i _mm_shufflelo_epi16(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             pshuflw XMM1, XMM0, ` ~ imm.to!string ~ `;
@@ -670,7 +670,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -686,7 +686,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -702,7 +702,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -717,7 +717,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_shuffle_epi32 ;  PSHUFD
     __m128i _mm_shuffle_epi32(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             pshufd XMM1, XMM0, ` ~ imm.to!string ~ `;
@@ -731,7 +731,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         int b;
         int* _b = &b;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -746,7 +746,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -763,7 +763,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -780,7 +780,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -797,7 +797,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -819,7 +819,7 @@ version(D_InlineAsm_X86_64) {
         __m128i a;
         __m128i* _a = &a;
         
-        asm {
+        asm pure nothrow {
             mov RAX, p;
             mov RBX, _a;
             movdqu XMM0, [RAX];
@@ -833,7 +833,7 @@ version(D_InlineAsm_X86_64) {
     void _mm_storeu_si128 (in __m128i* p, in __m128i a) {
         const(__m128i)* _a = &a;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, p;
             movdqu XMM0, [RAX];
@@ -847,7 +847,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -864,7 +864,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -881,7 +881,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -898,7 +898,7 @@ version(D_InlineAsm_X86_64) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
-        asm {
+        asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
             movdqu XMM0, [RAX];
@@ -913,7 +913,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_srli_si128 ; PSRLDQ
     __m128i _mm_srli_si128(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             psrldq XMM0, ` ~ imm.to!string ~ `;
@@ -925,7 +925,7 @@ version(D_InlineAsm_X86_64) {
     // _mm_slli_si128 ; PSLLDQ
     __m128i _mm_slli_si128(int imm)(__m128i a) {
         __m128i* _a = &a;
-        mixin(`asm {
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             movdqu XMM0, [RAX];
             pslldq XMM0, ` ~ imm.to!string ~ `;

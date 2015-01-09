@@ -18,8 +18,14 @@ import std.exception : enforceEx;
 import std.traits;
 import std.algorithm;
 import botan.utils.containers.hashmap : HashMapImpl;
+import botan.utils.memory.zeroise;
 
-alias VulnerableAllocator = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
+enum {
+	SimpleAllocator = 0,
+	VulnerableAllocator = 1
+}
+
+alias VulnerableAllocatorImpl = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
 
 R getAllocator(R)() {
     static __gshared R alloc;
@@ -28,8 +34,15 @@ R getAllocator(R)() {
     return alloc;
 }
 
-auto allocObject(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true, ARGS...)(ARGS args)
+auto allocObject(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, ARGS...)(ARGS args)
 {
+	static if (ALLOCATOR == VulnerableAllocator)
+		auto allocator = getAllocator!VulnerableAllocatorImpl();
+	else static if (ALLOCATOR == SimpleAllocator)
+		auto allocator = getAllocator!MallocAllocator();
+	else
+		auto allocator = getAllocator!SecureAllocatorImpl;
+
     auto mem = allocator.alloc(AllocSize!T);
     static if( MANAGED ){
         static if( hasIndirections!T )
@@ -40,10 +53,15 @@ auto allocObject(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true, ARGS..
     else return cast(T*)mem.ptr;
 }
 
-T[] allocArray(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size_t n)
+T[] allocArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size_t n)
 {
-    auto allocator = getAllocator!ALLOCATOR();
-    auto mem = allocator.alloc(T.sizeof * n);
+	static if (ALLOCATOR == VulnerableAllocator)
+		auto allocator = getAllocator!VulnerableAllocatorImpl();
+	else static if (ALLOCATOR == SimpleAllocator)
+		auto allocator = getAllocator!MallocAllocator();
+	else
+		auto allocator = getAllocator!SecureAllocatorImpl;
+	auto mem = allocator.alloc(T.sizeof * n);
     auto ret = cast(T[])mem;
     static if ( MANAGED )
     {
@@ -57,9 +75,15 @@ T[] allocArray(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size_t n
     return ret;
 }
 
-void freeArray(T, ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(ref T[] array)
+void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(ref T[] array)
 {
-    auto allocator = getAllocator!ALLOCATOR();
+	static if (ALLOCATOR == VulnerableAllocator)
+		auto allocator = getAllocator!VulnerableAllocatorImpl();
+	else static if (ALLOCATOR == SimpleAllocator)
+		auto allocator = getAllocator!MallocAllocator();
+	else
+		auto allocator = getAllocator!SecureAllocatorImpl;
+
     static if (MANAGED && hasIndirections!T)
         GC.removeRange(array.ptr);
     static if (hasElaborateDestructor!T) // calls destructors
@@ -104,7 +128,7 @@ final class LockAllocator(Base) : Allocator {
 final class DebugAllocator(Base) : Allocator {
     private {
         Base m_baseAlloc;
-        HashMapImpl!(void*, size_t, MallocAllocator) m_blocks;
+        HashMapImpl!(void*, size_t, SimpleAllocator) m_blocks;
         size_t m_bytes;
         size_t m_maxBytes;
     }
@@ -112,7 +136,7 @@ final class DebugAllocator(Base) : Allocator {
     this()
     {
         m_baseAlloc = getAllocator!Base();
-        m_blocks = HashMapImpl!(void*, size_t, MallocAllocator)();
+		m_blocks = HashMapImpl!(void*, size_t, SimpleAllocator)();
     }
     
     @property size_t allocatedBlockCount() const { return m_blocks.length; }
@@ -278,7 +302,7 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     TR alloc(ARGS...)(ARGS args)
     {
         //logInfo("alloc %s/%d", T.stringof, ElemSize);
-        auto mem = getAllocator!VulnerableAllocator().alloc(ElemSize);
+        auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) return emplace!T(mem, args);
         else return cast(TR)mem.ptr;
@@ -291,25 +315,16 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
             .destroy(objc);//typeid(T).destroy(cast(void*)obj);
         }
         static if( hasIndirections!T ) GC.removeRange(cast(void*)obj);
-        getAllocator!VulnerableAllocator().free((cast(void*)obj)[0 .. ElemSize]);
+        getAllocator!VulnerableAllocatorImpl().free((cast(void*)obj)[0 .. ElemSize]);
     }
 }
 
 
-template AllocSize(T)
-{
-    static if (is(T == class)) {
-        // workaround for a strange bug where AllocSize!SSLStream == 0: TODO: dustmite!
-        enum dummy = T.stringof ~ __traits(classInstanceSize, T).stringof;
-        enum AllocSize = __traits(classInstanceSize, T);
-    } else {
-        enum AllocSize = T.sizeof;
-    }
-}
 
 struct FreeListRef(T, bool INIT = true)
 {
-    enum ElemSize = AllocSize!T;
+	enum isFreeListRef = true;
+	enum ElemSize = AllocSize!T;
     
     static if( is(T == class) ){
         alias TR = T;
@@ -326,7 +341,7 @@ struct FreeListRef(T, bool INIT = true)
     {
         //logInfo("refalloc %s/%d", T.stringof, ElemSize);
         FreeListRef ret;
-        auto mem = getAllocator!VulnerableAllocator().alloc(ElemSize + int.sizeof);
+        auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize + int.sizeof);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
         else ret.m_object = cast(TR)mem.ptr;
@@ -343,17 +358,18 @@ struct FreeListRef(T, bool INIT = true)
         //if( m_object ) logInfo("~this!%s(): %d", T.stringof, this.refCount);
         //if( m_object ) logInfo("ref %s destructor %d", T.stringof, refCount);
         //else logInfo("ref %s destructor %d", T.stringof, 0);
-        if (m_object) clear();
+        clear();
         m_magic = 0;
         m_object = null;
     }
 
-    this(this) const
+    const this(this)
     {
-        (cast(FreeListRef)this).copyctor();
+    	(cast(FreeListRef*)&this).copyctor();
     }
 
     void copyctor() {
+		defaultInit();
         checkInvariants();
         if( m_object ){
             //if( m_object ) logInfo("this!%s(this): %d", T.stringof, this.refCount);
@@ -367,7 +383,7 @@ struct FreeListRef(T, bool INIT = true)
     }
 
     void opAssignImpl(FreeListRef other) {
-        if (m_object) clear();
+        clear();
         m_object = other.m_object;
 		other.m_object = null;
         if( m_object ){
@@ -389,7 +405,7 @@ struct FreeListRef(T, bool INIT = true)
                     //logInfo("ref %s destroyed", T.stringof);
                 }
                 static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
-                getAllocator!VulnerableAllocator().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
+                getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
             }
         }
         
@@ -397,8 +413,10 @@ struct FreeListRef(T, bool INIT = true)
         m_magic = 0x1EE75817;
     }
     
-    @property const(TR) opStar() const {
-		checkInvariants(); 
+    @property const(TR) opStar() const
+	{
+		(cast(FreeListRef*)&this).defaultInit();
+		checkInvariants();
 		return m_object; 
 	}
 
@@ -412,39 +430,41 @@ struct FreeListRef(T, bool INIT = true)
 
     auto opBinaryRight(string op, Key)(Key key)
     inout if (op == "in" && __traits(hasMember, typeof(m_object), "opBinaryRight")) {
+		defaultInit();
         static if (is(T == class) || __traits(isAbstractClass, T))
             return m_object.opBinaryRight!("in")(key);
         else
             return (*m_object).opBinaryRight!("in")(key);
     }
 
-    U opCast(U : bool)() const {
+    bool opCast(U : bool)() const {
         return m_object !is null;
     }
 
-    U opCast(U : UnConst!(typeof(this)))() const {
-        return cast(U) this;
-    }
-
-    U opCast(U : T)() const {
-        return cast(U) this;
+    U opCast(U)() const 
+		if (!is ( U == bool ))
+	{
+        return *cast(U*) &this;
     }
 
     int opApply(U...)(U args)
         if (__traits(hasMember, typeof(m_object), "opApply"))
     {
+		defaultInit();
         return m_object.opApply(args);
     }
 
     int opApply(U...)(U args) const
         if (__traits(hasMember, typeof(m_object), "opApply"))
     {
+		defaultInit();
         return m_object.opApply(args);
     }
 
     void opSliceAssign(U...)(U args)
         if (__traits(hasMember, typeof(m_object), "opSliceAssign"))
     {
+		defaultInit();
         m_object.opSliceAssign(args);
     }
 
@@ -454,6 +474,7 @@ struct FreeListRef(T, bool INIT = true)
 			if (!m_object) {
 				auto newObj = this.opCall();
 				(cast(FreeListRef*)&this).m_object = newObj.m_object;
+				(cast(FreeListRef*)&this).m_magic = 0x1EE75817;
 				newObj.m_object = null;
 			}
 		}
@@ -486,7 +507,7 @@ struct FreeListRef(T, bool INIT = true)
     }
 
     //pragma(msg, T.stringof);
-    static if (T.stringof == `VectorImpl!(ubyte, ZeroiseAllocator!(LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)))))`) {
+    static if (T.stringof == `VectorImpl!(ubyte, 2)`) {
         void opOpAssign(string op, U)(U input)
             if (op == "^")
         {
@@ -500,7 +521,6 @@ struct FreeListRef(T, bool INIT = true)
     auto opBinary(string op, U...)(U args)
         if (__traits(compiles, m_object.opBinary!op(args)))
     {
-
 		defaultInit();
         return m_object.opBinary!op(args);
     }
@@ -633,4 +653,15 @@ private void ensureValidMemory(void[] mem)
     auto bytes = cast(ubyte[])mem;
     swap(bytes[0], bytes[$-1]);
     swap(bytes[0], bytes[$-1]);
+}
+
+template AllocSize(T)
+{
+	static if (is(T == class)) {
+		// workaround for a strange bug where AllocSize!SSLStream == 0: TODO: dustmite!
+		enum dummy = T.stringof ~ __traits(classInstanceSize, T).stringof;
+		enum AllocSize = __traits(classInstanceSize, T);
+	} else {
+		enum AllocSize = T.sizeof;
+	}
 }

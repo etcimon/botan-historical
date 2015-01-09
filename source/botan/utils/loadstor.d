@@ -12,8 +12,6 @@ import botan.utils.bswap;
 import botan.utils.get_byte;
 import std.bitmanip;
 
-nothrow:
-pure:
 
 /**
 * Make a ushort from two bytes
@@ -57,7 +55,7 @@ uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
                   ubyte i4, ubyte i5, ubyte i6, ubyte i7)
 {
-    return     ((cast(ulong)(i0) << 56) |
+    return   ((cast(ulong)(i0) << 56) |
              (cast(ulong)(i1) << 48) |
              (cast(ulong)(i2) << 40) |
              (cast(ulong)(i3) << 32) |
@@ -303,9 +301,9 @@ void loadBigEndian(T)(T* output, const(ubyte)* input, size_t count)
 * @param input = the input ushort
 * @param output = the ubyte array to write to
 */
-void storeBigEndian(ushort input, ref ubyte[2] output)
+void storeBigEndian(ushort input, ubyte[2]* output)
 {
-    *cast(ushort*) output = bigEndianToNative!ushort(*cast(ubyte[2]*) input);
+    *cast(ushort*) output = bigEndianToNative!ushort(*cast(ubyte[2]*) &input);
     
 }
 
@@ -314,9 +312,9 @@ void storeBigEndian(ushort input, ref ubyte[2] output)
 * @param input = the input ushort
 * @param output = the ubyte array to write to
 */
-void storeLittleEndian(ushort input, ref ubyte[2] output)
+void storeLittleEndian(ushort input, ubyte[2]* output)
 {
-    *cast(ushort*) output = littleEndianToNative!ushort(*cast(ubyte[2]*) input);
+    *cast(ushort*) output = littleEndianToNative!ushort(*cast(ubyte[2]*) &input);
     
 }
 
@@ -325,9 +323,9 @@ void storeLittleEndian(ushort input, ref ubyte[2] output)
 * @param input = the input uint
 * @param output = the ubyte array to write to
 */
-void storeBigEndian(uint input, ref ubyte[4] output)
+void storeBigEndian(uint input, ubyte[4]* output)
 {
-    *cast(uint*) output = bigEndianToNative!uint(*cast(ubyte[4]*) input);
+    *cast(uint*) output = bigEndianToNative!uint(*cast(ubyte[4]*) &input);
     
 }
 
@@ -336,9 +334,9 @@ void storeBigEndian(uint input, ref ubyte[4] output)
 * @param input = the input uint
 * @param output = the ubyte array to write to
 */
-void storeLittleEndian(uint input, ref ubyte[4] output)
+void storeLittleEndian(uint input, ubyte[4]* output)
 {
-    *cast(uint*) output = littleEndianToNative!uint(*cast(ubyte[4]*) input);
+    *cast(uint*) output = littleEndianToNative!uint(*cast(ubyte[4]*) &input);
 
 }
 
@@ -347,9 +345,9 @@ void storeLittleEndian(uint input, ref ubyte[4] output)
 * @param input = the input ulong
 * @param output = the ubyte array to write to
 */
-void storeBigEndian(ulong input, ref ubyte[8] output)
+void storeBigEndian(ulong input, ubyte[8]* output)
 {
-    *cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) input);
+	*cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) &input);
 }
 
 /**
@@ -357,9 +355,9 @@ void storeBigEndian(ulong input, ref ubyte[8] output)
 * @param input = the input ulong
 * @param output = the ubyte array to write to
 */
-void storeLittleEndian(ulong input, ref ubyte[8] output)
+void storeLittleEndian(ulong input, ubyte[8]* output)
 {
-    *cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) input);
+    *cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) &input);
 }
 
 /**
@@ -367,9 +365,9 @@ void storeLittleEndian(ulong input, ref ubyte[8] output)
 * @param input = the input ulong
 * @param output = the ubyte array to write to
 */
-void storeLittleEndian(T)(T input, ubyte* output)
+void storeLittleEndian(T)(in T input, ubyte* output)
 {
-    storeLittleEndian(input, *cast(ubyte[T.sizeof]*) output);
+    storeLittleEndian(cast(T) input, cast(ubyte[T.sizeof]*) output);
 }
 
 /**
@@ -377,9 +375,9 @@ void storeLittleEndian(T)(T input, ubyte* output)
 * @param input = the input ulong
 * @param output = the ubyte array to write to
 */
-void storeBigEndian(T)(T input, ubyte* output)
+void storeBigEndian(T)(in T input, ubyte* output)
 {
-    storeBigEndian(input, *cast(ubyte[T.sizeof]*) output);
+    storeBigEndian(cast(T) input, cast(ubyte[T.sizeof]*) output);
 }
 
 /**

@@ -189,7 +189,7 @@ void transpose_out(ref __m128i B0, ref __m128i B1, ref __m128i B2, ref __m128i B
 */
 void idea_op_8(in ubyte[64] input, ref ubyte[64] output, in ushort[52] EK) pure
 {
-    const(__m128i)* in_mm = cast(const(__m128i)*)(input.ptr);
+    const(__m128i*) in_mm = cast(const(__m128i*))(input.ptr);
     
     __m128i B0 = _mm_loadu_si128(in_mm + 0);
     __m128i B1 = _mm_loadu_si128(in_mm + 1);

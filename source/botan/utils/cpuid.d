@@ -233,7 +233,7 @@ version(GNU)
     {
         version(PreserveEBX)
         {
-            asm { 
+            asm pure nothrow { 
                 "xchg %1, %%ebx
                 cpuid 
                 xchg %1, %%ebx"
@@ -243,7 +243,7 @@ version(GNU)
         }
         else
         {
-            asm { 
+            asm pure nothrow { 
                 "cpuid"
                     : "=a" a, "=b" b, "=c" c, "=d" d 
                         : "0" ain, "2" cin; 
@@ -258,7 +258,7 @@ version(LDC) {
         version(PreserveEBX)
         {
             mixin( q{
-                __asm { 
+                __asm pure nothrow { 
                     "xchg %1, %%ebx
                     cpuid 
                     xchg %1, %%ebx"
@@ -270,7 +270,7 @@ version(LDC) {
         else
         {
             mixin( q{
-                __asm { 
+                __asm pure nothrow { 
                     "cpuid"
                         : "=a" a, "=b" b, "=c" c, "=d" d 
                             : "0" ain, "2" cin; 
@@ -299,7 +299,7 @@ shared static this() {
         else {
             version(D_InlineAsm_X86)
             {
-                asm {
+                asm pure nothrow {
                     mov EAX, 0;
                     cpuid;
                     mov a, EAX;
@@ -311,7 +311,7 @@ shared static this() {
             }
             else version(D_InlineAsm_X86_64)
             {
-                asm {
+                asm pure nothrow {
                     mov EAX, 0;
                     cpuid;
                     mov a, EAX;
@@ -330,7 +330,7 @@ shared static this() {
         }
         else version(LDC) rawCpuid(0x8000_0000, 0, a2, unused, unused, unused);
         else {
-            asm {
+            asm pure nothrow {
                 mov EAX, 0x8000_0000;
                 cpuid;
                 mov a2, EAX;
@@ -352,7 +352,7 @@ shared static this() {
         } else version(LDC) rawCpuid(1, 0, a, apic, c, d);
         else
         {
-            asm {
+            asm pure nothrow {
                 mov EAX, 1; // model, stepping
                 cpuid;
                 mov a, EAX;
@@ -396,7 +396,7 @@ shared static this() {
         version(GNU)
         {
             // xgetbv does not affect ebx
-            asm {
+            asm pure nothrow {
                 "mov $0, %%ecx
                 xgetbv"
               : "=a" a, "=d" d
@@ -405,7 +405,7 @@ shared static this() {
             }    
         }
         else {
-            asm {
+            asm pure nothrow {
                 mov ECX, 0;
                 xgetbv;
                 mov d, EDX;
@@ -423,7 +423,7 @@ shared static this() {
         } else version(LDC) rawCpuid(0x8000_0001, 0, unused, unused, c, d);
         else
         {
-            asm {
+            asm pure nothrow {
                 mov EAX, 0x8000_0001;
                 cpuid;
                 mov c, ECX;
@@ -443,7 +443,7 @@ shared static this() {
         else version(LDC) rawCpuid(0x8000_0005, 0, unused, unused, c, unused);
         else
         {
-            asm {
+            asm pure nothrow {
                 mov EAX, 0x8000_0005; // L1 cache
                 cpuid;
                 // EAX has L1_TLB_4M.
@@ -516,7 +516,7 @@ version (PPC) {
             
             uint pvr = 0;
             
-            mixin(`asm { mfspr [pvr], 287; }`); // not supported in DMD?
+            mixin(`asm pure nothrow { mfspr [pvr], 287; }`); // not supported in DMD?
             
             // Top 16 bit suffice to identify model
             pvr >>= 16;

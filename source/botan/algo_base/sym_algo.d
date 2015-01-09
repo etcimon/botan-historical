@@ -11,12 +11,6 @@ public import botan.utils.types;
 interface SymmetricAlgorithm
 {
 public:
-    abstract void clear();
-    
-    /**
-        * @return object describing limits on key size
-        */
-    abstract KeyLengthSpecification keySpec() const;
     
     /**
     * @return minimum allowed key length
@@ -53,7 +47,7 @@ public:
         setKey(key.ptr, key.length);
     }
     
-    final void setKey(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
+    final void setKey(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
     {
         setKey(key.ptr, key.length);
     }
@@ -69,6 +63,13 @@ public:
             throw new InvalidKeyLength(name, length);
         keySchedule(key, length);
     }
+
+	abstract void clear();
+	
+	/**
+        * @return object describing limits on key size
+        */
+	abstract KeyLengthSpecification keySpec() const;
 
     abstract @property string name() const;
     

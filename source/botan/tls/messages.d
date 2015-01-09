@@ -61,7 +61,7 @@ interface HandshakeMessage
 public:
     abstract HandshakeType type() const;
     
-    abstract const(Vector!ubyte) serialize() const;
+    abstract Vector!ubyte serialize() const;
 }
 
 /**
@@ -70,7 +70,7 @@ public:
 final class HelloVerifyRequest : HandshakeMessage
 {
 public:
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         /* DTLS 1.2 server implementations SHOULD use DTLS version 1.0
             regardless of the version of TLS that is expected to be
@@ -338,7 +338,7 @@ protected:
     /*
     * Serialize a TLSClient Hello message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -606,7 +606,7 @@ protected:
     /*
     * Serialize a TLSServer Hello message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -1014,7 +1014,7 @@ public:
 
 
 protected:
-    override const(Vector!ubyte) serialize() const { return m_key_material; }
+    override Vector!ubyte serialize() const { return m_key_material.dup; }
 
 private:
     Vector!ubyte m_key_material;
@@ -1083,7 +1083,7 @@ protected:
     /**
     * Serialize a Certificate message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(3);
         
@@ -1205,7 +1205,7 @@ protected:
     /**
     * Serialize a Certificate Request message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -1326,7 +1326,7 @@ protected:
     /*
     * Serialize a Certificate Verify message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -1392,9 +1392,9 @@ protected:
     /*
     * Serialize a Finished message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
-        return m_verification_data;
+        return m_verification_data.dup;
     }
    
 private:
@@ -1430,7 +1430,7 @@ protected:
     /*
     * Serialize a Hello Request message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         return Vector!ubyte();
     }
@@ -1484,8 +1484,8 @@ public:
          in string sig_algo,
          TLSProtocolVersion _version) 
     {
-        m_kex_key.clear();
-        m_srp_params.clear();
+        m_kex_key.free();
+        m_srp_params.free();
         if (buf.length < 6)
             throw new DecodingError("ServerKeyExchange: Packet corrupted");
         
@@ -1678,7 +1678,7 @@ protected:
     /**
     * Serialize a TLSServer Key Exchange message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = params().dup;
         
@@ -1737,7 +1737,7 @@ protected:
     /*
     * Serialize a TLSServer Hello Done message
     */
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         return Vector!ubyte();
     }
@@ -1772,7 +1772,7 @@ public:
 
 protected:
 
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         
@@ -1834,7 +1834,7 @@ public:
     }
 
 protected:
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(4);
         storeBigEndian(m_ticket_lifetime_hint.total!"seconds", buf.ptr);
@@ -1855,7 +1855,7 @@ final class ChangeCipherSpec : HandshakeMessage
 public:
     override const(HandshakeType) type() const { return HANDSHAKE_CCS; }
 
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     { return Vector!ubyte(cast(ubyte[])[1]); }
 }
 

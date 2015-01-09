@@ -8,7 +8,7 @@
 module botan.utils.containers.hashmap;
 
 import botan.utils.memory.memory;
-import std.conv : emplace;
+import std.conv : emplace, to;
 import std.traits;
 
 
@@ -16,14 +16,24 @@ struct DefaultHashMapTraits(Key) {
     enum clearValue = Key.init;
     static bool equals(in Key a, in Key b)
     {
-        static if (is(Key == class)) return a is b;
-        else return a == b;
+        static if (!__traits(hasMember, Key, "isFreeListRef") && is(Key == class)) return a is b;
+		else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class) && __traits(hasMember, typeof(*(Key())), "opEquals"))
+		{
+			if (a is null && b !is null)
+				return b.opEquals(a);
+			else if (a !is null && b is null)
+				return a.opEquals(b);
+			else // both are equally null
+				return true;
+		}
+		else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class)) return *a is *b;
+		else return a == b;
     }
 }
 
-alias HashMap(Key, Value, ALLOCATOR = VulnerableAllocator) = FreeListRef!(HashMapImpl!(Key, Value, ALLOCATOR));
+alias HashMap(Key, Value, int ALLOCATOR = VulnerableAllocator) = FreeListRef!(HashMapImpl!(Key, Value, ALLOCATOR));
 
-struct HashMapImpl(Key, Value, ALLOCATOR)
+struct HashMapImpl(Key, Value, int ALLOCATOR)
 {
     alias Traits = DefaultHashMapTraits!Key;
     struct TableEntry {
@@ -72,11 +82,10 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
 
     Value get(Key key, lazy Value default_value = Value.init) const
     {
-        import std.conv : to;
-        auto idx = findIndex(key);
+        auto idx = this.findIndex(key);
         if (idx == size_t.max) return default_value;
         const Value ret = m_table[idx].value;
-        return cast(Value)ret;
+        return *cast(Value*)&ret;
     }
 
     Value get(in Key key, lazy Value default_value = Value.init)
@@ -124,20 +133,20 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         grow(1);
         auto i = findInsertIndex(key);
         if (!Traits.equals(m_table[i].key, key)) m_length++;
-        m_table[i] = TableEntry(cast(Key) key, cast(Value) value);
+        m_table[i] = TableEntry(*cast(Key*) &key, *cast(Value*) &value);
     }
     
     ref inout(Value) opIndex(Key key) inout {
         auto idx = findIndex(key);
-        assert (idx != size_t.max, "Accessing non-existent key.");
+        assert (idx != size_t.max, "Accessing non-existent key type: " ~ Key.stringof ~ " value: " ~ key.to!string);
         return m_table[idx].value;
     }
 
     Value opIndex(Key key) const {
         auto idx = findIndex(key);
-        assert (idx != size_t.max, "Accessing non-existent key.");
+		assert (idx != size_t.max, "Accessing non-existent key type: " ~ Key.stringof ~ " value: " ~ key.to!string);
         const Value ret = m_table[idx].value;
-        return cast(Value) ret;
+        return *cast(Value*) &ret;
     }
     
     inout(Value)* opBinaryRight(string op)(Key key)
@@ -194,8 +203,9 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
     
     private size_t findIndex(in Key key)
     const {
+
         if (m_length == 0) return size_t.max;
-        size_t start = m_hasher(cast(Key) key) & (m_table.length-1);
+        size_t start = m_hasher(*cast(Key*) &key) & (m_table.length-1);
         auto i = start;
         while (!Traits.equals(m_table[i].key, key)) {
             if (Traits.equals(m_table[i].key, Traits.clearValue)) return size_t.max;
@@ -207,7 +217,7 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
     
     private size_t findInsertIndex(in Key key)
     const {
-        auto hash = m_hasher(cast(Key) key);
+        auto hash = m_hasher(*cast(Key*) &key);
         size_t target = hash & (m_table.length-1);
         auto i = target;
         while (!Traits.equals(m_table[i].key, Traits.clearValue) && !Traits.equals(m_table[i].key, key)) {
@@ -232,17 +242,32 @@ struct HashMapImpl(Key, Value, ALLOCATOR)
         m_resizing = true;
         scope(exit) m_resizing = false;
         
-        if (!m_hasher) {
-            static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
+		if (!m_hasher) {
+
+			static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHash() : 0;
                 else m_hasher = k => k.toHash();
             } else static if (__traits(compiles, (){ Key t; size_t hash = t.toHashShared(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHashShared() : 0;
                 else m_hasher = k => k.toHashShared();
-            } else {
-                auto typeinfo = typeid(Key);
-                m_hasher = k => typeinfo.getHash(&k);
-            }
+            } 
+			else static if (!__traits(hasMember, Key, "isFreeListRef")){
+				auto typeinfo = typeid(Key);
+				m_hasher = k => typeinfo.getHash(&k);
+			}
+			else static if (__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString"))
+			{
+				m_hasher = (Key k) {
+					string s = k.toString();
+					auto typeinfo = typeid(string);
+					typeinfo.getHash(&s);
+				};
+			}
+			else static if (__traits(hasMember, Key, "isFreeListRef")) {
+
+				auto typeinfo = typeid(typeof(*(Key())));
+				m_hasher = k => typeinfo.getHash(&k);
+			}
         }
         
         uint pot = 0;

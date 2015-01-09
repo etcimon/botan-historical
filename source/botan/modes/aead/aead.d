@@ -45,7 +45,7 @@ public:
     */
     abstract void setAssociatedData(const(ubyte)* ad, size_t ad_len);
 
-    final void setAssociatedDataVec(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) ad)
+    final void setAssociatedDataVec(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) ad)
     {
         setAssociatedData(ad.ptr, ad.length);
     }

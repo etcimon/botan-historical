@@ -243,7 +243,7 @@ void encodeEntries(DEREncoder encoder,
         {
             const uint ip = stringToIpv4(alt_name);
             ubyte[4] ip_buf;
-            storeBigEndian(ip, ip_buf);
+            storeBigEndian(ip, &ip_buf);
             encoder.addObject(tagging, ASN1Tag.CONTEXT_SPECIFIC, ip_buf.ptr, 4);
         }
     }

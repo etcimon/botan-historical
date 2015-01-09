@@ -12,7 +12,7 @@ void TRACE(T...)(T t) {
 /**
 * Existence check for values
 */
-bool valueExists(T, Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) vec, in T val)
+bool valueExists(T, int Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) vec, in T val)
 {
     for (size_t i = 0; i != vec.length; ++i)
         if (vec[i] == val)
@@ -20,15 +20,16 @@ bool valueExists(T, Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) vec, in T val)
     return false;
 }
 
-template Vector(T, ALLOCATOR = VulnerableAllocator) 
+template Vector(T, int ALLOCATOR = VulnerableAllocator) 
     if (!is (T == FreeListRef!(VectorImpl!(T, ALLOCATOR))))
 {
     alias Vector = FreeListRef!(VectorImpl!(T, ALLOCATOR));
 }
 
 /// An array that uses a custom allocator.
-struct VectorImpl(T, ALLOCATOR)
+struct VectorImpl(T, int ALLOCATOR)
 {
+	@disable this(this);
     // Payload cannot be copied
     private struct Payload
     {
@@ -36,13 +37,19 @@ struct VectorImpl(T, ALLOCATOR)
         T[] _payload;
         
         // Convenience constructor
-        this(T[] p) { _capacity = p.length; _payload = allocArray!(T, ALLOCATOR, true)(p.length); }
+        this(T[] p) 
+		{ 
+			_capacity = p.length; 
+			_payload = allocArray!(T, ALLOCATOR, true)(p.length);
+			_payload[] = p[];
+		}
         
         // Destructor releases array memory
         ~this()
         {
             T[] data = _payload.ptr[0 .. capacity];
-            freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
+			if (data.ptr !is null)
+	            freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
         }
 
         void opAssign(Payload rhs)
@@ -210,13 +217,9 @@ struct VectorImpl(T, ALLOCATOR)
      */
     this(U)(U[] values...) if (isImplicitlyConvertible!(U, T))
     {
-        auto p = allocArray!(T, ALLOCATOR, true)(values.length);
-        foreach (i, e; values)
-        {
-            emplace(p.ptr + i, e);
-            assert(p[i] == e);
-        }
-        _data = Data(p[0 .. values.length]);
+		this.length = values.length;
+		foreach(value; values)
+			insertBack(value);
     }
     
     /**
@@ -230,11 +233,11 @@ struct VectorImpl(T, ALLOCATOR)
     
     /**
         Comparison for equality.
-     */
     bool opEquals(const FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs) const
     {
         return opEquals(rhs);
     }
+     */
     
     /// ditto
     bool opEquals(ref const FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs) const
@@ -249,13 +252,13 @@ struct VectorImpl(T, ALLOCATOR)
     */
     static struct Range
     {
-        private VectorImpl!(T, ALLOCATOR) _outer;
+        private VectorImpl!(T, ALLOCATOR)* _outer;
         private size_t _a, _b;
         import std.traits : isNarrowString;
 
-        private this(VectorImpl!(T, ALLOCATOR) data, size_t a, size_t b)
+        private this(ref VectorImpl!(T, ALLOCATOR) data, size_t a, size_t b)
         {
-            _outer = data;
+            _outer = &data;
             _a = a;
             _b = b;
         }
@@ -279,13 +282,13 @@ struct VectorImpl(T, ALLOCATOR)
         @property ref T front()
         {
             version (assert) if (empty) throw new RangeError();
-            return _outer[_a];
+            return (*_outer)[_a];
         }
         
         @property ref T back()
         {
             version (assert) if (empty) throw new RangeError();
-            return _outer[_b - 1];
+			return (*_outer)[_b - 1];
         }
 
         void popFront() @safe pure nothrow
@@ -321,30 +324,30 @@ struct VectorImpl(T, ALLOCATOR)
         ref T opIndex(size_t i)
         {
             version (assert) if (_a + i >= _b) throw new RangeError();
-            return _outer[_a + i];
+            return (*_outer)[_a + i];
         }
         
         typeof(this) opSlice()
         {
-            return typeof(this)(_outer, _a, _b);
+            return typeof(this)(*_outer, _a, _b);
         }
         
         typeof(this) opSlice(size_t i, size_t j)
         {
             version (assert) if (i > j || _a + j > _b) throw new RangeError();
-            return typeof(this)(_outer, _a + i, _a + j);
+            return typeof(this)(*_outer, _a + i, _a + j);
         }
         
         void opSliceAssign(T value)
         {
             version (assert) if (_b > _outer.length) throw new RangeError();
-            _outer[_a .. _b] = value;
+            (*_outer)[_a .. _b] = value;
         }
         
         void opSliceAssign(T value, size_t i, size_t j)
         {
             version (assert) if (_a + j > _b) throw new RangeError();
-            _outer[_a + i .. _a + j] = value;
+			(*_outer)[_a + i .. _a + j] = value;
         }
         
         void opSliceUnary(string op)()
@@ -416,7 +419,7 @@ struct VectorImpl(T, ALLOCATOR)
         return cast(T*) _data._payload.ptr;
     }
 
-    @property inout T* end() inout {
+    @property T* end() inout {
         return this.ptr + this.length;
     }
 
@@ -625,7 +628,7 @@ struct VectorImpl(T, ALLOCATOR)
         }
     }
 
-    void swap(FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
+    void swap(ref FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
         this._data._payload[0 .. $] = other._data._payload[0  .. $];
         other.clear();
     }
@@ -668,7 +671,7 @@ struct VectorImpl(T, ALLOCATOR)
     import std.traits : isNumeric;
 
     static if (is(T == ubyte))
-    int opCmp(in FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
+    int opCmp(const ref FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
         if (this[] == other[])
             return 0;
         else if (this[] < other[])
@@ -716,7 +719,7 @@ struct VectorImpl(T, ALLOCATOR)
         return _data.pushBack(cast(ubyte[]) stuff);
     }
 
-    size_t pushBack(U)(FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs)
+    size_t pushBack(ref FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs)
     {
         return pushBack(rhs[]);
     }

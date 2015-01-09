@@ -287,7 +287,7 @@ public:
         return this;
     }
 
-    DEREncoder encodeList(T, Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) values)
+    DEREncoder encodeList(T, int Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) values)
     {
         foreach (const value; values[])
             encode(value);

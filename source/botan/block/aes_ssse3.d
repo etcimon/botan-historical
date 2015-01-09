@@ -27,10 +27,10 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        const(__m128i*) in_mm = cast(const(__m128i*))(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* keys = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) keys = cast(const(__m128i*))(m_EK.ptr);
         
         foreach (size_t i; 0 .. blocks)
         {
@@ -44,10 +44,10 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        const(__m128i*) in_mm = cast(const(__m128i*))(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* keys = cast(const(__m128i)*)(m_DK.ptr);
+        const(__m128i*) keys = cast(const(__m128i*))(m_DK.ptr);
         
         foreach (size_t i; 0 .. blocks)
         {
@@ -76,7 +76,7 @@ protected:
     {
         __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81, 0x1F8391B9, 0xAF9DEEB6)();
         
-        __m128i key = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
+        __m128i key = _mm_loadu_si128(cast(const(__m128i*))(keyb));
         
         m_EK.resize(11*4);
         m_DK.resize(11*4);
@@ -118,10 +118,10 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        const(__m128i*) in_mm = cast(const(__m128i*))(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* keys = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) keys = cast(const(__m128i*))(m_EK.ptr);
         
         foreach (size_t i; 0 .. blocks)
         {
@@ -135,10 +135,10 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        const(__m128i*) in_mm = cast(const(__m128i*))(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* keys = cast(const(__m128i)*)(m_DK.ptr);
+        const(__m128i*) keys = cast(const(__m128i*))(m_DK.ptr);
         
         foreach (size_t i; 0 .. blocks)
         {
@@ -162,19 +162,18 @@ protected:
     /*
     * AES-192 Key Schedule
     */
-    override void keySchedule(const(ubyte)* keyb, size_t)
+    override void keySchedule(const(ubyte)* keyb, size_t len)
     {
-        __m128i rcon = _mm_set_epi32!(0x702A9808, 0x4D7C7D81,
-                                     0x1F8391B9, 0xAF9DEEB6)();
-        
+        immutable(__m128i) rcon_imm = _mm_set_epi32!(0x702A9808, 0x4D7C7D81, 0x1F8391B9, 0xAF9DEEB6)();
+		__m128i rcon = rcon_imm;
         m_EK.resize(13*4);
         m_DK.resize(13*4);
         
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         __m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
         
-        __m128i key1 = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
-        __m128i key2 = _mm_loadu_si128(cast(const(__m128i)*)((keyb + 8)));
+        __m128i key1 = _mm_loadu_si128(cast(const(__m128i*))(keyb));
+        __m128i key2 = _mm_loadu_si128(cast(const(__m128i*))((keyb + 8)));
         
         _mm_storeu_si128(DK_mm + 12, _mm_shuffle_epi8(key1, sr[0]));
         
@@ -231,10 +230,10 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        const(__m128i*) in_mm = cast(const(__m128i*))(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* keys = cast(const(__m128i)*)(m_EK.ptr);
+        const(__m128i*) keys = cast(const(__m128i*))(m_EK.ptr);
         
         foreach (size_t i; 0 .. blocks)
         {
@@ -248,10 +247,10 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-        const(__m128i)* in_mm = cast(const(__m128i)*)(input);
+        const(__m128i*) in_mm = cast(const(__m128i*))(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
-        const(__m128i)* keys = cast(const(__m128i)*)(m_DK.ptr);
+        const(__m128i*) keys = cast(const(__m128i*))(m_DK.ptr);
         
         foreach (size_t i; 0 .. blocks)
         {
@@ -286,8 +285,8 @@ protected:
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         __m128i* DK_mm = cast(__m128i*)(m_DK.ptr);
         
-        __m128i key1 = _mm_loadu_si128(cast(const(__m128i)*)(keyb));
-        __m128i key2 = _mm_loadu_si128(cast(const(__m128i)*)((keyb + 16)));
+        __m128i key1 = _mm_loadu_si128(cast(const(__m128i*))(keyb));
+        __m128i key2 = _mm_loadu_si128(cast(const(__m128i*))((keyb + 16)));
         
         _mm_storeu_si128(DK_mm + 14, _mm_shuffle_epi8(key1, sr[2]));
         
@@ -321,7 +320,7 @@ protected:
     SecureVector!uint m_EK, m_DK;
 }
 
-shared static this() {
+static this() {
 	version(unittest) { import std.stdio : writeln; writeln("Loading AES SSSE3 ..."); }
 
     low_nibs = _mm_set1_epi8!(0x0F)();
@@ -344,20 +343,20 @@ shared static this() {
 	sr = sr_;
 }
 
-__gshared immutable __m128i low_nibs;
+immutable __m128i low_nibs;
 
-__gshared immutable __m128i k_ipt1 ;
-__gshared immutable __m128i k_ipt2;
+immutable __m128i k_ipt1 ;
+immutable __m128i k_ipt2;
 
-__gshared immutable __m128i k_inv1;
-__gshared immutable __m128i k_inv2;
+immutable __m128i k_inv1;
+immutable __m128i k_inv2;
 
-__gshared immutable __m128i sb1u;
-__gshared immutable __m128i sb1t;
+immutable __m128i sb1u;
+immutable __m128i sb1t;
 
-__gshared immutable(__m128i)[4] mc_forward;
+immutable(__m128i)[4] mc_forward;
 
-__gshared immutable(__m128i)[4] sr;
+immutable(__m128i)[4] sr;
 
 package:
 
@@ -396,7 +395,7 @@ return _mm_xor_si128(y,_mm_xor_si128(_mm_shuffle_epi32!0xFE(x),
 
 __m128i aes_schedule_mangle_dec(__m128i k, ubyte round_no)
 {
-    __gshared immutable(__m128i)[8] dsk = [
+    immutable(__m128i)[8] dsk = [
             _mm_set_epi32!(0x4AED9334, 0x82255BFC, 0xB6116FC8, 0x7ED9A700)(),
             _mm_set_epi32!(0x8BB89FAC, 0xE9DAFDCE, 0x45765162, 0x27143300)(),
             _mm_set_epi32!(0x4622EE8A, 0xADC90561, 0x27438FEB, 0xCCA86400)(),
@@ -476,7 +475,7 @@ __m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
                    smeared));
 }
 
-__m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
+__m128i aes_ssse3_encrypt(__m128i B, const(__m128i*) keys, size_t rounds)
 {
     immutable(__m128i) sb2u = _mm_set_epi32!(0x5EB7E955, 0xBC982FCD, 0xE27A93C6, 0x0B712400)();
     immutable(__m128i) sb2t = _mm_set_epi32!(0xC2A163C8, 0xAB82234A, 0x69EB8840, 0x0AE12900)();
@@ -533,7 +532,7 @@ __m128i aes_ssse3_encrypt(__m128i B, const(__m128i)* keys, size_t rounds)
     }
 }
 
-__m128i aes_ssse3_decrypt(__m128i B, const(__m128i)* keys, size_t rounds)
+__m128i aes_ssse3_decrypt(__m128i B, const(__m128i*) keys, size_t rounds)
 {
     immutable(__m128i) k_dipt1 = _mm_set_epi32!(0x154A411E, 0x114E451A, 0x0F505B04, 0x0B545F00)();
     immutable(__m128i) k_dipt2 = _mm_set_epi32!(0x12771772, 0xF491F194, 0x86E383E6, 0x60056500)();

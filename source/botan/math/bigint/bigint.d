@@ -1310,7 +1310,7 @@ public:
         return BigInt((*m_reg).dup, m_signedness);
     }
 
-    const ~this() { 
+    pure const ~this() { 
         SecureVector!(word)* reg_ = cast(SecureVector!(word)*)m_reg;
         delete reg_; 
     }

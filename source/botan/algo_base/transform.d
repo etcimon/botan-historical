@@ -23,7 +23,7 @@ public:
     * Begin processing a message.
     * @param nonce = the per message nonce
     */    
-    final SecureVector!ubyte startVec(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) nonce)
+    final SecureVector!ubyte startVec(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) nonce)
     {
         return start(nonce.ptr, nonce.length);
     }
@@ -110,7 +110,7 @@ public:
         return keySpec().validKeylength(length);
     }
 
-    final void setKey(Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
+    final void setKey(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
     {
         setKey(key.ptr, key.length);
     }
