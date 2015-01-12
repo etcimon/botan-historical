@@ -116,11 +116,12 @@ public:
 		writeln("new SerializedRNG()");
 
 		m_global_prng = new SerializedRNG();
-
+		writeln("Done serialized RNG");
         static if (BOTAN_HAS_SELFTESTS) {        
 			writeln("Startup Self-Tests");
 			confirmStartupSelfTests(algorithmFactory());
 		}
+		writeln("Done Self Tests");
         m_initialized = true;
 
     }

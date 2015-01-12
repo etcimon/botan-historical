@@ -165,17 +165,21 @@ HashMap!(string, bool)
 */
 HashMap!(string, string)
     algorithmKatDetailed(in SCANToken algo_name,
-                           in HashMap!(string, string) vars,
-                           AlgorithmFactory af)
+                         in HashMap!(string, string) vars,
+                         AlgorithmFactory af)
 {
+	import std.stdio : writeln;
+	writeln("Testing ", algo_name);
     const string algo = algo_name.algoNameAndArgs();
     
     Vector!string providers = af.providersOf(algo);
+	writeln("Providers: ", providers[]);
     HashMap!(string, string) all_results;
     
-    if (providers.empty) // no providers, nothing to do
+    if (providers.empty) { // no providers, nothing to do
+		writeln("Warning: ", algo_name.toString(), " has no providers");
         return all_results;
-    
+	}
     const string input = vars.get("input");
     const string output = vars.get("output");
     
@@ -186,20 +190,17 @@ HashMap!(string, string)
     {
         const string provider = providers[i];
         
-        if (const HashFunction proto =
-            af.prototypeHashFunction(algo, provider))
+        if (const HashFunction proto = af.prototypeHashFunction(algo, provider))
         {
             Filter filt = new HashFilter(proto.clone());
             all_results[provider] = testFilterKat(filt, input, output);
         }
-        else if (const MessageAuthenticationCode proto =
-                 af.prototypeMac(algo, provider))
+        else if (const MessageAuthenticationCode proto = af.prototypeMac(algo, provider))
         {
             KeyedFilter filt = new MACFilter(proto.clone(), key);
             all_results[provider] = testFilterKat(filt, input, output);
         }
-        else if (const StreamCipher proto =
-                 af.prototypeStreamCipher(algo, provider))
+        else if (const StreamCipher proto = af.prototypeStreamCipher(algo, provider))
         {
             KeyedFilter filt = new StreamCipherFilter(proto.clone());
             filt.setKey(key);
@@ -207,16 +208,15 @@ HashMap!(string, string)
             
             all_results[provider] = testFilterKat(filt, input, output);
         }
-        else if (const BlockCipher proto =
-                 af.prototypeBlockCipher(algo, provider))
+        else if (const BlockCipher proto = af.prototypeBlockCipher(algo, provider))
         {
             KeyedFilter enc = getCipherMode(proto, ENCRYPTION,
-                                               algo_name.cipherMode(),
-                                               algo_name.cipherModePad());
+                                            algo_name.cipherMode(),
+                                            algo_name.cipherModePad());
             
             KeyedFilter dec = getCipherMode(proto, DECRYPTION,
-                                               algo_name.cipherMode(),
-                                               algo_name.cipherModePad());
+                                            algo_name.cipherMode(),
+                                            algo_name.cipherModePad());
             
             if (!enc || !dec)
             {
@@ -257,6 +257,12 @@ HashMap!(string, string)
         }
     }
     
+	import std.stdio : writeln;
+
+	foreach (const string k, const string v; all_results) {
+		writeln("Result: ", k, " => ", v);
+	}
+
     return all_results;
 }
 
@@ -341,8 +347,8 @@ void cipherKat(AlgorithmFactory af,
 * Perform a Known Answer Test
 */
 string testFilterKat(Filter filter,
-                       in string input,
-                       in string expected)
+                     in string input,
+                     in string expected)
 {
     try
     {
@@ -350,13 +356,14 @@ string testFilterKat(Filter filter,
         pipe.processMsg(input);
         
         const string got = pipe.toString();
-        
         const bool same = (got == expected);
         
-        if (same)
-            return "passed";
-        else
+        if (same) {
+			return "passed";
+
+		} else {
             return "got " ~ got ~ " expected " ~ expected;
+		}
     }
     catch(Exception e)
     {

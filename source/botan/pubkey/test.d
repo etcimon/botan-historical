@@ -194,7 +194,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
     
     mixin( PKTEST(` v.verifyMessage(message, sig) `, "Correct signature is valid") );
     
-    zeroMem(&sig[0], sig.length);
+    clearMem(&sig[0], sig.length);
     
     mixin( PKTEST(` !v.verifyMessage(message, sig) `, "All-zero signature is invalid") );
     

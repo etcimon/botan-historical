@@ -67,8 +67,8 @@ protected:
     {
         m_cipher = cipher;
         m_padding = padding;
-        if (!m_padding.validBlocksize(cipher.blockSize()))
-            throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ cipher.name ~ "/ECB");
+        if (!m_padding.validBlocksize(m_cipher.blockSize()))
+			throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/ECB");
     }
 
     final BlockCipher cipher() const { return *m_cipher; }

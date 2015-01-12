@@ -21,7 +21,12 @@ LibraryState globalState()
 	    /* Lazy initialization. Botan still needs to be deinitialized later
 	        on or memory might leak.
 	    */
-	    g_lib_state.initialize();
+	    try g_lib_state.initialize();
+		catch (Throwable e){
+			import std.stdio : writeln;
+			writeln(e.toString());
+			assert(false);
+		}
 	}
     return g_lib_state;
 }

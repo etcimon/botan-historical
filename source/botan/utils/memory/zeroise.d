@@ -33,12 +33,14 @@ final class ZeroiseAllocator(Base : Allocator)
     }
 
     this() {
+		m_secondary = getAllocator!VulnerableAllocatorImpl();
     }
 
     void[] alloc(size_t n)
     {
-        if (void[] p = gs_zeroise.alloc(n))
+        if (void[] p = gs_zeroise.alloc(n)) {
             return p;
+		}
         void[] p = m_secondary.alloc(n);
         clearMem(p.ptr, n);
         return p;

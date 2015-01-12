@@ -79,7 +79,7 @@ protected:
     {
         m_cipher = cipher;
         m_padding = padding;
-        m_state = m_cipher.blockSize();
+		m_state = SecureVector!ubyte(m_cipher.blockSize());
 		if (!m_padding.isEmpty && !m_padding.validBlocksize(m_cipher.blockSize()))
 			throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/CBC");
     }
@@ -142,6 +142,7 @@ public:
             
             state()[] = buf[BS*(blocks-1) .. BS*blocks];
         }
+
     }
 
 
@@ -271,7 +272,7 @@ public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)  
     {
         super(cipher, padding);
-        m_tempbuf = updateGranularity();
+		m_tempbuf = SecureVector!ubyte(updateGranularity());
     }
 
     override void update(SecureVector!ubyte buffer, size_t offset)

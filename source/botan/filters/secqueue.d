@@ -55,7 +55,8 @@ public:
             if (m_head.length == 0)
             {
                 SecureQueueNode holder = m_head.m_next;
-                delete m_head;
+				// fixme: Somehow this breaks everything
+                // delete m_head;
                 m_head = holder;
             }
         }
@@ -204,7 +205,7 @@ public:
 
     this() 
     { 
-        m_buffer = DEFAULT_BUFFERSIZE; 
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_next = null; 
         m_start = m_end = 0; }
     
@@ -225,6 +226,8 @@ public:
     {
         size_t copied = std.algorithm.min(length, m_end - m_start);
         copyMem(output, &m_buffer[m_start], copied);
+		import std.stdio : writeln;
+		writeln("reading ", m_buffer[]);
         m_start += copied;
         return copied;
     }

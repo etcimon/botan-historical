@@ -21,6 +21,15 @@ final class OFB : StreamCipher, SymmetricAlgorithm
 public:
     override void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
+		import std.stdio : writeln;
+		writeln("cipher: ", cast(void*)m_buffer.ptr);
+		size_t len_mem = length;
+		ubyte* output_mem = output;
+		import std.stdio : writeln;
+		writeln("IN: ", input[0 .. length]);
+		writeln("XOR: ", m_buffer[]);
+		writeln("XOR: ", m_buffer.length);
+		writeln("XOR: ", m_buffer.ptr[0 .. length]);
         while (length >= m_buffer.length - m_buf_pos)
         {
             xorBuf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
@@ -31,6 +40,7 @@ public:
             m_buf_pos = 0;
         }
         xorBuf(output, input, &m_buffer[m_buf_pos], length);
+		writeln("OUT: ", output_mem[0 .. len_mem]);
         m_buf_pos += length;
     }
 
@@ -38,12 +48,13 @@ public:
     {
         if (!validIvLength(iv_len))
             throw new InvalidIVLength(name, iv_len);
-        
         zeroise(m_buffer);
         bufferInsert(m_buffer, 0, iv, iv_len);
-        
-        m_cipher.encrypt(m_buffer);
+        if (iv_len > 0) m_cipher.encrypt(m_buffer);
         m_buf_pos = 0;
+		import std.stdio : writeln;
+		writeln("setIv: ", cast(void*)m_buffer.ptr);
+		writeln("setIv: ", m_buffer[]);
     }
 
     override bool validIvLength(size_t iv_len) const
@@ -67,6 +78,8 @@ public:
         m_cipher.clear();
         zeroise(m_buffer);
         m_buf_pos = 0;
+		import std.stdio : writeln;
+		writeln("m_buffer clear()");
     }
 
     /**
@@ -75,9 +88,11 @@ public:
     this(BlockCipher cipher)
     {
         m_cipher = cipher;
-        m_buffer = m_cipher.blockSize();
+		m_buffer = SecureVector!ubyte(m_cipher.blockSize());
         m_buf_pos = 0;
     }
+
+	~this() { import std.stdio : writeln; writeln("~this ", cast(void*)m_buffer.ptr); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
@@ -88,6 +103,7 @@ protected:
     }
 
     Unique!BlockCipher m_cipher;
-    SecureVector!ubyte m_buffer;
     size_t m_buf_pos;
+private:
+	SecureVector!ubyte m_buffer;
 }

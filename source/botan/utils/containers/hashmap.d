@@ -289,7 +289,7 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
             auto idx = findInsertIndex(el.key);
             (cast(ubyte[])(&m_table[idx])[0 .. 1])[] = (cast(ubyte[])(&el)[0 .. 1])[];
         }
-        if (oldtable) freeArray!(TableEntry, ALLOCATOR)(oldtable);
+        if (oldtable) freeArray!(TableEntry, ALLOCATOR, true, false)(oldtable);
     }
 }
 

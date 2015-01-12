@@ -89,7 +89,7 @@ public:
     this(size_t l = 9)
     {
         m_level = (l >= 9) ? 9 : l;
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_bz = null;
     }
     ~this() { clear(); }
@@ -217,7 +217,7 @@ public:
     this(bool small = false)
     {
         m_small_mem = small;
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_no_writes = true;
         m_bz = null;
     }

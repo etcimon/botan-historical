@@ -37,9 +37,9 @@ public:
 
     this() 
     { 
-        m_X = 48;
-        m_checksum = 16;
-        m_buffer = 16;
+		m_X = SecureVector!ubyte(48);
+		m_checksum = SecureVector!ubyte(16);
+		m_buffer = SecureVector!ubyte(16);
         clear(); 
     }
 protected:

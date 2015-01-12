@@ -43,9 +43,9 @@ public:
     this() 
     {
         m_cipher = new GOST2814789(scoped!GOST2814789Params("R3411_CryptoPro").Scoped_payload);
-        m_buffer = 32;
-        m_sum = 32;
-        m_hash = 32;
+		m_buffer = SecureVector!ubyte(32);
+		m_sum = SecureVector!ubyte(32);
+		m_hash = SecureVector!ubyte(32);
         m_count = 0;
         m_position = 0;
     }

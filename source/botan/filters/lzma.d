@@ -120,7 +120,7 @@ public:
     this(size_t l = 6)
     {
         m_level = (l >= 9) ? 9 : l;
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_lzma = null;
     }
 
@@ -246,7 +246,7 @@ public:
 
     this()
     {
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_lzma = null;
         m_no_writes = true;
     }

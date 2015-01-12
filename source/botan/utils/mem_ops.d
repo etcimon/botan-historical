@@ -9,24 +9,12 @@ import botan.utils.types;
 
 /**
 * Zeroise memory
-* @param ptr = a pointer to memory to zero out
-* @param n = the number of bytes pointed to by ptr
-*/
-void zeroMem(void* ptr, size_t n)
-{
-    ubyte[] mem = cast(ubyte[])ptr[0 .. n];
-    foreach (ref ubyte ub; mem) ub = 0;
-}
-
-/**
-* Zeroise memory
 * @param ptr = a pointer to an array
 * @param n = the number of Ts pointed to by ptr
 */
 void clearMem(T)(T* ptr, size_t n)
 {
-
-    ubyte[] mem = cast(ubyte[])ptr[0 .. T.sizeof*n];
+    ubyte[] mem = (cast(ubyte*)ptr)[0 .. T.sizeof*n];
     foreach (ref ubyte ub; mem) ub = 0;
 }
 

@@ -275,6 +275,8 @@ public:
         while (true)
         {
             size_t got = read(buffer.ptr, buffer.length, msg);
+			import std.stdio : writeln;
+			writeln("pipe.toString(): ", buffer[], " with length: ", buffer.length);
             if (got == 0)
                 break;
             str ~= buffer.ptr[0 .. got];

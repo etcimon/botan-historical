@@ -116,7 +116,7 @@ public:
         
         m_level = (level >= 9) ? 9 : level;
         m_raw_deflate = raw_deflate;
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_zlib = null;
     }
 
@@ -252,7 +252,7 @@ public:
     this(bool _raw_deflate = false)
     {
         m_raw_deflate = _raw_deflate;
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_zlib = null;
         m_no_writes = true;
     }

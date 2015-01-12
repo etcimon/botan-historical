@@ -30,6 +30,7 @@ template Vector(T, int ALLOCATOR = VulnerableAllocator)
 struct VectorImpl(T, int ALLOCATOR)
 {
 	@disable this(this);
+
     // Payload cannot be copied
     private struct Payload
     {
@@ -41,7 +42,7 @@ struct VectorImpl(T, int ALLOCATOR)
 		{ 
 			_capacity = p.length; 
 			_payload = allocArray!(T, ALLOCATOR, true)(p.length);
-			_payload[] = p[];
+			_payload[0 .. p.length] = p[0 .. $];
 		}
         
         // Destructor releases array memory
@@ -156,7 +157,7 @@ struct VectorImpl(T, int ALLOCATOR)
             auto ub = _payload.ptr[0 .. _capacity];
 			if (ub) {
 				TRACE("Freeing old payload");
-				freeArray!(T, ALLOCATOR, false)(ub);
+				freeArray!(T, ALLOCATOR, false, false)(ub);
 
 	            static if ( hasIndirections!T )
 	                GC.removeRange(cast(void*) _payload.ptr);
@@ -217,9 +218,7 @@ struct VectorImpl(T, int ALLOCATOR)
      */
     this(U)(U[] values...) if (isImplicitlyConvertible!(U, T))
     {
-		this.length = values.length;
-		foreach(value; values)
-			insertBack(value);
+		_data = Data(cast(T[])values);
     }
     
     /**

@@ -85,8 +85,8 @@ protected:
     this(BlockCipher cipher, size_t feedback_bits)
     { 
         m_cipher = cipher;
-        m_feedback_bytes = feedback_bits ? feedback_bits / 8 : cipher.blockSize();
-        if (feedback_bits % 8 || feedback() > cipher.blockSize())
+        m_feedback_bytes = feedback_bits ? feedback_bits / 8 : m_cipher.blockSize();
+		if (feedback_bits % 8 || feedback() > m_cipher.blockSize())
             throw new InvalidArgument(name() ~ ": feedback bits " ~
                                        to!string(feedback_bits) ~ " not supported");
     }
@@ -95,9 +95,9 @@ protected:
 
     final size_t feedback() const { return m_feedback_bytes; }
 
-    final SecureVector!ubyte shiftRegister() { return m_shift_register; }
+    final ref SecureVector!ubyte shiftRegister() { return m_shift_register; }
 
-    final SecureVector!ubyte keystreamBuf() { return m_keystream_buf; }
+    final ref SecureVector!ubyte keystreamBuf() { return m_keystream_buf; }
 
 protected:
     final override void keySchedule(const(ubyte)* key, size_t length)
@@ -137,9 +137,8 @@ public:
         {
             const size_t took = std.algorithm.min(shift, sz);
             xorBuf(buf, &keystreamBuf()[0], took);
-            
             // Assumes feedback-sized block except for last input
-            copyMem(state.ptr, &state[shift], BS - shift);
+			if (BS - shift > 0) copyMem(state.ptr, &state[shift], BS - shift);
             copyMem(&state[BS-shift], buf, took);
             cipher().encrypt(state, keystreamBuf());
             
@@ -195,7 +194,7 @@ public:
             const size_t took = std.algorithm.min(shift, sz);
             
             // first update shift register with ciphertext
-            copyMem(state.ptr, &state[shift], BS - shift);
+			if (BS - shift > 0) copyMem(state.ptr, &state[shift], BS - shift);
             copyMem(&state[BS-shift], buf, took);
             
             // then decrypt

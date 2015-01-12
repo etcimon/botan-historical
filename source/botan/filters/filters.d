@@ -80,10 +80,9 @@ public:
     */
     this(StreamCipher stream_cipher)
     {
-        m_buffer = DEFAULT_BUFFERSIZE;
-        m_cipher = stream_cipher;
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+		m_cipher = Unique!StreamCipher(stream_cipher);
     }
-
 
     /**
     * Construct a stream cipher filter.
@@ -92,8 +91,8 @@ public:
     */
     this(StreamCipher stream_cipher, in SymmetricKey key)
     {
-        m_buffer = DEFAULT_BUFFERSIZE;
-        m_cipher = stream_cipher;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_cipher = Unique!StreamCipher(stream_cipher);
         m_cipher.setKey(key);
     }
 
@@ -104,9 +103,9 @@ public:
     this(in string sc_name)
         
     {
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         AlgorithmFactory af = globalState().algorithmFactory();
-        m_cipher = af.makeStreamCipher(sc_name);
+		m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
     }
 
     /**
@@ -116,13 +115,11 @@ public:
     */
     this(in string sc_name, in SymmetricKey key)
     {
-        m_buffer = DEFAULT_BUFFERSIZE;
+		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         AlgorithmFactory af = globalState().algorithmFactory();
-        m_cipher = af.makeStreamCipher(sc_name);
+        m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
         m_cipher.setKey(key);
     }
-
-    ~this() { delete m_cipher; }
 
 	// Interface fallthrough
 	override bool attachable() { return super.attachable(); }
@@ -131,7 +128,7 @@ public:
 	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     SecureVector!ubyte m_buffer;
-    StreamCipher m_cipher;
+    Unique!StreamCipher m_cipher;
 }
 
 /**

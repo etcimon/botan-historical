@@ -60,7 +60,7 @@ T[] allocArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size
 	else static if (ALLOCATOR == SimpleAllocator)
 		auto allocator = getAllocator!MallocAllocator();
 	else
-		auto allocator = getAllocator!SecureAllocatorImpl;
+		auto allocator = getAllocator!SecureAllocatorImpl();
 	auto mem = allocator.alloc(T.sizeof * n);
     auto ret = cast(T[])mem;
     static if ( MANAGED )
@@ -75,18 +75,18 @@ T[] allocArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size
     return ret;
 }
 
-void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(ref T[] array)
+void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, bool DESTROY = true)(ref T[] array)
 {
 	static if (ALLOCATOR == VulnerableAllocator)
 		auto allocator = getAllocator!VulnerableAllocatorImpl();
 	else static if (ALLOCATOR == SimpleAllocator)
 		auto allocator = getAllocator!MallocAllocator();
 	else
-		auto allocator = getAllocator!SecureAllocatorImpl;
+		auto allocator = getAllocator!SecureAllocatorImpl();
 
     static if (MANAGED && hasIndirections!T)
         GC.removeRange(array.ptr);
-    static if (hasElaborateDestructor!T) // calls destructors
+	static if (DESTROY && hasElaborateDestructor!T) // calls destructors
         foreach (ref e; array)
             .destroy(e);
     allocator.free(cast(void[])array);
@@ -339,7 +339,6 @@ struct FreeListRef(T, bool INIT = true)
     
     static FreeListRef opCall(ARGS...)(ARGS args)
     {
-        //logInfo("refalloc %s/%d", T.stringof, ElemSize);
         FreeListRef ret;
         auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize + int.sizeof);
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
@@ -354,42 +353,43 @@ struct FreeListRef(T, bool INIT = true)
         (cast(FreeListRef*)&this).dtor();
     }
 
-    void dtor() {
-        //if( m_object ) logInfo("~this!%s(): %d", T.stringof, this.refCount);
-        //if( m_object ) logInfo("ref %s destructor %d", T.stringof, refCount);
-        //else logInfo("ref %s destructor %d", T.stringof, 0);
+	void dtor() {
         clear();
         m_magic = 0;
-        m_object = null;
     }
 
-    const this(this)
-    {
-    	(cast(FreeListRef*)&this).copyctor();
-    }
+	const this(this)
+	{
+		(cast(FreeListRef*)&this).copyctor();
+	}
 
     void copyctor() {
-		defaultInit();
+
+		if (!m_object) {
+			defaultInit();
+			import backtrace.backtrace;
+			import std.stdio : stdout;
+			static if (T.stringof.countUntil("OIDImpl") == -1)
+				printPrettyTrace(stdout, PrintOptions.init, 3);
+			install(stdout, PrintOptions.init, 0);
+		}
         checkInvariants();
-        if( m_object ){
-            //if( m_object ) logInfo("this!%s(this): %d", T.stringof, this.refCount);
-            this.refCount++;
-        }
+        if (m_object) this.refCount++; 
+        
     }
 
-    void opAssign(FreeListRef other) const
+    void opAssign(U)(in U other) const
     {
-        (cast(FreeListRef*)&this).opAssignImpl(other);
+		if (other.m_object == this.m_object) return;
+		static if (U.stringof.countUntil("FreeListRef") != -1)
+        	(cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
     }
 
-    void opAssignImpl(FreeListRef other) {
+    void opAssignImpl(U)(U other) {
         clear();
         m_object = other.m_object;
-		other.m_object = null;
-        if( m_object ){
-            //logInfo("opAssign!%s(): %d", T.stringof, this.refCount);
+        if( m_object )
             refCount++;
-        }
     }
 
     void clear()
@@ -397,16 +397,16 @@ struct FreeListRef(T, bool INIT = true)
         checkInvariants();
         if( m_object ){
             if( --this.refCount == 0 ){
+				//import std.stdio : writeln;
+				//writeln("Close ", T.stringof);
                 static if( INIT ){
-                    //logInfo("ref %s destroy", T.stringof);
-                    //typeid(T).destroy(cast(void*)m_object);
                     auto objc = m_object;
-                    .destroy(objc);
-                    //logInfo("ref %s destroyed", T.stringof);
+                    static if (is(TR == T*)) .destroy(*objc);
+					else .destroy(objc);
                 }
                 static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
                 getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_object)[0 .. ElemSize+int.sizeof]);
-            }
+			}
         }
         
         m_object = null;
@@ -417,7 +417,7 @@ struct FreeListRef(T, bool INIT = true)
 	{
 		(cast(FreeListRef*)&this).defaultInit();
 		checkInvariants();
-		return m_object; 
+		return m_object;
 	}
 
 	@property TR opStar() {
@@ -441,9 +441,12 @@ struct FreeListRef(T, bool INIT = true)
         return m_object !is null;
     }
 
-    U opCast(U)() const 
+    U opCast(U)() const nothrow
 		if (!is ( U == bool ))
 	{
+		try {import std.stdio : writeln;
+		writeln("UNSAFE Cast! From FreeListRef!", T.stringof, " to ", U.stringof);
+		} catch {}
         return *cast(U*) &this;
     }
 
@@ -469,7 +472,6 @@ struct FreeListRef(T, bool INIT = true)
     }
 
 	void defaultInit() inout {
-
 		static if (is(TR == T*)) {
 			if (!m_object) {
 				auto newObj = this.opCall();
@@ -525,29 +527,13 @@ struct FreeListRef(T, bool INIT = true)
         return m_object.opBinary!op(args);
     }
 
-    void opIndexAssign(U...)(U args)
-        if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
-    {
-
+	void opIndexAssign(U, V)(in U arg1, in V arg2)
+		if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
+	{
+		
 		defaultInit();
-        m_object.opIndexAssign(args);
-    }
-
-    void opIndexAssign(U, V)(in U arg1, in V arg2)
-        if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
-    {
-
-		defaultInit();
-        m_object.opIndexAssign(arg1, arg2);
-    }
-    
-    void opIndexAssign(U...)(in U args) const
-        if (__traits(hasMember, typeof(m_object), "opIndexAssign"))
-    {
-
-		defaultInit();
-        (cast(UnConst!TR)m_object).opIndexAssign(args);
-    }
+		m_object.opIndexAssign(arg1, arg2);
+	}
 
     auto ref opIndex(U...)(U args) inout
         if (__traits(hasMember, typeof(m_object), "opIndex"))

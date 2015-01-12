@@ -79,7 +79,7 @@ protected:
     {
         m_cipher = cipher;
         if (m_cipher.blockSize() != 8 && m_cipher.blockSize() != 16)
-            throw new InvalidArgument("Bad cipher for XTS: " ~ cipher.name);
+            throw new InvalidArgument("Bad cipher for XTS: " ~ m_cipher.name);
         
         m_tweak_cipher = m_cipher.clone();
         m_tweak.resize(updateGranularity());

@@ -7,9 +7,6 @@
 module botan.algo_factory.algo_cache;
 
 import botan.utils.types;
-import botan.utils.containers.multimap;
-// import string;
-import botan.utils.types;
 import botan.utils.containers.hashmap;
 /**
 * @param prov_name = a provider name
@@ -38,7 +35,7 @@ ubyte staticProviderWeight(in string prov_name)
 /**
 * AlgorithmCache (used by AlgorithmFactory)
 */
-struct AlgorithmCache(T)
+final class AlgorithmCache(T)
 {
 public:
     /**
@@ -100,9 +97,8 @@ public:
         {
             m_aliases[requested_name] = algo.name;
         }
-		import std.stdio : writeln;
-		if (!m_algorithms || m_algorithms.get(algo.name).length == 0)
-			m_algorithms[algo.name] = HashMap!(string, T).init;
+		if (m_algorithms.get(algo.name).length == 0)
+			m_algorithms[algo.name] = HashMap!(string, T)();
 
 		if (!(m_algorithms[algo.name].get(provider)))
             m_algorithms[algo.name][provider] = algo;
@@ -129,20 +125,15 @@ public:
     */
     Vector!string providersOf(in string algo_name)
     {
-        
         Vector!string providers;
-
-        string algo = algo_name;
-        if (m_aliases.get(algo_name))
-            algo = m_aliases.get(algo_name);
-
-        if (m_algorithms.get(algo).length == 0)
+		string algo = m_aliases.get(algo_name);
+		if (m_algorithms.get(algo).length == 0)
+            algo = algo_name;
+        if (m_algorithms.get(algo).length == 0) 
             return Vector!string();
-
         foreach(const ref string provider, const ref T instance; m_algorithms[algo]) {
             providers.pushBack(provider);
         }
-                
         return providers;
     }
 
@@ -163,7 +154,12 @@ public:
         m_algorithms.clear();
     }
 
-    ~this() { clearCache(); }
+	this() {
+		m_aliases = HashMap!(string, string)();
+		m_pref_providers = HashMap!(string, string)();
+		m_algorithms = HashMap!(string, HashMap!(string, T))();
+	}
+
 private:
 
     /*
@@ -179,17 +175,19 @@ private:
 
             string _alias = m_aliases.get(algo_spec);
 
-            if (_alias)
-                algo = m_algorithms.get(_alias);
-            else
-                return HashMap!(string, T).init;
+            if (_alias) {
+                return m_algorithms.get(_alias);
+			}
+            else {
+                return HashMap!(string, T)();
+			}
         }
-        
         return algo;
     }
+
     HashMap!(string, string) m_aliases;
     HashMap!(string, string) m_pref_providers;
 
-            // algo_name     //provider // instance
+             // algo_name     //provider // instance
     HashMap!(string, HashMap!(string, T)) m_algorithms;
 }

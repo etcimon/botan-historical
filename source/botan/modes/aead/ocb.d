@@ -92,7 +92,8 @@ protected:
     * @param tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size)
-    {     m_cipher = cipher;
+    {     
+		m_cipher = cipher;
         m_checksum = m_cipher.parallelBytes();
         m_offset = BS;
         m_ad_hash = BS;

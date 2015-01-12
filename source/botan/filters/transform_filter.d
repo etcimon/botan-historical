@@ -166,7 +166,6 @@ protected:
         {
             bufferedFinal(m_buffer.ptr, m_buffer_pos);
         }
-        
         m_buffer_pos = 0;
     }
 

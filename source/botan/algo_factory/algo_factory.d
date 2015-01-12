@@ -101,7 +101,7 @@ public:
     */
     const(BlockCipher) prototypeBlockCipher(in string algo_spec, in string provider = "")
     {
-        return factoryPrototype!BlockCipher(algo_spec, provider, engines, this, m_block_cipher_cache);
+        return factoryPrototype!BlockCipher(algo_spec, provider, engines, this, *m_block_cipher_cache);
     }
     
     /**
@@ -135,7 +135,7 @@ public:
     */
     const(StreamCipher) prototypeStreamCipher(in string algo_spec, in string provider = "")
     {
-        return factoryPrototype!StreamCipher(algo_spec, provider, engines, this, m_stream_cipher_cache);
+        return factoryPrototype!StreamCipher(algo_spec, provider, engines, this, *m_stream_cipher_cache);
     }
 
     
@@ -171,7 +171,7 @@ public:
     */
     const(HashFunction) prototypeHashFunction(in string algo_spec, in string provider = "")
     {
-        return factoryPrototype!HashFunction(algo_spec, provider, engines, this, m_hash_cache);
+        return factoryPrototype!HashFunction(algo_spec, provider, engines, this, *m_hash_cache);
     }
 
     
@@ -206,7 +206,7 @@ public:
     */
     const(MessageAuthenticationCode) prototypeMac(in string algo_spec, in string provider = "")
     {
-        return factoryPrototype!MessageAuthenticationCode(algo_spec, provider, engines, this, m_mac_cache);
+        return factoryPrototype!MessageAuthenticationCode(algo_spec, provider, engines, this, *m_mac_cache);
     }
     
     /**
@@ -241,7 +241,7 @@ public:
     */
     const(PBKDF) prototypePbkdf(in string algo_spec, in string provider = "")
     {
-        return factoryPrototype!PBKDF(algo_spec, provider, engines, this, m_pbkdf_cache);
+        return factoryPrototype!PBKDF(algo_spec, provider, engines, this, *m_pbkdf_cache);
     }
 
     
@@ -272,6 +272,14 @@ public:
         return m_engines;
     }
 
+	this() {
+		m_block_cipher_cache = new AlgorithmCache!BlockCipher;
+		m_stream_cipher_cache = new AlgorithmCache!StreamCipher;
+		m_hash_cache = new AlgorithmCache!HashFunction;
+		m_mac_cache = new AlgorithmCache!MessageAuthenticationCode;
+		m_pbkdf_cache = new AlgorithmCache!PBKDF;
+	}
+
 private:
     Engine getEngineN(size_t n) const
     {
@@ -283,11 +291,11 @@ private:
     
     Vector!Engine m_engines;
     
-    AlgorithmCache!BlockCipher m_block_cipher_cache;
-    AlgorithmCache!StreamCipher m_stream_cipher_cache;
-    AlgorithmCache!HashFunction m_hash_cache;
-    AlgorithmCache!MessageAuthenticationCode m_mac_cache;
-    AlgorithmCache!PBKDF m_pbkdf_cache;
+    Unique!(AlgorithmCache!BlockCipher) m_block_cipher_cache;
+	Unique!(AlgorithmCache!StreamCipher) m_stream_cipher_cache;
+	Unique!(AlgorithmCache!HashFunction) m_hash_cache;
+	Unique!(AlgorithmCache!MessageAuthenticationCode) m_mac_cache;
+	Unique!(AlgorithmCache!PBKDF) m_pbkdf_cache;
 }
 
 private:
@@ -328,21 +336,25 @@ const(T) factoryPrototype(T)(in string algo_spec,
                              Vector!( Engine ) engines,
                              AlgorithmFactory af,
                              AlgorithmCache!T cache) {
-	import std.stdio : writeln;
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
+
     SCANToken scan_name = SCANToken(algo_spec);
+
+	import std.stdio : writeln;
 	writeln("Searching for algo ", scan_name);
+
     if (scan_name.cipherMode() != "")
         return null;
+
     foreach (engine; engines[])
     {
         if (provider == "" || engine.providerName() == provider)
         {
-            if (T impl = engineGetAlgo!T(engine, scan_name, af))
+            if (T impl = engineGetAlgo!T(engine, scan_name, af)) {
                 cache.add(impl, algo_spec, engine.providerName());
+			}
         }
     }
-
     return cache.get(algo_spec, provider);
 }

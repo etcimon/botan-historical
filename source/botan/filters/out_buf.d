@@ -70,7 +70,7 @@ public:
     {
         assert(queue, "queue was provided");
         
-        assert(m_buffers.length < m_buffers.capacity, "Room was available in container");
+        // assert(m_buffers.length < m_buffers.capacity, "Room was available in container");
         
         m_buffers.pushBack(queue);
     }

@@ -36,8 +36,8 @@ public:
         m_personalization = arg_personalization;
         m_output_bits = arg_output_bits;
         m_threefish = new Threefish512;
-        m_T = 2;
-        m_buffer = 64; 
+		m_T = SecureVector!ulong(2);
+		m_buffer = SecureVector!ubyte(64); 
         m_buf_pos = 0;
 
         if (m_output_bits == 0 || m_output_bits % 8 != 0 || m_output_bits > 512)

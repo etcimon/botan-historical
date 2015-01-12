@@ -622,7 +622,7 @@ public:
 
     MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
     {
-		writeln("FindMac Core");
+		writeln("FindMac Core ", request, "/ ", request.algoName);
         static if (BOTAN_HAS_CBC_MAC) {
             if (request.algoName == "CBC-MAC" && request.argCount() == 1)
                 return new CBCMAC(af.makeBlockCipher(request.arg(0)));
@@ -634,8 +634,10 @@ public:
         }
         
         static if (BOTAN_HAS_HMAC) {
-            if (request.algoName == "HMAC" && request.argCount() == 1)
+            if (request.algoName == "HMAC" && request.argCount() == 1) {
+				writeln("New HMAC");
                 return new HMAC(af.makeHashFunction(request.arg(0)));
+			}
         }
         
         static if (BOTAN_HAS_SSL3_MAC) {
@@ -683,9 +685,9 @@ public:
 * @param padding = the mode padding to use (only used for ECB, CBC)
 */
 KeyedFilter getCipherMode(const BlockCipher block_cipher,
-                             CipherDir direction,
-                             in string mode,
-                             in string padding)
+                          CipherDir direction,
+                          in string mode,
+                          in string padding)
 {
     static if (BOTAN_HAS_OFB) {
         if (mode == "OFB")

@@ -110,15 +110,17 @@ size_t runTestsBb(ref File src,
     string fixed_name;
     
     string line;
+
     while(!src.eof && !src.error)
     {
 
 		line = src.readln();
 		if (line.length > 0)
 			line = line[0 .. $-1];
-		else
+
+		if (line.length == 0)
             continue;
-        
+
         if(line[0] == '#')
             continue;
         

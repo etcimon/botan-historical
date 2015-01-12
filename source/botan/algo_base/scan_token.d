@@ -28,6 +28,8 @@ public:
     */
     this(string algo_spec)
     {
+		m_args = Vector!string();
+		m_mode_info = Vector!string();
         m_orig_algo_spec = algo_spec;
         
         Vector!( Pair!(size_t, string)  ) names;
@@ -40,8 +42,6 @@ public:
         
         algo_spec = derefAlias(algo_spec);
         
-		import std.stdio : writeln;
-		writeln("SCANToken init: ", algo_spec);
         foreach (immutable(char) c; algo_spec)
         {
 
@@ -84,7 +84,7 @@ public:
         if (names.length == 0)
             throw new DecodingError(decoding_error ~ "Empty name");
         
-        m_alg_name = names[0].second;
+        m_alg_name = names[0].second[].dup;
 
         if (names.length == 1)
 			return;
@@ -215,7 +215,7 @@ public:
 		if (name)
 			return name;
 		else
-			return input;
+			return input.dup;
     }
 
     static void setDefaultAliases()
