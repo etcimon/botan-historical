@@ -63,7 +63,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
     atomicOp!"+="(total_tests, 1);
     if (ct != ct2)
     {
-        writeln(algo ~ " got ct " ~ ct2 ~ " expected " ~ ct);
+        logTrace(algo ~ " got ct " ~ ct2 ~ " expected " ~ ct);
         ++fails;
     }
     
@@ -71,7 +71,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
     atomicOp!"+="(total_tests, 1);
     if (pt != pt2)
     {
-        writeln(algo ~ " got pt " ~ pt2 ~ " expected " ~ pt);
+        logTrace(algo ~ " got pt " ~ pt2 ~ " expected " ~ pt);
         ++fails;
     }
     
@@ -79,8 +79,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
 }
 
 unittest {
-	import std.stdio : writeln;
-	writeln("Testing cipher_mode.d ...");
+	logTrace("Testing cipher_mode.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

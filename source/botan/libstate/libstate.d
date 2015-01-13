@@ -71,8 +71,7 @@ public:
 
     void initialize()
     {
-		import std.stdio : writeln;
-		writeln("LibraryState.initialize()");
+		logTrace("LibraryState.initialize()");
         if (m_initialized)
             return;
 
@@ -82,27 +81,27 @@ public:
         m_algorithm_factory = Unique!AlgorithmFactory(new AlgorithmFactory);
         
         static if (BOTAN_HAS_ENGINE_GNU_MP) {
-			writeln("Loading GNU MP Engine");
+			logTrace("Loading GNU MP Engine");
             algorithmFactory().addEngine(new GMPEngine);
 		}
         
         static if (BOTAN_HAS_ENGINE_OPENSSL) {
-			writeln("Loading OpenSSL Engine");
+			logTrace("Loading OpenSSL Engine");
             algorithmFactory().addEngine(new OpenSSLEngine);
 		}
         
         static if (BOTAN_HAS_ENGINE_AES_ISA) {         	
-			writeln("Loading AES ISA Engine");
+			logTrace("Loading AES ISA Engine");
 			algorithmFactory().addEngine(new AESISAEngine);        
 		}
         
         static if (BOTAN_HAS_ENGINE_SIMD) {
-			writeln("Loading SIMD Engine");
+			logTrace("Loading SIMD Engine");
             algorithmFactory().addEngine(new SIMDEngine);
 		}
         
         static if (BOTAN_HAS_ENGINE_ASSEMBLER) {
-			writeln("Loading Assembler Engine");
+			logTrace("Loading Assembler Engine");
 			algorithmFactory().addEngine(new AssemblerEngine);
         
 		}
@@ -113,15 +112,15 @@ public:
             if (m_sources.length == 0)
                 m_sources = entropySources();
 
-		writeln("new SerializedRNG()");
+		logTrace("new SerializedRNG()");
 
 		m_global_prng = new SerializedRNG();
-		writeln("Done serialized RNG");
+		logTrace("Done serialized RNG");
         static if (BOTAN_HAS_SELFTESTS) {        
-			writeln("Startup Self-Tests");
+			logTrace("Startup Self-Tests");
 			confirmStartupSelfTests(algorithmFactory());
 		}
-		writeln("Done Self Tests");
+		logTrace("Done Self Tests");
         m_initialized = true;
 
     }

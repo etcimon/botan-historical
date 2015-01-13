@@ -86,7 +86,7 @@ public:
     */
     this(RefT p)
     {
-        debug(Unique) writeln("Unique constructor with rvalue");
+        debug(Unique) logTrace("Unique constructor with rvalue");
         _p = p;
     }
     /**
@@ -97,7 +97,7 @@ public:
     this(ref RefT p)
     {
         _p = p;
-        debug(Unique) writeln("Unique constructor nulling source");
+        debug(Unique) logTrace("Unique constructor nulling source");
         p = null;
         assert(p is null);
     }
@@ -118,7 +118,7 @@ public:
     this(U)(Unique!U u)
         if (is(u.RefT:RefT))
     {
-        debug(Unique) writeln("Unique constructor converting from ", U.stringof);
+        debug(Unique) logTrace("Unique constructor converting from ", U.stringof);
         _p = u._p;
         u._p = null;
     }
@@ -139,7 +139,7 @@ public:
     /*
     void opAssign(U)(in Unique!U p)
     {
-        debug(Unique) writeln("Unique opAssign converting from ", U.stringof);
+        debug(Unique) logTrace("Unique opAssign converting from ", U.stringof);
         // first delete any resource we own
         destroy(this);
         _p = cast(RefT)u._p;
@@ -150,7 +150,7 @@ public:
     void opAssign(U)(Unique!U u)
         if (is(u.RefT:RefT))
     {
-        debug(Unique) writeln("Unique opAssign converting from ", U.stringof);
+        debug(Unique) logTrace("Unique opAssign converting from ", U.stringof);
         // first delete any resource we own
         destroy(this);
         _p = u._p;
@@ -159,7 +159,7 @@ public:
     
     ~this()
     {
-        debug(Unique) writeln("Unique destructor of ", (_p is null)? null: _p);
+        debug(Unique) logTrace("Unique destructor of ", (_p is null)? null: _p);
         if (_p !is null) delete _p;
         _p = null;
     }
@@ -172,10 +172,10 @@ public:
     /** Transfer ownership to a $(D Unique) rvalue. Nullifies the current contents. */
     Unique release()
     {
-        debug(Unique) writeln("Release");
+        debug(Unique) logTrace("Release");
         auto u = Unique(_p);
         assert(_p is null);
-        debug(Unique) writeln("return from Release");
+        debug(Unique) logTrace("return from Release");
         return u;
     }
 

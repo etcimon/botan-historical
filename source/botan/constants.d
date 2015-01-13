@@ -1,5 +1,20 @@
 module botan.constants;
 
+void logTrace(ARGS...)(ARGS args) {
+	import std.stdio: writeln;
+	writeln("T: ", args);
+}
+
+void logDebug(ARGS...)(ARGS args) {
+	import std.stdio: writeln;
+	writeln("D: ", args);
+}
+
+void logError(ARGS...)(ARGS args) {
+	import std.stdio: writeln, stderr;
+	stderr.writeln("E: ", args);
+}
+
 const BOTAN_VERSION_MAJOR = 2;
 const BOTAN_VERSION_MINOR = 0;
 const BOTAN_VERSION_PATCH = 0;

@@ -141,7 +141,7 @@ public:
             throw new EncodingError("EKB_code: EKB is too large");
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_K);
     }

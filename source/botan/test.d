@@ -20,12 +20,12 @@ string CHECK_MESSAGE (string expr, string print) {
         try { 
             if (!(" ~ expr ~ ")) { 
                 ++fails; 
-                writeln( `" ~ print ~ "` ); 
+                logTrace( `" ~ print ~ "` ); 
             } 
         } 
         catch(Exception e) 
         { 
-            writeln(__FUNCTION__, ` : ` ~ e.msg); 
+            logTrace(__FUNCTION__, ` : ` ~ e.msg); 
         }
     }";
 }
@@ -38,11 +38,11 @@ string CHECK (string expr) {
         } );
         try { 
             if (!success)
-            { ++fails; writeln( q{ ` ~ expr ~ ` } ); } 
+            { ++fails; logTrace( q{ ` ~ expr ~ ` } ); } 
         } 
         catch(Exception e) 
         { 
-            writeln(__FUNCTION__ ~ " : " ~ e.msg); 
+            logTrace(__FUNCTION__ ~ " : " ~ e.msg); 
         }
     }`;
 }
@@ -62,15 +62,15 @@ string[] listDir(string dir_path)
 size_t runTestsInDir(string dir, size_t delegate(string) fn)
 {
 	assert(exists(cast(char[])dir), "Directory `" ~ dir ~ "` does not exist");
-	writeln("Running tests for directory: " ~ dir);
+	logTrace("Running tests for directory: " ~ dir);
     import std.parallelism;
     import core.atomic;
     shared(size_t) shared_fails;
 	auto dirs = listDir(dir);
-	writeln("Found ", dirs.length, " files");
+	logTrace("Found ", dirs.length, " files");
     foreach (vec; dirs) {
         size_t local_fails = fn(vec);
-		writeln(vec, " fails: ", local_fails);
+		logTrace(vec, " fails: ", local_fails);
         atomicOp!"+="(shared_fails, local_fails);
     }
     
@@ -79,15 +79,15 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
 
 void testReport(string name, size_t ran, size_t failed)
 {
-    writeln(name);
+    logTrace(name);
     
     if(ran > 0)
-        writeln(" ", ran, " tests");
+        logTrace(" ", ran, " tests");
     
     if(failed)
-        writeln(" ", failed, " FAILs");
+        logTrace(" ", failed, " FAILs");
     else
-        writeln(" all ok");
+        logTrace(" all ok");
 }
 
 size_t runTestsBb(ref File src,
@@ -96,10 +96,10 @@ size_t runTestsBb(ref File src,
                     bool clear_between_cb,
                     size_t delegate(string[string]) cb)
 {
-	scope(failure) { writeln("failure in file: ", src.name); }
+	scope(failure) { logTrace("failure in file: ", src.name); }
     if(src.eof || src.error)
     {
-        writeln("Could not open input file for " ~ name_key);
+        logTrace("Could not open input file for " ~ name_key);
         return 1;
     }
     
@@ -133,7 +133,7 @@ size_t runTestsBb(ref File src,
             test_fails += algo_fail;
             algo_count = 0;
             algo_fail = 0;
-            fixed_name = line[1 .. $ - 2];
+            fixed_name = line[1 .. $ - 1];
             vars[name_key] = fixed_name;
             continue;
         }
@@ -148,7 +148,7 @@ size_t runTestsBb(ref File src,
         
         if(key == output_key)
         {
-            //writeln(vars[name_key] " ~ " ~ algo_count);
+            //logTrace(vars[name_key] " ~ " ~ algo_count);
             ++algo_count;
             try
             {
@@ -156,13 +156,13 @@ size_t runTestsBb(ref File src,
                 
                 if(fails)
                 {
-                    writeln(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
+                    logTrace(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
                     algo_fail += fails;
                 }
             }
             catch(Exception e)
             {
-                writeln(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
+                logTrace(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
                 ++algo_fail;
             }
             
@@ -195,7 +195,7 @@ size_t runTests(string filename,
     
     if(vec.error || vec.eof)
     {
-        writeln("Failure opening " ~ filename);
+        logTrace("Failure opening " ~ filename);
         return 1;
     }
     
@@ -214,7 +214,7 @@ size_t runTests(ref File src,
                             const string got = cb(vars);
                             if(got != vars[output_key])
                             {
-                                writeln(name_key ~ ' ' ~ vars[name_key] ~ " got " ~ got ~ " expected " ~ vars[output_key]);
+                                logTrace(name_key ~ ' ' ~ vars[name_key] ~ " got " ~ got ~ " expected " ~ vars[output_key]);
                                 return 1;
                             }
                             return 0;

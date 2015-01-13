@@ -215,8 +215,7 @@ size_t dliesKat(string p,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing dlies.d ...");
+	logTrace("Testing dlies.d ...");
     size_t fails = 0;
     
     File dlies = File("../test_data/pubkey/dlies.vec", "r");

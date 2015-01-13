@@ -30,7 +30,7 @@ public:
         .decrypt(input, output, blocks, m_SK, 9);
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_SK);
     }
@@ -64,7 +64,7 @@ public:
         .decrypt(input, output, blocks, m_SK, 12);
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_SK);
     }
@@ -98,7 +98,7 @@ public:
         .decrypt(input, output, blocks, m_SK, 12);
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_SK);
     }

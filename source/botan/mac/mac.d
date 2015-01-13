@@ -64,7 +64,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
     atomicOp!"+="(total_tests, 1);
     if(providers.empty)
     {
-        writeln("Unknown algo " ~ algo);
+        logTrace("Unknown algo " ~ algo);
         ++fails;
     }
     
@@ -75,7 +75,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
         
         if(!proto)
         {
-            writeln("Unable to get " ~ algo ~ " from " ~ provider);
+            logTrace("Unable to get " ~ algo ~ " from " ~ provider);
             ++fails;
             continue;
         }
@@ -90,7 +90,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
         atomicOp!"+="(total_tests, 1);
         if(h != hexDecodeLocked(out_hex))
         {
-            writeln(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
+            logTrace(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -99,8 +99,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
 }
 
 unittest {  
-	import std.stdio : writeln;
-	writeln("Testing mac.d ...");  
+	logTrace("Testing mac.d ...");  
     auto test = delegate(string input) {
         File vec = File(input, "r");
         

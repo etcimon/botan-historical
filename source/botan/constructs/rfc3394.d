@@ -163,7 +163,7 @@ size_t keywrapTest(string key_str,
         
         if (enc != expected.bitsOf())
         {
-            writeln("NIST key wrap encryption failure: ", hexEncode(enc), " != ", hexEncode(expected.bitsOf()));
+            logTrace("NIST key wrap encryption failure: ", hexEncode(enc), " != ", hexEncode(expected.bitsOf()));
             fail++;
         }
         
@@ -171,13 +171,13 @@ size_t keywrapTest(string key_str,
         
         if (dec != key.bitsOf())
         {
-            writeln("NIST key wrap decryption failure: " ~ hexEncode(dec) ~ " != " ~ hexEncode(key.bitsOf()));
+            logTrace("NIST key wrap decryption failure: " ~ hexEncode(dec) ~ " != " ~ hexEncode(key.bitsOf()));
             fail++;
         }
     }
     catch(Exception e)
     {
-        writeln(e.msg);
+        logTrace(e.msg);
         fail++;
     }
     
@@ -186,8 +186,7 @@ size_t keywrapTest(string key_str,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing rfc3394.d ...");
+	logTrace("Testing rfc3394.d ...");
 
     size_t fails = 0;
     

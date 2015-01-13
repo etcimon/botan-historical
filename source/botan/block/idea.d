@@ -35,7 +35,7 @@ public:
         idea_op(input, output, blocks, m_DK.ptr);
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_EK);
         zap(m_DK);

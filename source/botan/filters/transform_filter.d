@@ -6,6 +6,7 @@
 */
 module botan.filters.transform_filter;
 
+import botan.constants;
 public import botan.algo_base.transform;
 public import botan.filters.key_filt;
 import botan.filters.transform_filter;
@@ -167,6 +168,8 @@ protected:
             bufferedFinal(m_buffer.ptr, m_buffer_pos);
         }
         m_buffer_pos = 0;
+
+		//scope(exit) logTrace("endMsg(): ", m_buffer[]);
     }
 
 	override void startMsg()
@@ -221,7 +224,7 @@ private:
 
         void update(in InitializationVector iv)
         {
-            m_nonce = unlock(cast(SecureVector!ubyte)iv.bitsOf());
+            m_nonce = unlock(iv.bitsOf());
             m_fresh_nonce = true;
         }
 

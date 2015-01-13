@@ -274,8 +274,7 @@ size_t elgamalKat(string p,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing elgamal.d ...");
+	logTrace("Testing elgamal.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

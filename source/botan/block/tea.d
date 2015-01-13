@@ -66,7 +66,7 @@ public:
         }
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_K);
     }

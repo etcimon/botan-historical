@@ -125,7 +125,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         zap(m_SB);
         zap(m_RK);

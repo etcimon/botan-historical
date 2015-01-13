@@ -29,12 +29,13 @@ public:
             if (CPUID.hasAesNi())
             {
                 if (request.algoName == "AES-128")
-                    return new AES128NI;
-                if (request.algoName == "AES-192")
+					return new AES128NI;
+				if (request.algoName == "AES-192")
                     return new AES192NI;
                 if (request.algoName == "AES-256")
                     return new AES256NI;
             }
+			else { logDebug("AES-NI not supported"); }
         }
         
         return null;

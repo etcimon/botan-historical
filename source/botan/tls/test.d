@@ -64,7 +64,7 @@ public:
         }
         catch(Exception e)
         {
-            writeln("Certificate verification failed - " ~ e.msg ~ " - but will ignore");
+            logTrace("Certificate verification failed - " ~ e.msg ~ " - but will ignore");
         }
     }
     
@@ -155,14 +155,14 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
     
     auto handshake_complete = delegate(in TLSSession session) {
         if (session.Version() != offer_version)
-            writeln("Wrong version negotiated");
+            logTrace("Wrong version negotiated");
         return true;
     };
     
     auto print_alert = delegate(in TLSAlert alert, in ubyte[])
     {
         if (alert.isValid())
-            writeln("TLSServer recvd alert " ~ alert.typeString());
+            logTrace("TLSServer recvd alert " ~ alert.typeString());
     };
     
     auto save_server_data = delegate(in ubyte[] buf) {
@@ -185,9 +185,9 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
     
     auto next_protocol_chooser = delegate(in Vector!string protos) {
         if (protos.length != 2)
-            writeln("Bad protocol size");
+            logTrace("Bad protocol size");
         if (protos[0] != "test/1" || protos[1] != "test/2")
-            writeln("Bad protocol values");
+            logTrace("Bad protocol values");
         return "test/3";
     };
     
@@ -210,7 +210,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         if (server.isActive())
         {
             if (server.nextProtocol() != "test/3")
-                writeln("Wrong protocol " ~ server.nextProtocol());
+                logTrace("Wrong protocol " ~ server.nextProtocol());
             server.send("2");
         }
         
@@ -229,7 +229,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         }
         catch(Exception e)
         {
-            writeln("TLSServer error - " ~ e.msg);
+            logTrace("TLSServer error - " ~ e.msg);
             break;
         }
         
@@ -242,7 +242,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         }
         catch(Exception e)
         {
-            writeln("TLSClient error - " ~ e.msg);
+            logTrace("TLSClient error - " ~ e.msg);
             break;
         }
         
@@ -250,7 +250,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         {
             if (c2s_data[0] != '1')
             {
-                writeln("Error");
+                logTrace("Error");
                 return 1;
             }
         }
@@ -259,7 +259,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         {
             if (s2c_data[0] != '2')
             {
-                writeln("Error");
+                logTrace("Error");
                 return 1;
             }
         }
@@ -279,8 +279,7 @@ public:
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing tls/test.d ...");
+	logTrace("Testing tls/test.d ...");
     size_t errors = 0;
     
     TestPolicy default_policy;

@@ -141,9 +141,8 @@ public:
             auto upper_range = m_freelist.upperBound(mem);
             if (!upper_range.empty && (upper_range.front().ptr - alignment) < (mem.ptr + mem.length))
             {
-				import std.stdio : writeln;
-
-				writeln("Pool item (>): ", upper_range.front().ptr, " .. ", upper_range.front().ptr + upper_range.front().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
+				//import std.stdio : writeln;
+				//logTrace("Pool item (>): ", upper_range.front().ptr, " .. ", upper_range.front().ptr + upper_range.front().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
 
                 // we can merge with the next block
                 void[] upper_elem = upper_range.front();
@@ -156,10 +155,10 @@ public:
             }
 
             auto lower_range = m_freelist.lowerBound(mem);
-			if (!lower_range.empty && lower_range.back().ptr + lower_range.back().length + alignment >= mem.ptr)
+			if (!lower_range.empty && lower_range.back().ptr + lower_range.back().length + alignment > mem.ptr)
             {
-				import std.stdio : writeln;
-				writeln("Pool item (<): ", lower_range.back().ptr, " .. ", lower_range.back().ptr + lower_range.back().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
+				//import std.stdio : writeln;
+				//logTrace("Pool item (<): ", lower_range.back().ptr, " .. ", lower_range.back().ptr + lower_range.back().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
                 // we can merge with the next block
 				void[] lower_elem = lower_range.back();
                 size_t alignment_padding = mem.ptr - ( lower_elem.ptr + lower_elem.length );
@@ -178,7 +177,7 @@ package:
 
 		m_freelist = new RedBlackTree!(void[], "a.ptr < b.ptr");
 
-		version(unittest) { import std.stdio : writeln; writeln("Loading NoSwapAllocator instance ..."); }
+		logTrace("Loading NoSwapAllocator instance ...");
         m_mtx = new Mutex;
         
         auto pool_size = mlock_limit();

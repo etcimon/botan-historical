@@ -89,10 +89,10 @@ version(D_Version2) {
         asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
-            movdqu XMM0, [RAX];
-            movdqu XMM1, [RBX];
-            aesenc XMM0, XMM1;
-            movdqu [RAX], XMM0;
+            movdqu XMM1, [RAX];
+            movdqu XMM2, [RBX];
+            aesenc XMM1, XMM2;
+            movdqu [RAX], XMM1;
         }
         
         return a;
@@ -105,10 +105,10 @@ version(D_Version2) {
         asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
-            movdqu XMM0, [RAX];
-            movdqu XMM1, [RBX];
-            aesenclast XMM0, XMM1;
-            movdqu [RAX], XMM0;
+            movdqu XMM1, [RAX];
+            movdqu XMM2, [RBX];
+            aesenclast XMM1, XMM2;
+            movdqu [RAX], XMM1;
         }
         
         return a;
@@ -121,10 +121,10 @@ version(D_Version2) {
         asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
-            movdqu XMM0, [RAX];
-            movdqu XMM1, [RBX];
-            aesdec XMM0, XMM1;
-            movdqu [RAX], XMM0;
+            movdqu XMM1, [RAX];
+            movdqu XMM2, [RBX];
+            aesdec XMM1, XMM2;
+            movdqu [RAX], XMM1;
         }
         
         return a;
@@ -138,10 +138,10 @@ version(D_Version2) {
         asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
-            movdqu XMM0, [RAX];
-            movdqu XMM1, [RBX];
-            aesdeclast XMM0, XMM1;
-            movdqu [RAX], XMM0;
+            movdqu XMM1, [RAX];
+            movdqu XMM2, [RBX];
+            aesdeclast XMM1, XMM2;
+            movdqu [RAX], XMM1;
         }
         
         return a;
@@ -152,9 +152,9 @@ version(D_Version2) {
         
         asm pure nothrow {
             mov RAX, _a;
-            movdqu XMM1, [RAX];
-            aesimc XMM0, XMM1;
-            movdqu [RAX], XMM0;
+            movdqu XMM2, [RAX];
+            aesimc XMM1, XMM2;
+            movdqu [RAX], XMM1;
         }
         
         return a;
@@ -165,9 +165,9 @@ version(D_Version2) {
         
         mixin(`asm pure nothrow {
             mov RAX, _a;
-            movdqu XMM0, [RAX];
-            aeskeygenassist XMM1, XMM0, ` ~ b.to!string ~ `;
-            movdqu [RAX], XMM1;
+            movdqu XMM1, [RAX];
+            aeskeygenassist XMM2, XMM1, ` ~ b.to!string ~ `;
+            movdqu [RAX], XMM2;
         }`);
         
         return a;

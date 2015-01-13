@@ -158,8 +158,7 @@ import botan.rng.auto_rng;
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing passhash9.d ...");
+	logTrace("Testing passhash9.d ...");
     size_t fails = 0;
     
     const string input = "secret";
@@ -170,7 +169,7 @@ unittest
     ++ran;
     if (!checkPasshash9(input, fixed_hash))
     {
-        writeln("Passhash9 fixed input test failed");
+        logTrace("Passhash9 fixed input test failed");
         fails++;
     }
     
@@ -183,7 +182,7 @@ unittest
         ++ran;
         if (!checkPasshash9(input, gen_hash))
         {
-            writeln("Passhash9 gen and check " ~ alg_id.to!string ~ " failed");
+            logTrace("Passhash9 gen and check " ~ alg_id.to!string ~ " failed");
             ++fails;
         }
     }

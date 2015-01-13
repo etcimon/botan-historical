@@ -401,8 +401,8 @@ public:
     @property string name() const
     {
         if (SKIP == 0)        return "RC4";
-        if (SKIP == 256)     return "MARK-4";
-        else                return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
+        if (SKIP == 256)      return "MARK-4";
+        else                  return "RC4_skip(" ~ to!string(m_SKIP) ~ ")";
     }
     
     StreamCipher clone() const { return new RC4OpenSSL(m_SKIP); }

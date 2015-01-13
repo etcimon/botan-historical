@@ -297,8 +297,7 @@ size_t nrSigKat(string p, string q, string g, string x,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing nr.d ...");
+	logTrace("Testing nr.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

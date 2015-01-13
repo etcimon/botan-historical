@@ -10,6 +10,7 @@
 */
 module botan.utils.memory.memory;
 
+import botan.constants;
 import core.exception : OutOfMemoryError;
 import core.stdc.stdlib;
 import core.memory;
@@ -354,7 +355,7 @@ struct FreeListRef(T, bool INIT = true)
     }
 
 	void dtor() {
-        clear();
+        _clear();
         m_magic = 0;
     }
 
@@ -369,9 +370,9 @@ struct FreeListRef(T, bool INIT = true)
 			defaultInit();
 			import backtrace.backtrace;
 			import std.stdio : stdout;
-			static if (T.stringof.countUntil("OIDImpl") == -1)
-				printPrettyTrace(stdout, PrintOptions.init, 3);
-			install(stdout, PrintOptions.init, 0);
+			static if (T.stringof.countUntil("OIDImpl") == -1 &&
+					   T.stringof.countUntil("HashMapImpl!(string,") == -1)
+				printPrettyTrace(stdout, PrintOptions.init, 3); 
 		}
         checkInvariants();
         if (m_object) this.refCount++; 
@@ -385,20 +386,20 @@ struct FreeListRef(T, bool INIT = true)
         	(cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
     }
 
-    void opAssignImpl(U)(U other) {
-        clear();
+    private void opAssignImpl(U)(U other) {
+        _clear();
         m_object = other.m_object;
         if( m_object )
             refCount++;
     }
 
-    void clear()
+    private void _clear()
     {
         checkInvariants();
         if( m_object ){
             if( --this.refCount == 0 ){
 				//import std.stdio : writeln;
-				//writeln("Close ", T.stringof);
+				//logTrace("Close ", T.stringof);
                 static if( INIT ){
                     auto objc = m_object;
                     static if (is(TR == T*)) .destroy(*objc);
@@ -437,16 +438,21 @@ struct FreeListRef(T, bool INIT = true)
             return (*m_object).opBinaryRight!("in")(key);
     }
 
-    bool opCast(U : bool)() const {
-        return m_object !is null;
-    }
+	bool opCast(U : bool)() const {
+		return m_object !is null;
+	}
+
+	static if (T.stringof == `VectorImpl!(ubyte`)
+	bool opEquals(U)(U other) const
+	{
+		defaultInit();
+		return m_object.opEquals(other);
+	}
 
     U opCast(U)() const nothrow
 		if (!is ( U == bool ))
 	{
-		try {import std.stdio : writeln;
-		writeln("UNSAFE Cast! From FreeListRef!", T.stringof, " to ", U.stringof);
-		} catch {}
+		try logTrace("UNSAFE Cast! From FreeListRef!", T.stringof, " to ", U.stringof); catch {}
         return *cast(U*) &this;
     }
 
@@ -587,9 +593,7 @@ private void* adjustPointerAlignment(void* base)
 }
 
 unittest {
-
-	import std.stdio : writeln;
-	writeln("Testing memory/memory.d ...");
+	logTrace("Testing memory/memory.d ...");
     void testAlign(void* p, size_t adjustment) {
         void* pa = adjustPointerAlignment(p);
         assert((cast(size_t)pa & Allocator.alignmentMask) == 0, "Non-aligned pointer.");
@@ -624,8 +628,7 @@ private size_t alignedSize(size_t sz)
 }
 
 unittest {
-	import std.stdio : writeln;
-	writeln("Testing memory.d ...");
+	logTrace("Testing memory.d ...");
     foreach( i; 0 .. 20 ){
         auto ia = alignedSize(i);
         assert(ia >= i);

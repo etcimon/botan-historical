@@ -5,6 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.libstate.global_state;
+import botan.constants;
 import botan.libstate.libstate;
 
 /// Thread-Local, no locks needed.
@@ -17,14 +18,19 @@ private LibraryState g_lib_state;
 LibraryState globalState()
 {
 	if (!g_lib_state) {
+
+		import backtrace.backtrace;
+		import std.stdio : stdout;
+		install(stdout, PrintOptions.init, 5);
+
 		g_lib_state = new LibraryState;
 	    /* Lazy initialization. Botan still needs to be deinitialized later
 	        on or memory might leak.
 	    */
 	    try g_lib_state.initialize();
 		catch (Throwable e){
-			import std.stdio : writeln;
-			writeln(e.toString());
+			logError(e.toString());
+			foreach(line; e.info) { logError(line); }
 			assert(false);
 		}
 	}

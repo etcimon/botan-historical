@@ -159,7 +159,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     bool exc = false;
     try
     {
-        writeln("order = ", p_ecdsa_pk.domain().getOrder().dup.toString());
+        logTrace("order = ", p_ecdsa_pk.domain().getOrder().dup.toString());
     }
     catch (InvalidState)
     {
@@ -327,14 +327,14 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
 void testEacTime(RandomNumberGenerator)
 {
     EACTime time = EACTime(Clock.currTime(UTC()));
-    //      writeln("time as string = " ~ time.toString());
+    //      logTrace("time as string = " ~ time.toString());
     EACTime sooner = EACTime("", (cast(ASN1Tag)99));
     //X509Time sooner("", (cast(ASN1Tag)99));
     sooner.setTo("2007 12 12");
-    //      writeln("sooner as string = " ~ sooner.toString());
+    //      logTrace("sooner as string = " ~ sooner.toString());
     EACTime later = EACTime("2007 12 13");
     //X509Time later("2007 12 13");
-    //      writeln("later as string = " ~ later.toString());
+    //      logTrace("later as string = " ~ later.toString());
     mixin( CHECK(` sooner <= later `) );
     mixin( CHECK(` sooner == sooner `) );
     
@@ -444,8 +444,8 @@ void testTmpEacStrEnc(RandomNumberGenerator)
     }
     mixin( CHECK(` exc `) );
     //      string val = car.iso8859();
-    //      writeln("car 8859 = " ~ val);
-    //      writeln(hex <<(unsigned char)val[1]);
+    //      logTrace("car 8859 = " ~ val);
+    //      logTrace(hex <<(unsigned char)val[1]);
 }
 
 void testCvcChain(RandomNumberGenerator rng)
@@ -511,7 +511,7 @@ void testCvcChain(RandomNumberGenerator rng)
     ECDSAPublicKey cert_pk = cast(ECDSAPublicKey)(*ap_pk);
     
     //cert_pk.setDomainParameters(dom_pars);
-    //writeln("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_publicPoint(), ec::PointGFp.COMPRESSED).length);
+    //logTrace("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_publicPoint(), ec::PointGFp.COMPRESSED).length);
     EAC11CVC dvca_cert1_reread = EAC11CVC("test_data/ecc/cvc_chain_cvca.cer");
     mixin( CHECK(` dvca_ado2.checkSignature(cert_pk) `) );
     
@@ -542,8 +542,7 @@ void testCvcChain(RandomNumberGenerator rng)
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing cvc/test.d ...");
+	logTrace("Testing cvc/test.d ...");
     AutoSeededRNG rng;
     
     testEncGenSelfsigned(rng);

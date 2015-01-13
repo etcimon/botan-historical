@@ -21,15 +21,8 @@ final class OFB : StreamCipher, SymmetricAlgorithm
 public:
     override void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
-		import std.stdio : writeln;
-		writeln("cipher: ", cast(void*)m_buffer.ptr);
 		size_t len_mem = length;
 		ubyte* output_mem = output;
-		import std.stdio : writeln;
-		writeln("IN: ", input[0 .. length]);
-		writeln("XOR: ", m_buffer[]);
-		writeln("XOR: ", m_buffer.length);
-		writeln("XOR: ", m_buffer.ptr[0 .. length]);
         while (length >= m_buffer.length - m_buf_pos)
         {
             xorBuf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
@@ -40,7 +33,6 @@ public:
             m_buf_pos = 0;
         }
         xorBuf(output, input, &m_buffer[m_buf_pos], length);
-		writeln("OUT: ", output_mem[0 .. len_mem]);
         m_buf_pos += length;
     }
 
@@ -52,9 +44,6 @@ public:
         bufferInsert(m_buffer, 0, iv, iv_len);
         if (iv_len > 0) m_cipher.encrypt(m_buffer);
         m_buf_pos = 0;
-		import std.stdio : writeln;
-		writeln("setIv: ", cast(void*)m_buffer.ptr);
-		writeln("setIv: ", m_buffer[]);
     }
 
     override bool validIvLength(size_t iv_len) const
@@ -78,8 +67,6 @@ public:
         m_cipher.clear();
         zeroise(m_buffer);
         m_buf_pos = 0;
-		import std.stdio : writeln;
-		writeln("m_buffer clear()");
     }
 
     /**
@@ -92,7 +79,6 @@ public:
         m_buf_pos = 0;
     }
 
-	~this() { import std.stdio : writeln; writeln("~this ", cast(void*)m_buffer.ptr); }
 protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {

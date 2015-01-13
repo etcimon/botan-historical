@@ -7,6 +7,7 @@
 */
 module botan.filters.pipe;
 
+import botan.constants;
 import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.exceptn;
@@ -259,7 +260,6 @@ public:
         return buffer;
     }
 
-
     /**
     * Read the full contents of the pipe.
     * @param msg = the number identifying the message to read from
@@ -275,8 +275,6 @@ public:
         while (true)
         {
             size_t got = read(buffer.ptr, buffer.length, msg);
-			import std.stdio : writeln;
-			writeln("pipe.toString(): ", buffer[], " with length: ", buffer.length);
             if (got == 0)
                 break;
             str ~= buffer.ptr[0 .. got];
@@ -580,8 +578,8 @@ private:
         if (!to_kill || cast(SecureQueue)(to_kill))
             return;
         for (size_t j = 0; j != to_kill.totalPorts(); ++j)
-            destruct(to_kill.m_next[j]);
-        delete to_kill;
+			if (to_kill.m_next[j]) destruct(to_kill.m_next[j]);
+	    delete to_kill;
     }
 
     /*

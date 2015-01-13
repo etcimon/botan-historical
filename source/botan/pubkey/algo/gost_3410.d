@@ -348,9 +348,7 @@ size_t gostVerify(string group_id,
 
 unittest
 {
-
-	import std.stdio : writeln;
-	writeln("Testing gost_3410.d ...");
+	logTrace("Testing gost_3410.d ...");
     size_t fails = 0;
 
     AutoSeededRNG rng;

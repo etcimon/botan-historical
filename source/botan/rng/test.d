@@ -120,7 +120,7 @@ size_t x931Test(string algo,
     
     if (got != output)
     {
-        writeln("X9.31 " ~ got ~ " != " ~ output);
+        logTrace("X9.31 " ~ got ~ " != " ~ output);
         return 1;
     }
     
@@ -155,7 +155,7 @@ size_t hmacDrbgTest(string[string] m)
     
     if (got != output)
     {
-        writeln(algo ~ " " ~ got ~ " != " ~ output);
+        logTrace(algo ~ " " ~ got ~ " != " ~ output);
         return 1;
     }
     
@@ -164,8 +164,7 @@ size_t hmacDrbgTest(string[string] m)
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing rng/test.d ...");
+	logTrace("Testing rng/test.d ...");
     File hmac_drbg_vec = File("../test_data/hmac_drbg.vec", "r");
     File x931_vec = File("../test_data/x931.vec", "r");
     

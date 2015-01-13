@@ -35,9 +35,6 @@ public:
     */
     static RandomNumberGenerator makeRng(AlgorithmFactory af)
     {
-
-		import std.stdio : writeln;
-		writeln("Make RNG");
 		RandomNumberGenerator rng = new HMAC_RNG(af.makeMac("HMAC(SHA-512)"), 
 												 af.makeMac("HMAC(SHA-256)"));
         rng.reseed(256);

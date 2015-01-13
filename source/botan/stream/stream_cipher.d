@@ -93,7 +93,7 @@ size_t streamTest(string algo,
     
     if (providers.empty)
     {
-        writeln("Unknown algo " ~ algo);
+        logTrace("Unknown algo " ~ algo);
         ++fails;
     }
     
@@ -104,7 +104,7 @@ size_t streamTest(string algo,
         
         if (!proto)
         {
-            writeln("Unable to get " ~ algo ~ " from provider '" ~ provider ~ "'");
+            logTrace("Unable to get " ~ algo ~ " from provider '" ~ provider ~ "'");
             ++fails;
             continue;
         }
@@ -121,7 +121,7 @@ size_t streamTest(string algo,
         
         if (buf != ct)
         {
-            writeln(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
+            logTrace(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -131,8 +131,7 @@ size_t streamTest(string algo,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing stream_cipher.d ...");
+	logTrace("Testing stream_cipher.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

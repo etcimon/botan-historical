@@ -478,8 +478,7 @@ Vector!( RedBlackTree!CertificateStatusCode )
             }
             catch(Exception e)
             {
-				import std.stdio : writeln;
-                writeln("OCSP error: " ~ e.msg ~ "");
+                logTrace("OCSP error: " ~ e.msg ~ "");
             }
         }
         

@@ -49,7 +49,7 @@ public:
             output += BLOCK_SIZE;
         }
     }
-    void clear()
+	override void clear()
     {
         m_des.clear();
         zap(m_K1);

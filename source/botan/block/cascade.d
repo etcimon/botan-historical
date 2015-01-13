@@ -42,7 +42,7 @@ public:
         return KeyLengthSpecification(m_cipher1.maximumKeylength() + m_cipher2.maximumKeylength());
     }
 
-    void clear()
+	override void clear()
     {
         m_cipher1.clear();
         m_cipher2.clear();

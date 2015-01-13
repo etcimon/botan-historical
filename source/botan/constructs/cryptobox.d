@@ -169,8 +169,7 @@ import botan.rng.auto_rng;
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing cryptobox.d ...");
+	logTrace("Testing cryptobox.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
@@ -188,7 +187,7 @@ unittest
     }
     catch(Exception e)
     {
-        writeln("Error during Cryptobox test " ~ e.msg);
+        logTrace("Error during Cryptobox test " ~ e.msg);
         ++fails;
     }
     

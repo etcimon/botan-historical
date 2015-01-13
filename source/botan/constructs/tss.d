@@ -310,9 +310,8 @@ import botan.rng.auto_rng;
 import botan.codec.hex;
 
 unittest
-{    
-	import std.stdio : writeln;
-	writeln("Testing tss.d ...");
+{
+	logTrace("Testing tss.d ...");
     AutoSeededRNG rng;
     
     size_t fails = 0;
@@ -329,7 +328,7 @@ unittest
     
     if (S != back)
     {
-        writeln("TSS-0: " ~ hexEncode(S) ~ " != " ~ hexEncode(back));
+        logTrace("TSS-0: " ~ hexEncode(S) ~ " != " ~ hexEncode(back));
         ++fails;
     }
     
@@ -339,7 +338,7 @@ unittest
     
     if (S != back)
     {
-        writeln("TSS-1: " ~ hexEncode(S) ~ " != " ~ hexEncode(back));
+        logTrace("TSS-1: " ~ hexEncode(S) ~ " != " ~ hexEncode(back));
         ++fails;
     }
     

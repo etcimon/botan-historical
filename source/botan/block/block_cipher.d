@@ -177,7 +177,7 @@ public:
 /**
 * Represents a block cipher with a single fixed block size
 */ 
-abstract class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher
+abstract class BlockCipherFixedParams(size_t BS, size_t KMIN, size_t KMAX = 0, size_t KMOD = 1) : BlockCipher, SymmetricAlgorithm
 {
 public:
     enum { BLOCK_SIZE = BS }
@@ -187,6 +187,9 @@ public:
     {
         return KeyLengthSpecification(KMIN, KMAX, KMOD);
     }
+
+	abstract void clear();
+	this() { logTrace("__ctor ", name); clear(); }
 }
 
 static if (BOTAN_TEST):
@@ -201,17 +204,14 @@ shared size_t total_tests;
 
 size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
 {
-	writeln("Hex decode: ", key_hex, ", ", in_hex, ", ", out_hex);
+	logTrace("Block Cipher: ", algo);
     const SecureVector!ubyte key = hexDecodeLocked(key_hex);
-	writeln("Key: ", key[]);
     const SecureVector!ubyte pt = hexDecodeLocked(in_hex);
-	writeln("Plaintext: ", pt[]);
     const SecureVector!ubyte ct = hexDecodeLocked(out_hex);
-	writeln("Cryptext: ", ct[]);
-	writeln("Fetch algorithm factory");
+	logTrace("Fetch algorithm factory");
     AlgorithmFactory af = globalState().algorithmFactory();
     
-	writeln("Fetching providers");
+	logTrace("Fetching providers");
     const auto providers = af.providersOf(algo);
     size_t fails = 0;
     
@@ -222,12 +222,12 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
     {
 
         atomicOp!"+="(total_tests, 1);
-		writeln("Fetching block cipher");
+		logTrace("Fetching block cipher");
 		const BlockCipher proto = af.prototypeBlockCipher(algo, provider);
         
         if (!proto)
         {
-            writeln("Unable to get " ~ algo ~ " from " ~ provider);
+            logTrace("Unable to get " ~ algo ~ " from " ~ provider);
             ++fails;
             continue;
         }
@@ -236,36 +236,39 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         cipher.setKey(key);
         SecureVector!ubyte buf = pt.dup;
         
-		writeln("Encrypting");
+		logTrace("Encrypting ", buf[]);
         cipher.encrypt(buf);
-
+		logTrace(buf[], " Real");
+		logTrace(ct[], " Expected");
         atomicOp!"+="(total_tests, 1);
         if (buf != ct)
         {
-            writeln(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
             ++fails;
             buf = ct.dup;
         }
-		writeln("Decrypting");
+		logTrace("Decrypting ", buf[]);
         cipher.decrypt(buf);
+		logTrace(buf[], " Real");
+		logTrace(pt[], " Expected");
 
         atomicOp!"+="(total_tests, 1);
         if (buf != pt)
         {
-            writeln(algo ~ " " ~ provider ~ " dec " ~ hexEncode(buf) ~ " != " ~ out_hex);
             ++fails;
         }
     }
-	writeln("Finished ", algo, " Fails: ", fails);
+	logTrace("Finished ", algo, " Fails: ", fails);
+	import core.thread;
+	import std.datetime;
+	Thread.sleep(2.seconds);
     return fails;
 }
 
 unittest {
-	import std.stdio : writeln;
-	writeln("Testing block_cipher.d ...");
+	logTrace("Testing block_cipher.d ...");
     size_t test_bc(string input)
     {
-		writeln("Testing file `" ~ input ~ " ...");
+		logTrace("Testing file `" ~ input ~ " ...");
         File vec = File(input, "r");
         return runTestsBb(vec, "BlockCipher", "Out", true,
                           (string[string] m) {
@@ -273,7 +276,7 @@ unittest {
                           });
     }
     
-	writeln("Running tests ...");
+	logTrace("Running tests ...");
     size_t fails = runTestsInDir("../test_data/block", &test_bc);
 
 

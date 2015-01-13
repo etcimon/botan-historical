@@ -145,9 +145,9 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
     // 1 test
     if (alice_key != bob_key)
     {
-        writeln("The two keys didn't match!");
-        writeln("Alice's key was: " ~ alice_key.toString());
-        writeln("Bob's key was: " ~ bob_key.toString());
+        logTrace("The two keys didn't match!");
+        logTrace("Alice's key was: " ~ alice_key.toString());
+        logTrace("Bob's key was: " ~ bob_key.toString());
         ++fails;
     }
     
@@ -218,8 +218,7 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing ecdh.d ...");
+	logTrace("Testing ecdh.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

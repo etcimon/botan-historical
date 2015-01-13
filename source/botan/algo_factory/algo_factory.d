@@ -6,6 +6,7 @@
 */
 module botan.algo_factory.algo_factory;
 
+import botan.constants;
 import botan.algo_factory.algo_cache;
 import botan.utils.containers.multimap;
 import botan.engine.engine;
@@ -336,13 +337,13 @@ const(T) factoryPrototype(T)(in string algo_spec,
                              Vector!( Engine ) engines,
                              AlgorithmFactory af,
                              AlgorithmCache!T cache) {
+
+	logTrace("Searching for algo ", algo_spec, " & provider: ", provider);
+
     if (const T cache_hit = cache.get(algo_spec, provider))
         return cache_hit;
 
-    SCANToken scan_name = SCANToken(algo_spec);
-
-	import std.stdio : writeln;
-	writeln("Searching for algo ", scan_name);
+	SCANToken scan_name = SCANToken(algo_spec);
 
     if (scan_name.cipherMode() != "")
         return null;
@@ -351,10 +352,11 @@ const(T) factoryPrototype(T)(in string algo_spec,
     {
         if (provider == "" || engine.providerName() == provider)
         {
-            if (T impl = engineGetAlgo!T(engine, scan_name, af)) {
+            if (T impl = engineGetAlgo!T(engine, scan_name, af)) 
                 cache.add(impl, algo_spec, engine.providerName());
-			}
+
         }
     }
+
     return cache.get(algo_spec, provider);
 }

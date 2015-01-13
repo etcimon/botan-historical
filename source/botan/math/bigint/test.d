@@ -58,20 +58,20 @@ size_t results(string op, in BigInt a, in BigInt b, in BigInt c, in BigInt d, in
         return 0;
     else
     {
-        writeln();
+        logTrace();
         
-        writeln("ERROR: " ~ op1);
+        logTrace("ERROR: " ~ op1);
         
-        writeln("a = ", a);
-        writeln("b = ", b);
+        logTrace("a = ", a);
+        logTrace("b = ", b);
         
-        writeln("c = ", c);
-        writeln("d = ", d);
-        writeln("e = ", e);
+        logTrace("c = ", c);
+        logTrace("d = ", d);
+        logTrace("e = ", e);
         
         if (d != e)
         {
-            writeln("ERROR: " ~ op1 ~ " | " ~ op2 ~ " mismatch");
+            logTrace("ERROR: " ~ op1 ~ " | " ~ op2 ~ " mismatch");
         }
         return 1;
     }
@@ -117,7 +117,7 @@ size_t checkMul(in Vector!string args)
     BigInt c = BigInt(args[2]);
     
     /*
-    writeln("a = " ~ args[0] " ~\n"
+    logTrace("a = " ~ args[0] " ~\n"
                  " ~b = " ~ args[1]);
     */
     /* This makes it more likely the fast multiply algorithms will be usable,
@@ -238,12 +238,12 @@ size_t checkPowmod(in Vector!string args)
     
     if (c != r)
     {
-        writeln("ERROR: powerMod");
-        writeln("a = ", a);
-        writeln("b = ", b);
-        writeln("m = ", m);
-        writeln("c = ", c);
-        writeln("r = ", r);
+        logTrace("ERROR: powerMod");
+        logTrace("a = ", a);
+        logTrace("b = ", b);
+        logTrace("m = ", m);
+        logTrace("c = ", c);
+        logTrace("r = ", r);
         return 1;
     }
     return 0;
@@ -259,9 +259,9 @@ size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
     
     if (isPrime != should_be_prime)
     {
-        writeln("ERROR: isPrime");
-        writeln("n = ", n);
-        writeln(isPrime ~ " != " ~ should_be_prime);
+        logTrace("ERROR: isPrime");
+        logTrace("n = ", n);
+        logTrace(isPrime ~ " != " ~ should_be_prime);
     }
     return 0;
 }
@@ -269,7 +269,7 @@ size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
 unittest
 {
 	import std.stdio : writeln;
-	writeln("Testing bigint/test.d ...");
+	logTrace("Testing bigint/test.d ...");
     import std.array;
     import std.string : strip;
     const string filename = "test_data/mp_valid.dat";
@@ -322,7 +322,7 @@ unittest
         
         Vector!string substr = parse(line[]);
         
-        writeln("Testing: " ~ algorithm);
+        logTrace("Testing: " ~ algorithm);
         
         size_t new_errors = 0;
         if (algorithm.canFind("Addition"))
@@ -346,14 +346,14 @@ unittest
         else if (algorithm.canFind("PrimeTest"))
             new_errors = isPrimetest(substr, rng);
         else
-            writeln("Unknown MPI test " ~ algorithm);
+            logTrace("Unknown MPI test " ~ algorithm);
         
         counter++;
         alg_count++;
         errors += new_errors;
         
         if (new_errors)
-            writeln("ERROR: BigInt " ~ algorithm ~ " failed test #" ~ alg_count.to!string);
+            logTrace("ERROR: BigInt " ~ algorithm ~ " failed test #" ~ alg_count.to!string);
     }
 
     

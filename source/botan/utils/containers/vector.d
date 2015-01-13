@@ -97,7 +97,7 @@ struct VectorImpl(T, int ALLOCATOR)
         // length
         @property void length(size_t newLength)
         {
-            if (length >= newLength)
+            if (length > 0 && length >= newLength)
             {
                 // shorten
                 static if (hasElaborateDestructor!T) {
@@ -113,11 +113,14 @@ struct VectorImpl(T, int ALLOCATOR)
                 _payload = _payload.ptr[0 .. newLength];
                 return;
             }
-            // enlarge
-            auto startEmplace = length;
-            reserve(newLength);
-            _payload = _payload.ptr[0 .. newLength];
-            initializeAll(_payload.ptr[startEmplace .. length]);
+
+			if (newLength > 0) {
+	            // enlarge
+	            auto startEmplace = length;
+	            reserve(newLength);
+	            _payload = _payload.ptr[0 .. newLength];
+	            initializeAll(_payload.ptr[startEmplace .. length]);
+			}
         }
         
         // capacity
@@ -644,7 +647,6 @@ struct VectorImpl(T, int ALLOCATOR)
     {
 		TRACE("Vector.clear()");
         _data.length = 0;
-        _data = Data.init;
     }
     
     /**
@@ -885,6 +887,18 @@ struct VectorImpl(T, int ALLOCATOR)
         }
         return 1;
     }
+
+	bool opEquals(int Alloc)(Vector!(T, Alloc) other_) {
+		import botan.constants : logTrace;
+		logTrace("opEquals Vector");
+		if (*other_ is null && _data._payload.length == 0)
+			return true;
+		else if (*other_ is null)
+			return false;
+		if (other_.length != length)
+			return false;
+		return this[] == other_[];
+	}
     
 }
 

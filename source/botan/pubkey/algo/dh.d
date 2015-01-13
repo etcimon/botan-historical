@@ -215,8 +215,7 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing dh.d ...");
+	logTrace("Testing dh.d ...");
     size_t fails = 0;
 
     AutoSeededRNG rng;

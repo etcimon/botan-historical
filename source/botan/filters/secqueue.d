@@ -55,8 +55,7 @@ public:
             if (m_head.length == 0)
             {
                 SecureQueueNode holder = m_head.m_next;
-				// fixme: Somehow this breaks everything
-                // delete m_head;
+                delete m_head;
                 m_head = holder;
             }
         }
@@ -226,8 +225,6 @@ public:
     {
         size_t copied = std.algorithm.min(length, m_end - m_start);
         copyMem(output, &m_buffer[m_start], copied);
-		import std.stdio : writeln;
-		writeln("reading ", m_buffer[]);
         m_start += copied;
         return copied;
     }

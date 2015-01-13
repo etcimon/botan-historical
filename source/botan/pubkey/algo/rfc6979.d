@@ -68,7 +68,7 @@ size_t rfc6979Testcase(string q_str,
     
     if (gen_k != exp_k)
     {
-        writeln("RFC 6979 test #", testcase, " failed; generated k=", gen_k);
+        logTrace("RFC 6979 test #", testcase, " failed; generated k=", gen_k);
         return 1;
     }
     
@@ -77,8 +77,7 @@ size_t rfc6979Testcase(string q_str,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing rfc6979.d ...");
+	logTrace("Testing rfc6979.d ...");
     
     size_t fails = 0;
     

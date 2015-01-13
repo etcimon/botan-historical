@@ -194,8 +194,8 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     if (vec != expected_ct)
     {
-        writeln(algo ~ " got ct " ~ hexEncode(vec) ~ " expected " ~ expected);
-        writeln(algo ~ " \n");
+        logTrace(algo ~ " got ct " ~ hexEncode(vec) ~ " expected " ~ expected);
+        logTrace(algo ~ " \n");
         ++fail;
     }
     
@@ -206,7 +206,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     if (vec != pt)
     {
-        writeln(algo ~ " got pt " ~ hexEncode(vec) ~ " expected " ~ input);
+        logTrace(algo ~ " got pt " ~ hexEncode(vec) ~ " expected " ~ input);
         ++fail;
     }
     
@@ -218,7 +218,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
         try
         {
             dec.finish(vec);
-            writeln(algo ~ " accepted message with modified message");
+            logTrace(algo ~ " accepted message with modified message");
             ++fail;
         }
         catch (Throwable) {}
@@ -234,7 +234,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             try
             {
                 dec.finish(vec);
-                writeln(algo ~ " accepted message with modified nonce");
+                logTrace(algo ~ " accepted message with modified nonce");
                 ++fail;
             }
             catch (Throwable) {}
@@ -257,7 +257,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             try
             {
                 dec.finish(vec);
-                writeln(algo ~ " accepted message with modified AD");
+                logTrace(algo ~ " accepted message with modified AD");
                 ++fail;
             }
             catch (Throwable) {}
@@ -269,8 +269,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing aead.d ...");
+	logTrace("Testing aead.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

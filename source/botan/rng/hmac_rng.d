@@ -199,8 +199,6 @@ private:
         */
 		SecureVector!ubyte prf_key = SecureVector!ubyte(m_extractor.outputLength);
 		m_prf.setKey(prf_key);
-		import std.stdio : writeln;
-		writeln("New HMAC RNG");
 		/*
         Use PRF("Botan HMAC_RNG XTS") as the intitial XTS key.
 

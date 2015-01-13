@@ -35,6 +35,7 @@ public:
     
     override void clear()
     {
+		logTrace("Zap");
         zap(m_EK);
         zap(m_DK);
         zap(m_ME);
@@ -72,7 +73,7 @@ public:
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
 
-    void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -111,7 +112,7 @@ public:
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -735,8 +736,8 @@ void aes_decrypt_n(const(ubyte)* input, ubyte* output, size_t blocks,
 void aes_key_schedule(const(ubyte)* key, size_t length,
                       ref SecureVector!uint EK,
                       ref SecureVector!uint DK,
-                      SecureVector!ubyte ME,
-                      SecureVector!ubyte MD) 
+                      ref SecureVector!ubyte ME,
+                      ref SecureVector!ubyte MD) 
 {
     import botan.utils.get_byte : get_byte;
     import botan.utils.mem_ops : copyMem;

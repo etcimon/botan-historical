@@ -6,6 +6,7 @@
 */
 module botan.utils.memory.zeroise;
 
+import botan.constants;
 import botan.utils.mem_ops;
 import std.algorithm;
 import botan.utils.types;
@@ -21,7 +22,7 @@ alias SecureAllocatorImpl = ZeroiseAllocator!VulnerableAllocatorImpl;
 __gshared NoSwapAllocator gs_zeroise;
 
 shared static this() { 
-	version(unittest) { import std.stdio : writeln; writeln("Loading NoSwapAllocator ..."); }
+	logTrace("Loading NoSwapAllocator ...");
     if (!gs_zeroise)
         gs_zeroise = new NoSwapAllocator;
 }
@@ -59,11 +60,10 @@ final class ZeroiseAllocator(Base : Allocator)
 alias SecureVector(T) = Vector!(T, SecureAllocator);
 
 Vector!(T, VulnerableAllocator) 
-	unlock(T, int ALLOC)(FreeListRef!(VectorImpl!(T, ALLOC)) input)
+	unlock(T, int ALLOC)(in FreeListRef!(VectorImpl!(T, ALLOC)) input)
     	if (ALLOC == SecureAllocator)
 {
-    Vector!(T, VulnerableAllocator) output = Vector!T(input.length);
-    copyMem(output.ptr, input.ptr, input.length);
+    Vector!(T, VulnerableAllocator) output = Vector!T(input[]);
     return output;
 }
 
@@ -98,10 +98,10 @@ void zeroise(T)(T[] mem) {
 * Zeroise the values then free the memory
 * @param vec = the vector to zeroise and free
 */
-void zap(T, int Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec)
+void zap(T, int Alloc)(ref FreeListRef!(VectorImpl!(T, Alloc)) vec)
 {
     import std.traits : hasIndirections;
-    static if (!hasIndirections!T)
+    static if (!hasIndirections!T && Alloc != SecureAllocator)
         zeroise(vec);
-    vec.clear();
+    (*vec).clear();
 }

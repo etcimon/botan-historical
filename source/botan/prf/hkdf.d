@@ -140,7 +140,7 @@ size_t hkdfTest(string algo, string ikm, string salt, string info, string okm, s
     
     if (got != okm)
     {
-        writeln("HKDF got " ~ got ~ " expected " ~ okm);
+        logTrace("HKDF got " ~ got ~ " expected " ~ okm);
         return 1;
     }
     
@@ -149,8 +149,7 @@ size_t hkdfTest(string algo, string ikm, string salt, string info, string okm, s
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing hkdf.d ...");
+	logTrace("Testing hkdf.d ...");
     File vec = File("../test_data/hkdf.vec", "r");
     
     size_t fails = runTestsBb(vec, "HKDF", "OKM", true,

@@ -176,7 +176,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -206,7 +206,6 @@ protected:
         mixin(`__m128i K8  = ` ~  AES_128_key_exp!("K7", 0x80)());
         mixin(`__m128i K9  = ` ~  AES_128_key_exp!("K8", 0x1B)());
         mixin(`__m128i K10 = ` ~  AES_128_key_exp!("K9", 0x36)());
-        
         __m128i* EK_mm = cast(__m128i*)(m_EK.ptr);
         _mm_storeu_si128(EK_mm      , K0);
         mixin( q{
@@ -418,7 +417,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -661,7 +660,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-    void clear()
+	override void clear()
     {
         zap(m_EK);
         zap(m_DK);

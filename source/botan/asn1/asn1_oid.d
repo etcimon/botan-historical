@@ -6,6 +6,7 @@
 */
 module botan.asn1.asn1_oid;
 
+import botan.constants;
 public import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -222,11 +223,14 @@ public:
         }
         catch (Throwable)
         {
+			logTrace("parseAsn1Oid failure");
             throw new InvalidOID(oid_str);
         }
         
-        if (m_id.length < 2 || m_id[0] > 2)
+        if (m_id.length < 2 || m_id[0] > 2) {
+			logTrace("Got m_id: ", m_id[]);
             throw new InvalidOID(oid_str);
+		}
         if ((m_id[0] == 0 || m_id[0] == 1) && m_id[1] > 39)
             throw new InvalidOID(oid_str);
     }

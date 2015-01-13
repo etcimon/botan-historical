@@ -168,16 +168,15 @@ HashMap!(string, string)
                          in HashMap!(string, string) vars,
                          AlgorithmFactory af)
 {
-	import std.stdio : writeln;
-	writeln("Testing ", algo_name);
+	logTrace("Testing ", algo_name);
     const string algo = algo_name.algoNameAndArgs();
     
     Vector!string providers = af.providersOf(algo);
-	writeln("Providers: ", providers[]);
+	logTrace("Providers: ", providers[]);
     HashMap!(string, string) all_results;
     
     if (providers.empty) { // no providers, nothing to do
-		writeln("Warning: ", algo_name.toString(), " has no providers");
+		logTrace("Warning: ", algo_name.toString(), " has no providers");
         return all_results;
 	}
     const string input = vars.get("input");
@@ -192,24 +191,33 @@ HashMap!(string, string)
         
         if (const HashFunction proto = af.prototypeHashFunction(algo, provider))
         {
+			logTrace("Found ", proto.name);
             Filter filt = new HashFilter(proto.clone());
             all_results[provider] = testFilterKat(filt, input, output);
+			logDebug(proto.name, " Result: ", provider, " => ", all_results[provider]);
         }
         else if (const MessageAuthenticationCode proto = af.prototypeMac(algo, provider))
         {
+			logTrace("Found ", proto.name);
             KeyedFilter filt = new MACFilter(proto.clone(), key);
             all_results[provider] = testFilterKat(filt, input, output);
+			logDebug(proto.name, " Result: ", provider, " => ", all_results[provider]);
         }
         else if (const StreamCipher proto = af.prototypeStreamCipher(algo, provider))
         {
+			logTrace("Found ", proto.name);
             KeyedFilter filt = new StreamCipherFilter(proto.clone());
             filt.setKey(key);
             filt.setIv(iv);
             
             all_results[provider] = testFilterKat(filt, input, output);
+
+			
+			logDebug(proto.name, " Result: ", provider, " => ", all_results[provider]);
         }
         else if (const BlockCipher proto = af.prototypeBlockCipher(algo, provider))
         {
+			logTrace("Found ", proto.name);
             KeyedFilter enc = getCipherMode(proto, ENCRYPTION,
                                             algo_name.cipherMode(),
                                             algo_name.cipherModePad());
@@ -220,6 +228,7 @@ HashMap!(string, string)
             
             if (!enc || !dec)
             {
+				logTrace("Enc/dec failure");
                 delete enc;
                 delete dec;
                 continue;
@@ -254,14 +263,12 @@ HashMap!(string, string)
             
             all_results[provider ~ " (encrypt)"] = testFilterKat(enc, input, output);
             all_results[provider ~ " (decrypt)"] = testFilterKat(dec, output, input);
-        }
-    }
-    
-	import std.stdio : writeln;
 
-	foreach (const string k, const string v; all_results) {
-		writeln("Result: ", k, " => ", v);
-	}
+			logDebug(proto.name, " Result: ", provider, " (encrypt) => ", all_results[provider ~ " (encrypt)"]);
+			logDebug(proto.name, " Result: ", provider, " (decrypt) => ", all_results[provider ~ " (decrypt)"]);
+
+        }
+    }    
 
     return all_results;
 }
@@ -305,15 +312,15 @@ void macTest(AlgorithmFactory af,
 * Perform a KAT for a cipher
 */
 void cipherKat(AlgorithmFactory af,
-                in string algo,
-                in string key_str,
-                in string iv_str,
-                in string input,
-                in string ecb_out,
-                in string cbc_out,
-                in string cfb_out,
-                in string ofb_out,
-                in string ctr_out)
+               in string algo,
+               in string key_str,
+               in string iv_str,
+               in string input,
+               in string ecb_out,
+               in string cbc_out,
+               in string cfb_out,
+               in string ofb_out,
+               in string ctr_out)
 {
     SymmetricKey key = SymmetricKey(key_str);
     InitializationVector iv = InitializationVector(iv_str);
@@ -329,8 +336,7 @@ void cipherKat(AlgorithmFactory af,
     verifyResults(algo ~ "/ECB", algorithmKatDetailed(SCANToken(algo ~ "/ECB"), vars, af));
     
     vars["output"] = cbc_out;
-    verifyResults(algo ~ "/CBC",
-                  algorithmKatDetailed(SCANToken(algo ~ "/CBC/NoPadding"), vars, af));
+    verifyResults(algo ~ "/CBC", algorithmKatDetailed(SCANToken(algo ~ "/CBC/NoPadding"), vars, af));
     
     vars["output"] = cfb_out;
     verifyResults(algo ~ "/CFB", algorithmKatDetailed(SCANToken(algo ~ "/CFB"), vars, af));
@@ -354,7 +360,6 @@ string testFilterKat(Filter filter,
     {
         Pipe pipe = Pipe(new HexDecoder, filter, new HexEncoder);
         pipe.processMsg(input);
-        
         const string got = pipe.toString();
         const bool same = (got == expected);
         

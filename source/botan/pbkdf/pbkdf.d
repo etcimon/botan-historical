@@ -6,6 +6,7 @@
 */
 module botan.pbkdf.pbkdf;
 
+import botan.constants;
 import botan.algo_base.symkey;
 import std.datetime;
 import std.exception;
@@ -129,8 +130,7 @@ public:
 }
 
 unittest {
-	import std.stdio : writeln;
-	writeln("Testing pbkdf.d ...");
+	logTrace("Testing pbkdf.d ...");
     import botan.test;
     import botan.codec.hex;
 

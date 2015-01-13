@@ -364,7 +364,6 @@ private:
 
 OIDMap globalOidMap()
 {
-	import std.stdio : writeln;
 	static OIDMap map;
 
 	if (!map.m_str2oid) {

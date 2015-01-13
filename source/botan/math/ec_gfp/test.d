@@ -452,7 +452,7 @@ size_t testBasicOperations()
                                        BigInt("704859595002530890444080436569091156047721708633"),
                                        BigInt("1147993098458695153857594941635310323215433166682"));
     if (simplePlus != exp_simplePlus)
-        writeln(simplePlus.toString() ~ " != " ~ exp_simplePlus.toString());
+        logTrace(simplePlus.toString() ~ " != " ~ exp_simplePlus.toString());
     
     PointGFp simpleMinus= p1 - p0;
     PointGFp exp_simpleMinus = PointGFp(secp160r1,
@@ -801,8 +801,7 @@ size_t testCurveCpCtor()
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing ec_gfp/test.d ...");
+	logTrace("Testing ec_gfp/test.d ...");
     size_t fails = 0;
     
     fails += testPointTurnOnSpRedMul();

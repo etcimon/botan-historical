@@ -110,7 +110,7 @@ public:
         }
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_MK);
         zap(m_RK);

@@ -27,8 +27,8 @@ void dumpData(in Vector!ubyte output, in Vector!ubyte expected)
     
     pipe.processMsg(output.dup);
     pipe.processMsg(expected.dup);
-    writeln("Got: " ~ pipe.toString(0));
-    writeln("Exp: " ~ pipe.toString(1));
+    logTrace("Got: " ~ pipe.toString(0));
+    logTrace("Exp: " ~ pipe.toString(1));
 }
 
 size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
@@ -45,19 +45,19 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
         
         if (!restored_pub)
         {
-            writeln("Could not recover " ~ name ~ " public key");
+            logTrace("Could not recover " ~ name ~ " public key");
             ++fails;
         }
         else if (restored_pub.checkKey(rng, true) == false)
         {
-            writeln("Restored pubkey failed self tests " ~ name);
+            logTrace("Restored pubkey failed self tests " ~ name);
             ++fails;
         }
     }
     catch(Exception e)
     {
-        writeln("Exception during load of " ~ name ~ " key: " ~ e.msg);
-        writeln("PEM for pubkey was: " ~ pub_pem);
+        logTrace("Exception during load of " ~ name ~ " key: " ~ e.msg);
+        logTrace("PEM for pubkey was: " ~ pub_pem);
         ++fails;
     }
     
@@ -70,19 +70,19 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
         
         if (!restored_priv)
         {
-            writeln("Could not recover " ~ name ~ " private key");
+            logTrace("Could not recover " ~ name ~ " private key");
             ++fails;
         }
         else if (restored_priv.checkKey(rng, true) == false)
         {
-            writeln("Restored privkey failed self tests " ~ name);
+            logTrace("Restored privkey failed self tests " ~ name);
             ++fails;
         }
     }
     catch(Exception e)
     {
-        writeln("Exception during load of " ~ name ~ " key: " ~ e.msg);
-        writeln("PEM for privkey was: " ~ priv_pem);
+        logTrace("Exception during load of " ~ name ~ " key: " ~ e.msg);
+        logTrace("PEM for privkey was: " ~ priv_pem);
         ++fails;
     }
     
@@ -104,7 +104,7 @@ string PKTEST(string expr, string msg)
             const bool test_result = ` ~ expr ~ `;
             if (!test_result)
             {
-                writeln("Test " ~ ` ~ expr ~ ` ~ " failed: ` ~ msg ~ `");
+                logTrace("Test " ~ ` ~ expr ~ ` ~ " failed: ` ~ msg ~ `");
                 ++fails;
             }
         }
@@ -124,7 +124,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     const Vector!ubyte ctext = e.encrypt(message, rng);
     if (ctext != expected)
     {
-        writeln("FAILED (encrypt): " ~ algo);
+        logTrace("FAILED (encrypt): " ~ algo);
         dumpData(ctext, expected);
         ++fails;
     }
@@ -133,7 +133,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     
     if (decrypted != message)
     {
-        writeln("FAILED (decrypt): " ~ algo);
+        logTrace("FAILED (decrypt): " ~ algo);
         dumpData(decrypted, message);
         ++fails;
     }
@@ -153,9 +153,9 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
             try
             {
                 auto bad_ptext = unlock(d.decrypt(bad_ctext));
-                writeln(algo ~ " failed - decrypted bad data");
-                writeln(hexEncode(bad_ctext) ~ " . " ~ hexEncode(bad_ptext));
-                writeln(hexEncode(ctext) ~ " . " ~ hexEncode(decrypted));
+                logTrace(algo ~ " failed - decrypted bad data");
+                logTrace(hexEncode(bad_ctext) ~ " . " ~ hexEncode(bad_ptext));
+                logTrace(hexEncode(ctext) ~ " . " ~ hexEncode(decrypted));
                 ++fails;
             }
             catch (Throwable) {}
@@ -187,7 +187,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
     
     if (sig != expected)
     {
-        writeln("FAILED (sign): " ~ algo);
+        logTrace("FAILED (sign): " ~ algo);
         dumpData(sig, expected);
         ++fails;
     }
@@ -234,7 +234,7 @@ size_t validateKas(PKKeyAgreement kas, string algo,
     
     if (got != expected)
     {
-        writeln("FAILED: " ~ algo);
+        logTrace("FAILED: " ~ algo);
         dumpData(got, expected);
         ++fails;
     }

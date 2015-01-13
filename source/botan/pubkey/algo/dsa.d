@@ -308,9 +308,7 @@ size_t dsaSigKat(string p,
 
 unittest
 {
-
-	import std.stdio : writeln;
-	writeln("Testing dsa.d ...");
+	logTrace("Testing dsa.d ...");
     size_t fails;
     
     AutoSeededRNG rng;

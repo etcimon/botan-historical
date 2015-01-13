@@ -163,8 +163,7 @@ CertificateStatusCode[] getExpected()
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing x509/test.d ...");
+	logTrace("Testing x509/test.d ...");
     const string root_test_dir = "src/tests/data/nist_x509/";
     
     size_t unexp_failure = 0;
@@ -233,26 +232,26 @@ unittest
             auto expected = expected_results[test_no];
             CertificateStatusCode result = validation_result.result();
             if (result != expected)
-                writeln("NIST X.509 test #", test_no, " : ");
+                logTrace("NIST X.509 test #", test_no, " : ");
             const string result_str = PathValidationResult.statusString(result);
             const string exp_str = PathValidationResult.statusString(expected);
             if (expected == CertificateStatusCode.VERIFIED) {
-                writeln("unexpected failure: " ~ result_str);
+                logTrace("unexpected failure: " ~ result_str);
                 unexp_failure++;
             }
             else if (result == CertificateStatusCode.VERIFIED) {
-                writeln("unexpected success, expected " ~ exp_str);
+                logTrace("unexpected success, expected " ~ exp_str);
                 unexp_success++;
             } 
             else {
-                writeln("wrong error, got '" ~ result_str ~ " ' expected '" ~ exp_str ~ "'");
+                logTrace("wrong error, got '" ~ result_str ~ " ' expected '" ~ exp_str ~ "'");
                 wrong_error++;
             }
         }
     }
     catch(Exception e)
     {
-        writeln(e.msg);
+        logTrace(e.msg);
     }
     
     const size_t all_failures = unexp_failure + unexp_success + wrong_error;

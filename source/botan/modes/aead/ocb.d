@@ -569,11 +569,11 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     {
         Vector!ubyte pt2 = ocbDecrypt(key, nonce, &buf[0], buf.length, ad, ad_len);
         if (pt_len != pt2.length || !sameMem(pt, &pt2[0], pt_len))
-            writeln("OCB failed to decrypt correctly");
+            logTrace("OCB failed to decrypt correctly");
     }
     catch(Exception e)
     {
-        writeln("OCB round trip error - " ~ e.msg);
+        logTrace("OCB round trip error - " ~ e.msg);
     }
     
     return unlock(buf);
@@ -637,7 +637,7 @@ size_t testOcbLong(size_t taglen, in string expected)
     
     if (cipher_hex != expected)
     {
-        writeln("OCB AES-128 long test mistmatch " ~ cipher_hex ~ " != " ~ expected);
+        logTrace("OCB AES-128 long test mistmatch " ~ cipher_hex ~ " != " ~ expected);
         return 1;
     }
     
@@ -646,8 +646,7 @@ size_t testOcbLong(size_t taglen, in string expected)
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing ocb.d ...");
+	logTrace("Testing ocb.d ...");
     size_t fails = 0;
     
     fails += testOcbLong(128, "B2B41CBF9B05037DA7F16C24A35C1C94");

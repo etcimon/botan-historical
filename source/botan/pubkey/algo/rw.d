@@ -327,8 +327,7 @@ size_t rwSigVerify(string e,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing rw.d ...");
+	logTrace("Testing rw.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

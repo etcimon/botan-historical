@@ -223,7 +223,7 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
     
     if (orig_id != pub_id || orig_id != priv_id || orig_id != priv_enc_id)
     {
-        writeln("Failed copy check for " ~ orig.algoName());
+        logTrace("Failed copy check for " ~ orig.algoName());
         return 1;
     }
     return 0;
@@ -274,14 +274,14 @@ unittest
     PathValidationResult result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (!result_u1.successfulValidation())
     {
-        writeln("FAILED: User cert #1 did not validate - " ~ result_u1.resultString());
+        logTrace("FAILED: User cert #1 did not validate - " ~ result_u1.resultString());
         ++fails;
     }
     
     PathValidationResult result_u2 = x509PathValidate(user2_cert, restrictions, store);
     if (!result_u2.successfulValidation())
     {
-        writeln("FAILED: User cert #2 did not validate - " ~ result_u2.resultString());
+        logTrace("FAILED: User cert #2 did not validate - " ~ result_u2.resultString());
         ++fails;
     }
     
@@ -298,14 +298,14 @@ unittest
     result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (result_u1.result() != CertificateStatusCode.CERT_IS_REVOKED)
     {
-        writeln("FAILED: User cert #1 was not revoked - " ~ result_u1.resultString());
+        logTrace("FAILED: User cert #1 was not revoked - " ~ result_u1.resultString());
         ++fails;
     }
     
     result_u2 = x509PathValidate(user2_cert, restrictions, store);
     if (result_u2.result() != CertificateStatusCode.CERT_IS_REVOKED)
     {
-        writeln("FAILED: User cert #2 was not revoked - " ~ result_u2.resultString());
+        logTrace("FAILED: User cert #2 was not revoked - " ~ result_u2.resultString());
         ++fails;
     }
     
@@ -318,7 +318,7 @@ unittest
     result_u1 = x509PathValidate(user1_cert, restrictions, store);
     if (!result_u1.successfulValidation())
     {
-        writeln("FAILED: User cert #1 was not un-revoked - " ~ result_u1.resultString());
+        logTrace("FAILED: User cert #1 was not un-revoked - " ~ result_u1.resultString());
         ++fails;
     }
     

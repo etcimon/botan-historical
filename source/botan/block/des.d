@@ -85,7 +85,7 @@ public:
         }
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_round_key);
     }
@@ -121,7 +121,7 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ulong T =    (DES_IPTAB1[input[0]]      ) | (DES_IPTAB1[input[1]] << 1) |
+            ulong T =   (DES_IPTAB1[input[0]]      ) | (DES_IPTAB1[input[1]] << 1) |
                         (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
                         (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
                         (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]      );
@@ -136,7 +136,7 @@ public:
             T =     (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
                     (DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
-                    (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
+                    (DES_FPTAB1[get_byte(2, R)]     ) | (DES_FPTAB2[get_byte(3, R)]     );
             
             T = rotateLeft(T, 32);
             
@@ -153,10 +153,10 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ulong T =     (DES_IPTAB1[input[0]]      ) | (DES_IPTAB1[input[1]] << 1) |
+            ulong T =   (DES_IPTAB1[input[0]]     ) | (DES_IPTAB1[input[1]] << 1) |
                         (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
                         (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
-                        (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]      );
+                        (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]     );
             
             uint L = cast(uint)(T >> 32);
             uint R = cast(uint)(T);
@@ -168,7 +168,7 @@ public:
             T =     (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
                     (DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
-                    (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
+                    (DES_FPTAB1[get_byte(2, R)]     ) | (DES_FPTAB2[get_byte(3, R)]     );
             
             T = rotateLeft(T, 32);
             
@@ -179,7 +179,7 @@ public:
         }
     }
 
-    void clear()
+	override void clear()
     {
         zap(m_round_key);
     }
@@ -196,15 +196,16 @@ protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_round_key.resize(3*32);
-        des_key_schedule(m_round_key.ptr[0 .. 32], key[0 .. 8]);
-        des_key_schedule(m_round_key.ptr[32 .. 64], key[8 .. 16]);
+		des_key_schedule(*cast(uint[32]*)m_round_key.ptr, key[0 .. 8]);
+		des_key_schedule(*cast(uint[32]*)&m_round_key[32], key[8 .. 16]);
         
-        if (length == 24)
-            des_key_schedule(m_round_key.ptr[64 .. 96], key[16 .. 24]);
-        else
+        if (length == 24) {
+			des_key_schedule(*cast(uint[32]*)&m_round_key[64], key[16 .. 24]);
+		}
+        else {
             copyMem(&m_round_key[64], m_round_key.ptr, 32);
+		}
     }
-
 
     SecureVector!uint m_round_key;
 }
@@ -842,11 +843,11 @@ package: //used by desx as well
 /*
 * DES Key Schedule
 */
-void des_key_schedule(ref uint[32] round_key, in ubyte[8] key) pure
+void des_key_schedule(ref uint[32] round_key, in ubyte[8] key)
 {
     __gshared immutable ubyte[16] ROT = [ 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 ];
     
-    uint C =     ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
+    uint C =    ((key[7] & 0x80) << 20) | ((key[6] & 0x80) << 19) |
                 ((key[5] & 0x80) << 18) | ((key[4] & 0x80) << 17) |
                 ((key[3] & 0x80) << 16) | ((key[2] & 0x80) << 15) |
                 ((key[1] & 0x80) << 14) | ((key[0] & 0x80) << 13) |
@@ -879,7 +880,7 @@ void des_key_schedule(ref uint[32] round_key, in ubyte[8] key) pure
     {
         C = ((C << ROT[i]) | (C >> (28-ROT[i]))) & 0x0FFFFFFF;
         D = ((D << ROT[i]) | (D >> (28-ROT[i]))) & 0x0FFFFFFF;
-        round_key[2*i  ] =     ((C & 0x00000010) << 22) | ((C & 0x00000800) << 17) |
+        round_key[2*i  ] =  ((C & 0x00000010) << 22) | ((C & 0x00000800) << 17) |
                             ((C & 0x00000020) << 16) | ((C & 0x00004004) << 15) |
                             ((C & 0x00000200) << 11) | ((C & 0x00020000) << 10) |
                             ((C & 0x01000000) >>  6) | ((C & 0x00100000) >>  4) |
@@ -890,7 +891,7 @@ void des_key_schedule(ref uint[32] round_key, in ubyte[8] key) pure
                             ((D & 0x00000088) >>  3) | ((D & 0x00001000) >>  7) |
                             ((D & 0x00080000) >>  9) | ((D & 0x02020000) >> 14) |
                             ((D & 0x00400000) >> 21);
-        round_key[2*i+1] =     ((C & 0x00000001) << 28) | ((C & 0x00000082) << 18) |
+        round_key[2*i+1] =  ((C & 0x00000001) << 28) | ((C & 0x00000082) << 18) |
                             ((C & 0x00002000) << 14) | ((C & 0x00000100) << 10) |
                             ((C & 0x00001000) <<  9) | ((C & 0x00040000) <<  6) |
                             ((C & 0x02400000) <<  4) | ((C & 0x00008000) <<  2) |
@@ -914,17 +915,17 @@ void des_encrypt(ref uint L, ref uint R, in uint[32] round_key) pure
         uint T0, T1;
         
         T0 = rotateRight(R, 4) ^ round_key[2*i];
-        T1 =                   R ^ round_key[2*i + 1];
+        T1 =                 R ^ round_key[2*i + 1];
         
-        L ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+        L ^=    DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
                 DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
                 DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
                 DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
         
         T0 = rotateRight(L, 4) ^ round_key[2*i + 2];
-        T1 =                   L ^ round_key[2*i + 3];
+        T1 =                 L ^ round_key[2*i + 3];
         
-        R ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+        R ^=    DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
                 DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
                 DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
                 DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
@@ -941,17 +942,17 @@ void des_decrypt(ref uint L, ref uint R, in uint[32] round_key) pure
         uint T0, T1;
         
         T0 = rotateRight(R, 4) ^ round_key[2*i - 2];
-        T1 =                   R ^ round_key[2*i - 1];
+        T1 =                 R ^ round_key[2*i - 1];
         
-        L ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+        L ^=    DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
                 DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
                 DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
                 DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];
         
         T0 = rotateRight(L, 4) ^ round_key[2*i - 4];
-        T1 =                   L ^ round_key[2*i - 3];
+        T1 =                 L ^ round_key[2*i - 3];
         
-        R ^=     DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
+        R ^=    DES_SPBOX1[get_byte(0, T0)] ^ DES_SPBOX2[get_byte(0, T1)] ^
                 DES_SPBOX3[get_byte(1, T0)] ^ DES_SPBOX4[get_byte(1, T1)] ^
                 DES_SPBOX5[get_byte(2, T0)] ^ DES_SPBOX6[get_byte(2, T1)] ^
                 DES_SPBOX7[get_byte(3, T0)] ^ DES_SPBOX8[get_byte(3, T1)];

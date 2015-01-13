@@ -6,6 +6,7 @@
 */
 module botan.algo_factory.algo_cache;
 
+import botan.constants;
 import botan.utils.types;
 import botan.utils.containers.hashmap;
 /**
@@ -66,7 +67,7 @@ public:
             return algo.get(pref_provider);
 
         foreach(const ref string provider, const ref T instance; algo) 
-        {            
+        {
             const ubyte prov_weight = staticProviderWeight(provider);
             
             if (prototype is null || prov_weight > prototype_prov_weight)
@@ -76,7 +77,8 @@ public:
                 prototype_prov_weight = prov_weight;
             }
         }
-        
+
+		logTrace("Returning provider: ", prototype_provider);
         return prototype;
     }
 
@@ -151,7 +153,7 @@ public:
         }*/
 
         /// Let the GC handle this
-        m_algorithms.clear();
+        (*m_algorithms).clear();
     }
 
 	this() {

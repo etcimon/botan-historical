@@ -379,8 +379,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing rsa.d ...");
+	logTrace("Testing rsa.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

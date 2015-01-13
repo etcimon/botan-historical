@@ -7,6 +7,7 @@
 module botan.utils.cpuid;
 
 import core.cpuid;
+import botan.constants;
 import botan.utils.types;
 import botan.utils.types;
 import botan.utils.get_byte;
@@ -111,7 +112,7 @@ public:
     * Check if the processor supports AES-NI
     */
     static bool hasAesNi()
-    { return x86_processor_flags_has(CPUID_AESNI_BIT); }
+	{ return x86_processor_flags_has(CPUID_AESNI_BIT); }
 
     /**
     * Check if the processor supports CLMUL
@@ -283,7 +284,7 @@ version(LDC) {
 
 shared static this() {
     
-	version(unittest) { import std.stdio : writeln; writeln("Loading CPUID ..."); }
+	logTrace("Loading CPUID ...");
     string processorName;
     char[12] vendorID;
     uint unused;

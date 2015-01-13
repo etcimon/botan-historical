@@ -314,7 +314,7 @@ size_t testHashLargerThanN(RandomNumberGenerator rng)
     // verify against EMSA1_BSI
     if (PKVerifier.verifyMessage(message, signature))
     {
-        writeln("Corrupt ECDSA signature verified, should not have");
+        logTrace("Corrupt ECDSA signature verified, should not have");
         ++fails;
     }
     
@@ -387,7 +387,7 @@ size_t testSignThenVer(RandomNumberGenerator rng)
     
     if (!ok)
     {
-        writeln("ERROR: Could not verify ECDSA signature");
+        logTrace("ERROR: Could not verify ECDSA signature");
         fails++;
     }
     
@@ -396,7 +396,7 @@ size_t testSignThenVer(RandomNumberGenerator rng)
     
     if (ok)
     {
-        writeln("ERROR: Bogus ECDSA signature verified anyway");
+        logTrace("ERROR: Bogus ECDSA signature verified anyway");
         fails++;
     }
     
@@ -425,7 +425,7 @@ size_t testEcSign(RandomNumberGenerator rng)
             verifier.update(cast(ubyte)(i));
         if (!verifier.checkSignature(sig))
         {
-            writeln("ECDSA self-test failed!");
+            logTrace("ECDSA self-test failed!");
             ++fails;
         }
 
@@ -435,7 +435,7 @@ size_t testEcSign(RandomNumberGenerator rng)
 
         if (verifier.checkSignature(sig))
         {
-            writeln("ECDSA with bad input passed validation");
+            logTrace("ECDSA with bad input passed validation");
             ++fails;
         }
 
@@ -446,13 +446,13 @@ size_t testEcSign(RandomNumberGenerator rng)
 
         if (verifier.checkSignature(sig))
         {
-            writeln("ECDSA with bad signature passed validation");
+            logTrace("ECDSA with bad signature passed validation");
             ++fails;
         }
     }
     catch (Exception e)
     {
-        writeln("Exception in test_ec_sign - " ~ e.msg);
+        logTrace("Exception in test_ec_sign - " ~ e.msg);
         ++fails;
     }
     return fails;
@@ -484,7 +484,7 @@ size_t testCreatePkcs8(RandomNumberGenerator rng)
     }
     catch (Exception e)
     {
-        writeln("Exception: " ~ e.msg);
+        logTrace("Exception: " ~ e.msg);
         ++fails;
     }
     
@@ -544,7 +544,7 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     
     if (!cast(ECDSAPrivateKey)(*loaded_key))
     {
-        writeln("Failed to reload an ECDSA key with unusual parameter set");
+        logTrace("Failed to reload an ECDSA key with unusual parameter set");
         ++fails;
     }
     
@@ -603,13 +603,13 @@ size_t testCurveRegistry(RandomNumberGenerator rng)
             
             if (!verifier.verifyMessage(msg, sig))
             {
-                writeln("Failed testing ECDSA sig for curve " ~ oid_str);
+                logTrace("Failed testing ECDSA sig for curve " ~ oid_str);
                 ++fails;
             }
         }
         catch(InvalidArgument e)
         {
-            writeln("Error testing curve " ~ oid_str ~ " - " ~ e.msg);
+            logTrace("Error testing curve " ~ oid_str ~ " - " ~ e.msg);
             ++fails;
         }
     }
@@ -639,7 +639,7 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
     catch (Exception e)
     {
         ++fails;
-        writeln("Exception in test_read_pkcs8 - " ~ e.msg);
+        logTrace("Exception in test_read_pkcs8 - " ~ e.msg);
     }
     
     try
@@ -661,14 +661,14 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
         {
             Unique!PKCS8PrivateKey loaded_key_withdp = pkcs8.loadKey("test_data/ecc/withdompar_private.pkcs8.pem", rng);
             
-            writeln("Unexpected success: loaded key with unknown OID");
+            logTrace("Unexpected success: loaded key with unknown OID");
             ++fails;
         }
         catch (Exception) { /* OK */ }
     }
     catch (Exception e)
     {
-        writeln("Exception in test_read_pkcs8 - " ~ e.msg);
+        logTrace("Exception in test_read_pkcs8 - " ~ e.msg);
         ++fails;
     }
     
@@ -686,13 +686,13 @@ size_t testEccKeyWithRfc5915Extensions(RandomNumberGenerator rng)
         
         if (!cast(ECDSAPrivateKey)(*pkcs8))
         {
-            writeln("Loaded RFC 5915 key, but got something other than an ECDSA key");
+            logTrace("Loaded RFC 5915 key, but got something other than an ECDSA key");
             ++fails;
         }
     }
     catch(Exception e)
     {
-        writeln("Exception in " ~ __PRETTY_FUNCTION__ ~ " - " ~ e.msg);
+        logTrace("Exception in " ~ __PRETTY_FUNCTION__ ~ " - " ~ e.msg);
         ++fails;
     }
     
@@ -739,8 +739,7 @@ size_t ecdsaSigKat(string group_id,
 
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Testing ecdsa.d ...");
+	logTrace("Testing ecdsa.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;
