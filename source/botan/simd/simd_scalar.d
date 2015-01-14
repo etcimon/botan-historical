@@ -95,14 +95,14 @@ public:
             m_v[i] -= other.m_v[i];
     }
 
-    ref SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
+    SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
         if (op == "+")
     {
         this += other;
         return this;
     }
 
-    ref SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
+    SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
         if (op == "-")
     {
         this -= other;
@@ -117,7 +117,7 @@ public:
         return this;
     }
 
-    ref SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
+    SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
         if (op == "^")
     {
         this ^= other;
@@ -138,50 +138,58 @@ public:
             m_v[i] &= other.m_v[i];
     }
 
-    ref SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
+    SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
         if (op == "&")
     {
-        this &= other;
-        return this;
+        SIMDScalar!(T, N) ret;
+        ret &= other;
+        return ret;
     }
 
-    ref SIMDScalar!(T, N) lshift(size_t shift)()
+    SIMDScalar!(T, N) lshift(size_t shift)()
         if (op == "<<")
     {
+        SIMDScalar!(T, N) ret;
+        ret.m_v = m_v;
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] <<= shift;
-        return this;
+            ret.m_v[i] <<= shift;
+        return ret;
     }
 
-    ref SIMDScalar!(T, N) rshift(size_t shift)()
+    SIMDScalar!(T, N) rshift(size_t shift)()
         if (op == ">>")
     {
+        SIMDScalar!(T, N) ret;
+        ret.m_v = m_v;
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] >>= shift;
-        return this;
+            ret.m_v[i] >>= shift;
+        return ret;
     }
 
-    ref SIMDScalar!(T, N) opUnary(string op)()
+    SIMDScalar!(T, N) opUnary(string op)()
         if (op == "~")
     {
+        SIMDScalar!(T, N) ret;
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] = ~m_v[i];
-        return this;
+            ret.m_v[i] = ~m_v[i];
+        return ret;
     }
 
     // (~reg) & other
-    ref SIMDScalar!(T, N) andc(in SIMDScalar!(T, N) other)
+    SIMDScalar!(T, N) andc(in SIMDScalar!(T, N) other)
     {
+        SIMDScalar!(T, N) ret;
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] = (~m_v[i]) & other.m_v[i];
-        return this;
+            ret.m_v[i] = (~m_v[i]) & other.m_v[i];
+        return ret;
     }
 
-    ref SIMDScalar!(T, N) bswap()
+    SIMDScalar!(T, N) bswap()
     {
+        SIMDScalar!(T, N) ret;
         for (size_t i = 0; i != size(); ++i)
-            m_v[i] = reverseBytes(m_v[i]);
-        return this;
+            ret.m_v[i] = reverseBytes(m_v[i]);
+        return ret;
     }
 
     static void transpose(ref SIMDScalar!(T, N) B0, ref SIMDScalar!(T, N) B1,

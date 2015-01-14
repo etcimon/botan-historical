@@ -274,7 +274,7 @@ size_t elgamalKat(string p,
 
 unittest
 {
-	logTrace("Testing elgamal.d ...");
+    logTrace("Testing elgamal.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

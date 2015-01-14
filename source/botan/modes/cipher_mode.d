@@ -79,7 +79,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
 }
 
 unittest {
-	logTrace("Testing cipher_mode.d ...");
+    logTrace("Testing cipher_mode.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

@@ -578,8 +578,8 @@ private:
         if (!to_kill || cast(SecureQueue)(to_kill))
             return;
         for (size_t j = 0; j != to_kill.totalPorts(); ++j)
-			if (to_kill.m_next[j]) destruct(to_kill.m_next[j]);
-	    delete to_kill;
+            if (to_kill.m_next[j]) destruct(to_kill.m_next[j]);
+        delete to_kill;
     }
 
     /*
@@ -647,9 +647,9 @@ public:
     
     override @property string name() const { return "Null"; }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 }

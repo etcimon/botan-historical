@@ -64,7 +64,7 @@ public:
     */
     final void write(const(ubyte)[] input) { write(input.ptr, input.length); }
 
-	abstract void write(const(ubyte)* input, size_t length);
+    abstract void write(const(ubyte)* input, size_t length);
 
     /**
     * @param input = some input for the filter
@@ -227,10 +227,10 @@ public:
         return null;
     }
 
-	abstract bool attachable() { return true; }
-	abstract void startMsg() {}
-	abstract void endMsg() {}
-	abstract @property string name() const;
+    abstract bool attachable() { return true; }
+    abstract void startMsg() {}
+    abstract void endMsg() {}
+    abstract @property string name() const;
 
     SecureVector!ubyte m_write_queue;
     Vector!Filter m_next;
@@ -251,7 +251,7 @@ protected:
     */
     void incrOwns() { ++m_filter_owns; }
 
-	void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
+    void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
 
     override void setPort(size_t n) { setPort(n); }
 

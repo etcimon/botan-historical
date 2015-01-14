@@ -81,7 +81,7 @@ public:
     this(StreamCipher stream_cipher)
     {
         m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
-		m_cipher = Unique!StreamCipher(stream_cipher);
+        m_cipher = Unique!StreamCipher(stream_cipher);
     }
 
     /**
@@ -91,7 +91,7 @@ public:
     */
     this(StreamCipher stream_cipher, in SymmetricKey key)
     {
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_cipher = Unique!StreamCipher(stream_cipher);
         m_cipher.setKey(key);
     }
@@ -103,9 +103,9 @@ public:
     this(in string sc_name)
         
     {
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         AlgorithmFactory af = globalState().algorithmFactory();
-		m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
+        m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
     }
 
     /**
@@ -115,17 +115,17 @@ public:
     */
     this(in string sc_name, in SymmetricKey key)
     {
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         AlgorithmFactory af = globalState().algorithmFactory();
         m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
         m_cipher.setKey(key);
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     SecureVector!ubyte m_buffer;
     Unique!StreamCipher m_cipher;
@@ -184,10 +184,10 @@ public:
 
     ~this() { delete m_hash; }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     const size_t m_OUTPUT_LENGTH;
     HashFunction m_hash;
@@ -289,10 +289,10 @@ public:
 
     ~this() { delete m_mac; }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     const size_t m_OUTPUT_LENGTH;
     MessageAuthenticationCode m_mac;

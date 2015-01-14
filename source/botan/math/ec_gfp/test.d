@@ -801,7 +801,7 @@ size_t testCurveCpCtor()
 
 unittest
 {
-	logTrace("Testing ec_gfp/test.d ...");
+    logTrace("Testing ec_gfp/test.d ...");
     size_t fails = 0;
     
     fails += testPointTurnOnSpRedMul();

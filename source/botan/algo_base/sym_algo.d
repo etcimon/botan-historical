@@ -64,12 +64,12 @@ public:
         keySchedule(key, length);
     }
 
-	abstract void clear();
-	
-	/**
+    abstract void clear();
+    
+    /**
         * @return object describing limits on key size
         */
-	abstract KeyLengthSpecification keySpec() const;
+    abstract KeyLengthSpecification keySpec() const;
 
     abstract @property string name() const;
     

@@ -365,32 +365,32 @@ enum uint __NFDBITS = 8 * __fd_mask.sizeof;
 
 auto __FDELT( int d )
 {
-	return d / __NFDBITS;
+    return d / __NFDBITS;
 }
 
 auto __FDMASK( int d )
 {
-	return cast(__fd_mask) 1 << ( d % __NFDBITS );
+    return cast(__fd_mask) 1 << ( d % __NFDBITS );
 }
 
 enum FD_SETSIZE = 1024;
 
 void FD_CLR( int fd, fd_set* fdset )
 {
-	fdset.fds_bits[__FDELT( fd )] &= ~__FDMASK( fd );
+    fdset.fds_bits[__FDELT( fd )] &= ~__FDMASK( fd );
 }
 
 bool FD_ISSET( int fd, const(fd_set)* fdset )
 {
-	return (fdset.fds_bits[__FDELT( fd )] & __FDMASK( fd )) != 0;
+    return (fdset.fds_bits[__FDELT( fd )] & __FDMASK( fd )) != 0;
 }
 
 void FD_SET( int fd, fd_set* fdset )
 {
-	fdset.fds_bits[__FDELT( fd )] |= __FDMASK( fd );
+    fdset.fds_bits[__FDELT( fd )] |= __FDMASK( fd );
 }
 
 void FD_ZERO( fd_set* fdset )
 {
-	fdset.fds_bits[0 .. $] = 0;
+    fdset.fds_bits[0 .. $] = 0;
 }

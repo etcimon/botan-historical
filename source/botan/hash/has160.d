@@ -21,8 +21,8 @@ import botan.utils.types;
 class HAS160 : MDxHashFunction, HashFunction
 {
 public:
-	
-	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
+    
+    override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override @property string name() const { return "HAS-160"; }
     override @property size_t outputLength() const { return 20; }
     override HashFunction clone() const { return new HAS160; }

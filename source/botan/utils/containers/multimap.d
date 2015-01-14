@@ -34,7 +34,7 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
         static char[256] s_keyBuffer;
     }
 
-	@disable this(this);
+    @disable this(this);
 
     alias KeyType = KEY;
     alias ValueType = VALUE;
@@ -225,6 +225,28 @@ struct DictionaryList(KEY, VALUE, bool case_sensitive = true, size_t NUM_STATIC_
     int opApply(int delegate(ref const(ValueType) val) del) const
     {
         return (cast() this).opApply(cast(int delegate(ref ValueType)) del);
+    }
+
+    bool opEquals(in FreeListRef!(DictionaryList!(KEY, VALUE)) other) const
+    {
+        if (*other is null)
+            return false;
+        if (length != other.length)
+            return false;
+        foreach (const ref KeyType key, const ref ValueType val; this)
+        {
+            bool found;
+            other.equalRange(key, (const ValueType oval) {
+                if (oval == val) {
+                    found = true;
+                    return;
+                }
+            });
+            if (!found)
+                return false;
+        }
+
+        return true;
     }
     
     private ptrdiff_t getIndex(in Field[] map, in KeyType key, uint keysum)

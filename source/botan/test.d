@@ -50,27 +50,30 @@ string CHECK (string expr) {
 
 string[] listDir(string dir_path)
 {
-	auto dirfiles = dirEntries(dir_path, "*.vec", SpanMode.depth);
-	string[] files;
-	foreach(file; dirfiles) {
-		files ~= file.name;
-	}
-	files.sort();
+    auto dirfiles = dirEntries(dir_path, "*.vec", SpanMode.depth);
+    string[] files;
+    foreach(file; dirfiles) {
+        files ~= file.name;
+    }
+    files.sort();
     return files;
 }
 
 size_t runTestsInDir(string dir, size_t delegate(string) fn)
 {
-	assert(exists(cast(char[])dir), "Directory `" ~ dir ~ "` does not exist");
-	logTrace("Running tests for directory: " ~ dir);
+    assert(exists(cast(char[])dir), "Directory `" ~ dir ~ "` does not exist");
+    logTrace("Running tests for directory: " ~ dir);
     import std.parallelism;
     import core.atomic;
     shared(size_t) shared_fails;
-	auto dirs = listDir(dir);
-	logTrace("Found ", dirs.length, " files");
+    auto dirs = listDir(dir);
+    logTrace("Found ", dirs.length, " files");
     foreach (vec; dirs) {
         size_t local_fails = fn(vec);
-		logTrace(vec, " fails: ", local_fails);
+		if (local_fails > 0) {
+        	logError(vec, " fails: ", local_fails);
+			assert(false);
+		}
         atomicOp!"+="(shared_fails, local_fails);
     }
     
@@ -78,16 +81,11 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
 }
 
 void testReport(string name, size_t ran, size_t failed)
-{
-    logTrace(name);
-    
-    if(ran > 0)
-        logTrace(" ", ran, " tests");
-    
-    if(failed)
-        logTrace(" ", failed, " FAILs");
-    else
-        logTrace(" all ok");
+{    
+	if (failed)
+    	logInfo(name, " ... ", failed, " / ", ran, " ************** FAILED ****************");
+	else
+		logInfo(name, " ... PASSED (all of ", ran, " tests)");
 }
 
 size_t runTestsBb(ref File src,
@@ -96,10 +94,10 @@ size_t runTestsBb(ref File src,
                     bool clear_between_cb,
                     size_t delegate(string[string]) cb)
 {
-	scope(failure) { logTrace("failure in file: ", src.name); }
+    scope(failure) { logError("failure in file: ", src.name); }
     if(src.eof || src.error)
     {
-        logTrace("Could not open input file for " ~ name_key);
+        logError("Could not open input file for " ~ name_key);
         return 1;
     }
     
@@ -114,11 +112,11 @@ size_t runTestsBb(ref File src,
     while(!src.eof && !src.error)
     {
 
-		line = src.readln();
-		if (line.length > 0)
-			line = line[0 .. $-1];
+        line = src.readln();
+        if (line.length > 0)
+            line = line[0 .. $-1];
 
-		if (line.length == 0)
+        if (line.length == 0)
             continue;
 
         if(line[0] == '#')
@@ -137,7 +135,7 @@ size_t runTestsBb(ref File src,
             vars[name_key] = fixed_name;
             continue;
         }
-		assert(line[line.indexOf('=') - 1] == ' ' && line[line.indexOf('=') + 1] == ' ', "= must be wrapped with spaces");
+        assert(line[line.indexOf('=') - 1] == ' ' && line[line.indexOf('=') + 1] == ' ', "= must be wrapped with spaces");
         const string key = line[0 .. line.indexOf('=') - 1];
         const string val = line[line.indexOf('=') + 2 .. $];
         
@@ -195,7 +193,7 @@ size_t runTests(string filename,
     
     if(vec.error || vec.eof)
     {
-        logTrace("Failure opening " ~ filename);
+        logError("Failure opening " ~ filename);
         return 1;
     }
     

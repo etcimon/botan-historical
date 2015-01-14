@@ -77,7 +77,7 @@ public:
         zeroise(m_nonce_mac);
     }
 
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
 
 protected:
     final override void keySchedule(const(ubyte)* key, size_t length)
@@ -161,14 +161,14 @@ public:
         buffer.ptr[offset .. offset + tagSize()] = data_mac.ptr[0 .. tagSize()];
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 }
 
 /**
@@ -194,7 +194,7 @@ public:
 
     override size_t minimumFinalSize() const { return tagSize(); }
 
-	override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -232,14 +232,14 @@ public:
         buffer.resize(offset + remaining);
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 }
 
 

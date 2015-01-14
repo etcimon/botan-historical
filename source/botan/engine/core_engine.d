@@ -246,7 +246,6 @@ public:
                           CipherDir direction,
                           AlgorithmFactory af) const
     {
-		logTrace("getCipher Core");
         Vector!string algo_parts = splitter(algo_spec, '/');
         if (algo_parts.empty)
             throw new InvalidAlgorithmName(algo_spec);
@@ -294,7 +293,7 @@ public:
 
     BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
     {
-		logTrace("FindBlockCipher Core ", request.algoName);
+        logTrace("FindBlockCipher Core ", request.algoName);
         
         static if (BOTAN_HAS_AES) {
             if (request.algoName == "AES-128")
@@ -337,7 +336,7 @@ public:
         
         static if (BOTAN_HAS_GOST_28147_89) {
             if (request.algoName == "GOST-28147-89")
-                return new GOST2814789(request.arg(0, "R3411_94_TestParam"));
+                return new GOST_28147_89(request.arg(0, "R3411_94_TestParam"));
         }
         
         static if (BOTAN_HAS_IDEA) {
@@ -447,7 +446,7 @@ public:
 
     StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
     {
-		logTrace("FindStreamCipher Core ", request.algoName);
+        logTrace("FindStreamCipher Core ", request.algoName);
         static if (BOTAN_HAS_OFB) {
             if (request.algoName == "OFB" && request.argCount() == 1)
             {
@@ -486,7 +485,7 @@ public:
 
     HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
     {
-		logTrace("FindHash Core");
+        logTrace("FindHash Core");
         static if (BOTAN_HAS_ADLER32) {
             if (request.algoName == "Adler32")
                 return new Adler32;
@@ -621,7 +620,7 @@ public:
 
     MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
     {
-		logTrace("FindMac Core");
+        logTrace("FindMac Core");
         static if (BOTAN_HAS_CBC_MAC) {
             if (request.algoName == "CBC-MAC" && request.argCount() == 1)
                 return new CBCMAC(af.makeBlockCipher(request.arg(0)));
@@ -635,7 +634,7 @@ public:
         static if (BOTAN_HAS_HMAC) {
             if (request.algoName == "HMAC" && request.argCount() == 1) {
                 return new HMAC(af.makeHashFunction(request.arg(0)));
-			}
+            }
         }
         
         static if (BOTAN_HAS_SSL3_MAC) {
@@ -654,7 +653,7 @@ public:
 
     PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
-		logTrace("FindPbkdf Core");
+        logTrace("FindPbkdf Core");
         static if (BOTAN_HAS_PBKDF1) {
             if (algo_spec.algoName == "PBKDF1" && algo_spec.argCount() == 1)
                 return new PKCS5_PBKDF1(af.makeHashFunction(algo_spec.arg(0)));

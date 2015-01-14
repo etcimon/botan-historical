@@ -136,38 +136,38 @@ public:
                 return false;
             
             bool is_merged;
-			void[] combined;
+            void[] combined;
 
             auto upper_range = m_freelist.upperBound(mem);
             if (!upper_range.empty && (upper_range.front().ptr - alignment) < (mem.ptr + mem.length))
             {
-				//import std.stdio : writeln;
-				//logTrace("Pool item (>): ", upper_range.front().ptr, " .. ", upper_range.front().ptr + upper_range.front().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
+                //import std.stdio : writeln;
+                //logTrace("Pool item (>): ", upper_range.front().ptr, " .. ", upper_range.front().ptr + upper_range.front().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
 
                 // we can merge with the next block
                 void[] upper_elem = upper_range.front();
                 size_t alignment_padding = upper_elem.ptr - (mem.ptr + mem.length);
-				assert(alignment_padding < alignment, "Alignment padding error on upper bound");
+                assert(alignment_padding < alignment, "Alignment padding error on upper bound");
                 combined = mem.ptr[0 .. mem.length + alignment_padding + upper_elem.length];
 
-				m_freelist.removeKey(upper_elem);
-				mem = combined;
+                m_freelist.removeKey(upper_elem);
+                mem = combined;
             }
 
             auto lower_range = m_freelist.lowerBound(mem);
-			if (!lower_range.empty && lower_range.back().ptr + lower_range.back().length + alignment > mem.ptr)
+            if (!lower_range.empty && lower_range.back().ptr + lower_range.back().length + alignment > mem.ptr)
             {
-				//import std.stdio : writeln;
-				//logTrace("Pool item (<): ", lower_range.back().ptr, " .. ", lower_range.back().ptr + lower_range.back().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
+                //import std.stdio : writeln;
+                //logTrace("Pool item (<): ", lower_range.back().ptr, " .. ", lower_range.back().ptr + lower_range.back().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
                 // we can merge with the next block
-				void[] lower_elem = lower_range.back();
+                void[] lower_elem = lower_range.back();
                 size_t alignment_padding = mem.ptr - ( lower_elem.ptr + lower_elem.length );
-				assert(alignment_padding < alignment, "Alignment padding error on lower bound");
+                assert(alignment_padding < alignment, "Alignment padding error on lower bound");
                 combined = lower_elem.ptr[0 .. lower_elem.length + alignment_padding + mem.length];
-				m_freelist.removeKey(lower_elem);
-				mem = combined;
+                m_freelist.removeKey(lower_elem);
+                mem = combined;
             }
-			m_freelist.insert(mem);
+            m_freelist.insert(mem);
             return true;
         }
     }
@@ -175,9 +175,9 @@ package:
     this()
     {
 
-		m_freelist = new RedBlackTree!(void[], "a.ptr < b.ptr");
+        m_freelist = new RedBlackTree!(void[], "a.ptr < b.ptr");
 
-		logTrace("Loading NoSwapAllocator instance ...");
+        logTrace("Loading NoSwapAllocator instance ...");
         m_mtx = new Mutex;
         
         auto pool_size = mlock_limit();

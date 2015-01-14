@@ -17,17 +17,17 @@ struct DefaultHashMapTraits(Key) {
     static bool equals(in Key a, in Key b)
     {
         static if (!__traits(hasMember, Key, "isFreeListRef") && is(Key == class)) return a is b;
-		else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class) && __traits(hasMember, typeof(*(Key())), "opEquals"))
-		{
-			if (a is null && b !is null)
-				return b.opEquals(a);
-			else if (a !is null && b is null)
-				return a.opEquals(b);
-			else // both are equally null
-				return true;
-		}
-		else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class)) return *a is *b;
-		else return a == b;
+        else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class) && __traits(hasMember, typeof(*(Key())), "opEquals"))
+        {
+            if (a is null && b !is null)
+                return b.opEquals(a);
+            else if (a !is null && b is null)
+                return a.opEquals(b);
+            else // both are equally null
+                return true;
+        }
+        else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class)) return *a is *b;
+        else return a == b;
     }
 }
 
@@ -144,7 +144,7 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
 
     Value opIndex(Key key) const {
         auto idx = findIndex(key);
-		assert (idx != size_t.max, "Accessing non-existent key type: " ~ Key.stringof ~ " value: " ~ key.to!string);
+        assert (idx != size_t.max, "Accessing non-existent key type: " ~ Key.stringof ~ " value: " ~ key.to!string);
         const Value ret = m_table[idx].value;
         return *cast(Value*) &ret;
     }
@@ -242,32 +242,32 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
         m_resizing = true;
         scope(exit) m_resizing = false;
         
-		if (!m_hasher) {
+        if (!m_hasher) {
 
-			static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
+            static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHash() : 0;
                 else m_hasher = k => k.toHash();
             } else static if (__traits(compiles, (){ Key t; size_t hash = t.toHashShared(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHashShared() : 0;
                 else m_hasher = k => k.toHashShared();
             } 
-			else static if (!__traits(hasMember, Key, "isFreeListRef")){
-				auto typeinfo = typeid(Key);
-				m_hasher = k => typeinfo.getHash(&k);
-			}
-			else static if (__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString"))
-			{
-				m_hasher = (Key k) {
-					string s = k.toString();
-					auto typeinfo = typeid(string);
-					typeinfo.getHash(&s);
-				};
-			}
-			else static if (__traits(hasMember, Key, "isFreeListRef")) {
+            else static if (!__traits(hasMember, Key, "isFreeListRef")){
+                auto typeinfo = typeid(Key);
+                m_hasher = k => typeinfo.getHash(&k);
+            }
+            else static if (__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString"))
+            {
+                m_hasher = (Key k) {
+                    string s = k.toString();
+                    auto typeinfo = typeid(string);
+                    typeinfo.getHash(&s);
+                };
+            }
+            else static if (__traits(hasMember, Key, "isFreeListRef")) {
 
-				auto typeinfo = typeid(typeof(*(Key())));
-				m_hasher = k => typeinfo.getHash(&k);
-			}
+                auto typeinfo = typeid(typeof(*(Key())));
+                m_hasher = k => typeinfo.getHash(&k);
+            }
         }
         
         uint pot = 0;

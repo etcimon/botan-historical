@@ -23,7 +23,7 @@ final class BitBucket : Filter, Filterable
 
     override @property string name() const { return "BitBucket"; }
 
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 }
 
 /**
@@ -70,11 +70,11 @@ public:
         }
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 }
 
 /**
@@ -112,11 +112,11 @@ public:
         setNext(filter_arr, length);
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 }
 
 /**
@@ -167,11 +167,11 @@ public:
             thread.join();*/
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override void write(const(ubyte)* input, size_t len) { super.write(input, len); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override void write(const(ubyte)* input, size_t len) { super.write(input, len); }
 protected:
     override void setNext(Filter* f, size_t n)
     {

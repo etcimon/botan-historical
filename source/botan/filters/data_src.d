@@ -178,7 +178,7 @@ public:
     }
 
     override size_t getBytesRead() const { return m_offset; }
-	override string id() const { return ""; }
+    override string id() const { return ""; }
 private:
     SecureVector!ubyte m_source;
     size_t m_offset;

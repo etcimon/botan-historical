@@ -89,13 +89,13 @@ public:
     this(size_t l = 9)
     {
         m_level = (l >= 9) ? 9 : l;
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_bz = null;
     }
     ~this() { clear(); }
 
-	// Interface fallthrough
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     /*
     * Clean up Compression Context
@@ -217,14 +217,14 @@ public:
     this(bool small = false)
     {
         m_small_mem = small;
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_no_writes = true;
         m_bz = null;
     }
     ~this() { clear(); }
 
-	// Interface fallthrough
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     /*
     * Clean up Decompression Context

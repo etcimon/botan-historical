@@ -21,7 +21,7 @@ import botan.utils.get_byte;
 * considered a local configuration issue. Several different sets are
 * used.
 */
-final class GOST2814789Params
+final class GOST_28147_89_Params
 {
 public:
     /**
@@ -86,7 +86,7 @@ private:
 /**
 * GOST 28147-89
 */
-final class GOST2814789 : BlockCipherFixedParams!(8, 32), BlockCipher, SymmetricAlgorithm
+final class GOST_28147_89 : BlockCipherFixedParams!(8, 32), BlockCipher, SymmetricAlgorithm
 {
 public:
 
@@ -149,7 +149,7 @@ public:
         }
     }
 
-	override void clear()
+    override void clear()
     {
         zap(m_EK);
     }
@@ -174,32 +174,34 @@ public:
     }
 
     override @property size_t parallelism() const { return 1; }
-    override BlockCipher clone() const { return new GOST2814789(m_SBOX); }
+    override BlockCipher clone() const { return new GOST_28147_89(m_SBOX); }
     override size_t blockSize() const { return super.blockSize(); }
     override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 
     this(in string params) {
-        this(scoped!GOST2814789Params(params).Scoped_payload);
+        this(scoped!GOST_28147_89_Params(params).Scoped_payload);
     }
 
     /**
     * @param params = the sbox parameters to use
     */
-    this(in GOST2814789Params param)
+    this(in GOST_28147_89_Params param)
     {
-        m_SBOX = 1024;
+        m_SBOX = Vector!uint(1024);
         // Convert the parallel 4x4 sboxes into larger word-based sboxes
         foreach (size_t i; 0 .. 4)
-            foreach (size_t j; 0 .. 256)
         {
-            const uint T = (param.sboxEntry(2*i  , j % 16)) |
-                (param.sboxEntry(2*i+1, j / 16) << 4);
-            m_SBOX[256*i+j] = rotateLeft(T, (11+8*i) % 32);
+            foreach (size_t j; 0 .. 256)
+            {
+                const uint T = (param.sboxEntry(2*i  , j % 16)) |
+                               (param.sboxEntry(2*i+1, j / 16) << 4);
+                m_SBOX[256*i+j] = rotateLeft(T, (11+8*i) % 32);
+            }
         }
     }
 protected:
     this(in Vector!uint other_SBOX) {
-        m_SBOX = other_SBOX[]; 
+        m_SBOX = other_SBOX.dup; 
         m_EK = 8;
     }
 

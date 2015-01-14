@@ -218,7 +218,7 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
 
 unittest
 {
-	logTrace("Testing ecdh.d ...");
+    logTrace("Testing ecdh.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

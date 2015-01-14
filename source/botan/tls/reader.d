@@ -196,8 +196,8 @@ void appendTlsLengthValue(T, int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )
 }
 
 void appendTlsLengthValue(T, int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
-                                           			in FreeListRef!(VectorImpl!( T, Alloc2 )) vals, 
-                                            		size_t tag_size)
+                                                       in FreeListRef!(VectorImpl!( T, Alloc2 )) vals, 
+                                                    size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }

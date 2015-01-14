@@ -131,7 +131,7 @@ size_t streamTest(string algo,
 
 unittest
 {
-	logTrace("Testing stream_cipher.d ...");
+    logTrace("Testing stream_cipher.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

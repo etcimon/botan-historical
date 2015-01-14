@@ -164,11 +164,11 @@ public:
         return domain().getCurve().getP().bits() / 2;
     }
 
-	/**
+    /**
     * @return public point value
     */
-	Vector!ubyte publicValue() const
-	{ return unlock(EC2OSP(publicPoint(), PointGFp.UNCOMPRESSED)); }
+    Vector!ubyte publicValue() const
+    { return unlock(EC2OSP(publicPoint(), PointGFp.UNCOMPRESSED)); }
 protected:
 
     ECGroup m_domain_params;
@@ -266,7 +266,7 @@ public:
         return m_private_key;
     }
 
-	override Vector!ubyte publicValue() const { return super.publicValue(); }
+    override Vector!ubyte publicValue() const { return super.publicValue(); }
 
 private:
 

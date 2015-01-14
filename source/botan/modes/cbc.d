@@ -79,9 +79,9 @@ protected:
     {
         m_cipher = cipher;
         m_padding = padding;
-		m_state = SecureVector!ubyte(m_cipher.blockSize());
-		if (!m_padding.isEmpty && !m_padding.validBlocksize(m_cipher.blockSize()))
-			throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/CBC");
+        m_state = SecureVector!ubyte(m_cipher.blockSize());
+        if (!m_padding.isEmpty && !m_padding.validBlocksize(m_cipher.blockSize()))
+            throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/CBC");
     }
 
     final BlockCipher cipher() const { return *m_cipher; }
@@ -172,14 +172,14 @@ public:
         return 0;
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 }
 
 /**
@@ -252,14 +252,14 @@ public:
         return (n == cipher().blockSize());
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 
 }
 
@@ -272,7 +272,7 @@ public:
     this(BlockCipher cipher, BlockCipherModePaddingMethod padding)  
     {
         super(cipher, padding);
-		m_tempbuf = SecureVector!ubyte(updateGranularity());
+        m_tempbuf = SecureVector!ubyte(updateGranularity());
     }
 
     override void update(SecureVector!ubyte buffer, size_t offset)
@@ -329,14 +329,14 @@ public:
         return cipher().blockSize();
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 private:
     SecureVector!ubyte m_tempbuf;
 }
@@ -406,13 +406,13 @@ public:
         return (n == cipher().blockSize());
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
 }

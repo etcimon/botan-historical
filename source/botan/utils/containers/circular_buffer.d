@@ -13,7 +13,7 @@ struct CircularBuffer(T, size_t N = 0, int ALLOCATOR = VulnerableAllocator) {
     }
     static if( N == 0 ){
         this(size_t capacity) { m_buffer = new T[capacity]; }
-		~this() { if (m_buffer) delete m_buffer; }
+        ~this() { if (m_buffer) delete m_buffer; }
     }
     @property bool empty() const { return m_fill == 0; }
     @property bool full() const { return m_fill == m_buffer.length; }

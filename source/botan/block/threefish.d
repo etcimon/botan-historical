@@ -101,8 +101,10 @@ public:
 
     override void clear()
     {
-        zeroise(m_K);
-        zeroise(m_T);
+		if (!*m_T) m_T = SecureVector!ulong(3);
+		else zeroise(m_T);
+		if (!*m_K) m_K = SecureVector!ulong(9);
+		else zeroise(m_K);
     }
 
     final override @property string name() const { return "Threefish-512"; }
@@ -112,7 +114,7 @@ public:
     override KeyLengthSpecification keySpec() const { return super.keySpec(); }
 
     this() {
-        m_T = 3;
+        m_T = SecureVector!ulong(3);
     }
 
 protected:
@@ -198,7 +200,7 @@ string THREEFISH_ENC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
     const ROT3 = _ROT3.stringof;
     const ROT4 = _ROT4.stringof;
 
-    return X0 ~ ` += ` ~ X4 ~ `;
+    return  X0 ~ ` += ` ~ X4 ~ `;
         ` ~ X1 ~ ` += ` ~ X5 ~ `;
         ` ~ X2 ~ ` += ` ~ X6 ~ `;
         ` ~ X3 ~ ` += ` ~ X7 ~ `;
@@ -216,7 +218,7 @@ string THREEFISH_ENC_INJECT_KEY(ushort r)()
 {
     
     return `X0 += m_K[(` ~ r.stringof ~ `  ) % 9];
-            X1 += m_K[(` ~ (r + 1).stringof ~ `+1) % 9];
+            X1 += m_K[(` ~ (r + 1).stringof ~ `) % 9];
             X2 += m_K[(` ~ (r + 2).stringof ~ `) % 9];
             X3 += m_K[(` ~ (r + 3).stringof ~ `) % 9];
             X4 += m_K[(` ~ (r + 4).stringof ~ `) % 9];
@@ -256,7 +258,7 @@ string THREEFISH_DEC_ROUND(alias _X0, alias _X1, alias _X2, alias _X3,
     const ROT2 = _ROT2.stringof;
     const ROT3 = _ROT3.stringof;
     const ROT4 = _ROT4.stringof;
-    return X4 ~ ` ^= ` ~ X0 ~ `;
+    return X4 ~ `  ^= ` ~ X0 ~ `;
         ` ~ X5 ~ ` ^= ` ~ X1 ~ `;
         ` ~ X6 ~ ` ^= ` ~ X2 ~ `;
         ` ~ X7 ~ ` ^= ` ~ X3 ~ `;

@@ -123,10 +123,10 @@ public:
     */
     bool opEquals(in OID oid_) const
     {
-		OIDImpl oid = *oid_;
-		if ((!oid || !oid.m_id || oid.m_id.length == 0) && (!m_id || m_id.length == 0)) return true;
-		else if (!oid) return false;
-		else if (!m_id) return false;
+        OIDImpl oid = *oid_;
+        if ((!oid || !oid.m_id || oid.m_id.length == 0) && (!m_id || m_id.length == 0)) return true;
+        else if (!oid) return false;
+        else if (!m_id) return false;
 
         if (m_id.length != oid.m_id.length)
             return false;
@@ -223,14 +223,14 @@ public:
         }
         catch (Throwable)
         {
-			logTrace("parseAsn1Oid failure");
+            logTrace("parseAsn1Oid failure");
             throw new InvalidOID(oid_str);
         }
         
         if (m_id.length < 2 || m_id[0] > 2) {
-			logTrace("Got m_id: ", m_id[]);
+            logTrace("Got m_id: ", m_id[]);
             throw new InvalidOID(oid_str);
-		}
+        }
         if ((m_id[0] == 0 || m_id[0] == 1) && m_id[1] > 39)
             throw new InvalidOID(oid_str);
     }
@@ -240,11 +240,11 @@ public:
         m_id = other.m_id.dup;
     }
 
-	OID dup() const {
-		OID oid;
-		oid.m_id = m_id.dup;
-		return oid;
-	}
+    OID dup() const {
+        OID oid;
+        oid.m_id = m_id.dup;
+        return oid;
+    }
 private:
     Vector!uint m_id;
 }

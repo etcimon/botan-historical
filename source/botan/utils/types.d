@@ -123,11 +123,11 @@ public:
         u._p = null;
     }
 
-	void free()
-	{
-		RefT p = null;
-		opAssign(p);
-	}
+    void free()
+    {
+        RefT p = null;
+        opAssign(p);
+    }
 
     void opAssign(ref RefT p)
     {

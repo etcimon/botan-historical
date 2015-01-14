@@ -21,8 +21,8 @@ final class OFB : StreamCipher, SymmetricAlgorithm
 public:
     override void cipher(const(ubyte)* input, ubyte* output, size_t length)
     {
-		size_t len_mem = length;
-		ubyte* output_mem = output;
+        size_t len_mem = length;
+        ubyte* output_mem = output;
         while (length >= m_buffer.length - m_buf_pos)
         {
             xorBuf(output, input, &m_buffer[m_buf_pos], m_buffer.length - m_buf_pos);
@@ -75,7 +75,7 @@ public:
     this(BlockCipher cipher)
     {
         m_cipher = cipher;
-		m_buffer = SecureVector!ubyte(m_cipher.blockSize());
+        m_buffer = SecureVector!ubyte(m_cipher.blockSize());
         m_buf_pos = 0;
     }
 
@@ -91,5 +91,5 @@ protected:
     Unique!BlockCipher m_cipher;
     size_t m_buf_pos;
 private:
-	SecureVector!ubyte m_buffer;
+    SecureVector!ubyte m_buffer;
 }

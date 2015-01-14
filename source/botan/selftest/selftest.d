@@ -37,6 +37,9 @@ import botan.utils.types;
 */
 void confirmStartupSelfTests(AlgorithmFactory af)
 {
+	logInfo("************************");
+	logInfo("*** START SELF TESTS ***");
+	logInfo("************************");
     cipherKat(af, "DES",
                "0123456789ABCDEF", "1234567890ABCDEF",
                "4E6F77206973207468652074696D6520666F7220616C6C20",
@@ -110,6 +113,9 @@ void confirmStartupSelfTests(AlgorithmFactory af)
              ~ "BA0AA3F3D9AE3C1C7A3B1696A0B68CF7",
              "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B"
              ~ "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B");
+	logInfo("**********************");
+	logInfo("*** END SELF TESTS ***");
+	logInfo("**********************");
 }
 
 /**
@@ -150,7 +156,7 @@ HashMap!(string, bool)
     HashMap!(string, bool) pass_or_fail;
     
     foreach (const ref string key, const ref string val; result)
-        pass_or_fail[key] = (val == "passed");
+		pass_or_fail[key] = (val == "PASSED");
     
     return pass_or_fail;
 }
@@ -168,17 +174,17 @@ HashMap!(string, string)
                          in HashMap!(string, string) vars,
                          AlgorithmFactory af)
 {
-	logTrace("Testing ", algo_name);
+    logTrace("Testing ", algo_name);
     const string algo = algo_name.algoNameAndArgs();
     
     Vector!string providers = af.providersOf(algo);
-	logTrace("Providers: ", providers[]);
+    logTrace("Providers: ", providers[]);
     HashMap!(string, string) all_results;
     
     if (providers.empty) { // no providers, nothing to do
-		logTrace("Warning: ", algo_name.toString(), " has no providers");
+        logTrace("Warning: ", algo_name.toString(), " has no providers");
         return all_results;
-	}
+    }
     const string input = vars.get("input");
     const string output = vars.get("output");
     
@@ -191,33 +197,33 @@ HashMap!(string, string)
         
         if (const HashFunction proto = af.prototypeHashFunction(algo, provider))
         {
-			logTrace("Found ", proto.name);
+            logTrace("Found ", proto.name);
             Filter filt = new HashFilter(proto.clone());
             all_results[provider] = testFilterKat(filt, input, output);
-			logDebug(proto.name, " Result: ", provider, " => ", all_results[provider]);
+            logInfo(proto.name, " (", provider, ") ... ", all_results[provider]);
         }
         else if (const MessageAuthenticationCode proto = af.prototypeMac(algo, provider))
         {
-			logTrace("Found ", proto.name);
+            logTrace("Found ", proto.name);
             KeyedFilter filt = new MACFilter(proto.clone(), key);
             all_results[provider] = testFilterKat(filt, input, output);
-			logDebug(proto.name, " Result: ", provider, " => ", all_results[provider]);
+			logInfo(proto.name, " (", provider, ") ... ", all_results[provider]);
         }
         else if (const StreamCipher proto = af.prototypeStreamCipher(algo, provider))
         {
-			logTrace("Found ", proto.name);
+            logTrace("Found ", proto.name);
             KeyedFilter filt = new StreamCipherFilter(proto.clone());
             filt.setKey(key);
             filt.setIv(iv);
             
             all_results[provider] = testFilterKat(filt, input, output);
 
-			
-			logDebug(proto.name, " Result: ", provider, " => ", all_results[provider]);
+            
+            logInfo(proto.name, " (", provider, ") ... ", all_results[provider]);
         }
         else if (const BlockCipher proto = af.prototypeBlockCipher(algo, provider))
         {
-			logTrace("Found ", proto.name);
+            logTrace("Found ", proto.name);
             KeyedFilter enc = getCipherMode(proto, ENCRYPTION,
                                             algo_name.cipherMode(),
                                             algo_name.cipherModePad());
@@ -228,7 +234,7 @@ HashMap!(string, string)
             
             if (!enc || !dec)
             {
-				logTrace("Enc/dec failure");
+                logTrace("Enc/dec failure");
                 delete enc;
                 delete dec;
                 continue;
@@ -264,8 +270,8 @@ HashMap!(string, string)
             all_results[provider ~ " (encrypt)"] = testFilterKat(enc, input, output);
             all_results[provider ~ " (decrypt)"] = testFilterKat(dec, output, input);
 
-			logDebug(proto.name, " Result: ", provider, " (encrypt) => ", all_results[provider ~ " (encrypt)"]);
-			logDebug(proto.name, " Result: ", provider, " (decrypt) => ", all_results[provider ~ " (decrypt)"]);
+            logInfo(proto.name, " (", provider, " encrypt) ... ", all_results[provider ~ " (encrypt)"]);
+            logInfo(proto.name, " (", provider, " decrypt) ... ", all_results[provider ~ " (decrypt)"]);
 
         }
     }    
@@ -279,7 +285,7 @@ void verifyResults(in string algo, in HashMap!(string, string) results)
 {
     foreach (const ref string key, const ref string value; results)
     {
-        if (value != "passed")
+		if (value != "PASSED")
             throw new SelfTestFailure(algo ~ " self-test failed (" ~ value ~ ")" ~
                                         " with provider " ~ key);
     }
@@ -364,11 +370,11 @@ string testFilterKat(Filter filter,
         const bool same = (got == expected);
         
         if (same) {
-			return "passed";
+            return "PASSED";
 
-		} else {
-            return "got " ~ got ~ " expected " ~ expected;
-		}
+        } else {
+			return "************** FAILED **************** => got " ~ got ~ " expected " ~ expected;
+        }
     }
     catch(Exception e)
     {

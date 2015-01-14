@@ -163,7 +163,7 @@ CertificateStatusCode[] getExpected()
 
 unittest
 {
-	logTrace("Testing x509/test.d ...");
+    logTrace("Testing x509/test.d ...");
     const string root_test_dir = "src/tests/data/nist_x509/";
     
     size_t unexp_failure = 0;

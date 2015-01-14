@@ -311,7 +311,7 @@ import botan.codec.hex;
 
 unittest
 {
-	logTrace("Testing tss.d ...");
+    logTrace("Testing tss.d ...");
     AutoSeededRNG rng;
     
     size_t fails = 0;

@@ -85,7 +85,7 @@ public:
 
     ~this() { /* for unique_ptr destructor */ }
 
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
 protected:
     /**
     * @param cipher = the 128-bit block cipher to use
@@ -93,7 +93,7 @@ protected:
     */
     this(BlockCipher cipher, size_t tag_size)
     {     
-		m_cipher = cipher;
+        m_cipher = cipher;
         m_checksum = m_cipher.parallelBytes();
         m_offset = BS;
         m_ad_hash = BS;
@@ -251,14 +251,14 @@ public:
         m_block_index = 0;
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 
 private:
     void encrypt(ubyte* buffer, size_t blocks)
@@ -383,14 +383,14 @@ public:
         buffer.length = remaining + offset;
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
 
 private:
     void decrypt(ubyte* buffer, size_t blocks)
@@ -646,7 +646,7 @@ size_t testOcbLong(size_t taglen, in string expected)
 
 unittest
 {
-	logTrace("Testing ocb.d ...");
+    logTrace("Testing ocb.d ...");
     size_t fails = 0;
     
     fails += testOcbLong(128, "B2B41CBF9B05037DA7F16C24A35C1C94");

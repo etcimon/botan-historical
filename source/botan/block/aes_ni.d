@@ -101,7 +101,7 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-		__m128i* in_mm = cast(__m128i*)(input);
+        __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
         const(__m128i*) key_mm = cast(const(__m128i*))(m_DK.ptr);
@@ -176,7 +176,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -253,7 +253,7 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-		__m128i* in_mm = cast(__m128i*)(input);
+        __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
         const(__m128i*) key_mm = cast(const(__m128i*))(m_EK.ptr);
@@ -335,7 +335,7 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-		__m128i* in_mm = cast(__m128i*)(input);
+        __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
         const(__m128i*) key_mm = cast(const(__m128i*))(m_DK.ptr);
@@ -417,7 +417,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -486,7 +486,7 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-		__m128i* in_mm = cast(__m128i*)(input);
+        __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
         const(__m128i*) key_mm = cast(const(__m128i*))(m_EK.ptr);
@@ -574,7 +574,7 @@ public:
     */
     override void decryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-		__m128i* in_mm = cast(__m128i*)(input);
+        __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         
         const(__m128i*) key_mm = cast(const(__m128i*))(m_DK.ptr);
@@ -660,7 +660,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);

@@ -120,14 +120,14 @@ public:
     this(size_t l = 6)
     {
         m_level = (l >= 9) ? 9 : l;
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_lzma = null;
     }
 
     ~this() { clear(); }
 
-	// Interface fallthrough
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     void clear()
     {
@@ -246,15 +246,15 @@ public:
 
     this()
     {
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_lzma = null;
         m_no_writes = true;
     }
 
     ~this() { clear(); }
 
-	// Interface fallthrough
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     /*
     * Clean up Decompression Context

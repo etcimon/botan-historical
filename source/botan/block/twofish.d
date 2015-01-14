@@ -37,9 +37,9 @@ public:
                 uint X, Y;
                 
                 X = m_SB[     get_byte(3, A)] ^ m_SB[256+get_byte(2, A)] ^
-                    m_SB[512+get_byte(1, A)] ^ m_SB[768+get_byte(0, A)];
+                    m_SB[512+ get_byte(1, A)] ^ m_SB[768+get_byte(0, A)];
                 Y = m_SB[     get_byte(0, B)] ^ m_SB[256+get_byte(3, B)] ^
-                    m_SB[512+get_byte(2, B)] ^ m_SB[768+get_byte(1, B)];
+                    m_SB[512+ get_byte(2, B)] ^ m_SB[768+get_byte(1, B)];
                 X += Y;
                 Y += X + m_RK[2*j + 9];
                 X += m_RK[2*j + 8];
@@ -48,9 +48,9 @@ public:
                 D = rotateLeft(D, 1) ^ Y;
                 
                 X = m_SB[     get_byte(3, C)] ^ m_SB[256+get_byte(2, C)] ^
-                    m_SB[512+get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
+                    m_SB[512+ get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
                 Y = m_SB[     get_byte(0, D)] ^ m_SB[256+get_byte(3, D)] ^
-                    m_SB[512+get_byte(2, D)] ^ m_SB[768+get_byte(1, D)];
+                    m_SB[512+ get_byte(2, D)] ^ m_SB[768+get_byte(1, D)];
                 X += Y;
                 Y += X + m_RK[2*j + 11];
                 X += m_RK[2*j + 10];
@@ -88,9 +88,9 @@ public:
                 uint X, Y;
                 
                 X = m_SB[     get_byte(3, A)] ^ m_SB[256+get_byte(2, A)] ^
-                    m_SB[512+get_byte(1, A)] ^ m_SB[768+get_byte(0, A)];
+                    m_SB[512+ get_byte(1, A)] ^ m_SB[768+get_byte(0, A)];
                 Y = m_SB[     get_byte(0, B)] ^ m_SB[256+get_byte(3, B)] ^
-                    m_SB[512+get_byte(2, B)] ^ m_SB[768+get_byte(1, B)];
+                    m_SB[512+ get_byte(2, B)] ^ m_SB[768+get_byte(1, B)];
                 X += Y;
                 Y += X + m_RK[39 - 2*j];
                 X += m_RK[38 - 2*j];
@@ -99,9 +99,9 @@ public:
                 D = rotateRight(D ^ Y, 1);
                 
                 X = m_SB[     get_byte(3, C)] ^ m_SB[256+get_byte(2, C)] ^
-                    m_SB[512+get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
+                    m_SB[512+ get_byte(1, C)] ^ m_SB[768+get_byte(0, C)];
                 Y = m_SB[     get_byte(0, D)] ^ m_SB[256+get_byte(3, D)] ^
-                    m_SB[512+get_byte(2, D)] ^ m_SB[768+get_byte(1, D)];
+                    m_SB[512+ get_byte(2, D)] ^ m_SB[768+get_byte(1, D)];
                 X += Y;
                 Y += X + m_RK[37 - 2*j];
                 X += m_RK[36 - 2*j];
@@ -125,7 +125,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zap(m_SB);
         zap(m_RK);
@@ -156,7 +156,7 @@ protected:
         {
             foreach (size_t i; 0 .. 256)
             {
-                m_SB[     i] = MDS0[Q0[Q0[i]^S[ 0]]^S[ 4]];
+                m_SB[    i] = MDS0[Q0[Q0[i]^S[ 0]]^S[ 4]];
                 m_SB[256+i] = MDS1[Q0[Q1[i]^S[ 1]]^S[ 5]];
                 m_SB[512+i] = MDS2[Q1[Q0[i]^S[ 2]]^S[ 6]];
                 m_SB[768+i] = MDS3[Q1[Q1[i]^S[ 3]]^S[ 7]];
@@ -165,13 +165,13 @@ protected:
             foreach (size_t i; iota(0, 40, 2))
             {
                 uint X = MDS0[Q0[Q0[i  ]^key[ 8]]^key[ 0]] ^
-                    MDS1[Q0[Q1[i  ]^key[ 9]]^key[ 1]] ^
-                    MDS2[Q1[Q0[i  ]^key[10]]^key[ 2]] ^
-                    MDS3[Q1[Q1[i  ]^key[11]]^key[ 3]];
+                         MDS1[Q0[Q1[i  ]^key[ 9]]^key[ 1]] ^
+                         MDS2[Q1[Q0[i  ]^key[10]]^key[ 2]] ^
+                         MDS3[Q1[Q1[i  ]^key[11]]^key[ 3]];
                 uint Y = MDS0[Q0[Q0[i+1]^key[12]]^key[ 4]] ^
-                    MDS1[Q0[Q1[i+1]^key[13]]^key[ 5]] ^
-                    MDS2[Q1[Q0[i+1]^key[14]]^key[ 6]] ^
-                    MDS3[Q1[Q1[i+1]^key[15]]^key[ 7]];
+                         MDS1[Q0[Q1[i+1]^key[13]]^key[ 5]] ^
+                         MDS2[Q1[Q0[i+1]^key[14]]^key[ 6]] ^
+                         MDS3[Q1[Q1[i+1]^key[15]]^key[ 7]];
                 Y = rotateLeft(Y, 8);
                 X += Y; Y += X;
                 
@@ -183,7 +183,7 @@ protected:
         {
             foreach (size_t i; 0 .. 256)
             {
-                m_SB[     i] = MDS0[Q0[Q0[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]];
+                m_SB[    i] = MDS0[Q0[Q0[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]];
                 m_SB[256+i] = MDS1[Q0[Q1[Q1[i]^S[ 1]]^S[ 5]]^S[ 9]];
                 m_SB[512+i] = MDS2[Q1[Q0[Q0[i]^S[ 2]]^S[ 6]]^S[10]];
                 m_SB[768+i] = MDS3[Q1[Q1[Q0[i]^S[ 3]]^S[ 7]]^S[11]];
@@ -192,13 +192,13 @@ protected:
             foreach (size_t i; iota(0, 40, 2))
             {
                 uint X = MDS0[Q0[Q0[Q1[i  ]^key[16]]^key[ 8]]^key[ 0]] ^
-                    MDS1[Q0[Q1[Q1[i  ]^key[17]]^key[ 9]]^key[ 1]] ^
-                    MDS2[Q1[Q0[Q0[i  ]^key[18]]^key[10]]^key[ 2]] ^
-                    MDS3[Q1[Q1[Q0[i  ]^key[19]]^key[11]]^key[ 3]];
+                         MDS1[Q0[Q1[Q1[i  ]^key[17]]^key[ 9]]^key[ 1]] ^
+                         MDS2[Q1[Q0[Q0[i  ]^key[18]]^key[10]]^key[ 2]] ^
+                         MDS3[Q1[Q1[Q0[i  ]^key[19]]^key[11]]^key[ 3]];
                 uint Y = MDS0[Q0[Q0[Q1[i+1]^key[20]]^key[12]]^key[ 4]] ^
-                    MDS1[Q0[Q1[Q1[i+1]^key[21]]^key[13]]^key[ 5]] ^
-                    MDS2[Q1[Q0[Q0[i+1]^key[22]]^key[14]]^key[ 6]] ^
-                    MDS3[Q1[Q1[Q0[i+1]^key[23]]^key[15]]^key[ 7]];
+                         MDS1[Q0[Q1[Q1[i+1]^key[21]]^key[13]]^key[ 5]] ^
+                         MDS2[Q1[Q0[Q0[i+1]^key[22]]^key[14]]^key[ 6]] ^
+                         MDS3[Q1[Q1[Q0[i+1]^key[23]]^key[15]]^key[ 7]];
                 Y = rotateLeft(Y, 8);
                 X += Y; Y += X;
                 
@@ -210,7 +210,7 @@ protected:
         {
             foreach (size_t i; 0 .. 256)
             {
-                m_SB[     i] = MDS0[Q0[Q0[Q1[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]]^S[12]];
+                m_SB[    i] = MDS0[Q0[Q0[Q1[Q1[i]^S[ 0]]^S[ 4]]^S[ 8]]^S[12]];
                 m_SB[256+i] = MDS1[Q0[Q1[Q1[Q0[i]^S[ 1]]^S[ 5]]^S[ 9]]^S[13]];
                 m_SB[512+i] = MDS2[Q1[Q0[Q0[Q0[i]^S[ 2]]^S[ 6]]^S[10]]^S[14]];
                 m_SB[768+i] = MDS3[Q1[Q1[Q0[Q1[i]^S[ 3]]^S[ 7]]^S[11]]^S[15]];
@@ -219,13 +219,13 @@ protected:
             foreach (size_t i; iota(0, 40, 2))
             {
                 uint X = MDS0[Q0[Q0[Q1[Q1[i  ]^key[24]]^key[16]]^key[ 8]]^key[ 0]] ^
-                    MDS1[Q0[Q1[Q1[Q0[i  ]^key[25]]^key[17]]^key[ 9]]^key[ 1]] ^
-                    MDS2[Q1[Q0[Q0[Q0[i  ]^key[26]]^key[18]]^key[10]]^key[ 2]] ^
-                    MDS3[Q1[Q1[Q0[Q1[i  ]^key[27]]^key[19]]^key[11]]^key[ 3]];
+                         MDS1[Q0[Q1[Q1[Q0[i  ]^key[25]]^key[17]]^key[ 9]]^key[ 1]] ^
+                         MDS2[Q1[Q0[Q0[Q0[i  ]^key[26]]^key[18]]^key[10]]^key[ 2]] ^
+                         MDS3[Q1[Q1[Q0[Q1[i  ]^key[27]]^key[19]]^key[11]]^key[ 3]];
                 uint Y = MDS0[Q0[Q0[Q1[Q1[i+1]^key[28]]^key[20]]^key[12]]^key[ 4]] ^
-                    MDS1[Q0[Q1[Q1[Q0[i+1]^key[29]]^key[21]]^key[13]]^key[ 5]] ^
-                    MDS2[Q1[Q0[Q0[Q0[i+1]^key[30]]^key[22]]^key[14]]^key[ 6]] ^
-                    MDS3[Q1[Q1[Q0[Q1[i+1]^key[31]]^key[23]]^key[15]]^key[ 7]];
+                         MDS1[Q0[Q1[Q1[Q0[i+1]^key[29]]^key[21]]^key[13]]^key[ 5]] ^
+                         MDS2[Q1[Q0[Q0[Q0[i+1]^key[30]]^key[22]]^key[14]]^key[ 6]] ^
+                         MDS3[Q1[Q1[Q0[Q1[i+1]^key[31]]^key[23]]^key[15]]^key[ 7]];
                 Y = rotateLeft(Y, 8);
                 X += Y; Y += X;
                 

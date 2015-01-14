@@ -121,9 +121,9 @@ public:
         write(input.ptr, input.length);
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 
 protected:
     /**
@@ -169,10 +169,10 @@ protected:
         }
         m_buffer_pos = 0;
 
-		//scope(exit) logTrace("endMsg(): ", m_buffer[]);
+        //scope(exit) logTrace("endMsg(): ", m_buffer[]);
     }
 
-	override void startMsg()
+    override void startMsg()
     {
         send(m_transform.startVec(m_nonce.get()));
     }

@@ -115,7 +115,7 @@ public:
         }
     }
 
-	override void clear()
+    override void clear()
     {
         zap(m_S);
     }
@@ -142,7 +142,7 @@ protected:
         
         SecureVector!uint K = SecureVector!uint(8);
         
-        for (size_t i = length-1; i >= 0; --i)
+        for (int i = cast(int) length-1; i >= 0; --i)
             K[i/4] = (K[i/4] << 8) + key[i];
         
         uint A = 0, B = 0;

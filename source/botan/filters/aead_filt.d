@@ -35,15 +35,15 @@ public:
         (cast(AEADMode)(getTransform())).setAssociatedData(ad, ad_len);
     }
 
-	// void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
+    // void setNext(Filter f, size_t n) { super.setNext(&f, 1); }
 
-	override bool attachable() { return super.attachable(); }
+    override bool attachable() { return super.attachable(); }
 
-	override @property string name() const { return super.name; }
-	override void write(const(ubyte)* input, size_t len) { return super.write(input, len); }
+    override @property string name() const { return super.name; }
+    override void write(const(ubyte)* input, size_t len) { return super.write(input, len); }
 
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 
 }

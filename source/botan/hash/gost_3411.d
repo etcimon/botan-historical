@@ -42,10 +42,10 @@ public:
     */
     this() 
     {
-        m_cipher = new GOST2814789(scoped!GOST2814789Params("R3411_CryptoPro").Scoped_payload);
-		m_buffer = SecureVector!ubyte(32);
-		m_sum = SecureVector!ubyte(32);
-		m_hash = SecureVector!ubyte(32);
+        m_cipher = new GOST_28147_89(scoped!GOST_28147_89_Params("R3411_CryptoPro").Scoped_payload);
+        m_buffer = SecureVector!ubyte(32);
+        m_sum = SecureVector!ubyte(32);
+        m_hash = SecureVector!ubyte(32);
         m_count = 0;
         m_position = 0;
     }
@@ -67,7 +67,7 @@ protected:
             
             ubyte[32] S;
             
-			ulong[4] U, V;
+            ulong[4] U, V;
             loadBigEndian(U.ptr, m_hash.ptr, 4);
             loadBigEndian(V.ptr, input + 32*i, 4);
             
@@ -256,7 +256,7 @@ protected:
         clear();
     }
 
-    GOST2814789 m_cipher;
+    GOST_28147_89 m_cipher;
     SecureVector!ubyte m_buffer, m_sum, m_hash;
     size_t m_position;
     ulong m_count;

@@ -15,14 +15,14 @@ import botan.utils.memory.noswap;
 import std.traits : ReturnType;
 
 enum {
-	SecureAllocator = 2
+    SecureAllocator = 2
 }
 alias SecureAllocatorImpl = ZeroiseAllocator!VulnerableAllocatorImpl;
 
 __gshared NoSwapAllocator gs_zeroise;
 
 shared static this() { 
-	logTrace("Loading NoSwapAllocator ...");
+    logTrace("Loading NoSwapAllocator ...");
     if (!gs_zeroise)
         gs_zeroise = new NoSwapAllocator;
 }
@@ -34,14 +34,14 @@ final class ZeroiseAllocator(Base : Allocator)
     }
 
     this() {
-		m_secondary = getAllocator!VulnerableAllocatorImpl();
+        m_secondary = getAllocator!VulnerableAllocatorImpl();
     }
 
     void[] alloc(size_t n)
     {
         if (void[] p = gs_zeroise.alloc(n)) {
             return p;
-		}
+        }
         void[] p = m_secondary.alloc(n);
         clearMem(p.ptr, n);
         return p;
@@ -60,8 +60,8 @@ final class ZeroiseAllocator(Base : Allocator)
 alias SecureVector(T) = Vector!(T, SecureAllocator);
 
 Vector!(T, VulnerableAllocator) 
-	unlock(T, int ALLOC)(in FreeListRef!(VectorImpl!(T, ALLOC)) input)
-    	if (ALLOC == SecureAllocator)
+    unlock(T, int ALLOC)(in FreeListRef!(VectorImpl!(T, ALLOC)) input)
+        if (ALLOC == SecureAllocator)
 {
     Vector!(T, VulnerableAllocator) output = Vector!T(input[]);
     return output;

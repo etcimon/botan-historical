@@ -186,7 +186,7 @@ size_t keywrapTest(string key_str,
 
 unittest
 {
-	logTrace("Testing rfc3394.d ...");
+    logTrace("Testing rfc3394.d ...");
 
     size_t fails = 0;
     

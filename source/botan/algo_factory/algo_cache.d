@@ -78,7 +78,7 @@ public:
             }
         }
 
-		logTrace("Returning provider: ", prototype_provider);
+        logTrace("Returning provider: ", prototype_provider);
         return prototype;
     }
 
@@ -99,10 +99,10 @@ public:
         {
             m_aliases[requested_name] = algo.name;
         }
-		if (m_algorithms.get(algo.name).length == 0)
-			m_algorithms[algo.name] = HashMap!(string, T)();
+        if (m_algorithms.get(algo.name).length == 0)
+            m_algorithms[algo.name] = HashMap!(string, T)();
 
-		if (!(m_algorithms[algo.name].get(provider)))
+        if (!(m_algorithms[algo.name].get(provider)))
             m_algorithms[algo.name][provider] = algo;
 
     }
@@ -128,8 +128,8 @@ public:
     Vector!string providersOf(in string algo_name)
     {
         Vector!string providers;
-		string algo = m_aliases.get(algo_name);
-		if (m_algorithms.get(algo).length == 0)
+        string algo = m_aliases.get(algo_name);
+        if (m_algorithms.get(algo).length == 0)
             algo = algo_name;
         if (m_algorithms.get(algo).length == 0) 
             return Vector!string();
@@ -156,11 +156,11 @@ public:
         (*m_algorithms).clear();
     }
 
-	this() {
-		m_aliases = HashMap!(string, string)();
-		m_pref_providers = HashMap!(string, string)();
-		m_algorithms = HashMap!(string, HashMap!(string, T))();
-	}
+    this() {
+        m_aliases = HashMap!(string, string)();
+        m_pref_providers = HashMap!(string, string)();
+        m_algorithms = HashMap!(string, HashMap!(string, T))();
+    }
 
 private:
 
@@ -179,10 +179,10 @@ private:
 
             if (_alias) {
                 return m_algorithms.get(_alias);
-			}
+            }
             else {
                 return HashMap!(string, T)();
-			}
+            }
         }
         return algo;
     }

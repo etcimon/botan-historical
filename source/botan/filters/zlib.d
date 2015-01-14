@@ -116,14 +116,14 @@ public:
         
         m_level = (level >= 9) ? 9 : level;
         m_raw_deflate = raw_deflate;
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_zlib = null;
     }
 
     ~this() { clear(); }
 
-	// Interface fallthrough
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     /*
     * Clean up Compression Context
@@ -252,15 +252,15 @@ public:
     this(bool _raw_deflate = false)
     {
         m_raw_deflate = _raw_deflate;
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_zlib = null;
         m_no_writes = true;
     }
 
     ~this() { clear(); }
 
-	// Interface fallthrough
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
 
     /*

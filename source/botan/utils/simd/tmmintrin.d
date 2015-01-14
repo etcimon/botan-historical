@@ -39,15 +39,15 @@ version(D_InlineAsm_X86_64) {
     // _mm_min_epi8 ; PSHUFB
     __m128i _mm_shuffle_epi8(in __m128i a, in __m128i b) {
         
-		const(__m128i)* _a = &a;
+        const(__m128i)* _a = &a;
         const(__m128i)* _b = &b;
-		__m128i c;
-		__m128i* _c = &c;
+        __m128i c;
+        __m128i* _c = &c;
 
         asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
-			mov RCX, _c;
+            mov RCX, _c;
             movdqu XMM1, [RAX];
             movdqu XMM2, [RBX];
             pshufb XMM1, XMM2;
@@ -59,15 +59,15 @@ version(D_InlineAsm_X86_64) {
     // _mm_alignr_epi8 ; palignr
     __m128i _mm_alignr_epi8(int n)(in __m128i a, in __m128i b) {
         const(__m128i)* _a = &a;
-		const(__m128i)* _b = &b;
-		__m128i c;
-		__m128i* _c = &c;
+        const(__m128i)* _b = &b;
+        __m128i c;
+        __m128i* _c = &c;
 
         mixin(`
             asm pure nothrow {
                 mov RAX, _a;
                 mov RBX, _b;
-				mov RCX, _c;
+                mov RCX, _c;
                 movdqu XMM1, [RAX];
                 movdqu XMM2, [RBX];
                 palignr XMM1, XMM2, ` ~ n.stringof ~ `;

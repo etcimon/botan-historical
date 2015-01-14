@@ -347,7 +347,7 @@ void storeLittleEndian(uint input, ubyte[4]* output)
 */
 void storeBigEndian(ulong input, ubyte[8]* output)
 {
-	*cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) &input);
+    *cast(ulong*) output = bigEndianToNative!ulong(*cast(ubyte[8]*) &input);
 }
 
 /**

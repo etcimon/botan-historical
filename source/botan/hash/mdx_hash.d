@@ -79,7 +79,7 @@ protected:
             compressN(m_buffer.ptr, 1);
             zeroise(m_buffer);
         }
-		writeCount(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
+        writeCount(&m_buffer[m_buffer.length - m_COUNT_SIZE]);
         compressN(m_buffer.ptr, 1);
         copyOut(output);
         clear();

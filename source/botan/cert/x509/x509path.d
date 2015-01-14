@@ -386,9 +386,9 @@ Vector!( RedBlackTree!CertificateStatusCode )
     
     Vector!( Tid ) ocsp_responses;
 
-	Vector!(OCSPResponse) ocsp_data;
+    Vector!(OCSPResponse) ocsp_data;
 
-	Mutex mtx = new Mutex;
+    Mutex mtx = new Mutex;
     
     Vector!( RedBlackTree!CertificateStatusCode ) cert_status = Vector!( RedBlackTree!CertificateStatusCode )( cert_path.length );
     
@@ -406,13 +406,13 @@ Vector!( RedBlackTree!CertificateStatusCode )
         
         if (i == 0 || restrictions.ocspAllIntermediates()) {
 
-			ocsp_data.length = i;
+            ocsp_data.length = i;
 
             version(Have_vibe_d)
-				Tid id_ = runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
+                Tid id_ = runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
             else
-				Tid id_ = spawn(&onlineCheck, cast(shared)thisTid(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
-			ocsp_responses ~= id_;
+                Tid id_ = spawn(&onlineCheck, cast(shared)thisTid(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
+            ocsp_responses ~= id_;
         }
         // Check all certs for valid time range
         if (current_time < X509Time(subject.startTime()))
@@ -459,10 +459,10 @@ Vector!( RedBlackTree!CertificateStatusCode )
             try
             {
 
-				OCSPResponse ocsp;
+                OCSPResponse ocsp;
 
-				synchronized(mtx)
-					ocsp = ocsp_data[receiveOnly!(size_t)()];
+                synchronized(mtx)
+                    ocsp = ocsp_data[receiveOnly!(size_t)()];
                 
                 auto ocsp_status = ocsp.statusFor(ca, subject);
                 

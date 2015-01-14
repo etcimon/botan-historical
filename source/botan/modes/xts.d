@@ -73,7 +73,7 @@ public:
         zeroise(m_tweak);
     }
 
-	override bool authenticated() const { return true; }
+    override bool authenticated() const { return true; }
 protected:
     this(BlockCipher cipher) 
     {
@@ -207,17 +207,17 @@ public:
         return roundUp(input_length, cipher().blockSize());
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
-	override bool validNonceLength(size_t n) const {
-		return super.validNonceLength(n);
-	}
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+    override bool validNonceLength(size_t n) const {
+        return super.validNonceLength(n);
+    }
 }
 
 /**
@@ -310,17 +310,17 @@ public:
         return input_length;
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
-	override bool validNonceLength(size_t n) const {
-		return super.validNonceLength(n);
-	}
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+    override bool validNonceLength(size_t n) const {
+        return super.validNonceLength(n);
+    }
 }
 
 

@@ -457,7 +457,7 @@ public:
             throw new InvalidArgument("ASN1EACString contains illegal characters");
     }
 
-    bool opEquals(in ASN1EACString rhs)
+    bool opEquals(in ASN1EACString rhs) const
     {
         return (iso8859() == rhs.iso8859());
     }

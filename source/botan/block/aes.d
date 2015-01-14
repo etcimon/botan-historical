@@ -35,7 +35,7 @@ public:
     
     override void clear()
     {
-		logTrace("Zap");
+        logTrace("Zap");
         zap(m_EK);
         zap(m_DK);
         zap(m_ME);
@@ -112,7 +112,7 @@ public:
         aes_decrypt_n(input, output, blocks, m_DK, m_MD);
     }
 
-	override void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);

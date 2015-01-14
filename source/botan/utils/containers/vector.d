@@ -6,8 +6,8 @@ import core.exception, core.memory, core.stdc.stdlib, core.stdc.string,
 import botan.utils.memory.memory;
 
 void TRACE(T...)(T t) {
-	//import std.stdio : writeln;
-	//writeln(t);
+    //import std.stdio : writeln;
+    //writeln(t);
 }
 /**
 * Existence check for values
@@ -29,7 +29,7 @@ template Vector(T, int ALLOCATOR = VulnerableAllocator)
 /// An array that uses a custom allocator.
 struct VectorImpl(T, int ALLOCATOR)
 {
-	@disable this(this);
+    @disable this(this);
 
     // Payload cannot be copied
     private struct Payload
@@ -39,18 +39,18 @@ struct VectorImpl(T, int ALLOCATOR)
         
         // Convenience constructor
         this(T[] p) 
-		{ 
-			_capacity = p.length; 
-			_payload = allocArray!(T, ALLOCATOR, true)(p.length);
-			_payload[0 .. p.length] = p[0 .. $];
-		}
+        { 
+            _capacity = p.length; 
+            _payload = allocArray!(T, ALLOCATOR, true)(p.length);
+            _payload[0 .. p.length] = p[0 .. $];
+        }
         
         // Destructor releases array memory
         ~this()
         {
             T[] data = _payload.ptr[0 .. capacity];
-			if (data.ptr !is null)
-	            freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
+            if (data.ptr !is null)
+                freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
         }
 
         void opAssign(Payload rhs)
@@ -114,13 +114,13 @@ struct VectorImpl(T, int ALLOCATOR)
                 return;
             }
 
-			if (newLength > 0) {
-	            // enlarge
-	            auto startEmplace = length;
-	            reserve(newLength);
-	            _payload = _payload.ptr[0 .. newLength];
-	            initializeAll(_payload.ptr[startEmplace .. length]);
-			}
+            if (newLength > 0) {
+                // enlarge
+                auto startEmplace = length;
+                reserve(newLength);
+                _payload = _payload.ptr[0 .. newLength];
+                initializeAll(_payload.ptr[startEmplace .. length]);
+            }
         }
         
         // capacity
@@ -132,7 +132,7 @@ struct VectorImpl(T, int ALLOCATOR)
         // reserve
         void reserve(size_t elements)
         {
-			if (elements <= capacity) return;
+            if (elements <= capacity) return;
             immutable sz = elements * T.sizeof;
             /* Because of the transactional nature of this
              * relative to the garbage collector, ensure no
@@ -140,32 +140,32 @@ struct VectorImpl(T, int ALLOCATOR)
              * than realloc.
              */
             immutable oldLength = length;
-			TRACE("Oldlength = ", oldLength);
+            TRACE("Oldlength = ", oldLength);
             auto newPayload = allocArray!(T, ALLOCATOR, false)(elements)[0 .. oldLength];
             static if ( hasIndirections!T ) {
                 // Zero out unused capacity to prevent gc from seeing
                 // false pointers
-				TRACE("Zeroing from ", newPayload.ptr + oldLength, "length: ", (elements - oldLength) * T.sizeof);
+                TRACE("Zeroing from ", newPayload.ptr + oldLength, "length: ", (elements - oldLength) * T.sizeof);
                 memset(newPayload.ptr + oldLength, 0, (elements - oldLength) * T.sizeof);
                 GC.addRange(newPayload.ptr, sz);
             }
 
             // copy old data over to new array
             if (_payload) {
-				TRACE("Copying from : ", _payload.ptr, " to: ", newPayload.ptr, " length: ", T.sizeof * oldLength);
-				memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
-			}
+                TRACE("Copying from : ", _payload.ptr, " to: ", newPayload.ptr, " length: ", T.sizeof * oldLength);
+                memcpy(newPayload.ptr, _payload.ptr, T.sizeof * oldLength);
+            }
 
-			TRACE("New payload: ", newPayload);
+            TRACE("New payload: ", newPayload);
             auto ub = _payload.ptr[0 .. _capacity];
-			if (ub) {
-				TRACE("Freeing old payload");
-				freeArray!(T, ALLOCATOR, false, false)(ub);
+            if (ub) {
+                TRACE("Freeing old payload");
+                freeArray!(T, ALLOCATOR, false, false)(ub);
 
-	            static if ( hasIndirections!T )
-	                GC.removeRange(cast(void*) _payload.ptr);
-			}
-			TRACE("Reservation done. ");
+                static if ( hasIndirections!T )
+                    GC.removeRange(cast(void*) _payload.ptr);
+            }
+            TRACE("Reservation done. ");
             _payload = newPayload;
             _capacity = elements;
         }
@@ -174,7 +174,7 @@ struct VectorImpl(T, int ALLOCATOR)
         size_t pushBack(Stuff)(Stuff stuff)
             if (isImplicitlyConvertible!(Stuff, T))
         {
-			TRACE("Vector.append");
+            TRACE("Vector.append");
             if (_capacity == length)
             {
                 reserve(1 + capacity * 3 / 2);
@@ -189,7 +189,7 @@ struct VectorImpl(T, int ALLOCATOR)
         size_t pushBack(Stuff)(Stuff stuff)
             if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
         {
-			TRACE("Vector.append 2");
+            TRACE("Vector.append 2");
             static if (hasLength!Stuff)
             {
                 immutable oldLength = length;
@@ -221,7 +221,7 @@ struct VectorImpl(T, int ALLOCATOR)
      */
     this(U)(U[] values...) if (isImplicitlyConvertible!(U, T))
     {
-		_data = Data(cast(T[])values);
+        _data = Data(cast(T[])values);
     }
     
     /**
@@ -232,23 +232,7 @@ struct VectorImpl(T, int ALLOCATOR)
     {
         insertBack(stuff);
     }
-    
-    /**
-        Comparison for equality.
-    bool opEquals(const FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs) const
-    {
-        return opEquals(rhs);
-    }
-     */
-    
-    /// ditto
-    bool opEquals(ref const FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs) const
-    {
-        if (empty) return rhs.empty;
-        if (rhs.empty) return false;
-        return _data._payload == rhs._data._payload;
-    }
-    
+        
     /**
         Defines the container's primary range, which is a random-access range.
     */
@@ -290,7 +274,7 @@ struct VectorImpl(T, int ALLOCATOR)
         @property ref T back()
         {
             version (assert) if (empty) throw new RangeError();
-			return (*_outer)[_b - 1];
+            return (*_outer)[_b - 1];
         }
 
         void popFront() @safe pure nothrow
@@ -349,7 +333,7 @@ struct VectorImpl(T, int ALLOCATOR)
         void opSliceAssign(T value, size_t i, size_t j)
         {
             version (assert) if (_a + j > _b) throw new RangeError();
-			(*_outer)[_a + i .. _a + j] = value;
+            (*_outer)[_a + i .. _a + j] = value;
         }
         
         void opSliceUnary(string op)()
@@ -605,7 +589,7 @@ struct VectorImpl(T, int ALLOCATOR)
     auto opBinary(string op, Stuff)(Stuff stuff)
         if (op == "~")
     {
-		TRACE("Appending stuff");
+        TRACE("Appending stuff");
         FreeListRef!(VectorImpl!(T, ALLOCATOR)) result;
         // @@@BUG@@ result ~= this[] doesn't work
         auto r = this[];
@@ -645,7 +629,7 @@ struct VectorImpl(T, int ALLOCATOR)
      */
     void clear()
     {
-		TRACE("Vector.clear()");
+        TRACE("Vector.clear()");
         _data.length = 0;
     }
     
@@ -671,8 +655,8 @@ struct VectorImpl(T, int ALLOCATOR)
 
     import std.traits : isNumeric;
 
-    static if (is(T == ubyte))
-    int opCmp(const ref FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
+    int opCmp(int Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) other) const 
+    {
         if (this[] == other[])
             return 0;
         else if (this[] < other[])
@@ -888,17 +872,23 @@ struct VectorImpl(T, int ALLOCATOR)
         return 1;
     }
 
-	bool opEquals(int Alloc)(Vector!(T, Alloc) other_) {
-		import botan.constants : logTrace;
-		logTrace("opEquals Vector");
-		if (*other_ is null && _data._payload.length == 0)
-			return true;
-		else if (*other_ is null)
-			return false;
-		if (other_.length != length)
-			return false;
-		return this[] == other_[];
-	}
+    bool opEquals(in FreeListRef!(VectorImpl!(T, ALLOCATOR)) other_) const {
+        import botan.constants : logTrace;
+        logTrace("opEquals Vector");
+        if (*other_ is null && _data._payload.length == 0)
+            return true;
+        else if (*other_ is null)
+            return false;
+        if (other_.length != length)
+            return false;
+        foreach  (const size_t i, const ref T t; _data._payload) {
+            if (t != other_[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     
 }
 

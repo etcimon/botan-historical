@@ -68,7 +68,7 @@ protected:
         m_cipher = cipher;
         m_padding = padding;
         if (!m_padding.validBlocksize(m_cipher.blockSize()))
-			throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/ECB");
+            throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/ECB");
     }
 
     final BlockCipher cipher() const { return *m_cipher; }
@@ -137,16 +137,16 @@ public:
         return 0;
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override bool validNonceLength(size_t n) const {
-		return super.validNonceLength(n);
-	}
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override bool validNonceLength(size_t n) const {
+        return super.validNonceLength(n);
+    }
 }
 
 /**
@@ -200,14 +200,14 @@ public:
         return cipher().blockSize();
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override bool validNonceLength(size_t n) const {
-		return super.validNonceLength(n);
-	}
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override bool validNonceLength(size_t n) const {
+        return super.validNonceLength(n);
+    }
 }

@@ -379,7 +379,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
 unittest
 {
-	logTrace("Testing rsa.d ...");
+    logTrace("Testing rsa.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

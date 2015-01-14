@@ -28,8 +28,8 @@ public:
     */
     this(string algo_spec)
     {
-		m_args = Vector!string();
-		m_mode_info = Vector!string();
+        m_args = Vector!string();
+        m_mode_info = Vector!string();
         m_orig_algo_spec = algo_spec;
         
         Vector!( Pair!(size_t, string)  ) names;
@@ -59,12 +59,12 @@ public:
                 if (c == '/' && level > 0) {
                     accum.second ~= c;
 
-				}
+                }
                 else
                 {
                     if (accum.second.length > 0) {
                         names ~= makePair(accum.first, derefAlias(accum.second[]));
-					}
+                    }
                     Vector!ubyte str;
                     str.reserve(8);
                     accum = makePair(level, str);
@@ -72,12 +72,12 @@ public:
             }
             else {
                 accum.second ~= c;
-			}
+            }
         }
         
         if (accum.second.length > 0) {
             names ~= makePair(accum.first, derefAlias(accum.second[]));
-		}
+        }
         if (level != 0)
             throw new DecodingError(decoding_error ~ "Missing close paren");
         
@@ -87,7 +87,7 @@ public:
         m_alg_name = names[0].second[].dup;
 
         if (names.length == 1)
-			return;
+            return;
 
         bool in_modes;
         size_t i = 1;
@@ -95,14 +95,14 @@ public:
         {
             if (name.first == 0)
             {
-				string val = makeArg(names, i);
+                string val = makeArg(names, i);
                 m_mode_info.pushBack(val);
                 in_modes = true;
             }
             else if (name.first == 1 && !in_modes) { 
-				string val = makeArg(names, i);
+                string val = makeArg(names, i);
                 m_args.pushBack(val);
-			}
+            }
             i++;
         }
     }
@@ -211,11 +211,11 @@ public:
     
     static string derefAlias(string input)
     {
-		auto name = s_alias_map.get(input, null);
-		if (name)
-			return name;
-		else
-			return input.dup;
+        auto name = s_alias_map.get(input, null);
+        if (name)
+            return name;
+        else
+            return input.dup;
     }
 
     static void setDefaultAliases()

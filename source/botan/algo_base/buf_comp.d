@@ -172,14 +172,14 @@ public:
         return finished();
     }
 
-	final void addData(T)(in T input, size_t length) {
-		addData(cast(const(ubyte)*)input, length);
-	}
+    final void addData(T)(in T input, size_t length) {
+        addData(cast(const(ubyte)*)input, length);
+    }
 
-	/**
+    /**
     * @return length of the output of this function in bytes
     */
-	abstract @property size_t outputLength() const;
+    abstract @property size_t outputLength() const;
 
 protected:
     /**

@@ -86,7 +86,7 @@ protected:
     { 
         m_cipher = cipher;
         m_feedback_bytes = feedback_bits ? feedback_bits / 8 : m_cipher.blockSize();
-		if (feedback_bits % 8 || feedback() > m_cipher.blockSize())
+        if (feedback_bits % 8 || feedback() > m_cipher.blockSize())
             throw new InvalidArgument(name() ~ ": feedback bits " ~
                                        to!string(feedback_bits) ~ " not supported");
     }
@@ -138,7 +138,7 @@ public:
             const size_t took = std.algorithm.min(shift, sz);
             xorBuf(buf, &keystreamBuf()[0], took);
             // Assumes feedback-sized block except for last input
-			if (BS - shift > 0) copyMem(state.ptr, &state[shift], BS - shift);
+            if (BS - shift > 0) copyMem(state.ptr, &state[shift], BS - shift);
             copyMem(&state[BS-shift], buf, took);
             cipher().encrypt(state, keystreamBuf());
             
@@ -153,18 +153,18 @@ public:
         update(buffer, offset);
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
-	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
-	override bool validNonceLength(size_t n) const {
-		return super.validNonceLength(n);
-	}
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
+    override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+    override bool validNonceLength(size_t n) const {
+        return super.validNonceLength(n);
+    }
 }
 
 /**
@@ -194,7 +194,7 @@ public:
             const size_t took = std.algorithm.min(shift, sz);
             
             // first update shift register with ciphertext
-			if (BS - shift > 0) copyMem(state.ptr, &state[shift], BS - shift);
+            if (BS - shift > 0) copyMem(state.ptr, &state[shift], BS - shift);
             copyMem(&state[BS-shift], buf, took);
             
             // then decrypt
@@ -213,16 +213,16 @@ public:
         update(buffer, offset);
     }
 
-	// Interface fallthrough
-	override string provider() const { return "core"; }
-	override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-	override size_t updateGranularity() const { return super.updateGranularity(); }
-	override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
-	override @property string name() const { return super.name; }
-	override void clear() { return super.clear(); }
-	override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
-	override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
-	override bool validNonceLength(size_t n) const {
-		return super.validNonceLength(n);
-	}
+    // Interface fallthrough
+    override string provider() const { return "core"; }
+    override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
+    override size_t updateGranularity() const { return super.updateGranularity(); }
+    override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
+    override @property string name() const { return super.name; }
+    override void clear() { return super.clear(); }
+    override size_t outputLength(size_t input_length) const { return super.outputLength(input_length); }
+    override size_t minimumFinalSize() const { return super.minimumFinalSize(); }
+    override bool validNonceLength(size_t n) const {
+        return super.validNonceLength(n);
+    }
 }

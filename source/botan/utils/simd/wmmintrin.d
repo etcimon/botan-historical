@@ -176,7 +176,7 @@ version(D_Version2) {
     __m128i _mm_clmulepi64_si128(int imm)(__m128i a, __m128i b) {
         /// todo: Enable this after adding PCLMULQDQ in dmd
         __m128i* _a = &a;
-		__m128i* _b = &b;
+        __m128i* _b = &b;
                 
         mixin(`asm pure nothrow {
             mov RAX, _a;

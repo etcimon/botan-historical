@@ -739,7 +739,7 @@ size_t ecdsaSigKat(string group_id,
 
 unittest
 {
-	logTrace("Testing ecdsa.d ...");
+    logTrace("Testing ecdsa.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

@@ -21,8 +21,8 @@ import botan.utils.types;
 class MD4 : MDxHashFunction, HashFunction
 {
 public:
-	
-	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
+    
+    override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override @property string name() const { return "MD4"; }
     override @property size_t outputLength() const { return 16; }
     override HashFunction clone() const { return new MD4; }

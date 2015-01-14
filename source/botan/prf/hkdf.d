@@ -149,7 +149,7 @@ size_t hkdfTest(string algo, string ikm, string salt, string info, string okm, s
 
 unittest
 {
-	logTrace("Testing hkdf.d ...");
+    logTrace("Testing hkdf.d ...");
     File vec = File("../test_data/hkdf.vec", "r");
     
     size_t fails = runTestsBb(vec, "HKDF", "OKM", true,

@@ -77,10 +77,10 @@ public:
         m_out_position = 0;
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 
 private:
     /*
@@ -218,10 +218,10 @@ public:
         m_position = 0;
     }
 
-	// Interface fallthrough
-	override bool attachable() { return super.attachable(); }
-	override void startMsg() { super.startMsg(); }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override bool attachable() { return super.attachable(); }
+    override void startMsg() { super.startMsg(); }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     const DecoderChecking m_checking;
     Vector!ubyte m_input, m_output;

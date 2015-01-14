@@ -542,7 +542,7 @@ void testCvcChain(RandomNumberGenerator rng)
 
 unittest
 {
-	logTrace("Testing cvc/test.d ...");
+    logTrace("Testing cvc/test.d ...");
     AutoSeededRNG rng;
     
     testEncGenSelfsigned(rng);

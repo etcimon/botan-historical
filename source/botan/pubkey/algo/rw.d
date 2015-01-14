@@ -190,11 +190,11 @@ public:
         
         const BigInt r = m_blinder.unblind(mulAdd(j1, m_q, j2));
         
-		BigInt min_val = r.dup;
-		BigInt cmp2 = m_n.dup - r;
+        BigInt min_val = r.dup;
+        BigInt cmp2 = m_n.dup - r;
 
-		if (cmp2 < min_val)
-			min_val = cmp2;
+        if (cmp2 < min_val)
+            min_val = cmp2;
 
         return BigInt.encode1363(min_val, m_n.bytes());
     }
@@ -327,7 +327,7 @@ size_t rwSigVerify(string e,
 
 unittest
 {
-	logTrace("Testing rw.d ...");
+    logTrace("Testing rw.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

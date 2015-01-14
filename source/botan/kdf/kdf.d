@@ -171,7 +171,7 @@ import botan.test;
 
 unittest
 {
-	logTrace("Testing kdf.d ...");
+    logTrace("Testing kdf.d ...");
     auto test = delegate(string input) {
         return runTests(input, "KDF", "Output", true,
                          (string[string] vec)

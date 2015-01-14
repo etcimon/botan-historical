@@ -208,13 +208,13 @@ Vector!uint parseAsn1Oid(in string oid)
         }
         else {
             substring ~= c;
-		}
+        }
     }
     
     if (substring.length == 0)
         throw new InvalidOID(oid);
     oid_elems ~= to!uint(substring[]);    
-	substring.clear();
+    substring.clear();
 
     if (oid_elems.length < 2)
         throw new InvalidOID(oid);

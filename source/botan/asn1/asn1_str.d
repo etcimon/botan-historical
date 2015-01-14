@@ -63,6 +63,12 @@ public:
         return transcode(m_iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
     }
 
+    bool opEquals(in FreeListRef!(ASN1StringImpl) other) const
+    {
+        if (m_tag != other.tagging()) return false;
+        if (m_iso_8859_str != other.iso8859()) return false;
+        return true;
+    }
 
     /*
     * Return this string in ISO 8859-1 encoding

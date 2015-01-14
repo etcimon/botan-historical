@@ -112,7 +112,7 @@ public:
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "+")
     {
-        return vec_add(m_reg, other.m_reg);
+        return SIMDAltivec(vec_add(m_reg, other.m_reg));
     }
 
     void opOpAssign(string op)(in SIMDAltivec other)
@@ -124,7 +124,7 @@ public:
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "-")
     {
-        return vec_sub(m_reg, other.m_reg);
+        return SIMDAltivec(vec_sub(m_reg, other.m_reg));
     }
 
     void opOpAssign(string op)(in SIMDAltivec other)
@@ -136,7 +136,7 @@ public:
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "^")
     {
-        return vec_xor(m_reg, other.m_reg);
+        return SIMDAltivec(vec_xor(m_reg, other.m_reg));
     }
 
     void opOpAssign(string op)(in SIMDAltivec other)
@@ -148,7 +148,7 @@ public:
     SIMDAltivec opBinary(string op)(in SIMDAltivec other)
         if (op == "&")
     {
-        return vec_and(m_reg, other.m_reg);
+        return SIMDAltivec(vec_and(m_reg, other.m_reg));
     }
 
     void opOpAssign(string op)(in SIMDAltivec other)
@@ -162,7 +162,7 @@ public:
         uint shift = cast(uint) shift_;
         vector_uint shift_vec = vector_uint([shift, shift, shift, shift]);
 
-        return vec_sl(m_reg, shift_vec);
+        return SIMDAltivec(vec_sl(m_reg, shift_vec));
     }
 
     SIMDAltivec rshift(int shift_)()
@@ -170,19 +170,19 @@ public:
         uint shift = cast(uint) shift_;
         vector_uint shift_vec = vector_uint([shift, shift, shift, shift]);
 
-        return vec_sr(m_reg, shift_vec);
+        return SIMDAltivec(vec_sr(m_reg, shift_vec));
     }
 
     SIMDAltivec opUnary(string op)()
         if (op == "~")
     {
-        return vec_nor(m_reg, m_reg);
+        return SIMDAltivec(vec_nor(m_reg, m_reg));
     }
 
     SIMDAltivec andc(in SIMDAltivec other)
     {
         // AltiVec does arg1 & ~arg2 rather than SSE's ~arg1 & arg2
-        return vec_andc(other.m_reg, m_reg);
+        return SIMDAltivec(vec_andc(other.m_reg, m_reg));
     }
 
     SIMDAltivec bswap()

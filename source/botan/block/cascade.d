@@ -42,12 +42,11 @@ public:
         return KeyLengthSpecification(m_cipher1.maximumKeylength() + m_cipher2.maximumKeylength());
     }
 
-	override void clear()
+    override void clear()
     {
         m_cipher1.clear();
         m_cipher2.clear();
     }
-
 
     @property string name() const
     {
@@ -66,12 +65,13 @@ public:
     * @param cipher1 = the first cipher
     * @param cipher2 = the second cipher
     */
-    this(in BlockCipher c1, in BlockCipher c2) 
+    this(BlockCipher c1, BlockCipher c2) 
     {
-        m_cipher1 = cast(BlockCipher) c1; m_cipher2 = cast(BlockCipher) c2;
-        m_block = block_size_for_cascade(c1.blockSize(), c2.blockSize());
+        m_cipher1 = Unique!BlockCipher(c1); 
+        m_cipher2 = Unique!BlockCipher(c2);
+        m_block = block_size_for_cascade(m_cipher1.blockSize(), m_cipher2.blockSize());
         
-        if (this.blockSize() % c1.blockSize() || this.blockSize() % c2.blockSize())
+        if (this.blockSize() % m_cipher1.blockSize() || this.blockSize() % m_cipher2.blockSize())
             throw new InternalError("Failure in " ~ name() ~ " constructor");
     }
 protected:

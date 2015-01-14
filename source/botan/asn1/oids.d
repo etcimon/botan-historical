@@ -364,12 +364,12 @@ private:
 
 OIDMap globalOidMap()
 {
-	static OIDMap map;
+    static OIDMap map;
 
-	if (!map.m_str2oid) {
-		map.m_str2oid = HashMap!(string, OID)();
-		map.m_oid2str = HashMap!(OID, string)();
-	}
+    if (!map.m_str2oid) {
+        map.m_str2oid = HashMap!(string, OID)();
+        map.m_oid2str = HashMap!(OID, string)();
+    }
 
-	return map;
+    return map;
 }

@@ -25,7 +25,7 @@
             "EME_PKCS1v15", "PBE_PKCSv20", "GCM_CLMUL", "X931_RNG", "HMAC_DRBG", "KDF1", "KDF2", "SSL_V3_PRF", "TLS_V10_PRF", "TLS_V12_PRF", "X942_PRF"]
         }
     ],
-	"dependencies": { "backtrace-d": "~master" }, 
-	"buildOptions": ["debugInfoC", "stackStomping", "alwaysStackFrame"],
-	"libs": ["sqlite3", "dl", "bz2", "lzma"]
+    "dependencies": { "backtrace-d": "~master" }, 
+    "buildOptions": ["debugInfoC", "stackStomping", "alwaysStackFrame"],
+    "libs": ["sqlite3", "dl", "bz2", "lzma"]
 }

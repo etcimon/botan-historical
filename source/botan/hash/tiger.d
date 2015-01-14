@@ -24,8 +24,8 @@ import std.conv : to;
 final class Tiger : MDxHashFunction, HashFunction
 {
 public:
-	
-	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
+    
+    override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
 
     /*
     * Return the name of this type

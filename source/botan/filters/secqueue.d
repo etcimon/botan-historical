@@ -142,7 +142,7 @@ public:
     this()
     {
         bytes_read = 0;
-		Filter filt;
+        Filter filt;
         setNext(&filt, 0);
         m_head = m_tail = new SecureQueueNode;
     }
@@ -154,7 +154,7 @@ public:
     this(SecureQueue input)
     {
         bytes_read = 0;
-		Filter filt;
+        Filter filt;
         setNext(&filt, 0);
         
         m_head = m_tail = new SecureQueueNode;
@@ -168,11 +168,11 @@ public:
 
     ~this() { destroy(); }
 
-	// Interface fallthrough
-	override void startMsg() { super.startMsg(); }
-	override void endMsg() { super.endMsg(); }
-	override string id() const { return ""; }
-	override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
+    // Interface fallthrough
+    override void startMsg() { super.startMsg(); }
+    override void endMsg() { super.endMsg(); }
+    override string id() const { return ""; }
+    override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
 private:
     size_t bytes_read;
 
@@ -204,7 +204,7 @@ public:
 
     this() 
     { 
-		m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
+        m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         m_next = null; 
         m_start = m_end = 0; }
     

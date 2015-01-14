@@ -209,7 +209,7 @@ public:
     /*
     * Compare two X509DNs for equality
     */
-    bool opEquals(in X509DN dn2)
+    bool opEquals(in X509DN dn2) const
     {
         Vector!(Pair!(OID, string)) attr1;
         Vector!(Pair!(OID, string)) attr2;
@@ -222,7 +222,7 @@ public:
             }
 
             foreach (const ref OID oid, const ref string val; map2) {
-				attr2 ~= makePair(oid.dup, val);
+                attr2 ~= makePair(oid.dup, val);
             }
         }
 
@@ -249,7 +249,7 @@ public:
     /*
     * Compare two X509DNs for inequality
     */
-    int opCmp(const X509DN dn2)
+    int opCmp(const X509DN dn2) const
     {
         if (this == dn2)
             return 0;
@@ -262,7 +262,7 @@ public:
     /*
     * Induce an arbitrary ordering on DNs
     */
-    bool isSmallerThan(const X509DN dn2)
+    bool isSmallerThan(const X509DN dn2) const
     {
         const auto attr1 = getAttributes();
         const auto attr2 = dn2.getAttributes();

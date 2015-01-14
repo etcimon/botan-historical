@@ -22,13 +22,13 @@ import botan.asn1.ber_dec;
 class DLSchemePublicKey : PublicKey
 {
 public:
-	override bool checkKey(RandomNumberGenerator rng, bool strong) const
-	{    
-		return (cast(DLSchemePublicKey)this).checkKey(rng, strong);
-	}
+    override bool checkKey(RandomNumberGenerator rng, bool strong) const
+    {    
+        return (cast(DLSchemePublicKey)this).checkKey(rng, strong);
+    }
 
-	private bool checkKey(RandomNumberGenerator rng, bool strong)
-	{
+    private bool checkKey(RandomNumberGenerator rng, bool strong)
+    {
         if (m_check_key) {
             auto tmp = m_check_key;
             m_check_key = null;
@@ -70,13 +70,13 @@ public:
         return DEREncoder().encode(m_y).getContentsUnlocked();
     }
 
-	/*
+    /*
     * Return the public value for key agreement
     */
-	Vector!ubyte publicValue() const
-	{
-		return unlock(BigInt.encode1363(getY(), groupP().bytes()));
-	}
+    Vector!ubyte publicValue() const
+    {
+        return unlock(BigInt.encode1363(getY(), groupP().bytes()));
+    }
 
     /**
     * Get the DL domain parameters of this key.
@@ -241,13 +241,13 @@ public:
         super(grp, y1, format, algo_name, msg_parts, check_key, max_input_bits, msg_part_size);
     }
 
-	/*
+    /*
     * Return the public value for key agreement
     */
-	override Vector!ubyte publicValue() const
-	{
-		return super.publicValue();
-	}
+    override Vector!ubyte publicValue() const
+    {
+        return super.publicValue();
+    }
 
 
 package:

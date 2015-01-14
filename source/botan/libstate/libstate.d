@@ -71,7 +71,7 @@ public:
 
     void initialize()
     {
-		logTrace("LibraryState.initialize()");
+        logTrace("LibraryState.initialize()");
         if (m_initialized)
             return;
 
@@ -81,30 +81,30 @@ public:
         m_algorithm_factory = Unique!AlgorithmFactory(new AlgorithmFactory);
         
         static if (BOTAN_HAS_ENGINE_GNU_MP) {
-			logTrace("Loading GNU MP Engine");
+            logTrace("Loading GNU MP Engine");
             algorithmFactory().addEngine(new GMPEngine);
-		}
+        }
         
         static if (BOTAN_HAS_ENGINE_OPENSSL) {
-			logTrace("Loading OpenSSL Engine");
+            logTrace("Loading OpenSSL Engine");
             algorithmFactory().addEngine(new OpenSSLEngine);
-		}
+        }
         
-        static if (BOTAN_HAS_ENGINE_AES_ISA) {         	
-			logTrace("Loading AES ISA Engine");
-			algorithmFactory().addEngine(new AESISAEngine);        
-		}
+        static if (BOTAN_HAS_ENGINE_AES_ISA) {             
+            logTrace("Loading AES ISA Engine");
+            algorithmFactory().addEngine(new AESISAEngine);        
+        }
         
         static if (BOTAN_HAS_ENGINE_SIMD) {
-			logTrace("Loading SIMD Engine");
+            logTrace("Loading SIMD Engine");
             algorithmFactory().addEngine(new SIMDEngine);
-		}
+        }
         
         static if (BOTAN_HAS_ENGINE_ASSEMBLER) {
-			logTrace("Loading Assembler Engine");
-			algorithmFactory().addEngine(new AssemblerEngine);
+            logTrace("Loading Assembler Engine");
+            algorithmFactory().addEngine(new AssemblerEngine);
         
-		}
+        }
         
         algorithmFactory().addEngine(new CoreEngine);
 
@@ -112,15 +112,15 @@ public:
             if (m_sources.length == 0)
                 m_sources = entropySources();
 
-		logTrace("new SerializedRNG()");
+        logTrace("new SerializedRNG()");
 
-		m_global_prng = new SerializedRNG();
-		logTrace("Done serialized RNG");
+        m_global_prng = new SerializedRNG();
+        logTrace("Done serialized RNG");
         static if (BOTAN_HAS_SELFTESTS) {        
-			logTrace("Startup Self-Tests");
-			confirmStartupSelfTests(algorithmFactory());
-		}
-		logTrace("Done Self Tests");
+            logTrace("Startup Self-Tests");
+            confirmStartupSelfTests(algorithmFactory());
+        }
+        logTrace("Done Self Tests");
         m_initialized = true;
 
     }

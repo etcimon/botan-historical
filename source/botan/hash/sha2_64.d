@@ -20,8 +20,8 @@ import botan.utils.types;
 final class SHA384 : MDxHashFunction, HashFunction
 {
 public:
-	
-	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
+    
+    override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override @property string name() const { return "SHA-384"; }
     override @property size_t outputLength() const { return 48; }
     override HashFunction clone() const { return new SHA384; }
@@ -76,8 +76,8 @@ protected:
 final class SHA512 : MDxHashFunction, HashFunction
 {
 public:
-	
-	override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
+    
+    override @property size_t hashBlockSize() const { return super.hashBlockSize(); }
     override @property string name() const { return "SHA-512"; }
     override @property size_t outputLength() const { return 64; }
     override HashFunction clone() const { return new SHA512; }

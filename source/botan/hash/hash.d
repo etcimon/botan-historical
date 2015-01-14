@@ -27,7 +27,7 @@ public:
     /**
     * @return hash block size as defined for this algorithm
     */
-	@property size_t hashBlockSize() const;
+    @property size_t hashBlockSize() const;
 }
 
 static if (BOTAN_TEST):
@@ -101,7 +101,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
 unittest
 {
-	logTrace("Testing hash.d ...");
+    logTrace("Testing hash.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

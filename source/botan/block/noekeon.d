@@ -99,7 +99,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zap(m_EK);
         zap(m_DK);
@@ -185,7 +185,7 @@ package:
 */
 void theta(ref uint A0, ref uint A1,
            ref uint A2, ref uint A3,
-           in uint[4] EK) pure
+           in uint[] EK) pure
 {
     uint T = A0 ^ A2;
     T ^= rotateLeft(T, 8) ^ rotateRight(T, 8);

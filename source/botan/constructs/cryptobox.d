@@ -169,7 +169,7 @@ import botan.rng.auto_rng;
 
 unittest
 {
-	logTrace("Testing cryptobox.d ...");
+    logTrace("Testing cryptobox.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

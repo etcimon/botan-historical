@@ -81,33 +81,33 @@ public:
     }
 
 
-	StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactory af) const
-	{ return null; }
-	
-	MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactory af) const
-	{ return null; }
-	
-	PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
-	{ return null; }
-	
-	ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
-	{ return null; }
-	
-	KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const
-	{ return null; }
-	
-	KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{ return null; }
-	
-	Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{ return null; }
-	
-	Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
-	{ return null; }
-	
-	Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator rng) const
-	{ return null; }
-	
-	Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{ return null; }
+    StreamCipher findStreamCipher(in SCANToken algo_spec, AlgorithmFactory af) const
+    { return null; }
+    
+    MessageAuthenticationCode findMac(in SCANToken algo_spec, AlgorithmFactory af) const
+    { return null; }
+    
+    PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
+    { return null; }
+    
+    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
+    { return null; }
+    
+    KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const
+    { return null; }
+    
+    KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
+    { return null; }
+    
+    Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
+    { return null; }
+    
+    Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
+    { return null; }
+    
+    Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator rng) const
+    { return null; }
+    
+    Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
+    { return null; }
 }

@@ -112,7 +112,7 @@ public:
     * Check if the processor supports AES-NI
     */
     static bool hasAesNi()
-	{ return x86_processor_flags_has(CPUID_AESNI_BIT); }
+    { return x86_processor_flags_has(CPUID_AESNI_BIT); }
 
     /**
     * Check if the processor supports CLMUL
@@ -284,7 +284,7 @@ version(LDC) {
 
 shared static this() {
     
-	logTrace("Loading CPUID ...");
+    logTrace("Loading CPUID ...");
     string processorName;
     char[12] vendorID;
     uint unused;

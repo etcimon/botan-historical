@@ -32,7 +32,7 @@ public:
         m_reg = _mm_set1_epi32(B);
     }
 
-    static SIMDSSE2 loadLittleEndian(const void* input)
+    static SIMDSSE2 loadLittleEndian(in void* input)
     {
         SIMDSSE2 simd;
         simd.m_reg = _mm_loadu_si128(cast(const(__m128i*))(input));
@@ -74,8 +74,9 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "+")
     {
-        m_reg = _mm_add_epi32(m_reg, other.m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_add_epi32(m_reg, other.m_reg);
+        return ret;
     }
 
     void opOpAssign(string op)(in SIMDSSE2 other)
@@ -87,8 +88,9 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "-")
     {
-        m_reg = _mm_sub_epi32(m_reg, other.m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_sub_epi32(m_reg, other.m_reg);
+        return ret;
     }
 
     void opOpAssign(string op)(in SIMDSSE2 other)
@@ -100,8 +102,9 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "^")
     {
-        m_reg = _mm_xor_si128(m_reg, other.m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_xor_si128(m_reg, other.m_reg);
+        return ret;
     }
 
     void opOpAssign(string op)(in SIMDSSE2 other)
@@ -113,8 +116,9 @@ public:
     SIMDSSE2 opBinary(string op)(in SIMDSSE2 other)
         if (op == "&")
     {
-        m_reg = _mm_and_si128(m_reg, other.m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_and_si128(m_reg, other.m_reg);
+        return ret;
     }
 
     void opOpAssign(string op)(in SIMDSSE2 other)
@@ -125,28 +129,32 @@ public:
 
     SIMDSSE2 lshift(size_t shift)()
     {
-        m_reg = _mm_slli_epi32!shift(m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_slli_epi32!shift(m_reg);
+        return ret;
     }
 
     SIMDSSE2 rshift(size_t shift)()
     {
-        m_reg = _mm_srli_epi32!shift(m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_srli_epi32!shift(m_reg);
+        return ret;
     }
 
     SIMDSSE2 opUnary(string op)()
         if (op == "~")
     {
-        m_reg = _mm_xor_si128(m_reg, _mm_set1_epi32!(0xFFFFFFFF)());
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_xor_si128(m_reg, _mm_set1_epi32!(0xFFFFFFFF)());
+        return ret;
     }
 
     // (~reg) & other
     SIMDSSE2 andc(in SIMDSSE2 other)
     {
-        m_reg = _mm_andnot_si128(m_reg, other.m_reg);
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_andnot_si128(m_reg, other.m_reg);
+        return ret;
     }
 
     SIMDSSE2 bswap()
@@ -157,9 +165,10 @@ public:
         T = _mm_shufflehi_epi16!SHUF(T);
         T = _mm_shufflelo_epi16!SHUF(T);
 
-        m_reg = _mm_or_si128(_mm_srli_epi16!8(T),
-                             _mm_slli_epi16!8(T));
-        return this;
+        SIMDSSE2 ret;
+        ret.m_reg = _mm_or_si128(_mm_srli_epi16!8(T),
+                                 _mm_slli_epi16!8(T));
+        return ret;
     }
 
     static void transpose(ref SIMDSSE2 B0, ref SIMDSSE2 B1,

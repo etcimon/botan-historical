@@ -30,7 +30,7 @@ public:
     */
     abstract OID getOid() const;
 
-	override void setNext(Filter* filters, size_t size) {
-		super.setNext(filters, size);
-	}
+    override void setNext(Filter* filters, size_t size) {
+        super.setNext(filters, size);
+    }
 }

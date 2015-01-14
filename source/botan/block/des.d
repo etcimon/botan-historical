@@ -19,7 +19,7 @@ import botan.utils.mem_ops;
 /**
 * DES
 */
-final class DES : BlockCipherFixedParams!(8, 8), BlockCipher, SymmetricAlgorithm
+class DES : BlockCipherFixedParams!(8, 8), BlockCipher, SymmetricAlgorithm
 {
 public:
 
@@ -30,7 +30,7 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ulong T =     (DES_IPTAB1[input[0]]      ) | (DES_IPTAB1[input[1]] << 1) |
+            ulong T =   (DES_IPTAB1[input[0]]     ) | (DES_IPTAB1[input[1]] << 1) |
                         (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
                         (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
                         (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]      );
@@ -43,7 +43,7 @@ public:
             T =     (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
                     (DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
-                    (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
+                    (DES_FPTAB1[get_byte(2, R)]     ) | (DES_FPTAB2[get_byte(3, R)]      );
             T = rotateLeft(T, 32);
             
             storeBigEndian(T, output);
@@ -61,7 +61,7 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ulong T =     (DES_IPTAB1[input[0]]      ) | (DES_IPTAB1[input[1]] << 1) |
+            ulong T =     (DES_IPTAB1[input[0]]   ) | (DES_IPTAB1[input[1]] << 1) |
                         (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
                         (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
                         (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]      );
@@ -74,7 +74,7 @@ public:
             T =     (DES_FPTAB1[get_byte(0, L)] << 5) | (DES_FPTAB1[get_byte(1, L)] << 3) |
                     (DES_FPTAB1[get_byte(2, L)] << 1) | (DES_FPTAB2[get_byte(3, L)] << 1) |
                     (DES_FPTAB1[get_byte(0, R)] << 4) | (DES_FPTAB1[get_byte(1, R)] << 2) |
-                    (DES_FPTAB1[get_byte(2, R)]      )   | (DES_FPTAB2[get_byte(3, R)]      );
+                    (DES_FPTAB1[get_byte(2, R)]     ) | (DES_FPTAB2[get_byte(3, R)]      );
             
             T = rotateLeft(T, 32);
             
@@ -85,7 +85,7 @@ public:
         }
     }
 
-	override void clear()
+    override void clear()
     {
         zap(m_round_key);
     }
@@ -121,7 +121,7 @@ public:
     {
         foreach (size_t i; 0 .. blocks)
         {
-            ulong T =   (DES_IPTAB1[input[0]]      ) | (DES_IPTAB1[input[1]] << 1) |
+            ulong T =   (DES_IPTAB1[input[0]]     ) | (DES_IPTAB1[input[1]] << 1) |
                         (DES_IPTAB1[input[2]] << 2) | (DES_IPTAB1[input[3]] << 3) |
                         (DES_IPTAB1[input[4]] << 4) | (DES_IPTAB1[input[5]] << 5) |
                         (DES_IPTAB1[input[6]] << 6) | (DES_IPTAB2[input[7]]      );
@@ -179,7 +179,7 @@ public:
         }
     }
 
-	override void clear()
+    override void clear()
     {
         zap(m_round_key);
     }
@@ -196,15 +196,15 @@ protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_round_key.resize(3*32);
-		des_key_schedule(*cast(uint[32]*)m_round_key.ptr, key[0 .. 8]);
-		des_key_schedule(*cast(uint[32]*)&m_round_key[32], key[8 .. 16]);
+        des_key_schedule(*cast(uint[32]*)m_round_key.ptr, key[0 .. 8]);
+        des_key_schedule(*cast(uint[32]*)&m_round_key[32], key[8 .. 16]);
         
         if (length == 24) {
-			des_key_schedule(*cast(uint[32]*)&m_round_key[64], key[16 .. 24]);
-		}
+            des_key_schedule(*cast(uint[32]*)&m_round_key[64], key[16 .. 24]);
+        }
         else {
             copyMem(&m_round_key[64], m_round_key.ptr, 32);
-		}
+        }
     }
 
     SecureVector!uint m_round_key;

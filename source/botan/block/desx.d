@@ -49,9 +49,10 @@ public:
             output += BLOCK_SIZE;
         }
     }
-	override void clear()
+    override void clear()
     {
-        m_des.clear();
+        m_des.free();
+        m_des = Unique!DES(new DES);
         zap(m_K1);
         zap(m_K2);
     }
@@ -74,5 +75,5 @@ protected:
     }
 
     SecureVector!ubyte m_K1, m_K2;
-    DES m_des;
+    Unique!DES m_des;
 }

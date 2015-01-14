@@ -44,7 +44,7 @@ protected:
             D = m_digest[3],
             E = m_digest[4];
         
-		__m128i* input = cast(__m128i*)(input_bytes);
+        __m128i* input = cast(__m128i*)(input_bytes);
         
         foreach (size_t i; 0 .. blocks)
         {

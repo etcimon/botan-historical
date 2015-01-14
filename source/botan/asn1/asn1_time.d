@@ -274,7 +274,7 @@ public:
     /*
     * Compare two X509Times for in various ways
     */
-    bool opEquals(in X509Time t2)
+    bool opEquals(in X509Time t2) const
     { return (cmp(t2) == 0); }
 
     int opCmp(in X509Time t2) const

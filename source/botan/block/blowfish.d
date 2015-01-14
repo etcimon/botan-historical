@@ -41,11 +41,11 @@ public:
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
-                      S3[get_byte(2, L)]) + S4[get_byte(3, L)];
+                       S3[get_byte(2, L)]) + S4[get_byte(3, L)];
                 
                 R ^= m_P[j+1];
                 L ^= ((S1[get_byte(0, R)]  + S2[get_byte(1, R)]) ^
-                      S3[get_byte(2, R)]) + S4[get_byte(3, R)];
+                       S3[get_byte(2, R)]) + S4[get_byte(3, R)];
             }
             
             L ^= m_P[16]; R ^= m_P[17];
@@ -78,11 +78,11 @@ public:
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
-                      S3[get_byte(2, L)]) + S4[get_byte(3, L)];
+                       S3[get_byte(2, L)]) + S4[get_byte(3, L)];
                 
                 R ^= m_P[j-1];
                 L ^= ((S1[get_byte(0, R)]  + S2[get_byte(1, R)]) ^
-                      S3[get_byte(2, R)]) + S4[get_byte(3, R)];
+                       S3[get_byte(2, R)]) + S4[get_byte(3, R)];
             }
             
             L ^= m_P[1]; R ^= m_P[0];
@@ -138,7 +138,7 @@ public:
     /*
     * Clear memory of sensitive data
     */
-	override void clear()
+    override void clear()
     {
         zap(m_P);
         zap(m_S);
@@ -156,10 +156,10 @@ protected:
     override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_P.resize(18);
-        m_P ~= P_INIT[0 .. 18];
+        m_P[] = P_INIT[0 .. 18];
         
         m_S.resize(1024);
-        m_S ~= S_INIT[0 .. 1024];
+        m_S[] = S_INIT[0 .. 1024];
         
         immutable ubyte[16] null_salt;
         
@@ -204,11 +204,11 @@ private:
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
-                      S3[get_byte(2, L)]) + S4[get_byte(3, L)];
+                       S3[get_byte(2, L)]) + S4[get_byte(3, L)];
                 
                 R ^= m_P[j+1];
                 L ^= ((S1[get_byte(0, R)]  + S2[get_byte(1, R)]) ^
-                      S3[get_byte(2, R)]) + S4[get_byte(3, R)];
+                       S3[get_byte(2, R)]) + S4[get_byte(3, R)];
             }
             
             uint T = R; R = L ^ m_P[16]; L = T ^ m_P[17];
