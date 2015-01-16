@@ -35,8 +35,8 @@ public:
     */
     string toString(Base base = Decimal) const
     {
-		Vector!ubyte ret = BigInt.encode(this, base);
-		logDebug("Encoded: ", ret[]);
+        Vector!ubyte ret = BigInt.encode(this, base);
+        logDebug("Encoded: ", ret[]);
         return ret[].idup;
     }
 
@@ -62,12 +62,12 @@ public:
         }
     }
 
-	this(this) {
-		SecureVector!word* other = m_reg;
-		m_reg = null;
-		defaultInit();
-		*m_reg = *other;
-	}
+    this(this) {
+        SecureVector!word* other = m_reg;
+        m_reg = null;
+        defaultInit();
+        *m_reg = *other;
+    }
 
     /**
     * Create BigInt from any integer
@@ -76,20 +76,20 @@ public:
     this(T)(T n)
         if (isNumeric!T)
     {
-		import std.algorithm : max;
+        import std.algorithm : max;
         if (n == 0)
             return;
         const size_t limbs_needed = std.algorithm.max(1, T.sizeof / word.sizeof);
-		defaultInit();
-		(*m_reg).resize(4*limbs_needed);
+        defaultInit();
+        (*m_reg).resize(4*limbs_needed);
         foreach (size_t i; 0 .. limbs_needed)
             (*m_reg)[i] = ((n >> (i*MP_WORD_BITS)) & MP_WORD_MASK);
     }
 
-	void defaultInit() {
-		if (!m_reg)
-			m_reg = new SecureVector!(word)();
-	}
+    void defaultInit() {
+        if (!m_reg)
+            m_reg = new SecureVector!(word)();
+    }
 
     ref BigInt opAssign(size_t other)
     {
@@ -105,7 +105,7 @@ public:
     */
     this(in BigInt other)
     {
-		defaultInit();
+        defaultInit();
         *m_reg = (*other.m_reg).dup;
         m_signedness = cast(Sign)other.m_signedness;
     }
@@ -138,8 +138,8 @@ public:
         
         BigInt model = decode(cast(const(ubyte)*)(str.ptr) + markers,
                               str.length - markers, base);
-		defaultInit();
-		*this.m_reg = *model.m_reg;
+        defaultInit();
+        *this.m_reg = *model.m_reg;
 
         if (negative) setSign(Negative);
         else          setSign(Positive);
@@ -153,12 +153,12 @@ public:
     */
     this(const(ubyte)* input, size_t length, Base base = Binary)
     {
-		logDebug("Building bigint with input: ", input[0 .. length]);
+        logDebug("Building bigint with input: ", input[0 .. length]);
         BigInt model = decode(input, length, base);
-		logDebug("Done model");
-		defaultInit();
-		*this.m_reg = *model.m_reg;
-		this.m_signedness = model.m_signedness;
+        logDebug("Done model");
+        defaultInit();
+        *this.m_reg = *model.m_reg;
+        this.m_signedness = model.m_signedness;
     }
 
     /**
@@ -177,7 +177,7 @@ public:
     */
     this(Sign s, size_t size)
     {
-		defaultInit();
+        defaultInit();
         (*m_reg).resize(roundUp!size_t(size, 8));
         m_signedness = s;
     }
@@ -187,7 +187,7 @@ public:
     */
     this(ref BigInt other)
     {
-		BigInt other_ = other.dup;
+        BigInt other_ = other.dup;
         this.swap(other_);
     }
     
@@ -223,21 +223,21 @@ public:
     */
     void swap(ref BigInt other)
     {
-		if (&other is null) {
-			destroy(this);
-			return;
-		}
-		if (&other is &this)
-			return;
+        if (&other is null) {
+            destroy(this);
+            return;
+        }
+        if (&other is &this)
+            return;
 
-		if (!m_reg) {
-			m_reg = new SecureVector!(word)();
-		}
-		if (other.m_reg)
-			*m_reg = *other.m_reg;
+        if (!m_reg) {
+            m_reg = new SecureVector!(word)();
+        }
+        if (other.m_reg)
+            *m_reg = *other.m_reg;
         m_signedness = other.m_signedness;
 
-		destroy(other);
+        destroy(other);
     }
 
     /**
@@ -247,7 +247,7 @@ public:
     void opOpAssign(string op)(in BigInt y)
         if (op == "+")
     {
-		defaultInit();
+        defaultInit();
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
         const size_t reg_size = std.algorithm.max(x_sw, y_sw) + 1;
@@ -279,8 +279,8 @@ public:
 
     void opOpAssign(string op)(in word y)
         if (op == "+")
-	{
-		defaultInit();
+    {
+        defaultInit();
         this += BigInt(y);
     }
 
@@ -291,7 +291,7 @@ public:
     void opOpAssign(string op)(in BigInt y)
         if (op == "-")
     {
-		defaultInit();
+        defaultInit();
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         
         int relative_size = bigint_cmp((*m_reg).ptr, x_sw, y.ptr, y_sw);
@@ -331,7 +331,7 @@ public:
     void opOpAssign(string op)(in word y)
         if (op == "-")
     {
-		defaultInit();
+        defaultInit();
         this -= BigInt(y);
     }
 
@@ -343,7 +343,7 @@ public:
     void opOpAssign(string op)(in BigInt y)
         if (op == "*")
     {
-		defaultInit();
+        defaultInit();
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
         setSign((sign() == y.sign()) ? Positive : Negative);
         
@@ -377,7 +377,7 @@ public:
     void opOpAssign(string op)(in word y)
         if (op == "*")
     {
-		defaultInit();
+        defaultInit();
         this *= BigInt(y);
     }
 
@@ -388,7 +388,7 @@ public:
     void opOpAssign(string op)(in BigInt y)
         if (op == "/")
     {
-		defaultInit();
+        defaultInit();
         if (y.sigWords() == 1 && isPowerOf2(y.wordAt(0)))
             this >>= (y.bits() - 1);
         else
@@ -399,7 +399,7 @@ public:
     void opOpAssign(string op)(in word y)
         if (op == "/")
     {
-		defaultInit();
+        defaultInit();
         this /= BigInt(y);
     }
 
@@ -411,7 +411,7 @@ public:
     void opOpAssign(string op)(in BigInt mod)
         if (op == "%")
     {
-		defaultInit();
+        defaultInit();
         this = this % mod;
     }
 
@@ -422,7 +422,7 @@ public:
     void opOpAssign(string op)(word mod)
         if (op == "%")
     {
-		defaultInit();
+        defaultInit();
         if (mod == 0)
             throw new DivideByZero();
         
@@ -458,7 +458,7 @@ public:
     void opOpAssign(string op)(size_t shift)
         if (op == "<<")
     {
-		defaultInit();
+        defaultInit();
         if (shift)
         {
             const size_t shift_words = shift / MP_WORD_BITS;
@@ -478,7 +478,7 @@ public:
     void opOpAssign(string op)(size_t shift)
         if (op == ">>")
     {
-		defaultInit();
+        defaultInit();
         if (shift)
         {
             const size_t shift_words = shift / MP_WORD_BITS;
@@ -494,12 +494,12 @@ public:
     /**
     * Increment operator
     */
-	BigInt opUnary(string op)() if (op == "++") { defaultInit(); return (this + BigInt(1)); }
+    BigInt opUnary(string op)() if (op == "++") { defaultInit(); return (this + BigInt(1)); }
 
     /**
     * Decrement operator
     */
-	BigInt opUnary(string op)() if (op == "--") { defaultInit(); return (this - BigInt(1)); }
+    BigInt opUnary(string op)() if (op == "--") { defaultInit(); return (this - BigInt(1)); }
 
     /**
     * Unary negation operator
@@ -524,12 +524,12 @@ public:
     * Zeroize the BigInt. The size of the underlying register is not
     * modified.
     */
-	void clear() 
-	{ 
-		defaultInit();
-		if (m_reg !is null) 
-			zeroise(*m_reg);
-	}
+    void clear() 
+    { 
+        defaultInit();
+        if (m_reg !is null) 
+            zeroise(*m_reg);
+    }
 
     /**
     * Compare this to another BigInt
@@ -602,7 +602,7 @@ public:
     */
     bool isZero() const
     {
-		if (!m_reg) return true;
+        if (!m_reg) return true;
         const size_t sw = sigWords();
 
         foreach (size_t i; 0 .. sw)
@@ -660,7 +660,7 @@ public:
     */
     bool getBit(size_t n) const
     {
-		if (!m_reg) return false;
+        if (!m_reg) return false;
         return ((wordAt(n / MP_WORD_BITS) >> (n % MP_WORD_BITS)) & 1);
     }
 
@@ -713,11 +713,11 @@ public:
     */
     ubyte byteAt(size_t n) const
     {
-		if (!m_reg) return 0;
+        if (!m_reg) return 0;
 
         const size_t WORD_BYTES = (word).sizeof;
-		size_t word_num = n / WORD_BYTES;
-		size_t byte_num = n % WORD_BYTES;
+        size_t word_num = n / WORD_BYTES;
+        size_t byte_num = n % WORD_BYTES;
         if (word_num >= size())
             return 0;
         else
@@ -730,7 +730,7 @@ public:
     * @return value at position n
     */
     word wordAt(size_t n) const
-	{ if (!m_reg) return 0; return ((n < size()) ? (*m_reg)[n] : 0); }
+    { if (!m_reg) return 0; return ((n < size()) ? (*m_reg)[n] : 0); }
 
     /**
     * Tests if the sign of the integer is negative
@@ -794,7 +794,7 @@ public:
     * Give size of internal register
     * @result size of internal register in words
     */
-	size_t size() const { return m_reg?(*m_reg).length:0; }
+    size_t size() const { return m_reg?(*m_reg).length:0; }
 
     // ditto
     size_t length() const { return m_reg?size():0; }
@@ -846,13 +846,13 @@ public:
     * Return a mutable pointer to the register
     * @result a pointer to the start of the internal register
     */
-	word* mutablePtr() { defaultInit(); return (*m_reg).ptr; }
+    word* mutablePtr() { defaultInit(); return (*m_reg).ptr; }
 
     /**
     * Return a const pointer to the register
     * @result a pointer to the start of the internal register
     */
-	@property const(word*) ptr() const { return m_reg?(*m_reg).ptr:null; }
+    @property const(word*) ptr() const { return m_reg?(*m_reg).ptr:null; }
 
     /**
     * Increase internal register buffer to at least n words
@@ -860,7 +860,7 @@ public:
     */
     void growTo(size_t n)
     {
-		defaultInit();
+        defaultInit();
         if (n > size())
             (*m_reg).resize(roundUp!size_t(n, 8));
     }
@@ -872,7 +872,7 @@ public:
     */
     void randomize(RandomNumberGenerator rng, size_t bitsize = 0)
     {
-		defaultInit();
+        defaultInit();
         setSign(Positive);
         
         if (bitsize == 0)
@@ -906,7 +906,7 @@ public:
     */
     void binaryDecode(const(ubyte)* buf, size_t length)
     {
-		defaultInit();
+        defaultInit();
         const size_t WORD_BYTES = (word).sizeof;
         
         clear();
@@ -959,7 +959,7 @@ public:
     */
     static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, in BigInt max)
     {
-		logDebug("Random Integer");
+        logDebug("Random Integer");
         BigInt range = -min + max;
 
         if (range <= 0)
@@ -1022,7 +1022,7 @@ public:
     * @param base = number-base of resulting ubyte array representation
     */
     static void encode(ubyte* output, in BigInt n, Base base = Binary)
-	{ scope(exit) logDebug("Finished encode");
+    { scope(exit) logDebug("Finished encode");
         if (base == Binary)
         {
             n.binaryEncode(output);
@@ -1036,22 +1036,22 @@ public:
         }
         else if (base == Decimal)
         {
-			logDebug("Duplicate bigInt");
+            logDebug("Duplicate bigInt");
             BigInt copy = n.dup();
-			logDebug("Done duplicating");
+            logDebug("Done duplicating");
             BigInt remainder;
-			logDebug("Remainder!");
+            logDebug("Remainder!");
             copy.setSign(Positive);
             const size_t output_size = n.encodedSize(Decimal);
             foreach (size_t j; 0 .. output_size)
             {
-				logDebug("divide(copy)");
+                logDebug("divide(copy)");
                 divide(copy, BigInt(10), copy, remainder);
                 output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
                 if (copy.isZero())
                     break;
             }
-			logDebug("returning");
+            logDebug("returning");
         }
         else
             throw new InvalidArgument("Unknown BigInt encoding method");
@@ -1157,7 +1157,7 @@ public:
     /*
     * Addition Operator
     */
-	BigInt opBinary(string op)(in BigInt y) const
+    BigInt opBinary(string op)(in BigInt y) const
         if (op == "+")
     {
         const BigInt x = this;
@@ -1185,7 +1185,7 @@ public:
         return z;
     }
 
-	BigInt opBinary(string op)(in word y) const
+    BigInt opBinary(string op)(in word y) const
         if (op == "+")
     {
         return this + BigInt(y);
@@ -1194,7 +1194,7 @@ public:
     /*
     * Subtraction Operator
     */
-	BigInt opBinary(string op)(in BigInt y) const
+    BigInt opBinary(string op)(in BigInt y) const
         if (op == "-")
     {
         const BigInt x = this;
@@ -1229,7 +1229,7 @@ public:
     }
 
 
-	BigInt opBinary(string op)(in word y) const
+    BigInt opBinary(string op)(in word y) const
         if (op == "-")
     {
         return this - BigInt(y);
@@ -1238,7 +1238,7 @@ public:
     /*
     * Multiplication Operator
     */
-	BigInt opBinary(string op)(in BigInt y) const
+    BigInt opBinary(string op)(in BigInt y) const
         if (op == "*")
     {
         const BigInt x = this;
@@ -1264,7 +1264,7 @@ public:
     }
 
 
-	BigInt opBinary(string op)(in word y) const
+    BigInt opBinary(string op)(in word y) const
         if (op == "*")
     {
         return this * BigInt(y);
@@ -1273,7 +1273,7 @@ public:
     /*
     * Division Operator
     */
-	BigInt opBinary(string op)(in BigInt y) const
+    BigInt opBinary(string op)(in BigInt y) const
         if (op == "/")
     {
         const BigInt x = this;
@@ -1283,7 +1283,7 @@ public:
     }
 
 
-	BigInt opBinary(string op)(in word y) const
+    BigInt opBinary(string op)(in word y) const
         if (op == "/")
     {
         return this / BigInt(y);
@@ -1292,7 +1292,7 @@ public:
     /*
     * Modulo Operator
     */
-	BigInt opBinary(string op)(in BigInt mod) const
+    BigInt opBinary(string op)(in BigInt mod) const
         if (op == "%")
     {
         const BigInt n = this;
@@ -1311,7 +1311,7 @@ public:
     /*
     * Modulo Operator
     */
-	word opBinary(string op)(word mod) const
+    word opBinary(string op)(word mod) const
         if (op == "%")
     {
         const BigInt n = this;
@@ -1334,7 +1334,7 @@ public:
     /*
     * Left Shift Operator
     */
-	BigInt opBinary(string op)(size_t shift) const
+    BigInt opBinary(string op)(size_t shift) const
         if (op == "<<")
     {
         const BigInt x = this;
@@ -1376,8 +1376,8 @@ public:
     }
 
     const ~this() { 
-		if (!m_reg) return;
-		SecureVector!(word)* reg_ = cast(SecureVector!(word)*)m_reg;
+        if (!m_reg) return;
+        SecureVector!(word)* reg_ = cast(SecureVector!(word)*)m_reg;
         delete reg_; 
     }
 private:

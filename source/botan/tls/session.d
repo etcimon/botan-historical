@@ -117,7 +117,7 @@ public:
         {
             auto certs = DataSourceMemory(peer_cert_bits.ptr, peer_cert_bits.length);
             while (!certs.endOfData())
-				m_peer_certs.pushBack(X509Certificate(cast(DataSource)certs));
+                m_peer_certs.pushBack(X509Certificate(cast(DataSource)certs));
         }
     }
 

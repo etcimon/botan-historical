@@ -132,7 +132,7 @@ public:
     void addAttribute(in string type,
                       in string str)
     {
-		logDebug("type: ", type, " str: ", str);
+        logDebug("type: ", type, " str: ", str);
         OID oid = OIDS.lookup(type);
         addAttribute(oid, str);
     }
@@ -145,7 +145,7 @@ public:
         if (str == "")
             return;
 
-		logDebug("type: ", OIDS.lookup(oid), " str: ", str);
+        logDebug("type: ", OIDS.lookup(oid), " str: ", str);
 
         bool exists;
         void search_func(in ASN1String name) {
@@ -215,14 +215,14 @@ public:
     */
     bool opEquals(in X509DN dn2) const
     {
-		logDebug("This");
-		foreach (const ref string oid, const ref string val; contents()) {
-			logDebug("OID: ", oid, " VAL: ", val);
-		}
-		logDebug("Other");
-		foreach (const ref string oid, const ref string val; dn2.contents()) {
-			logDebug("OID: ", oid, " VAL: ", val);
-		}
+        logDebug("This");
+        foreach (const ref string oid, const ref string val; contents()) {
+            logDebug("OID: ", oid, " VAL: ", val);
+        }
+        logDebug("Other");
+        foreach (const ref string oid, const ref string val; dn2.contents()) {
+            logDebug("OID: ", oid, " VAL: ", val);
+        }
         Vector!(Pair!(OID, string)) attr1;
         Vector!(Pair!(OID, string)) attr2;
 

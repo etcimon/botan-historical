@@ -119,7 +119,7 @@ struct PEM
     static SecureVector!ubyte decode(in string pem, ref string label)
     {
         auto src = DataSourceMemory(pem);
-		return decode(cast(DataSource)src, label);
+        return decode(cast(DataSource)src, label);
     }
     /**
     * Decode PEM data
@@ -144,7 +144,7 @@ struct PEM
                                                in string label_want)
     {
         auto src = DataSourceMemory(pem);
-		return decodeCheckLabel(cast(DataSource) src, label_want);
+        return decodeCheckLabel(cast(DataSource) src, label_want);
     }
 
     /**

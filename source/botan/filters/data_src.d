@@ -67,7 +67,7 @@ public:
     * into out
     */
     final size_t readByte(ref ubyte output)
-	{
+    {
         return read(&output, 1);
     }
 
@@ -115,7 +115,7 @@ class DataSourceMemoryImpl : DataSourceImpl
 public:
     override size_t read(ubyte* output, size_t length)
     {
-		if (m_offset == m_source.length) return 0;
+        if (m_offset == m_source.length) return 0;
         size_t got = std.algorithm.min(m_source.length - m_offset, length);
         copyMem(output, &m_source[m_offset], got);
         m_offset += got;
@@ -125,7 +125,7 @@ public:
     /*
     * Peek into a memory buffer
     */
-	override size_t peek(ubyte* output, size_t length, size_t peek_offset) const
+    override size_t peek(ubyte* output, size_t length, size_t peek_offset) const
     {
         const size_t bytes_left = m_source.length - m_offset;
         if (peek_offset >= bytes_left) return 0;
@@ -201,9 +201,9 @@ public:
     /*
     * Read from a stream
     */
-	override size_t read(ubyte* output, size_t length)
+    override size_t read(ubyte* output, size_t length)
     {
-		logDebug("Read for ", cast(void*)this, " len: ", length, " offset ", m_total_read);
+        logDebug("Read for ", cast(void*)this, " len: ", length, " offset ", m_total_read);
         ubyte[] data;
         try data = m_source.rawRead(output[0..length]);
         catch (Exception e)
@@ -211,25 +211,25 @@ public:
         
         size_t got = data.length;
         m_total_read += got;
-		logDebug("Read total: ", m_total_read, " end of stream? ", endOfData().to!string);
+        logDebug("Read total: ", m_total_read, " end of stream? ", endOfData().to!string);
         return got;
     }
 
     /*
     * Peek into a stream
     */
-	override size_t peek(ubyte* output, size_t length, size_t offset) const
+    override size_t peek(ubyte* output, size_t length, size_t offset) const
     {
-		logDebug("Peek for ", cast(void*)this, " len: ", length, " offset ", offset, " total read ", m_total_read);
-		File file;
-		if (endOfData()) {
-			file = File(m_identifier, "rb");
-		}
+        logDebug("Peek for ", cast(void*)this, " len: ", length, " offset ", offset, " total read ", m_total_read);
+        File file;
+        if (endOfData()) {
+            file = File(m_identifier, "rb");
+        }
            // throw new InvalidState("DataSourceStream: Cannot peek when out of data " ~ m_source.name);
-		else file = cast(File)m_source;
+        else file = cast(File)m_source;
         size_t got = 0;
         
-		file.seek(offset, SEEK_SET);
+        file.seek(offset, SEEK_SET);
         ubyte[] data;
         ubyte[] output_buf = output[0 .. length];
         try data = file.rawRead(output_buf);
@@ -237,18 +237,18 @@ public:
             throw new StreamIOError("peek: Source failure..." ~ e.toString());
         
         got = data.length;
-		logDebug("Read total: ", got, " data: ", data);
+        logDebug("Read total: ", got, " data: ", data);
         if (!file.isOpen) {
-			file = File(m_identifier, "r");
-		}
-		else
-		if (file.eof || file.error()) {
-			file.clearerr();
-			file.rewind();
+            file = File(m_identifier, "r");
         }
-		
-		file.seek(m_total_read, SEEK_SET);
-		logDebug("File name: ", file.name, " all good? ", endOfData().to!string);
+        else
+        if (file.eof || file.error()) {
+            file.clearerr();
+            file.rewind();
+        }
+        
+        file.seek(m_total_read, SEEK_SET);
+        logDebug("File name: ", file.name, " all good? ", endOfData().to!string);
         return got;
     }
 
@@ -288,7 +288,7 @@ public:
         
         m_identifier = path;
         m_source = File(path, use_binary ? "rb" : "r");
-		m_source.open(path);
+        m_source.open(path);
         m_total_read = 0;
         if (m_source.error())
         {

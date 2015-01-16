@@ -48,9 +48,9 @@ string ucs2ToLatin1(in string ucs2)
         latin1 ~= cast(char)(c2);
     }
 
-	string ret = latin1.ptr[0 .. latin1.length].idup;
+    string ret = latin1.ptr[0 .. latin1.length].idup;
 
-	logDebug(ret);
+    logDebug(ret);
     
     return ret;
 }
@@ -85,8 +85,8 @@ string utf8ToLatin1(in string utf8)
         else
             throw new DecodingError("UTF-8: Unicode chars not in Latin1 used");
     }
-	string ret = iso8859.ptr[0 .. iso8859.length].idup;
-	logDebug("utf8ToLatin1: ", ret);
+    string ret = iso8859.ptr[0 .. iso8859.length].idup;
+    logDebug("utf8ToLatin1: ", ret);
     return ret;
 }
 
@@ -109,8 +109,8 @@ string latin1ToUtf8(in string iso8859)
             utf8 ~= cast(char)((0x80 | (c & 0x3F)));
         }
     }
-	string ret = utf8.ptr[0 .. utf8.length].idup;
-	logDebug("latin1ToUtf8: ", ret);
+    string ret = utf8.ptr[0 .. utf8.length].idup;
+    logDebug("latin1ToUtf8: ", ret);
     return ret;
 }
 

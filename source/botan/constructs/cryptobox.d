@@ -88,7 +88,7 @@ struct CryptoBox {
     static string decrypt(const(ubyte)* input, size_t input_len, in string passphrase)
     {
         auto input_src = DataSourceMemory(input, input_len);
-		SecureVector!ubyte ciphertext = PEM.decodeCheckLabel(cast(DataSource)input_src, "BOTAN CRYPTOBOX MESSAGE");
+        SecureVector!ubyte ciphertext = PEM.decodeCheckLabel(cast(DataSource)input_src, "BOTAN CRYPTOBOX MESSAGE");
         
         if (ciphertext.length < (VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN))
             throw new DecodingError("Invalid CryptoBox input");

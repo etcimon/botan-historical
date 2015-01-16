@@ -24,7 +24,7 @@ final class X509TimeImpl : ASN1Object
 {
 public:
 
-	this() { }
+    this() { }
 
     /*
     * DER encode a X509Time
@@ -231,7 +231,7 @@ public:
         m_second  = (params.length == 6) ? to!uint(params[5]) : 0;
         m_tag     = spec_tag;
         
-		foreach(string param; params[]) delete param;
+        foreach(string param; params[]) delete param;
 
         if (spec_tag == ASN1Tag.UTC_TIME)
         {

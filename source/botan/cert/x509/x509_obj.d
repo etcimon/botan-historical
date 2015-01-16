@@ -186,8 +186,8 @@ protected:
     */
     this(in string file, in string labels)
     {
-		DataSource stream = cast(DataSource)DataSourceStream(file, true);
-		init(stream, labels);
+        DataSource stream = cast(DataSource)DataSourceStream(file, true);
+        init(stream, labels);
     }
 
     /*
@@ -196,7 +196,7 @@ protected:
     this(in Vector!ubyte vec, in string labels)
     {
         auto stream = DataSourceMemory(vec.ptr, vec.length);
-		init(cast(DataSource)stream, labels);
+        init(cast(DataSource)stream, labels);
     }
 
     /*
@@ -233,7 +233,7 @@ private:
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-		logDebug("in init");
+        logDebug("in init");
         m_PEM_label_pref = m_PEM_labels_allowed[0];
         std.algorithm.sort(m_PEM_labels_allowed);
         
@@ -250,7 +250,7 @@ private:
                 if (m_PEM_labels_allowed.canFind(got_label))
                     throw new DecodingError("Invalid PEM label: " ~ got_label);
                 
-				auto dec = BERDecoder(cast(DataSource)ber);
+                auto dec = BERDecoder(cast(DataSource)ber);
                 decodeFrom(dec);
             }
         }

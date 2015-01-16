@@ -369,7 +369,7 @@ struct VectorImpl(T, int ALLOCATOR)
 
         Complexity: $(BIGOH n).
      */
-	@property FreeListRef!(VectorImpl!(T, ALLOCATOR)) dup() const
+    @property FreeListRef!(VectorImpl!(T, ALLOCATOR)) dup() const
     {
         return FreeListRef!(VectorImpl!(T, ALLOCATOR))(cast(T[])_data._payload);
     }
@@ -875,7 +875,7 @@ struct VectorImpl(T, int ALLOCATOR)
     bool opEquals(in FreeListRef!(VectorImpl!(T, ALLOCATOR)) other_) const {
         import botan.constants : logTrace;
         logTrace("opEquals Vector");
-		scope(success) logTrace("opEquals Vector exit");
+        scope(success) logTrace("opEquals Vector exit");
         if (other_ is null && _data._payload.length == 0)
             return true;
         else if (other_ is null)

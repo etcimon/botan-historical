@@ -71,7 +71,7 @@ public:
     this(in PointGFp other)
     {
         m_curve = CurveGFp.init;
-		PointGFp other_ = other.dup;
+        PointGFp other_ = other.dup;
         this.swap(other_);
     }
 
@@ -80,7 +80,7 @@ public:
     */
     ref PointGFp opAssign(in PointGFp other)
     {
-		PointGFp other_ = other.dup;
+        PointGFp other_ = other.dup;
         this.swap(other_);
         return this;
     }
@@ -147,7 +147,7 @@ public:
     * @param point = the point value
     * @return scalar*point on the curve
     */
-	PointGFp opBinary(string op)(in BigInt scalar) const
+    PointGFp opBinary(string op)(in BigInt scalar) const
         if (op == "*")
     {
         const PointGFp point = this;
@@ -406,10 +406,10 @@ public:
         m_coord_y.swap(other.m_coord_y);
         m_coord_z.swap(other.m_coord_z);
         m_ws = other.m_ws;
-		other.m_ws = null;
+        other.m_ws = null;
     }
 
-	@property PointGFp dup() const
+    @property PointGFp dup() const
     {
         PointGFp ret = PointGFp(m_curve.dup, m_coord_x.dup, m_coord_y.dup);
         ret.m_coord_z = m_coord_z.dup;
@@ -693,30 +693,30 @@ private:
     PointGFp opUnary(string op)() const
         if (op == "-")
     {
-		PointGFp ret = this.dup;
+        PointGFp ret = this.dup;
         return ret.negate();
     }
     
     PointGFp opBinary(string op)(in PointGFp rhs) const
         if (op == "+")
     {
-		PointGFp ret = this.dup;
-		ret += rhs;
+        PointGFp ret = this.dup;
+        ret += rhs;
         return ret;
     }
     
-	PointGFp opBinary(string op)(in PointGFp rhs) const
+    PointGFp opBinary(string op)(in PointGFp rhs) const
         if (op == "-")
     {
-		PointGFp ret = this.dup;
+        PointGFp ret = this.dup;
         ret -= rhs;
         return ret;
     }
     
-	PointGFp opBinary(string op)(in PointGFp point) const
+    PointGFp opBinary(string op)(in PointGFp point) const
         if (op == "*")
     {
-		PointGFp ret = this.dup;
+        PointGFp ret = this.dup;
         ret *= point;
         return ret;
     }

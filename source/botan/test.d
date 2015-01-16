@@ -18,7 +18,7 @@ string CHECK_MESSAGE (string expr, string print) {
     return "
     {
         import core.atomic : atomicOp;
-		static if (is(typeof(total_tests) == shared)) atomicOp!`+=`(total_tests, cast(size_t) 1);
+        static if (is(typeof(total_tests) == shared)) atomicOp!`+=`(total_tests, cast(size_t) 1);
         else total_tests++;
         try { 
             if (!(" ~ expr ~ ")) { 
@@ -37,7 +37,7 @@ string CHECK (string expr) {
     return `
     {
         import core.atomic : atomicOp;
-		static if (is(typeof(total_tests) == shared)) atomicOp!"+="(total_tests, cast(size_t) 1);
+        static if (is(typeof(total_tests) == shared)) atomicOp!"+="(total_tests, cast(size_t) 1);
         else total_tests++;
         mixin( q{
             bool success = ` ~ expr ~ `;
