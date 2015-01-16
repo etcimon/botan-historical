@@ -74,9 +74,9 @@ PublicKey loadKey(DataSource source)
         }
         else
         {
-            auto ber = scoped!DataSourceMemory(PEM.decodeCheckLabel(source, "PUBLIC KEY"));
+            auto ber = DataSourceMemory(PEM.decodeCheckLabel(source, "PUBLIC KEY"));
             
-            BERDecoder(ber)
+            BERDecoder(cast(DataSource)ber)
                     .startCons(ASN1Tag.SEQUENCE)
                     .decode(alg_id)
                     .decode(key_bits, ASN1Tag.BIT_STRING)
@@ -102,8 +102,8 @@ PublicKey loadKey(DataSource source)
 */
 PublicKey loadKey(in string filename)
 {
-    auto source = scoped!DataSourceStream(filename, true);
-    return x509_key.loadKey(source);
+    auto source = DataSourceStream(filename, true);
+    return x509_key.loadKey(cast(DataSource)source);
 }
 
 
@@ -114,8 +114,8 @@ PublicKey loadKey(in string filename)
 */
 PublicKey loadKey(in Vector!ubyte enc)
 {
-    auto source = scoped!DataSourceMemory(enc);
-    return x509_key.loadKey(source);
+    auto source = DataSourceMemory(enc);
+    return x509_key.loadKey(cast(DataSource)source);
 }
 
 /**
@@ -125,8 +125,8 @@ PublicKey loadKey(in Vector!ubyte enc)
 */
 PublicKey copyKey(in PublicKey key)
 {
-    auto source = scoped!DataSourceMemory(PEM_encode(key));
-    return x509_key.loadKey(source);
+    auto source = DataSourceMemory(PEM_encode(key));
+    return x509_key.loadKey(cast(DataSource)source);
 }
 
 static if (BOTAN_TEST && BOTAN_HAS_X509_CERTIFICATES && BOTAN_HAS_RSA && BOTAN_HAS_DSA):
@@ -209,8 +209,8 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
     PublicKey copy_pub = x509_key.copyKey(orig);
     
     const string passphrase = "I need work! -Mr. T";
-    auto enc_source = scoped!DataSourceMemory(pkcs8.PEM_encode(orig, rng, passphrase));
-    PrivateKey copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
+    auto enc_source = DataSourceMemory(pkcs8.PEM_encode(orig, rng, passphrase));
+    PrivateKey copy_priv_enc = pkcs8.loadKey(cast(DataSource)enc_source, rng, passphrase);
     
     ulong orig_id = keyId(orig);
     ulong pub_id = keyId(copy_pub);

@@ -20,16 +20,15 @@ import botan.utils.types;
 import std.file;
 import std.array;
 
-Vector!string dirListing(string dir_name)
+string[] dirListing(string dir_path)
 {
-    Vector!string paths;
-    
-    foreach (file; dirEntries(dir_name, "*.vec", SpanMode.depth).array.sort!`a.name < b.name`())
-    {    
-        paths.pushBack(file.name);
-    }
-    
-    return paths;
+	auto dirfiles = dirEntries(dir_path, "*", SpanMode.shallow);
+	string[] files;
+	foreach(file; dirfiles) {
+		files ~= file.name;
+	}
+	files.sort();
+	return files;
 }
 
 /*
@@ -161,10 +160,12 @@ CertificateStatusCode[] getExpected()
     return expected_results;
 }
 
-unittest
+static if (!SKIP_X509_TEST) unittest
 {
+	import botan.libstate.global_state;
+	auto state = globalState(); // ensure initialized
     logTrace("Testing x509/test.d ...");
-    const string root_test_dir = "src/tests/data/nist_x509/";
+    const string root_test_dir = "../test_data/nist_x509/";
     
     size_t unexp_failure = 0;
     size_t unexp_success = 0;
@@ -176,14 +177,15 @@ unittest
     
     try {
         
-        const Vector!string test_dirs = dirListing(root_test_dir);
+        const string[] test_dirs = dirListing(root_test_dir);
         
+		logDebug(test_dirs);
         for(size_t i = 0; i != test_dirs.length; i++)
         {
             const size_t test_no = i+1;
             
             const string test_dir = test_dirs[i];
-            const Vector!string all_files = dirListing(test_dir);
+			const string[] all_files = dirListing(test_dir);
             
             Vector!string certs, crls;
             string root_cert, to_verify;
@@ -210,19 +212,19 @@ unittest
             
             ++ran;
             
-            CertificateStoreInMemory store;
+            auto store = scoped!CertificateStoreInMemory();
             
+			logDebug(root_cert);
             store.addCertificate(X509Certificate(root_cert));
             
             X509Certificate end_user = X509Certificate(to_verify);
-            
             foreach(cert; certs[])
                 store.addCertificate(X509Certificate(cert));
             
             foreach(crl; crls[])
             {
-                DataSourceStream input = scoped!DataSourceStream(crl);
-                X509CRL crl_ = X509CRL(input);
+                DataSourceStream input = DataSourceStream(crl);
+				X509CRL crl_ = X509CRL(cast(DataSource)input);
                 store.addCrl(crl_);
             }
             
@@ -249,8 +251,9 @@ unittest
             }
         }
     }
-    catch(Exception e)
+    catch(Throwable e)
     {
+		logError(e.toString());
         logTrace(e.msg);
     }
     

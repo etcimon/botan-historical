@@ -68,7 +68,7 @@ public:
         if (!strong)
             return true;
         
-        if ((m_priv.getE().dup * m_priv.getD()) % lcm(m_priv.getP().dup - 1, m_priv.getQ().dup - 1) != 1)
+        if ((m_priv.getE() * m_priv.getD()) % lcm(m_priv.getP() - 1, m_priv.getQ() - 1) != 1)
             return false;
         
         return signatureConsistencyCheck(rng, m_priv, "EMSA4(SHA-1)");
@@ -117,10 +117,10 @@ public:
         {
             p = randomPrime(rng, (bits + 1) / 2, e);
             q = randomPrime(rng, bits - p.bits(), e);
-            n = p.dup * q;
+            n = p * q;
         } while (n.bits() != bits);
         
-        d = inverseMod(e, lcm(p.dup - 1, q.dup - 1));
+        d = inverseMod(e, lcm(p - 1, q - 1));
 
         m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
         super(m_priv);

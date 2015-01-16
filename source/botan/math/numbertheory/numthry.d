@@ -119,7 +119,7 @@ BigInt gcd(in BigInt a, in BigInt b)
 */
 BigInt lcm(in BigInt a, in BigInt b)
 {
-    return ((a.dup * b) / gcd(a, b));
+    return ((a * b) / gcd(a, b));
 }
 
 
@@ -438,7 +438,7 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_r
 
     const size_t test_iterations = mrTestIterations(n.bits(), prob, is_random);
     
-    const BigInt n_minus_1 = n.dup - 1;
+    const BigInt n_minus_1 = n - 1;
     const size_t s = lowZeroBits(n_minus_1);
     
     FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1.dup >> s, n);

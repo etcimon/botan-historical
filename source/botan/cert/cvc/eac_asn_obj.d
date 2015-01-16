@@ -158,12 +158,12 @@ public:
             else
             {
                 if (current.length > 0)
-                    params.pushBack(current[]);
+                    params.pushBack(current[].idup); // fixme: GC allocations
                 current.clear();
             }
         }
         if (current.length > 0)
-            params.pushBack(current[]);
+            params.pushBack(current[].idup);
         
         if (params.length != 3)
             throw new InvalidArgument("Invalid time specification " ~ time_str);
@@ -173,7 +173,7 @@ public:
         day     = to!uint(params[2]);
         
         if (!passesSanityCheck())
-            throw new InvalidArgument("Invalid time specification " ~ time_str);
+            throw new InvalidArgument("Invalid time specification " ~ time_str ~ " => " ~ year.to!string ~ "-" ~ month.to!string ~ "-" ~ day.to!string);
     }
 
     /**
@@ -292,6 +292,7 @@ private:
         
         return true;
     }
+
     uint year, month, day;
     ASN1Tag m_tag;
 }

@@ -6,6 +6,8 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.data_src;
+
+import botan.constants;
 import botan.utils.memory.zeroise;
 import botan.utils.types;
 import std.stdio;
@@ -13,10 +15,14 @@ import botan.utils.exceptn;
 import botan.utils.mem_ops;
 import std.algorithm;
 
+alias DataSource = FreeListRef!DataSourceImpl;
+alias DataSourceMemory = FreeListRef!DataSourceMemoryImpl;
+alias DataSourceStream = FreeListRef!DataSourceStreamImpl;
+
 /**
 * This class represents an abstract data source object.
 */
-interface DataSource
+interface DataSourceImpl
 {
 public:
     /**
@@ -28,7 +34,7 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    abstract size_t read(ubyte* output, size_t length);
+    size_t read(ubyte* output, size_t length);
 
     /**
     * Read from the source but do not modify the internal
@@ -41,18 +47,18 @@ public:
     * @return length in bytes that was actually read and put
     * into out
     */
-    abstract size_t peek(ubyte* output, size_t length, size_t peek_offset) const;
+    size_t peek(ubyte* output, size_t length, size_t peek_offset) const;
 
     /**
     * Test whether the source still has data that can be read.
     * @return true if there is still data to read, false otherwise
     */
-    abstract bool endOfData() const;
+    bool endOfData() const;
     /**
     * return the id of this data source
     * @return string representing the id of this data source
     */
-    abstract string id() const;
+    string id() const;
 
     /**
     * Read one ubyte.
@@ -61,7 +67,7 @@ public:
     * into out
     */
     final size_t readByte(ref ubyte output)
-    {
+	{
         return read(&output, 1);
     }
 
@@ -96,18 +102,20 @@ public:
     /**
     * @return number of bytes read so far.
     */
-    abstract size_t getBytesRead() const;
+    size_t getBytesRead() const;
 
 }
+
 
 /**
 * This class represents a Memory-Based DataSource
 */
-final class DataSourceMemory : DataSource
+class DataSourceMemoryImpl : DataSourceImpl
 {
 public:
-    size_t read(ubyte* output, size_t length)
+    override size_t read(ubyte* output, size_t length)
     {
+		if (m_offset == m_source.length) return 0;
         size_t got = std.algorithm.min(m_source.length - m_offset, length);
         copyMem(output, &m_source[m_offset], got);
         m_offset += got;
@@ -117,7 +125,7 @@ public:
     /*
     * Peek into a memory buffer
     */
-    size_t peek(ubyte* output, size_t length, size_t peek_offset) const
+	override size_t peek(ubyte* output, size_t length, size_t peek_offset) const
     {
         const size_t bytes_left = m_source.length - m_offset;
         if (peek_offset >= bytes_left) return 0;
@@ -187,14 +195,15 @@ private:
 /**
 * This class represents a Stream-Based DataSource.
 */
-final class DataSourceStream : DataSource
+class DataSourceStreamImpl : DataSourceImpl
 {
 public:
     /*
     * Read from a stream
     */
-    size_t read(ubyte* output, size_t length)
+	override size_t read(ubyte* output, size_t length)
     {
+		logDebug("Read for ", cast(void*)this, " len: ", length, " offset ", m_total_read);
         ubyte[] data;
         try data = m_source.rawRead(output[0..length]);
         catch (Exception e)
@@ -202,47 +211,44 @@ public:
         
         size_t got = data.length;
         m_total_read += got;
+		logDebug("Read total: ", m_total_read, " end of stream? ", endOfData().to!string);
         return got;
     }
 
     /*
     * Peek into a stream
     */
-    size_t peek(ubyte* output, size_t length, size_t offset) const
+	override size_t peek(ubyte* output, size_t length, size_t offset) const
     {
-        if (endOfData())
-            throw new InvalidState("DataSourceStream: Cannot peek when out of data");
-        File file = cast(File)m_source;
+		logDebug("Peek for ", cast(void*)this, " len: ", length, " offset ", offset, " total read ", m_total_read);
+		File file;
+		if (endOfData()) {
+			file = File(m_identifier, "rb");
+		}
+           // throw new InvalidState("DataSourceStream: Cannot peek when out of data " ~ m_source.name);
+		else file = cast(File)m_source;
         size_t got = 0;
         
-        if (offset)
-        {
-            SecureVector!ubyte buf = SecureVector!ubyte(offset);
-            ubyte[] data;
-            ubyte[] output_buf = buf.ptr[0 .. offset];
-            try data = file.rawRead(output_buf);
-            catch (Exception e)
-                throw new StreamIOError("peek: Source failure..." ~ e.toString());
-            
-            got = data.length;
-        }
+		file.seek(offset, SEEK_SET);
+        ubyte[] data;
+        ubyte[] output_buf = output[0 .. length];
+        try data = file.rawRead(output_buf);
+        catch (Exception e)
+            throw new StreamIOError("peek: Source failure..." ~ e.toString());
         
-        if (got == offset)
-        {
-            ubyte[] data;
-            ubyte[] output_buf = output[0 .. length];
-            try data = file.rawRead(output_buf);
-            catch (Exception e)
-                throw new StreamIOError("peek: Source failure" ~ e.toString());
-            got = data.length;
+        got = data.length;
+		logDebug("Read total: ", got, " data: ", data);
+        if (!file.isOpen) {
+			file = File(m_identifier, "r");
+		}
+		else
+		if (file.eof || file.error()) {
+			file.clearerr();
+			file.rewind();
         }
-        
-        if (file.eof) {
-            file.clearerr();
-            file.rewind();
-        }
-        file.seek(m_total_read, SEEK_SET);
-        
+		
+		file.seek(m_total_read, SEEK_SET);
+		logDebug("File name: ", file.name, " all good? ", endOfData().to!string);
         return got;
     }
 
@@ -251,7 +257,7 @@ public:
     */
     override bool endOfData() const
     {
-        return (!m_source.eof && !m_source.error());
+        return !m_source.isOpen || m_source.eof || m_source.error();
     }
 
     /*
@@ -282,6 +288,7 @@ public:
         
         m_identifier = path;
         m_source = File(path, use_binary ? "rb" : "r");
+		m_source.open(path);
         m_total_read = 0;
         if (m_source.error())
         {

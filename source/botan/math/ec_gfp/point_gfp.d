@@ -8,6 +8,7 @@
 */
 module botan.math.ec_gfp.point_gfp;
 
+import botan.constants;
 import botan.math.ec_gfp.curve_gfp;
 import botan.utils.types;
 import botan.math.numbertheory.numthry;
@@ -57,7 +58,7 @@ public:
     this(CurveGFp curve) 
     {
         m_curve = curve;
-        m_ws = new SecureVector!word;
+        m_ws = new SecureVector!word();
         (*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = 0;
         m_coord_y = montyMult(BigInt(1), curve.getR2());
@@ -67,18 +68,20 @@ public:
     /**
     * Move Constructor
     */
-    this(PointGFp other)
+    this(in PointGFp other)
     {
         m_curve = CurveGFp.init;
-        this.swap(other);
+		PointGFp other_ = other.dup;
+        this.swap(other_);
     }
 
     /**
     * Move Assignment
     */
-    ref PointGFp opAssign(PointGFp other)
+    ref PointGFp opAssign(in PointGFp other)
     {
-        this.swap(other);
+		PointGFp other_ = other.dup;
+        this.swap(other_);
         return this;
     }
 
@@ -91,7 +94,7 @@ public:
     this(CurveGFp curve, BigInt x, BigInt y)
     { 
         m_curve = curve;
-        m_ws = new SecureVector!word;
+        m_ws = new SecureVector!word();
         (*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = montyMult(x, curve.getR2());
         m_coord_y = montyMult(y, curve.getR2());
@@ -144,10 +147,10 @@ public:
     * @param point = the point value
     * @return scalar*point on the curve
     */
-    PointGFp opBinary(string op)(in BigInt scalar)
+	PointGFp opBinary(string op)(in BigInt scalar) const
         if (op == "*")
     {
-        auto point = this;
+        const PointGFp point = this;
         const CurveGFp curve = point.getCurve();
         
         if (scalar.isZero())
@@ -159,7 +162,7 @@ public:
         {
             ubyte value = scalar.abs().byteAt(0);
             
-            PointGFp result = point;
+            PointGFp result = point.dup;
             
             if (value == 2)
                 result.mult2(ws);
@@ -208,12 +211,12 @@ public:
             
             Vector!PointGFp Ps = Vector!PointGFp(1 << window_size);
             Ps[0] = PointGFp(curve.dup);
-            Ps[1] = point;
+            Ps[1] = point.dup;
             
             for (size_t i = 2; i != Ps.length; ++i)
             {
                 Ps[i] = Ps[i-1];
-                Ps[i].add(point, ws);
+                Ps[i].add(point.dup, ws);
             }
             
             PointGFp H = PointGFp(curve.dup); // create as zero
@@ -236,7 +239,7 @@ public:
             {
                 H.mult2(ws);
                 if (scalar.getBit(bits_left-1))
-                    H.add(point, ws);
+                    H.add(point.dup, ws);
                 
                 --bits_left;
             }
@@ -259,7 +262,7 @@ public:
     static PointGFp multiExponentiate(in PointGFp p1, in BigInt z1,
                                in PointGFp p2, in BigInt z2)
     {
-        const PointGFp p3 = p1.dup + p2;
+        const PointGFp p3 = p1 + p2;
         
         PointGFp H = PointGFp(p1.m_curve.dup); // create as zero
         size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
@@ -296,7 +299,7 @@ public:
     ref PointGFp negate()
     {
         if (!isZero())
-            m_coord_y = m_curve.getP().dup - m_coord_y;
+            m_coord_y = m_curve.getP() - m_coord_y;
         return this;
     }
 
@@ -360,8 +363,7 @@ public:
         point is always on its curve; then the function will return true.
         If somehow the state is corrupted, which suggests a fault attack
         (or internal computational error), then return false.
-        */
-        
+        */        
         if (isZero())
             return true;
         
@@ -403,15 +405,15 @@ public:
         m_coord_x.swap(other.m_coord_x);
         m_coord_y.swap(other.m_coord_y);
         m_coord_z.swap(other.m_coord_z);
-        .swap(m_ws, other.m_ws);
+        m_ws = other.m_ws;
+		other.m_ws = null;
     }
 
-    PointGFp dup() const
+	@property PointGFp dup() const
     {
         PointGFp ret = PointGFp(m_curve.dup, m_coord_x.dup, m_coord_y.dup);
         ret.m_coord_z = m_coord_z.dup;
-        ret.m_ws = new SecureVector!word;
-
+        ret.m_ws = new SecureVector!word();
         (*ret.m_ws)[] = (*m_ws).ptr[0 .. (*m_ws).length];
         return ret;
     }
@@ -688,31 +690,35 @@ private:
     }
     
     // arithmetic operators
-    ref PointGFp opUnary(string op)()
+    PointGFp opUnary(string op)() const
         if (op == "-")
     {
-        return negate();
+		PointGFp ret = this.dup;
+        return ret.negate();
     }
     
-    ref PointGFp opBinary(string op)(in PointGFp rhs)
+    PointGFp opBinary(string op)(in PointGFp rhs) const
         if (op == "+")
     {
-        this += rhs;
-        return this;
+		PointGFp ret = this.dup;
+		ret += rhs;
+        return ret;
     }
     
-    ref PointGFp opBinary(string op)(in PointGFp rhs)
+	PointGFp opBinary(string op)(in PointGFp rhs) const
         if (op == "-")
     {
-        this -= rhs;
-        return this;
+		PointGFp ret = this.dup;
+        ret -= rhs;
+        return ret;
     }
     
-    ref PointGFp opBinary(string op)(in PointGFp point)
+	PointGFp opBinary(string op)(in PointGFp point) const
         if (op == "*")
     {
-        this *= point;
-        return this;
+		PointGFp ret = this.dup;
+        ret *= point;
+        return ret;
     }
 
     CurveGFp m_curve;
@@ -809,7 +815,7 @@ PointGFp OS2ECP(T : CurveGFp)(const(ubyte)* data, size_t data_len, auto ref T cu
         throw new InvalidArgument("OS2ECP: Unknown format type " ~ to!string(pc));
     
     PointGFp result = PointGFp(curve, x, y);
-    
+
     if (!result.onTheCurve())
         throw new IllegalPoint("OS2ECP: Decoded point was not on the curve");
     
@@ -820,7 +826,7 @@ PointGFp OS2ECP(int Alloc, T : CurveGFp)(in FreeListRef!(VectorImpl!( ubyte, All
 { return OS2ECP(data.ptr, data.length, curve); }
 
 void swap(ref PointGFp x, ref PointGFp y)
-{ import std.algorithm : swap; x.swap(y); }
+{ x.swap(y); }
 
 private:
 
@@ -829,7 +835,6 @@ BigInt decompressPoint(T : CurveGFp)(bool yMod2,
                                      auto ref T curve)
 {
     BigInt xpow3 = x * x * x;
-    
     BigInt g = BigInt(curve.getA()) * x;
     g += xpow3;
     g += curve.getB();

@@ -35,7 +35,7 @@ public:
         {
             ubyte A = input[0], B = input[1], C = input[2], D = input[3],
                   E = input[4], F = input[5], G = input[6], H = input[7], 
-				  X, Y;
+                  X, Y;
             
             for (size_t j = 0; j != 16*m_rounds; j += 16)
             {
@@ -50,14 +50,14 @@ public:
                 B += A; D += C; F += E; H += G; A += B; C += D; E += F; G += H;
                 C += A; G += E; D += B; H += F; A += C; E += G; B += D; F += H;
                 H += D; 
-				Y = cast(ubyte)(D + H); 
-				D = cast(ubyte)(B + F); 
-				X = cast(ubyte)(B + D); 
-				B = cast(ubyte)(A + E);
+                Y = cast(ubyte)(D + H); 
+                D = cast(ubyte)(B + F); 
+                X = cast(ubyte)(B + D); 
+                B = cast(ubyte)(A + E);
                 A += B; 
-				F = cast(ubyte)(C + G); 
-				E = cast(ubyte)(C + F); 
-				C = X; G = Y;
+                F = cast(ubyte)(C + G); 
+                E = cast(ubyte)(C + F); 
+                C = X; G = Y;
             }
             
             output[0] =              A ^ m_EK[16*m_rounds+0];  output[1] = cast(ubyte) (B + m_EK[16*m_rounds+1]);
@@ -81,13 +81,13 @@ public:
                   E = input[4], F = input[5], G = input[6], H = input[7];
             
             A ^= m_EK[16*m_rounds+0]; 
-			B -= m_EK[16*m_rounds+1]; 
-			C -= m_EK[16*m_rounds+2];
+            B -= m_EK[16*m_rounds+1]; 
+            C -= m_EK[16*m_rounds+2];
             D ^= m_EK[16*m_rounds+3]; 
-			E ^= m_EK[16*m_rounds+4]; 
-			F -= m_EK[16*m_rounds+5];
+            E ^= m_EK[16*m_rounds+4]; 
+            F -= m_EK[16*m_rounds+5];
             G -= m_EK[16*m_rounds+6]; 
-			H ^= m_EK[16*m_rounds+7];
+            H ^= m_EK[16*m_rounds+7];
             
             for (int j = cast(int) (16*(m_rounds-1)); j >= 0; j -= 16)
             {
@@ -97,13 +97,13 @@ public:
                 A -= B; C -= D; E -= F; G -= H; B -= A; D -= C; F -= E; H -= G;
                 
                 A = LOG[A - m_EK[j+8 ] + 256]; 
-				B = EXP[B ^ m_EK[j+9 ]];
+                B = EXP[B ^ m_EK[j+9 ]];
                 C = EXP[C ^ m_EK[j+10]];       
-				D = LOG[D - m_EK[j+11] + 256];
+                D = LOG[D - m_EK[j+11] + 256];
                 E = LOG[E - m_EK[j+12] + 256]; 
-				F = EXP[F ^ m_EK[j+13]];
+                F = EXP[F ^ m_EK[j+13]];
                 G = EXP[G ^ m_EK[j+14]];       
-				H = LOG[H - m_EK[j+15] + 256];
+                H = LOG[H - m_EK[j+15] + 256];
                 
                 A ^= m_EK[j+0]; B -= m_EK[j+1]; C -= m_EK[j+2]; D ^= m_EK[j+3];
                 E ^= m_EK[j+4]; F -= m_EK[j+5]; G -= m_EK[j+6]; H ^= m_EK[j+7];

@@ -103,12 +103,12 @@ public:
             output += BLOCK_SIZE;
         }
     }
-	/**
+    /**
     * Return the code of the effective key bits
     * @param bits = key length
     * @return EKB code
     */
-	version(none)
+    version(none)
     static ubyte EKBCode(size_t ekb)
     {
         __gshared immutable ubyte[256] EKB = [
@@ -190,7 +190,7 @@ protected:
         L[128-length] = TABLE[L[128-length]];
         for (int i = cast(int) (127 - length); i >= 0; --i) {
             L[i] = TABLE[L[i+1] ^ L[i+length]];
-		}
+        }
         
         m_K.resize(64);
         loadLittleEndian!ushort(m_K.ptr, L.ptr, 64);

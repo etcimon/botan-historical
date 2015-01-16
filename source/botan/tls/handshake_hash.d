@@ -103,7 +103,7 @@ public:
 
     void reset() { m_data.clear(); }
 
-    HandshakeHash dup() const 
+    @property HandshakeHash dup() const 
     { 
         HandshakeHash ret;
         ret.m_data = m_data.dup;

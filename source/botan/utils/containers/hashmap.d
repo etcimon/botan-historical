@@ -7,27 +7,41 @@
 */
 module botan.utils.containers.hashmap;
 
+import botan.constants;
 import botan.utils.memory.memory;
 import std.conv : emplace, to;
 import std.traits;
-
+import std.algorithm : countUntil;
 
 struct DefaultHashMapTraits(Key) {
     enum clearValue = Key.init;
     static bool equals(in Key a, in Key b)
     {
-        static if (!__traits(hasMember, Key, "isFreeListRef") && is(Key == class)) return a is b;
-        else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class) && __traits(hasMember, typeof(*(Key())), "opEquals"))
+        static if (__traits(hasMember, Key, "isFreeListRef") && 
+            is (typeof(*(Key())) == class) && 
+            __traits(compiles, "bool c = a.opEquals(b);"))
         {
-            if (a is null && b !is null)
+            if (a is null && b !is null) {
                 return b.opEquals(a);
-            else if (a !is null && b is null)
+            }
+            else if (a !is null && b is null) {
                 return a.opEquals(b);
-            else // both are equally null
+            }
+            else if (a !is null && b !is null) // both are equally null
+            {
+
+                return a.opEquals(b);
+            }
+            else {
                 return true;
+            }
         }
-        else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class)) return *a is *b;
-        else return a == b;
+        else static if (__traits(hasMember, Key, "isFreeListRef") && is (typeof(*(Key())) == class)) {
+            return *a is *b;
+        }
+        else {
+            return a == b;
+        }
     }
 }
 
@@ -244,28 +258,32 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
         
         if (!m_hasher) {
 
-            static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
+            static if (__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString"))
+            {
+                m_hasher = (Key k) {
+                    import std.typecons : scoped;
+                    import botan.hash.md4;
+                    string s = k.toString();
+                    auto md4 = scoped!MD4();
+                    md4.update(s);
+                    auto hash = md4.finished();
+                    return *cast(size_t*)hash.ptr;
+                };
+            }
+            else static if (__traits(hasMember, Key, "isFreeListRef")) {
+                
+                auto typeinfo = typeid(typeof(*(Key())));
+                m_hasher = k => typeinfo.getHash(&k);
+            }
+            else static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHash() : 0;
                 else m_hasher = k => k.toHash();
             } else static if (__traits(compiles, (){ Key t; size_t hash = t.toHashShared(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHashShared() : 0;
                 else m_hasher = k => k.toHashShared();
             } 
-            else static if (!__traits(hasMember, Key, "isFreeListRef")){
+            else {
                 auto typeinfo = typeid(Key);
-                m_hasher = k => typeinfo.getHash(&k);
-            }
-            else static if (__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString"))
-            {
-                m_hasher = (Key k) {
-                    string s = k.toString();
-                    auto typeinfo = typeid(string);
-                    typeinfo.getHash(&s);
-                };
-            }
-            else static if (__traits(hasMember, Key, "isFreeListRef")) {
-
-                auto typeinfo = typeid(typeof(*(Key())));
                 m_hasher = k => typeinfo.getHash(&k);
             }
         }

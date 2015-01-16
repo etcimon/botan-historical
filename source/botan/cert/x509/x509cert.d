@@ -504,11 +504,11 @@ public:
         doDecode();
     }
 
-private:
+protected:
     /*
     * Decode the TBSCertificate data
     */
-    void forceDecode()
+    override void forceDecode()
     {
         size_t _version;
         BigInt serial_bn;

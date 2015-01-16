@@ -1,6 +1,13 @@
 module botan.constants;
 
-const LogLevel = Info;
+const LogLevel = Trace;
+
+const SKIP_TRANSFORM_TEST = true;
+const SKIP_X509_TEST = false;
+const SKIP_BLOCK_TEST = true;
+const SKIP_CVC_TEST = true;
+
+
 
 const BOTAN_VERSION_MAJOR = 2;
 const BOTAN_VERSION_MINOR = 0;
@@ -376,38 +383,38 @@ version(OPENSSL_NO_SEED) {    const BOTAN_HAS_OPENSSL_NO_SEED = true;           
 else                          const BOTAN_HAS_OPENSSL_NO_SEED = false;
 
 enum { // LogLevel
-	Trace,
-	Info,
-	Debug,
-	Error,
-	None
+    Trace,
+    Info,
+    Debug,
+    Error,
+    None
 }
 
 void logTrace(ARGS...)(ARGS args) {
-	static if (LogLevel <= Trace) {
-		import std.stdio: writeln;
-		writeln("T: ", args);
-	}
+    static if (LogLevel <= Trace) {
+        import std.stdio: writeln;
+        writeln("T: ", args);
+    }
 }
 
 void logInfo(ARGS...)(ARGS args) {
-	static if (LogLevel <= Info) {
-		import std.stdio: writeln;
-		writeln("I: ", args);
-	}
+    static if (LogLevel <= Info) {
+        import std.stdio: writeln;
+        writeln("I: ", args);
+    }
 }
 
 void logDebug(ARGS...)(ARGS args) {
-	
-	static if (LogLevel <= Debug) {
-		import std.stdio: writeln;
-		writeln("D: ", args);
-	}
+    
+    static if (LogLevel <= Debug) {
+        import std.stdio: writeln;
+        writeln("D: ", args);
+    }
 }
 
 void logError(ARGS...)(ARGS args) {
-	static if (LogLevel <= Error) {
-		import std.stdio: writeln, stderr;
-		stderr.writeln("E: ", args);
-	}
+    static if (LogLevel <= Error) {
+        import std.stdio: writeln, stderr;
+        stderr.writeln("E: ", args);
+    }
 }

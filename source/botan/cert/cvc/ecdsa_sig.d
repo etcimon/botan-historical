@@ -35,7 +35,7 @@ public:
                 .verifyEnd();
     }
 
-    ECDSASignature dup() const
+    @property ECDSASignature dup() const
     {
         return new ECDSASignature(m_r.dup, m_s.dup);
     }

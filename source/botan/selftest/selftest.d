@@ -37,9 +37,9 @@ import botan.utils.types;
 */
 void confirmStartupSelfTests(AlgorithmFactory af)
 {
-	logInfo("************************");
-	logInfo("*** START SELF TESTS ***");
-	logInfo("************************");
+    logInfo("************************");
+    logInfo("*** START SELF TESTS ***");
+    logInfo("************************");
     cipherKat(af, "DES",
                "0123456789ABCDEF", "1234567890ABCDEF",
                "4E6F77206973207468652074696D6520666F7220616C6C20",
@@ -113,9 +113,9 @@ void confirmStartupSelfTests(AlgorithmFactory af)
              ~ "BA0AA3F3D9AE3C1C7A3B1696A0B68CF7",
              "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B"
              ~ "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B");
-	logInfo("**********************");
-	logInfo("*** END SELF TESTS ***");
-	logInfo("**********************");
+    logInfo("**********************");
+    logInfo("*** END SELF TESTS ***");
+    logInfo("**********************");
 }
 
 /**
@@ -156,7 +156,7 @@ HashMap!(string, bool)
     HashMap!(string, bool) pass_or_fail;
     
     foreach (const ref string key, const ref string val; result)
-		pass_or_fail[key] = (val == "PASSED");
+        pass_or_fail[key] = (val == "PASSED");
     
     return pass_or_fail;
 }
@@ -207,7 +207,7 @@ HashMap!(string, string)
             logTrace("Found ", proto.name);
             KeyedFilter filt = new MACFilter(proto.clone(), key);
             all_results[provider] = testFilterKat(filt, input, output);
-			logInfo(proto.name, " (", provider, ") ... ", all_results[provider]);
+            logInfo(proto.name, " (", provider, ") ... ", all_results[provider]);
         }
         else if (const StreamCipher proto = af.prototypeStreamCipher(algo, provider))
         {
@@ -285,7 +285,7 @@ void verifyResults(in string algo, in HashMap!(string, string) results)
 {
     foreach (const ref string key, const ref string value; results)
     {
-		if (value != "PASSED")
+        if (value != "PASSED")
             throw new SelfTestFailure(algo ~ " self-test failed (" ~ value ~ ")" ~
                                         " with provider " ~ key);
     }
@@ -373,7 +373,7 @@ string testFilterKat(Filter filter,
             return "PASSED";
 
         } else {
-			return "************** FAILED **************** => got " ~ got ~ " expected " ~ expected;
+            return "************** FAILED **************** => got " ~ got ~ " expected " ~ expected;
         }
     }
     catch(Exception e)

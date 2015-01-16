@@ -101,10 +101,10 @@ public:
 
     override void clear()
     {
-		if (!*m_T) m_T = SecureVector!ulong(3);
-		else zeroise(m_T);
-		if (!*m_K) m_K = SecureVector!ulong(9);
-		else zeroise(m_K);
+        if (!*m_T) m_T = SecureVector!ulong(3);
+        else zeroise(m_T);
+        if (!*m_K) m_K = SecureVector!ulong(9);
+        else zeroise(m_K);
     }
 
     final override @property string name() const { return "Threefish-512"; }

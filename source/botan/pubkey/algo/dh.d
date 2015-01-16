@@ -141,7 +141,7 @@ public:
     {
         BigInt input = BigInt.decode(w, w_len);
         
-        if (input <= 1 || input >= m_p.dup - 1)
+        if (input <= 1 || input >= m_p - 1)
             throw new InvalidArgument("DH agreement - invalid key provided");
         
         BigInt r = m_blinder.unblind((*m_powermod_x_p)(m_blinder.blind(input)));

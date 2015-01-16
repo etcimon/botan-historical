@@ -151,7 +151,7 @@ public:
             while (k >= m_order)
                 k.randomize(rng, m_order.bits() - 1);
             
-            PointGFp k_times_P = m_base_point.dup * k;
+            PointGFp k_times_P = m_base_point * k;
             r = m_mod_order.reduce(k_times_P.getAffineX());
             s = m_mod_order.multiply(inverseMod(k, m_order), mulAdd(m_x, r, m));
         }
@@ -324,7 +324,6 @@ size_t testHashLargerThanN(RandomNumberGenerator rng)
 static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t testDecodeEcdsaX509()
 {
-    atomicOp!"+="(total_tests, 5);
     X509Certificate cert = X509Certificate("test_data/ecc/CSCA.CSCA.csca-germany.1.crt");
     size_t fails = 0;
     
@@ -344,7 +343,6 @@ size_t testDecodeEcdsaX509()
 static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t testDecodeVerLinkSHA256()
 {
-    atomicOp!"+="(total_tests, 1);
     X509Certificate root_cert = X509Certificate("test_data/ecc/root2_SHA256.cer");
     X509Certificate link_cert = X509Certificate("test_data/ecc/link_SHA256.cer");
     
@@ -405,7 +403,7 @@ size_t testSignThenVer(RandomNumberGenerator rng)
 
 size_t testEcSign(RandomNumberGenerator rng)
 {
-    atomicOp!"+="(total_tests, 3);
+    atomicOp!"+="(total_tests, 4);
     size_t fails = 0;
     
     try
@@ -539,8 +537,8 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     auto key_odd_oid = scoped!ECDSAPrivateKey(rng, dom_params);
     string key_odd_oid_str = pkcs8.PEM_encode(key_odd_oid);
     
-    auto key_data_src = scoped!DataSourceMemory(key_odd_oid_str);
-    Unique!PKCS8PrivateKey loaded_key2 = pkcs8.loadKey(key_data_src, rng);
+    auto key_data_src = DataSourceMemory(key_odd_oid_str);
+    Unique!PKCS8PrivateKey loaded_key2 = pkcs8.loadKey(cast(DataSource)key_data_src, rng);
     
     if (!cast(ECDSAPrivateKey)(*loaded_key))
     {

@@ -160,7 +160,7 @@ public:
         BigInt e = exp;
         m_p = prime1;
         m_q = prime2;
-        BigInt n = mod.isNonzero() ? mod : m_p.dup * m_q;
+        BigInt n = mod.isNonzero() ? mod : m_p * m_q;
         super(n, e, algo_name, check_key);
 
         m_d = d_exp;
@@ -196,10 +196,10 @@ public:
             return m_check_key(rng, strong);
         }
 
-        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p.dup*m_q != m_n)
+        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
             return false;
         
-        if (m_d1 != m_d.dup % (m_p.dup - 1) || m_d2 != m_d.dup % (m_q.dup - 1) || m_c != inverseMod(m_q, m_p))
+        if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
             return false;
         
         const size_t prob = (strong) ? 56 : 12;

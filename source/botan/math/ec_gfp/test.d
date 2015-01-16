@@ -16,6 +16,8 @@ import botan.math.numbertheory.reducer;
 import botan.asn1.oids;
 import botan.utils.types;
 
+size_t total_tests;
+
 string toString(PointGFp point) {
     import std.array : Appender;
     Vector!ubyte output;
@@ -72,12 +74,12 @@ size_t testPointTurnOnSpRedMul()
     
     BigInt d = BigInt("459183204582304");
     
-    PointGFp r1 = p_G.dup * d;
+    PointGFp r1 = p_G * d;
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
     PointGFp p_G2 = PointGFp(p_G.dup);
     
-    PointGFp r2 = p_G2.dup * d;
+    PointGFp r2 = p_G2 * d;
     mixin( CHECK_MESSAGE( `r1 == r2`, "error with point mul after extra turn on sp red mul" ) );
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
@@ -461,7 +463,7 @@ size_t testBasicOperations()
     
     mixin( CHECK(` simpleMinus == exp_simpleMinus `) );
     
-    PointGFp simpleMult= p1.dup * BigInt(123456789);
+    PointGFp simpleMult= p1 * BigInt(123456789);
     
     mixin( CHECK(` simpleMult.getAffineX() == BigInt("43638877777452195295055270548491599621118743290") `) );
     mixin( CHECK(` simpleMult.getAffineY() == BigInt("56841378500012376527163928510402662349220202981") `) );
@@ -709,7 +711,7 @@ size_t testMoreZeropoint()
         throw new InternalError("Point not on the curve");
     
     BigInt y1 = p1.getAffineY();
-    y1 = curve.getP().dup - y1;
+    y1 = curve.getP() - y1;
     
     CHECK_MESSAGE(`p1.getAffineX() == minus_p1.getAffineX()`,
                   "problem with minus_p1 : x");
@@ -774,7 +776,7 @@ size_t testMultSecMass()
     {
         PointGFp a = PointGFp(createRandomPoint(rng, dom_pars.getCurve()));
         BigInt scal = BigInt(BigInt(rng, 40));
-        PointGFp b = a.dup * scal;
+        PointGFp b = a * scal;
         PointGFp c = PointGFp(a.dup);
         
         c *= scal;
@@ -829,6 +831,6 @@ unittest
     fails += testMultSecMass();
     fails += testCurveCpCtor();
     
-    testReport("ECC", 61, fails);
+    testReport("ECC", total_tests, fails);
 
 }

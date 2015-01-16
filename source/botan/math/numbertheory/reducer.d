@@ -29,7 +29,7 @@ public:
         if (x.cmp(modulus, false) < 0)
         {
             if (x.isNegative())
-                return x.dup + modulus; // make positive
+                return x + modulus; // make positive
             return x;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
@@ -66,7 +66,7 @@ public:
         else
         {
             // too big, fall back to normal division
-            return (x.dup % modulus);
+            return (x % modulus);
         }
     }
 
@@ -77,7 +77,7 @@ public:
     * @return (x * y) % p
     */
     BigInt multiply(in BigInt x, in BigInt y) const
-    { return reduce(x.dup * y); }
+    { return reduce(x * y); }
 
     /**
     * Square mod p
@@ -85,7 +85,7 @@ public:
     * @return (x * x) % p
     */
     BigInt square(in BigInt x) const
-    { return reduce(square(x.dup)); }
+    { return reduce(square(x)); }
 
     /**
     * Cube mod p
@@ -112,7 +112,7 @@ public:
         m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
     }
 
-    ModularReducer dup() const {
+    @property ModularReducer dup() const {
         ModularReducer ret = ModularReducer.init;
         ret.m_modulus = m_modulus.dup;
         ret.m_modulus_2 = m_modulus_2.dup;

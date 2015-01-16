@@ -209,7 +209,7 @@ public:
         super(cipher, tag_size, L);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         buffer.resize(offset + msgBuf().length);
@@ -301,7 +301,7 @@ public:
         super(cipher, tag_size, L);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
         buffer.resize(offset + msgBuf().length);

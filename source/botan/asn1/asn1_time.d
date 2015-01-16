@@ -24,6 +24,8 @@ final class X509TimeImpl : ASN1Object
 {
 public:
 
+	this() { }
+
     /*
     * DER encode a X509Time
     */
@@ -203,12 +205,12 @@ public:
         
         const size_t YEAR_SIZE = (spec_tag == ASN1Tag.UTC_TIME) ? 2 : 4;
         
-        Vector!(Vector!ubyte) params;
+        Vector!(string) params;
         Vector!ubyte current;
         current.reserve(YEAR_SIZE);
         foreach (size_t j; 0 .. YEAR_SIZE)
             current ~= t_spec[j];
-        params.pushBack(current);
+        params.pushBack(current[].idup);
         current.clear();
         
         for (size_t j = YEAR_SIZE; j != t_spec.length - 1; ++j)
@@ -216,19 +218,21 @@ public:
             current ~= t_spec[j];
             if (current.length == 2)
             {
-                params.pushBack(current);
+                params.pushBack(current[].idup);
                 current.clear();
             }
         }
         
-        m_year    = to!uint(params[0][]);
-        m_month   = to!uint(params[1][]);
-        m_day     = to!uint(params[2][]);
-        m_hour    = to!uint(params[3][]);
-        m_minute  = to!uint(params[4][]);
-        m_second  = (params.length == 6) ? to!uint(params[5][]) : 0;
+        m_year    = to!uint(params[0]);
+        m_month   = to!uint(params[1]);
+        m_day     = to!uint(params[2]);
+        m_hour    = to!uint(params[3]);
+        m_minute  = to!uint(params[4]);
+        m_second  = (params.length == 6) ? to!uint(params[5]) : 0;
         m_tag     = spec_tag;
         
+		foreach(string param; params[]) delete param;
+
         if (spec_tag == ASN1Tag.UTC_TIME)
         {
             if (m_year >= 50) m_year += 1900;

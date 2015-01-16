@@ -166,7 +166,7 @@ public:
         m_ghash.update(buf, sz);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
         auto mac = m_ghash.finished();
@@ -217,7 +217,7 @@ public:
         m_ctr.cipher(buf, buf, sz);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;

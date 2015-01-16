@@ -40,8 +40,8 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
     
     try
     {
-        DataSourceMemory input_pub = scoped!DataSourceMemory(pub_pem);
-        PublicKey restored_pub = x509_key.loadKey(input_pub);
+        DataSourceMemory input_pub = DataSourceMemory(pub_pem);
+        PublicKey restored_pub = x509_key.loadKey(cast(DataSource)input_pub);
         
         if (!restored_pub)
         {
@@ -65,8 +65,8 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
     
     try
     {
-        auto input_priv = scoped!DataSourceMemory(priv_pem);
-        Unique!PrivateKey restored_priv = pkcs8.loadKey(input_priv, rng);
+        auto input_priv = DataSourceMemory(priv_pem);
+        Unique!PrivateKey restored_priv = pkcs8.loadKey(cast(DataSource)input_priv, rng);
         
         if (!restored_priv)
         {

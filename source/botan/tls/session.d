@@ -115,9 +115,9 @@ public:
         
         if (!peer_cert_bits.empty)
         {
-            auto certs = scoped!DataSourceMemory(peer_cert_bits.ptr, peer_cert_bits.length);
+            auto certs = DataSourceMemory(peer_cert_bits.ptr, peer_cert_bits.length);
             while (!certs.endOfData())
-                m_peer_certs.pushBack(X509Certificate(certs.Scoped_payload));
+				m_peer_certs.pushBack(X509Certificate(cast(DataSource)certs));
         }
     }
 

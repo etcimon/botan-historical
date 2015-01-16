@@ -1072,8 +1072,8 @@ public:
             if (remaining_bytes < (3 + cert_size))
                 throw new DecodingError("Certificate: Message malformed");
             
-            auto cert_buf = scoped!DataSourceMemory(&certs[3], cert_size);
-            m_certs.pushBack(X509Certificate(cert_buf.Scoped_payload));
+            auto cert_buf = DataSourceMemory(&certs[3], cert_size);
+            m_certs.pushBack(X509Certificate(cast(DataSource)cert_buf));
             
             certs += cert_size + 3;
         }

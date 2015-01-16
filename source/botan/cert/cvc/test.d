@@ -25,7 +25,6 @@ import botan.utils.types;
 import botan.utils.memory.memory;
 import std.datetime;
 
-size_t fails;
 
 // helper functions
 void helperWriteFile(in EACSignedObject to_write, in string file_path)
@@ -67,6 +66,11 @@ bool helperFilesEqual(in string file_path1, in string file_path2)
 
 void testEncGenSelfsigned(RandomNumberGenerator rng)
 {
+
+	size_t fails;
+	size_t total_tests;
+	scope(exit) testReport("testEncGenSelfSigned", total_tests, fails);
+
     EAC11CVCOptions opts;
     //opts.cpi = 0;
     opts.chr = ASN1Chr("my_opt_chr"); // not used
@@ -174,10 +178,16 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     mixin( CHECK(` p_ecdsa_pk2.domain().getOrder() == dom_pars.getOrder() `) );
     bool ver_ec = cert_in.checkSignature(*p_pk2);
     mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned cvc certificate" ) );
+
 }
 
 void testEncGenReq(RandomNumberGenerator rng)
 {
+
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testEncGenReq", total_tests, fails);
+
     EAC11CVCOptions opts;
     
     //opts.cpi = 0;
@@ -208,6 +218,9 @@ void testEncGenReq(RandomNumberGenerator rng)
 
 void testCvcReqExt(RandomNumberGenerator)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCvcReqExt", total_tests, fails);
     EAC11Req req_in = EAC11Req("test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     //req_in.setDomainParameters(dom_pars);
@@ -220,7 +233,9 @@ void testCvcReqExt(RandomNumberGenerator)
 }
 
 void testCvcAdoExt(RandomNumberGenerator)
-{
+{	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCvcAdoExt", total_tests, fails);
     EAC11ADO req_in = EAC11ADO("test_data/ecc/ado.cvcreq");
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     //cout " ~car = " ~ req_in.getCar().value());
@@ -228,7 +243,10 @@ void testCvcAdoExt(RandomNumberGenerator)
 }
 
 void testCvcAdoCreation(RandomNumberGenerator rng)
-{
+{	
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCvcAdoCreation", total_tests, fails);
     EAC11CVCOptions opts;
     //opts.cpi = 0;
     opts.chr = ASN1Chr("my_opt_chr");
@@ -273,6 +291,9 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
 
 void testCvcAdoComparison(RandomNumberGenerator rng)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCvcAdoComparison", total_tests, fails);
     EAC11CVCOptions opts;
     //opts.cpi = 0;
     opts.chr = ASN1Chr("my_opt_chr");
@@ -326,6 +347,9 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
 
 void testEacTime(RandomNumberGenerator)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testEacTime", total_tests, fails);
     EACTime time = EACTime(Clock.currTime(UTC()));
     //      logTrace("time as string = " ~ time.toString());
     EACTime sooner = EACTime("", (cast(ASN1Tag)99));
@@ -361,6 +385,9 @@ void testEacTime(RandomNumberGenerator)
 
 void testVerCvca(RandomNumberGenerator)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testVerCvca", total_tests, fails);
     EAC11CVC req_in = EAC11CVC("test_data/ecc/cvca01.cv.crt");
     
     bool exc = false;
@@ -383,6 +410,9 @@ void testVerCvca(RandomNumberGenerator)
 
 void testCopyAndAssignment(RandomNumberGenerator)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCopyAndAssignment", total_tests, fails);
     EAC11CVC cert_in = EAC11CVC("test_data/ecc/cvca01.cv.crt");
     EAC11CVC cert_cp = EAC11CVC(cert_in);
     EAC11CVC cert_ass = cert_in;
@@ -406,6 +436,9 @@ void testCopyAndAssignment(RandomNumberGenerator)
 
 void testEacStrIllegalValues(RandomNumberGenerator)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCopyAndAssignment", total_tests, fails);
     bool exc = false;
     try
     {
@@ -428,11 +461,14 @@ void testEacStrIllegalValues(RandomNumberGenerator)
     {
         exc2 = true;
     }
-    mixin( CHECK(` exc2 `) );
+	mixin( CHECK(` exc2 `) );
 }
 
 void testTmpEacStrEnc(RandomNumberGenerator)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testTmpEacStrEnc", total_tests, fails);
     bool exc = false;
     try
     {
@@ -450,6 +486,9 @@ void testTmpEacStrEnc(RandomNumberGenerator)
 
 void testCvcChain(RandomNumberGenerator rng)
 {
+	size_t fails;
+	size_t total_tests;
+	scope(exit)testReport("testCvcChain", total_tests, fails);
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     auto cvca_privk = scoped!ECDSAPrivateKey(rng, dom_pars);
     string hash = "SHA-224";
@@ -540,22 +579,34 @@ void testCvcChain(RandomNumberGenerator rng)
     mixin( CHECK(` is_cert1.checkSignature(dvca_priv_key) `) );
 }
 
-unittest
+static if (!SKIP_CVC_TEST) unittest
 {
+
     logTrace("Testing cvc/test.d ...");
     AutoSeededRNG rng;
     
+	logTrace("testEncGenSelfsigned");
     testEncGenSelfsigned(rng);
+	logTrace("testEncGenReq");
     testEncGenReq(rng);
+	logTrace("testCvcReqExt");
     testCvcReqExt(rng);
+	logTrace("testCvcAdoExt");
     testCvcAdoExt(rng);
+	logTrace("testCvcAdoCreation");
     testCvcAdoCreation(rng);
+	logTrace("testCvcAdoComparison");
     testCvcAdoComparison(rng);
+	logTrace("testEacTime");
     testEacTime(rng);
+	logTrace("testVerCvca");
     testVerCvca(rng);
+	logTrace("testCopyAndAssignment");
     testCopyAndAssignment(rng);
+	logTrace("testEacStrIllegalValues");
     testEacStrIllegalValues(rng);
+	logTrace("testTmpEacStrEnc");
     testTmpEacStrEnc(rng);
+	logTrace("testCvcChain");
     testCvcChain(rng);
-
 }

@@ -6,6 +6,7 @@
 */
 module botan.asn1.x509_dn;
 
+import botan.constants;
 public import botan.asn1.asn1_obj;
 public import botan.asn1.asn1_oid;
 public import botan.asn1.asn1_str;
@@ -72,7 +73,7 @@ public:
             while (rdn.moreItems())
             {
                 OID oid;
-                ASN1String str;
+                ASN1String str = ASN1String();
                 
                 rdn.startCons(ASN1Tag.SEQUENCE)
                         .decode(oid)
@@ -129,8 +130,9 @@ public:
     * Add an attribute to a X509DN
     */
     void addAttribute(in string type,
-                       in string str)
+                      in string str)
     {
+		logDebug("type: ", type, " str: ", str);
         OID oid = OIDS.lookup(type);
         addAttribute(oid, str);
     }
@@ -142,6 +144,8 @@ public:
     {
         if (str == "")
             return;
+
+		logDebug("type: ", OIDS.lookup(oid), " str: ", str);
 
         bool exists;
         void search_func(in ASN1String name) {
@@ -211,6 +215,14 @@ public:
     */
     bool opEquals(in X509DN dn2) const
     {
+		logDebug("This");
+		foreach (const ref string oid, const ref string val; contents()) {
+			logDebug("OID: ", oid, " VAL: ", val);
+		}
+		logDebug("Other");
+		foreach (const ref string oid, const ref string val; dn2.contents()) {
+			logDebug("OID: ", oid, " VAL: ", val);
+		}
         Vector!(Pair!(OID, string)) attr1;
         Vector!(Pair!(OID, string)) attr2;
 

@@ -17,6 +17,9 @@ import std.exception;
 string CHECK_MESSAGE (string expr, string print) {
     return "
     {
+        import core.atomic : atomicOp;
+		static if (is(typeof(total_tests) == shared)) atomicOp!`+=`(total_tests, cast(size_t) 1);
+        else total_tests++;
         try { 
             if (!(" ~ expr ~ ")) { 
                 ++fails; 
@@ -33,6 +36,9 @@ string CHECK_MESSAGE (string expr, string print) {
 string CHECK (string expr) {
     return `
     {
+        import core.atomic : atomicOp;
+		static if (is(typeof(total_tests) == shared)) atomicOp!"+="(total_tests, cast(size_t) 1);
+        else total_tests++;
         mixin( q{
             bool success = ` ~ expr ~ `;
         } );
@@ -70,10 +76,10 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
     logTrace("Found ", dirs.length, " files");
     foreach (vec; dirs) {
         size_t local_fails = fn(vec);
-		if (local_fails > 0) {
-        	logError(vec, " fails: ", local_fails);
-			assert(false);
-		}
+        if (local_fails > 0) {
+            logError(vec, " fails: ", local_fails);
+            assert(false);
+        }
         atomicOp!"+="(shared_fails, local_fails);
     }
     
@@ -82,10 +88,10 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
 
 void testReport(string name, size_t ran, size_t failed)
 {    
-	if (failed)
-    	logInfo(name, " ... ", failed, " / ", ran, " ************** FAILED ****************");
-	else
-		logInfo(name, " ... PASSED (all of ", ran, " tests)");
+    if (failed)
+        logInfo(name, " ... ", failed, " / ", ran, " ************** FAILED ****************");
+    else
+        logInfo(name, " ... PASSED (all of ", ran, " tests)");
 }
 
 size_t runTestsBb(ref File src,

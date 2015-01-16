@@ -201,7 +201,7 @@ public:
         else
             m_private_key = private_key.dup;
 
-        PointGFp public_key = ec_group.getBasePoint().dup * m_private_key;
+        PointGFp public_key = ec_group.getBasePoint() * m_private_key;
         
         assert(public_key.onTheCurve(), "Generated public key point was on the curve");
 
@@ -228,7 +228,7 @@ public:
         
         if (public_key_bits.empty)
         {
-            public_key = domain().getBasePoint().dup * m_private_key;
+            public_key = domain().getBasePoint() * m_private_key;
             
             assert(public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
         }

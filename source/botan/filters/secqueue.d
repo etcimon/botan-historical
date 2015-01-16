@@ -15,7 +15,7 @@ import std.algorithm;
 /**
 * A queue that knows how to zeroise itself
 */
-final class SecureQueue : FanoutFilter, DataSource, Filterable
+final class SecureQueue : FanoutFilter, DataSourceImpl, Filterable
 {
 public:
     override @property string name() const { return "Queue"; }

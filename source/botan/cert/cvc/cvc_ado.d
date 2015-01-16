@@ -39,8 +39,8 @@ public:
     */
     this(in string input)
     {
-        auto stream = scoped!DataSourceStream(input, true);
-        init(stream);
+        auto stream = DataSourceStream(input, true);
+        init(cast(DataSource)stream);
         doDecode();
     }
 
@@ -188,8 +188,8 @@ protected:
                                 .endCons()
                                 .getContentsUnlocked();
         
-        auto req_source = scoped!DataSourceMemory(req_bits);
-        m_req = EAC11Req(req_source.Scoped_payload);
+        auto req_source = DataSourceMemory(req_bits);
+        m_req = EAC11Req(cast(DataSource)req_source);
         m_sig_algo = cast(AlgorithmIdentifier) m_req.signatureAlgorithm();
     }
 

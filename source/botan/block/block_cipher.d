@@ -262,7 +262,9 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
     return fails;
 }
 
-unittest {
+static if (!SKIP_BLOCK_TEST) unittest {
+
+
     logTrace("Testing block_cipher.d ...");
     size_t test_bc(string input)
     {

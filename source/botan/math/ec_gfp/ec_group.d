@@ -124,6 +124,7 @@ public:
     }
 
     void BER_decode(in Vector!ubyte ber_data) {
+        assert(ber_data.length > 0);
         BERDecoder ber = BERDecoder(ber_data);
         BERObject obj = ber.getNextObject();
         if (obj.type_tag == ASN1Tag.OBJECT_ID)
@@ -145,7 +146,7 @@ public:
             Vector!ubyte sv_base_point;
             
             BERDecoder(ber_data)
-                .startCons(ASN1Tag.SEQUENCE)
+                    .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck!size_t(1, "Unknown ECC param version code")
                     .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck(OID("1.2.840.10045.1.1"), "Only prime ECC fields supported")

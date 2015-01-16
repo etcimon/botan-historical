@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.datastor.datastor;
-
+import botan.constants;
 public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
@@ -152,11 +152,13 @@ public:
     */
     void add(in string key, in SecureVector!ubyte val)
     {
+		logDebug("Adding Secure: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     
     void add(in string key, in Vector!ubyte val)
     {
+		logDebug("Adding: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     

@@ -6,6 +6,7 @@
 */
 module botan.asn1.oids;
 
+import botan.constants;
 public import botan.asn1.asn1_oid;
 import botan.utils.containers.hashmap;
 import botan.utils.types;
@@ -90,8 +91,10 @@ public:
     {
         /* Public key types */
         addOidstr("1.2.840.113549.1.1.1", "RSA");
+		assert(lookup(OID("1.2.840.113549.1.1.1")) == "RSA");
         addOidstr("2.5.8.1.1", "RSA"); // RSA alternate
         addOidstr("1.2.840.10040.4.1", "DSA");
+		assert(lookup(OID("1.2.840.10040.4.1")) == "DSA");
         addOidstr("1.2.840.10046.2.1", "DH");
         addOidstr("1.3.6.1.4.1.3029.1.2.1", "ElGamal");
         addOidstr("1.3.6.1.4.1.25258.1.1", "RW");
@@ -318,18 +321,18 @@ public:
     {
         if (!haveOid(str))
             m_str2oid[str] = oid;
-
     }
     
     void addOid2str(in OID oid, in string str)
     {
-        if (m_oid2str.get(oid) == string.init)
-            m_oid2str[oid] = str;
+        if (m_oid2str.get(oid) == string.init) 
+			m_oid2str[oid] = str;
     }
 
     string lookup(in OID oid)
     {
         auto str = m_oid2str.get(oid, string.init);
+		scope(exit) logTrace("OID lookup found: ", str);
         if (str)
             return str;
         
@@ -365,8 +368,8 @@ private:
 OIDMap globalOidMap()
 {
     static OIDMap map;
-
     if (!map.m_str2oid) {
+		logDebug("Loading OID map");
         map.m_str2oid = HashMap!(string, OID)();
         map.m_oid2str = HashMap!(OID, string)();
     }

@@ -173,12 +173,12 @@ public:
         doDecode();
     }
 
-private:
+protected:
 
     /*
     * Decode the TBSCertList data
     */
-    void forceDecode()
+    override void forceDecode()
     {
         BERDecoder tbs_crl = BERDecoder(m_tbs_bits);
         

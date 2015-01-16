@@ -60,8 +60,8 @@ public:
     */
     this(in string str)
     {
-        auto stream = scoped!DataSourceStream(str, true);
-        init(stream);
+        auto stream = DataSourceStream(str, true);
+        init(cast(DataSource)stream);
         m_self_signed = true;
         doDecode();
     }

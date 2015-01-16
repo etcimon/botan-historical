@@ -129,8 +129,15 @@ public:
     * Create a new OctetString
     * @param input = a bytestring
     */
-    this(SecureVector!ubyte input) { m_bits = input; }
-    
+    this(ref SecureVector!ubyte input) { 
+        if (*input is null) input = SecureVector!ubyte(); 
+        m_bits = input; 
+    }
+
+    this(SecureVector!ubyte input) { 
+        assert(*input !is null); 
+        m_bits = input; 
+    }
     /**
     * Create a new OctetString
     * @param input = a bytestring
@@ -200,7 +207,7 @@ public:
         return OctetString(ret);
     }
 
-    OctetString dup() const
+    @property OctetString dup() const
     {
         OctetString ret;
         ret.m_bits = m_bits.dup;

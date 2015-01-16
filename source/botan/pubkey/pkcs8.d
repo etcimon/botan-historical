@@ -167,11 +167,11 @@ PrivateKey loadKey(DataSource source,
 * @return loaded private key object
 */
 PrivateKey loadKey(in string filename,
-                     RandomNumberGenerator rng,
-                     SingleShotPassphrase get_pass)
+                   RandomNumberGenerator rng,
+                   SingleShotPassphrase get_pass)
 {
-    auto source = scoped!DataSourceStream(filename, true);
-    return loadKey(source, rng, get_pass);
+    auto source = DataSourceStream(filename, true);
+    return loadKey(cast(DataSource)source, rng, get_pass);
 }
 
 /** Load a key from a file.
@@ -182,8 +182,8 @@ PrivateKey loadKey(in string filename,
 * @return loaded private key object
 */
 PrivateKey loadKey(in string filename,
-                     RandomNumberGenerator rng,
-                     in string pass = "")
+                   RandomNumberGenerator rng,
+                   in string pass = "")
 {
     return loadKey(filename, rng, SingleShotPassphrase(pass));
 }
@@ -198,8 +198,8 @@ PrivateKey loadKey(in string filename,
 PrivateKey copyKey(in PrivateKey key,
                    RandomNumberGenerator rng)
 {
-    auto source = scoped!DataSourceMemory(PEM_encode(key));
-    return loadKey(source, rng);
+    auto source = DataSourceMemory(PEM_encode(key));
+    return loadKey(cast(DataSource)source, rng);
 }
 
 /*
@@ -239,8 +239,8 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
                 is_encrypted = false;
             else if (label == "ENCRYPTED PRIVATE KEY")
             {
-                auto key_source = scoped!DataSourceMemory(key_data);
-                key_data = PKCS8_extract(key_source, pbe_alg_id);
+                auto key_source = DataSourceMemory(key_data);
+                key_data = PKCS8_extract(cast(DataSource)key_source, pbe_alg_id);
             }
             else
                 throw new PKCS8Exception("Unknown PEM label " ~ label);

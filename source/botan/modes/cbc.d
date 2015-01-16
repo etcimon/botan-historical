@@ -146,7 +146,7 @@ public:
     }
 
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         
@@ -198,7 +198,7 @@ public:
         return input_length; // no ciphertext expansion in CTS
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         ubyte* buf = &buffer[offset];
@@ -303,7 +303,7 @@ public:
         }
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -352,7 +352,7 @@ public:
         super(cipher, null);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;

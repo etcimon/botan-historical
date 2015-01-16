@@ -189,7 +189,7 @@ public:
         if (e == 0)
             e = 1;
         
-        PointGFp k_times_P = m_base_point.dup * k;
+        PointGFp k_times_P = m_base_point * k;
         
         assert(k_times_P.onTheCurve(),
                      "GOST 34.10 k*g is on the curve");

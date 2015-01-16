@@ -6,6 +6,7 @@
 */
 module botan.asn1.asn1_str;
 
+import botan.constants;
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
@@ -39,7 +40,6 @@ public:
     override void decodeFrom(BERDecoder source)
     {
         BERObject obj = source.getNextObject();
-        
         CharacterSet charset_is;
         
         if (obj.type_tag == ASN1Tag.BMP_STRING)
@@ -91,7 +91,7 @@ public:
         initialize(str, t);
     }
 
-    this(in string str)
+    this(in string str = "")
     {
         m_iso_8859_str = transcode(str, LOCAL_CHARSET, LATIN1_CHARSET);
         m_tag = chooseEncoding(m_iso_8859_str, "latin1");

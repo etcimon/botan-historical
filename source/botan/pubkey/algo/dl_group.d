@@ -91,7 +91,7 @@ public:
         
         if (m_g < 2 || m_p < 3 || m_q < 0)
             return false;
-        if ((m_q != 0) && ((m_p.dup - 1) % m_q != 0))
+        if ((m_q != 0) && ((m_p - 1) % m_q != 0))
             return false;
         
         const size_t prob = (strong) ? 56 : 10;
@@ -264,7 +264,7 @@ public:
         if (type == Strong)
         {
             m_p = randomSafePrime(rng, pbits);
-            m_q = (m_p.dup - 1) / 2;
+            m_q = (m_p - 1) / 2;
             m_g = 2;
         }
         else if (type == Prime_Subgroup)
@@ -277,7 +277,7 @@ public:
             while (m_p.bits() != pbits || !isPrime(m_p, rng))
             {
                 X.randomize(rng, pbits);
-                m_p = X - (X % (m_q.dup*2) - 1);
+                m_p = X - (X % (m_q*2) - 1);
             }
             
             m_g = makeDsaGenerator(m_p, m_q);
@@ -342,9 +342,9 @@ private:
     */
     static BigInt makeDsaGenerator(in BigInt p, in BigInt q)
     {
-        const BigInt e = (p.dup - 1) / q;
+        const BigInt e = (p - 1) / q;
         
-        if (e == 0 || (p.dup - 1) % q > 0)
+        if (e == 0 || (p - 1) % q > 0)
             throw new InvalidArgument("makeDsaGenerator q does not divide p-1");
 
         foreach (size_t i; 0 .. PRIME_TABLE_SIZE)

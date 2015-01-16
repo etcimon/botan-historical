@@ -79,7 +79,7 @@ public:
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
         if (x_arg == 0)
-            x_arg = BigInt.randomInteger(rng, BigInt(2), grp.getQ().dup - 1);
+            x_arg = BigInt.randomInteger(rng, BigInt(2), grp.getQ() - 1);
         
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
@@ -156,7 +156,7 @@ public:
             while (k >= m_q);
             
             c = m_mod_q.reduce((*m_powermod_g_p)(k) + f);
-            d = m_mod_q.reduce(k - m_x.dup * c);
+            d = m_mod_q.reduce(k - m_x * c);
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());

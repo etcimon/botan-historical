@@ -41,8 +41,8 @@ public:
     */
     PublicKey subjectPublicKey() const
     {
-        auto source = scoped!DataSourceMemory(m_info.get1("X509.Certificate.public_key"));
-        return x509_key.loadKey(source);
+        auto source = DataSourceMemory(m_info.get1("X509.Certificate.public_key"));
+        return x509_key.loadKey(cast(DataSource)source);
     }
 
 
@@ -52,8 +52,8 @@ public:
     */
     Vector!ubyte rawPublicKey() const
     {
-        auto source = scoped!DataSourceMemory(m_info.get1("X509.Certificate.public_key"));
-        return unlock(PEM.decodeCheckLabel(source, "PUBLIC KEY"));
+        auto source = DataSourceMemory(m_info.get1("X509.Certificate.public_key"));
+        return unlock(PEM.decodeCheckLabel(cast(DataSource)source, "PUBLIC KEY"));
     }
 
     /**

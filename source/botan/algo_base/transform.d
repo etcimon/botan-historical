@@ -49,7 +49,7 @@ public:
     *          minimumFinalSize() bytes, and will be set to any final output
     * @param offset = an offset into final_block to begin processing
     */
-    void finish(SecureVector!ubyte final_block, size_t offset = 0);
+    void finish(ref SecureVector!ubyte final_block, size_t offset = 0);
 
     /**
     * Returns the size of the output if this transform is used to process a
@@ -166,7 +166,7 @@ SecureVector!ubyte transformTest(string algo,
     return output;
 }
 
-unittest
+static if (!SKIP_TRANSFORM_TEST) unittest
 {
     logTrace("Testing transform.d ...");
     File vec = File("../test_data/transform.vec", "r");

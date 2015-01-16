@@ -57,7 +57,7 @@ Pair!(BigInt, SymmetricKey)
     
     BigInt x = computeX(hash_id, identifier, password, salt);
     
-    BigInt S = powerMod((B.dup - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
+    BigInt S = powerMod((B - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
     
     SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
@@ -145,7 +145,7 @@ public:
         
         BigInt b = BigInt(rng, 256);
         
-        m_B = (v.dup*k + powerMod(g, b, p)) % p;
+        m_B = (v*k + powerMod(g, b, p)) % p;
         
         m_v = v.dup;
         m_b = b;
@@ -167,7 +167,7 @@ public:
         
         BigInt u = hashSeq(m_hash_id, m_p_bytes, A, m_B);
         
-        BigInt S = powerMod(A.dup * powerMod(m_v, u, m_p), m_b, m_p);
+        BigInt S = powerMod(A * powerMod(m_v, u, m_p), m_b, m_p);
         
         return SymmetricKey(BigInt.encode1363(S, m_p_bytes));
     }

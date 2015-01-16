@@ -149,7 +149,7 @@ public:
         m_cmac.update(buf, sz);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset)
     {
         update(buffer, offset);
         
@@ -204,7 +204,7 @@ public:
         m_ctr.cipher(buf, buf, sz);
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;

@@ -62,7 +62,7 @@ public:
     {
         
         if (x_arg == 0)
-            x_arg = BigInt.randomInteger(rng, BigInt(2), dl_group.getQ().dup - 1);
+            x_arg = BigInt.randomInteger(rng, BigInt(2), dl_group.getQ() - 1);
         
         BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         

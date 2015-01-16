@@ -103,7 +103,8 @@ public:
     */
     string toString()
     {
-        return cast(string) value[];
+        if (!*value) value = SecureVector!ubyte();
+        return cast(string) value[].idup;
     }
 
     ASN1Tag type_tag, class_tag;

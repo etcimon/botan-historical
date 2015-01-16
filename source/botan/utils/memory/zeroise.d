@@ -85,8 +85,9 @@ size_t bufferInsert(T, int Alloc, int Alloc2)(FreeListRef!(VectorImpl!(T, Alloc)
 * Zeroise the values; length remains unchanged
 * @param vec = the vector to zeroise
 */
-void zeroise(T, int Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) vec)
+void zeroise(T, int Alloc)(ref FreeListRef!(VectorImpl!(T, Alloc)) vec)
 {
+    if (*vec is null) vec = FreeListRef!(VectorImpl!(T, Alloc))();
     clearMem(vec.ptr, vec.length);
 }
 

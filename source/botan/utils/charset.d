@@ -5,6 +5,8 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.charset;
+
+import botan.constants;
 import std.array : Appender;
 import botan.utils.types;
 import botan.utils.exceptn;
@@ -45,8 +47,12 @@ string ucs2ToLatin1(in string ucs2)
         
         latin1 ~= cast(char)(c2);
     }
+
+	string ret = latin1.ptr[0 .. latin1.length].idup;
+
+	logDebug(ret);
     
-    return latin1.ptr[0 .. latin1.length].idup;
+    return ret;
 }
 
 /*
@@ -79,8 +85,9 @@ string utf8ToLatin1(in string utf8)
         else
             throw new DecodingError("UTF-8: Unicode chars not in Latin1 used");
     }
-    
-    return iso8859.ptr[0 .. iso8859.length].idup;
+	string ret = iso8859.ptr[0 .. iso8859.length].idup;
+	logDebug("utf8ToLatin1: ", ret);
+    return ret;
 }
 
 /*
@@ -102,7 +109,9 @@ string latin1ToUtf8(in string iso8859)
             utf8 ~= cast(char)((0x80 | (c & 0x3F)));
         }
     }
-    return utf8.ptr[0 .. utf8.length].idup;
+	string ret = utf8.ptr[0 .. utf8.length].idup;
+	logDebug("latin1ToUtf8: ", ret);
+    return ret;
 }
 
 /*
@@ -190,7 +199,7 @@ char digit2char(ubyte b)
         case 8: return '8';
         case 9: return '9';
         default:
-            throw new InvalidArgument("digit2char: Input is not a digit");
+            throw new InvalidArgument("digit2char: Input is not a digit: " ~ b.to!string);
     }
     
 }

@@ -126,6 +126,8 @@ import botan.pubkey.pubkey;
 import botan.cert.x509.x509self;
 import botan.asn1.der_enc;
 import botan.rng.auto_rng;
+import core.atomic : atomicOp;
+shared(size_t) total_tests;
 
 size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
 {
@@ -148,6 +150,7 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
         logTrace("The two keys didn't match!");
         logTrace("Alice's key was: " ~ alice_key.toString());
         logTrace("Bob's key was: " ~ bob_key.toString());
+        atomicOp!"+="(total_tests, cast(size_t)1);
         ++fails;
     }
     
@@ -227,5 +230,5 @@ unittest
     fails += testEcdhSomeDp(rng);
     fails += testEcdhDerDerivation(rng);
     
-    testReport("ECDH", 7, fails);
+    testReport("ECDH", total_tests, fails);
 }

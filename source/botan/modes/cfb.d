@@ -148,7 +148,7 @@ public:
     }
 
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
     }
@@ -208,7 +208,7 @@ public:
         }
     }
 
-    override void finish(SecureVector!ubyte buffer, size_t offset = 0)
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         update(buffer, offset);
     }

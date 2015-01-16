@@ -95,8 +95,8 @@ public:
     */
     this(in string input)
     {
-        auto stream = scoped!DataSourceStream(input, true);
-        init(stream);
+        auto stream = DataSourceStream(input, true);
+        init(cast(DataSource)stream);
         m_self_signed = false;
         doDecode();
     }
@@ -237,8 +237,8 @@ EAC11CVC makeCvcCert(ref PKSigner signer,
     
     Vector!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
     
-    auto source = scoped!DataSourceMemory(signed_cert);
-    return EAC11CVC(source.Scoped_payload);
+    auto source = DataSourceMemory(signed_cert);
+    return EAC11CVC(cast(DataSource)source);
 }
 
 /**

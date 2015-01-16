@@ -127,8 +127,8 @@ EAC11Req createCvcReq(in PrivateKey key,
                                             EAC11genCVC!EAC11ReqImpl.buildCertBody(tbs),
                                             rng);
     
-    auto source = scoped!DataSourceMemory(signed_cert);
-    return EAC11Req(source.Scoped_payload);
+    auto source = DataSourceMemory(signed_cert);
+    return EAC11Req(cast(DataSource)source);
 }
 
 /**
@@ -158,8 +158,8 @@ EAC11ADO createAdoReq(in PrivateKey key,
     
     Vector!ubyte signed_cert = EAC11ADO.makeSigned(signer, tbs_bits, rng);
     
-    auto source = scoped!DataSourceMemory(signed_cert);
-    return EAC11ADO(source.Scoped_payload);
+    auto source = DataSourceMemory(signed_cert);
+    return EAC11ADO(cast(DataSource)source);
 }
 
 
@@ -179,10 +179,10 @@ EAC11ADO createAdoReq(in PrivateKey key,
 * @result the CVCA certificate created
 */
 EAC11CVC createCvca(in PrivateKey key,
-                       in string hash,
-                       in ASN1Car car, bool iris, bool fingerpr,
-                       uint cvca_validity_months,
-                       RandomNumberGenerator rng)
+                    in string hash,
+                    in ASN1Car car, bool iris, bool fingerpr,
+                    uint cvca_validity_months,
+                    RandomNumberGenerator rng)
 {
     const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
     if (!priv_key)

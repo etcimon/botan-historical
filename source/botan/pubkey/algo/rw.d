@@ -88,11 +88,11 @@ public:
         do
         {
             p = randomPrime(rng, (bits + 1) / 2, e.dup / 2, 3, 4);
-            q = randomPrime(rng, bits - p.bits(), e.dup / 2, ((p.dup % 8 == 3) ? 7 : 3), 8);
-            n = p.dup * q;
+            q = randomPrime(rng, bits - p.bits(), e.dup / 2, ((p % 8 == 3) ? 7 : 3), 8);
+            n = p * q;
         } while (n.bits() != bits);
         
-        d = inverseMod(e, lcm(p.dup - 1, q.dup - 1) >> 1);
+        d = inverseMod(e, lcm(p - 1, q - 1) >> 1);
 
         m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
 
@@ -111,7 +111,7 @@ public:
         if (!strong)
             return true;
         
-        if ((m_priv.getE().dup * m_priv.getD()) % (lcm(m_priv.getP().dup - 1, m_priv.getQ().dup - 1) / 2) != 1)
+        if ((m_priv.getE().dup * m_priv.getD()) % (lcm(m_priv.getP() - 1, m_priv.getQ() - 1) / 2) != 1)
             return false;
         
         return signatureConsistencyCheck(rng, m_priv, "EMSA2(SHA-1)");
@@ -191,7 +191,7 @@ public:
         const BigInt r = m_blinder.unblind(mulAdd(j1, m_q, j2));
         
         BigInt min_val = r.dup;
-        BigInt cmp2 = m_n.dup - r;
+        BigInt cmp2 = m_n - r;
 
         if (cmp2 < min_val)
             min_val = cmp2;
@@ -250,13 +250,13 @@ public:
         if (r % 16 == 12)
             return BigInt.encodeLocked(r);
         if (r % 8 == 6)
-            return BigInt.encodeLocked(r.dup*2);
+            return BigInt.encodeLocked(r*2);
         
-        r = m_n.dup - r;
+        r = m_n - r;
         if (r % 16 == 12)
             return BigInt.encodeLocked(r);
         if (r % 8 == 6)
-            return BigInt.encodeLocked(r.dup*2);
+            return BigInt.encodeLocked(r*2);
         
         throw new InvalidArgument("RW signature verification: Invalid signature");
     }

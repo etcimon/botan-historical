@@ -118,8 +118,8 @@ struct PEM
     */
     static SecureVector!ubyte decode(in string pem, ref string label)
     {
-        auto src = scoped!DataSourceMemory(pem);
-        return decode(src, label);
+        auto src = DataSourceMemory(pem);
+		return decode(cast(DataSource)src, label);
     }
     /**
     * Decode PEM data
@@ -141,10 +141,10 @@ struct PEM
     * @param label = is what we expect the label to be
     */
     static SecureVector!ubyte decodeCheckLabel(in string pem,
-                                        in string label_want)
+                                               in string label_want)
     {
-        auto src = scoped!DataSourceMemory(pem);
-        return decodeCheckLabel(src, label_want);
+        auto src = DataSourceMemory(pem);
+		return decodeCheckLabel(cast(DataSource) src, label_want);
     }
 
     /**

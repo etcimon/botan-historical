@@ -83,14 +83,14 @@ size_t checkAdd(in Vector!string args)
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a.dup + b;
+    BigInt d = a + b;
     BigInt e = a.dup;
     e += b;
     
     if (results("+", a, b, c, d, e))
         return 1;
     
-    d = b.dup + a;
+    d = b + a;
     e = b.dup;
     e += a;
     
@@ -103,7 +103,7 @@ size_t checkSub(in Vector!string args)
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a.dup - b;
+    BigInt d = a - b;
     BigInt e = a.dup;
     e -= b;
     
@@ -127,14 +127,14 @@ size_t checkMul(in Vector!string args)
     a.growTo(64);
     b.growTo(64);
     
-    BigInt d = a.dup * b;
-    BigInt e = a.dup;
+    BigInt d = a * b;
+    BigInt e = a;
     e *= b;
     
     if (results("*", a, b, c, d, e))
         return 1;
     
-    d = b.dup * a;
+    d = b * a;
     e = b.dup;
     e *= a;
     
@@ -150,7 +150,7 @@ size_t checkSqr(in Vector!string args)
     b.growTo(64);
     
     BigInt c = square(a);
-    BigInt d = a.dup * a;
+    BigInt d = a * a;
     
     return results("sqr", a, a, b, c, d);
 }
@@ -174,7 +174,7 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a.dup % b;
+    BigInt d = a % b;
     BigInt e = a.dup;
     e %= b;
     
@@ -193,7 +193,7 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     
     c = a.dup % b; /* we declare the BigInt % BigInt version to be correct here */
     
-    word d2 = a.dup % b_word;
+    word d2 = a % b_word;
     e = a.dup;
     e %= b_word;
     

@@ -8,6 +8,7 @@ module botan.math.bigint.divide;
 
 import botan.math.bigint.bigint;
 import botan.math.mp.mp_core;
+import botan.constants;
 
 /**
 * BigInt Division
@@ -24,10 +25,10 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
     if (y_arg.isZero())
         throw new BigInt.DivideByZero();
     
-    BigInt y = BigInt(y_arg);
+    BigInt y = y_arg.dup;
     const size_t y_words = y.sigWords();
     
-    r = BigInt(x);
+    r = x.dup;
     q = 0;
     
     r.setSign(BigInt.Positive);
@@ -65,7 +66,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
             return;
         }
         
-        BigInt temp = y << (MP_WORD_BITS * (n-t));
+        BigInt temp = y.dup << (MP_WORD_BITS * (n-t));
         
         while (r >= temp) { r -= temp; q_words[n-t] += 1; }
         
@@ -80,9 +81,7 @@ void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
             else
                 q_words[j-t-1] = bigint_divop(x_j0, x_j1, y_t);
             
-            while (divisionCheck(q_words[j-t-1],
-            y_t, y.wordAt(t-1),
-            x_j0, x_j1, r.wordAt(j-2)))
+            while (divisionCheck(q_words[j-t-1], y_t, y.wordAt(t-1), x_j0, x_j1, r.wordAt(j-2)))
             {
                 q_words[j-t-1] -= 1;
             }

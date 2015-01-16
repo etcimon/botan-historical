@@ -122,7 +122,7 @@ public:
         else return -1;
     }
 
-    CurveGFp dup() const {
+	@property CurveGFp dup() const {
         CurveGFp ret = CurveGFp(m_p.dup, m_a.dup, m_b.dup);
         ret.m_p_words = m_p_words;
         ret.m_r2 = m_r2.dup;
