@@ -320,8 +320,6 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     }
 }
 
-
-
 struct FreeListRef(T, bool INIT = true)
 {
     enum isFreeListRef = true;
@@ -332,22 +330,22 @@ struct FreeListRef(T, bool INIT = true)
     } else static if (__traits(isAbstractClass, T)) {
         alias TR = T;
     } else static if (is(T == interface)) {
-		alias TR = T;
-	} else {
+        alias TR = T;
+    } else {
         alias TR = T*;
     }
     
     private TR m_object;
-	private ulong* m_refCount;
-	private void function(void*) m_free;
+    private ulong* m_refCount;
+    private void function(void*) m_free;
     private size_t m_magic = 0x1EE75817; // workaround for compiler bug
     
     static FreeListRef opCall(ARGS...)(ARGS args)
     {
         FreeListRef ret;
-		auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);
-		ret.m_refCount = cast(ulong*)getAllocator!VulnerableAllocatorImpl().alloc(ulong.sizeof).ptr;
-		(*ret.m_refCount) = 1;
+        auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);
+        ret.m_refCount = cast(ulong*)getAllocator!VulnerableAllocatorImpl().alloc(ulong.sizeof).ptr;
+        (*ret.m_refCount) = 1;
         static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
         else ret.m_object = cast(TR)mem.ptr;
@@ -356,19 +354,19 @@ struct FreeListRef(T, bool INIT = true)
     
     const ~this()
     {
-		dtor((cast(FreeListRef*)&this));
-		(cast(FreeListRef*)&this).m_magic = 0;
+        dtor((cast(FreeListRef*)&this));
+        (cast(FreeListRef*)&this).m_magic = 0;
     }
 
     static void dtor(U)(U* ctxt) {
-		static if (!is (U == typeof(this))) {
-			typeof(this)* this_ = cast(typeof(this)*)ctxt;
-			this_.m_object = cast(typeof(this.m_object)) ctxt.m_object;
-			this_._deinit();
-		}
-		else {
-			ctxt._clear();
-		}
+        static if (!is (U == typeof(this))) {
+            typeof(this)* this_ = cast(typeof(this)*)ctxt;
+            this_.m_object = cast(typeof(this.m_object)) ctxt.m_object;
+            this_._deinit();
+        }
+        else {
+            ctxt._clear();
+        }
     }
 
     const this(this)
@@ -387,69 +385,69 @@ struct FreeListRef(T, bool INIT = true)
                 printPrettyTrace(stdout, PrintOptions.init, 3); 
         }
         checkInvariants();
-		if (m_object) (*m_refCount)++; 
+        if (m_object) (*m_refCount)++; 
         
     }
 
-	void opAssign(U)(in U other) const
-	{
-		if (other.m_object is this.m_object) return;
-		static if (is(U == FreeListRef))
-			(cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
-	}
+    void opAssign(U)(in U other) const
+    {
+        if (other.m_object is this.m_object) return;
+        static if (is(U == FreeListRef))
+            (cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
+    }
 
-	ref typeof(this) opAssign(U)(in U other) const
-	{
-		if (other.m_object is this.m_object) return;
-		static if (is(U == FreeListRef))
-			(cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
-		return this;
-	}
+    ref typeof(this) opAssign(U)(in U other) const
+    {
+        if (other.m_object is this.m_object) return;
+        static if (is(U == FreeListRef))
+            (cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
+        return this;
+    }
 
     private void opAssignImpl(U)(U other) {
         _clear();
         m_object = cast(typeof(this.m_object))other.m_object;
-		m_refCount = other.m_refCount;
-		static if (!is (U == typeof(this))) {
-			static void destr(void* ptr) {
-				U.dtor(cast(typeof(&this))ptr);
-			}
-			m_free = &destr;
-		} else
-			m_free = other.m_free;
+        m_refCount = other.m_refCount;
+        static if (!is (U == typeof(this))) {
+            static void destr(void* ptr) {
+                U.dtor(cast(typeof(&this))ptr);
+            }
+            m_free = &destr;
+        } else
+            m_free = other.m_free;
         if( m_object )
-			(*m_refCount)++;
+            (*m_refCount)++;
     }
 
     private void _clear()
     {
         checkInvariants();
         if( m_object ){
-			if( --(*m_refCount) == 0 ){
-				if (m_free)
-					m_free(cast(void*)&this);
-				else {
-					_deinit();
-				}
+            if( --(*m_refCount) == 0 ){
+                if (m_free)
+                    m_free(cast(void*)&this);
+                else {
+                    _deinit();
+                }
             }
         }
         
         m_object = null;
-		m_refCount = null;
-		m_free = null;
+        m_refCount = null;
+        m_free = null;
         m_magic = 0x1EE75817;
     }
     
-	private void _deinit() {
-		static if( INIT ){
-			auto objc = m_object;
-			static if (is(TR == T*)) .destroy(*objc);
-			else .destroy(objc);
-		}
-		static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
-		getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_object)[0 .. ElemSize]);
-		getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_refCount)[0 .. ulong.sizeof]);
-	}
+    private void _deinit() {
+        static if( INIT ){
+            auto objc = m_object;
+            static if (is(TR == T*)) .destroy(*objc);
+            else .destroy(objc);
+        }
+        static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
+        getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_object)[0 .. ElemSize]);
+        getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_refCount)[0 .. ulong.sizeof]);
+    }
 
     @property const(TR) opStar() const
     {
@@ -479,43 +477,46 @@ struct FreeListRef(T, bool INIT = true)
         return m_object !is null;
     }
 
-	bool opEquals(U)(U other) const
-	{
-		defaultInit();
-		return (cast(TR)m_object).opEquals(other);
-	}
+    bool opEquals(U)(U other) const
+    {
+        defaultInit();
+		static if (__traits(compiles, (cast(TR)m_object).opEquals(cast(T) other.m_object)))
+			return (cast(TR)m_object).opEquals(cast(T) other.m_object);
+		else
+			return (cast(TR)m_object).opEquals(other);
+    }
 
     int opCmp(U)(U other) const
     {
         defaultInit();
-		return (cast(TR)m_object).opCmp(other);
+        return (cast(TR)m_object).opCmp(other);
     }
 
     U opCast(U)() const nothrow
         if (!is ( U == bool ))
     {
-		assert(U.sizeof == typeof(this).sizeof, "Error, U: "~ U.sizeof.to!string~ " != this: " ~ typeof(this).sizeof.to!string);
-		try { 
-			U ret = U.init;
-			ret.m_object = cast(U.TR)this.m_object;
+        assert(U.sizeof == typeof(this).sizeof, "Error, U: "~ U.sizeof.to!string~ " != this: " ~ typeof(this).sizeof.to!string);
+        try { 
+            U ret = U.init;
+            ret.m_object = cast(U.TR)this.m_object;
 
-			static if (!is (U == typeof(this))) {
-				if (!m_free) {
-					static void destr(void* ptr) {
-						dtor(cast(U*)ptr);
-					}
-					ret.m_free = &destr;
-				}
-				else
-					ret.m_free = m_free;
-			}
-			else ret.m_free = m_free;
+            static if (!is (U == typeof(this))) {
+                if (!m_free) {
+                    static void destr(void* ptr) {
+                        dtor(cast(U*)ptr);
+                    }
+                    ret.m_free = &destr;
+                }
+                else
+                    ret.m_free = m_free;
+            }
+            else ret.m_free = m_free;
 
-			ret.m_refCount = cast(ulong*)this.m_refCount;
-			(*ret.m_refCount) += 1;
-			return ret;
-		} catch(Throwable e) { try logError("Error in catch: ", e.toString()); catch {} }
-		return U.init;
+            ret.m_refCount = cast(ulong*)this.m_refCount;
+            (*ret.m_refCount) += 1;
+            return ret;
+        } catch(Throwable e) { try logError("Error in catch: ", e.toString()); catch {} }
+        return U.init;
     }
 
     int opApply(U...)(U args)
@@ -543,8 +544,8 @@ struct FreeListRef(T, bool INIT = true)
         static if (is(TR == T*)) {
             if (!m_object) {
                 auto newObj = this.opCall();
-				(cast(FreeListRef*)&this).m_object = newObj.m_object;
-				(cast(FreeListRef*)&this).m_refCount = newObj.m_refCount;
+                (cast(FreeListRef*)&this).m_object = newObj.m_object;
+                (cast(FreeListRef*)&this).m_refCount = newObj.m_refCount;
                 (cast(FreeListRef*)&this).m_magic = 0x1EE75817;
                 newObj.m_object = null;
             }
@@ -613,19 +614,18 @@ struct FreeListRef(T, bool INIT = true)
     static if (__traits(compiles, m_object.opBinaryRight!("in")(ReturnType!(m_object.front).init)))
     bool opBinaryRight(string op, U)(U e) const if (op == "in") 
     {
-
         defaultInit();
         return m_object.opBinaryRight!("in")(e);
     }
 
-	private @property ulong refCount() const {
-		return *m_refCount;
+    private @property ulong refCount() const {
+        return *m_refCount;
     }
     
     private void checkInvariants()
     const {
         assert(m_magic == 0x1EE75817, "Magic number of " ~ T.stringof ~ " expected 0x1EE75817, set to: " ~ m_magic.to!string);
-		assert(!m_object || refCount > 0, (!m_object)?"No m_object":"Zero Refcount: " ~ refCount.to!string);
+        assert(!m_object || refCount > 0, (!m_object) ? "No m_object" : "Zero Refcount: " ~ refCount.to!string);
     }
 
     private template UnConst(T) {

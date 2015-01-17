@@ -82,7 +82,11 @@ struct BERObject
 {
 public:
     void opAssign(in BERObject ber) {
-        this = cast(BERObject) ber;
+		if (ber.value !is null)
+			value = *cast(SecureVector!ubyte*)&ber.value;
+		else value = SecureVector!ubyte();
+		type_tag = ber.type_tag;
+		class_tag = ber.class_tag;
     }
 
     /*

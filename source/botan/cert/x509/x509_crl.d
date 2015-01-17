@@ -180,6 +180,7 @@ protected:
     */
     override void forceDecode()
     {
+		logTrace("Starting Decode CRL");
         BERDecoder tbs_crl = BERDecoder(m_tbs_bits);
         
         size_t _version;
@@ -191,6 +192,7 @@ protected:
         AlgorithmIdentifier sig_algo_inner;
         tbs_crl.decode(sig_algo_inner);
         
+		logTrace("Sig algo inner: ", OIDS.lookup(sig_algo_inner.oid));
         if (m_sig_algo != sig_algo_inner)
             throw new X509CRLError("Algorithm identifier mismatch");
         
@@ -200,11 +202,15 @@ protected:
         
         X509Time start, end;
         tbs_crl.decode(start).decode(end);
+		logTrace("CRL Start, ", start.readableString());
         m_info.add("X509.CRL.start", start.readableString());
+		logTrace("CRL End");
+		logTrace("CRL Start, ", end.readableString());
         m_info.add("X509.CRL.end", end.readableString());
         
         BERObject next = tbs_crl.getNextObject();
         
+		logTrace("Next...");
         if (next.type_tag == ASN1Tag.SEQUENCE && next.class_tag == ASN1Tag.CONSTRUCTED)
         {
             BERDecoder cert_list = BERDecoder(next.value);

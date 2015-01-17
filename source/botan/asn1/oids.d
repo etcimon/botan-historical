@@ -369,7 +369,7 @@ OIDMap globalOidMap()
 {
     static OIDMap map;
     if (!map.m_str2oid) {
-        logDebug("Loading OID map");
+        logTrace("Loading OID map");
         map.m_str2oid = HashMap!(string, OID)();
         map.m_oid2str = HashMap!(OID, string)();
     }

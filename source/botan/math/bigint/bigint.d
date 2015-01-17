@@ -36,7 +36,6 @@ public:
     string toString(Base base = Decimal) const
     {
         Vector!ubyte ret = BigInt.encode(this, base);
-        logDebug("Encoded: ", ret[]);
         return ret[].idup;
     }
 
@@ -123,6 +122,7 @@ public:
         size_t markers = 0;
         bool negative = false;
         
+		logTrace("Building bigint with input str: ", str);
         if (str.length > 0 && str[0] == '-')
         {
             markers += 1;
@@ -153,9 +153,8 @@ public:
     */
     this(const(ubyte)* input, size_t length, Base base = Binary)
     {
-        logDebug("Building bigint with input: ", input[0 .. length]);
+        logTrace("Building BigInt with input: ", input[0 .. length]);
         BigInt model = decode(input, length, base);
-        logDebug("Done model");
         defaultInit();
         *this.m_reg = *model.m_reg;
         this.m_signedness = model.m_signedness;
@@ -959,7 +958,7 @@ public:
     */
     static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, in BigInt max)
     {
-        logDebug("Random Integer");
+        logTrace("Building BigInt from Random Integer");
         BigInt range = -min + max;
 
         if (range <= 0)
@@ -1022,7 +1021,8 @@ public:
     * @param base = number-base of resulting ubyte array representation
     */
     static void encode(ubyte* output, in BigInt n, Base base = Binary)
-    { scope(exit) logDebug("Finished encode");
+    {
+		logTrace("Encoding BigInt to output string");
         if (base == Binary)
         {
             n.binaryEncode(output);
@@ -1036,22 +1036,17 @@ public:
         }
         else if (base == Decimal)
         {
-            logDebug("Duplicate bigInt");
             BigInt copy = n.dup();
-            logDebug("Done duplicating");
             BigInt remainder;
-            logDebug("Remainder!");
             copy.setSign(Positive);
             const size_t output_size = n.encodedSize(Decimal);
             foreach (size_t j; 0 .. output_size)
             {
-                logDebug("divide(copy)");
                 divide(copy, BigInt(10), copy, remainder);
                 output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
                 if (copy.isZero())
                     break;
             }
-            logDebug("returning");
         }
         else
             throw new InvalidArgument("Unknown BigInt encoding method");
@@ -1066,6 +1061,7 @@ public:
     */
     static BigInt decode(const(ubyte)* buf, size_t length, Base base = Binary)
     {
+		logTrace("Decoding BigInt from input string");
         BigInt r;
         if (base == Binary)
             r.binaryDecode(buf, length);
@@ -1143,6 +1139,7 @@ public:
     */
     static SecureVector!ubyte encode1363(in BigInt n, size_t bytes)
     {
+		logTrace("Encoding BigInt to output string with IEEE 1363");
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
             throw new EncodingError("encode1363: n is too large to encode properly");

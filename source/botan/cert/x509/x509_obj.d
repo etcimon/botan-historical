@@ -107,6 +107,8 @@ public:
     */
     final bool checkSignature(in PublicKey pub_key) const
     {
+		logTrace("CheckSignature");
+		assert(pub_key);
         try {
             Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
             
@@ -115,8 +117,9 @@ public:
             
             string padding = sig_info[1];
             SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
-            
+			logTrace("Running verifier");
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
+			logTrace("VerifyMessage");
             return verifier.verifyMessage(tbsData(), signature());
         }
         catch(Exception e)
@@ -141,6 +144,7 @@ public:
     */
     override void decodeFrom(BERDecoder from)
     {
+		logTrace("Start Decode X509Object");
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .rawBytes(m_tbs_bits)
@@ -149,6 +153,7 @@ public:
                 .decode(m_sig, ASN1Tag.BIT_STRING)
                 .verifyEnd()
                 .endCons();
+		logTrace("Signature: ", m_sig[]);
     }
 
 
@@ -233,7 +238,7 @@ private:
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-        logDebug("in init");
+        logDebug("Initialize PEM/BER X.509 Object");
         m_PEM_label_pref = m_PEM_labels_allowed[0];
         std.algorithm.sort(m_PEM_labels_allowed);
         

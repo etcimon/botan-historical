@@ -49,7 +49,7 @@ public:
         m_require_revocation_information = require_rev;
         m_ocsp_all_intermediates = ocsp_all;
         m_minimum_key_strength = key_strength;
-
+		m_trusted_hashes = RedBlackTree!string();
         if (key_strength <= 80)
             m_trusted_hashes.insert("SHA-160");
         
@@ -57,6 +57,10 @@ public:
         m_trusted_hashes.insert("SHA-256");
         m_trusted_hashes.insert("SHA-384");
         m_trusted_hashes.insert("SHA-512");
+
+		foreach (string val; m_trusted_hashes[]) {
+			logTrace("m_trusted_hashes: ", val);
+		}
     }
 
     /**
@@ -406,7 +410,7 @@ Vector!( RedBlackTree!CertificateStatusCode )
         
         if (i == 0 || restrictions.ocspAllIntermediates()) {
 
-            ocsp_data.length = i;
+            ocsp_data.length = i + 1;
 
             version(Have_vibe_d)
                 Tid id_ = runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
@@ -422,22 +426,22 @@ Vector!( RedBlackTree!CertificateStatusCode )
             status.insert(CertificateStatusCode.CERT_HAS_EXPIRED);
         
         // Check issuer constraints
-        
+		logTrace("Check issuer constraints");
         // Don't require CA bit set on self-signed end entity cert
         if (!issuer.isCACert() && !self_signed_ee_cert)
             status.insert(CertificateStatusCode.CA_CERT_NOT_FOR_CERT_ISSUER);
         
         if (issuer.pathLimit() < i)
             status.insert(CertificateStatusCode.CERT_CHAIN_TOO_LONG);
-        
         Unique!PublicKey issuer_key = issuer.subjectPublicKey();
-        
+		logTrace("Got issuer key");
         if (subject.checkSignature(*issuer_key) == false)
             status.insert(CertificateStatusCode.SIGNATURE_ERROR);
-        
+		logTrace("Get estimated strength");
         if (issuer_key.estimatedStrength() < restrictions.minimumKeyStrength())
             status.insert(CertificateStatusCode.SIGNATURE_METHOD_TOO_WEAK);
         
+		logTrace("Scan untrusted hashes");
         // Allow untrusted hashes on self-signed roots
         if (!trusted_hashes.empty && !at_self_signed_root)
         {
@@ -445,15 +449,17 @@ Vector!( RedBlackTree!CertificateStatusCode )
                 status.insert(CertificateStatusCode.UNTRUSTED_HASH);
         }
     }
-    
+	logTrace("Certificates to check: ", cert_path.length);
     foreach (size_t i; 0 .. cert_path.length - 1)
     {
+		logTrace("Checking status ", i);
 
         auto status = &cert_status[i];
         
         const X509Certificate subject = cert_path[i];
         const X509Certificate ca = cert_path[i+1];
         
+		logTrace("Checking response ", i+1, " of ", ocsp_responses.length);
         if (i < ocsp_responses.length)
         {
             try
@@ -461,13 +467,18 @@ Vector!( RedBlackTree!CertificateStatusCode )
 
                 OCSPResponse ocsp;
 
-                synchronized(mtx)
-                    ocsp = ocsp_data[receiveOnly!(size_t)()];
-                
+                synchronized(mtx) {
+					size_t id = receiveOnly!(size_t)();
+					logTrace("Got response for ID#", id.to!string);
+                    ocsp = ocsp_data[id];
+				}
+				if (ocsp == OCSPResponse.init)
+					throw new Exception("OSCP.responder is undefined");
                 auto ocsp_status = ocsp.statusFor(ca, subject);
                 
                 status.insert(ocsp_status);
                 
+				logTrace("OCSP status: ", ocsp_status.to!string);
                 //std::cout << "OCSP status: " << statusString(ocsp_status) << "\n";
                 
                 // Either way we have a definitive answer, no need to check CRLs

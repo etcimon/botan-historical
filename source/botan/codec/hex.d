@@ -6,6 +6,7 @@
 */
 module botan.codec.hex;
 
+import botan.constants;
 import botan.utils.memory.zeroise;
 import botan.codec.hex;
 import botan.utils.mem_ops;
@@ -39,7 +40,7 @@ void hexEncode(char* output,
     {
         ubyte x = input[i];
         output[2*i  ] = tbl[(x >> 4) & 0x0F];
-        output[2*i+1] = tbl[(x      ) & 0x0F];
+        output[2*i+1] = tbl[(x     ) & 0x0F];
     }
 }
 
@@ -135,23 +136,24 @@ size_t hexDecode(ubyte* output,
     
     foreach (size_t i; 0 .. input_length)
     {
-        const ubyte bin = HEX_TO_BIN[cast(ubyte)(input[i])];
+        const ubyte bin = HEX_TO_BIN[(cast(ubyte*)input)[i]];
         
         if (bin >= 0x10)
         {
             if (bin == 0x80 && ignore_ws)
                 continue;
             
-            string bad_char = input[i].to!string;
-            if (bad_char == "\t")
-                bad_char = "\\t";
-            else if (bad_char == "\n")
-                bad_char = "\\n";
+            ubyte bad_char = input[i];
+			string bad_char_;
+            if (bad_char == '\t')
+                bad_char_ = "\\t";
+            else if (bad_char == '\n')
+                bad_char_ = "\\n";
             
-            throw new InvalidArgument("hexDecode: invalid hex character '" ~ bad_char ~ "'");
+            throw new InvalidArgument("hexDecode: invalid hex character '" ~ bad_char_ ~ "'");
         }
         
-        *out_ptr |= bin << (top_nibble*4);
+        *out_ptr |= bin << ((top_nibble?1:0)*4);
         
         top_nibble = !top_nibble;
         if (top_nibble)
@@ -170,7 +172,7 @@ size_t hexDecode(ubyte* output,
         *out_ptr = 0;
         input_consumed -= 1;
     }
-    
+
     return written;
 }
 
@@ -221,7 +223,7 @@ size_t hexDecode(ubyte* output, in string input, bool ignore_ws = true)
 Vector!ubyte hexDecode(string input, bool ignore_ws = true)
 {
     Vector!ubyte bin;
-    bin.reserve(1 + input.length / 2);
+    bin.resize(1 + input.length / 2);
     
     size_t written = hexDecode(bin.ptr, input.ptr, input.length, ignore_ws);
     bin.resize(written);

@@ -48,8 +48,9 @@ public:
     */
     PublicKey subjectPublicKey() const
     {
-        return x509_key.loadKey(
-            putInSequence(subjectPublicKeyBits()));
+		Vector!ubyte keybits = subjectPublicKeyBits();
+		logTrace("Key Bits: ", keybits[]);
+        return x509_key.loadKey(putInSequence(keybits));
     }
 
     /**
@@ -265,6 +266,7 @@ public:
     */
     string ocspResponder() const
     {
+		logTrace("Find OSCP responder in DataStore: ", m_subject.toString());
         return m_subject.get1("OCSP.responder", "");
     }
 
@@ -517,7 +519,7 @@ protected:
         X509Time start, end;
         
         BERDecoder tbsCert = BERDecoder(m_tbs_bits);
-        
+		logTrace("ForceDecode X509Cert");
         tbsCert.decodeOptional(_version, (cast(ASN1Tag) 0),
                               (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
                 .decode(serial_bn)
@@ -540,19 +542,26 @@ protected:
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         
+		logDebug("Add dn_bits");
+
         m_subject.add("X509.Certificate.dn_bits", putInSequence(dn_subject.getBits()));
         m_issuer.add("X509.Certificate.dn_bits", putInSequence(dn_issuer.getBits()));
         
+		logDebug("Get public key");
         BERObject public_key = tbsCert.getNextObject();
+
         if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
             throw new BERBadTag("X509Certificate: Unexpected tag for public key",
                                   public_key.type_tag, public_key.class_tag);
         
         Vector!ubyte v2_issuer_key_id, v2_subject_key_id;
         
+		logDebug("Get issuer key optional");
         tbsCert.decodeOptionalString(v2_issuer_key_id, ASN1Tag.BIT_STRING, 1);
+		logDebug("Get subject key optional");
         tbsCert.decodeOptionalString(v2_subject_key_id, ASN1Tag.BIT_STRING, 2);
         
+		logDebug("Get exts data");
         BERObject v3_exts_data = tbsCert.getNextObject();
         if (v3_exts_data.type_tag == 3 &&
             v3_exts_data.class_tag == (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
@@ -618,7 +627,7 @@ X509DN createDn(in DataStore info)
     }
     auto names = info.searchFor(&search_for);
     
-    X509DN dn;
+    X509DN dn = X509DN();
     
     foreach (const ref string key, const ref string value; names)
         dn.addAttribute(key, value);
@@ -635,7 +644,7 @@ AlternativeName createAltName(in DataStore info)
     auto names = info.searchFor((string key, string)
                                  { return (key == "RFC822" || key == "DNS" || key == "URI" || key == "IP"); });
     
-    AlternativeName alt_name;
+    AlternativeName alt_name = AlternativeName();
     
     foreach (const ref string key, const ref string value; names)
         alt_name.addAttribute(key, value);
@@ -650,7 +659,7 @@ AlternativeName createAltName(in DataStore info)
 */
 Vector!string lookupOids(in Vector!string input)
 {
-    Vector!string output;
+    Vector!string output = Vector!string();
     
     foreach (oid_name; input[])
         output.pushBack(OIDS.lookup(OID(oid_name)));

@@ -43,16 +43,18 @@ public:
         if (M == 0 || N == 0 || M > N)
             throw new EncodingError("split: M == 0 or N == 0 or M > N");
         
-        SHA256 hash; // always use SHA-256 when generating shares
-        
+		Unique!SHA256 hash = new SHA256(); // always use SHA-256 when generating shares
         Vector!RTSS shares = Vector!RTSS(N);
-        
+		logTrace("Secret length: ", S_len);
         // Create RTSS header in each share
         foreach (ubyte i; 0 .. N)
         {
+			shares[i].m_contents = SecureVector!ubyte();
             shares[i].m_contents ~= identifier.ptr[0 .. 16];
             shares[i].m_contents ~= rtssHashId(hash.name);
             shares[i].m_contents ~= M;
+			logTrace(S_len);
+			logTrace("Bytes: ", get_byte(0, S_len), "::", get_byte(1, S_len));
             shares[i].m_contents ~= get_byte(0, S_len);
             shares[i].m_contents ~= get_byte(1, S_len);
         }
@@ -61,10 +63,13 @@ public:
         foreach (ubyte i; 0 .. N)
             shares[i].m_contents.pushBack(i+1);
         
+		logTrace("pushed back");
         // secret = S || H(S)
         SecureVector!ubyte secret = SecureVector!ubyte(S[0 .. S_len]);
+		logTrace("secret");
         secret ~= hash.process(S, S_len);
         
+		logTrace("secret ", secret[]);
         foreach (ubyte s; secret[])
         {
             Vector!ubyte coefficients = Vector!ubyte(M-1);
@@ -114,16 +119,19 @@ public:
         
         if (shares.length < shares[0].m_contents[17])
             throw new DecodingError("Insufficient shares to do TSS reconstruction");
-        
+		logTrace(shares[0].m_contents[18], shares[0].m_contents[19]);
         ushort secret_len = make_ushort(shares[0].m_contents[18], shares[0].m_contents[19]);
         
         ubyte hash_id = shares[0].m_contents[16];
-
+		logTrace("hash: ",hash_id);
         Unique!HashFunction hash = getRtssHashById(hash_id);
-        
-        if (shares[0].length != secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1)
-            throw new DecodingError("Bad RTSS length field in header");
-        
+		logTrace("Secret length: ", secret_len);
+		logTrace("Hash output length: ", hash.outputLength);
+        if (shares[0].length != secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1) {
+			hash.release();
+			assert(hash.outputLength > 0);
+			throw new DecodingError("Bad RTSS length field in header " ~ shares[0].length.to!string ~ " != " ~ (secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1).to!string);
+		}
         Vector!ubyte V = Vector!ubyte(shares.length);
         SecureVector!ubyte secret;
         
@@ -309,10 +317,10 @@ import botan.test;
 import botan.rng.auto_rng;
 import botan.codec.hex;
 
-unittest
+static if (!SKIP_TSS_TEST) unittest
 {
     logTrace("Testing tss.d ...");
-    AutoSeededRNG rng;
+    AutoSeededRNG rng = AutoSeededRNG();
     
     size_t fails = 0;
     
@@ -321,9 +329,9 @@ unittest
         id[i] = cast(ubyte)i;
     
     const SecureVector!ubyte S = hexDecodeLocked("7465737400");
-    
+	logTrace("Split TSS: ", S[]);
     Vector!RTSS shares = RTSS.split(cast(ubyte)2, cast(ubyte)4, cast(const(ubyte)*)&S[0], S.length, id, rng);
-    
+	logTrace("Reconstruct TSS");
     auto back = RTSS.reconstruct(shares);
     
     if (S != back)

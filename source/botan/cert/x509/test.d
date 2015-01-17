@@ -164,6 +164,7 @@ static if (!SKIP_X509_TEST) unittest
 {
     import botan.libstate.global_state;
     auto state = globalState(); // ensure initialized
+
     logTrace("Testing x509/test.d ...");
     const string root_test_dir = "../test_data/nist_x509/";
     

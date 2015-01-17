@@ -119,7 +119,7 @@ struct CryptoBox {
         const size_t ciphertext_offset = VERSION_CODE_LEN + PBKDF_SALT_LEN + MAC_OUTPUT_LEN;
         
         pipe.processMsg(&ciphertext[ciphertext_offset],
-        ciphertext.length - ciphertext_offset);
+       					 ciphertext.length - ciphertext_offset);
 
         ubyte[MAC_OUTPUT_LEN] computed_mac;
         pipe.read(computed_mac.ptr, MAC_OUTPUT_LEN, 1);
@@ -167,12 +167,14 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.rng.auto_rng;
 
-unittest
+static if (!SKIP_CRYPTOBOX_TEST) unittest
 {
     logTrace("Testing cryptobox.d ...");
+	import botan.libstate.global_state;
+	auto state = globalState(); // ensure initialized
     size_t fails = 0;
     
-    AutoSeededRNG rng;
+	AutoSeededRNG rng = AutoSeededRNG();
     
     __gshared immutable ubyte[3] msg = [ 0xAA, 0xBB, 0xCC ];
     string ciphertext = CryptoBox.encrypt(msg.ptr, msg.length, "secret password", rng);

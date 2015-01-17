@@ -104,7 +104,6 @@ struct VectorImpl(T, int ALLOCATOR)
                     foreach (ref e; _payload.ptr[newLength .. _payload.length])
                         .destroy(e);
 
-
                     // Zero out unused capacity to prevent gc from seeing
                     // false pointers
                     static if (hasIndirections!T)

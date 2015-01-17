@@ -5,8 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.utils.parsing;
+
+import botan.constants;
+
 import botan.utils.types;
-// import string;
 import botan.utils.types;
 import botan.utils.parsing;
 import botan.utils.exceptn;
@@ -93,7 +95,7 @@ Vector!string splitter(in string str, char delim)
 * @param str = the input string
 */
 Vector!string splitOnPred(in string str,
-                            bool delegate(char) pred)
+                          bool delegate(char) pred)
 {
     Vector!string elems;
     if (str == "") return elems;
@@ -104,16 +106,16 @@ Vector!string splitOnPred(in string str,
         if (pred(c))
         {
             if (substr.length > 0)
-                elems.pushBack(substr[]);
+                elems.pushBack(substr[].idup);
             substr.clear();
         }
         else
             substr ~= c;
     }
     
-    if (substr.length > 0)
+    if (substr.length == 0)
         throw new InvalidArgument("Unable to split string: " ~ str);
-    elems.pushBack(substr[]);
+    elems.pushBack(substr[].idup);
     
     return elems;
 }
@@ -229,6 +231,7 @@ Vector!uint parseAsn1Oid(in string oid)
 */
 bool x500NameCmp(in string name1, in string name2)
 {
+	logTrace("x500NameCmp");
     auto p1 = name1.ptr;
     auto p2 = name2.ptr;
     

@@ -7,6 +7,7 @@
 module botan.asn1.asn1_time;
 
 import std.datetime;
+import botan.constants;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.charset;
@@ -156,23 +157,25 @@ public:
             else
             {
                 if (current.length > 0)
-                    params.pushBack(cast(string) current[]);
+                    params.pushBack(cast(string) current[].idup);
                 current.clear();
             }
         }
         if (current.length > 0)
-            params.pushBack(cast(string) current[]);
+            params.pushBack(cast(string) current[].idup);
         
         if (params.length < 3 || params.length > 6)
             throw new InvalidArgument("Invalid time specification " ~ time_str);
         
-        m_year        = to!uint(params[0]);
+        m_year      = to!uint(params[0]);
         m_month     = to!uint(params[1]);
-        m_day        = to!uint(params[2]);
-        m_hour        = (params.length >= 4) ? to!uint(params[3]) : 0;
+        m_day       = to!uint(params[2]);
+        m_hour      = (params.length >= 4) ? to!uint(params[3]) : 0;
         m_minute    = (params.length >= 5) ? to!uint(params[4]) : 0;
         m_second    = (params.length == 6) ? to!uint(params[5]) : 0;
-        
+
+		foreach(string param; params[]) delete param;
+
         m_tag = (m_year >= 2050) ? ASN1Tag.GENERALIZED_TIME : ASN1Tag.UTC_TIME;
         
         if (!passesSanityCheck())
@@ -248,14 +251,17 @@ public:
     */
     this(in SysTime time)
     {
-        m_year    = time.year;
+        m_year   = time.year;
         m_month  = time.month;
-        m_day     = time.day;
-        m_hour    = time.hour;
+        m_day    = time.day;
+        m_hour   = time.hour;
         m_minute = time.minute;
         m_second = time.second;
         
         m_tag = (m_year >= 2050) ? ASN1Tag.GENERALIZED_TIME : ASN1Tag.UTC_TIME;
+
+		if (!passesSanityCheck())
+			throw new InvalidArgument("Invalid time specification from SysTime");
     }
     
     /*
@@ -264,6 +270,7 @@ public:
     this(in string t_spec, ASN1Tag t)
     {
         m_tag = t;
+		logTrace("Time ctor: ", t_spec);
         setTo(t_spec, m_tag);
     }
 
@@ -272,6 +279,7 @@ public:
     */
     this(in string time_str)
     {
+		logTrace("Time ctor: ", time_str);
         setTo(time_str);
     }
 
@@ -291,6 +299,7 @@ private:
     */
     bool passesSanityCheck() const
     {
+		logTrace("Decoded time: ", readableString());
         if (m_year < 1950 || m_year > 2100)
             return false;
         if (m_month == 0 || m_month > 12)

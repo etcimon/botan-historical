@@ -8,9 +8,9 @@ module botan.rng.auto_rng;
 
 public import botan.rng.rng;
 import botan.utils.types;
-// import string;
-
-final class AutoSeededRNG : RandomNumberGenerator
+import botan.utils.memory.memory;
+alias AutoSeededRNG = FreeListRef!AutoSeededRNGImpl;
+final class AutoSeededRNGImpl : RandomNumberGenerator
 {
 public:
     override void randomize(ubyte* output, size_t len)

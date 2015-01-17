@@ -86,7 +86,7 @@ string utf8ToLatin1(in string utf8)
             throw new DecodingError("UTF-8: Unicode chars not in Latin1 used");
     }
     string ret = iso8859.ptr[0 .. iso8859.length].idup;
-    logDebug("utf8ToLatin1: ", ret);
+    logTrace("utf8ToLatin1: ", ret);
     return ret;
 }
 
@@ -110,7 +110,7 @@ string latin1ToUtf8(in string iso8859)
         }
     }
     string ret = utf8.ptr[0 .. utf8.length].idup;
-    logDebug("latin1ToUtf8: ", ret);
+    logTrace("latin1ToUtf8: ", ret);
     return ret;
 }
 

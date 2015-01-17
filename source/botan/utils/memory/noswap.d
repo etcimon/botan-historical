@@ -175,7 +175,7 @@ package:
     this()
     {
 
-        m_freelist = new RedBlackTree!(void[], "a.ptr < b.ptr");
+        m_freelist = RedBlackTree!(void[], "a.ptr < b.ptr")();
 
         logTrace("Loading NoSwapAllocator instance ...");
         m_mtx = new Mutex;

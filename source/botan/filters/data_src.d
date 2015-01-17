@@ -203,7 +203,7 @@ public:
     */
     override size_t read(ubyte* output, size_t length)
     {
-        logDebug("Read for ", cast(void*)this, " len: ", length, " offset ", m_total_read);
+        logTrace("Read for ", cast(void*)this, " len: ", length, " offset ", m_total_read);
         ubyte[] data;
         try data = m_source.rawRead(output[0..length]);
         catch (Exception e)
@@ -211,7 +211,7 @@ public:
         
         size_t got = data.length;
         m_total_read += got;
-        logDebug("Read total: ", m_total_read, " end of stream? ", endOfData().to!string);
+        logTrace("Read total: ", m_total_read, " end of stream? ", endOfData().to!string);
         return got;
     }
 
@@ -220,7 +220,7 @@ public:
     */
     override size_t peek(ubyte* output, size_t length, size_t offset) const
     {
-        logDebug("Peek for ", cast(void*)this, " len: ", length, " offset ", offset, " total read ", m_total_read);
+        logTrace("Peek for ", cast(void*)this, " len: ", length, " offset ", offset, " total read ", m_total_read);
         File file;
         if (endOfData()) {
             file = File(m_identifier, "rb");
@@ -237,7 +237,7 @@ public:
             throw new StreamIOError("peek: Source failure..." ~ e.toString());
         
         got = data.length;
-        logDebug("Read total: ", got, " data: ", data);
+        logTrace("Read total: ", got, " data: ", data);
         if (!file.isOpen) {
             file = File(m_identifier, "r");
         }
@@ -248,7 +248,6 @@ public:
         }
         
         file.seek(m_total_read, SEEK_SET);
-        logDebug("File name: ", file.name, " all good? ", endOfData().to!string);
         return got;
     }
 

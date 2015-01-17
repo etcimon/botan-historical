@@ -583,7 +583,7 @@ static if (!SKIP_CVC_TEST) unittest
 {
 
     logTrace("Testing cvc/test.d ...");
-    AutoSeededRNG rng;
+	AutoSeededRNG rng = AutoSeededRNG();
     
     logTrace("testEncGenSelfsigned");
     testEncGenSelfsigned(rng);
