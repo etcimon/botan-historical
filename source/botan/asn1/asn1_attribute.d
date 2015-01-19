@@ -43,7 +43,7 @@ public:
     /*
     * DER encode a Attribute
     */
-    override void encodeInto(DEREncoder codec) const
+    override void encodeInto(ref DEREncoder codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)

@@ -26,7 +26,7 @@ public:
     /*
     * DER encode an ASN1String
     */
-    override void encodeInto(DEREncoder encoder) const
+    override void encodeInto(ref DEREncoder encoder) const
     {
         string value = iso8859();
         if (tagging() == ASN1Tag.UTF8_STRING)

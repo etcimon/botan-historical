@@ -257,8 +257,11 @@ BigInt powerMod(in BigInt base, in BigInt exp, in BigInt mod)
     * minimal window. This makes sense given that here we know that any
     * precomputation is wasted.
     */
+    logTrace("SetBase");
     pow_mod.setBase(base);
+    logTrace("SetExponent");
     pow_mod.setExponent(exp);
+    logTrace("Execute()");
     return pow_mod.execute();
 }
 

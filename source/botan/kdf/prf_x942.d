@@ -27,7 +27,7 @@ public:
                                        const(ubyte)* secret, size_t secret_len,
                                        const(ubyte)* salt, size_t salt_len) const
     {
-        SHA160 hash;
+        auto hash = scoped!SHA160();
         const OID kek_algo = OID(m_key_wrap_oid);
         
         SecureVector!ubyte key;

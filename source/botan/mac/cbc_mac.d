@@ -60,7 +60,7 @@ public:
     this(BlockCipher cipher)
     {
         m_cipher = cipher;
-        m_state = cipher.blockSize();
+        m_state = m_cipher.blockSize();
     }
 
 

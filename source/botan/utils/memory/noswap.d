@@ -155,14 +155,14 @@ public:
             }
 
             auto lower_range = m_freelist.lowerBound(mem);
-            if (!lower_range.empty && lower_range.back().ptr + lower_range.back().length + alignment > mem.ptr)
+            if (!lower_range.empty && (lower_range.back().ptr + lower_range.back().length + alignment) > mem.ptr)
             {
                 //import std.stdio : writeln;
                 //logTrace("Pool item (<): ", lower_range.back().ptr, " .. ", lower_range.back().ptr + lower_range.back().length, " <==> ", mem.ptr, " .. ", mem.ptr + mem.length);
                 // we can merge with the next block
                 void[] lower_elem = lower_range.back();
-                size_t alignment_padding = mem.ptr - ( lower_elem.ptr + lower_elem.length );
-                assert(alignment_padding < alignment, "Alignment padding error on lower bound");
+                size_t alignment_padding = mem.ptr - ( lower_range.back().ptr + lower_range.back().length );
+                assert(alignment_padding < alignment, "Alignment padding error on lower bound " ~ mem.ptr.to!string ~ ": " ~ alignment_padding.to!string ~ "/" ~ alignment.to!string);
                 combined = lower_elem.ptr[0 .. lower_elem.length + alignment_padding + mem.length];
                 m_freelist.removeKey(lower_elem);
                 mem = combined;
@@ -227,7 +227,7 @@ package:
     }
 
 private:
-    Mutex m_mtx;
+    __gshared Mutex m_mtx;
     RedBlackTree!(void[], "a.ptr < b.ptr") m_freelist;
     void[] m_pool;
     void[] m_pool_unaligned;

@@ -38,8 +38,8 @@ public:
          X509Certificate subject_cert) 
         
     {
-		logTrace("OCSPRequest: Issuer Cert: ", issuer_cert.toString());
-		logTrace("OCSPRequest: Subject Cert: ", subject_cert.toString());
+        logTrace("OCSPRequest: Issuer Cert: ", issuer_cert.toString());
+        logTrace("OCSPRequest: Subject Cert: ", subject_cert.toString());
         m_issuer = issuer_cert;
         m_subject = subject_cert;
     }
@@ -259,20 +259,20 @@ void onlineCheck(shared(Tid) sender,
                  shared(const(X509Certificate)*) subject,
                  shared(const(CertificateStore)*) trusted_roots)
 {
-	logTrace("Checking OCSP online");
+    logTrace("Checking OCSP online");
     const string responder_url = (*cast(X509Certificate*)subject).ocspResponder();
-	logTrace("Responder url: ", responder_url.length);
+    logTrace("Responder url: ", responder_url.length);
 
     if (responder_url.length == 0) {
-		logTrace("Aborting OCSP for ID#", id.to!string);
-		*cast(OCSPResponse*)resp = OCSPResponse.init;
-		send(cast(Tid)sender, cast(size_t)id);
-		return;
-	}
+        logTrace("Aborting OCSP for ID#", id.to!string);
+        *cast(OCSPResponse*)resp = OCSPResponse.init;
+        send(cast(Tid)sender, cast(size_t)id);
+        return;
+    }
 
     OCSPRequest req = OCSPRequest(*cast(X509Certificate*)issuer, *cast(X509Certificate*)subject);
     
-	logTrace("POST_sync");
+    logTrace("POST_sync");
     HTTPResponse res = POST_sync(responder_url, "application/ocsp-request", req.BER_encode());
     
     res.throwUnlessOk();

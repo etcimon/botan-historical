@@ -112,32 +112,32 @@ public:
     override void setBase(BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
-        
         m_g.resize((1 << m_window_bits));
         
         BigInt z = BigInt(BigInt.Positive, 2 * (m_mod_words + 1));
         SecureVector!word workspace = SecureVector!word(z.length);
         
-        m_g[0] = 1;
+        m_g[0] = BigInt(1);
         
         bigint_monty_mul(z.mutablePtr(), z.length, m_g[0].ptr, m_g[0].length, m_g[0].sigWords(), m_R2_mod.ptr, 
                          m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
-        m_g[0] = z;
+        m_g[0] = z.dup;
         
-        m_g[1] = (base >= m_modulus) ? (base % m_modulus) : base;
+        m_g[1] = (base >= m_modulus) ? (base % m_modulus) : base.dup;
         
         bigint_monty_mul(z.mutablePtr(), z.length, m_g[1].ptr, m_g[1].length, m_g[1].sigWords(), m_R2_mod.ptr, 
                          m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
-        m_g[1] = z;
+        m_g[1] = z.dup;
         
-        const BigInt x = m_g[1];
+        const BigInt x = m_g[1].dup;
         const size_t x_sig = x.sigWords();
         
         for (size_t i = 2; i != m_g.length; ++i)
         {
-            const BigInt y = m_g[i-1];
+            logDebug("i ", i);
+            const BigInt y = m_g[i-1].dup;
             const size_t y_sig = y.sigWords();
             
             bigint_monty_mul(z.mutablePtr(), z.length,
@@ -155,6 +155,7 @@ public:
     */
     override BigInt execute() const
     {
+        logTrace("start execute");
         const size_t exp_nibbles = (m_exp_bits + m_window_bits - 1) / m_window_bits;
         
         BigInt x = m_R_mod.dup;
@@ -187,7 +188,7 @@ public:
         x.growTo(2*m_mod_words + 1);
         
         bigint_monty_redc(x.mutablePtr(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
-        
+        logTrace("Finished execute");
         return x;
     }
 

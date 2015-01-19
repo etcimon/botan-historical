@@ -38,7 +38,7 @@ public:
     /*
     * DER encode a EACTime
     */
-    override void encodeInto(DEREncoder der) const
+    override void encodeInto(ref DEREncoder der) const
     {
         der.addObject(m_tag, ASN1Tag.APPLICATION,
                        encodedEacTime());
@@ -385,7 +385,7 @@ public:
     /*
     * DER encode an ASN1EACString
     */
-    override void encodeInto(DEREncoder encoder) const
+    override void encodeInto(ref DEREncoder encoder) const
     {
         string value = iso8859();
         encoder.addObject(tagging(), ASN1Tag.APPLICATION, value);

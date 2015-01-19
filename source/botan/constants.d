@@ -8,7 +8,11 @@ const SKIP_BLOCK_TEST = true;
 const SKIP_CVC_TEST = true;
 const SKIP_CRYPTOBOX_TEST = true;
 const SKIP_RFC3394_TEST = true;
-const SKIP_TSS_TEST = false;
+const SKIP_TSS_TEST = true;
+const SKIP_HASH_TEST = true;
+const SKIP_KDF_TEST = true;
+const SKIP_MAC_TEST = true;
+const SKIP_BIGINT_TEST = false;
 
 const BOTAN_VERSION_MAJOR = 2;
 const BOTAN_VERSION_MINOR = 0;

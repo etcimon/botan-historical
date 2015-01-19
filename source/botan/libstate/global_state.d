@@ -19,9 +19,9 @@ LibraryState globalState()
 {
     if (!g_lib_state) {
 
-		import backtrace.backtrace;
-		import std.stdio : stdout;
-		install(stdout, PrintOptions.init, 0);
+        import backtrace.backtrace;
+        import std.stdio : stdout;
+        install(stdout, PrintOptions.init, 0);
 
         g_lib_state = new LibraryState;
         /* Lazy initialization. Botan still needs to be deinitialized later

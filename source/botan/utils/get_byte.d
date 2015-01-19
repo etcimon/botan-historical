@@ -9,6 +9,7 @@ module botan.utils.get_byte;
 import botan.constants;
 public import botan.utils.mem_ops;
 import botan.utils.types;
+import std.bitmanip;
 /**
 * Byte extraction
 * @param byte_num = which ubyte to extract, 0 == highest ubyte
@@ -17,5 +18,5 @@ import botan.utils.types;
 */
 ubyte get_byte(T)(size_t byte_num, T input)
 {
-	return cast(ubyte)(input >> ( ( T.sizeof - 1 - (byte_num & (T.sizeof - 1) ) ) << 3) );
+    return cast(ubyte)(input >> ( ( T.sizeof - 1 - (byte_num & (T.sizeof - 1) ) ) << 3) );
 }

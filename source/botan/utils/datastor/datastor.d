@@ -150,7 +150,7 @@ public:
     */
     void add(in string key, in SecureVector!ubyte val)
     {
-		logTrace("Adding Secure: ", val[]);
+        logTrace("Adding Secure: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     
@@ -169,17 +169,17 @@ public:
             m_contents.insert(k, v);
     }
 
-	string toString() const {
-		Vector!ubyte buffer;
-		foreach (const ref string k, const ref string v; m_contents) {
-			buffer ~= "Key: ";
-			buffer ~= k;
-			buffer ~= ", Value: ";
-			buffer ~= v;
-			buffer ~= "\n";
-		}
-		return buffer[].idup;
-	}
+    string toString() const {
+        Vector!ubyte buffer;
+        foreach (const ref string k, const ref string v; m_contents) {
+            buffer ~= "Key: ";
+            buffer ~= k;
+            buffer ~= ", Value: ";
+            buffer ~= v;
+            buffer ~= "\n";
+        }
+        return buffer[].idup;
+    }
 
 private:
     MultiMap!(string, string) m_contents;

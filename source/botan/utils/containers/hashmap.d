@@ -259,33 +259,33 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
         if (!m_hasher) {
 
             
-			static if ((__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toVector") ) ||
-						__traits(hasMember, Key, "toVector"))
-			{
-				m_hasher = (Key k) {
-					import std.typecons : scoped;
-					import botan.hash.md4;
-					import botan.utils.containers.vector : Vector;
-					Vector!ubyte s = k.toVector();
-					auto md4 = scoped!MD4();
-					md4.update(s);
-					auto hash = md4.finished();
-					return *cast(size_t*)hash.ptr;
-				};
-			}
-			else static if (( __traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString") ) ||
-							  __traits(hasMember, Key, "toString"))
-			{
-				m_hasher = (Key k) {
-					import std.typecons : scoped;
-					import botan.hash.md4;
-					string s = k.toString();
-					auto md4 = scoped!MD4();
-					md4.update(s);
-					auto hash = md4.finished();
-					return *cast(size_t*)hash.ptr;
-				};
-			}
+            static if ((__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toVector") ) ||
+                        __traits(hasMember, Key, "toVector"))
+            {
+                m_hasher = (Key k) {
+                    import std.typecons : scoped;
+                    import botan.hash.md4;
+                    import botan.utils.containers.vector : Vector;
+                    Vector!ubyte s = k.toVector();
+                    auto md4 = scoped!MD4();
+                    md4.update(s);
+                    auto hash = md4.finished();
+                    return *cast(size_t*)hash.ptr;
+                };
+            }
+            else static if (( __traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString") ) ||
+                              __traits(hasMember, Key, "toString"))
+            {
+                m_hasher = (Key k) {
+                    import std.typecons : scoped;
+                    import botan.hash.md4;
+                    string s = k.toString();
+                    auto md4 = scoped!MD4();
+                    md4.update(s);
+                    auto hash = md4.finished();
+                    return *cast(size_t*)hash.ptr;
+                };
+            }
             
             else static if (__traits(compiles, (){ Key t; size_t hash = t.toHash(); }())) {
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHash() : 0;
@@ -294,11 +294,11 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
                 static if (isPointer!Key || is(Unqual!Key == class)) m_hasher = k => k ? k.toHashShared() : 0;
                 else m_hasher = k => k.toHashShared();
             } 
-			else static if (__traits(hasMember, Key, "isFreeListRef")) {
-				
-				auto typeinfo = typeid(typeof(*(Key())));
-				m_hasher = k => typeinfo.getHash(&k);
-			}
+            else static if (__traits(hasMember, Key, "isFreeListRef")) {
+                
+                auto typeinfo = typeid(typeof(*(Key())));
+                m_hasher = k => typeinfo.getHash(&k);
+            }
             else {
                 auto typeinfo = typeid(Key);
                 m_hasher = k => typeinfo.getHash(&k);

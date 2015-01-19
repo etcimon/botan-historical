@@ -28,7 +28,7 @@ public:
     /*
     * DER encode an AlgorithmIdentifier
     */
-    override void encodeInto(DEREncoder codec) const
+    override void encodeInto(ref DEREncoder codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)

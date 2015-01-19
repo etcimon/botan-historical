@@ -75,7 +75,7 @@ final class X509ExtensionsImpl : ASN1Object
 {
 public:
 
-    override void encodeInto(DEREncoder to_object) const
+    override void encodeInto(ref DEREncoder to_object) const
     {
         foreach (const extension; m_extensions[])
         {
@@ -900,7 +900,7 @@ public:
     final class DistributionPointImpl : ASN1Object
     {
     public:
-        override void encodeInto(DEREncoder) const
+        override void encodeInto(ref DEREncoder) const
         {
             throw new Exception("CRLDistributionPoints encoding not implemented");
         }
@@ -976,7 +976,7 @@ public:
     this() {}
     this(OID oid_) { oid = oid_; }
     
-    override void encodeInto(DEREncoder codec) const
+    override void encodeInto(ref DEREncoder codec) const
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)

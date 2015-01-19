@@ -271,8 +271,8 @@ void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1, ref T x2, ref T x
 * @param x7 = where the eighth word will be written
 */
 void loadBigEndian(T)(const(ubyte)* input,
-                ref T x0, ref T x1, ref T x2, ref T x3,
-                ref T x4, ref T x5, ref T x6, ref T x7)
+                      ref T x0, ref T x1, ref T x2, ref T x3,
+                      ref T x4, ref T x5, ref T x6, ref T x7)
 {
     x0 = loadBigEndian!T(input, 0);
     x1 = loadBigEndian!T(input, 1);
@@ -355,7 +355,7 @@ void storeBigEndian(ulong input, ubyte[8]* output)
 * @param input = the input ulong
 * @param output = the ubyte array to write to
 */
-void storeLittleEndian(ulong input, ubyte[8]* output)
+void storeLittleEndian(in ulong input, ubyte[8]* output)
 {
     *cast(ulong*) output = littleEndianToNative!ulong(*cast(ubyte[8]*) &input);
 }

@@ -32,7 +32,7 @@ public:
     /*
     * DER encode an AlternativeName extension
     */
-    override void encodeInto(DEREncoder der) const
+    override void encodeInto(ref DEREncoder der) const
     {
         der.startCons(ASN1Tag.SEQUENCE);
         

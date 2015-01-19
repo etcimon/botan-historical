@@ -61,11 +61,16 @@ public:
         }
     }
 
-    this(this) {
-        SecureVector!word* other = m_reg;
-        m_reg = null;
-        defaultInit();
-        *m_reg = *other;
+    this(this) const {
+        if (!m_reg || m_reg.length == 0) {
+            (cast(BigInt*)&this).m_reg = null;
+            (cast(BigInt*)&this).defaultInit();
+            return;
+        }
+        SecureVector!word* other = (cast(BigInt*)&this).m_reg;
+        (cast(BigInt*)&this).m_reg = null;
+        (cast(BigInt*)&this).defaultInit();
+        *(cast(BigInt*)&this).m_reg = *other;
     }
 
     /**
@@ -76,10 +81,10 @@ public:
         if (isNumeric!T)
     {
         import std.algorithm : max;
+        defaultInit();
         if (n == 0)
             return;
         const size_t limbs_needed = std.algorithm.max(1, T.sizeof / word.sizeof);
-        defaultInit();
         (*m_reg).resize(4*limbs_needed);
         foreach (size_t i; 0 .. limbs_needed)
             (*m_reg)[i] = ((n >> (i*MP_WORD_BITS)) & MP_WORD_MASK);
@@ -122,7 +127,7 @@ public:
         size_t markers = 0;
         bool negative = false;
         
-		logTrace("Building bigint with input str: ", str);
+        logTrace("Building bigint with input str: ", str);
         if (str.length > 0 && str[0] == '-')
         {
             markers += 1;
@@ -224,6 +229,7 @@ public:
     {
         if (&other is null) {
             destroy(this);
+            defaultInit();
             return;
         }
         if (&other is &this)
@@ -232,8 +238,8 @@ public:
         if (!m_reg) {
             m_reg = new SecureVector!(word)();
         }
-        if (other.m_reg)
-            *m_reg = *other.m_reg;
+        if (other.m_reg && other.m_reg.length > 0) *m_reg = *other.m_reg;
+        else if (other.m_reg && other.m_reg.length == 0) (*m_reg) = SecureVector!(word)();
         m_signedness = other.m_signedness;
 
         destroy(other);
@@ -504,11 +510,12 @@ public:
     * Unary negation operator
     * @return negative this
     */
-    ref BigInt opUnary(string op)()
+    BigInt opUnary(string op)()
         if (op == "-")
     {
-        flipSign();
-        return this;
+        BigInt ret = this.dup;
+        ret.flipSign();
+        return ret;
     }
 
     /**
@@ -517,7 +524,7 @@ public:
     */
     T opCast(T : bool)() const { return isNonzero(); }
 
-    T opCast(T : BigInt)() const { return cast(BigInt)this; }
+    T opCast(T : BigInt)() const { return *cast(BigInt*)&this; }
 
     /**
     * Zeroize the BigInt. The size of the underlying register is not
@@ -539,6 +546,7 @@ public:
     */
     int cmp(in BigInt other, bool check_signs = true) const
     {
+        (cast(BigInt*)&this).defaultInit();
         if (check_signs)
         {
             if (other.isPositive() && this.isNegative())
@@ -1022,7 +1030,6 @@ public:
     */
     static void encode(ubyte* output, in BigInt n, Base base = Binary)
     {
-		logTrace("Encoding BigInt to output string");
         if (base == Binary)
         {
             n.binaryEncode(output);
@@ -1061,7 +1068,6 @@ public:
     */
     static BigInt decode(const(ubyte)* buf, size_t length, Base base = Binary)
     {
-		logTrace("Decoding BigInt from input string");
         BigInt r;
         if (base == Binary)
             r.binaryDecode(buf, length);
@@ -1091,8 +1097,7 @@ public:
                     continue;
                 
                 if (!isDigit(buf[i]))
-                    throw new InvalidArgument("BigInt.decode: "
-                                               ~ "Invalid character in decimal input");
+                    throw new InvalidArgument("BigInt.decode: " ~ "Invalid character in decimal input");
                 
                 const ubyte x = char2digit(buf[i]);
                 
@@ -1139,7 +1144,7 @@ public:
     */
     static SecureVector!ubyte encode1363(in BigInt n, size_t bytes)
     {
-		logTrace("Encoding BigInt to output string with IEEE 1363");
+        logTrace("Encoding BigInt to output string with IEEE 1363");
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
             throw new EncodingError("encode1363: n is too large to encode properly");
@@ -1157,6 +1162,7 @@ public:
     BigInt opBinary(string op)(in BigInt y) const
         if (op == "+")
     {
+        logTrace("DoAdd IN");
         const BigInt x = this;
         const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
@@ -1178,7 +1184,6 @@ public:
             else if (relative_size > 0)
                 bigint_sub3(z.mutablePtr(), x.ptr, x_sw, y.ptr, y_sw);
         }
-        
         return z;
     }
 
@@ -1251,8 +1256,8 @@ public:
         {
             SecureVector!word workspace = SecureVector!word(z.length);
             bigint_mul(z.mutablePtr(), z.length, workspace.ptr,
-            x.ptr, x.length, x_sw,
-            y.ptr, y.length, y_sw);
+                        x.ptr, x.length, x_sw,
+                        y.ptr, y.length, y_sw);
         }
         
         if (x_sw && y_sw && x.sign() != y.sign())
@@ -1355,7 +1360,7 @@ public:
         if (op == ">>")
     {
         if (shift == 0)
-            return this.dup;
+            return BigInt(this);
         if (bits() <= shift)
             return BigInt(0);
         

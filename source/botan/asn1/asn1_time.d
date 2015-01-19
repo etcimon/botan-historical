@@ -30,7 +30,7 @@ public:
     /*
     * DER encode a X509Time
     */
-    override void encodeInto(DEREncoder der) const
+    override void encodeInto(ref DEREncoder der) const
     {
         if (m_tag != ASN1Tag.GENERALIZED_TIME && m_tag != ASN1Tag.UTC_TIME)
             throw new InvalidArgument("X509Time: Bad encoding m_tag");
@@ -174,7 +174,7 @@ public:
         m_minute    = (params.length >= 5) ? to!uint(params[4]) : 0;
         m_second    = (params.length == 6) ? to!uint(params[5]) : 0;
 
-		foreach(string param; params[]) delete param;
+        foreach(string param; params[]) delete param;
 
         m_tag = (m_year >= 2050) ? ASN1Tag.GENERALIZED_TIME : ASN1Tag.UTC_TIME;
         
@@ -260,8 +260,8 @@ public:
         
         m_tag = (m_year >= 2050) ? ASN1Tag.GENERALIZED_TIME : ASN1Tag.UTC_TIME;
 
-		if (!passesSanityCheck())
-			throw new InvalidArgument("Invalid time specification from SysTime");
+        if (!passesSanityCheck())
+            throw new InvalidArgument("Invalid time specification from SysTime");
     }
     
     /*
@@ -270,7 +270,7 @@ public:
     this(in string t_spec, ASN1Tag t)
     {
         m_tag = t;
-		logTrace("Time ctor: ", t_spec);
+        logTrace("Time ctor: ", t_spec);
         setTo(t_spec, m_tag);
     }
 
@@ -279,7 +279,7 @@ public:
     */
     this(in string time_str)
     {
-		logTrace("Time ctor: ", time_str);
+        logTrace("Time ctor: ", time_str);
         setTo(time_str);
     }
 
@@ -299,7 +299,7 @@ private:
     */
     bool passesSanityCheck() const
     {
-		logTrace("Decoded time: ", readableString());
+        logTrace("Decoded time: ", readableString());
         if (m_year < 1950 || m_year > 2100)
             return false;
         if (m_month == 0 || m_month > 12)

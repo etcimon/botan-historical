@@ -9,23 +9,26 @@ import botan.utils.exceptn;
 import botan.math.numbertheory.numthry;
 import botan.test;
 
-void stripComments(string line)
+string stripComments(string line)
 {
-    if (line.canFind('#'))
-        line = line[0 .. line.indexOf('#')];
+    string ret = line;
+    if (ret.canFind('#'))
+        ret = ret[0 .. ret.indexOf('#')];
+    return ret;
 }
 
 /* Strip comments, whitespace, etc */
-void strip(string line)
+string strip(string line)
 {
-    stripComments(line);
+    string ret = stripComments(line);
     
     /*    while(line.canFind(' '))
         line = line[0 .. line.indexOf(' ')];
 */
     
-    while(line.canFind('\t'))
-        line = line[0 .. line.indexOf('\t')];
+    while(ret.canFind('\t'))
+        ret = ret[0 .. ret.indexOf('\t')];
+    return ret;
 }
 
 Vector!string parse(string line)
@@ -37,12 +40,14 @@ Vector!string parse(string line)
     string line_ = line;
     while(end != -1)
     {
-        substr.pushBack(line_[0 .. end]);
-        if (end+1 >= line.length)
+        substr.pushBack(line_[0 .. end].idup);
+        if (end + 1 >= line.length)
             break;
-        line_ = line_[end+1 .. $];
+        line_ = line_[end + 1 .. $];
         end = line_.indexOf(DELIMITER);
     }
+    if (line_.length > 0)
+        substr.pushBack(line_.idup);
     while(substr.length <= 4) // at least 5 substr, some possibly empty
         substr.pushBack("");
     return substr;
@@ -58,33 +63,34 @@ size_t results(string op, in BigInt a, in BigInt b, in BigInt c, in BigInt d, in
         return 0;
     else
     {
-        logTrace();
+        logError("ERROR: " ~ op1);
         
-        logTrace("ERROR: " ~ op1);
+        logDebug("a = ", a);
+        logDebug("b = ", b);
         
-        logTrace("a = ", a);
-        logTrace("b = ", b);
-        
-        logTrace("c = ", c);
-        logTrace("d = ", d);
-        logTrace("e = ", e);
+        logDebug("c = ", c);
+        logDebug("d = ", d);
+        logDebug("e = ", e);
         
         if (d != e)
         {
-            logTrace("ERROR: " ~ op1 ~ " | " ~ op2 ~ " mismatch");
+            logError("ERROR: " ~ op1 ~ " | " ~ op2 ~ " mismatch");
         }
-        return 1;
+        assert(false);
     }
 }
 
 size_t checkAdd(in Vector!string args)
 {
+    //logTrace("Add: ", cast(ubyte[])args[0][]);
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
     BigInt c = BigInt(args[2]);
     
     BigInt d = a + b;
     BigInt e = a.dup;
+
+    logTrace("Add inplace");
     e += b;
     
     if (results("+", a, b, c, d, e))
@@ -128,7 +134,7 @@ size_t checkMul(in Vector!string args)
     b.growTo(64);
     
     BigInt d = a * b;
-    BigInt e = a;
+    BigInt e = a.dup;
     e *= b;
     
     if (results("*", a, b, c, d, e))
@@ -162,7 +168,7 @@ size_t checkDiv(in Vector!string args)
     BigInt c = BigInt(args[2]);
     
     BigInt d = a / b;
-    BigInt e = a;
+    BigInt e = a.dup;
     e /= b;
     
     return results("/", a, b, c, d, e);
@@ -191,7 +197,7 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     
     b = b_word;
     
-    c = a.dup % b; /* we declare the BigInt % BigInt version to be correct here */
+    c = a % b; /* we declare the BigInt % BigInt version to be correct here */
     
     word d2 = a % b_word;
     e = a.dup;
@@ -206,7 +212,7 @@ size_t checkShl(in Vector!string args)
     size_t b = args[1].to!size_t;
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a.dup << b;
+    BigInt d = a << b;
     BigInt e = a.dup;
     e <<= b;
     
@@ -219,7 +225,7 @@ size_t checkShr(in Vector!string args)
     size_t b = args[1].to!size_t;
     BigInt c = BigInt(args[2]);
     
-    BigInt d = a.dup >> b;
+    BigInt d = a >> b;
     BigInt e = a.dup;
     e >>= b;
     
@@ -266,13 +272,15 @@ size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
     return 0;
 }
 
-unittest
+static if (!SKIP_BIGINT_TEST) unittest
 {
+    import botan.libstate.global_state;
+    auto state = globalState(); // ensure initialized
+
     import std.stdio : writeln;
     logTrace("Testing bigint/test.d ...");
     import std.array;
-    import std.string : strip;
-    const string filename = "test_data/mp_valid.dat";
+    const string filename = "../test_data/mp_valid.dat";
     File test_data = File(filename, "r");
     
     if (test_data.error || test_data.eof)
@@ -291,17 +299,19 @@ unittest
         if (test_data.error)
             throw new StreamIOError("File I/O error reading from " ~ filename);
         
-        Vector!ubyte line = test_data.readln().strip();
-        
+        Vector!ubyte line = Vector!ubyte(test_data.readln()[0 .. $-1].strip());
         if (line.length == 0) continue;
         
         // Do line continuation
         while(line[line.length-1] == '\\' && !test_data.eof())
         {
-            line[] = line.ptr[0 .. line.length-1];
-            string nextline = test_data.readln().strip();
-            if (nextline.length == 0) continue;
-            line ~= nextline;
+            line.removeBack();
+            string nextline = test_data.readln()[0 .. $-1].strip();
+            while(nextline.length > 0) {
+                if (nextline[$-1] == '\\') nextline = nextline[0 .. $-1];
+                line ~= nextline;
+                nextline = test_data.readln()[0 .. $-1].strip();
+            }
         }
         
         if (line[0] == '[' && line[line.length - 1] == ']')
@@ -309,7 +319,7 @@ unittest
             if (!first)
                 testReport("Bigint " ~ algorithm, alg_count, errors);
             
-            algorithm = line[1 .. line.length - 2 + 1];
+            algorithm = line[].ptr[1 .. line.length - 1].idup;
             
             total_errors += errors;
             errors = 0;
@@ -319,8 +329,9 @@ unittest
             first = false;
             continue;
         }
-        
+        logTrace(line[]);
         Vector!string substr = parse(line[]);
+        logTrace(substr[]);
         
         logTrace("Testing: " ~ algorithm);
         

@@ -6,6 +6,7 @@
 */
 module botan.math.numbertheory.pow_mod;
 
+import botan.constants;
 import botan.math.bigint.bigint;
 import botan.libstate.libstate;
 import botan.engine.engine;
@@ -98,7 +99,7 @@ public:
                 if (m_core)
                     break;
             }
-            
+            logTrace("Ending setModulus");
             if (!m_core)
                 throw new LookupError("PowerMod: Unable to find a working engine");
         }
@@ -109,11 +110,13 @@ public:
     */
     void setBase(in BigInt b)
     {
+
         if (b.isZero() || b.isNegative())
             throw new InvalidArgument("PowerMod.setBase: arg must be > 0");
         
         if (!m_core)
             throw new InternalError("PowerMod.setBase: core was NULL");
+
         m_core.setBase(b.dup);
     }
 

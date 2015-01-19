@@ -31,7 +31,7 @@ public:
     /*
     * DER encode a DistinguishedName
     */
-    override void encodeInto(DEREncoder der) const
+    override void encodeInto(ref DEREncoder der) const
     {
         auto dn_info = getAttributes();
         
@@ -144,7 +144,7 @@ public:
         if (str == "")
             return;
 
-		logTrace("Add X509DN Attribute Type: ", OIDS.lookup(oid), ", Value: ", str);
+        logTrace("Add X509DN Attribute Type: ", OIDS.lookup(oid), ", Value: ", str);
         bool exists;
         void search_func(in ASN1String name) {
             if (name.value() == str)
@@ -213,34 +213,34 @@ public:
     */
     bool opEquals(in X509DN dn2) const
     {
-		bool equals = true;
+        bool equals = true;
 
         Pair!(OID, string)[] attr1;
         Pair!(OID, string)[] attr2;
 
-		scope(exit) {
-			if (attr1) freeArray(attr1); 
-			if (attr2) freeArray(attr2);
-			logTrace("Equals? ", equals);
-		}
+        scope(exit) {
+            if (attr1) freeArray(attr1); 
+            if (attr2) freeArray(attr2);
+            logTrace("Equals? ", equals);
+        }
 
         {
             MultiMap!(OID, string) map1 = getAttributes();
             MultiMap!(OID, string) map2 = dn2.getAttributes();
 
-			attr1 = allocArray!(Pair!(OID, string))(map1.length);
-			attr2 = allocArray!(Pair!(OID, string))(map2.length);
+            attr1 = allocArray!(Pair!(OID, string))(map1.length);
+            attr2 = allocArray!(Pair!(OID, string))(map2.length);
 
-			size_t i;
-			foreach (const ref OID oid, const ref string val; map1) {
+            size_t i;
+            foreach (const ref OID oid, const ref string val; map1) {
                 attr1[i] = makePair(oid.dup, val);
-				i++;
-			}
-			i=0;
+                i++;
+            }
+            i=0;
             foreach (const ref OID oid, const ref string val; map2) {
                 attr2[i] = makePair(oid.dup, val);
-				i++;
-			}
+                i++;
+            }
         }
 
         if (attr1.length != attr2.length) return false;
@@ -248,38 +248,38 @@ public:
         auto p1 = attr1.ptr;
         auto p2 = attr2.ptr;
 
-		auto p1max = (attr1.ptr + attr1.length);
-		auto p2max = (attr2.ptr + attr2.length);
+        auto p1max = (attr1.ptr + attr1.length);
+        auto p2max = (attr2.ptr + attr2.length);
 
         while (true)
         {
-			if (p1 == p1max && p2 == p2max)
+            if (p1 == p1max && p2 == p2max)
                 break;
-			if (p1 == p1max)  {
-				equals = false;
-				break;
-			}
-			if (p2 == p2max) {
-				equals = false;
-				break;
-			}
-			if (!p1.first && !p2.first) {
-				break;
-			}
+            if (p1 == p1max)  {
+                equals = false;
+                break;
+            }
+            if (p2 == p2max) {
+                equals = false;
+                break;
+            }
+            if (!p1.first && !p2.first) {
+                break;
+            }
 
-			if (!p1.first || !p2.first) {
-				equals = false;
-				break;
-			}
+            if (!p1.first || !p2.first) {
+                equals = false;
+                break;
+            }
             if (p1.first != p2.first) {
-				equals = false;
-				return false;
-			}
+                equals = false;
+                return false;
+            }
 
             if (!x500NameCmp(p1.second, p2.second)) {
-				equals = false;
+                equals = false;
                 return false;
-			}
+            }
             ++p1;
             ++p2;
         }
@@ -352,7 +352,7 @@ void doAva(DEREncoder encoder,
     if (!exists) return;
 
     dn_info.equalRange(oid, (in string val) {
-        		 encoder.startCons(ASN1Tag.SET)
+                 encoder.startCons(ASN1Tag.SET)
                 .startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)
                 .encode(ASN1String(val, string_type))

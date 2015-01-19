@@ -98,7 +98,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
     return fails;
 }
 
-unittest {  
+static if (!SKIP_MAC_TEST) unittest {  
     logTrace("Testing mac.d ...");  
     auto test = delegate(string input) {
         File vec = File(input, "r");

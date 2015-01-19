@@ -13,7 +13,6 @@ import botan.utils.exceptn;
 import botan.utils.mem_ops;
 import botan.utils.mul128;
 
-pure:
 // todo: Bring back ASM for x86_32, x86_64, from Botan C++.
 
 /*

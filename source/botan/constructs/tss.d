@@ -43,33 +43,30 @@ public:
         if (M == 0 || N == 0 || M > N)
             throw new EncodingError("split: M == 0 or N == 0 or M > N");
         
-		Unique!SHA256 hash = new SHA256(); // always use SHA-256 when generating shares
+        Unique!SHA256 hash = new SHA256(); // always use SHA-256 when generating shares
         Vector!RTSS shares = Vector!RTSS(N);
-		logTrace("Secret length: ", S_len);
         // Create RTSS header in each share
         foreach (ubyte i; 0 .. N)
         {
-			shares[i].m_contents = SecureVector!ubyte();
+            shares[i].m_contents = SecureVector!ubyte();
             shares[i].m_contents ~= identifier.ptr[0 .. 16];
             shares[i].m_contents ~= rtssHashId(hash.name);
             shares[i].m_contents ~= M;
-			logTrace(S_len);
-			logTrace("Bytes: ", get_byte(0, S_len), "::", get_byte(1, S_len));
-            shares[i].m_contents ~= get_byte(0, S_len);
-            shares[i].m_contents ~= get_byte(1, S_len);
+            shares[i].m_contents ~= get_byte(6, S_len);
+            shares[i].m_contents ~= get_byte(7, S_len);
         }
         
         // Choose sequential values for X starting from 1
         foreach (ubyte i; 0 .. N)
             shares[i].m_contents.pushBack(i+1);
         
-		logTrace("pushed back");
+        logTrace("pushed back");
         // secret = S || H(S)
         SecureVector!ubyte secret = SecureVector!ubyte(S[0 .. S_len]);
-		logTrace("secret");
+        logTrace("secret");
         secret ~= hash.process(S, S_len);
         
-		logTrace("secret ", secret[]);
+        logTrace("secret ", secret[]);
         foreach (ubyte s; secret[])
         {
             Vector!ubyte coefficients = Vector!ubyte(M-1);
@@ -119,21 +116,20 @@ public:
         
         if (shares.length < shares[0].m_contents[17])
             throw new DecodingError("Insufficient shares to do TSS reconstruction");
-		logTrace(shares[0].m_contents[18], shares[0].m_contents[19]);
+        
         ushort secret_len = make_ushort(shares[0].m_contents[18], shares[0].m_contents[19]);
         
         ubyte hash_id = shares[0].m_contents[16];
-		logTrace("hash: ",hash_id);
+
         Unique!HashFunction hash = getRtssHashById(hash_id);
-		logTrace("Secret length: ", secret_len);
-		logTrace("Hash output length: ", hash.outputLength);
+        
         if (shares[0].length != secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1) {
-			hash.release();
-			assert(hash.outputLength > 0);
-			throw new DecodingError("Bad RTSS length field in header " ~ shares[0].length.to!string ~ " != " ~ (secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1).to!string);
-		}
+            hash.release();
+            assert(hash.outputLength > 0);
+            throw new DecodingError("Bad RTSS length field in header " ~ shares[0].length.to!string ~ " != " ~ (secret_len + hash.outputLength + RTSS_HEADER_SIZE + 1).to!string);
+        }
         Vector!ubyte V = Vector!ubyte(shares.length);
-        SecureVector!ubyte secret;
+        SecureVector!ubyte secret = SecureVector!ubyte();
         
         foreach (size_t i; (RTSS_HEADER_SIZE + 1) .. shares[0].length)
         {
@@ -174,8 +170,8 @@ public:
         
         if (!sameMem(hash_check.ptr, &secret[secret_len], hash.outputLength))
             throw new DecodingError("RTSS hash check failed");
-        
-        return SecureVector!ubyte(secret.ptr[0 .. secret_len]);
+        secret.length = secret_len;
+        return secret;
     }
 
 
@@ -329,9 +325,9 @@ static if (!SKIP_TSS_TEST) unittest
         id[i] = cast(ubyte)i;
     
     const SecureVector!ubyte S = hexDecodeLocked("7465737400");
-	logTrace("Split TSS: ", S[]);
+    logTrace("Split TSS: ", S[]);
     Vector!RTSS shares = RTSS.split(cast(ubyte)2, cast(ubyte)4, cast(const(ubyte)*)&S[0], S.length, id, rng);
-	logTrace("Reconstruct TSS");
+    logTrace("Reconstruct TSS");
     auto back = RTSS.reconstruct(shares);
     
     if (S != back)
@@ -339,7 +335,7 @@ static if (!SKIP_TSS_TEST) unittest
         logTrace("TSS-0: " ~ hexEncode(S) ~ " != " ~ hexEncode(back));
         ++fails;
     }
-    
+    Object ta;
     shares.resize(shares.length-1);
     
     back = RTSS.reconstruct(shares);

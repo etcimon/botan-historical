@@ -27,7 +27,7 @@ public:
     /*
     * DER encode an OBJECT IDENTIFIER
     */
-    override void encodeInto(DEREncoder der) const
+    override void encodeInto(ref DEREncoder der) const
     {
         if (m_id.length < 2)
             throw new InvalidArgument("encodeInto: OID is invalid");
@@ -107,19 +107,19 @@ public:
     */
     override string toString() const
     {
-		return toVector()[].idup;
+        return toVector()[].idup;
     }
 
-	Vector!ubyte toVector() const {
-		Vector!ubyte oid_str;
-		foreach (size_t i; 0 .. m_id.length)
-		{
-			oid_str ~= to!string(m_id[i]);
-			if (i != m_id.length - 1)
-				oid_str ~= '.';
-		}
-		return oid_str;
-	}
+    Vector!ubyte toVector() const {
+        Vector!ubyte oid_str;
+        foreach (size_t i; 0 .. m_id.length)
+        {
+            oid_str ~= to!string(m_id[i]);
+            if (i != m_id.length - 1)
+                oid_str ~= '.';
+        }
+        return oid_str;
+    }
 
     /**
     * Compare two OIDs.
@@ -258,7 +258,7 @@ public:
         OID oid = OID();
         if (m_id !is null)
             oid.m_id = m_id.dup;
-		else oid.m_id = Vector!uint();
+        else oid.m_id = Vector!uint();
         return oid;
     }
 private:

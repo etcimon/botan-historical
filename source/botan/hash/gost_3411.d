@@ -222,7 +222,7 @@ protected:
         }
         
         const size_t full_blocks = length / hashBlockSize;
-        const size_t remaining    = length % hashBlockSize;
+        const size_t remaining   = length % hashBlockSize;
         
         if (full_blocks)
             compress_n(input, full_blocks);
@@ -246,17 +246,16 @@ protected:
         const ulong bit_count = m_count * 8;
         storeLittleEndian(bit_count, length_buf.ptr);
         
-        SecureVector!ubyte sum_buf = m_sum;
+        SecureVector!ubyte sum_buf = m_sum.dup;
         
         compress_n(length_buf.ptr, 1);
         compress_n(sum_buf.ptr, 1);
         
         copyMem(output, m_hash.ptr, 32);
-        
         clear();
     }
 
-    GOST_28147_89 m_cipher;
+    Unique!GOST_28147_89 m_cipher;
     SecureVector!ubyte m_buffer, m_sum, m_hash;
     size_t m_position;
     ulong m_count;

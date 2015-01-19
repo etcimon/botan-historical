@@ -310,7 +310,7 @@ public:
                        const(ubyte)* sig, size_t sig_length)
     {
         update(msg, msg_length);
-		logTrace("Done update");
+        logTrace("Done update");
         return checkSignature(sig, sig_length);
     }
 
@@ -361,7 +361,7 @@ public:
     */
     bool checkSignature(const(ubyte)* sig, size_t length)
     {
-		logTrace("CheckSignature");
+        logTrace("CheckSignature");
         try {
             if (m_sig_format == IEEE_1363)
                 return validateSignature(m_emsa.rawData(), sig, length);
@@ -422,23 +422,23 @@ public:
     this(in PublicKey key, in string emsa_name, SignatureFormat format = IEEE_1363)
     {
         AlgorithmFactory af = globalState().algorithmFactory();
-		logTrace("Started algorithmFactory");
+        logTrace("Started algorithmFactory");
         RandomNumberGenerator rng = globalState().globalRng();
-		logTrace("Started globalRng");
+        logTrace("Started globalRng");
 
         foreach (Engine engine; af.engines[]) {
-							logTrace("engine iterator for: ", engine.providerName());
+                            logTrace("engine iterator for: ", engine.providerName());
             m_op = Unique!Verification(engine.getVerifyOp(key, rng));
             if (m_op)
                 break;
         }
-		logTrace("m_op?");
+        logTrace("m_op?");
         
         if (!m_op)
             throw new LookupError("Verification with " ~ key.algoName ~ " not supported");
-						logTrace("Get EMSA");
+                        logTrace("Get EMSA");
         m_emsa = getEmsa(emsa_name);
-						logTrace("SigFormat");
+                        logTrace("SigFormat");
         m_sig_format = format;
     }
 

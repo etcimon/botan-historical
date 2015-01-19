@@ -87,10 +87,10 @@ string hexEncode(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, 
 * @return number of bytes written to output
 */
 size_t hexDecode(ubyte* output,
-                  const(char)* input,
-                  size_t input_length,
-                  ref size_t input_consumed,
-                  bool ignore_ws = true)
+                 const(char)* input,
+                 size_t input_length,
+                 ref size_t input_consumed,
+                 bool ignore_ws = true)
 {
     /*
     * Mapping of hex characters to either their binary equivalent
@@ -144,7 +144,7 @@ size_t hexDecode(ubyte* output,
                 continue;
             
             ubyte bad_char = input[i];
-			string bad_char_;
+            string bad_char_;
             if (bad_char == '\t')
                 bad_char_ = "\\t";
             else if (bad_char == '\n')

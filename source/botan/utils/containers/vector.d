@@ -50,7 +50,7 @@ struct VectorImpl(T, int ALLOCATOR)
         {
             T[] data = _payload.ptr[0 .. capacity];
             if (data.ptr !is null)
-                freeArray!(T, ALLOCATOR, true)(data); // calls destructors and frees memory
+                freeArray!(T, ALLOCATOR, true)(data, length); // calls destructors and frees memory
         }
 
         void opAssign(Payload rhs)
@@ -514,7 +514,7 @@ struct VectorImpl(T, int ALLOCATOR)
 
     void opIndexAssign(U)(U val, size_t i)
     {
-        _data._payload[i] = cast(T)val;
+        _data._payload[i] = cast(T) val;
     }
 
     ref const(T) opIndex(size_t i) const
@@ -873,8 +873,6 @@ struct VectorImpl(T, int ALLOCATOR)
 
     bool opEquals(in FreeListRef!(VectorImpl!(T, ALLOCATOR)) other_) const {
         import botan.constants : logTrace;
-        logTrace("opEquals Vector");
-        scope(success) logTrace("opEquals Vector exit");
         if (other_ is null && _data._payload.length == 0)
             return true;
         else if (other_ is null)

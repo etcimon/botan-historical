@@ -7,7 +7,7 @@
 module botan.kdf.kdf;
 import botan.utils.memory.zeroise;
 import botan.utils.types;
-// import string;
+
 import botan.libstate.libstate;
 import botan.algo_base.scan_token;
 import botan.constants;
@@ -169,7 +169,7 @@ import botan.libstate.lookup;
 import botan.codec.hex;
 import botan.test;
 
-unittest
+static if (!SKIP_KDF_TEST) unittest
 {
     logTrace("Testing kdf.d ...");
     auto test = delegate(string input) {

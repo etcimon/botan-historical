@@ -236,8 +236,11 @@ public:
 
     ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
     {
-        if (n.isOdd())
+        if (n.isOdd()) {
+            logTrace("Loading MontgomeryExponentiator");
             return new MontgomeryExponentiator(n.dup, hints);
+        }
+        logTrace("Loading FixedWindowExponentiator");
         return new FixedWindowExponentiator(n.dup, hints);
     }
 

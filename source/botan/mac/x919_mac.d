@@ -58,7 +58,7 @@ public:
         m_des2 = m_des1.clone();
         m_state = 8;
         m_position = 0;
-        if (cipher.name != "DES")
+        if (m_des1.name != "DES")
             throw new InvalidArgument("ANSI X9.19 MAC only supports DES");
     }
 

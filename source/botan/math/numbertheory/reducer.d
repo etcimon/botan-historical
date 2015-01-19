@@ -6,6 +6,7 @@
 */
 module botan.math.numbertheory.reducer;
 
+import botan.constants;
 import botan.math.numbertheory.numthry;
 import botan.math.mp.mp_core;
 
@@ -85,7 +86,7 @@ public:
     * @return (x * x) % p
     */
     BigInt square(in BigInt x) const
-    { return reduce(square(x)); }
+    { return reduce(x.square()); }
 
     /**
     * Cube mod p
@@ -103,11 +104,14 @@ public:
     {
         if (mod <= 0)
             throw new InvalidArgument("ModularReducer: modulus must be positive");
-        
+        logTrace("Set mod");
         m_modulus = mod;
+        logTrace("Get sigWords");
         m_mod_words = m_modulus.sigWords();
+        logTrace("square");
         
         m_modulus_2 = square(m_modulus);
+        logTrace("power2");
         
         m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
     }

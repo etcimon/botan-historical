@@ -89,9 +89,9 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
 void testReport(string name, size_t ran, size_t failed)
 {    
     if (failed)
-        logInfo(name, " ... ", failed, " / ", ran, " ************** FAILED ****************");
+        logError(name, " ... ", failed, " / ", ran, " ************** FAILED ****************");
     else
-        logInfo(name, " ... PASSED (all of ", ran, " tests)");
+        logDebug(name, " ... PASSED (all of ", ran, " tests)");
 }
 
 size_t runTestsBb(ref File src,

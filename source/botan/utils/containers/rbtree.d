@@ -6,7 +6,7 @@ import std.traits;
 import std.range;
 import std.algorithm : countUntil;
 
-	alias RedBlackTree(T,  alias less = "a < b", int Alloc = 1) = FreeListRef!(RedBlackTreeImpl!(T, less, Alloc));
+    alias RedBlackTree(T,  alias less = "a < b", int Alloc = 1) = FreeListRef!(RedBlackTreeImpl!(T, less, Alloc));
 
 /*
  * Implementation for a Red Black node for use in a Red Black Tree (see below)
@@ -490,7 +490,7 @@ struct RBNode(V)
         _left = _right = _parent = null;
 
         /// this node object can now be safely deleted
-		FreeListObjectAlloc!(RBNode!V).free(cast(RBNode!V*)&this);
+        FreeListObjectAlloc!(RBNode!V).free(cast(RBNode!V*)&this);
 
         return ret;
     }
@@ -575,7 +575,7 @@ struct RBNode(V)
     
     @property Node dup() const
     {
-		Node copy = FreeListObjectAlloc!(RBNode!V).alloc();
+        Node copy = FreeListObjectAlloc!(RBNode!V).alloc();
         copy.value = cast(V)value;
         copy.color = color;
         if(_left !is null)
@@ -609,7 +609,7 @@ struct RBNode(V)
 final class RedBlackTreeImpl(T, alias less = "a < b", int Alloc)
     if(is(typeof(binaryFun!less(T.init, T.init))))
 {
-	enum allowDuplicates = false;
+    enum allowDuplicates = false;
 
     import std.range : Take;
     import std.typetuple : allSatisfy;
@@ -905,9 +905,9 @@ final class RedBlackTreeImpl(T, alias less = "a < b", int Alloc)
      */
     void clear()
     {
-		while (length > 0)
-			removeBack();
-		return;
+        while (length > 0)
+            removeBack();
+        return;
     }
     
     /**
@@ -1124,24 +1124,24 @@ assert(equal(rbt[], [5]));
         enum isImplicitlyConvertibleToElem = isImplicitlyConvertible!(U, Elem);
     }
     
-	/**
+    /**
      * Compares two trees for equality.
      *
      * Complexity: $(BIGOH n*log(n))
      */
-	override bool opEquals(Object other)
-	{
-		RedBlackTreeImpl rhs = cast(RedBlackTreeImpl) other;
-		import std.algorithm : equal;
-		if (rhs is null) return false;
-		
-		// If there aren't the same number of nodes, we can't be equal.
-		if (this._length != rhs._length) return false;
-		
-		auto thisRange = this[];
-		auto thatRange = rhs[];
-		return equal!(function(Elem a, Elem b) => !_less(a,b) && !_less(b,a))(thisRange, thatRange);
-	}
+    override bool opEquals(Object other)
+    {
+        RedBlackTreeImpl rhs = cast(RedBlackTreeImpl) other;
+        import std.algorithm : equal;
+        if (rhs is null) return false;
+        
+        // If there aren't the same number of nodes, we can't be equal.
+        if (this._length != rhs._length) return false;
+        
+        auto thisRange = this[];
+        auto thatRange = rhs[];
+        return equal!(function(Elem a, Elem b) => !_less(a,b) && !_less(b,a))(thisRange, thatRange);
+    }
 
     // find the first node where the value is > e
     private Node _firstGreater(Elem e)
@@ -1250,10 +1250,10 @@ assert(equal(rbt[], [5]));
         _setup();
         stableInsert(stuff);
     }
-	this() { _setup(); }
-	~this() {
-		clear();
-	}
+    this() { _setup(); }
+    ~this() {
+        clear();
+    }
     
     private this(Node end, size_t length)
     {

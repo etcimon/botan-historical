@@ -27,10 +27,9 @@ struct DEREncoder
 public:
     Vector!ubyte getContentsUnlocked()
     {
-		logTrace("Return DER Encoder contents");
-		return unlock(getContents()); 
-	}
-
+        logTrace("DEREncoder.getContentsUnlocked");
+        return unlock(getContents()); 
+    }
 
     /*
     * Return the encoded m_contents

@@ -66,7 +66,7 @@ public:
     * Encode whatever this object is into to
     * @param to = the DEREncoder that will be written to
     */
-    void encodeInto(DEREncoder to) const;
+    void encodeInto(ref DEREncoder to) const;
 
     /**
     * Decode whatever this object is from from
@@ -82,11 +82,11 @@ struct BERObject
 {
 public:
     void opAssign(in BERObject ber) {
-		if (ber.value !is null)
-			value = *cast(SecureVector!ubyte*)&ber.value;
-		else value = SecureVector!ubyte();
-		type_tag = ber.type_tag;
-		class_tag = ber.class_tag;
+        if (ber.value !is null)
+            value = *cast(SecureVector!ubyte*)&ber.value;
+        else value = SecureVector!ubyte();
+        type_tag = ber.type_tag;
+        class_tag = ber.class_tag;
     }
 
     /*

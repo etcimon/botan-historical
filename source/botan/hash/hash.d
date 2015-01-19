@@ -60,14 +60,14 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
         if (!proto)
         {
-            logTrace("Unable to get " ~ algo ~ " from " ~ provider);
+            logError("Unable to get " ~ algo ~ " from " ~ provider);
             ++fails;
             continue;
         }
         
         Unique!HashFunction hash = proto.clone();
-        
-        hash.update(hexDecode(in_hex));
+        auto decoded = hexDecode(in_hex);
+        hash.update(decoded);
         
         auto h = hash.finished();
 
@@ -75,7 +75,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
         if (h != hexDecodeLocked(out_hex))
         {
-            logTrace(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
+            logError(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
         
@@ -91,7 +91,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
         if (h != hexDecodeLocked(out_hex))
         {
-            logTrace(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
+            logError(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -99,7 +99,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
     return fails;
 }
 
-unittest
+static if (!SKIP_HASH_TEST) unittest
 {
     logTrace("Testing hash.d ...");
     auto test = delegate(string input)

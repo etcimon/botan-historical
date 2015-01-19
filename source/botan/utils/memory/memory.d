@@ -76,7 +76,7 @@ T[] allocArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size
     return ret;
 }
 
-void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, bool DESTROY = true)(ref T[] array)
+void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, bool DESTROY = true)(ref T[] array, size_t max_destroy = size_t.max)
 {
     static if (ALLOCATOR == VulnerableAllocator)
         auto allocator = getAllocator!VulnerableAllocatorImpl();
@@ -87,9 +87,13 @@ void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, bool
 
     static if (MANAGED && hasIndirections!T)
         GC.removeRange(array.ptr);
-    static if (DESTROY && hasElaborateDestructor!T) // calls destructors
-        foreach (ref e; array)
+    static if (DESTROY && hasElaborateDestructor!T) { // calls destructors
+        size_t i;
+        foreach (ref e; array) {
             .destroy(e);
+            if (++i == max_destroy) break;
+        }
+    }
     allocator.free(cast(void[])array);
     array = null;
 }
@@ -480,10 +484,10 @@ struct FreeListRef(T, bool INIT = true)
     bool opEquals(U)(U other) const
     {
         defaultInit();
-		static if (__traits(compiles, (cast(TR)m_object).opEquals(cast(T) other.m_object)))
-			return (cast(TR)m_object).opEquals(cast(T) other.m_object);
-		else
-			return (cast(TR)m_object).opEquals(other);
+        static if (__traits(compiles, (cast(TR)m_object).opEquals(cast(T) other.m_object)))
+            return (cast(TR)m_object).opEquals(cast(T) other.m_object);
+        else
+            return (cast(TR)m_object).opEquals(other);
     }
 
     int opCmp(U)(U other) const

@@ -107,8 +107,8 @@ public:
     */
     final bool checkSignature(in PublicKey pub_key) const
     {
-		logTrace("CheckSignature");
-		assert(pub_key);
+        logTrace("CheckSignature");
+        assert(pub_key);
         try {
             Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
             
@@ -117,9 +117,9 @@ public:
             
             string padding = sig_info[1];
             SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
-			logTrace("Running verifier");
+            logTrace("Running verifier");
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
-			logTrace("VerifyMessage");
+            logTrace("VerifyMessage");
             return verifier.verifyMessage(tbsData(), signature());
         }
         catch(Exception e)
@@ -128,7 +128,7 @@ public:
         }
     }
 
-    override void encodeInto(DEREncoder to) const
+    override void encodeInto(ref DEREncoder to) const
     {
         to.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -144,7 +144,7 @@ public:
     */
     override void decodeFrom(BERDecoder from)
     {
-		logTrace("Start Decode X509Object");
+        logTrace("Start Decode X509Object");
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .rawBytes(m_tbs_bits)
@@ -153,7 +153,7 @@ public:
                 .decode(m_sig, ASN1Tag.BIT_STRING)
                 .verifyEnd()
                 .endCons();
-		logTrace("Signature: ", m_sig[]);
+        logTrace("Signature: ", m_sig[]);
     }
 
 

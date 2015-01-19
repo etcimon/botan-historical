@@ -30,7 +30,7 @@ public:
         BERObject next;
         if (next.value is null) {
             next.value = typeof(next.value)();
-		}
+        }
         if (m_pushed.type_tag != ASN1Tag.NO_OBJECT)
         {
             next = m_pushed;
@@ -46,9 +46,9 @@ public:
         
         size_t length = decodeLength(m_source);
         next.value.resize(length);
-		if (length != 0)
-			if (m_source.read(&(next.value[0]), length) != length)
-            	throw new BERDecodingError("Value truncated");
+        if (length != 0)
+            if (m_source.read(&(next.value[0]), length) != length)
+                throw new BERDecodingError("Value truncated");
         logTrace("Value: ", next.value[]);
         if (next.type_tag == ASN1Tag.EOC && next.class_tag == ASN1Tag.UNIVERSAL)
             return getNextObject();
@@ -138,8 +138,8 @@ public:
     
     ref BERDecoder getNext(ref BERObject ber)
     {
-		BERObject next = getNextObject();
-		ber = next;
+        BERObject next = getNextObject();
+        ber = next;
         return this;
     }
         
@@ -186,12 +186,12 @@ public:
             if (!obj) 
                 obj = T();
         }
-		logTrace("Decode obj: ", T.stringof);
+        logTrace("Decode obj: ", T.stringof);
         obj.decodeFrom(this);
-		return this;
-	}
-	
-	/*
+        return this;
+    }
+    
+    /*
     * Request for an object to decode itself
     */
     ref BERDecoder decode(T : ASN1Object)(auto ref T obj, ASN1Tag type, ASN1Tag tag)
@@ -257,7 +257,7 @@ public:
         foreach (size_t i; 0 .. 4)
             output = (output << 8) | integer.byteAt(3-i);
         
-		logTrace("decode size_t: ", output);
+        logTrace("decode size_t: ", output);
 
         return this;
     }
@@ -290,7 +290,7 @@ public:
                 output.flipSign();
         }
         
-		logTrace("decode BigInt: (32bit start:)", output.getSubstring(0, 32));
+        logTrace("decode BigInt: (32bit start:)", output.getSubstring(0, 32));
         return this;
     }
     
@@ -334,7 +334,7 @@ public:
             copyMem(buffer.ptr, &obj.value[1], obj.value.length - 1);
         }
 
-		logTrace("decode SecureVector: ", buffer[]);
+        logTrace("decode SecureVector: ", buffer[]);
 
         return this;
     }
@@ -359,7 +359,7 @@ public:
             buffer.resize(obj.value.length - 1);
             copyMem(buffer.ptr, &obj.value[1], obj.value.length - 1);
         }
-		logTrace("decode Vector: ", buffer[]);
+        logTrace("decode Vector: ", buffer[]);
         return this;
     }
 
@@ -383,7 +383,7 @@ public:
         foreach (size_t i; 0 .. 8)
             output = (output << 8) | integer.byteAt(7-i);
         
-		logTrace("decode Integer: (64bit) ", output);
+        logTrace("decode Integer: (64bit) ", output);
 
         return output;
     }
@@ -428,10 +428,10 @@ public:
             pushBack(obj);
         }
 
-		static if (__traits(hasMember, T, "toString"))
-			logTrace("decode Optional ", T.stringof, ": ", output.toString());
-		else
-			logTrace("decode Optional ", T.stringof);
+        static if (__traits(hasMember, T, "toString"))
+            logTrace("decode Optional ", T.stringof, ": ", output.toString());
+        else
+            logTrace("decode Optional ", T.stringof);
 
 
         return this;
@@ -462,10 +462,10 @@ public:
             pushBack(obj);
         }
 
-		static if (__traits(hasMember, T, "toString"))
-			logTrace("decode OptionalImplicit ", T.stringof, ": ", output.toString());
-		else
-			logTrace("decode OptionalImplicit ", T.stringof);
+        static if (__traits(hasMember, T, "toString"))
+            logTrace("decode OptionalImplicit ", T.stringof, ": ", output.toString());
+        else
+            logTrace("decode OptionalImplicit ", T.stringof);
         
         return this;
     }
@@ -489,7 +489,7 @@ public:
         
         list.endCons();
         
-		logTrace("decode List ", vec[]);
+        logTrace("decode List ", vec[]);
 
 
         return this;
@@ -505,10 +505,10 @@ public:
         if (actual != expected)
             throw new DecodingError(error_msg ~ " T " ~ T.stringof ~ " : " ~ actual.to!string ~ ", expected: " ~ expected.to!string);
         
-		static if (__traits(hasMember, T, "toString"))
-			logTrace("decode and check ", T.stringof, ": ", actual.toString());
-		else
-			logTrace("decode and check ", T.stringof);
+        static if (__traits(hasMember, T, "toString"))
+            logTrace("decode and check ", T.stringof, ": ", actual.toString());
+        else
+            logTrace("decode and check ", T.stringof);
 
         return this;
     }
@@ -527,7 +527,7 @@ public:
         {
             if ((class_tag & ASN1Tag.CONSTRUCTED) && (class_tag & ASN1Tag.CONTEXT_SPECIFIC)) {
                 BERDecoder(obj.value).decode(output, real_type).verifyEnd();
-			}
+            }
             else
             {
                 pushBack(obj);
@@ -540,7 +540,7 @@ public:
             pushBack(obj);
         }
 
-		logTrace("decode optional string ", output[]);
+        logTrace("decode optional string ", output[]);
 
         
         return this;
@@ -553,7 +553,7 @@ public:
         SecureVector!ubyte out_vec;
         decode(out_vec, ASN1Tag.OCTET_STRING);
         output = BigInt.decode(out_vec.ptr, out_vec.length);
-		logTrace("decode octet string BigInt (32bit): ", output.getSubstring(0,32));
+        logTrace("decode octet string BigInt (32bit): ", output.getSubstring(0,32));
         return this;
     }
 
