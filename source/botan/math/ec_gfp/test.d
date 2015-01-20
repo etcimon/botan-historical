@@ -803,6 +803,7 @@ size_t testCurveCpCtor()
 
 unittest
 {
+	assert(false);/*
     logTrace("Testing ec_gfp/test.d ...");
     size_t fails = 0;
     
@@ -831,6 +832,6 @@ unittest
     fails += testMultSecMass();
     fails += testCurveCpCtor();
     
-    testReport("ECC", total_tests, fails);
+    testReport("ECC", total_tests, fails);*/
 
 }

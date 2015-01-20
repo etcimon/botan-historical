@@ -19,6 +19,7 @@ import botan.constants;
 */
 final class FixedWindowExponentiator : ModularExponentiator
 {
+	enum NOGC = true;
 public:
     /*
     * Set the exponent
@@ -96,6 +97,7 @@ private:
 */
 class MontgomeryExponentiator : ModularExponentiator
 {
+	enum NOGC = true;
 public:
     /*
     * Set the exponent
@@ -136,7 +138,6 @@ public:
         
         for (size_t i = 2; i != m_g.length; ++i)
         {
-            logDebug("i ", i);
             const BigInt y = m_g[i-1].dup;
             const size_t y_sig = y.sigWords();
             
@@ -155,7 +156,6 @@ public:
     */
     override BigInt execute() const
     {
-        logTrace("start execute");
         const size_t exp_nibbles = (m_exp_bits + m_window_bits - 1) / m_window_bits;
         
         BigInt x = m_R_mod.dup;
@@ -172,23 +172,24 @@ public:
                 bigint_monty_sqr(z.mutablePtr(), z_size, x.ptr, x.length, x.sigWords(),
                                  m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
                 
-                x = z;
-            }
-            
-            const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
+				x.growTo(z.length);
+				x.mutablePtr[0..x.length] = z.mutablePtr[0..z.length];
+			}
+			
+			const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
             const BigInt y = m_g[nibble];
 
+
             bigint_monty_mul(z.mutablePtr(), z_size, x.ptr, x.length, x.sigWords(), y.ptr, y.length, y.sigWords(),
                              m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
-
-            x = z;
-        }
+			x.growTo(z.length);
+			x.mutablePtr[0..x.length] = z.mutablePtr[0..z.length];
+		}
         
         x.growTo(2*m_mod_words + 1);
         
         bigint_monty_redc(x.mutablePtr(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
-        logTrace("Finished execute");
         return x;
     }
 

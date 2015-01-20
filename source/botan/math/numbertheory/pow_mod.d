@@ -31,6 +31,7 @@ public:
 */
 class PowerMod
 {
+	enum NOGC = true;
 public:
     alias UsageHints = ushort;
     enum : UsageHints {
@@ -99,7 +100,6 @@ public:
                 if (m_core)
                     break;
             }
-            logTrace("Ending setModulus");
             if (!m_core)
                 throw new LookupError("PowerMod: Unable to find a working engine");
         }
@@ -163,6 +163,7 @@ private:
 */
 class FixedExponentPowerModImpl : PowerMod
 {
+	enum NOGC = true;
 public:
     BigInt opCall(in BigInt b)
     { setBase(b); return execute(); }
@@ -186,6 +187,7 @@ public:
 */
 class FixedBasePowerModImpl : PowerMod
 {
+	enum NOGC = true;
 public:
     BigInt opCall(in BigInt e)
     { setExponent(e); return execute(); }

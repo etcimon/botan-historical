@@ -6,7 +6,7 @@
 */
 module botan.utils.mem_ops;
 import botan.utils.types;
-
+pure:
 /**
 * Zeroise memory
 * @param ptr = a pointer to an array
@@ -14,8 +14,7 @@ import botan.utils.types;
 */
 void clearMem(T)(T* ptr, size_t n)
 {
-    ubyte[] mem = (cast(ubyte*)ptr)[0 .. T.sizeof*n];
-    foreach (ref ubyte ub; mem) ub = 0;
+	setMem(ptr,n,0);
 }
 
 /**

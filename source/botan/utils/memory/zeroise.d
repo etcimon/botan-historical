@@ -43,7 +43,6 @@ final class ZeroiseAllocator(Base : Allocator)
             return p;
         }
         void[] p = m_secondary.alloc(n);
-        clearMem(p.ptr, n);
         return p;
     }
 

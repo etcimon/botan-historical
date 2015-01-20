@@ -6,7 +6,7 @@ import std.traits;
 import std.range;
 import std.algorithm : countUntil;
 
-    alias RedBlackTree(T,  alias less = "a < b", int Alloc = 1) = FreeListRef!(RedBlackTreeImpl!(T, less, Alloc));
+alias RedBlackTree(T,  alias less = "a < b", int Alloc = 1) = FreeListRef!(RedBlackTreeImpl!(T, less, Alloc));
 
 /*
  * Implementation for a Red Black node for use in a Red Black Tree (see below)
@@ -609,6 +609,7 @@ struct RBNode(V)
 final class RedBlackTreeImpl(T, alias less = "a < b", int Alloc)
     if(is(typeof(binaryFun!less(T.init, T.init))))
 {
+	enum NOGC = true;
     enum allowDuplicates = false;
 
     import std.range : Take;

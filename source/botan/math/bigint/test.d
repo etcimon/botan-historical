@@ -90,7 +90,6 @@ size_t checkAdd(in Vector!string args)
     BigInt d = a + b;
     BigInt e = a.dup;
 
-    logTrace("Add inplace");
     e += b;
     
     if (results("+", a, b, c, d, e))
@@ -256,18 +255,18 @@ size_t checkPowmod(in Vector!string args)
 }
 
 /* Make sure that n is prime or not prime, according to should_be_prime */
-size_t isPrimetest(in Vector!string args, RandomNumberGenerator rng)
+size_t isPrimeTest(in Vector!string args, RandomNumberGenerator rng)
 {
     BigInt n = BigInt(args[0]);
-    bool should_be_prime = (args[1] == "1");
+    bool should_be_prime = cast(bool)(args[1] == "1");
     
     bool isPrime = isPrime(n, rng);
     
     if (isPrime != should_be_prime)
     {
-        logTrace("ERROR: isPrime");
-        logTrace("n = ", n);
-        logTrace(isPrime ~ " != " ~ should_be_prime);
+        logError("ERROR: isPrime");
+        logDebug("n = ", n);
+        logDebug(isPrime, " != ", should_be_prime);
     }
     return 0;
 }
@@ -292,7 +291,7 @@ static if (!SKIP_BIGINT_TEST) unittest
     bool first = true;
     size_t counter = 0;
     
-    AutoSeededRNG rng;
+	AutoSeededRNG rng = AutoSeededRNG();
     
     while(!test_data.eof)
     {
@@ -354,8 +353,8 @@ static if (!SKIP_BIGINT_TEST) unittest
             new_errors = checkShr(substr);
         else if (algorithm.canFind("ModExp"))
             new_errors = checkPowmod(substr);
-        else if (algorithm.canFind("PrimeTest"))
-            new_errors = isPrimetest(substr, rng);
+        //else if (algorithm.canFind("PrimeTest"))
+        //    new_errors = isPrimeTest(substr, rng);
         else
             logTrace("Unknown MPI test " ~ algorithm);
         
@@ -369,4 +368,5 @@ static if (!SKIP_BIGINT_TEST) unittest
 
     
     testReport("BigInt", alg_count, total_errors);
+assert(false);
 }

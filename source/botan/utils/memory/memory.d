@@ -26,7 +26,7 @@ enum {
     VulnerableAllocator = 1
 }
 
-alias VulnerableAllocatorImpl = LockAllocator!(DebugAllocator!(AutoFreeListAllocator!(MallocAllocator)));
+alias VulnerableAllocatorImpl = AutoFreeListAllocator!(MallocAllocator);
 
 R getAllocator(R)() {
     static __gshared R alloc;
@@ -66,7 +66,10 @@ T[] allocArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size
     auto ret = cast(T[])mem;
     static if ( MANAGED )
     {
-        static if( hasIndirections!T )
+		static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+		else enum NOGC = false;
+
+        static if( hasIndirections!T && !NOGC )
             GC.addRange(mem.ptr, mem.length);
         // TODO: use memset for class, pointers and scalars
         foreach (ref el; ret) { // calls constructors
@@ -85,12 +88,17 @@ void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, bool
     else
         auto allocator = getAllocator!SecureAllocatorImpl();
 
-    static if (MANAGED && hasIndirections!T)
+	static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+	else enum NOGC = false;
+
+	static if (MANAGED && hasIndirections!T && !NOGC) {
         GC.removeRange(array.ptr);
+	}
     static if (DESTROY && hasElaborateDestructor!T) { // calls destructors
         size_t i;
-        foreach (ref e; array) {
-            .destroy(e);
+        foreach (e; array) {
+			static if (is(T == struct) && isPointer!T) .destroy(*e);
+			else .destroy(e);
             if (++i == max_destroy) break;
         }
     }
@@ -192,8 +200,8 @@ final class AutoFreeListAllocator(Base) : Allocator {
     import std.typetuple;
     
     private {
-        enum minExponent = 5;
-        enum freeListCount = 14;
+        enum minExponent = 3;
+        enum freeListCount = 12;
         FreeListAlloc!Base[freeListCount] m_freeLists;
         Base m_baseAlloc;
     }
@@ -298,17 +306,24 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 {
     enum ElemSize = AllocSize!T;
     
-    static if( is(T == class) ){
-        alias TR = T;
-    } else {
-        alias TR = T*;
-    }
-    
+	static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+	else enum NOGC = false;
+
+	static if( is(T == class) ){
+		alias TR = T;
+	} else static if (__traits(isAbstractClass, T)) {
+		alias TR = T;
+	} else static if (is(T == interface)) {
+		alias TR = T;
+	} else {
+		alias TR = T*;
+	}
+
     TR alloc(ARGS...)(ARGS args)
     {
         //logInfo("alloc %s/%d", T.stringof, ElemSize);
         auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);
-        static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
+        static if( hasIndirections!T && !NOGC ) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) return emplace!T(mem, args);
         else return cast(TR)mem.ptr;
     }
@@ -316,10 +331,11 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     void free(TR obj)
     {
         static if( INIT ){
-            auto objc = obj;
-            .destroy(objc);//typeid(T).destroy(cast(void*)obj);
+			auto objc = obj;
+			static if (is(TR == T*)) .destroy(*objc);
+			else .destroy(objc);
         }
-        static if( hasIndirections!T ) GC.removeRange(cast(void*)obj);
+        static if( hasIndirections!T && !NOGC ) GC.removeRange(cast(void*)obj);
         getAllocator!VulnerableAllocatorImpl().free((cast(void*)obj)[0 .. ElemSize]);
     }
 }
@@ -327,6 +343,8 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 struct FreeListRef(T, bool INIT = true)
 {
     enum isFreeListRef = true;
+	static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+	else enum NOGC = false;
     enum ElemSize = AllocSize!T;
     
     static if( is(T == class) ){
@@ -342,7 +360,7 @@ struct FreeListRef(T, bool INIT = true)
     private TR m_object;
     private ulong* m_refCount;
     private void function(void*) m_free;
-    private size_t m_magic = 0x1EE75817; // workaround for compiler bug
+    //private size_t m_magic = 0x1EE75817; // workaround for compiler bug
     
     static FreeListRef opCall(ARGS...)(ARGS args)
     {
@@ -350,7 +368,7 @@ struct FreeListRef(T, bool INIT = true)
         auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);
         ret.m_refCount = cast(ulong*)getAllocator!VulnerableAllocatorImpl().alloc(ulong.sizeof).ptr;
         (*ret.m_refCount) = 1;
-        static if( hasIndirections!T ) GC.addRange(mem.ptr, ElemSize);
+		static if( hasIndirections!T && !NOGC) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
         else ret.m_object = cast(TR)mem.ptr;
         return ret;
@@ -359,7 +377,7 @@ struct FreeListRef(T, bool INIT = true)
     const ~this()
     {
         dtor((cast(FreeListRef*)&this));
-        (cast(FreeListRef*)&this).m_magic = 0;
+        //(cast(FreeListRef*)&this).m_magic = 0;
     }
 
     static void dtor(U)(U* ctxt) {
@@ -439,7 +457,7 @@ struct FreeListRef(T, bool INIT = true)
         m_object = null;
         m_refCount = null;
         m_free = null;
-        m_magic = 0x1EE75817;
+        //m_magic = 0x1EE75817;
     }
     
     private void _deinit() {
@@ -448,7 +466,7 @@ struct FreeListRef(T, bool INIT = true)
             static if (is(TR == T*)) .destroy(*objc);
             else .destroy(objc);
         }
-        static if( hasIndirections!T ) GC.removeRange(cast(void*)m_object);
+		static if( hasIndirections!T && !NOGC ) GC.removeRange(cast(void*)m_object);
         getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_object)[0 .. ElemSize]);
         getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_refCount)[0 .. ulong.sizeof]);
     }
@@ -550,7 +568,7 @@ struct FreeListRef(T, bool INIT = true)
                 auto newObj = this.opCall();
                 (cast(FreeListRef*)&this).m_object = newObj.m_object;
                 (cast(FreeListRef*)&this).m_refCount = newObj.m_refCount;
-                (cast(FreeListRef*)&this).m_magic = 0x1EE75817;
+                //(cast(FreeListRef*)&this).m_magic = 0x1EE75817;
                 newObj.m_object = null;
             }
         }
@@ -628,8 +646,8 @@ struct FreeListRef(T, bool INIT = true)
     
     private void checkInvariants()
     const {
-        assert(m_magic == 0x1EE75817, "Magic number of " ~ T.stringof ~ " expected 0x1EE75817, set to: " ~ m_magic.to!string);
-        assert(!m_object || refCount > 0, (!m_object) ? "No m_object" : "Zero Refcount: " ~ refCount.to!string);
+        //assert(m_magic == 0x1EE75817, "Magic number of " ~ T.stringof ~ " expected 0x1EE75817, set to: " ~ m_magic.to!string);
+        //assert(!m_object || refCount > 0, (!m_object) ? "No m_object" : "Zero Refcount: " ~ refCount.to!string);
     }
 
     private template UnConst(T) {

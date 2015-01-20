@@ -257,11 +257,8 @@ BigInt powerMod(in BigInt base, in BigInt exp, in BigInt mod)
     * minimal window. This makes sense given that here we know that any
     * precomputation is wasted.
     */
-    logTrace("SetBase");
     pow_mod.setBase(base);
-    logTrace("SetExponent");
     pow_mod.setExponent(exp);
-    logTrace("Execute()");
     return pow_mod.execute();
 }
 
@@ -444,13 +441,12 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_r
     const BigInt n_minus_1 = n - 1;
     const size_t s = lowZeroBits(n_minus_1);
     
-    FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1.dup >> s, n);
+    FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1 >> s, n);
     ModularReducer reducer = ModularReducer(n.dup);
     
     foreach (size_t i; 0 .. test_iterations)
     {
         const BigInt a = BigInt.randomInteger(rng, BigInt(2), n_minus_1.dup);
-        
         BigInt y = (*pow_mod)(a);
         
         if (mrWitness(y, reducer, n_minus_1, s))

@@ -26,6 +26,6 @@
         }
     ],
     "dependencies": { "backtrace-d": "~master" }, 
-    "buildOptions": ["debugInfoC", "stackStomping", "alwaysStackFrame"],
+    "buildOptions": ["inline"],
     "libs": ["sqlite3", "dl", "bz2", "lzma"]
 }

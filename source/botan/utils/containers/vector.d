@@ -29,6 +29,8 @@ template Vector(T, int ALLOCATOR = VulnerableAllocator)
 /// An array that uses a custom allocator.
 struct VectorImpl(T, int ALLOCATOR)
 {
+	enum NOGC = true;
+
     @disable this(this);
 
     // Payload cannot be copied

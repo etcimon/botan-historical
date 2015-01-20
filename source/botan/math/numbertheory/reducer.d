@@ -23,7 +23,7 @@ public:
     */
     BigInt reduce(BigInt x) const
     {
-        BigInt modulus = m_modulus.dup;
+        const BigInt modulus = m_modulus;
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
         
@@ -45,7 +45,7 @@ public:
             
             t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
-            BigInt t2 = x.dup;
+            BigInt t2 = x;
             t2.setSign(BigInt.Positive);
             t2.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
@@ -104,14 +104,10 @@ public:
     {
         if (mod <= 0)
             throw new InvalidArgument("ModularReducer: modulus must be positive");
-        logTrace("Set mod");
         m_modulus = mod;
-        logTrace("Get sigWords");
         m_mod_words = m_modulus.sigWords();
-        logTrace("square");
         
         m_modulus_2 = square(m_modulus);
-        logTrace("power2");
         
         m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
     }

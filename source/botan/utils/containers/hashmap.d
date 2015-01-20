@@ -49,6 +49,7 @@ alias HashMap(Key, Value, int ALLOCATOR = VulnerableAllocator) = FreeListRef!(Ha
 
 struct HashMapImpl(Key, Value, int ALLOCATOR)
 {
+	enum NOGC = true;
     alias Traits = DefaultHashMapTraits!Key;
     struct TableEntry {
         UnConst!Key key;

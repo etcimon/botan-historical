@@ -29,6 +29,7 @@ import std.traits : isNumeric;
 */
 struct BigInt
 {
+	enum NOGC = true;
 public:
     /*
     * Write the BigInt into a string
@@ -92,7 +93,7 @@ public:
 
     void defaultInit() {
         if (!m_reg)
-            m_reg = new SecureVector!(word)();
+            m_reg = FreeListObjectAlloc!(SecureVector!(word)).alloc();
     }
 
     ref BigInt opAssign(size_t other)
@@ -127,7 +128,6 @@ public:
         size_t markers = 0;
         bool negative = false;
         
-        logTrace("Building bigint with input str: ", str);
         if (str.length > 0 && str[0] == '-')
         {
             markers += 1;
@@ -158,7 +158,6 @@ public:
     */
     this(const(ubyte)* input, size_t length, Base base = Binary)
     {
-        logTrace("Building BigInt with input: ", input[0 .. length]);
         BigInt model = decode(input, length, base);
         defaultInit();
         *this.m_reg = *model.m_reg;
@@ -201,7 +200,7 @@ public:
 
     
     this(SecureVector!word reg, in Sign sign) {
-        m_reg = new SecureVector!word();
+		m_reg = FreeListObjectAlloc!(SecureVector!(word)).alloc();
         (*m_reg) = reg;
         m_signedness = sign;
     }
@@ -236,7 +235,7 @@ public:
             return;
 
         if (!m_reg) {
-            m_reg = new SecureVector!(word)();
+			m_reg = FreeListObjectAlloc!(SecureVector!(word)).alloc();
         }
         if (other.m_reg && other.m_reg.length > 0) *m_reg = *other.m_reg;
         else if (other.m_reg && other.m_reg.length == 0) (*m_reg) = SecureVector!(word)();
@@ -868,8 +867,7 @@ public:
     void growTo(size_t n)
     {
         defaultInit();
-        if (n > size())
-            (*m_reg).resize(roundUp!size_t(n, 8));
+        (*m_reg).resize(roundUp!size_t(n, 8));
     }
 
     /**
@@ -966,7 +964,7 @@ public:
     */
     static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, in BigInt max)
     {
-        logTrace("Building BigInt from Random Integer");
+		logTrace("Random integer");
         BigInt range = -min + max;
 
         if (range <= 0)
@@ -1162,7 +1160,6 @@ public:
     BigInt opBinary(string op)(in BigInt y) const
         if (op == "+")
     {
-        logTrace("DoAdd IN");
         const BigInt x = this;
         const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
@@ -1380,7 +1377,7 @@ public:
     const ~this() { 
         if (!m_reg) return;
         SecureVector!(word)* reg_ = cast(SecureVector!(word)*)m_reg;
-        delete reg_; 
+		FreeListObjectAlloc!(SecureVector!(word)).free(reg_); 
     }
 private:
     SecureVector!(word)* m_reg;
