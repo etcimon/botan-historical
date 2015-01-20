@@ -7,6 +7,9 @@
 module botan.math.numbertheory.pow_mod;
 
 import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
+import botan.constants;
 import botan.math.bigint.bigint;
 import botan.libstate.libstate;
 import botan.engine.engine;

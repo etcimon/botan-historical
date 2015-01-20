@@ -5,6 +5,10 @@
 * Distributed under the terms of the Botan license
 */
 module botan.math.numbertheory.primes;
+
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.math.mp.mp_types;
 
 /**

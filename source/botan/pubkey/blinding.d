@@ -6,6 +6,9 @@
 */
 module botan.pubkey.blinding;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.math.bigint.bigint;
 import botan.math.numbertheory.reducer;
 import botan.math.numbertheory.numthry;

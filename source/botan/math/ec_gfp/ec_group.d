@@ -8,6 +8,9 @@
 */
 module botan.math.ec_gfp.ec_group;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.math.ec_gfp.curve_gfp;
 import botan.math.ec_gfp.point_gfp;
 import botan.math.bigint.bigint;

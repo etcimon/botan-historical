@@ -6,6 +6,9 @@
 */
 module botan.pubkey.algo.dl_group;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 public import botan.pubkey.pubkey;
 import botan.math.bigint.bigint;
 import botan.filters.data_src;

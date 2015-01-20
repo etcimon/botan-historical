@@ -7,7 +7,7 @@
 module botan.pubkey.algo.rfc6979;
 
 import botan.constants;
-static if (BOTAN_HAS_RFC6979_GENERATOR):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_RFC6979_GENERATOR):
 
 import botan.libstate.libstate;
 import botan.math.bigint.bigint;

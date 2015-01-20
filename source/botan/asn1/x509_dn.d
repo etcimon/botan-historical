@@ -7,6 +7,8 @@
 module botan.asn1.x509_dn;
 
 import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 public import botan.asn1.asn1_obj;
 public import botan.asn1.asn1_oid;
 public import botan.asn1.asn1_str;

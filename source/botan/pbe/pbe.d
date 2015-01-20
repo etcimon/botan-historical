@@ -6,6 +6,9 @@
 */
 module botan.pbe.pbe;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.asn1.asn1_oid;
 import botan.filters.data_src;
 import botan.filters.filter;

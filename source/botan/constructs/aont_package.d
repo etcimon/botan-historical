@@ -6,6 +6,11 @@
 */
 module botan.constructs.aont_package;
 
+import botan.constants;
+static if (BOTAN_HAS_AONT):
+
+// todo: write unit tests
+
 import botan.block.block_cipher;
 import botan.rng.rng;
 import botan.filters.filters;
@@ -24,9 +29,9 @@ import botan.algo_base.symkey;
 *          input_len + cipher.BLOCK_SIZE bytes long)
 */
 void aontPackage(RandomNumberGenerator rng,
-                  BlockCipher cipher,
-                  const(ubyte)* input, size_t input_len,
-                  ubyte* output)
+                 BlockCipher cipher,
+                 const(ubyte)* input, size_t input_len,
+                 ubyte* output)
 {
     import std.algorithm : fill;
     const size_t BLOCK_SIZE = cipher.blockSize();

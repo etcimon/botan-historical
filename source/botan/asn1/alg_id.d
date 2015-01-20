@@ -6,13 +6,15 @@
 */
 module botan.asn1.alg_id;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.utils.types;
 import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oids;
-// import string;
 
 alias AlgorithmIdentifier = FreeListRef!AlgorithmIdentifierImpl;
 

@@ -6,6 +6,9 @@
 */
 module botan.math.numbertheory.def_powm;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.math.mp.mp_core;
 import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.reducer;

@@ -7,7 +7,6 @@
 module botan.pk_pad.hash_id;
 
 import botan.utils.memory.zeroise;
-// import string;
 import botan.utils.exceptn;
 import botan.utils.types;
 

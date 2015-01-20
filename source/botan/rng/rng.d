@@ -8,7 +8,6 @@ module botan.rng.rng;
 
 import botan.entropy.entropy_src;
 import botan.utils.exceptn;
-// import string;
 import core.sync.mutex;
 import botan.rng.hmac_rng;
 import botan.libstate.libstate;

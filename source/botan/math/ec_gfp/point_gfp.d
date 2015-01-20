@@ -9,6 +9,9 @@
 module botan.math.ec_gfp.point_gfp;
 
 import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
+import botan.constants;
 import botan.math.ec_gfp.curve_gfp;
 import botan.utils.types;
 import botan.math.numbertheory.numthry;

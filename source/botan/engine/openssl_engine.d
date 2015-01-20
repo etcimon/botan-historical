@@ -9,6 +9,8 @@ module botan.engine.openssl_engine;
 import botan.constants;
 static if (BOTAN_HAS_ENGINE_OPENSSL):
 
+pragma(msg, "OpenSSL engine was enabled, so it is allowable to disable native public key encryption.");
+
 import botan.engine.engine;
 import botan.pubkey.pk_keys;
 import botan.rng.rng;

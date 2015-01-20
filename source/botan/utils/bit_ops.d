@@ -6,6 +6,7 @@
 */
 module botan.utils.bit_ops;
 
+import botan.constants;
 import botan.utils.get_byte;
 import botan.utils.types;
 /**

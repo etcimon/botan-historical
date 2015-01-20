@@ -7,6 +7,9 @@
 */
 module botan.math.bigint.bigint;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 public import botan.math.mp.mp_types;
 public import botan.utils.types;
 import botan.constants;
@@ -36,7 +39,12 @@ public:
     */
     string toString(Base base = Decimal) const
     {
-        Vector!ubyte ret = BigInt.encode(this, base);
+        Vector!ubyte buffer = BigInt.encode(this, base);
+		Vector!ubyte ret;
+		size_t skip = 0;
+		while(skip < buffer.length && buffer[skip] == '0')
+			++skip;
+		ret[] = (buffer.ptr + skip)[0 .. buffer.length - skip];
         return ret[].idup;
     }
 
@@ -834,18 +842,12 @@ public:
     */
     size_t bits() const
     {
-        const size_t words = sigWords();
-        
-        if (words == 0)
-            return 0;
-        
-        size_t full_words = words - 1, top_bits = MP_WORD_BITS;
-        word top_word = wordAt(full_words), mask = MP_WORD_TOP_BIT;
-        
-        while (top_bits && ((top_word & mask) == 0))
-        { mask >>= 1; top_bits--; }
-        
-        return (full_words * MP_WORD_BITS + top_bits);
+		const size_t words = sigWords();
+		if(words == 0)
+			return 0;
+		
+		const size_t full_words = words - 1;
+		return (full_words * MP_WORD_BITS + highBit(wordAt(full_words)));
     }
 
     /**
@@ -951,7 +953,7 @@ public:
         else if (base == Hexadecimal)
             return 2*bytes();
         else if (base == Decimal)
-            return cast(size_t)((bits() * LOG_2_BASE_10) + 1);
+            return cast(size_t)(((cast(double)bits()) * LOG_2_BASE_10) + 1.0);
         else
             throw new InvalidArgument("Unknown base for BigInt encoding");
     }
@@ -1028,6 +1030,7 @@ public:
     */
     static void encode(ubyte* output, in BigInt n, Base base = Binary)
     {
+		logTrace("n: ", (*n.m_reg)[]);
         if (base == Binary)
         {
             n.binaryEncode(output);
@@ -1045,9 +1048,11 @@ public:
             BigInt remainder;
             copy.setSign(Positive);
             const size_t output_size = n.encodedSize(Decimal);
+			logTrace("output_size: ", output_size);
             foreach (size_t j; 0 .. output_size)
             {
                 divide(copy, BigInt(10), copy, remainder);
+				logTrace("Writing output char: ", digit2char(cast(ubyte)(remainder.wordAt(0))));
                 output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
                 if (copy.isZero())
                     break;

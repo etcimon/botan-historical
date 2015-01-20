@@ -6,6 +6,9 @@
 */
 module botan.kdf.prf_x942;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS || BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.kdf.kdf;
 import botan.asn1.der_enc;
 import botan.asn1.oids;

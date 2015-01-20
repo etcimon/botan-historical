@@ -7,7 +7,7 @@
 module botan.pubkey.algo.dsa;
 
 import botan.constants;
-static if (BOTAN_HAS_DSA):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_DSA):
 
 public import botan.pubkey.algo.dl_algo;
 public import botan.pubkey.pubkey;

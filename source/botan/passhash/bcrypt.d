@@ -7,7 +7,7 @@
 module botan.passhash.bcrypt;
 
 import botan.constants;
-static if (BOTAN_HAS_BCRYPT):
+static if (BOTAN_HAS_BCRYPT && BOTAN_HAS_BLOWFISH):
 
 import botan.rng.rng;
 import botan.utils.loadstor;

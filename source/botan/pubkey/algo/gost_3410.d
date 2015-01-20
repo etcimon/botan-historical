@@ -9,7 +9,7 @@
 module botan.pubkey.algo.gost_3410;
 
 import botan.constants;
-static if (BOTAN_HAS_GOST_34_10_2001):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_GOST_34_10_2001):
 
 public import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;

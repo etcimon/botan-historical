@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.pubkey.workfactor;
+
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.utils.types;
 import std.algorithm : max;
 import std.math : pow, log;

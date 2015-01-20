@@ -7,6 +7,8 @@
 */
 module botan.pk_pad.emsa1_bsi;
 
+import botan.constants;
+static if (BOTAN_HAS_EMSA1_BSI):
 import botan.pk_pad.emsa1;
 import botan.hash.hash;
 import botan.utils.types;

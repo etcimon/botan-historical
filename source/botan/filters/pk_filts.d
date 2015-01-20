@@ -6,6 +6,9 @@
 */
 module botan.filters.pk_filts;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.filters.filter;
 import botan.pubkey.pubkey;
 import botan.rng.rng;

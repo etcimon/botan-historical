@@ -8,7 +8,7 @@
 module botan.pubkey.algo.dlies;
 
 import botan.constants;
-static if (BOTAN_HAS_DLIES):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_DLIES):
 
 public import botan.pubkey.pubkey;
 import botan.mac.mac;

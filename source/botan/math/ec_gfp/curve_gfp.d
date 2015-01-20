@@ -7,6 +7,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.math.ec_gfp.curve_gfp;
+
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.math.numbertheory.numthry;
 import botan.math.mp.mp_types;
 import std.algorithm : swap;

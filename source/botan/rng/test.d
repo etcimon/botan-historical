@@ -171,8 +171,11 @@ unittest
     size_t fails = 0;
 
     import std.functional : toDelegate;
+
+	static if (BOTAN_HAS_HMAC_DRBG)
     fails += runTestsBb(hmac_drbg_vec, "RNG", "Out", true, toDelegate(&hmacDrbgTest));
     
+	static if (BOTAN_HAS_X931_RNG)
     fails += runTestsBb(x931_vec, "RNG", "Out", true,
                           (string[string] m) {
                                 return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));

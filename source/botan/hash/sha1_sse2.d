@@ -7,7 +7,7 @@
 module botan.hash.sha1_sse2;
 
 import botan.constants;
-static if (BOTAN_HAS_SHA1_SSE2 && BOTAN_HAS_SIMD_SSE2):
+static if (BOTAN_HAS_SHA1 && BOTAN_HAS_SHA1_SSE2 && BOTAN_HAS_SIMD_SSE2):
 
 import botan.hash.sha160;
 import botan.utils.rotate;

@@ -6,7 +6,9 @@
 */
 module botan.constructs.cryptobox_psk;
 
-// import string;
+import botan.constants;
+static if (BOTAN_HAS_CRYPTOBOX):
+
 import botan.rng.rng;
 import botan.algo_base.symkey;
 import botan.filters.pipe;

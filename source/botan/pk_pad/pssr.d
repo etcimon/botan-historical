@@ -6,6 +6,9 @@
 */
 module botan.pk_pad.pssr;
 
+import botan.constants;
+static if (BOTAN_HAS_EMSA_PSSR):
+
 import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.utils.types;

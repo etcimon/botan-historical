@@ -9,7 +9,7 @@
 module botan.pubkey.algo.ecc_key;
 
 import botan.constants;
-static if (BOTAN_HAS_ECDH || BOTAN_HAS_ECDSA || BOTAN_HAS_GOST_34_10_2001):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && (BOTAN_HAS_ECDH || BOTAN_HAS_ECDSA || BOTAN_HAS_GOST_34_10_2001)):
 
 public import botan.pubkey.pubkey;
 public import botan.math.ec_gfp.ec_group;

@@ -360,7 +360,7 @@ struct FreeListRef(T, bool INIT = true)
     private TR m_object;
     private ulong* m_refCount;
     private void function(void*) m_free;
-    //private size_t m_magic = 0x1EE75817; // workaround for compiler bug
+    private size_t m_magic = 0x1EE75817; // workaround for compiler bug
     
     static FreeListRef opCall(ARGS...)(ARGS args)
     {
@@ -377,7 +377,7 @@ struct FreeListRef(T, bool INIT = true)
     const ~this()
     {
         dtor((cast(FreeListRef*)&this));
-        //(cast(FreeListRef*)&this).m_magic = 0;
+        (cast(FreeListRef*)&this).m_magic = 0;
     }
 
     static void dtor(U)(U* ctxt) {
@@ -457,7 +457,7 @@ struct FreeListRef(T, bool INIT = true)
         m_object = null;
         m_refCount = null;
         m_free = null;
-        //m_magic = 0x1EE75817;
+        m_magic = 0x1EE75817;
     }
     
     private void _deinit() {
@@ -646,8 +646,8 @@ struct FreeListRef(T, bool INIT = true)
     
     private void checkInvariants()
     const {
-        //assert(m_magic == 0x1EE75817, "Magic number of " ~ T.stringof ~ " expected 0x1EE75817, set to: " ~ m_magic.to!string);
-        //assert(!m_object || refCount > 0, (!m_object) ? "No m_object" : "Zero Refcount: " ~ refCount.to!string);
+        assert(m_magic == 0x1EE75817, "Magic number of " ~ T.stringof ~ " expected 0x1EE75817, set to: " ~ m_magic.to!string);
+        assert(!m_object || refCount > 0, (!m_object) ? "No m_object" : "Zero Refcount: " ~ refCount.to!string);
     }
 
     private template UnConst(T) {

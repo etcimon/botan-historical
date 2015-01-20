@@ -6,6 +6,9 @@
 */
 module botan.utils.sqlite3.sqlite3;
 
+import botan.constants;
+static if (BOTAN_HAS_SQLITE):
+
 import std.exception;
 import etc.c.sqlite3;
 import botan.utils.types;

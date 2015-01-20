@@ -7,7 +7,7 @@
 module botan.pubkey.algo.dh;
 
 import botan.constants;
-static if (BOTAN_HAS_DIFFIE_HELLMAN):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_DIFFIE_HELLMAN):
 
 public import botan.pubkey.algo.dl_algo;
 public import botan.pubkey.pubkey;

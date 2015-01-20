@@ -76,7 +76,8 @@ public:
             return;
 
         SCANToken.setDefaultAliases();
-        OIDS.setDefaults();
+        static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO) 
+			OIDS.setDefaults();
 
         m_algorithm_factory = Unique!AlgorithmFactory(new AlgorithmFactory);
         

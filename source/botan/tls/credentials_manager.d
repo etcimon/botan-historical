@@ -6,6 +6,8 @@
 */
 module botan.tls.credentials_manager;
 
+import botan.constants;
+static if (BOTAN_HAS_TLS):
 import botan.cert.x509.x509cert;
 import botan.cert.x509.certstor;
 import botan.math.bigint.bigint;

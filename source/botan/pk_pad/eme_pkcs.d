@@ -6,6 +6,8 @@
 */
 module botan.pk_pad.eme_pkcs;
 
+import botan.constants;
+static if (BOTAN_HAS_EME_PKCS1_V15):
 import botan.pk_pad.eme;
 import botan.utils.types;
 /**

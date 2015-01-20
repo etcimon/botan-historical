@@ -6,6 +6,8 @@
 */
 module botan.pk_pad.emsa_raw;
 
+import botan.constants;
+static if (BOTAN_HAS_EMSA_RAW):
 import botan.pk_pad.emsa;
 import botan.utils.types;
 import botan.utils.mem_ops;

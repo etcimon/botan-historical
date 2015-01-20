@@ -11,7 +11,6 @@ import botan.utils.exceptn;
 import std.exception;
 import std.array : Appender;
 import botan.utils.types;
-// import string;
 import std.conv : to;
 import core.sync.mutex;
 import botan.utils.containers.hashmap;

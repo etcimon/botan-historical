@@ -6,6 +6,9 @@
 */
 module botan.constructs.fpe_fe1;
 
+import botan.constants;
+static if (BOTAN_HAS_FPE_FE1):
+
 import botan.math.bigint.bigint;
 import botan.algo_base.symkey;
 import botan.math.numbertheory.numthry;

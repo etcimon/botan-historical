@@ -5,6 +5,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.kdf.kdf2;
+
+import botan.constants;
+static if (BOTAN_HAS_TLS || BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.kdf.kdf;
 import botan.hash.hash;
 import botan.utils.types;

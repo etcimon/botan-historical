@@ -7,6 +7,8 @@
 module botan.asn1.der_enc;
 
 import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.asn1.asn1_obj;
 import botan.asn1.der_enc;
 import botan.math.bigint.bigint;

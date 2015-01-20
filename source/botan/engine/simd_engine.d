@@ -13,13 +13,13 @@ import botan.engine.engine;
 import botan.simd.simd_32;
 import botan.utils.cpuid;
 
-static if (BOTAN_HAS_AES_SSSE3)         import botan.block.aes_ssse3;
-static if (BOTAN_HAS_SERPENT_SIMD)     import botan.block.serp_simd;
-static if (BOTAN_HAS_THREEFISH_512_AVX2)import botan.block.threefish_avx2;
-static if (BOTAN_HAS_NOEKEON_SIMD)     import botan.block.noekeon_simd;
-static if (BOTAN_HAS_XTEA_SIMD)         import botan.block.xtea_simd;
-static if (BOTAN_HAS_IDEA_SSE2)         import botan.block.idea_sse2;
-static if (BOTAN_HAS_SHA1_SSE2)         import botan.hash.sha1_sse2;
+static if (BOTAN_HAS_AES_SSSE3)          import botan.block.aes_ssse3;
+static if (BOTAN_HAS_SERPENT_SIMD)       import botan.block.serp_simd;
+static if (BOTAN_HAS_THREEFISH_512_AVX2) import botan.block.threefish_avx2;
+static if (BOTAN_HAS_NOEKEON_SIMD)       import botan.block.noekeon_simd;
+static if (BOTAN_HAS_XTEA_SIMD)          import botan.block.xtea_simd;
+static if (BOTAN_HAS_IDEA_SSE2)          import botan.block.idea_sse2;
+static if (BOTAN_HAS_SHA1_SSE2)          import botan.hash.sha1_sse2;
 
 /**
 * Engine for implementations that use some kind of SIMD
@@ -90,12 +90,14 @@ public:
     PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     { return null; }
     
-    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
-    { return null; }
-    
     KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const
     { return null; }
     
+	static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
+	ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
+	{ return null; }
+
     KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
     { return null; }
     

@@ -6,7 +6,9 @@
 */
 module botan.constructs.cryptobox;
 
-// import string;
+import botan.constants;
+static if (BOTAN_HAS_SHA2_64 && BOTAN_HAS_PBKDF2 && BOTAN_HAS_SERPENT && BOTAN_HAS_CTR_BE):
+
 import botan.rng.rng;
 import botan.algo_base.symkey;
 import botan.filters.filters;

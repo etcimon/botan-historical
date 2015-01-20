@@ -7,7 +7,7 @@
 module botan.pubkey.algo.nr;
 
 import botan.constants;
-static if (BOTAN_HAS_NYBERG_RUEPPEL):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_NYBERG_RUEPPEL):
 
 public import botan.pubkey.pubkey;
 import botan.pubkey.algo.dl_algo;

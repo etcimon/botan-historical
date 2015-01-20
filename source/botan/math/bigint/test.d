@@ -1,7 +1,7 @@
 module botan.math.bigint.test;
 
 import botan.constants;
-static if (BOTAN_TEST):
+static if (BOTAN_TEST && BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 import botan.rng.rng;
 import botan.rng.auto_rng;
@@ -267,6 +267,9 @@ size_t isPrimeTest(in Vector!string args, RandomNumberGenerator rng)
         logError("ERROR: isPrime");
         logDebug("n = ", n);
         logDebug(isPrime, " != ", should_be_prime);
+		ubyte* b = null;
+		*b = 0;
+		//return 1;
     }
     return 0;
 }
@@ -297,19 +300,24 @@ static if (!SKIP_BIGINT_TEST) unittest
     {
         if (test_data.error)
             throw new StreamIOError("File I/O error reading from " ~ filename);
-        
-        Vector!ubyte line = Vector!ubyte(test_data.readln()[0 .. $-1].strip());
+		string line_data = test_data.readln();
+		if (!line_data) break;
+		Vector!ubyte line = Vector!ubyte(line_data[0 .. $-1].strip());
         if (line.length == 0) continue;
         
         // Do line continuation
         while(line[line.length-1] == '\\' && !test_data.eof())
         {
             line.removeBack();
-            string nextline = test_data.readln()[0 .. $-1].strip();
+			line_data = test_data.readln();
+			if (!line_data) break;
+            string nextline = line_data[0 .. $-1].strip();
             while(nextline.length > 0) {
                 if (nextline[$-1] == '\\') nextline = nextline[0 .. $-1];
                 line ~= nextline;
-                nextline = test_data.readln()[0 .. $-1].strip();
+				line_data = test_data.readln();
+				if (!line_data) break;
+                nextline = line_data[0 .. $-1].strip();
             }
         }
         
@@ -351,10 +359,10 @@ static if (!SKIP_BIGINT_TEST) unittest
             new_errors = checkShl(substr);
         else if (algorithm.canFind("RightShift"))
             new_errors = checkShr(substr);
-        else if (algorithm.canFind("ModExp"))
-            new_errors = checkPowmod(substr);
-        //else if (algorithm.canFind("PrimeTest"))
-        //    new_errors = isPrimeTest(substr, rng);
+        //else if (algorithm.canFind("ModExp"))
+        //    new_errors = checkPowmod(substr);
+        else if (algorithm.canFind("PrimeTest"))
+            new_errors = isPrimeTest(substr, rng);
         else
             logTrace("Unknown MPI test " ~ algorithm);
         
@@ -366,6 +374,9 @@ static if (!SKIP_BIGINT_TEST) unittest
             logTrace("ERROR: BigInt " ~ algorithm ~ " failed test #" ~ alg_count.to!string);
     }
 
+	testReport("Bigint " ~ algorithm, alg_count, errors);
+	
+	total_errors += errors;
     
     testReport("BigInt", alg_count, total_errors);
 assert(false);

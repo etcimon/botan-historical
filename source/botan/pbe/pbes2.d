@@ -7,7 +7,7 @@
 module botan.pbe.pbes2;
 
 import botan.constants;
-static if (BOTAN_HAS_PBE_PKCS_V20):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_PBE_PKCS_V20):
 
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;

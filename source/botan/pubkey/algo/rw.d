@@ -7,7 +7,7 @@
 module botan.pubkey.algo.rw;
 
 import botan.constants;
-static if (BOTAN_HAS_RW):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_RW):
 
 public import botan.pubkey.pubkey;
 import botan.pubkey.algo.if_algo;

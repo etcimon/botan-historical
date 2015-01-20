@@ -6,6 +6,7 @@
 */
 module botan.engine.engine;
 
+import botan.constants;
 public import botan.algo_base.scan_token;
 public import botan.block.block_cipher;
 public import botan.stream.stream_cipher;
@@ -72,6 +73,17 @@ public:
     */
     PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const;
 
+	/**
+    * Return a new cipher object
+    * @param algo_spec = the algorithm name/specification
+    * @param dir = specifies if encryption or decryption is desired
+    * @param af = an algorithm factory object
+    * @return newly allocated object, or NULL
+    */
+	KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const;
+
+	static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
     /**
     * @param n = the modulus
     * @param hints = any use hints
@@ -79,14 +91,6 @@ public:
     */
     ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const;
 
-    /**
-    * Return a new cipher object
-    * @param algo_spec = the algorithm name/specification
-    * @param dir = specifies if encryption or decryption is desired
-    * @param af = an algorithm factory object
-    * @return newly allocated object, or NULL
-    */
-    KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const;
 
     /**
     * Return a new operator object for this key, if possible

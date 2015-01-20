@@ -9,7 +9,7 @@
 module botan.pubkey.algo.ecdh;
 
 import botan.constants;
-static if (BOTAN_HAS_ECDH):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_ECDH):
 
 public import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;

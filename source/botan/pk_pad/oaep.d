@@ -6,6 +6,9 @@
 */
 module botan.pk_pad.oaep;
 
+import botan.constants;
+static if (BOTAN_HAS_EME_OAEP):
+
 import botan.pk_pad.eme;
 import botan.kdf.kdf;
 import botan.hash.hash;

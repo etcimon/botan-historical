@@ -7,7 +7,7 @@
 module botan.hash.sha1_x86_64;
 
 import botan.constants;
-static if (BOTAN_HAS_SHA1_X86_64):
+static if (BOTAN_HAS_SHA1 && BOTAN_HAS_SHA1_X86_64):
 
 import botan.utils.asm_x86_64.asm_x86_64;
 import botan.hash.sha160;

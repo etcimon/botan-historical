@@ -6,6 +6,9 @@
 */
 module botan.math.numbertheory.numthry;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 public import botan.math.bigint.bigint;
 public import botan.math.numbertheory.pow_mod;
 public import botan.math.numbertheory.primes;
@@ -428,6 +431,7 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_r
     if (n <= 1 || n.isEven())
         return false;
     
+	logDebug("Is_prime: ", n);
     // Fast path testing for small numbers (<= 65521)
     if (n <= PRIMES[PRIME_TABLE_SIZE-1])
     {
@@ -437,7 +441,7 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_r
     }
 
     const size_t test_iterations = mrTestIterations(n.bits(), prob, is_random);
-    
+	logDebug("Test iterations: ", test_iterations);
     const BigInt n_minus_1 = n - 1;
     const size_t s = lowZeroBits(n_minus_1);
     
@@ -735,6 +739,7 @@ bool mrWitness(T : ModularReducer)(ref BigInt y,
                                    auto ref T reducer_n,
                                    in BigInt n_minus_1, size_t s)
 {
+	//logTrace("n_minus_1: ", n_minus_1);
     if (y == 1 || y == n_minus_1)
         return false;
     
@@ -744,7 +749,7 @@ bool mrWitness(T : ModularReducer)(ref BigInt y,
         
         if (y == 1) // found a non-trivial square root
             return true;
-        
+		//logTrace("Y", i, ": ", y);
         if (y == n_minus_1) // -1, trivial square root, so give up
             return false;
     }

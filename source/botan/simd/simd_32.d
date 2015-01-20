@@ -19,5 +19,3 @@ else static if (BOTAN_HAS_SIMD_SCALAR) {
     import botan.simd.simd_scalar;
     alias SIMD32 = SIMDScalar!(uint,4); 
 }
-else
-    static assert(false, "No SIMD defined");

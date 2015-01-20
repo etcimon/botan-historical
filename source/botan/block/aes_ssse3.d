@@ -7,7 +7,7 @@
 module botan.block.aes_ssse3;
 
 import botan.constants;
-static if (BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
+static if (BOTAN_HAS_AES && BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
 
 import std.range : iota;
 import botan.block.block_cipher;
@@ -306,7 +306,8 @@ protected:
             _mm_storeu_si128(EK_mm + i, aes_schedule_mangle(key2, i % 4));
             _mm_storeu_si128(DK_mm + (14-i), aes_schedule_mangle_dec(key2, (i+2) % 4));
             
-            key2 = aes_schedule_round(null, _mm_shuffle_epi32!0xFF(key2), k_t);
+			__m128i k_t_0 = _mm_shuffle_epi32!0xFF(key2);
+            key2 = aes_schedule_round(cast(__m128i*)null, k_t_0, k_t);
             _mm_storeu_si128(EK_mm + i + 1, aes_schedule_mangle(key2, (i - 1) % 4));
             _mm_storeu_si128(DK_mm + (13-i), aes_schedule_mangle_dec(key2, (i+1) % 4));
         }
@@ -441,12 +442,13 @@ __m128i aes_schedule_mangle_last_dec(__m128i k)
 
 __m128i aes_schedule_round(__m128i* rcon, __m128i input1, __m128i input2)
 {
-    if (rcon)
+
+
+    if (rcon !is null)
     {
-        input2 = _mm_xor_si128(_mm_alignr_epi8!15(_mm_setzero_si128(), *rcon),
-                               input2);
-        
-        *rcon = _mm_alignr_epi8!15(*rcon, *rcon); // next rcon
+        input2 = _mm_xor_si128(_mm_alignr_epi8!15(_mm_setzero_si128(), *rcon), input2);
+		__m128i tmp_rcon = *rcon;
+        *rcon = _mm_alignr_epi8!15(tmp_rcon, tmp_rcon); // next rcon
         
         input1 = _mm_shuffle_epi32!0xFF(input1); // rotate
         input1 = _mm_alignr_epi8!1(input1, input1);

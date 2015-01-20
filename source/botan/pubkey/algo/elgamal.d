@@ -7,7 +7,7 @@
 module botan.pubkey.algo.elgamal;
 
 import botan.constants;
-static if (BOTAN_HAS_ELGAMAL):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_ELGAMAL):
 
 public import botan.pubkey.pubkey;
 import botan.pubkey.algo.dl_algo;

@@ -1,7 +1,7 @@
 module botan.math.ec_gfp.test;
 
 import botan.constants;
-static if (BOTAN_TEST):
+static if (BOTAN_TEST && BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 import botan.test;
 

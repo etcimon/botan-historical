@@ -7,7 +7,7 @@
 module botan.pubkey.algo.rsa;
 
 import botan.constants;
-static if (BOTAN_HAS_RSA):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_RSA):
 
 public import botan.pubkey.pubkey;
 public import botan.pubkey.algo.if_algo;

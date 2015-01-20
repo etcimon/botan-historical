@@ -7,7 +7,7 @@
 module botan.passhash.passhash9;
 
 import botan.constants;
-static if (BOTAN_HAS_PASSHASH9):
+static if (BOTAN_HAS_PASSHASH9 && BOTAN_HAS_PBKDF2):
 
 import botan.rng.rng;
 import botan.utils.loadstor;

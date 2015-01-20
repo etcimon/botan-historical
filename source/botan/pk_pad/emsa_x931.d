@@ -6,6 +6,8 @@
 */
 module botan.pk_pad.emsa_x931;
 
+import botan.constants;
+static if (BOTAN_HAS_EMSA_X931):
 import botan.pk_pad.emsa;
 import botan.hash.hash;
 import botan.pk_pad.hash_id;

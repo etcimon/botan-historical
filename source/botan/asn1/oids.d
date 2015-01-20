@@ -7,6 +7,8 @@
 module botan.asn1.oids;
 
 import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 public import botan.asn1.asn1_oid;
 import botan.utils.containers.hashmap;
 import botan.utils.types;

@@ -7,7 +7,7 @@
 module botan.pubkey.x509_key;
 
 import botan.constants;
-static if (BOTAN_HAS_X509_CERTIFICATES):
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_X509_CERTIFICATES):
 
 alias x509_key = botan.pubkey.x509_key;
 

@@ -5,13 +5,17 @@
 * Distributed under the terms of the botan license.
 */
 module botan.kdf.kdf;
+
+import botan.constants;
+static if (BOTAN_HAS_TLS || BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.utils.memory.zeroise;
 import botan.utils.types;
 
 import botan.libstate.libstate;
 import botan.algo_base.scan_token;
 import botan.constants;
-static if (BOTAN_HAS_KDF1)             import botan.kdf.kdf1;
+static if (BOTAN_HAS_KDF1)     		   import botan.kdf.kdf1;
 static if (BOTAN_HAS_KDF2)             import botan.kdf.kdf2;
 static if (BOTAN_HAS_X942_PRF)         import botan.kdf.prf_x942;
 static if (BOTAN_HAS_SSL_V3_PRF)       import botan.kdf.prf_ssl3;

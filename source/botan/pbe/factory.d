@@ -6,6 +6,9 @@
 */
 module botan.pbe.factory;
 
+import botan.constants;
+static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+
 import botan.pbe.pbe;
 import botan.utils.types;
 import botan.asn1.oids;
@@ -14,8 +17,6 @@ import botan.rng.rng;
 import botan.utils.parsing;
 import botan.libstate.libstate;
 import std.datetime;
-
-import botan.constants;
 static if (BOTAN_HAS_PBE_PKCS_V20) {
     import botan.pbe.pbes2;
     import botan.mac.hmac;
@@ -30,9 +31,9 @@ static if (BOTAN_HAS_PBE_PKCS_V20) {
 * @return pointer to a PBE with randomly created parameters
 */
 PBE getPbe(in string algo_spec,
-            in string passphrase,
-            Duration dur,
-            RandomNumberGenerator rng)
+           in string passphrase,
+           Duration dur,
+           RandomNumberGenerator rng)
 {
     SCANToken request = SCANToken(algo_spec);
     
