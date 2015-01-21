@@ -150,7 +150,7 @@ public:
                              m_modulus.ptr, m_mod_words, m_mod_prime,
                              workspace.ptr);
             
-            m_g[i] = z;
+            m_g[i] = z.dup;
         }
     }
 

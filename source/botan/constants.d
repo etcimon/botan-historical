@@ -1,6 +1,6 @@
 module botan.constants;
 
-const LogLevel = Trace;
+const LogLevel = Debug;
 
 const SKIP_TRANSFORM_TEST = true;
 const SKIP_X509_TEST = true;

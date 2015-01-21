@@ -267,9 +267,7 @@ size_t isPrimeTest(in Vector!string args, RandomNumberGenerator rng)
         logError("ERROR: isPrime");
         logDebug("n = ", n);
         logDebug(isPrime, " != ", should_be_prime);
-		ubyte* b = null;
-		*b = 0;
-		//return 1;
+		return 1;
     }
     return 0;
 }
@@ -290,6 +288,7 @@ static if (!SKIP_BIGINT_TEST) unittest
     
     size_t total_errors = 0;
     size_t errors = 0, alg_count = 0;
+	size_t total_alg;
     string algorithm;
     bool first = true;
     size_t counter = 0;
@@ -329,6 +328,7 @@ static if (!SKIP_BIGINT_TEST) unittest
             algorithm = line[].ptr[1 .. line.length - 1].idup;
             
             total_errors += errors;
+			total_alg += alg_count;
             errors = 0;
             alg_count = 0;
             counter = 0;
@@ -336,9 +336,7 @@ static if (!SKIP_BIGINT_TEST) unittest
             first = false;
             continue;
         }
-        logTrace(line[]);
         Vector!string substr = parse(line[]);
-        logTrace(substr[]);
         
         logTrace("Testing: " ~ algorithm);
         
@@ -359,25 +357,25 @@ static if (!SKIP_BIGINT_TEST) unittest
             new_errors = checkShl(substr);
         else if (algorithm.canFind("RightShift"))
             new_errors = checkShr(substr);
-        //else if (algorithm.canFind("ModExp"))
-        //    new_errors = checkPowmod(substr);
+        else if (algorithm.canFind("ModExp"))
+            new_errors = checkPowmod(substr);
         else if (algorithm.canFind("PrimeTest"))
             new_errors = isPrimeTest(substr, rng);
         else
-            logTrace("Unknown MPI test " ~ algorithm);
+            logError("Unknown MPI test " ~ algorithm);
         
         counter++;
         alg_count++;
         errors += new_errors;
         
         if (new_errors)
-            logTrace("ERROR: BigInt " ~ algorithm ~ " failed test #" ~ alg_count.to!string);
+            logError("ERROR: BigInt " ~ algorithm ~ " failed test #" ~ alg_count.to!string);
     }
 
 	testReport("Bigint " ~ algorithm, alg_count, errors);
 	
 	total_errors += errors;
+	total_alg += alg_count;
     
-    testReport("BigInt", alg_count, total_errors);
-assert(false);
+    testReport("BigInt", total_alg, total_errors);
 }

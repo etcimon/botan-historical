@@ -966,7 +966,6 @@ public:
     */
     static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, in BigInt max)
     {
-		logTrace("Random integer");
         BigInt range = -min + max;
 
         if (range <= 0)
@@ -1030,7 +1029,6 @@ public:
     */
     static void encode(ubyte* output, in BigInt n, Base base = Binary)
     {
-		logTrace("n: ", (*n.m_reg)[]);
         if (base == Binary)
         {
             n.binaryEncode(output);
@@ -1048,11 +1046,9 @@ public:
             BigInt remainder;
             copy.setSign(Positive);
             const size_t output_size = n.encodedSize(Decimal);
-			logTrace("output_size: ", output_size);
             foreach (size_t j; 0 .. output_size)
             {
                 divide(copy, BigInt(10), copy, remainder);
-				logTrace("Writing output char: ", digit2char(cast(ubyte)(remainder.wordAt(0))));
                 output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
                 if (copy.isZero())
                     break;
@@ -1147,7 +1143,6 @@ public:
     */
     static SecureVector!ubyte encode1363(in BigInt n, size_t bytes)
     {
-        logTrace("Encoding BigInt to output string with IEEE 1363");
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
             throw new EncodingError("encode1363: n is too large to encode properly");
