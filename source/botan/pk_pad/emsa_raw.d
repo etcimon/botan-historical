@@ -30,9 +30,9 @@ public:
     /*
     * Return the raw (unencoded) data
     */
-    SecureVector!ubyte rawData()
+    SecureArray!ubyte rawData()
     {
-        SecureVector!ubyte output;
+        SecureArray!ubyte output;
         std.algorithm.swap(m_message, output);
         return output;
     }
@@ -40,7 +40,7 @@ public:
     /*
     * EMSA-Raw Encode Operation
     */
-    SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
+    SecureArray!ubyte encodingOf(const ref SecureArray!ubyte msg,
                                  size_t,
                                  RandomNumberGenerator)
     {
@@ -50,8 +50,8 @@ public:
     /*
     * EMSA-Raw Verify Operation
     */
-    bool verify(const ref SecureVector!ubyte coded,
-                const ref SecureVector!ubyte raw,
+    bool verify(const ref SecureArray!ubyte coded,
+                const ref SecureArray!ubyte raw,
                 size_t)
     {
         if (coded.length == raw.length)
@@ -75,5 +75,5 @@ public:
         return same_modulo_leading_zeros;
     }
 
-    SecureVector!ubyte m_message;
+    SecureArray!ubyte m_message;
 }

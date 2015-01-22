@@ -40,8 +40,7 @@ public:
     */
     override void encodeInto(ref DEREncoder der) const
     {
-        der.addObject(m_tag, ASN1Tag.APPLICATION,
-                       encodedEacTime());
+        der.addObject(m_tag, ASN1Tag.APPLICATION, encodedEacTime());
     }
 
     /*

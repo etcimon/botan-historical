@@ -32,7 +32,7 @@ alias EAC11ADO = FreeListRef!EAC11ADOImpl;
 final class EAC11ADOImpl : EAC11obj!EAC11ADOImpl, SignedObject
 {
 public:
-    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+	override const(Array!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Construct a CVC ADO request from a DER encoded CVC ADO request file.
     * @param str = the path to the DER encoded file
@@ -60,9 +60,9 @@ public:
     * @param tbs_bits = the TBS data to sign
     * @param rng = a random number generator
     */
-    static Vector!ubyte makeSigned(ref PKSigner signer,
-                                   Vector!ubyte tbs_bits,
-                                   RandomNumberGenerator rng)
+    static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+                                  			 const ref Vector!(ubyte, ALLOC) tbs_bits,
+                                  			 RandomNumberGenerator rng)
     {
         const Vector!ubyte concat_sig = signer.signMessage(tbs_bits, rng);
         
@@ -73,6 +73,13 @@ public:
                 .endCons()
                 .getContentsUnlocked();
     }
+
+	static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+											 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits,
+											 RandomNumberGenerator rng)
+	{
+		return makeSigned(signer, **tbs_bits, rng);
+	}
 
     /**
     * Get the CAR of this CVC ADO request
@@ -102,7 +109,7 @@ public:
         if (encoding == PEM_)
             throw new InvalidArgument("encode() cannot PEM encode an EAC object");
         
-        auto concat_sig = m_sig.getConcatenation();
+        auto concat_sig = m_sig.getConcatenation().dup;
         
         output.write(DEREncoder()
                      .startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
@@ -123,7 +130,7 @@ public:
     * Get the TBS data of this CVC ADO request.
     * @result the TBS data
     */
-    override const(Vector!ubyte) tbsData() const
+	override const(Array!ubyte) tbsData() const
     {
         return m_tbs_bits;
     }
@@ -144,7 +151,7 @@ public:
     {
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
-        m_tbs_bits = other.m_tbs_bits.dup;
+        m_tbs_bits = other.m_tbs_bits;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
 
@@ -182,7 +189,7 @@ protected:
                     .decode(m_car)
                     .verifyEnd();
         
-        Vector!ubyte req_bits = DEREncoder()
+        Array!ubyte req_bits = DEREncoder()
                                 .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                                 .rawBytes(inner_cert)
                                 .endCons()
@@ -195,9 +202,16 @@ protected:
 
 
 package:
-    static void decodeInfo(DataSource source,
-                           ref Vector!ubyte res_tbs_bits,
-                           ref ECDSASignature res_sig)
+	static void decodeInfo(int ALLOC)(DataSource source,
+									  auto ref FreeListRef!(Vector!(ubyte, ALLOC)) res_tbs_bits,
+									  ref ECDSASignature res_sig)
+	{
+		return decodeInfo(source, **res_tbs_bits, res_sig);
+	}
+
+    static void decodeInfo(int ALLOC)(DataSource source,
+                           			  ref Vector!(ubyte, ALLOC) res_tbs_bits,
+                           			  ref ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         Vector!ubyte cert_inner_bits;
@@ -212,13 +226,13 @@ package:
                 .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons();
         
-        Vector!ubyte enc_cert = DEREncoder()
+        Array!ubyte enc_cert = DEREncoder()
                 .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                 .rawBytes(cert_inner_bits)
                 .endCons()
                 .getContentsUnlocked();
         
-        res_tbs_bits = enc_cert;
+        res_tbs_bits = enc_cert.dup;
         res_tbs_bits ~= DEREncoder().encode(car).getContentsUnlocked();
         res_sig = decodeConcatenation(concat_sig);
     }

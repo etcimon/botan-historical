@@ -30,7 +30,7 @@ public:
     /*
     * PKCS1 Pad Operation
     */
-    override SecureVector!ubyte pad(const(ubyte)* input, size_t inlen, size_t olen, RandomNumberGenerator rng) const
+    override SecureArray!ubyte pad(const(ubyte)* input, size_t inlen, size_t olen, RandomNumberGenerator rng) const
     {
         olen /= 8;
         
@@ -39,7 +39,7 @@ public:
         if (inlen > olen - 10)
             throw new EncodingError("PKCS1: Input is too large");
         
-        SecureVector!ubyte output = SecureVector!ubyte(olen);
+        SecureArray!ubyte output = SecureArray!ubyte(olen);
         
         output[0] = 0x02;
         foreach (size_t j; 1 .. (olen - inlen - 1))
@@ -53,7 +53,7 @@ public:
     /*
     * PKCS1 Unpad Operation
     */
-    override SecureVector!ubyte unpad(const(ubyte)* input, size_t inlen, size_t key_len) const
+    override SecureArray!ubyte unpad(const(ubyte)* input, size_t inlen, size_t key_len) const
     {
         if (inlen != key_len / 8 || inlen < 10 || input[0] != 0x02)
             throw new DecodingError("PKCS1::unpad");
@@ -68,7 +68,7 @@ public:
         if (seperator < 9)
             throw new DecodingError("PKCS1::unpad");
         
-        return SecureVector!ubyte(input[seperator + 1 .. inlen]);
+        return SecureArray!ubyte(input[seperator + 1 .. inlen]);
     }
 
 }

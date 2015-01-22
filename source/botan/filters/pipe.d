@@ -79,14 +79,14 @@ public:
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the SecureVector containing the data to write
     */
-    void write(const ref SecureVector!ubyte input)
+    void write(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
     { write(input.ptr, input.length); }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the std::vector containing the data to write
     */
-    void write(const ref Vector!ubyte input)
+    void write(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input)
     { write(input.ptr, input.length); }
 
     /**

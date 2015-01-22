@@ -20,9 +20,10 @@ class ECDSASignature
 {
 public:
     this() {}
-    this(BigInt r, BigInt s) {
-        m_r = r;
-        m_s = s;
+
+	this()(auto const ref BigInt r, auto const ref BigInt s) {
+        m_r = r.dup;
+        m_s = s.dup;
     }
 
     this(const ref Vector!ubyte ber)
@@ -40,13 +41,13 @@ public:
         return new ECDSASignature(m_r.dup, m_s.dup);
     }
 
-    const(BigInt) getR() const { return m_r; }
-    const(BigInt) getS() const { return m_s; }
+    ref const(BigInt) getR() const { return m_r; }
+    ref const(BigInt) getS() const { return m_s; }
 
     /**
     * return the r||s
     */
-    const(Vector!ubyte) getConcatenation() const
+	const(Array!ubyte) getConcatenation() const
     {
         // use the larger
         const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
@@ -54,7 +55,7 @@ public:
         auto sv_r = BigInt.encode1363(m_r, enc_len);
         auto sv_s = BigInt.encode1363(m_s, enc_len);
         
-        SecureVector!ubyte result = sv_r;
+        SecureArray!ubyte result = sv_r;
         result ~= sv_s;
         return unlock(result);
     }

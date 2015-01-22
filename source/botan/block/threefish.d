@@ -101,9 +101,9 @@ public:
 
     override void clear()
     {
-        if (!*m_T) m_T = SecureVector!ulong(3);
+        if (m_T.length == 0) m_T = SecureVector!ulong(3);
         else zeroise(m_T);
-        if (!*m_K) m_K = SecureVector!ulong(9);
+		if (m_K.length == 0) m_K = SecureVector!ulong(9);
         else zeroise(m_K);
     }
 
@@ -118,8 +118,8 @@ public:
     }
 
 protected:
-    final const(SecureVector!ulong) getT() const { return m_T; }
-    final const(SecureVector!ulong) getK() const { return m_K; }
+    final ref const(SecureVector!ulong) getT() const { return m_T; }
+    final ref const(SecureVector!ulong) getK() const { return m_K; }
     override void keySchedule(const(ubyte)* key, size_t)
     {
         // todo: define key schedule for smaller keys

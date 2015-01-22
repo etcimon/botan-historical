@@ -36,16 +36,16 @@ public:
     * Add new input to process.
     * @param input = the input to process as a SecureVector
     */
-    final void update(const ref SecureVector!ubyte input)
-    {
-        addData(input.ptr, input.length);
-    }
+	final void update(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
+	{
+		addData(input.ptr, input.length);
+	}
 
     /**
     * Add new input to process.
     * @param input = the input to process as a Vector
     */
-    final void update(const ref Vector!ubyte input)
+    final void update(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input)
     {
         addData(input.ptr, input.length);
     }

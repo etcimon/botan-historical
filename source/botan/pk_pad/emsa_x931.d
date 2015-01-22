@@ -41,7 +41,7 @@ public:
         m_hash.update(input, length);
     }
 
-    override SecureVector!ubyte rawData()
+    override SecureArray!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -49,7 +49,7 @@ public:
     /*
     * EMSA_X931 Encode Operation
     */
-    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
+    override SecureArray!ubyte encodingOf(const ref SecureArray!ubyte msg,
                                            size_t output_bits,
                                            RandomNumberGenerator)
     {
@@ -59,8 +59,8 @@ public:
     /*
     * EMSA_X931 Verify Operation
     */
-    bool verify(const ref SecureVector!ubyte coded,
-                const ref SecureVector!ubyte raw,
+    bool verify(const ref SecureArray!ubyte coded,
+                const ref SecureArray!ubyte raw,
                 size_t key_bits)
     {
         try
@@ -75,16 +75,16 @@ public:
     }
 
 private:
-    SecureVector!ubyte m_empty_hash;
+    SecureArray!ubyte m_empty_hash;
     Unique!HashFunction m_hash;
     ubyte m_hash_id;
 }
 
 private:
 
-SecureVector!ubyte emsa2Encoding(const ref SecureVector!ubyte msg,
+SecureArray!ubyte emsa2Encoding(const ref SecureArray!ubyte msg,
                                    size_t output_bits,
-                                   const ref SecureVector!ubyte empty_hash,
+                                   const ref SecureArray!ubyte empty_hash,
                                    ubyte hash_id)
 {
     const size_t HASH_SIZE = empty_hash.length;
@@ -98,7 +98,7 @@ SecureVector!ubyte emsa2Encoding(const ref SecureVector!ubyte msg,
     
     const bool empty_input = (msg == empty_hash);
     
-    SecureVector!ubyte output = SecureVector!ubyte(output_length);
+    SecureArray!ubyte output = SecureArray!ubyte(output_length);
     
     output[0] = (empty_input ? 0x4B : 0x6B);
     output[output_length - 3 - HASH_SIZE] = 0xBA;

@@ -17,8 +17,8 @@ import std.algorithm;
 * MGF1 from PKCS #1 v2.0
 */
 void mgf1Mask(HashFunction hash,
-               const(ubyte)* input, size_t in_len,
-               ubyte* output, size_t out_len)
+              const(ubyte)* input, size_t in_len,
+              ubyte* output, size_t out_len)
 {
     uint counter = 0;
     
@@ -26,7 +26,7 @@ void mgf1Mask(HashFunction hash,
     {
         hash.update(input, in_len);
         hash.updateBigEndian(counter);
-        SecureVector!ubyte buffer = hash.finished();
+        SecureArray!ubyte buffer = hash.finished();
         
         size_t xored = std.algorithm.min(buffer.length, out_len);
         xorBuf(output, buffer.ptr, xored);

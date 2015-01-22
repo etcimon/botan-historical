@@ -20,7 +20,7 @@ import botan.constants;
 * @param q = will be set to x / y
 * @param r = will be set to x % y
 */
-void divide(const ref BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
+void divide()(auto const ref BigInt x, auto const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 {
     /*
     * Solve x = q * y + r

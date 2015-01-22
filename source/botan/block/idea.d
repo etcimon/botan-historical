@@ -50,12 +50,12 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    const(SecureVector!ushort) getEK() const { return m_EK; }
+    ref const(SecureVector!ushort) getEK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    const(SecureVector!ushort) getDK() const { return m_DK; }
+    ref const(SecureVector!ushort) getDK() const { return m_DK; }
 
     /*
     * IDEA Key Schedule

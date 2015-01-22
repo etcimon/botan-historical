@@ -146,7 +146,7 @@ public:
         
         BigInt serial_no = BigInt(rng, SERIAL_BITS);
         
-        const Vector!ubyte cert = X509Object.makeSigned(
+        const Array!ubyte cert = X509Object.makeSigned(
             signer, rng, sig_algo,
             DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .startExplicit(0)
@@ -221,7 +221,7 @@ private:
         extensions.add(new AuthorityKeyID(m_cert.subjectKeyId()));
         extensions.add(new CRLNumber(crl_number));
         PKSigner* _signer = cast(PKSigner*)&m_signer;
-        const Vector!ubyte crl = X509Object.makeSigned(
+        const Array!ubyte crl = X509Object.makeSigned(
             *_signer, rng, m_ca_sig_algo,
             DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .encode(X509_CRL_VERSION-1)

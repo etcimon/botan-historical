@@ -108,7 +108,7 @@ public:
     this(const ref EAC11CVC other) {
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
-        m_tbs_bits = other.m_tbs_bits.dup;
+        m_tbs_bits = other.m_tbs_bits.dupr;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
         
@@ -131,7 +131,7 @@ public:
     void opAssign(ref EAC11CVC other) {
         m_sig = other.m_sig;
         m_sig_algo = other.m_sig_algo;
-        m_tbs_bits = other.m_tbs_bits;
+        m_tbs_bits = other.m_tbs_bits.dupr;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
         m_pk = other.m_pk;
@@ -207,14 +207,14 @@ protected:
 * @param cex = the CEX to appear in the certificate
 * @param rng = a random number generator
 */
-EAC11CVC makeCvcCert(ref PKSigner signer,
-                     const ref Vector!ubyte public_key,
-                     in ASN1Car car,
-                     in ASN1Chr chr,
-                     in ubyte holder_auth_templ,
-                     in ASN1Ced ced,
-                     in ASN1Cex cex,
-                     RandomNumberGenerator rng)
+EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
+			                    const ref Vector!(ubyte, ALLOC) public_key,
+			                    in ASN1Car car,
+			                    in ASN1Chr chr,
+			                    in ubyte holder_auth_templ,
+			                    in ASN1Ced ced,
+			                    in ASN1Cex cex,
+			                    RandomNumberGenerator rng)
 {
     OID chat_oid = OIDS.lookup("CertificateHolderAuthorizationTemplate");
     Vector!ubyte enc_chat_val;
@@ -222,7 +222,7 @@ EAC11CVC makeCvcCert(ref PKSigner signer,
     
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
-    Vector!ubyte tbs = DEREncoder()
+    Array!ubyte tbs = DEREncoder()
                         .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION) // cpi
                         .encode(car)
                         .rawBytes(public_key)
@@ -235,12 +235,23 @@ EAC11CVC makeCvcCert(ref PKSigner signer,
                         .encode(cex)
                         .getContentsUnlocked();
     
-    Vector!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
+    Array!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
     
     auto source = DataSourceMemory(signed_cert);
     return EAC11CVC(cast(DataSource)source);
 }
 
+EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
+								auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) public_key,
+								in ASN1Car car,
+								in ASN1Chr chr,
+								in ubyte holder_auth_templ,
+								in ASN1Ced ced,
+								in ASN1Cex cex,
+								RandomNumberGenerator rng)
+{
+	return makeCvcCert(signer, **public_key, car, chr, holder_auth_templ, ced, cex, rng);
+}
 /**
 * Decode an EAC encoding ECDSA key
 */

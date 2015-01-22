@@ -94,7 +94,7 @@ protected:
     /**
     * @return const reference to the key schedule
     */
-    const(SecureVector!uint) getEK() const { return m_EK; }
+    ref const(SecureVector!uint) getEK() const { return m_EK; }
 
 protected:
     /*

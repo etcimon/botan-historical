@@ -36,7 +36,7 @@ public:
     * The underlying data that is to be or was signed
     * @return data that is or was signed
     */
-    final const(Vector!ubyte) tbsData() const
+    final const(Array!ubyte) tbsData() const
     {
         return putInSequence(m_tbs_bits);
     }
@@ -62,12 +62,12 @@ public:
     */
     final string hashUsedForSignature() const
     {
-        Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
+        Array!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
         
         if (sig_info.length != 2)
             throw new InternalError("Invalid name format found for " ~ m_sig_algo.oid.toString());
         
-        Vector!string pad_and_hash = parseAlgorithmName(sig_info[1]);
+        Array!string pad_and_hash = parseAlgorithmName(sig_info[1]);
         
         if (pad_and_hash.length != 2)
             throw new InternalError("Invalid name format " ~ sig_info[1]);
@@ -84,10 +84,10 @@ public:
     * @param tbs = the tbs bits to be signed
     * @return signed X509 object
     */
-    static Vector!ubyte makeSigned(ref PKSigner signer,
-                                   RandomNumberGenerator rng,
-                                   in AlgorithmIdentifier algo,
-                                   const ref SecureVector!ubyte tbs_bits)
+    static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+                                  			 RandomNumberGenerator rng,
+                                 			 in AlgorithmIdentifier algo,
+                                 			 const ref Vector!(ubyte, ALLOC) tbs_bits)
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
@@ -97,7 +97,14 @@ public:
                 .endCons()
                 .getContentsUnlocked();
     }
-    
+
+	static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+											 RandomNumberGenerator rng,
+											 in AlgorithmIdentifier algo,
+										  	 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits)
+	{
+		return makeSigned(signer, rng, algo, **tbs_bits);
+	}
 
 
     /**
@@ -160,7 +167,7 @@ public:
     /**
     * @return BER encoding of this
     */
-    final Vector!ubyte BER_encode() const
+    final Array!ubyte BER_encode() const
     {
         auto der = DEREncoder.init;
         encodeInto(der);
@@ -195,14 +202,23 @@ protected:
         init(stream, labels);
     }
 
-    /*
+	/*
     * Create a generic X.509 object
     */
-    this(const ref Vector!ubyte vec, in string labels)
-    {
-        auto stream = DataSourceMemory(vec.ptr, vec.length);
-        init(cast(DataSource)stream, labels);
-    }
+	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) vec, in string labels)
+	{
+		auto stream = DataSourceMemory(vec.ptr, vec.length);
+		init(cast(DataSource)stream, labels);
+	}
+
+	/*
+    * Create a generic X.509 object
+    */
+	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) vec, in string labels)
+	{
+		auto stream = DataSourceMemory(vec.ptr, vec.length);
+		init(cast(DataSource)stream, labels);
+	}
 
     /*
     * Try to decode the actual information
@@ -223,7 +239,7 @@ protected:
     }
     this() { }
     AlgorithmIdentifier m_sig_algo;
-    Vector!ubyte m_tbs_bits, m_sig;
+    Array!ubyte m_tbs_bits, m_sig;
 
 protected:
     abstract void forceDecode();

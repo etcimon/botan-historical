@@ -23,7 +23,7 @@ import botan.utils.containers.hashmap;
 /*
 * Parse a SCAN-style algorithm name
 */
-Vector!string parseAlgorithmName(in string scan_name)
+Array!string parseAlgorithmName(in string scan_name)
 {
     import std.array : Appender;
     if (scan_name.find('(') == -1 &&
@@ -34,7 +34,7 @@ Vector!string parseAlgorithmName(in string scan_name)
     }
     string name = scan_name;
     Vector!ubyte substring;
-    Vector!string elems;
+    Array!string elems;
     size_t level = 0;
     
     elems.pushBack(name[0 .. name.find('(')]);
@@ -85,7 +85,7 @@ Vector!string parseAlgorithmName(in string scan_name)
 * @param delim = the delimitor
 * @return string split by delim
 */
-Vector!string splitter(in string str, char delim)
+Array!string splitter(in string str, char delim)
 {
     return splitOnPred(str, (char c) { return c == delim; });
 }
@@ -94,10 +94,10 @@ Vector!string splitter(in string str, char delim)
 * Split a string on a character predicate
 * @param str = the input string
 */
-Vector!string splitOnPred(in string str,
-                          bool delegate(char) pred)
+Array!string splitOnPred(in string str,
+                         bool delegate(char) pred)
 {
-    Vector!string elems;
+    Array!string elems;
     if (str == "") return elems;
     import std.array : Appender;
     Vector!ubyte substr;

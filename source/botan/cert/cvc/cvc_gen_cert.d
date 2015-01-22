@@ -28,7 +28,7 @@ import botan.utils.types;
 abstract class EAC11genCVC(Derived) : EAC11obj!Derived, SignedObject // CRTP continuation from EAC11obj
 {
 public:
-    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+	override const(Array!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Get this certificates public key.
     * @result this certificates public key
@@ -64,10 +64,10 @@ public:
     */
     override final void encode(Pipe output, X509Encoding encoding) const
     {
-        const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
+        const(Array!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
         // fixme: this should be EAC11obj!Derived.tbsData() but linker fails...
         auto tbsdata = tbsData();
-        Vector!ubyte der = DEREncoder()
+        Array!ubyte der = DEREncoder()
                             .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                             .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
                             .rawBytes(tbsdata)
@@ -86,7 +86,7 @@ public:
     * Get the to-be-signed (TBS) data of this object.
     * @result the TBS data of this object
     */
-    override final const(Vector!ubyte) tbsData() const
+	override final const(Array!ubyte) tbsData() const
     {
         return buildCertBody(m_tbs_bits);
     }
@@ -97,7 +97,7 @@ public:
     * @param tbs = the data to be signed
     * @result the correctly encoded body of the object
     */
-    static Vector!ubyte buildCertBody(const ref Vector!ubyte tbs)
+    static Array!ubyte buildCertBody(const ref Array!ubyte tbs)
     {
         return DEREncoder()
                 .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
@@ -112,9 +112,9 @@ public:
     * @param rng = a random number generator
     * @result the DER encoded signed generalized CVC object
     */
-    static Vector!ubyte makeSigned(ref PKSigner signer,
-                                   Vector!ubyte tbs_bits,
-                                   RandomNumberGenerator rng)
+    static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+                                  			 const ref Vector!(ubyte, ALLOC) tbs_bits,
+                                  			 RandomNumberGenerator rng)
     {
         const auto concat_sig = signer.signMessage(tbs_bits, rng);
         
@@ -126,15 +126,22 @@ public:
                 .getContentsUnlocked();
     }
 
+	static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+											 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits,
+											 RandomNumberGenerator rng)
+	{
+		return makeSigned(signer, **tbs_bits, rng);
+	}
+
     ~this() { if (m_pk) delete m_pk; }
 protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;
     bool m_self_signed;
 package:
-    static void decodeInfo(DataSource source,
-                           Vector!ubyte res_tbs_bits,
-                           ECDSASignature res_sig)
+    static void decodeInfo(int ALLOC)(DataSource source,
+			                          ref Vector!(ubyte, ALLOC) res_tbs_bits,
+			                          ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         BERDecoder(source)
@@ -147,4 +154,10 @@ package:
         res_sig = decodeConcatenation(concat_sig);
     }
 
+	static void decodeInfo(int ALLOC)(DataSource source,
+									  ref FreeListRef!(Vector!(ubyte, ALLOC)) res_tbs_bits,
+									  ECDSASignature res_sig)
+	{
+		return decodeInfo(source, **res_tbs_bits, res_sig);
+	}
 }

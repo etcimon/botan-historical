@@ -267,8 +267,8 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
                 m_hasher = (Key k) {
                     import std.typecons : scoped;
                     import botan.hash.md4;
-                    import botan.utils.containers.vector : Vector;
-                    Vector!ubyte s = k.toArray();
+                    import botan.utils.containers.vector : Array;
+                    Array!ubyte s = k.toArray();
                     auto md4 = scoped!MD4();
                     md4.update(s);
                     auto hash = md4.finished();

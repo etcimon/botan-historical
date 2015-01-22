@@ -71,7 +71,7 @@ public:
     {
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
-        m_tbs_bits = other.m_tbs_bits.dup;
+        m_tbs_bits = other.m_tbs_bits.dupr;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
     

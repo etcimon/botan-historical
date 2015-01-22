@@ -124,12 +124,12 @@ protected:
     /**
     * @return const reference to encryption subkeys
     */
-    const(SecureVector!uint) getEK() const { return m_EK; }
+    ref const(SecureVector!uint) getEK() const { return m_EK; }
 
     /**
     * @return const reference to decryption subkeys
     */
-    const(SecureVector!uint) getDK() const { return m_DK; }
+    ref const(SecureVector!uint) getDK() const { return m_DK; }
 
 protected:
     /*

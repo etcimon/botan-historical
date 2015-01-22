@@ -95,22 +95,13 @@ public:
 
 	@disable this(this);
 
+	/// Move constructor
     ref BigInt opAssign(size_t other)
     {
         BigInt bigInt = BigInt(other);
         this.swap(bigInt);
         
         return this;
-    }
-
-    /**
-    * Copy Constructor
-    * @param other = the BigInt to copy
-    */
-    this(const ref BigInt other)
-    {
-        m_reg = other.m_reg.dup;
-        m_signedness = cast(Sign)other.m_signedness;
     }
 
     /**
@@ -182,29 +173,32 @@ public:
     */
     this(ref BigInt other)
     {
-        BigInt other_ = other.dup;
-        this.swap(other_);
+		this.swap(other);
     }
     
-    this(ref SecureVector!ubyte payload, in Sign sign) {
-        this(payload.ptr, payload.length);
-    }
+	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) payload, in Sign sign) {
+		this(payload.ptr, payload.length);
+	}
 
-    
-    this(SecureVector!word reg, in Sign sign) {
-        m_reg = reg;
-        m_signedness = sign;
-    }
+	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) payload, in Sign sign) {
+		this(payload.ptr, payload.length);
+	}
+
+	this(ref SecureVector!word reg, ref Sign sign) {
+		import std.algorithm : swap;
+		m_reg.swap(reg);
+		swap(m_signedness, sign);
+	}
 
 	/**
     * Move assignment
-    */
+
 	ref BigInt opAssign(BigInt other)
 	{
 		if (&this !is &other)
 			this.swap(other);
 		return this;
-	}
+	}*/
 
     /**
     * Copy assignment
@@ -215,7 +209,7 @@ public:
     * Swap this value with another
     * @param other = BigInt to swap values with
     */
-    void swap(const ref BigInt other)
+	void swap()(auto const ref BigInt other)
     {
 		if (other.m_reg.length > 0) {
 			auto val = other.m_reg.ptr[0 .. other.length];
@@ -232,7 +226,7 @@ public:
     * += operator
     * @param y = the BigInt to add to this
     */
-    void opOpAssign(string op)(const ref BigInt y)
+	void opOpAssign(string op)(auto const ref BigInt y)
         if (op == "+")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
@@ -274,7 +268,7 @@ public:
     * -= operator
     * @param y = the BigInt to subtract from this
     */
-    void opOpAssign(string op)(const ref BigInt y)
+	void opOpAssign(string op)(auto const ref BigInt y)
         if (op == "-")
     {
         const size_t x_sw = sigWords(), y_sw = y.sigWords();
@@ -367,7 +361,7 @@ public:
     * /= operator
     * @param y = the BigInt to divide this by
     */
-    void opOpAssign(string op)(const ref BigInt y)
+	void opOpAssign(string op)(auto const ref BigInt y)
         if (op == "/")
     {
         if (y.sigWords() == 1 && isPowerOf2(y.wordAt(0)))
@@ -388,7 +382,7 @@ public:
     * Modulo operator
     * @param y = the modulus to reduce this by
     */
-    void opOpAssign(string op)(const ref BigInt mod)
+	void opOpAssign(string op)(auto const ref BigInt mod)
         if (op == "%")
     {
         this = this % mod;
@@ -532,7 +526,7 @@ public:
     /*
     * Comparison Operators
     */
-    bool opEquals(const ref BigInt b) const
+    bool opEquals()(auto const ref BigInt b) const
     { return (cmp(b) == 0); }
 
     bool opEquals(in size_t n) const
@@ -542,7 +536,7 @@ public:
     }
 
 
-    int opCmp(const ref BigInt b) const
+    int opCmp()(auto const ref BigInt b) const
     { 
         return cmp(b);
     }
@@ -889,10 +883,16 @@ public:
     * Read integer value from a ubyte array (SecureVector!ubyte)
     * @param buf = the array to load from
     */
-    void binaryDecode(const ref SecureVector!ubyte buf)
-    {
-        binaryDecode(buf.ptr, buf.length);
-    }
+	void binaryDecode(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) buf)
+	{
+		binaryDecode(buf.ptr, buf.length);
+	}
+
+	/// ditto
+	void binaryDecode(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) buf)
+	{
+		binaryDecode(buf.ptr, buf.length);
+	}
 
     /**
     * @param base = the base to measure the size for
@@ -918,7 +918,7 @@ public:
     * @param max = the maximum value
     * @return random integer in [min,max)
     */
-    static BigInt randomInteger(RandomNumberGenerator rng, BigInt min, const ref BigInt max)
+	static BigInt randomInteger()(RandomNumberGenerator rng, auto const ref BigInt min, auto const ref BigInt max)
     {
         BigInt range = -min + max;
 
@@ -941,12 +941,12 @@ public:
     }
 
     /**
-    * Encode the integer value from a BigInt to a std::vector of bytes
+    * Encode the integer value from a BigInt to an Array of bytes
     * @param n = the BigInt to use as integer source
     * @param base = number-base of resulting ubyte array representation
     * @result SecureVector of bytes containing the integer with given base
     */
-    static Array!ubyte encode(const ref BigInt n, Base base = Binary)
+    static Array!ubyte encode()(auto const ref BigInt n, Base base = Binary)
     {
         Array!ubyte output = Vector!ubyte(n.encodedSize(base));
         encode(output.ptr, n, base);
@@ -958,14 +958,14 @@ public:
     }
 
     /**
-    * Encode the integer value from a BigInt to a SecureVector of bytes
+    * Encode the integer value from a BigInt to a Secure Array of bytes
     * @param n = the BigInt to use as integer source
     * @param base = number-base of resulting ubyte array representation
     * @result SecureVector of bytes containing the integer with given base
     */
-    static SecureVector!ubyte encodeLocked(const ref BigInt n, Base base = Binary)
+    static SecureArray!ubyte encodeLocked()(auto const ref BigInt n, Base base = Binary)
     {
-        SecureVector!ubyte output = SecureVector!ubyte(n.encodedSize(base));
+        SecureArray!ubyte output = SecureVector!ubyte(n.encodedSize(base));
         encode(output.ptr, n, base);
         if (base != Binary)
             for (size_t j = 0; j != output.length; ++j)
@@ -981,7 +981,7 @@ public:
     * @param n = the BigInt to use as integer source
     * @param base = number-base of resulting ubyte array representation
     */
-    static void encode(ubyte* output, const ref BigInt n, Base base = Binary)
+	static void encode()(ubyte* output, auto const ref BigInt n, Base base = Binary)
     {
         if (base == Binary)
         {
@@ -1073,7 +1073,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static BigInt decode(const ref SecureVector!ubyte buf, Base base = Binary)
+    static BigInt decode(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) buf, Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
     }
@@ -1084,7 +1084,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static BigInt decode(const ref Vector!ubyte buf, Base base = Binary)
+    static BigInt decode(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) buf, Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
     }
@@ -1095,7 +1095,7 @@ public:
     * @param bytes = the length of the resulting SecureVector!ubyte
     * @result a SecureVector!ubyte containing the encoded BigInt
     */
-    static SecureVector!ubyte encode1363(const ref BigInt n, size_t bytes)
+    static SecureArray!ubyte encode1363()(auto const ref BigInt n, size_t bytes)
     {
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
@@ -1103,7 +1103,7 @@ public:
         
         const size_t leading_0s = bytes - n_bytes;
         
-        SecureVector!ubyte output = SecureVector!ubyte(bytes);
+        SecureArray!ubyte output = SecureArray!ubyte(bytes);
         encode(&output[leading_0s], n, Binary);
         return output;
     }
@@ -1111,10 +1111,10 @@ public:
     /*
     * Addition Operator
     */
-    BigInt opBinary(string op)(const ref BigInt y) const
+	BigInt opBinary(string op)(auto const ref BigInt y) const
         if (op == "+")
     {
-        const BigInt x = this;
+        const BigInt* x = &this;
         const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
         BigInt z = BigInt(x.sign(), std.algorithm.max(x_sw, y_sw) + 1);
@@ -1135,7 +1135,7 @@ public:
             else if (relative_size > 0)
                 bigint_sub3(z.mutablePtr(), x.ptr, x_sw, y.ptr, y_sw);
         }
-        return z;
+		return z.move();
     }
 
     BigInt opBinary(string op)(in word y) const
@@ -1147,10 +1147,10 @@ public:
     /*
     * Subtraction Operator
     */
-    BigInt opBinary(string op)(const ref BigInt y) const
+	BigInt opBinary(string op)(auto const ref BigInt y) const
         if (op == "-")
     {
-        const BigInt x = this;
+        const BigInt* x = &this;
         const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
         int relative_size = bigint_cmp(x.ptr, x_sw, y.ptr, y_sw);
@@ -1178,7 +1178,7 @@ public:
                 bigint_add3(z.mutablePtr(), x.ptr, x_sw, y.ptr, y_sw);
             z.setSign(x.sign());
         }
-        return z;
+		return z.move();
     }
 
 
@@ -1191,10 +1191,10 @@ public:
     /*
     * Multiplication Operator
     */
-    BigInt opBinary(string op)(const ref BigInt y) const
+	BigInt opBinary(string op)(auto const ref BigInt y) const
         if (op == "*")
     {
-        const BigInt x = this;
+        const BigInt* x = &this;
         const size_t x_sw = x.sigWords(), y_sw = y.sigWords();
         
         BigInt z = BigInt(BigInt.Positive, x.length + y.length);
@@ -1213,7 +1213,7 @@ public:
         
         if (x_sw && y_sw && x.sign() != y.sign())
             z.flipSign();
-        return z;
+		return z.move();
     }
 
 
@@ -1226,13 +1226,13 @@ public:
     /*
     * Division Operator
     */
-    BigInt opBinary(string op)(const ref BigInt y) const
+    BigInt opBinary(string op)(auto const ref BigInt y) const
         if (op == "/")
     {
         const BigInt x = this;
         BigInt q, r;
         divide(x, y, q, r);
-        return q;
+        return q.move();
     }
 
 
@@ -1245,7 +1245,7 @@ public:
     /*
     * Modulo Operator
     */
-    BigInt opBinary(string op)(const ref BigInt mod) const
+	BigInt opBinary(string op)(auto const ref BigInt mod) const
         if (op == "%")
     {
         const BigInt n = this;
@@ -1258,7 +1258,7 @@ public:
         
 		BigInt q, r;
         divide(n, mod, q, r);
-        return r;
+		return r.move();
     }
 
     /*
@@ -1290,9 +1290,9 @@ public:
     BigInt opBinary(string op)(size_t shift) const
         if (op == "<<")
     {
-        const BigInt x = this;
+        const BigInt* x = &this;
         if (shift == 0)
-            return BigInt(x);
+            return x.move();
         
         const size_t shift_words = shift / MP_WORD_BITS,
             shift_bits  = shift % MP_WORD_BITS;
@@ -1301,7 +1301,7 @@ public:
         
         BigInt y = BigInt(x.sign(), x_sw + shift_words + (shift_bits ? 1 : 0));
         bigint_shl2(y.mutablePtr(), x.ptr, x_sw, shift_words, shift_bits);
-        return y;
+        return y.move();
     }
     
     /*
@@ -1321,8 +1321,12 @@ public:
         
         BigInt y = BigInt(sign(), x_sw - shift_words);
         bigint_shr2(y.mutablePtr(), ptr, x_sw, shift_words, shift_bits);
-        return y;
+        return y.move();
     }
+
+	@property BigInt move() const {
+		return BigInt(this);
+	}
 
     @property BigInt dup() const {
         return BigInt(m_reg.dup(), m_signedness);

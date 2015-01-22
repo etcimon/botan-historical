@@ -74,7 +74,7 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
     
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
     
-    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Array!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(signer,
                        enc_public_key,
@@ -112,17 +112,17 @@ EAC11Req createCvcReq(in PrivateKey key,
     
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
     
-    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Array!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
-    Vector!ubyte tbs = DEREncoder()
+    Array!ubyte tbs = DEREncoder()
             .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
             .rawBytes(enc_public_key)
             .encode(chr)
             .getContentsUnlocked();
     
-    Vector!ubyte signed_cert = 
+    Array!ubyte signed_cert = 
         EAC11genCVC!EAC11ReqImpl.makeSigned(signer,
                                             EAC11genCVC!EAC11ReqImpl.buildCertBody(tbs),
                                             rng);
@@ -156,7 +156,7 @@ EAC11ADO createAdoReq(in PrivateKey key,
     Vector!ubyte tbs_bits = req.BER_encode();
     tbs_bits ~= DEREncoder().encode(car).getContentsUnlocked();
     
-    Vector!ubyte signed_cert = EAC11ADO.makeSigned(signer, tbs_bits, rng);
+    Array!ubyte signed_cert = EAC11ADO.makeSigned(signer, tbs_bits, rng);
     
     auto source = DataSourceMemory(signed_cert);
     return EAC11ADO(cast(DataSource)source);
@@ -242,7 +242,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
     ECDSAPublicKey subj_pk = cast(ECDSAPublicKey)(*pk);
     subj_pk.setParameterEncoding(EC_DOMPAR_ENC_EXPLICIT);
     
-    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Array!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(pk_signer, enc_public_key,
                          signer.getCar(),
@@ -355,7 +355,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
         // (IS cannot sign certificates)
     }
     
-    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Array!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(pk_signer, enc_public_key,
                        ASN1Car(signer_cert.getChr().iso8859()),
@@ -380,12 +380,12 @@ enum : CHATValues {
     FINGERPRINT = 0x01
 }
 
-void encodeEacBigint(ref DEREncoder der, const ref BigInt x, ASN1Tag tag)
+void encodeEacBigint()(ref DEREncoder der, auto const ref BigInt x, ASN1Tag tag)
 {
     der.encode(BigInt.encode1363(x, x.bytes()), ASN1Tag.OCTET_STRING, tag);
 }
 
-Vector!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
+Array!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
 {
     if (key.domainFormat() == EC_DOMPAR_ENC_OID)
         throw new EncodingError("CVC encoder: cannot encode parameters by OID");

@@ -87,7 +87,7 @@ public:
             }
         }
         
-        m_dn_bits = bits;
+        m_dn_bits = bits.dup;
     }
 
     /*
@@ -180,7 +180,7 @@ public:
     /*
     * Return the BER encoded data, if any
     */
-    const(Vector!ubyte) getBits() const
+    ref const(Vector!ubyte) getBits() const
     {
         return m_dn_bits;
     }

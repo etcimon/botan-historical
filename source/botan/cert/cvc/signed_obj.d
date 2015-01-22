@@ -27,7 +27,7 @@ interface SignedObject {
     * Get the TBS (to-be-signed) data in this object.
     * @return DER encoded TBS data of this object
     */
-    const(Vector!ubyte) tbsData() const;
+    const(Array!ubyte) tbsData() const;
     
     /**
     * Get the signature of this object as a concatenation, i.e. if the
@@ -35,7 +35,7 @@ interface SignedObject {
     * these will be concatenated.
     * @return signature as a concatenation of its parts
     */
-    const(Vector!ubyte) getConcatSig() const;
+    const(Array!ubyte) getConcatSig() const;
     /**
     * Write this object DER encoded into a specified pipe.
     * @param pipe = the pipe to write the encoded object to
@@ -149,7 +149,7 @@ protected:
     this() {}
 
     AlgorithmIdentifier m_sig_algo;
-    Vector!ubyte m_tbs_bits;
+    Array!ubyte m_tbs_bits;
     string m_PEM_label_pref;
     string[] m_PEM_labels_allowed;
 }

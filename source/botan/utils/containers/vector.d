@@ -233,6 +233,13 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
     {
         insertBack(stuff);
     }
+
+	/**
+	 * Move Constructor
+	*/
+	this(ref typeof(this) other) {
+		this.swap(other);
+	}
         
     /**
         Defines the container's primary range, which is a random-access range.
@@ -293,19 +300,19 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         T moveFront()
         {
             version (assert) if (empty || _a >= _outer.length) throw new RangeError();
-            return move(_outer._data._payload[_a]);
+            return .move(_outer._data._payload[_a]);
         }
         
         T moveBack()
         {
             version (assert) if (empty || _b  > _outer.length) throw new RangeError();
-            return move(_outer._data._payload[_b - 1]);
+            return .move(_outer._data._payload[_b - 1]);
         }
         
         T moveAt(size_t i)
         {
             version (assert) if (_a + i >= _b || _a + i >= _outer.length) throw new RangeError();
-            return move(_outer._data._payload[_a + i]);
+            return .move(_outer._data._payload[_a + i]);
         }
         
         ref T opIndex(size_t i)
@@ -375,9 +382,19 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 		return Vector!(T, ALLOCATOR)(cast(T[])_data._payload);
 	}
 
+	/// ditto
 	@property FreeListRef!(Vector!(T, ALLOCATOR)) dupr() const
 	{
 		return FreeListRef!(Vector!(T, ALLOCATOR))(cast(T[])_data._payload);
+	}
+
+	void swap(ref Vector!(T, ALLOCATOR) other) const {
+		import std.algorithm;
+		swap(_data, other._data);
+	}
+
+	@property Vector!(T, ALLOCATOR) move() const {
+		return Vector!(T, ALLOCATOR)(this);
 	}
 
     /**
@@ -535,7 +552,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 
         Complexity: $(BIGOH slice.length)
      */
-    void opSliceAssign(Stuff)(Stuff value)
+    void opSliceAssign(Stuff)(auto ref Stuff value)
     {
         static if (isRandomAccessRange!Stuff)
         {
@@ -621,18 +638,16 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
     void opOpAssign(string op, Stuff)(Stuff stuff)
         if (op == "~")
     {
-        static if (is (Stuff == FreeListRef!(typeof(this)))) {
-            insertBack(cast(T[]) stuff[]);
-        }
+		static if (is (Stuff == FreeListRef!(typeof(this)))) {
+			insertBack(cast(T[]) stuff[]);
+		}
+		else static if (is (Stuff == typeof(this))) {
+			insertBack(cast(T[]) stuff[]);
+		}
         else
         {
             insertBack(stuff);
         }
-    }
-
-    void swap(ref Vector!(T, ALLOCATOR) other) {
-        this._data._payload[0 .. $] = other._data._payload[0  .. $];
-        other.clear();
     }
 
     /**
@@ -649,6 +664,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         _data.length = 0;
     }
     
+
     /**
         Sets the number of elements in the container to $(D newSize). If $(D
         newSize) is greater than $(D length), the added elements are added to
@@ -671,15 +687,25 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 
     import std.traits : isNumeric;
 
-    int opCmp(int Alloc)(ref Vector!(T, Alloc) other) const 
-    {
-        if (this[] == other[])
-            return 0;
-        else if (this[] < other[])
-            return -1;
-        else
-            return 0;
-    }
+	int opCmp(int Alloc)(const ref Vector!(T, Alloc) other) const 
+	{
+		if (this[] == other[])
+			return 0;
+		else if (this[] < other[])
+			return -1;
+		else
+			return 0;
+	}
+
+	int opCmp(int Alloc)(const FreeListRef!(Vector!(T, Alloc)) other) const 
+	{
+		if (this[] == other[])
+			return 0;
+		else if (this[] < other[])
+			return -1;
+		else
+			return 0;
+	}
 
     size_t pushBack(Stuff...)(Stuff stuff) 
         if (!isNumeric!Stuff || !is ( T == ubyte ))
@@ -892,13 +918,28 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         }
         return 1;
     }
-
+	
 	bool opEquals(in FreeListRef!(Vector!(T, ALLOCATOR)) other_) const {
 		import botan.constants : logTrace;
 		if (other_ is null && _data._payload.length == 0)
 			return true;
 		else if (other_ is null)
 			return false;
+		if (other_.length != length)
+			return false;
+		foreach  (const size_t i, const ref T t; _data._payload) {
+			if (t != other_[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	bool opEquals()(auto const ref Vector!(T, ALLOCATOR) other_) const {
+		import botan.constants : logTrace;
+		if (_data._payload.length == 0)
+			return true;
 		if (other_.length != length)
 			return false;
 		foreach  (const size_t i, const ref T t; _data._payload) {

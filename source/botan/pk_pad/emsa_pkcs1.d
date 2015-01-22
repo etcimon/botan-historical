@@ -39,13 +39,13 @@ public:
         m_hash.update(input, length);
     }
 
-    override SecureVector!ubyte rawData()
+    override SecureArray!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-    override SecureVector!ubyte
-        encodingOf(const ref SecureVector!ubyte msg,
+    override SecureArray!ubyte
+        encodingOf(const ref SecureArray!ubyte msg,
                     size_t output_bits,
                     RandomNumberGenerator)
     {
@@ -56,8 +56,8 @@ public:
                               m_hash_id.ptr, m_hash_id.length);
     }
 
-    override bool verify(const ref SecureVector!ubyte coded,
-                         const ref SecureVector!ubyte raw,
+    override bool verify(const ref SecureArray!ubyte coded,
+                         const ref SecureArray!ubyte raw,
                          size_t key_bits)
     {
         if (raw.length != m_hash.outputLength)
@@ -91,22 +91,20 @@ public:
         m_message ~= input[0 .. length];
     }
 
-    override SecureVector!ubyte rawData()
+    override SecureArray!ubyte rawData()
     {
-        SecureVector!ubyte ret;
-        std.algorithm.swap(ret, m_message);
-        return ret;
+		return m_message;
     }
 
-    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
-                                    size_t output_bits,
-                                    RandomNumberGenerator)
+	override SecureArray!ubyte encodingOf(const ref SecureArray!ubyte msg,
+                                          size_t output_bits,
+                                          RandomNumberGenerator)
     {
         return emsa3Encoding(msg, output_bits, null, 0);
     }
 
-    override bool verify(const ref SecureVector!ubyte coded,
-                         const ref SecureVector!ubyte raw,
+	override bool verify(const ref SecureArray!ubyte coded,
+						 const ref SecureArray!ubyte raw,
                          size_t key_bits)
     {
         try
@@ -120,12 +118,12 @@ public:
     }
 
 private:
-    SecureVector!ubyte m_message;
+	SecureArray!ubyte m_message;
 }
 
 private:
 
-SecureVector!ubyte emsa3Encoding(const ref SecureVector!ubyte msg,
+SecureArray!ubyte emsa3Encoding(const ref SecureArray!ubyte msg,
                                 size_t output_bits,
                                 const(ubyte)* hash_id,
                                 size_t hash_id_length)
@@ -134,7 +132,7 @@ SecureVector!ubyte emsa3Encoding(const ref SecureVector!ubyte msg,
     if (output_length < hash_id_length + msg.length + 10)
         throw new EncodingError("emsa3Encoding: Output length is too small");
     
-    SecureVector!ubyte T = SecureVector!ubyte(output_length);
+    SecureArray!ubyte T = SecureArray!ubyte(output_length);
     const size_t P_LENGTH = output_length - msg.length - hash_id_length - 2;
     
     T[0] = 0x01;

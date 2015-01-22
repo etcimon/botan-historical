@@ -109,7 +109,7 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    final SecureVector!ubyte decrypt(int Alloc)(const ref Vector!( ubyte, Alloc ) input) const
+    final SecureVector!ubyte decrypt(int Alloc)(auto const ref Vector!( ubyte, Alloc ) input) const
     {
         return dec(input.ptr, input.length);
     }
@@ -145,10 +145,10 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte signMessage(const ref Vector!ubyte input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
-    Vector!ubyte signMessage(const ref SecureVector!ubyte input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
     /**
@@ -171,7 +171,8 @@ public:
     * Add a message part.
     * @param input = the message part to add
     */
-    void update(const ref Vector!ubyte input) { update(input.ptr, input.length); }
+	void update(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input) { update(input.ptr, input.length); }
+	void update(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { update(input.ptr, input.length); }
 
     /**
     * Get the signature of the so far processed message (provided by the
@@ -179,7 +180,7 @@ public:
     * @param rng = the rng to use
     * @return signature of the total message
     */
-    Vector!ubyte signature(RandomNumberGenerator rng)
+    Array!ubyte signature(RandomNumberGenerator rng)
     {
         Vector!ubyte encoded = unlock(m_emsa.encodingOf(m_emsa.rawData(), m_op.maxInputBits(), rng));
         
@@ -207,8 +208,7 @@ public:
                     .getContentsUnlocked();
         }
         else
-            throw new EncodingError("PKSigner: Unknown signature format " ~
-                                     to!string(m_sig_format));
+            throw new EncodingError("PKSigner: Unknown signature format " ~ to!string(m_sig_format));
     }
 
     /**
