@@ -29,7 +29,7 @@ import std.datetime;
 // helper functions
 void helperWriteFile(in EACSignedObject to_write, in string file_path)
 {
-    Vector!ubyte sv = to_write.BER_encode();
+    Array!ubyte sv = to_write.BER_encode();
     File cert_file = File(file_path, "wb+");
     cert_file.write(sv.ptr[0 .. sv.length]);
 }
@@ -86,7 +86,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     EAC11CVC cert = createSelfSignedCert(key, opts, rng);
     {
-        Vector!ubyte der = cert.BER_encode();
+        Array!ubyte der = cert.BER_encode();
         File cert_file = File("../test_data/ecc/my_cv_cert.ber", "wb+");
         //cert_file << der; // this is bad !!!
         cert_file.write(cast(string) der.ptr[0 .. der.length]);
@@ -96,7 +96,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     mixin( CHECK(` cert == cert_in `) );
     // encoding it again while it has no dp
     {
-        Vector!ubyte der2 = cert_in.BER_encode();
+        Array!ubyte der2 = cert_in.BER_encode();
         File cert_file2 = File("../test_data/ecc/my_cv_cert2.ber", "wb+");
         cert_file2.write(der2.ptr[0 .. der2.length]);
     }
@@ -200,7 +200,7 @@ void testEncGenReq(RandomNumberGenerator rng)
     key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     EAC11Req req = createCvcReq(key, opts.chr, opts.hash_alg, rng);
     {
-        Vector!ubyte der = req.BER_encode();
+        Array!ubyte der = req.BER_encode();
         File req_file = File("../test_data/ecc/my_cv_req.ber", "wb+");
         req_file.write(der.ptr[0 .. der.length]);
     }
@@ -260,7 +260,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     //EAC11Req req = createCvcReq(req_key, opts);
     EAC11Req req = createCvcReq(req_key, opts.chr, opts.hash_alg, rng);
     {
-        Vector!ubyte der = req.BER_encode();
+        Array!ubyte der = req.BER_encode();
         File req_file = File("../test_data/ecc/my_cv_req.ber", "wb+");
         req_file.write(der.ptr[0 .. der.length]);
     }
@@ -277,7 +277,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     
     {
         File ado_file = File("../test_data/ecc/ado", "wb+");
-        Vector!ubyte ado_der = ado.BER_encode();
+        Array!ubyte ado_der = ado.BER_encode();
         ado_file.write(ado_der.ptr[0 .. ado_der.length]);
     }
     // read it again and check the signature
@@ -496,7 +496,7 @@ void testCvcChain(RandomNumberGenerator rng)
     EAC11CVC cvca_cert = cvc_self.createCvca(cvca_privk, hash, car, true, true, 12, rng);
     {
         File cvca_file = File("../test_data/ecc/cvc_chain_cvca.cer","wb+");
-        Vector!ubyte cvca_sv = cvca_cert.BER_encode();
+        Array!ubyte cvca_sv = cvca_cert.BER_encode();
         cvca_file.write(cast(string) cvca_sv.ptr[0 .. cvca_sv.length]);
     }
     
@@ -505,7 +505,7 @@ void testCvcChain(RandomNumberGenerator rng)
     EAC11CVC cvca_cert2 = cvc_self.createCvca(cvca_privk2, hash, car2, true, true, 12, rng);
     EAC11CVC link12 = cvc_self.linkCvca(cvca_cert, cvca_privk, cvca_cert2, rng);
     {
-        Vector!ubyte link12_sv = link12.BER_encode();
+        Array!ubyte link12_sv = link12.BER_encode();
         File link12_file = File("../test_data/ecc/cvc_chain_link12.cer", "wb+");
         link12_file.write(link12_sv.ptr[0 .. link12_sv.length]);
     }
@@ -522,7 +522,7 @@ void testCvcChain(RandomNumberGenerator rng)
     EAC11Req dvca_req = cvc_self.createCvcReq(dvca_priv_key, ASN1Chr("DEDVCAEPASS"), hash, rng);
     {
         File dvca_file = File("../test_data/ecc/cvc_chain_dvca_req.cer", "wb+");
-        Vector!ubyte dvca_sv = dvca_req.BER_encode();
+        Array!ubyte dvca_sv = dvca_req.BER_encode();
         dvca_file.write(dvca_sv.ptr[0 .. dvca_sv.length]);
     }
     
@@ -537,7 +537,7 @@ void testCvcChain(RandomNumberGenerator rng)
     EAC11Req dvca_req2 = cvc_self.createCvcReq(dvca_priv_key2, ASN1Chr("DEDVCAEPASS"), hash, rng);
     {
         File dvca_file2 = File("../test_data/ecc/cvc_chain_dvca_req2.cer", "wb+");
-        Vector!ubyte dvca_sv2 = dvca_req2.BER_encode();
+        Array!ubyte dvca_sv2 = dvca_req2.BER_encode();
         dvca_file2.write(dvca_sv2.ptr[0 .. dvca_sv2.length]);
     }
     

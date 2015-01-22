@@ -60,14 +60,14 @@ alias SecureVector(T) = Vector!(T, SecureAllocator);
 alias SecureArray(T) = Array!(T, SecureAllocator);
 
 Vector!(T, VulnerableAllocator) 
-	unlock(T, int ALLOC)(const ref Vector!(T, ALLOC) input)
+	unlock(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input)
 		if (ALLOC == SecureAllocator)
 {
 	return Vector!T(input[]);
 }
 
 FreeListRef!(Vector!(T, VulnerableAllocator)) 
-	unlock(T, int ALLOC)(const FreeListRef!(Vector!(T, ALLOC)) input)
+	unlock(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
 		if (ALLOC == SecureAllocator)
 {
 	return FreeListRef!(Vector!T)(input[]);

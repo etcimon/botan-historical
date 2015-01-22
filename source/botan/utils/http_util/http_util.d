@@ -223,9 +223,9 @@ HTTPResponse GET_sync(in string url, size_t allowable_redirects = 1)
     return httpSync("GET", url, "", Vector!ubyte(), allowable_redirects);
 }
 
-HTTPResponse POST_sync(in string url, in string content_type,
-                      const ref Vector!ubyte _body,
-                      size_t allowable_redirects = 1)
+HTTPResponse POST_sync(int ALLOC)(in string url, in string content_type,
+                      			  auto const ref Vector!(ubyte, ALLOC) _body,
+                      			  size_t allowable_redirects = 1)
 {
     return httpSync("POST", url, content_type, _body, allowable_redirects);
 }

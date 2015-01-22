@@ -47,25 +47,23 @@ public:
     /**
     * return the r||s
     */
-	const(Array!ubyte) getConcatenation() const
+	const(Vector!ubyte) getConcatenation() const
     {
         // use the larger
         const size_t enc_len = m_r > m_s ? m_r.bytes() : m_s.bytes();
         
-        auto sv_r = BigInt.encode1363(m_r, enc_len);
-        auto sv_s = BigInt.encode1363(m_s, enc_len);
         
-        SecureArray!ubyte result = sv_r;
-        result ~= sv_s;
+		SecureVector!ubyte result = BigInt.encode1363(m_r, enc_len);
+		result ~= BigInt.encode1363(m_s, enc_len);
         return unlock(result);
     }
 
-    Vector!ubyte DER_encode() const
+	Vector!ubyte DER_encode() const
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
-                .encode(getR())
-                .encode(getS())
+                .encode(getR().move())
+                .encode(getS().move())
                 .endCons()
                 .getContentsUnlocked();
     }

@@ -68,9 +68,15 @@ string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hexEncode(int Alloc)(const ref Vector!( ubyte, Alloc ) input, bool uppercase = true)
+string hexEncode(int Alloc)(auto const ref Vector!( ubyte, Alloc ) input, bool uppercase = true)
 {
-    return hexEncode(input.ptr, input.length, uppercase);
+	return hexEncode(input.ptr, input.length, uppercase);
+}
+
+/// ditto
+string hexEncode(int Alloc)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) input, bool uppercase = true)
+{
+	return hexEncode(input.ptr, input.length, uppercase);
 }
 
 /**
@@ -227,7 +233,7 @@ Vector!ubyte hexDecode(string input, bool ignore_ws = true)
     
     size_t written = hexDecode(bin.ptr, input.ptr, input.length, ignore_ws);
     bin.resize(written);
-    return bin;
+    return bin.move();
 }
 
 /**
@@ -255,7 +261,7 @@ SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool
     SecureVector!ubyte bin = SecureVector!ubyte(1 + input_length / 2);
     size_t written = hexDecode(bin.ptr, input, input_length, ignore_ws);
     bin.resize(written);
-    return bin;
+    return bin.move();
 }
 
 /**

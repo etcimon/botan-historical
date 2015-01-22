@@ -133,7 +133,7 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
+	Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
     {
         update(msg, length);
         return signature(rng);
@@ -145,10 +145,10 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte signMessage(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
+	Vector!ubyte signMessage(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
-    Vector!ubyte signMessage(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input, RandomNumberGenerator rng)
+	Vector!ubyte signMessage(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
     /**
@@ -180,7 +180,7 @@ public:
     * @param rng = the rng to use
     * @return signature of the total message
     */
-    Array!ubyte signature(RandomNumberGenerator rng)
+	Vector!ubyte signature(RandomNumberGenerator rng)
     {
         Vector!ubyte encoded = unlock(m_emsa.encodingOf(m_emsa.rawData(), m_op.maxInputBits(), rng));
         
@@ -258,7 +258,7 @@ private:
     /*
     * Check the signature we just created, to help prevent fault attacks
     */
-    bool selfTestSignature(const ref Vector!ubyte msg, const ref Vector!ubyte sig) const
+    bool selfTestSignature()(auto const ref Vector!ubyte msg, auto const ref Vector!ubyte sig) const
     {
         if (!m_verify_op)
             return true; // checking disabled, assume ok
@@ -320,11 +320,18 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-    bool verifyMessage(int Alloc, int Alloc2)(const ref Vector!( ubyte, Alloc ) msg, 
-                                              const ref Vector!( ubyte, Alloc2 ) sig)
-    {
-        return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
-    }
+	bool verifyMessage(int Alloc, int Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
+		auto const ref Vector!( ubyte, Alloc2 ) sig)
+	{
+		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
+	}
+
+	/// ditto
+	bool verifyMessage(int Alloc, int Alloc2)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) msg, 
+											  auto const ref FreeListRef!(Vector!( ubyte, Alloc2 )) sig)
+	{
+		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
+	}
 
     /**
     * Add a message part (single ubyte) of the message corresponding to the
@@ -397,7 +404,7 @@ public:
     * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
-    bool checkSignature(int Alloc)(const ref Vector!( ubyte, Alloc ) sig)
+    bool checkSignature(int Alloc)(auto const ref Vector!( ubyte, Alloc ) sig)
     {
         return checkSignature(sig.ptr, sig.length);
     }
@@ -427,7 +434,7 @@ public:
         logTrace("Started globalRng");
 
         foreach (Engine engine; af.engines[]) {
-                            logTrace("engine iterator for: ", engine.providerName());
+            logTrace("engine iterator for: ", engine.providerName());
             m_op = Unique!Verification(engine.getVerifyOp(key, rng));
             if (m_op)
                 break;
@@ -436,9 +443,9 @@ public:
         
         if (!m_op)
             throw new LookupError("Verification with " ~ key.algoName ~ " not supported");
-                        logTrace("Get EMSA");
+        logTrace("Get EMSA");
         m_emsa = getEmsa(emsa_name);
-                        logTrace("SigFormat");
+        logTrace("SigFormat");
         m_sig_format = format;
     }
 

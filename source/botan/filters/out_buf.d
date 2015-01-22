@@ -121,6 +121,6 @@ private:
         return m_buffers[msg - m_offset];
     }
 
-    Vector!SecureQueue m_buffers;
+    Array!SecureQueue m_buffers;
     Pipe.message_id m_offset;
 }

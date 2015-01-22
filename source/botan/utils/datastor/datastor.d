@@ -148,13 +148,13 @@ public:
     /*
     * Insert a single key and value
     */
-    void add(in string key, const ref SecureVector!ubyte val)
+    void add(int ALLOC)(in string key, auto const ref Vector!(ubyte, ALLOC) val)
     {
         logTrace("Adding Secure: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     
-    void add(in string key, const ref Vector!ubyte val)
+    void add(int ALLOC)(in string key, auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) val)
     {
         logTrace("Adding Vector: ", val[]);
         add(key, hexEncode(val.ptr, val.length));

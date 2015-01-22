@@ -112,9 +112,9 @@ PublicKey loadKey(in string filename)
 * @param enc = the memory region containing the DER or PEM encoded key
 * @return new public key object
 */
-PublicKey loadKey(const ref Vector!ubyte enc)
+PublicKey loadKey(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) enc)
 {
-    auto source = DataSourceMemory(enc);
+    auto source = DataSourceMemory(&enc);
     return x509_key.loadKey(cast(DataSource)source);
 }
 
@@ -153,7 +153,7 @@ ulong keyId(in PublicKey key)
     pipe.write(key.x509SubjectPublicKey());
     pipe.endMsg();
     
-    SecureVector!ubyte output = pipe.readAll();
+	SecureVector!ubyte output = pipe.readAll();
     
     if (output.length != 8)
         throw new InternalError("PublicKey::key_id: Incorrect output size");

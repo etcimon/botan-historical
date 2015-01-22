@@ -275,6 +275,20 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
                     return *cast(size_t*)hash.ptr;
                 };
             }
+			else static if ((__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toVector") ) ||
+				__traits(hasMember, Key, "toVector"))
+			{
+				m_hasher = (Key k) {
+					import std.typecons : scoped;
+					import botan.hash.md4;
+					import botan.utils.containers.vector : Array;
+					Vector!ubyte s = k.toVector();
+					auto md4 = scoped!MD4();
+					md4.update(s);
+					auto hash = md4.finished();
+					return *cast(size_t*)hash.ptr;
+				};
+			}
             else static if (( __traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toString") ) ||
                               __traits(hasMember, Key, "toString"))
             {

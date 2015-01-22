@@ -89,7 +89,7 @@ bool checkPasshash9(in string password, in string hash)
     pipe.write(cast(const(ubyte)*)hash.toStringz + MAGIC_PREFIX.length, hash.length - MAGIC_PREFIX.length + 1);
     pipe.endMsg();
     
-    SecureVector!ubyte bin = pipe.readAll();
+	SecureVector!ubyte bin = pipe.readAll();
     
     if (bin.length != BINARY_LENGTH)
         return false;

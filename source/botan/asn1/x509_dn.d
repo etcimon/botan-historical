@@ -333,6 +333,10 @@ public:
         return output.data;
     }
 
+	@property X509DN dup() const {
+		return X509DN(getAttributes());
+	}
+
 private:
     MultiMap!(OID, ASN1String) m_dn_info;
     Vector!ubyte m_dn_bits;

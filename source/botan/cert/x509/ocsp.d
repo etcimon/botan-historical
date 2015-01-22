@@ -127,7 +127,7 @@ public:
             
             if (certs.empty)
             {
-                if (auto cert = trusted_roots.findCert(name, Vector!ubyte()))
+				if (auto cert = trusted_roots.findCert(name, Vector!ubyte()))
                     certs.pushBack(cert);
                 else
                     throw new Exception("Could not find certificate that signed OCSP response");
@@ -168,7 +168,7 @@ public:
     }
 
 private:
-    Vector!( SingleResponse ) m_responses;
+    Array!( SingleResponse ) m_responses;
 }
 
 
@@ -196,12 +196,12 @@ void decodeOptionalList(BERDecoder ber,
 
 /// Does not use trusted roots
 /// Throws if not trusted
-void checkSignature(const ref Vector!ubyte tbs_response,
-                     const AlgorithmIdentifier sig_algo,
-                     const ref Vector!ubyte signature,
-                     const X509Certificate cert)
+void checkSignature(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
+			                   const AlgorithmIdentifier sig_algo,
+			                   const ref Vector!ubyte signature,
+			                   const X509Certificate cert)
 {
-    Unique!PublicKey pub_key = cert.subjectPublicKey();
+    const PublicKey pub_key = cert.subjectPublicKey();
     
     const Vector!string sig_info = splitter(OIDS.lookup(sig_algo.oid), '/');
     
@@ -211,18 +211,18 @@ void checkSignature(const ref Vector!ubyte tbs_response,
     string padding = sig_info[1];
     SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
     
-    PKVerifier verifier = PKVerifier(*pub_key, padding, format);
+    PKVerifier verifier = PKVerifier(pub_key, padding, format);
     if (!verifier.verifyMessage(putInSequence(tbs_response), signature))
         throw new Exception("Signature on OCSP response does not verify");
 }
 
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
-void checkSignature(const ref Vector!ubyte tbs_response,
-                     const AlgorithmIdentifier sig_algo,
-                     const ref Vector!ubyte signature,
-                     const CertificateStore trusted_roots,
-                     const ref Vector!X509Certificate certs)
+void checkSignature(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
+                  			   const AlgorithmIdentifier sig_algo,
+                  			   const ref Vector!ubyte signature,
+                  			   const CertificateStore trusted_roots,
+                  			   const ref Vector!X509Certificate certs)
 {
     if (certs.length < 1)
         throw new InvalidArgument("Short cert chain for checkSignature");
@@ -242,10 +242,8 @@ void checkSignature(const ref Vector!ubyte tbs_response,
     
     if (!trusted_roots.certificateKnown(result.trustRoot())) // not needed anymore?
         throw new Exception("Certificate chain roots in unknown/untrusted CA");
-    
-    const Vector!X509Certificate cert_path = result.certPath();
-    
-    checkSignature(tbs_response, sig_algo, signature, cert_path[0]);
+        
+	checkSignature(tbs_response, sig_algo, signature, result.certPath()[0]);
 }
 
 version(Have_vibe_d) import vibe.core.concurrency : Tid, send;

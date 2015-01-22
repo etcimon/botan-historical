@@ -134,7 +134,7 @@ public:
     /**
     * @return the full path from subject to trust root
     */
-    const(Vector!X509Certificate) certPath() const { return m_cert_path; }
+    ref const(Vector!X509Certificate) certPath() const { return m_cert_path; }
 
     /**
     * @return true iff the validation was succesful
@@ -155,7 +155,7 @@ public:
     /**
     * Return a set of status codes for each certificate in the chain
     */
-    const(Vector!(RedBlackTree!CertificateStatusCode)) allStatuses() const
+    ref const(Vector!(RedBlackTree!CertificateStatusCode)) allStatuses() const
     { return m_all_status; }
 
     /**
@@ -226,12 +226,12 @@ public:
         }
     }
 
-    this(Vector!(  RedBlackTree!CertificateStatusCode ) status,
-                           Vector!X509Certificate cert_chainput)
+    this()(auto const ref Vector!(RedBlackTree!CertificateStatusCode ) status,
+           auto const ref Vector!X509Certificate cert_chainput)
     {
         m_overall = CertificateStatusCode.VERIFIED;
-        m_all_status = status;
-        m_cert_path = cert_chainput;
+        m_all_status = status.dup;
+        m_cert_path = cert_chainput.dup;
         // take the "worst" error as overall
         foreach (s; m_all_status[])
         {
@@ -433,9 +433,9 @@ Vector!( RedBlackTree!CertificateStatusCode )
         
         if (issuer.pathLimit() < i)
             status.insert(CertificateStatusCode.CERT_CHAIN_TOO_LONG);
-        Unique!PublicKey issuer_key = issuer.subjectPublicKey();
+        const PublicKey issuer_key = issuer.subjectPublicKey();
         logTrace("Got issuer key");
-        if (subject.checkSignature(*issuer_key) == false)
+        if (subject.checkSignature(issuer_key) == false)
             status.insert(CertificateStatusCode.SIGNATURE_ERROR);
         logTrace("Get estimated strength");
         if (issuer_key.estimatedStrength() < restrictions.minimumKeyStrength())

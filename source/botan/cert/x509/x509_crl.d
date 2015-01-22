@@ -52,13 +52,13 @@ public:
             return false;
         
         Vector!ubyte crl_akid = authorityKeyId();
-        Vector!ubyte cert_akid = cert.authorityKeyId();
+        const Vector!ubyte cert_akid = cert.authorityKeyId();
         
         if (!crl_akid.empty && !cert_akid.empty)
             if (crl_akid != cert_akid)
                 return false;
         
-        Vector!ubyte cert_serial = cert.serialNumber();
+        const Vector!ubyte cert_serial = cert.serialNumber();
         
         bool is_revoked = false;
         
@@ -81,7 +81,7 @@ public:
     * Get the entries of this CRL in the form of a vector.
     * @return vector containing the entries of this CRL.
     */
-    const(Vector!CRLEntry) getRevoked() const
+    ref const(Vector!CRLEntry) getRevoked() const
     {
         return m_revoked;
     }

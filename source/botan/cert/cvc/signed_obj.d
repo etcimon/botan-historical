@@ -27,7 +27,7 @@ interface SignedObject {
     * Get the TBS (to-be-signed) data in this object.
     * @return DER encoded TBS data of this object
     */
-    const(Array!ubyte) tbsData() const;
+	const(Vector!ubyte) tbsData() const;
     
     /**
     * Get the signature of this object as a concatenation, i.e. if the
@@ -35,7 +35,7 @@ interface SignedObject {
     * these will be concatenated.
     * @return signature as a concatenation of its parts
     */
-    const(Array!ubyte) getConcatSig() const;
+	const(Vector!ubyte) getConcatSig() const;
     /**
     * Write this object DER encoded into a specified pipe.
     * @param pipe = the pipe to write the encoded object to
@@ -70,7 +70,7 @@ public:
     * @return true if the signature was created by the private key
     * associated with this public key
     */
-    bool checkSignature(PublicKey pub_key, Vector!ubyte sig) const
+	bool checkSignature(int ALLOC)(PublicKey pub_key, auto ref Vector!(ubyte, ALLOC) sig) const
     {
         try
         {
@@ -84,7 +84,7 @@ public:
             string padding = sig_info[1];
             SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
-            const(Vector!ubyte) to_sign = tbsData();
+			const(Vector!ubyte) to_sign = tbsData();
             
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
             return verifier.verifyMessage(to_sign, sig);
@@ -149,7 +149,7 @@ protected:
     this() {}
 
     AlgorithmIdentifier m_sig_algo;
-    Array!ubyte m_tbs_bits;
+    Vector!ubyte m_tbs_bits;
     string m_PEM_label_pref;
     string[] m_PEM_labels_allowed;
 }

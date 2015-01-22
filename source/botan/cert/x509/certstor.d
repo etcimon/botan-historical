@@ -23,7 +23,11 @@ public:
     /**
     * Subject DN and (optionally) key identifier
     */
-    X509Certificate findCert(in X509DN subject_dn, const ref Vector!ubyte key_id) const;
+	X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const;
+
+	final X509Certificate findCert()(in X509DN subject_dn, auto const ref Vector!ubyte key_id) const {
+		return findCert(subject_dn, key_id);
+	}
 
     X509CRL findCrlFor(in X509Certificate subject) const;
 
@@ -74,11 +78,11 @@ public:
     {
         Vector!X509DN subjects;
         foreach (ref cert; m_certs[])
-            subjects.pushBack(cert.subjectDn());
+            subjects.pushBack(cert.subjectDn().dup);
         return subjects;
     }
 
-    override X509Certificate findCert(in X509DN subject_dn, const ref Vector!ubyte key_id) const
+	override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -135,7 +139,7 @@ final class CertificateStoreOverlay : CertificateStore
 public:
     this(const ref Vector!X509Certificate certs)
     {
-        m_certs = certs;
+        m_certs = certs.dup();
     }
 
     override X509CRL findCrlFor(in X509Certificate subject) const { return X509CRL.init; }
@@ -144,11 +148,11 @@ public:
     {
         Vector!X509DN subjects;
         foreach (cert; m_certs[])
-            subjects.pushBack(cert.subjectDn());
+            subjects.pushBack(cert.subjectDn().dup);
         return subjects;
     }
 
-    override X509Certificate findCert(in X509DN subject_dn, const ref Vector!ubyte key_id) const
+	override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -165,7 +169,7 @@ X509Certificate certSearch(in X509DN subject_dn,
         // Only compare key ids if set in both call and in the cert
         if (key_id.length)
         {
-            Vector!ubyte skid = cert.subjectKeyId();
+            const Vector!ubyte skid = cert.subjectKeyId();
             
             if (skid.length && skid != key_id) // no match
                 continue;

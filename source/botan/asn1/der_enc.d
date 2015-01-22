@@ -27,7 +27,7 @@ import botan.utils.types;
 struct DEREncoder
 {
 public:
-    Array!ubyte getContentsUnlocked()
+    Vector!ubyte getContentsUnlocked()
     {
         logTrace("DEREncoder.getContentsUnlocked");
         return unlock(getContents()); 
@@ -36,14 +36,14 @@ public:
     /*
     * Return the encoded m_contents
     */
-    SecureArray!ubyte getContents()
+    SecureVector!ubyte getContents()
     {
         if (m_subsequences.length != 0)
             throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
         
         SecureArray!ubyte output;
         std.algorithm.swap(output, m_contents);
-        return output;
+        return output.move();
     }
     
     /*
@@ -63,7 +63,7 @@ public:
         if (m_subsequences.empty)
             throw new InvalidState("endCons: No such sequence");
         
-        SecureArray!ubyte seq = m_subsequences[m_subsequences.length-1].getContents();
+        SecureVector!ubyte seq = m_subsequences[m_subsequences.length-1].getContents();
         m_subsequences.popBack();
         rawBytes(seq);
         return this;
@@ -143,7 +143,7 @@ public:
     /*
     * DER encode a small INTEGER
     */
-    ref DEREncoder encode()(auto ref BigInt n)
+    ref DEREncoder encode()(auto const ref BigInt n)
     {
         return encode(n, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
     }
@@ -151,7 +151,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    ref DEREncoder encode(const ref SecureVector!ubyte bytes, ASN1Tag real_type)
+    ref DEREncoder encode(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) bytes, ASN1Tag real_type)
     {
         return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -159,7 +159,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    ref DEREncoder encode(const ref Vector!ubyte bytes, ASN1Tag real_type)
+    ref DEREncoder encode(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) bytes, ASN1Tag real_type)
     {
         return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -192,7 +192,7 @@ public:
     /*
     * DER encode an INTEGER
     */
-    ref DEREncoder encode()(auto ref BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+    ref DEREncoder encode()(auto const ref BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         if (n == 0)
             return addObject(m_type_tag, m_class_tag, 0);
@@ -231,7 +231,7 @@ public:
     {
         return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
     }
-    
+
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
@@ -352,7 +352,7 @@ private:
         /*
         * Return the encoded ASN1Tag.SEQUENCE/SET
         */
-        SecureArray!ubyte getContents()
+        SecureVector!ubyte getContents()
         {
             const ASN1Tag real_class_tag = m_class_tag | ASN1Tag.CONSTRUCTED;
             
@@ -365,13 +365,13 @@ private:
                 m_set_contents.clear();
             }
             
-            SecureArray!ubyte result;
+            SecureVector!ubyte result;
             result ~= encodeTag(m_type_tag, real_class_tag);
             result ~= encodeLength(m_contents.length);
             result ~= m_contents;
             m_contents.clear();
             
-            return result;
+            return result.move();
         }
 
         /*

@@ -97,7 +97,7 @@ public:
     * Get the serial number of the certificate associated with this entry.
     * @return certificate's serial number
     */
-    const(Vector!ubyte) serialNumber() const { return m_serial; }
+    ref const(Vector!ubyte) serialNumber() const { return m_serial; }
 
     /**
     * Get the revocation date of the certificate associated with this entry
@@ -128,7 +128,7 @@ public:
     this(in X509CertificateImpl cert, CRLCode why = UNSPECIFIED)
     {
         m_throw_on_unknown_critical = false;
-        m_serial = cert.serialNumber();
+        m_serial = cert.serialNumber().dup;
         m_time = X509Time(Clock.currTime());
         m_reason = why;
     }

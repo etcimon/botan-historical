@@ -28,7 +28,7 @@ public:
     * Return the signature as a concatenation of the encoded parts.
     * @result the concatenated signature
     */
-	override const(Array!ubyte) getConcatSig() const { return m_sig.getConcatenation(); }
+	override const(Vector!ubyte) getConcatSig() const { return m_sig.getConcatenation(); }
 
     bool checkSignature(PublicKey key) const
     {

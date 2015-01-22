@@ -37,7 +37,7 @@ public:
     /*
     * Write the BigInt into a vector
     */
-    Array!ubyte toArray(Base base = Decimal) const
+	Vector!ubyte toVector(Base base = Decimal) const
     {
         Array!ubyte buffer = BigInt.encode(this, base);
 		Array!ubyte ret;
@@ -45,7 +45,7 @@ public:
         while(skip < buffer.length && buffer[skip] == '0')
             ++skip;
         ret[] = (buffer.ptr + skip)[0 .. buffer.length - skip];
-        return ret;
+        return ret.move();
     }
 
 	/*
@@ -53,7 +53,7 @@ public:
     */
 	string toString(Base base = Decimal) const
 	{
-		return toArray(base)[].idup;
+		return toVector(base)[].idup;
 	}
     alias Base = int;
     /**
@@ -946,15 +946,15 @@ public:
     * @param base = number-base of resulting ubyte array representation
     * @result SecureVector of bytes containing the integer with given base
     */
-    static Array!ubyte encode()(auto const ref BigInt n, Base base = Binary)
+    static Vector!ubyte encode()(auto const ref BigInt n, Base base = Binary)
     {
-        Array!ubyte output = Vector!ubyte(n.encodedSize(base));
+        Vector!ubyte output = Vector!ubyte(n.encodedSize(base));
         encode(output.ptr, n, base);
         if (base != Binary)
             for (size_t j = 0; j != output.length; ++j)
                 if (output[j] == 0)
                     output[j] = '0';
-        return output;
+        return output.move();
     }
 
     /**
@@ -963,15 +963,15 @@ public:
     * @param base = number-base of resulting ubyte array representation
     * @result SecureVector of bytes containing the integer with given base
     */
-    static SecureArray!ubyte encodeLocked()(auto const ref BigInt n, Base base = Binary)
+    static SecureVector!ubyte encodeLocked()(auto const ref BigInt n, Base base = Binary)
     {
-        SecureArray!ubyte output = SecureVector!ubyte(n.encodedSize(base));
+		SecureVector!ubyte output = SecureVector!ubyte(n.encodedSize(base));
         encode(output.ptr, n, base);
         if (base != Binary)
             for (size_t j = 0; j != output.length; ++j)
                 if (output[j] == 0)
                     output[j] = '0';
-        return output;
+        return output.move();
     }
 
     /**
@@ -1095,7 +1095,7 @@ public:
     * @param bytes = the length of the resulting SecureVector!ubyte
     * @result a SecureVector!ubyte containing the encoded BigInt
     */
-    static SecureArray!ubyte encode1363()(auto const ref BigInt n, size_t bytes)
+	static SecureVector!ubyte encode1363()(auto const ref BigInt n, size_t bytes)
     {
         const size_t n_bytes = n.bytes();
         if (n_bytes > bytes)
@@ -1103,7 +1103,7 @@ public:
         
         const size_t leading_0s = bytes - n_bytes;
         
-        SecureArray!ubyte output = SecureArray!ubyte(bytes);
+		SecureVector!ubyte output = SecureVector!ubyte(bytes);
         encode(&output[leading_0s], n, Binary);
         return output;
     }

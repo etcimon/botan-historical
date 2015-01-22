@@ -150,7 +150,7 @@ public:
     */
     this(in string input) 
     {
-        m_source = SecureArray!ubyte((cast(const(ubyte)*)input.ptr)[0 .. input.length]);
+		m_source = SecureVector!ubyte((cast(const(ubyte)*)input.ptr)[0 .. input.length]);
         m_offset = 0;
     }
 
@@ -162,17 +162,17 @@ public:
     */
     this(const(ubyte)* input, size_t length)
     {
-        m_source = SecureArray!ubyte(input[0 .. length]);
+		m_source = SecureVector!ubyte(input[0 .. length]);
         m_offset = 0; 
     }
 
     /**
-    * Construct a memory source that reads from a SecureVector
+    * Construct a memory source that reads from a referenced vector
     * @param input = the MemoryRegion to read from
     */
-    this(T, int ALLOC)(const FreeListRef!(Vector!(T, ALLOC)) input)
+    this(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
     {
-        m_source = SecureArray!ubyte(input[]);
+		m_source = SecureVector!ubyte(input[]);
         m_offset = 0;
     }
 
@@ -180,24 +180,24 @@ public:
     * Construct a memory source that reads from a vector
     * @param input = the MemoryRegion to read from
     */
-	this(T, int ALLOC)(const ref Vector!(T, ALLOC) input) {
-		m_source = SecureArray!ubyte(input.ptr[0 .. input.length]);
+	this(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input) {
+		m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
 		m_offset = 0;
 	}
 
 	/**
-    * Construct a memory source that reads from a vector
+    * Construct a memory source that reads from a vector*
     * @param input = the MemoryRegion to read from
     */
 	this(T, int ALLOC)(const Vector!(T, ALLOC)* input) {
-		m_source = SecureArray!ubyte(input.ptr[0 .. input.length]);
+		m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
 		m_offset = 0;
 	}
 
     override size_t getBytesRead() const { return m_offset; }
     override string id() const { return ""; }
 private:
-    SecureArray!ubyte m_source;
+    SecureVector!ubyte m_source;
     size_t m_offset;
 }
 

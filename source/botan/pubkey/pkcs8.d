@@ -131,8 +131,8 @@ string PEM_encode(in PrivateKey key,
 * @return loaded private key object
 */
 PrivateKey loadKey(DataSource source,
-                     RandomNumberGenerator rng,
-                     SingleShotPassphrase get_pass)
+                   RandomNumberGenerator rng,
+                   SingleShotPassphrase get_pass)
 {
     AlgorithmIdentifier alg_id;
     SecureVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);

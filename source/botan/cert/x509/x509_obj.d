@@ -36,7 +36,7 @@ public:
     * The underlying data that is to be or was signed
     * @return data that is or was signed
     */
-    final const(Array!ubyte) tbsData() const
+	final const(Vector!ubyte) tbsData() const
     {
         return putInSequence(m_tbs_bits);
     }
@@ -44,7 +44,7 @@ public:
     /**
     * @return signature on tbsData()
     */
-    final const(Vector!ubyte) signature() const
+    final ref const(Vector!ubyte) signature() const
     {
         return m_sig;
     }
@@ -84,10 +84,10 @@ public:
     * @param tbs = the tbs bits to be signed
     * @return signed X509 object
     */
-    static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+    static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
                                   			 RandomNumberGenerator rng,
                                  			 in AlgorithmIdentifier algo,
-                                 			 const ref Vector!(ubyte, ALLOC) tbs_bits)
+                                 			 auto const ref Vector!(ubyte, ALLOC) tbs_bits)
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
@@ -98,7 +98,8 @@ public:
                 .getContentsUnlocked();
     }
 
-	static Array!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+	/// ditto
+	static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
 											 RandomNumberGenerator rng,
 											 in AlgorithmIdentifier algo,
 										  	 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits)
@@ -167,7 +168,7 @@ public:
     /**
     * @return BER encoding of this
     */
-    final Array!ubyte BER_encode() const
+    final Vector!ubyte BER_encode() const
     {
         auto der = DEREncoder.init;
         encodeInto(der);
@@ -239,7 +240,7 @@ protected:
     }
     this() { }
     AlgorithmIdentifier m_sig_algo;
-    Array!ubyte m_tbs_bits, m_sig;
+    Vector!ubyte m_tbs_bits, m_sig;
 
 protected:
     abstract void forceDecode();

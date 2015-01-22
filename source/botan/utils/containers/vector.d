@@ -33,6 +33,10 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 
     @disable this(this);
 
+	void opAssign()(auto ref Vector!(T, ALLOCATOR) other) {
+		this.swap(other);
+	}
+
     // Payload cannot be copied
     private struct Payload
     {
@@ -237,7 +241,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 	/**
 	 * Move Constructor
 	*/
-	this(ref typeof(this) other) {
+	this()(auto ref typeof(this) other) {
 		this.swap(other);
 	}
         
@@ -388,12 +392,13 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 		return FreeListRef!(Vector!(T, ALLOCATOR))(cast(T[])_data._payload);
 	}
 
-	void swap(ref Vector!(T, ALLOCATOR) other) const {
-		import std.algorithm;
-		swap(_data, other._data);
+	void swap(ref Vector!(T, ALLOCATOR) other) {
+		import std.algorithm : swap;
+		.swap(_data._payload, other._data._payload);
+		.swap(_data._capacity, other._data._capacity);
 	}
 
-	@property Vector!(T, ALLOCATOR) move() const {
+	@property Vector!(T, ALLOCATOR) move() {
 		return Vector!(T, ALLOCATOR)(this);
 	}
 

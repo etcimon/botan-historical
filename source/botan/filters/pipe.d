@@ -251,10 +251,10 @@ public:
     * @param msg = the number identifying the message to read from
     * @return SecureVector holding the contents of the pipe
     */
-    SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
+	SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
     {
         msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
-        SecureVector!ubyte buffer = SecureVector!ubyte(remaining(msg));
+        SecureArray!ubyte buffer = SecureVector!ubyte(remaining(msg));
         size_t got = read(buffer.ptr, buffer.length, msg);
         buffer.resize(got);
         return buffer;

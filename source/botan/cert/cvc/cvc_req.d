@@ -71,7 +71,7 @@ public:
     {
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
-        m_tbs_bits = other.m_tbs_bits.dupr;
+        m_tbs_bits = other.m_tbs_bits.dup;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
     
@@ -84,7 +84,7 @@ public:
     void opAssign(ref EAC11Req other) {
         m_sig = other.m_sig;
         m_sig_algo = other.m_sig_algo;
-        m_tbs_bits = other.m_tbs_bits;
+        m_tbs_bits = other.m_tbs_bits.dup; // move?
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
         m_pk = other.m_pk;

@@ -54,7 +54,7 @@ public:
     /*
     * Return the raw (unencoded) data
     */
-    override SecureArray!ubyte rawData()
+	override SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -62,7 +62,7 @@ public:
     /*
     * PSSR Encode Operation
     */
-    override SecureArray!ubyte encodingOf(const ref SecureArray!ubyte msg,
+	override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                            size_t output_bits,
                                            RandomNumberGenerator rng)
     {
@@ -75,15 +75,15 @@ public:
         
         const size_t output_length = (output_bits + 7) / 8;
         
-        SecureArray!ubyte salt = rng.randomVec(m_SALT_SIZE);
+		SecureVector!ubyte salt = rng.randomVec(m_SALT_SIZE);
         
         foreach (size_t j; 0 .. 8)
             m_hash.update(0);
         m_hash.update(msg);
         m_hash.update(salt);
-        SecureArray!ubyte H = m_hash.finished();
+		SecureVector!ubyte H = m_hash.finished();
         
-        SecureArray!ubyte EM = SecureArray!ubyte(output_length);
+		SecureVector!ubyte EM = SecureVector!ubyte(output_length);
         
         EM[output_length - HASH_SIZE - m_SALT_SIZE - 2] = 0x01;
         bufferInsert(EM, output_length - 1 - HASH_SIZE - m_SALT_SIZE, salt);
@@ -98,8 +98,8 @@ public:
     /*
     * PSSR Decode/Verify Operation
     */
-    override bool verify(const ref SecureArray!ubyte const_coded,
-                         const ref SecureArray!ubyte raw, size_t key_bits)
+	override bool verify(const ref SecureVector!ubyte const_coded,
+						 const ref SecureVector!ubyte raw, size_t key_bits)
     {
         const size_t HASH_SIZE = m_hash.outputLength;
         const size_t KEY_BYTES = (key_bits + 7) / 8;
@@ -116,10 +116,10 @@ public:
         if (const_coded[const_coded.length-1] != 0xBC)
             return false;
         
-        SecureArray!ubyte coded = const_coded.dup;
+		SecureVector!ubyte coded = const_coded.dup;
         if (coded.length < KEY_BYTES)
         {
-            SecureArray!ubyte temp = SecureArray!ubyte(KEY_BYTES);
+			SecureVector!ubyte temp = SecureVector!ubyte(KEY_BYTES);
             bufferInsert(temp, KEY_BYTES - coded.length, coded);
             coded = temp;
         }
@@ -152,7 +152,7 @@ public:
             m_hash.update(0);
         m_hash.update(raw);
         m_hash.update(&DB[salt_offset], DB_size - salt_offset);
-        SecureArray!ubyte H2 = m_hash.finished();
+		SecureVector!ubyte H2 = m_hash.finished();
         
         return sameMem(H, H2.ptr, HASH_SIZE);
     }

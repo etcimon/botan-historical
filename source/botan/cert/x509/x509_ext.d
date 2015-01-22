@@ -381,14 +381,14 @@ public:
     override SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
 
     this() {}
-    this(const ref Vector!ubyte pub_key)
+	this()(auto const ref Vector!ubyte pub_key)
     {
         SHA160 hash;
         m_key_id = unlock(hash.process(pub_key));
     }
 
 
-    const(Vector!ubyte) getKeyId() const { return m_key_id; }
+    ref const(Vector!ubyte) getKeyId() const { return m_key_id; }
 protected:
     string oidName() const { return "X509v3.SubjectKeyIdentifier"; }
 
@@ -427,12 +427,12 @@ protected:
 class AuthorityKeyID : CertificateExtension
 {
 public:
-    override AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id.dup); }
+    override AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
 
     this() {}
-    this(Vector!ubyte k) { m_key_id = k; }
+	this()(auto const ref Vector!ubyte k) { m_key_id = k.dup(); }
 
-    const(Vector!ubyte) getKeyId() const { return m_key_id; }
+    ref const(Vector!ubyte) getKeyId() const { return m_key_id; }
 protected:
     string oidName() const { return "X509v3.AuthorityKeyIdentifier"; }
 
@@ -609,15 +609,15 @@ public:
 final class ExtendedKeyUsage : CertificateExtension
 {
 public:
-    override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids.dup); }
+	override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids.dup); }
 
     this() {}
-    this(Vector!OID o) 
+    this()(auto const ref Vector!OID o) 
     {
-        m_oids = o;
+        m_oids = o.dup();
     }
 
-    const(Vector!OID) getOids() const { return m_oids; }
+    ref const(Vector!OID) getOids() const { return m_oids; }
 protected:
     string oidName() const { return "X509v3.ExtendedKeyUsage"; }
 
@@ -661,12 +661,12 @@ final class CertificatePolicies : CertificateExtension
 {
 public:
     override CertificatePolicies copy() const
-    { return new CertificatePolicies(m_oids.dup); }
+	{ return new CertificatePolicies(m_oids); }
 
     this() {}
-    this(Vector!OID o) { m_oids = o; }
+	this()(auto const ref Vector!OID o) { m_oids = o.dup(); }
 
-    const(Vector!OID) getOids() const { return m_oids; }
+    ref const(Vector!OID) getOids() const { return m_oids; }
 protected:
     string oidName() const { return "X509v3.CertificatePolicies"; }
 
@@ -922,13 +922,13 @@ public:
     }
 
     override CRLDistributionPoints copy() const
-    { return new CRLDistributionPoints(m_distribution_points.dup); }
+	{ return new CRLDistributionPoints(m_distribution_points); }
 
     this() {}
 
-    this(Vector!( DistributionPoint ) points) { m_distribution_points = points; }
+	this()(auto const ref Vector!( DistributionPoint ) points) { m_distribution_points = points.dup; }
 
-    const(Vector!( DistributionPoint )) distributionPoints() const
+    ref const(Vector!( DistributionPoint )) distributionPoints() const
     { return m_distribution_points; }
 
 protected:

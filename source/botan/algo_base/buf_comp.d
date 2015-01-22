@@ -142,7 +142,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(const ref SecureVector!ubyte input)
+    final SecureVector!ubyte process(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input)
     {
         addData(input.ptr, input.length);
         return finished();
@@ -154,7 +154,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(const ref Vector!ubyte input)
+    final SecureVector!ubyte process(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
         addData(input.ptr, input.length);
         return finished();

@@ -35,12 +35,12 @@ public:
         m_hash.update(input, length);
     }
 
-    SecureArray!ubyte rawData()
+	SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-    SecureArray!ubyte encodingOf(const ref SecureArray!ubyte msg,
+	SecureVector!ubyte encodingOf(const ref SecureArray!ubyte msg,
                                   size_t output_bits,
                                   RandomNumberGenerator rng)
     {
@@ -49,14 +49,14 @@ public:
         return emsa1Encoding(msg, output_bits);
     }
 
-    bool verify(const ref SecureArray!ubyte coded,
-                const ref SecureArray!ubyte raw, size_t key_bits)
+	bool verify(const ref SecureVector!ubyte coded,
+				const ref SecureVector!ubyte raw, size_t key_bits)
     {
         try {
             if (raw.length != m_hash.outputLength)
                 throw new EncodingError("encodingOf: Invalid size for input");
             
-            SecureArray!ubyte our_coding = emsa1Encoding(raw, key_bits);
+			SecureVector!ubyte our_coding = emsa1Encoding(raw, key_bits);
             
             if (our_coding == coded) return true;
             if (our_coding.empty || our_coding[0] != 0) return false;
@@ -85,16 +85,16 @@ public:
 
 private:
 
-SecureArray!ubyte emsa1Encoding(const ref SecureArray!ubyte msg_, size_t output_bits)
+SecureVector!ubyte emsa1Encoding(const ref SecureArray!ubyte msg_, size_t output_bits)
 {
-    SecureArray!ubyte msg = msg_.dup;
+	SecureVector!ubyte msg = msg_.dup;
     if (8*msg.length <= output_bits)
         return msg;
     
     size_t shift = 8*msg.length - output_bits;
     
     size_t byte_shift = shift / 8, bit_shift = shift % 8;
-    SecureArray!ubyte digest = SecureArray!ubyte(msg.length - byte_shift);
+	SecureVector!ubyte digest = SecureArray!ubyte(msg.length - byte_shift);
     
     for (size_t j = 0; j != msg.length - byte_shift; ++j)
         digest[j] = msg[j];
@@ -109,5 +109,5 @@ SecureArray!ubyte emsa1Encoding(const ref SecureArray!ubyte msg_, size_t output_
             carry = cast(ubyte)(temp << (8 - bit_shift));
         }
     }
-    return digest;
+    return digest.move();
 }

@@ -63,8 +63,8 @@ public:
         
         extensions.add(new KeyUsage(constraints), true);
         
-        extensions.add(new AuthorityKeyID(m_cert.subjectKeyId()));
-        extensions.add(new SubjectKeyID(req.rawPublicKey()));
+        extensions.add(new AuthorityKeyID(m_cert.subjectKeyId().dup));
+        extensions.add(new SubjectKeyID(req.rawPublicKey().dup));
         
         extensions.add(new SubjectAlternativeName(req.subjectAltName()));
         
@@ -113,7 +113,7 @@ public:
                       Duration next_update = 0.seconds) const
     {
 
-        const(Vector!CRLEntry) revoked = crl.getRevoked();        
+        Vector!CRLEntry revoked = crl.getRevoked().dup;        
         return makeCRL(revoked, crl.crlNumber() + 1, next_update, rng);
     }
 
@@ -131,22 +131,22 @@ public:
     * @param extensions = an optional list of certificate extensions
     * @returns newly minted certificate
     */
-    static X509Certificate makeCert(ref PKSigner signer,
-                                    RandomNumberGenerator rng,
-                                    in AlgorithmIdentifier sig_algo,
-                                    const ref Vector!ubyte pub_key,
-                                    in X509Time not_before,
-                                    in X509Time not_after,
-                                    in X509DN issuer_dn,
-                                    in X509DN subject_dn,
-                                    in X509Extensions extensions)
+    static X509Certificate makeCert(int ALLOC)(ref PKSigner signer,
+			                                    RandomNumberGenerator rng,
+			                                    in AlgorithmIdentifier sig_algo,
+			                                    auto const ref Vector!(ubyte, ALLOC) pub_key,
+			                                    in X509Time not_before,
+			                                    in X509Time not_after,
+			                                    in X509DN issuer_dn,
+			                                    in X509DN subject_dn,
+			                                    in X509Extensions extensions)
     {
         __gshared immutable size_t X509_CERT_VERSION = 3;
         __gshared immutable size_t SERIAL_BITS = 128;
         
         BigInt serial_no = BigInt(rng, SERIAL_BITS);
         
-        const Array!ubyte cert = X509Object.makeSigned(
+        Vector!ubyte cert = X509Object.makeSigned(
             signer, rng, sig_algo,
             DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .startExplicit(0)
@@ -174,7 +174,7 @@ public:
             .endCons()
             .getContents());
         
-        return X509Certificate(cert);
+        return X509Certificate(cert.move);
     }
 
     /**
@@ -218,10 +218,10 @@ private:
         auto expire_time = current_time + next_update;
         
         X509Extensions extensions;
-        extensions.add(new AuthorityKeyID(m_cert.subjectKeyId()));
+        extensions.add(new AuthorityKeyID(m_cert.subjectKeyId().dup));
         extensions.add(new CRLNumber(crl_number));
         PKSigner* _signer = cast(PKSigner*)&m_signer;
-        const Array!ubyte crl = X509Object.makeSigned(
+        Vector!ubyte crl = X509Object.makeSigned(
             *_signer, rng, m_ca_sig_algo,
             DEREncoder().startCons(ASN1Tag.SEQUENCE)
             .encode(X509_CRL_VERSION-1)
@@ -243,7 +243,7 @@ private:
             .endCons()
             .getContents());
         
-        return X509CRL(crl);
+        return X509CRL(crl.move);
     }    
 
 

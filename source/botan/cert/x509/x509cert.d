@@ -46,9 +46,9 @@ public:
     * Get the public key associated with this certificate.
     * @return subject public key of this certificate
     */
-    PublicKey subjectPublicKey() const
+    const(PublicKey) subjectPublicKey() const
     {
-        Vector!ubyte keybits = subjectPublicKeyBits();
+        Vector!ubyte keybits = subjectPublicKeyBits().dup;
         logTrace("Key Bits: ", keybits[]);
         return x509_key.loadKey(putInSequence(keybits));
     }
@@ -57,7 +57,7 @@ public:
     * Get the public key associated with this certificate.
     * @return subject public key of this certificate
     */
-    Vector!ubyte subjectPublicKeyBits() const
+    const(Vector!ubyte) subjectPublicKeyBits() const
     {
         return hexDecode(m_subject.get1("X509.Certificate.public_key"));
     }
@@ -66,7 +66,7 @@ public:
     * Get the issuer certificate DN.
     * @return issuer DN of this certificate
     */
-    X509DN issuerDn() const
+    const(X509DN) issuerDn() const
     {
         return createDn(m_issuer);
     }
@@ -75,7 +75,7 @@ public:
     * Get the subject certificate DN.
     * @return subject DN of this certificate
     */
-    X509DN subjectDn() const
+	const(X509DN) subjectDn() const
     {
         return createDn(m_subject);
     }
@@ -92,7 +92,7 @@ public:
     * "X509.Certificate.serial".
     * @return value(s) of the specified parameter
     */
-    Vector!string subjectInfo(in string what) const
+    const(Vector!string) subjectInfo(in string what) const
     {
         return m_subject.get(X509DNImpl.derefInfoField(what));
     }
@@ -103,7 +103,7 @@ public:
     * "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
     * @return value(s) of the specified parameter
     */
-    Vector!string issuerInfo(in string what) const
+	const(Vector!string) issuerInfo(in string what) const
     {
         return m_issuer.get(X509DNImpl.derefInfoField(what));
     }
@@ -111,7 +111,7 @@ public:
     /**
     * Raw subject DN
     */
-    Vector!ubyte rawIssuerDn() const
+	const(Vector!ubyte) rawIssuerDn() const
     {
         return m_issuer.get1Memvec("X509.Certificate.dn_bits");
     }
@@ -120,7 +120,7 @@ public:
     /**
     * Raw issuer DN
     */
-    Vector!ubyte rawSubjectDn() const
+	const(Vector!ubyte) rawSubjectDn() const
     {
         return m_subject.get1Memvec("X509.Certificate.dn_bits");
     }
@@ -156,7 +156,7 @@ public:
     * Get the serial number of this certificate.
     * @return certificates serial number
     */
-    Vector!ubyte serialNumber() const
+	const(Vector!ubyte) serialNumber() const
     {
         return m_subject.get1Memvec("X509.Certificate.serial");
     }
@@ -165,7 +165,7 @@ public:
     * Get the DER encoded AuthorityKeyIdentifier of this certificate.
     * @return DER encoded AuthorityKeyIdentifier
     */
-    Vector!ubyte authorityKeyId() const
+	const(Vector!ubyte) authorityKeyId() const
     {
         return m_issuer.get1Memvec("X509v3.AuthorityKeyIdentifier");
     }
@@ -174,7 +174,7 @@ public:
     * Get the DER encoded SubjectKeyIdentifier of this certificate.
     * @return DER encoded SubjectKeyIdentifier
     */
-    Vector!ubyte subjectKeyId() const
+    const(Vector!ubyte) subjectKeyId() const
     {
         return m_subject.get1Memvec("X509v3.SubjectKeyIdentifier");
     }
@@ -235,7 +235,7 @@ public:
     * certificate.
     * @return key constraints
     */
-    KeyConstraints constraints() const
+    const(KeyConstraints) constraints() const
     {
         return cast(KeyConstraints) m_subject.get1Uint("X509v3.KeyUsage", KeyConstraints.NO_CONSTRAINTS);
     }
@@ -246,7 +246,7 @@ public:
     * certificate.
     * @return key constraints
     */
-    Vector!string exConstraints() const
+    const(Vector!string) exConstraints() const
     {
         return lookupOids(m_subject.get("X509v3.ExtendedKeyUsage"));
     }
@@ -256,7 +256,7 @@ public:
     * of this certificate.
     * @return certificate policies
     */
-    Vector!string policies() const
+    const(Vector!string) policies() const
     {
         return lookupOids(m_subject.get("X509v3.CertificatePolicies"));
     }
@@ -352,7 +352,7 @@ public:
                 output ~= "    CRL Sign";
         }
         
-        Vector!string policies = policies();
+        const Vector!string policies = policies();
         if (!policies.empty)
         {
             output ~= "Policies: ";
@@ -360,7 +360,7 @@ public:
                 output ~= "    " ~ policy;
         }
         
-        Vector!string ex_constraints = exConstraints();
+        const Vector!string ex_constraints = exConstraints();
         if (!ex_constraints.empty)
         {
             output ~= "Extended Constraints:";
@@ -383,8 +383,8 @@ public:
         if (subjectKeyId().length)
             output ~= "Subject keyid: " ~ hexEncode(subjectKeyId());
         
-        Unique!X509PublicKey pubkey = subjectPublicKey();
-        output ~= "Public Key:" ~ x509_key.PEM_encode(*pubkey);
+        const X509PublicKey pubkey = subjectPublicKey();
+        output ~= "Public Key:" ~ x509_key.PEM_encode(pubkey);
         
         return output.data;
     }
@@ -499,12 +499,19 @@ public:
         doDecode();
     }
 
-    this(const ref Vector!ubyte input)
-    {
-        super(input, "CERTIFICATE/X509 CERTIFICATE");
-        m_self_signed = false;
-        doDecode();
-    }
+	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
+	{
+		super(input, "CERTIFICATE/X509 CERTIFICATE");
+		m_self_signed = false;
+		doDecode();
+	}
+
+	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input)
+	{
+		super(input, "CERTIFICATE/X509 CERTIFICATE");
+		m_self_signed = false;
+		doDecode();
+	}
 
 protected:
     /*
@@ -588,7 +595,7 @@ protected:
         m_subject.add("X509.Certificate.v2.key_id", v2_subject_key_id);
         
         m_subject.add("X509.Certificate.public_key",
-                    hexEncode(public_key.value));
+        hexEncode(public_key.value));
         
         if (m_self_signed && _version == 0)
         {
@@ -657,7 +664,7 @@ AlternativeName createAltName(in DataStore info)
 /*
 * Lookup each OID in the vector
 */
-Vector!string lookupOids(const ref Vector!string input)
+Vector!string lookupOids(int ALLOC)(auto const ref Vector!(string, ALLOC) input)
 {
     Vector!string output = Vector!string();
     
@@ -667,8 +674,8 @@ Vector!string lookupOids(const ref Vector!string input)
 }
 
 
-bool certSubjectDnsMatch(in string name,
-                         const ref Vector!string cert_names)
+bool certSubjectDnsMatch(int ALLOC)(in string name,
+                         			auto const ref Vector!(string, ALLOC) cert_names)
 {
     foreach (const cn; cert_names[])
     {

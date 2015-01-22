@@ -108,7 +108,7 @@ public:
     this(const ref EAC11CVC other) {
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
-        m_tbs_bits = other.m_tbs_bits.dupr;
+        m_tbs_bits = other.m_tbs_bits.dup;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
         
@@ -131,7 +131,7 @@ public:
     void opAssign(ref EAC11CVC other) {
         m_sig = other.m_sig;
         m_sig_algo = other.m_sig_algo;
-        m_tbs_bits = other.m_tbs_bits.dupr;
+        m_tbs_bits = other.m_tbs_bits.dup;
         m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
         m_pk = other.m_pk;
@@ -222,7 +222,7 @@ EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
     
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
-    Array!ubyte tbs = DEREncoder()
+	Vector!ubyte tbs = DEREncoder()
                         .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION) // cpi
                         .encode(car)
                         .rawBytes(public_key)
@@ -235,9 +235,9 @@ EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
                         .encode(cex)
                         .getContentsUnlocked();
     
-    Array!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
+	Vector!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
     
-    auto source = DataSourceMemory(signed_cert);
+    auto source = DataSourceMemory(&signed_cert);
     return EAC11CVC(cast(DataSource)source);
 }
 

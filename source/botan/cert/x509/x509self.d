@@ -125,7 +125,7 @@ public:
     /**
     * The key extended constraints for the subject public key
     */
-    Vector!OID ex_constraints;
+    Array!OID ex_constraints;
 
     /**
     * Check the options set in this object for validity.

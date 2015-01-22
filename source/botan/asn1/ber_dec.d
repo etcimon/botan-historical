@@ -476,7 +476,7 @@ public:
     /*
     * Decode a list of homogenously typed values
     */
-    ref BERDecoder decodeList(T, int Alloc)(ref Vector!(T, Alloc) vec,
+    ref BERDecoder decodeList(T, int Alloc)(auto ref Vector!(T, Alloc) vec,
                                             ASN1Tag type_tag = ASN1Tag.SEQUENCE,
                                             ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
@@ -496,7 +496,14 @@ public:
         return this;
     }
 
-    
+    /// ditto
+	ref BERDecoder decodeList(T, int Alloc)(auto ref FreeListRef!(Vector!(T, Alloc)) vec,
+											ASN1Tag type_tag = ASN1Tag.SEQUENCE,
+											ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
+	{
+		return decodeList(**vec, type_tag, class_tag); 
+	}
+
     ref BERDecoder decodeAndCheck(T)(in T expected,
                                      in string error_msg)
     {
@@ -587,7 +594,7 @@ public:
     /*
     * BERDecoder Constructor
     */
-	this(T, int ALLOC)(const ref Vector!(T, ALLOC) data)
+	this(T, int ALLOC)(auto const ref Vector!(T, ALLOC) data)
 	{
 		m_pushed = BERObject.init;
 		m_pushed.value = SecureArray!ubyte();
@@ -598,7 +605,7 @@ public:
 	}
 
 	/// ditto
-	this(T, int ALLOC)(const FreeListRef!(Vector!(T, ALLOC)) data)
+	this(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) data)
 	{
 		m_pushed = BERObject.init;
 		m_pushed.value = SecureArray!ubyte();
