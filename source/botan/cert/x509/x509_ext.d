@@ -63,7 +63,7 @@ public:
 protected:
     abstract bool shouldEncode() const;
     abstract Vector!ubyte encodeInner() const;
-    abstract void decodeInner(in Vector!ubyte);
+    abstract void decodeInner(const ref Vector!ubyte);
 }
 
 alias X509Extensions = FreeListRef!X509ExtensionsImpl;
@@ -270,7 +270,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -336,7 +336,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder ber = BERDecoder(input);
         
@@ -381,7 +381,7 @@ public:
     override SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
 
     this() {}
-    this(in Vector!ubyte pub_key)
+    this(const ref Vector!ubyte pub_key)
     {
         SHA160 hash;
         m_key_id = unlock(hash.process(pub_key));
@@ -405,7 +405,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input).decode(m_key_id, ASN1Tag.OCTET_STRING).verifyEnd();
     }
@@ -453,7 +453,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input)
             .startCons(ASN1Tag.SEQUENCE)
@@ -504,7 +504,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input).decode(m_alt_name);
     }
@@ -556,7 +556,7 @@ public:
         return super.encodeInner();
     }
 
-    override void decodeInner(in Vector!ubyte input) {
+    override void decodeInner(const ref Vector!ubyte input) {
         super.decodeInner(input);
     }
 
@@ -591,7 +591,7 @@ public:
         return super.encodeInner();
     }
     
-    override void decodeInner(in Vector!ubyte input) {
+    override void decodeInner(const ref Vector!ubyte input) {
         super.decodeInner(input);
     }
 
@@ -637,7 +637,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input).decodeList(m_oids);
     }
@@ -691,7 +691,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         Vector!( PolicyInformation ) policies;
         
@@ -742,7 +742,7 @@ protected:
                 .endCons().getContentsUnlocked();
     }
 
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder ber = BERDecoder(input).startCons(ASN1Tag.SEQUENCE);
         
@@ -825,7 +825,7 @@ protected:
     /*
     * Decode the extension
     */
-    void decodeInner(in Vector!ubyte input)
+    void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input).decode(m_crl_number);
     }
@@ -871,7 +871,7 @@ protected:
     /*
     * Decode the extension
     */
-    override void decodeInner(in Vector!ubyte input)
+    override void decodeInner(const ref Vector!ubyte input)
     {
         size_t reason_code = 0;
         BERDecoder(input).decode(reason_code, ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL);
@@ -941,7 +941,7 @@ protected:
         throw new Exception("CRLDistributionPoints encoding not implemented");
     }
 
-    void decodeInner(in Vector!ubyte buf)
+    void decodeInner(const ref Vector!ubyte buf)
     {
         BERDecoder(buf).decodeList(m_distribution_points).verifyEnd();
     }

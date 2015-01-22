@@ -75,7 +75,7 @@ private:
 HTTPResponse httpSync(in string verb,
                    in string url,
                    in string content_type,
-                   in Vector!ubyte _body,
+                   const ref Vector!ubyte _body,
                    size_t allowable_redirects)
 {
     const auto protocol_host_sep = url.indexOf("://");
@@ -224,7 +224,7 @@ HTTPResponse GET_sync(in string url, size_t allowable_redirects = 1)
 }
 
 HTTPResponse POST_sync(in string url, in string content_type,
-                      in Vector!ubyte _body,
+                      const ref Vector!ubyte _body,
                       size_t allowable_redirects = 1)
 {
     return httpSync("POST", url, content_type, _body, allowable_redirects);

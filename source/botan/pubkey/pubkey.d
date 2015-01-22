@@ -72,7 +72,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    final Vector!ubyte encrypt(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(int Alloc)(const ref Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
     {
         return enc(input.ptr, input.length, rng);
     }
@@ -109,7 +109,7 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    final SecureVector!ubyte decrypt(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input) const
+    final SecureVector!ubyte decrypt(int Alloc)(const ref Vector!( ubyte, Alloc ) input) const
     {
         return dec(input.ptr, input.length);
     }
@@ -145,10 +145,10 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-    Vector!ubyte signMessage(in Vector!ubyte input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(const ref Vector!ubyte input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
-    Vector!ubyte signMessage(in SecureVector!ubyte input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(const ref SecureVector!ubyte input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
     /**
@@ -171,7 +171,7 @@ public:
     * Add a message part.
     * @param input = the message part to add
     */
-    void update(in Vector!ubyte input) { update(input.ptr, input.length); }
+    void update(const ref Vector!ubyte input) { update(input.ptr, input.length); }
 
     /**
     * Get the signature of the so far processed message (provided by the
@@ -258,7 +258,7 @@ private:
     /*
     * Check the signature we just created, to help prevent fault attacks
     */
-    bool selfTestSignature(in Vector!ubyte msg, in Vector!ubyte sig) const
+    bool selfTestSignature(const ref Vector!ubyte msg, const ref Vector!ubyte sig) const
     {
         if (!m_verify_op)
             return true; // checking disabled, assume ok
@@ -320,8 +320,8 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-    bool verifyMessage(int Alloc, int Alloc2)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) msg, 
-                                              in FreeListRef!(VectorImpl!( ubyte, Alloc2 )) sig)
+    bool verifyMessage(int Alloc, int Alloc2)(const ref Vector!( ubyte, Alloc ) msg, 
+                                              const ref Vector!( ubyte, Alloc2 ) sig)
     {
         return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
     }
@@ -349,7 +349,7 @@ public:
     * signature to be verified.
     * @param input = the new message part
     */
-    void update(in Vector!ubyte input)
+    void update(const ref Vector!ubyte input)
     { update(input.ptr, input.length); }
 
     /**
@@ -397,7 +397,7 @@ public:
     * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
-    bool checkSignature(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) sig)
+    bool checkSignature(int Alloc)(const ref Vector!( ubyte, Alloc ) sig)
     {
         return checkSignature(sig.ptr, sig.length);
     }
@@ -443,7 +443,7 @@ public:
     }
 
 private:
-    bool validateSignature(in SecureVector!ubyte msg, const(ubyte)* sig, size_t sig_len)
+    bool validateSignature(const ref SecureVector!ubyte msg, const(ubyte)* sig, size_t sig_len)
     {
         if (m_op.withRecovery())
         {
@@ -500,7 +500,7 @@ public:
     * @param params = extra derivation params
     * @param params_len = the length of params in bytes
     */
-    SymmetricKey deriveKey(size_t key_len, in Vector!ubyte input, const(ubyte)* params, size_t params_len) const
+    SymmetricKey deriveKey(size_t key_len, const ref Vector!ubyte input, const(ubyte)* params, size_t params_len) const
     {
         return deriveKey(key_len, input.ptr, input.length, params, params_len);
     }
@@ -524,7 +524,7 @@ public:
     * @param params = extra derivation params
     */
     SymmetricKey deriveKey(size_t key_len,
-                                    in Vector!ubyte input,
+                                    const ref Vector!ubyte input,
                                     in string params = "") const
     {
         return deriveKey(key_len, input.ptr, input.length,

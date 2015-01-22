@@ -68,7 +68,7 @@ string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hexEncode(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input, bool uppercase = true)
+string hexEncode(int Alloc)(const ref Vector!( ubyte, Alloc ) input, bool uppercase = true)
 {
     return hexEncode(input.ptr, input.length, uppercase);
 }
@@ -237,7 +237,7 @@ Vector!ubyte hexDecode(string input, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded hex output
 */
-Vector!ubyte hexDecode(in Vector!ubyte input, bool ignore_ws = true)
+Vector!ubyte hexDecode(const ref Vector!ubyte input, bool ignore_ws = true)
 {
     return hexDecode(input[], ignore_ws);
 }

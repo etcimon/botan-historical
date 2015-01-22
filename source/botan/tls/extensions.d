@@ -642,7 +642,7 @@ public:
 
     override @property bool empty() const { return false; }
 
-    this(in Vector!string hashes, in Vector!string sigs)
+    this(const ref Vector!string hashes, const ref Vector!string sigs)
     {
         for (size_t i = 0; i != hashes.length; ++i)
             for (size_t j = 0; j != sigs.length; ++j)

@@ -202,7 +202,7 @@ public:
     * @return a hint as the how many more bytes we need to process the
     *            current record (this may be 0 if on a record boundary)
     */
-    size_t receivedData(in Vector!ubyte buf)
+    size_t receivedData(const ref Vector!ubyte buf)
     {
         return this.receivedData(buf.ptr, buf.length);
     }
@@ -231,7 +231,7 @@ public:
     /**
     * Inject plaintext intended for counterparty
     */
-    void send(int Alloc)(in FreeListRef!(VectorImpl!( char, Alloc )) val)
+    void send(int Alloc)(const ref Vector!( char, Alloc ) val)
     {
         send(val.ptr, val.length);
     }
@@ -439,7 +439,7 @@ protected:
     abstract void processHandshakeMsg(in HandshakeState active_state,
                                       HandshakeState pending_state,
                                       HandshakeType type,
-                                      in Vector!ubyte contents);
+                                      const ref Vector!ubyte contents);
 
     abstract void initiateHandshake(HandshakeState state,
                                     bool force_full_renegotiation);
@@ -662,14 +662,14 @@ private:
         return MAX_PLAINTEXT_SIZE;
     }
 
-    void sendRecord(ubyte record_type, in Vector!ubyte record)
+    void sendRecord(ubyte record_type, const ref Vector!ubyte record)
     {
         sendRecordArray(sequenceNumbers().currentWriteEpoch(),
                           record_type, record.ptr, record.length);
     }
 
     void sendRecordUnderEpoch(ushort epoch, ubyte record_type,
-                                 in Vector!ubyte record)
+                                 const ref Vector!ubyte record)
     {
         sendRecordArray(epoch, record_type, record.ptr, record.length);
     }

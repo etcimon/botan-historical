@@ -63,7 +63,7 @@ public:
     * @param input = the input
     * @param polynomial = the ubyte value of the polynomial
     */
-    static SecureVector!ubyte polyDouble(in SecureVector!ubyte input)
+    static SecureVector!ubyte polyDouble(const ref SecureVector!ubyte input)
     {
         const bool top_carry = (input[0] & 0x80) != 0;
         

@@ -121,7 +121,7 @@ public:
     }
 
     this(in AlgorithmIdentifier alg_id, 
-         in SecureVector!ubyte key_bits, 
+         const ref SecureVector!ubyte key_bits, 
          in DLGroup.Format format,
          in string algo_name,
          in short msg_parts = 0,
@@ -217,7 +217,7 @@ public:
     }
 
     this(in AlgorithmIdentifier alg_id,
-         in SecureVector!ubyte key_bits,
+         const ref SecureVector!ubyte key_bits,
          in DLGroup.Format format,
          in string algo_name,
          in short msg_parts = 0,

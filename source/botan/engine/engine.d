@@ -73,23 +73,23 @@ public:
     */
     PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const;
 
-	/**
+    /**
     * Return a new cipher object
     * @param algo_spec = the algorithm name/specification
     * @param dir = specifies if encryption or decryption is desired
     * @param af = an algorithm factory object
     * @return newly allocated object, or NULL
     */
-	KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const;
+    KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const;
 
-	static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+    static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
     /**
     * @param n = the modulus
     * @param hints = any use hints
     * @return newly allocated object, or NULL
     */
-    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const;
+    ModularExponentiator modExp(const ref BigInt n, PowerMod.UsageHints hints) const;
 
 
     /**

@@ -118,7 +118,7 @@ final class CoreEngine : Engine
 public:
     string providerName() const { return "core"; }
 
-	override KeyedFilter getCipher(in string algo_spec,
+    override KeyedFilter getCipher(in string algo_spec,
                           CipherDir direction,
                           AlgorithmFactory af) const
     {
@@ -166,7 +166,7 @@ public:
             throw new AlgorithmNotFound(cipher_name ~ "/" ~ mode);
     }
 
-	override BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
+    override BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
     {
         logTrace("FindBlockCipher Core ", request.algoName);
         
@@ -319,7 +319,7 @@ public:
         return null;
     }
 
-	override StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
+    override StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
     {
         logTrace("FindStreamCipher Core ", request.algoName);
         static if (BOTAN_HAS_OFB) {
@@ -358,7 +358,7 @@ public:
         return null;
     }
 
-	override HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
+    override HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
     {
         logTrace("FindHash Core");
         static if (BOTAN_HAS_ADLER32) {
@@ -493,7 +493,7 @@ public:
         
     }
 
-	override MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
+    override MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
     {
         logTrace("FindMac Core");
         static if (BOTAN_HAS_CBC_MAC) {
@@ -526,7 +526,7 @@ public:
     }
 
 
-	override PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
+    override PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
         logTrace("FindPbkdf Core");
         static if (BOTAN_HAS_PBKDF1) {
@@ -547,133 +547,133 @@ public:
         return null;
     }
 
-	static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+    static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
-	override ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
-	{
-		if (n.isOdd()) {
-			logTrace("Loading MontgomeryExponentiator");
-			return new MontgomeryExponentiator(n.dup, hints);
-		}
-		logTrace("Loading FixedWindowExponentiator");
-		return new FixedWindowExponentiator(n.dup, hints);
-	}
+    override ModularExponentiator modExp(const ref BigInt n, PowerMod.UsageHints hints) const
+    {
+        if (n.isOdd()) {
+            logTrace("Loading MontgomeryExponentiator");
+            return new MontgomeryExponentiator(n.dup, hints);
+        }
+        logTrace("Loading FixedWindowExponentiator");
+        return new FixedWindowExponentiator(n.dup, hints);
+    }
 
-	override KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{
-		static if (BOTAN_HAS_DIFFIE_HELLMAN) {
-			if (DHPrivateKey.algoName == key.algoName)
-				return new DHKAOperation(key, rng);
-		}
-		
-		static if (BOTAN_HAS_ECDH) {
-			if (ECDHPrivateKey.algoName == key.algoName)
-				return new ECDHKAOperation(key);
-		}
-		
-		return null;
-	}
-	
-	override Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{
-		static if (BOTAN_HAS_RSA) {
-			if (RSAPrivateKey.algoName == key.algoName)
-				return new RSAPrivateOperation(key, rng);
-		}
-		
-		static if (BOTAN_HAS_RW) {
-			if (RWPrivateKey.algoName == key.algoName)
-				return new RWSignatureOperation(key);
-		}
-		
-		static if (BOTAN_HAS_DSA) {
-			if (DSAPrivateKey.algoName == key.algoName)
-				return new DSASignatureOperation(key);
-		}
-		
-		static if (BOTAN_HAS_ECDSA) {
-			if (ECDSAPrivateKey.algoName == key.algoName)
-				return new ECDSASignatureOperation(key);
-		}
-		
-		static if (BOTAN_HAS_GOST_34_10_2001) {
-			if (GOST3410PrivateKey.algoName == key.algoName)
-				return new GOST3410SignatureOperation(key);
-		}
-		
-		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-			if (NRPrivateKey.algoName == key.algoName)
-				return new NRSignatureOperation(key);
-		}
-		
-		return null;
-	}
-	
-	override Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
-	{
-		static if (BOTAN_HAS_RSA) {
-			if (RSAPublicKey.algoName == key.algoName)
-				return new RSAPublicOperation(key);
-		}
-		
-		static if (BOTAN_HAS_RW) {
-			if (RWPublicKey.algoName == key.algoName)
-				return new RWVerificationOperation(key);
-		}
-		
-		static if (BOTAN_HAS_DSA) {
-			if (DSAPublicKey.algoName == key.algoName)
-				return new DSAVerificationOperation(key);
-		}
-		
-		static if (BOTAN_HAS_ECDSA) {
-			if (ECDSAPublicKey.algoName == key.algoName)
-				return new ECDSAVerificationOperation(key);
-		}
-		
-		static if (BOTAN_HAS_GOST_34_10_2001) {
-			if (GOST3410PublicKey.algoName == key.algoName)
-				return new GOST3410VerificationOperation(key);
-		}
-		
-		static if (BOTAN_HAS_NYBERG_RUEPPEL) {
-			if (NRPublicKey.algoName == key.algoName)
-				return new NRVerificationOperation(key);
-		}
-		
-		return null;
-	}
-	
-	
-	override Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
-	{
-		static if (BOTAN_HAS_RSA) {
-			if (RSAPublicKey.algoName == key.algoName)
-				return new RSAPublicOperation(key);
-		}
-		
-		static if (BOTAN_HAS_ELGAMAL) {
-			if (ElGamalPublicKey.algoName == key.algoName)
-				return new ElGamalEncryptionOperation(key);
-		}
-		
-		return null;
-	}
-	
-	override Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
-	{
-		static if (BOTAN_HAS_RSA) {
-			if (RSAPrivateKey.algoName == key.algoName)
-				return new RSAPrivateOperation(key, rng);
-		}
-		
-		static if (BOTAN_HAS_ELGAMAL) {
-			if (ElGamalPrivateKey.algoName == key.algoName)
-				return new ElGamalDecryptionOperation(key, rng);
-		}
-		
-		return null;
-	}
+    override KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
+    {
+        static if (BOTAN_HAS_DIFFIE_HELLMAN) {
+            if (DHPrivateKey.algoName == key.algoName)
+                return new DHKAOperation(key, rng);
+        }
+        
+        static if (BOTAN_HAS_ECDH) {
+            if (ECDHPrivateKey.algoName == key.algoName)
+                return new ECDHKAOperation(key);
+        }
+        
+        return null;
+    }
+    
+    override Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
+    {
+        static if (BOTAN_HAS_RSA) {
+            if (RSAPrivateKey.algoName == key.algoName)
+                return new RSAPrivateOperation(key, rng);
+        }
+        
+        static if (BOTAN_HAS_RW) {
+            if (RWPrivateKey.algoName == key.algoName)
+                return new RWSignatureOperation(key);
+        }
+        
+        static if (BOTAN_HAS_DSA) {
+            if (DSAPrivateKey.algoName == key.algoName)
+                return new DSASignatureOperation(key);
+        }
+        
+        static if (BOTAN_HAS_ECDSA) {
+            if (ECDSAPrivateKey.algoName == key.algoName)
+                return new ECDSASignatureOperation(key);
+        }
+        
+        static if (BOTAN_HAS_GOST_34_10_2001) {
+            if (GOST3410PrivateKey.algoName == key.algoName)
+                return new GOST3410SignatureOperation(key);
+        }
+        
+        static if (BOTAN_HAS_NYBERG_RUEPPEL) {
+            if (NRPrivateKey.algoName == key.algoName)
+                return new NRSignatureOperation(key);
+        }
+        
+        return null;
+    }
+    
+    override Verification getVerifyOp(in PublicKey key, RandomNumberGenerator rng) const
+    {
+        static if (BOTAN_HAS_RSA) {
+            if (RSAPublicKey.algoName == key.algoName)
+                return new RSAPublicOperation(key);
+        }
+        
+        static if (BOTAN_HAS_RW) {
+            if (RWPublicKey.algoName == key.algoName)
+                return new RWVerificationOperation(key);
+        }
+        
+        static if (BOTAN_HAS_DSA) {
+            if (DSAPublicKey.algoName == key.algoName)
+                return new DSAVerificationOperation(key);
+        }
+        
+        static if (BOTAN_HAS_ECDSA) {
+            if (ECDSAPublicKey.algoName == key.algoName)
+                return new ECDSAVerificationOperation(key);
+        }
+        
+        static if (BOTAN_HAS_GOST_34_10_2001) {
+            if (GOST3410PublicKey.algoName == key.algoName)
+                return new GOST3410VerificationOperation(key);
+        }
+        
+        static if (BOTAN_HAS_NYBERG_RUEPPEL) {
+            if (NRPublicKey.algoName == key.algoName)
+                return new NRVerificationOperation(key);
+        }
+        
+        return null;
+    }
+    
+    
+    override Encryption getEncryptionOp(in PublicKey key, RandomNumberGenerator) const
+    {
+        static if (BOTAN_HAS_RSA) {
+            if (RSAPublicKey.algoName == key.algoName)
+                return new RSAPublicOperation(key);
+        }
+        
+        static if (BOTAN_HAS_ELGAMAL) {
+            if (ElGamalPublicKey.algoName == key.algoName)
+                return new ElGamalEncryptionOperation(key);
+        }
+        
+        return null;
+    }
+    
+    override Decryption getDecryptionOp(in PrivateKey key, RandomNumberGenerator rng) const
+    {
+        static if (BOTAN_HAS_RSA) {
+            if (RSAPrivateKey.algoName == key.algoName)
+                return new RSAPrivateOperation(key, rng);
+        }
+        
+        static if (BOTAN_HAS_ELGAMAL) {
+            if (ElGamalPrivateKey.algoName == key.algoName)
+                return new ElGamalDecryptionOperation(key, rng);
+        }
+        
+        return null;
+    }
 }
 
 /**

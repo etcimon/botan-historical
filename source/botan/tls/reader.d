@@ -22,7 +22,7 @@ import std.conv : to;
 struct TLSDataReader
 {
 public:
-    this(string type, in Vector!ubyte buf_input) 
+    this(string type, const ref Vector!ubyte buf_input) 
     {
         m_typename = type;
         m_buf = buf_input; 
@@ -174,8 +174,8 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void appendTlsLengthValue(T, int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, in T* vals, 
-                                       size_t vals_size, size_t tag_size)
+void appendTlsLengthValue(T, int Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
+                                        size_t vals_size, size_t tag_size)
 {
     const size_t T_size = T.sizeof;
     const size_t val_bytes = T_size * vals_size;
@@ -195,15 +195,15 @@ void appendTlsLengthValue(T, int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )
             buf.pushBack(get_byte(j, vals[i]));
 }
 
-void appendTlsLengthValue(T, int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
-                                                       in FreeListRef!(VectorImpl!( T, Alloc2 )) vals, 
+void appendTlsLengthValue(T, int Alloc, int Alloc2)(ref Vector!( ubyte, Alloc ) buf, 
+                                                    const ref Vector!( T, Alloc2 ) vals, 
                                                     size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTlsLengthValue(int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) buf, 
-                                 in string str, size_t tag_size)
+void appendTlsLengthValue(int Alloc)(const ref Vector!( ubyte, Alloc ) buf, 
+                                     in string str, size_t tag_size)
 {
     appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);
 }

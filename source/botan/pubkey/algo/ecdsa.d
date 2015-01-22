@@ -38,7 +38,7 @@ public:
         m_pub = new ECPublicKey(dom_par, public_point, algoName, true);
     }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
         m_pub = new ECPublicKey(alg_id, key_bits, algoName, true);
     }
@@ -67,7 +67,7 @@ public:
     * @param alg_id = the X.509 algorithm identifier
     * @param key_bits = PKCS #8 structure
     */
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
         m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1);
         m_priv.setCB(&checkKey);
@@ -80,14 +80,14 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key (if zero, generate a ney random key)
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0))
+    this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = BigInt(0))
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1);
         m_priv.setCB(&checkKey); 
         super(m_priv);
     }
 
-    this(RandomNumberGenerator rng, in ECGroup domain) { this(rng, domain, BigInt(0)); }
+    this(RandomNumberGenerator rng, const ref ECGroup domain) { this(rng, domain, BigInt(0)); }
 
     this(PrivateKey pkey) { 
         m_priv = cast(ECPrivateKey)pkey;

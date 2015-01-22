@@ -95,7 +95,7 @@ public:
     * Encrypt one or more blocks
     * @param block = the input/output buffer (multiple of blockSize())
     */
-    final void encrypt(int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) block)
+    final void encrypt(int Alloc)(ref Vector!( ubyte, Alloc ) block)
     {
         return encryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
@@ -104,7 +104,7 @@ public:
     * Decrypt one or more blocks
     * @param block = the input/output buffer (multiple of blockSize())
     */
-    final void decrypt(int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) block)
+    final void decrypt(int Alloc)(ref Vector!( ubyte, Alloc ) block)
     {
         return decryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
@@ -114,8 +114,8 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void encrypt(int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) input,
-                                      FreeListRef!(VectorImpl!( ubyte, Alloc2 )) output)
+    final void encrypt(int Alloc, int Alloc2)(const ref Vector!( ubyte, Alloc ) input,
+                                              ref Vector!( ubyte, Alloc2 ) output)
     {
         return encryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
@@ -125,8 +125,8 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void decrypt(int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) input,
-                                      FreeListRef!(VectorImpl!( ubyte, Alloc2 )) output)
+    final void decrypt(int Alloc, int Alloc2)(const ref Vector!( ubyte, Alloc ) input,
+                                              ref Vector!( ubyte, Alloc2 ) output)
     {
         return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }

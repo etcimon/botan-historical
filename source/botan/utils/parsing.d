@@ -180,7 +180,7 @@ string replaceChars(in string str,
 * @param delim = the delimitor
 * @return string joined by delim
 */
-string stringJoin(in Vector!string strs, char delim)
+string stringJoin(const ref Vector!string strs, char delim)
 {
     import std.algorithm : joiner;
     import std.array : array;
@@ -192,11 +192,11 @@ string stringJoin(in Vector!string strs, char delim)
 * @param oid = the OID in string form
 * @return OID components
 */
-Vector!uint parseAsn1Oid(in string oid)
+Array!uint parseAsn1Oid(in string oid)
 {
     import std.array : Appender, array;
     Vector!ubyte substring;
-    Vector!uint oid_elems;
+    Array!uint oid_elems;
     
 
     foreach (char c; oid)

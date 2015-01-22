@@ -58,21 +58,28 @@ public:
     * Construct the zero point
     * @param curve = The base curve
     */
-    this(CurveGFp curve) 
+    this(const ref CurveGFp curve) 
     {
-        m_curve = curve;
-        m_ws = new SecureVector!word();
+		logTrace("PointGFP ctor (from CurveGFp)");
+        m_curve = curve.dup;
+		logTrace("m_curve = curve OK");
+		m_ws = FreeListObjectAlloc!(SecureVector!(word)).alloc();
+		logTrace("m_ws alloc OK");
         (*m_ws).resize(2 * (curve.getPWords() + 2));
+		logTrace("m_ws.resize OK");
         m_coord_x = 0;
+		logTrace("montymult");
         m_coord_y = montyMult(BigInt(1), curve.getR2());
+		logTrace("Done montymult");
         m_coord_z = 0;
     }
 
     /**
     * Move Constructor
     */
-    this(in PointGFp other)
+    this(const ref PointGFp other)
     {
+		logTrace("PointGFp ctor (from PointGFp)");
         m_curve = CurveGFp.init;
         PointGFp other_ = other.dup;
         this.swap(other_);
@@ -83,10 +90,16 @@ public:
     */
     ref PointGFp opAssign(in PointGFp other)
     {
+		logTrace("opassign");
         PointGFp other_ = other.dup;
         this.swap(other_);
         return this;
     }
+
+	void defaultInit() {
+		if (!m_ws)
+			m_ws = FreeListObjectAlloc!(SecureVector!(word)).alloc();
+	}
 
     /**
     * Construct a point from its affine coordinates
@@ -94,22 +107,25 @@ public:
     * @param x = affine x coordinate
     * @param y = affine y coordinate
     */
-    this(CurveGFp curve, BigInt x, BigInt y)
+    this(const ref CurveGFp curve, BigInt x, BigInt y)
     { 
-        m_curve = curve;
-        m_ws = new SecureVector!word();
+		assert(curve.getA() != 0, "Uninitialized curve");
+		logTrace("PointGFp(curve, x, y)");
+        m_curve = curve.dup;
+		m_ws = FreeListObjectAlloc!(SecureVector!(word)).alloc();
         (*m_ws).resize(2 * (curve.getPWords() + 2));
         m_coord_x = montyMult(x, curve.getR2());
         m_coord_y = montyMult(y, curve.getR2());
         m_coord_z = montyMult(BigInt(1), curve.getR2());
-    }
+		logTrace("End Ctor(curve, x, y)");
+	}
 
     /**
     * += Operator
     * @param rhs = the PointGFp to add to the local value
     * @result resulting PointGFp
     */
-    void opOpAssign(string op)(in PointGFp rhs)
+    void opOpAssign(string op)(const ref PointGFp rhs)
         if (op == "+")
     {
         Vector!BigInt ws = Vector!BigInt(9);
@@ -121,15 +137,14 @@ public:
     * @param rhs = the PointGFp to subtract from the local value
     * @result resulting PointGFp
     */
-    void opOpAssign(string op)(in PointGFp rhs)
+    void opOpAssign(string op)(const ref PointGFp rhs)
         if (op == "-")
     {
-        PointGFp minus_rhs = PointGFp(rhs.dup).negate();
         
         if (isZero())
-            this = minus_rhs;
+			this = PointGFp(rhs).negate().dup;
         else
-            this += minus_rhs;
+			this += PointGFp(rhs).negate();
         
     }
 
@@ -138,7 +153,7 @@ public:
     * @param scalar = the PointGFp to multiply with this
     * @result resulting PointGFp
     */
-    void opOpAssign(string op)(in BigInt scalar)
+    void opOpAssign(string op)(const ref BigInt scalar)
         if (op == "*")
     {
         this = this * scalar;
@@ -150,15 +165,17 @@ public:
     * @param point = the point value
     * @return scalar*point on the curve
     */
-    PointGFp opBinary(string op)(in BigInt scalar) const
+    PointGFp opBinary(string op)(const ref BigInt scalar) const
         if (op == "*")
     {
-        const PointGFp point = this;
-        const CurveGFp curve = point.getCurve();
+
+		logTrace("opbinary");
+		assert(this.getCurve().getA() != BigInt(0));
+        const PointGFp* point = &this;
         
-        if (scalar.isZero())
-            return PointGFp(curve.dup); // zero point
-        
+        if (scalar.isZero()) {
+			return PointGFp(point.getCurve()); // zero point
+		}
         Vector!BigInt ws = Vector!BigInt(9);
         
         if (scalar.abs() <= 2) // special cases for small values
@@ -173,9 +190,8 @@ public:
             if (scalar.isNegative())
                 result.negate();
             
-            return result;
+            return result.dup;
         }
-        
         const size_t scalar_bits = scalar.bits();
         
         version(none) {
@@ -212,19 +228,21 @@ public:
         } else {
             const size_t window_size = 4;
             
-            Vector!PointGFp Ps = Vector!PointGFp(1 << window_size);
-            Ps[0] = PointGFp(curve.dup);
-            Ps[1] = point.dup;
+            Vector!(PointGFp*) Ps = Vector!(PointGFp*)(1 << window_size);
+			logTrace("Curve dup");
+			auto ps0 = PointGFp(point.getCurve());
+			Ps[0] = &ps0;
+            Ps[1] = point;
             
             for (size_t i = 2; i != Ps.length; ++i)
             {
                 Ps[i] = Ps[i-1];
-                Ps[i].add(point.dup, ws);
+                Ps[i].add(*point, ws);
             }
             
-            PointGFp H = PointGFp(curve.dup); // create as zero
+			PointGFp H = PointGFp(point.getCurve()); // create as zero
             size_t bits_left = scalar_bits;
-            
+			logTrace("bits left");
             while (bits_left >= window_size)
             {
                 foreach (size_t i; 0 .. window_size)
@@ -232,8 +250,7 @@ public:
                 
                 const uint nibble = scalar.getSubstring(bits_left - window_size,
                                                          window_size);
-                
-                H.add(Ps[nibble], ws);
+				H.add(*Ps[nibble], ws);
                 
                 bits_left -= window_size;
             }
@@ -242,7 +259,7 @@ public:
             {
                 H.mult2(ws);
                 if (scalar.getBit(bits_left-1))
-                    H.add(point.dup, ws);
+                    H.add(*point, ws);
                 
                 --bits_left;
             }
@@ -250,7 +267,7 @@ public:
             if (scalar.isNegative())
                 H.negate();
             
-            return H;
+            return H.dup;
         }
     }
 
@@ -262,12 +279,13 @@ public:
     * @param z2 = a scalar
     * @result (p1 * z1 + p2 * z2)
     */
-    static PointGFp multiExponentiate(in PointGFp p1, in BigInt z1,
-                               in PointGFp p2, in BigInt z2)
+    static PointGFp multiExponentiate(const ref PointGFp p1, const ref BigInt z1,
+                                      const ref PointGFp p2, const ref BigInt z2)
     {
         const PointGFp p3 = p1 + p2;
         
-        PointGFp H = PointGFp(p1.m_curve.dup); // create as zero
+		CurveGFp p1_curve = p1.m_curve.dup;
+        PointGFp H = PointGFp(p1_curve); // create as zero
         size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
         
         Vector!BigInt ws = Vector!BigInt(9);
@@ -310,7 +328,7 @@ public:
     * Return base curve of this point
     * @result the curve over GF(p) of this point
     */
-    const(CurveGFp) getCurve() const { return m_curve; }
+    ref const(CurveGFp) getCurve() const { return m_curve; }
 
     /**
     * get affine x coordinate
@@ -361,15 +379,16 @@ public:
     */
     bool onTheCurve() const
     {
+		logTrace("OnTheCurve: ", toArray()[]);
         /*
         Is the point still on the curve?? (If everything is correct, the
         point is always on its curve; then the function will return true.
         If somehow the state is corrupted, which suggests a fault attack
         (or internal computational error), then return false.
-        */        
-        if (isZero())
-            return true;
-        
+        */
+		if (isZero()) {
+			return true;
+		}
         BigInt y2 = montyMult(montySqr(m_coord_y), BigInt(1));
         BigInt x3 = montyMult(m_coord_x, montySqr(m_coord_x));
         
@@ -393,7 +412,6 @@ public:
         
         if (y2 != montyMult(x3 + ax_z4 + b_z6, BigInt(1)))
             return false;
-        
         return true;
     }
 
@@ -403,28 +421,40 @@ public:
     * @param other = the object to swap values with
     */
     void swap(ref PointGFp other)
-    {
+	{    
+		logTrace("swap");
+		if (&other is null) {
+			destroy(this);
+			defaultInit();
+			return;
+		}
+		if (&other is &this)
+			return;
+		
+		if (!m_ws) {
+			m_ws = FreeListObjectAlloc!(SecureVector!(word)).alloc();
+		}
+		if (other.m_ws && other.m_ws.length > 0) *m_ws = *other.m_ws;
+		else if (other.m_ws && other.m_ws.length == 0) (*m_ws) = SecureVector!(word)();
+
         m_curve.swap(other.m_curve);
         m_coord_x.swap(other.m_coord_x);
         m_coord_y.swap(other.m_coord_y);
         m_coord_z.swap(other.m_coord_z);
-        m_ws = other.m_ws;
-        other.m_ws = null;
+		destroy(other);
     }
 
     @property PointGFp dup() const
     {
-        PointGFp ret = PointGFp(m_curve.dup, m_coord_x.dup, m_coord_y.dup);
-        ret.m_coord_z = m_coord_z.dup;
-        ret.m_ws = new SecureVector!word();
-        (*ret.m_ws)[] = (*m_ws).ptr[0 .. (*m_ws).length];
-        return ret;
+		logTrace("PointGFp.dup()");
+		(cast(PointGFp*)&this).defaultInit();
+       return PointGFp(m_curve, m_coord_x.dup, m_coord_y.dup);
     }
 
     /**
     * Equality operator
     */
-    bool opEquals(in PointGFp other) const
+    bool opEquals(const ref PointGFp other) const
     {
         if (getCurve() != other.getCurve())
             return false;
@@ -437,7 +467,12 @@ public:
                 getAffineY() == other.getAffineY());
     }
 
-    @trusted const ~this() { }
+    @trusted const ~this() {
+		logTrace("PointGFp dtor");
+		if (!m_ws) return;
+		SecureVector!(word)* ws = cast(SecureVector!(word)*)m_ws;
+		FreeListObjectAlloc!(SecureVector!(word)).free(ws); 
+	}
 
 private:
 
@@ -447,7 +482,7 @@ private:
     * @param y = second multiplicand
     * @param workspace = temp space
     */
-    BigInt montyMult(in BigInt x, in BigInt y) const
+    BigInt montyMult(const ref BigInt x, const ref BigInt y) const
     {
         BigInt result;
         montyMult(result, x, y);
@@ -462,7 +497,7 @@ private:
     * @param y = second multiplicand
     */
     // Montgomery multiplication
-    void montyMult(ref BigInt z, in BigInt x, in BigInt y) const
+    void montyMult(ref BigInt z, const ref BigInt x, const ref BigInt y) const
     {
         //assert(&z != &x && &z != &y);
         
@@ -492,7 +527,7 @@ private:
     * Montgomery squaring/reduction
     * @param x = multiplicand
     */
-    BigInt montySqr(in BigInt x) const
+    BigInt montySqr(const ref BigInt x) const
     {
         BigInt result;
         montySqr(result, x);
@@ -505,7 +540,7 @@ private:
     * @param z = output
     * @param x = multiplicand
     */
-    void montySqr(ref BigInt z, in BigInt x) const
+    void montySqr(ref BigInt z, const ref BigInt x) const
     {
         //assert(&z != &x);
         
@@ -534,7 +569,7 @@ private:
     * Point addition
     * @param workspace = temp space, at least 11 elements
     */
-    void add(in PointGFp rhs, ref Vector!BigInt ws_bn)
+    void add(const ref PointGFp rhs, ref Vector!BigInt ws_bn)
     {
         if (isZero())
         {
@@ -585,7 +620,7 @@ private:
                 return;
             }
             
-            this = PointGFp(m_curve.dup); // setting myself to zero
+            this = PointGFp(m_curve); // setting myself to zero
             return;
         }
         
@@ -686,7 +721,7 @@ private:
     }
 
     // relational operators
-    int opCmp(in PointGFp rhs) const
+    int opCmp(const ref PointGFp rhs) const
     {
         if  (this == rhs) return 0;
         else return -1;
@@ -697,10 +732,10 @@ private:
         if (op == "-")
     {
         PointGFp ret = this.dup;
-        return ret.negate();
+        return ret.negate().dup;
     }
     
-    PointGFp opBinary(string op)(in PointGFp rhs) const
+    PointGFp opBinary(string op)(const ref PointGFp rhs) const
         if (op == "+")
     {
         PointGFp ret = this.dup;
@@ -708,7 +743,7 @@ private:
         return ret;
     }
     
-    PointGFp opBinary(string op)(in PointGFp rhs) const
+    PointGFp opBinary(string op)(const ref PointGFp rhs) const
         if (op == "-")
     {
         PointGFp ret = this.dup;
@@ -716,7 +751,7 @@ private:
         return ret;
     }
     
-    PointGFp opBinary(string op)(in PointGFp point) const
+    PointGFp opBinary(string op)(const ref PointGFp point) const
         if (op == "*")
     {
         PointGFp ret = this.dup;
@@ -724,13 +759,35 @@ private:
         return ret;
     }
 
+	@disable this(this);
+
+	public Vector!ubyte toArray() const {
+		Array!ubyte ret;
+		ret ~= "m_curve: ";
+		ret ~= m_curve.toArray()[];
+		ret ~= "\nm_coord_x: ";
+		ret ~= m_coord_x.toArray()[];
+		ret ~= "\nm_coord_y: ";
+		ret ~= m_coord_y.toArray()[];
+		ret ~= "\nm_coord_z: ";
+		ret ~= m_coord_z.toArray()[];
+		ret ~= "\nm_ws: ";
+		if (m_ws)
+			ret ~= (*m_ws).ptr[0 .. (*m_ws).length].to!string;
+		return ret;
+	}
+
+	public string toString() const {
+		return toArray()[].idup;
+	}
+
     CurveGFp m_curve;
     BigInt m_coord_x, m_coord_y, m_coord_z;
     SecureVector!(word)* m_ws; // workspace for Montgomery
 }
 
 // encoding and decoding
-SecureVector!ubyte EC2OSP(in PointGFp point, ubyte format)
+SecureVector!ubyte EC2OSP(const ref PointGFp point, ubyte format)
 {
     if (point.isZero())
         return SecureVector!ubyte(1); // single 0 ubyte
@@ -776,11 +833,13 @@ SecureVector!ubyte EC2OSP(in PointGFp point, ubyte format)
         throw new InvalidArgument("illegal point encoding format specification");
 }
 
-PointGFp OS2ECP(T : CurveGFp)(const(ubyte)* data, size_t data_len, auto ref T curve)
+PointGFp OS2ECP(const(ubyte)* data, size_t data_len, const ref CurveGFp curve)
 {
-    if (data_len <= 1)
-        return PointGFp(curve); // return zero
-    
+	logTrace("data_len: ", data_len);
+    if (data_len <= 1) {
+		auto curve_copy = curve.dup;
+        return PointGFp(curve_copy); // return zero
+	}
     const ubyte pc = data[0];
     
     BigInt x, y;
@@ -816,26 +875,23 @@ PointGFp OS2ECP(T : CurveGFp)(const(ubyte)* data, size_t data_len, auto ref T cu
     }
     else
         throw new InvalidArgument("OS2ECP: Unknown format type " ~ to!string(pc));
-    
+	auto copy = curve.dup;
+	logTrace("Getting immediate value: ", curve.dup.toString());
     PointGFp result = PointGFp(curve, x, y);
-
+	assert(result.m_curve.getA() != 0);
     if (!result.onTheCurve())
         throw new IllegalPoint("OS2ECP: Decoded point was not on the curve");
-    
-    return result;
+    return result.dup;
 }
 
-PointGFp OS2ECP(int Alloc, T : CurveGFp)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) data, auto ref T curve)
+PointGFp OS2ECP(int Alloc)(const ref Vector!( ubyte, Alloc ) data, const ref CurveGFp curve)
 { return OS2ECP(data.ptr, data.length, curve); }
-
-void swap(ref PointGFp x, ref PointGFp y)
-{ x.swap(y); }
 
 private:
 
-BigInt decompressPoint(T : CurveGFp)(bool yMod2,
-                                     BigInt x,
-                                     auto ref T curve)
+BigInt decompressPoint(bool yMod2,
+                       BigInt x,
+                       const ref CurveGFp curve)
 {
     BigInt xpow3 = x * x * x;
     BigInt g = BigInt(curve.getA()) * x;

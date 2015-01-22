@@ -175,7 +175,7 @@ public:
     * @param ber = a vector containing the DER/BER encoded group
     * @param format = the format of the encoded group
     */
-    void BER_decode(in Vector!ubyte data,
+    void BER_decode(const ref Vector!ubyte data,
                     Format format)
     {
         BigInt new_p, new_q, new_g;
@@ -323,7 +323,7 @@ public:
     * @param p1 = the prime p
     * @param g1 = the base m_g
     */
-    this(in BigInt p1, in BigInt g1)
+    this(const ref BigInt p1, const ref BigInt g1)
     {
         initialize(p1, BigInt(0), g1);
     }
@@ -334,7 +334,7 @@ public:
     * @param q1 = the prime m_q
     * @param g1 = the base m_g
     */
-    this(in BigInt p1, in BigInt q1, in BigInt g1)
+    this(const ref BigInt p1, const ref BigInt q1, const ref BigInt g1)
     {
         initialize(p1, q1, g1);
     }
@@ -343,7 +343,7 @@ private:
     /*
     * Create generator of the q-sized subgroup (DSA style generator)
     */
-    static BigInt makeDsaGenerator(in BigInt p, in BigInt q)
+    static BigInt makeDsaGenerator(const ref BigInt p, const ref BigInt q)
     {
         const BigInt e = (p - 1) / q;
         
@@ -366,7 +366,7 @@ private:
             throw new InvalidState("DLP group cannot be used uninitialized");
     }
 
-    void initialize(in BigInt p1, in BigInt q1, in BigInt g1)
+    void initialize(const ref BigInt p1, const ref BigInt q1, const ref BigInt g1)
     {
         if (p1 < 3)
             throw new InvalidArgument("DLGroup: Prime invalid");

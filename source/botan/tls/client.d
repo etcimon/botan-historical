@@ -71,7 +71,7 @@ public:
          RandomNumberGenerator rng,
          in TLSServerInformation server_info = TLSServerInformation(),
          in TLSProtocolVersion offer_version = TLSProtocolVersion.latestTlsVersion(),
-         string delegate(in Vector!string) next_protocol = null,
+         string delegate(const ref Vector!string) next_protocol = null,
          size_t reserved_io_buffer_size = 16*1024)
     { 
         super(socket_output_fn, proc_cb, alert_cb, handshake_cb, session_manager, rng, reserved_io_buffer_size);
@@ -108,7 +108,7 @@ protected:
                            bool force_full_renegotiation,
                            TLSProtocolVersion _version,
                            in string srp_identifier = "",
-                           string delegate(in Vector!string) next_protocol = null)
+                           string delegate(const ref Vector!string) next_protocol = null)
     {
         ClientHandshakeState state = cast(ClientHandshakeState)(state_base);
         
@@ -163,7 +163,7 @@ protected:
     override void processHandshakeMsg(in HandshakeState active_state,
                                HandshakeState state_base,
                                HandshakeType type,
-                               in Vector!ubyte contents)
+                               const ref Vector!ubyte contents)
     {
         ClientHandshakeState state = cast(ClientHandshakeState)(state_base);
         
@@ -521,5 +521,5 @@ public:
     Unique!PublicKey server_public_key;
     
     // Used by client using NPN
-    string delegate(in Vector!string) client_npn_cb;
+    string delegate(const ref Vector!string) client_npn_cb;
 }

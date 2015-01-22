@@ -536,8 +536,8 @@ __gshared immutable uint[1024] TD = [
 */
 void aes_encrypt_n(const(ubyte)* input, ubyte* output,
                    size_t blocks,
-                   in SecureVector!uint EK,
-                   in SecureVector!ubyte ME)
+                   const ref SecureVector!uint EK,
+                   const ref SecureVector!ubyte ME)
 {
     import botan.utils.get_byte : get_byte;
     assert(EK.length && ME.length == 16, "Key was set");
@@ -650,8 +650,8 @@ void aes_encrypt_n(const(ubyte)* input, ubyte* output,
 * AES Decryption
 */
 void aes_decrypt_n(const(ubyte)* input, ubyte* output, size_t blocks,
-                   in SecureVector!uint DK,
-                   in SecureVector!ubyte MD) 
+                   const ref SecureVector!uint DK,
+                   const ref SecureVector!ubyte MD) 
 {
     import botan.utils.get_byte : get_byte;
     assert(DK.length && MD.length == 16, "Key was set");

@@ -15,7 +15,7 @@ public import botan.asn1.ber_dec;
 public import botan.asn1.alg_id;
 public import botan.filters.data_src;
 import botan.utils.parsing;
-import botan.utils.memory.zeroise : SecureVector;
+import botan.utils.memory.zeroise : SecureArray;
 import botan.utils.exceptn;
 import std.conv : to;
 import botan.utils.types;
@@ -86,8 +86,8 @@ struct BERObject
 public:
     void opAssign(in BERObject ber) {
         if (ber.value !is null)
-            value = *cast(SecureVector!ubyte*)&ber.value;
-        else value = SecureVector!ubyte();
+            value = *cast(SecureArray!ubyte*)&ber.value;
+        else value = SecureArray!ubyte();
         type_tag = ber.type_tag;
         class_tag = ber.class_tag;
     }
@@ -110,12 +110,12 @@ public:
     */
     string toString()
     {
-        if (!*value) value = SecureVector!ubyte();
+        if (!*value) value = SecureArray!ubyte();
         return cast(string) value[].idup;
     }
 
     ASN1Tag type_tag, class_tag;
-    SecureVector!ubyte value;
+    SecureArray!ubyte value;
 }
 
 /**
@@ -152,7 +152,7 @@ class BERBadTag : BERDecodingError
 /*
 * Put some arbitrary bytes into a ASN1Tag.SEQUENCE
 */
-Vector!ubyte putInSequence(in Vector!ubyte contents)
+Array!ubyte putInSequence(const ref Vector!ubyte contents)
 {
     return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)

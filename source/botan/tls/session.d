@@ -199,7 +199,7 @@ public:
     * @param ctext = the ciphertext returned by encrypt
     * @param key = the same key used by the encrypting side
     */
-    static TLSSession decrypt(in Vector!ubyte ctext, in SymmetricKey key)
+    static TLSSession decrypt(const ref Vector!ubyte ctext, in SymmetricKey key)
     {
         return TLSSession.decrypt(ctext.ptr, ctext.length, key);
     }

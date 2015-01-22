@@ -24,7 +24,7 @@ static if (BOTAN_HAS_RW)                   import botan.pubkey.algo.rw;
 static if (BOTAN_HAS_ELGAMAL)              import botan.pubkey.algo.elgamal;
 static if (BOTAN_HAS_ECDH)                 import botan.pubkey.algo.ecdh;
 
-PublicKey makePublicKey(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
+PublicKey makePublicKey(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
 {
     const string alg_name = OIDS.lookup(alg_id.oid);
     if (alg_name == "")
@@ -79,7 +79,7 @@ PublicKey makePublicKey(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key
 }
 
 PrivateKey makePrivateKey(in AlgorithmIdentifier alg_id,
-                             in SecureVector!ubyte key_bits,
+                             const ref SecureVector!ubyte key_bits,
                              RandomNumberGenerator rng)
 {
     const string alg_name = OIDS.lookup(alg_id.oid);

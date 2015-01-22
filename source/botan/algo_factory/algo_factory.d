@@ -269,7 +269,7 @@ public:
         m_pbkdf_cache.add(pbkdf, pbkdf.name, provider);
     }
 
-    @property Vector!Engine engines() {
+    @property ref Vector!Engine engines() {
         return m_engines;
     }
 
@@ -334,7 +334,7 @@ PBKDF engineGetAlgo(T : PBKDF, U : SCANToken)(Engine engine,
 
 const(T) factoryPrototype(T)(in string algo_spec,
                              in string provider,
-                             Vector!( Engine ) engines,
+                             ref Vector!( Engine ) engines,
                              AlgorithmFactory af,
                              AlgorithmCache!T cache) {
 

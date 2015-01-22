@@ -28,7 +28,7 @@ class RSAPublicKey
 public:
     __gshared immutable string algoName = "RSA";
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
         m_pub = new IFSchemePublicKey(alg_id, key_bits, algoName);
     }
@@ -74,7 +74,7 @@ public:
         return signatureConsistencyCheck(rng, m_priv, "EMSA4(SHA-1)");
     }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
     {
         m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, algoName, &checkKey);
         super(m_priv);
@@ -193,7 +193,7 @@ public:
         return BigInt.encodeLocked(x);
     }
 private:
-    BigInt privateOp(in BigInt m) const
+    BigInt privateOp(const ref BigInt m) const
     {
         if (m >= m_n)
             throw new InvalidArgument("RSA private op - input is too large");
@@ -263,7 +263,7 @@ public:
     }
 
 private:
-    BigInt publicOp(in BigInt m) const
+    BigInt publicOp(const ref BigInt m) const
     {
         if (m >= m_n)
             throw new InvalidArgument("RSA public op - input is too large");

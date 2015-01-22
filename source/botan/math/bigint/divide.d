@@ -20,7 +20,7 @@ import botan.constants;
 * @param q = will be set to x / y
 * @param r = will be set to x % y
 */
-void divide(in BigInt x, in BigInt y_arg, ref BigInt q, ref BigInt r)
+void divide(const ref BigInt x, const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 {
     /*
     * Solve x = q * y + r
@@ -107,7 +107,7 @@ private:
 /*
 * Handle signed operands, if necessary
 */
-void signFixup(in BigInt x, in BigInt y, ref BigInt q, ref BigInt r)
+void signFixup(const ref BigInt x, const ref BigInt y, ref BigInt q, ref BigInt r)
 {
     if (x.sign() == BigInt.Negative)
     {

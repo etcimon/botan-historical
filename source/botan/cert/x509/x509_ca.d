@@ -134,7 +134,7 @@ public:
     static X509Certificate makeCert(ref PKSigner signer,
                                     RandomNumberGenerator rng,
                                     in AlgorithmIdentifier sig_algo,
-                                    in Vector!ubyte pub_key,
+                                    const ref Vector!ubyte pub_key,
                                     in X509Time not_before,
                                     in X509Time not_after,
                                     in X509DN issuer_dn,
@@ -204,7 +204,7 @@ private:
     /*
     * Create a CRL
     */
-    X509CRL makeCRL(in Vector!CRLEntry revoked,
+    X509CRL makeCRL(const ref Vector!CRLEntry revoked,
                     uint crl_number, Duration next_update,
                     RandomNumberGenerator rng) const
     {

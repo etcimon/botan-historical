@@ -27,7 +27,7 @@ import botan.utils.types;
 struct DEREncoder
 {
 public:
-    Vector!ubyte getContentsUnlocked()
+    Array!ubyte getContentsUnlocked()
     {
         logTrace("DEREncoder.getContentsUnlocked");
         return unlock(getContents()); 
@@ -36,12 +36,12 @@ public:
     /*
     * Return the encoded m_contents
     */
-    SecureVector!ubyte getContents()
+    SecureArray!ubyte getContents()
     {
         if (m_subsequences.length != 0)
             throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
         
-        SecureVector!ubyte output;
+        SecureArray!ubyte output;
         std.algorithm.swap(output, m_contents);
         return output;
     }
@@ -93,16 +93,16 @@ public:
     /*
     * Write raw bytes into the stream
     */
-    ref DEREncoder rawBytes(in SecureVector!ubyte val)
-    {
-        return rawBytes(val.ptr, val.length);
-    }
-    
-    ref DEREncoder rawBytes(in Vector!ubyte val)
-    {
-        return rawBytes(val.ptr, val.length);
-    }
-    
+	ref DEREncoder rawBytes(T, int ALLOC)(const ref Vector!(T, ALLOC) val)
+	{
+		return rawBytes(val.ptr, val.length);
+	}
+
+	ref DEREncoder rawBytes(T, int ALLOC)(const FreeListRef!(Vector!(T, ALLOC)) val)
+	{
+		return rawBytes(val.ptr, val.length);
+	}
+       
     /*
     * Write raw bytes into the stream
     */
@@ -143,7 +143,7 @@ public:
     /*
     * DER encode a small INTEGER
     */
-    ref DEREncoder encode(in BigInt n)
+    ref DEREncoder encode()(auto ref BigInt n)
     {
         return encode(n, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL);
     }
@@ -151,7 +151,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    ref DEREncoder encode(in SecureVector!ubyte bytes, ASN1Tag real_type)
+    ref DEREncoder encode(const ref SecureVector!ubyte bytes, ASN1Tag real_type)
     {
         return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -159,7 +159,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    ref DEREncoder encode(in Vector!ubyte bytes, ASN1Tag real_type)
+    ref DEREncoder encode(const ref Vector!ubyte bytes, ASN1Tag real_type)
     {
         return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -192,7 +192,7 @@ public:
     /*
     * DER encode an INTEGER
     */
-    ref DEREncoder encode(in BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+    ref DEREncoder encode()(auto ref BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         if (n == BigInt(0))
             return addObject(m_type_tag, m_class_tag, 0);
@@ -215,7 +215,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    ref DEREncoder encode(in SecureVector!ubyte bytes,
+    ref DEREncoder encode(const ref SecureVector!ubyte bytes,
                           ASN1Tag real_type,
                           ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
@@ -225,7 +225,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-    ref DEREncoder encode(in Vector!ubyte bytes,
+    ref DEREncoder encode(const ref Vector!ubyte bytes,
                           ASN1Tag real_type,
                           ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
@@ -286,7 +286,7 @@ public:
         return this;
     }
 
-    ref DEREncoder encodeList(T, int Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) values)
+    ref DEREncoder encodeList(T, int Alloc)(const ref Vector!(T, Alloc) values)
     {
         foreach (const value; values[])
             encode(value);
@@ -325,12 +325,12 @@ public:
     }
 
 
-    ref DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in Vector!ubyte rep)
+    ref DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, const ref Vector!ubyte rep)
     {
         return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
 
-    ref DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, in SecureVector!ubyte rep)
+    ref DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, const ref SecureVector!ubyte rep)
     {
         return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
@@ -400,8 +400,8 @@ private:
         Vector!( SecureVector!ubyte ) m_set_contents;
     }
 
-    SecureVector!ubyte m_contents;
-    Vector!DERSequence m_subsequences;
+    SecureArray!ubyte m_contents;
+    Array!DERSequence m_subsequences;
 }
 
 /*

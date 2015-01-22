@@ -57,23 +57,30 @@ final class ZeroiseAllocator(Base : Allocator)
 }
 
 alias SecureVector(T) = Vector!(T, SecureAllocator);
+alias SecureArray(T) = Array!(T, SecureAllocator);
 
 Vector!(T, VulnerableAllocator) 
-    unlock(T, int ALLOC)(in FreeListRef!(VectorImpl!(T, ALLOC)) input)
-        if (ALLOC == SecureAllocator)
+	unlock(T, int ALLOC)(const ref Vector!(T, ALLOC) input)
+		if (ALLOC == SecureAllocator)
 {
-    Vector!(T, VulnerableAllocator) output = Vector!T(input[]);
-    return output;
+	return Vector!T(input[]);
 }
 
-size_t bufferInsert(T, int Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) buf, size_t buf_offset, in T* input, size_t input_length)
+FreeListRef!(Vector!(T, VulnerableAllocator)) 
+	unlock(T, int ALLOC)(const FreeListRef!(Vector!(T, ALLOC)) input)
+		if (ALLOC == SecureAllocator)
+{
+	return FreeListRef!(Vector!T)(input[]);
+}
+
+size_t bufferInsert(T, int Alloc)(ref Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
 {
     const size_t to_copy = min(input_length, buf.length - buf_offset);
     copyMem(&buf[buf_offset], input, to_copy);
     return to_copy;
 }
 
-size_t bufferInsert(T, int Alloc, int Alloc2)(FreeListRef!(VectorImpl!(T, Alloc)) buf, size_t buf_offset, in FreeListRef!(VectorImpl!(T, Alloc2)) input)
+size_t bufferInsert(T, int Alloc, int Alloc2)(ref Vector!(T, Alloc) buf, size_t buf_offset, const ref Vector!(T, Alloc2) input)
 {
     const size_t to_copy = min(input.length, buf.length - buf_offset);
     copyMem(&buf[buf_offset], input.ptr, to_copy);
@@ -84,9 +91,8 @@ size_t bufferInsert(T, int Alloc, int Alloc2)(FreeListRef!(VectorImpl!(T, Alloc)
 * Zeroise the values; length remains unchanged
 * @param vec = the vector to zeroise
 */
-void zeroise(T, int Alloc)(ref FreeListRef!(VectorImpl!(T, Alloc)) vec)
+void zeroise(T, int Alloc)(ref Vector!(T, Alloc) vec)
 {
-    if (*vec is null) vec = FreeListRef!(VectorImpl!(T, Alloc))();
     clearMem(vec.ptr, vec.length);
 }
 
@@ -98,10 +104,10 @@ void zeroise(T)(T[] mem) {
 * Zeroise the values then free the memory
 * @param vec = the vector to zeroise and free
 */
-void zap(T, int Alloc)(ref FreeListRef!(VectorImpl!(T, Alloc)) vec)
+void zap(T, int Alloc)(ref Vector!(T, Alloc) vec)
 {
     import std.traits : hasIndirections;
     static if (!hasIndirections!T && Alloc != SecureAllocator)
         zeroise(vec);
-    (*vec).clear();
+    vec.clear();
 }

@@ -77,7 +77,7 @@ public:
     Device_EntropySource constructor
     Open a file descriptor to each (available) device in fsnames
     */
-    this(in Vector!string fsnames)
+    this(const ref Vector!string fsnames)
     {
         enum O_NONBLOCK = 0;
         enum O_NOCTTY = 0;

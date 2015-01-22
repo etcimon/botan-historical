@@ -258,15 +258,15 @@ HashMap!(string, string)
             
             if (!ad.empty)
             {
-				static if (BOTAN_HAS_AEAD_FILTER) {
-	                if (AEADFilter enc_aead = cast(AEADFilter)(enc))
-	                {
-	                    enc_aead.setAssociatedData(ad.ptr, ad.length);
-	                    
-	                    if (AEADFilter dec_aead = cast(AEADFilter)(dec))
-	                        dec_aead.setAssociatedData(ad.ptr, ad.length);
-	                }
-				}
+                static if (BOTAN_HAS_AEAD_FILTER) {
+                    if (AEADFilter enc_aead = cast(AEADFilter)(enc))
+                    {
+                        enc_aead.setAssociatedData(ad.ptr, ad.length);
+                        
+                        if (AEADFilter dec_aead = cast(AEADFilter)(dec))
+                            dec_aead.setAssociatedData(ad.ptr, ad.length);
+                    }
+                }
             }
             
             all_results[provider ~ " (encrypt)"] = testFilterKat(enc, input, output);

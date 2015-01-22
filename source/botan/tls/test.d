@@ -34,7 +34,7 @@ public:
         return m_stores;
     }
 
-    override Vector!X509Certificate certChain(in Vector!string cert_key_types, in string type, in string) 
+    override Vector!X509Certificate certChain(const ref Vector!string cert_key_types, in string type, in string) 
     {
         Vector!X509Certificate chain;
         
@@ -56,7 +56,7 @@ public:
     }
     
     override void verifyCertificateChain(in string type, in string purported_hostname,
-                                         in Vector!X509Certificate cert_chain)
+                                         const ref Vector!X509Certificate cert_chain)
     {
         try
         {
@@ -183,7 +183,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
                                 rng,
                                 Vector!string(["test/1", "test/2"]));
     
-    auto next_protocol_chooser = delegate(in Vector!string protos) {
+    auto next_protocol_chooser = delegate(const ref Vector!string protos) {
         if (protos.length != 2)
             logTrace("Bad protocol size");
         if (protos[0] != "test/1" || protos[1] != "test/2")

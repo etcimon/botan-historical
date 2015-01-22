@@ -101,7 +101,7 @@ public:
     * Get this OID as list (vector) of its components.
     * @return vector representing this OID
     */
-    const(Vector!uint) getId() const { return m_id; }
+    const(Array!uint) getId() const { return m_id; }
 
     /**
     * Get this OID as a string
@@ -109,11 +109,11 @@ public:
     */
     override string toString() const
     {
-        return toVector()[].idup;
+        return toArray()[].idup;
     }
 
-    Vector!ubyte toVector() const {
-        Vector!ubyte oid_str;
+    Array!ubyte toArray() const {
+        Array!ubyte oid_str;
         foreach (size_t i; 0 .. m_id.length)
         {
             oid_str ~= to!string(m_id[i]);
@@ -248,21 +248,21 @@ public:
 
     this(const ref OID other)
     {
-        m_id = other.m_id.dup;
+        m_id = other.m_id.dupr;
     }
 
     this(const OIDImpl other)
     {
-        m_id = other.m_id.dup;
+        m_id = other.m_id.dupr;
     }
 
     @property OID dup() const {
         OID oid = OID();
         if (m_id !is null)
-            oid.m_id = m_id.dup;
-        else oid.m_id = Vector!uint();
+            oid.m_id = m_id.dupr;
+        else oid.m_id = Array!uint();
         return oid;
     }
 private:
-    Vector!uint m_id;
+    Array!uint m_id;
 }

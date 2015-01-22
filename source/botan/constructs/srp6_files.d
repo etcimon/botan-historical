@@ -76,8 +76,8 @@ private:
     struct SRP6Data
     {
 
-        this(in BigInt _v,
-             in Vector!ubyte _salt,
+        this(const ref BigInt _v,
+             const ref Vector!ubyte _salt,
              in string _group_id) 
         {
             v = _v.dup;

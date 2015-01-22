@@ -148,7 +148,7 @@ public:
     /*
     * Save all the bytes remaining in the m_source
     */
-    ref BERDecoder rawBytes(SecureVector!ubyte output)
+    ref BERDecoder rawBytes(T, int ALLOC)(ref Vector!(T, ALLOC) output)
     {
         output.clear();
         ubyte buf;
@@ -156,15 +156,15 @@ public:
             output.pushBack(buf);
         return this;
     }
-    
-    ref BERDecoder rawBytes(ref Vector!ubyte output)
-    {
-        output.clear();
-        ubyte buf;
-        while (m_source.readByte(buf))
-            output.pushBack(buf);
-        return this;
-    }
+
+	ref BERDecoder rawBytes(T, int ALLOC)(ref FreeListRef!(Vector!(T, ALLOC)) output)
+	{
+		output.clear();
+		ubyte buf;
+		while (m_source.readByte(buf))
+			output.pushBack(buf);
+		return this;
+	}
 
     /*
     * Decode a BER encoded NULL
@@ -326,7 +326,7 @@ public:
         obj.assertIsA(type_tag, class_tag);
         
         if (real_type == ASN1Tag.OCTET_STRING)
-            buffer = obj.value;
+            buffer[] = obj.value[];
         else
         {
             if (obj.value[0] >= 8)
@@ -352,7 +352,7 @@ public:
         obj.assertIsA(type_tag, class_tag);
         
         if (real_type == ASN1Tag.OCTET_STRING)
-            buffer = unlock(obj.value);
+            buffer = unlock(**(obj.value));
         else
         {
             if (obj.value[0] >= 8)
@@ -476,7 +476,7 @@ public:
     /*
     * Decode a list of homogenously typed values
     */
-    ref BERDecoder decodeList(T, int Alloc)(ref FreeListRef!(VectorImpl!(T, Alloc)) vec,
+    ref BERDecoder decodeList(T, int Alloc)(ref Vector!(T, Alloc) vec,
                                             ASN1Tag type_tag = ASN1Tag.SEQUENCE,
                                             ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
@@ -492,7 +492,6 @@ public:
         list.endCons();
         
         logTrace("decode List ", vec[]);
-
 
         return this;
     }
@@ -518,7 +517,7 @@ public:
     /*
         * Decode an OPTIONAL string type
         */
-    ref BERDecoder decodeOptionalString(int Alloc)(ref FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
+	ref BERDecoder decodeOptionalString(int Alloc)(ref Vector!( ubyte, Alloc ) output,
                                                    ASN1Tag real_type,
                                                    ushort type_no,
                                                    ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
@@ -565,7 +564,7 @@ public:
     this(DataSource src)
     {
         m_pushed = BERObject.init;
-        m_pushed.value = SecureVector!ubyte();
+        m_pushed.value = SecureArray!ubyte();
         m_source = src;
         m_owns = false;
         m_pushed.type_tag = m_pushed.class_tag = ASN1Tag.NO_OBJECT;
@@ -578,7 +577,7 @@ public:
     this(const(ubyte)* data, size_t length)
     {
         m_pushed = BERObject.init;
-        m_pushed.value = SecureVector!ubyte();
+		m_pushed.value = SecureArray!ubyte();
         m_source = cast(DataSource)DataSourceMemory(data, length);
         m_owns = true;
         m_pushed.type_tag = m_pushed.class_tag = ASN1Tag.NO_OBJECT;
@@ -588,29 +587,27 @@ public:
     /*
     * BERDecoder Constructor
     */
-    this(in SecureVector!ubyte data_)
-    {
-        m_pushed = BERObject.init;
-        m_pushed.value = SecureVector!ubyte();
-        SecureVector!ubyte data = data_.dup;
-        m_source = cast(DataSource) DataSourceMemory(data);
-        m_owns = true;
-        m_pushed.type_tag = m_pushed.class_tag = ASN1Tag.NO_OBJECT;
-        m_parent = null;
-    }
+	this(T, int ALLOC)(const ref Vector!(T, ALLOC) data)
+	{
+		m_pushed = BERObject.init;
+		m_pushed.value = SecureArray!ubyte();
+		m_source = cast(DataSource) DataSourceMemory(data.ptr, data.length);
+		m_owns = true;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1Tag.NO_OBJECT;
+		m_parent = null;
+	}
+
+	/// ditto
+	this(T, int ALLOC)(const FreeListRef!(Vector!(T, ALLOC)) data)
+	{
+		m_pushed = BERObject.init;
+		m_pushed.value = SecureArray!ubyte();
+		m_source = cast(DataSource) DataSourceMemory(data.ptr, data.length);
+		m_owns = true;
+		m_pushed.type_tag = m_pushed.class_tag = ASN1Tag.NO_OBJECT;
+		m_parent = null;
+	}
     
-    /*
-    * BERDecoder Constructor
-    */
-    this(in Vector!ubyte data)
-    {
-        m_pushed = BERObject.init;
-        m_pushed.value = SecureVector!ubyte();
-        m_source = cast(DataSource) DataSourceMemory(data.ptr, data.length);
-        m_owns = true;
-        m_pushed.type_tag = m_pushed.class_tag = ASN1Tag.NO_OBJECT;
-        m_parent = null;
-    }
     
     /*
     * BERDecoder Copy Constructor
@@ -618,7 +615,7 @@ public:
     this(BERDecoder other)
     {
         m_pushed = BERObject.init;
-        m_pushed.value = SecureVector!ubyte();
+        m_pushed.value = SecureArray!ubyte();
         m_source = other.m_source;
         m_owns = false;
         if (other.m_owns)
@@ -732,7 +729,7 @@ size_t findEoc(DataSource ber)
         data ~= buffer[];
     }
 
-    auto source = cast(DataSource) DataSourceMemory(data);
+    auto source = cast(DataSource) DataSourceMemory(&data);
     size_t length = 0;
     while (true)
     {

@@ -22,7 +22,7 @@ public:
     /*
     * Blind a number
     */
-    BigInt blind(in BigInt i)
+    BigInt blind(const ref BigInt i)
     {
         if (!m_reducer.initialized())
             return *cast(BigInt*)&i;
@@ -35,7 +35,7 @@ public:
     /*
     * Unblind a number
     */
-    BigInt unblind(in BigInt i) const
+    BigInt unblind(const ref BigInt i) const
     {
         if (!m_reducer.initialized())
             return *cast(BigInt*)&i;

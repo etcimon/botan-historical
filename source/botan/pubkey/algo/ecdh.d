@@ -24,7 +24,7 @@ class ECDHPublicKey
 public:
     __gshared immutable string algoName = "ECDH";
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     { 
         m_pub = new ECPublicKey(alg_id, key_bits, algoName, false);
     }
@@ -34,7 +34,7 @@ public:
     * @param dom_par = the domain parameters associated with this key
     * @param public_point = the public point defining this key
     */
-    this(in ECGroup dom_par, in PointGFp public_point) 
+    this(const ref ECGroup dom_par, const ref PointGFp public_point) 
     {
         m_pub = new ECPublicKey(dom_par, public_point, algoName, false);
     }
@@ -53,7 +53,7 @@ public:
 final class ECDHPrivateKey : ECDHPublicKey
 {
 public:
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
         m_priv = new ECPrivateKey(alg_id, key_bits, algoName, false);
         super(m_priv);
@@ -65,13 +65,13 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = BigInt(0)) 
+	this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = BigInt(0)) 
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, false);
         super(m_priv);
     }
 
-    this(RandomNumberGenerator rng, in ECGroup domain) { this(rng, domain, BigInt(0)); }
+    this(RandomNumberGenerator rng, const ref ECGroup domain) { this(rng, domain, BigInt(0)); }
 
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(m_priv); }
 
@@ -104,7 +104,7 @@ public:
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
-        PointGFp point = OS2ECP(w, w_len, m_curve.dup);
+        PointGFp point = OS2ECP(w, w_len, m_curve);
         
         PointGFp S = (point * m_cofactor) * m_l_times_priv;
 

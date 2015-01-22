@@ -40,7 +40,7 @@ public:
     /*
     * EMSA-Raw Encode Operation
     */
-    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                  size_t,
                                  RandomNumberGenerator)
     {
@@ -50,8 +50,8 @@ public:
     /*
     * EMSA-Raw Verify Operation
     */
-    bool verify(in SecureVector!ubyte coded,
-                in SecureVector!ubyte raw,
+    bool verify(const ref SecureVector!ubyte coded,
+                const ref SecureVector!ubyte raw,
                 size_t)
     {
         if (coded.length == raw.length)

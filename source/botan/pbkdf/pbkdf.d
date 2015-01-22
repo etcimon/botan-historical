@@ -62,7 +62,7 @@ public:
     */
     final OctetString deriveKey(int Alloc)(size_t output_len,
                                        in string passphrase,
-                                       in FreeListRef!(VectorImpl!( ubyte, Alloc )) salt,
+                                       const ref Vector!( ubyte, Alloc ) salt,
                                        size_t iterations) const
     {
         return deriveKey(output_len, passphrase, salt.ptr, salt.length, iterations);
@@ -100,7 +100,7 @@ public:
     */
     final OctetString deriveKey(int Alloc)(size_t output_len,
                                        in string passphrase,
-                                       in Vector!( ubyte, Alloc ) salt,
+                                       const ref Vector!( ubyte, Alloc ) salt,
                                        Duration loop_for,
                                        ref size_t iterations) const
     {

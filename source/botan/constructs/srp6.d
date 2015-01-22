@@ -34,8 +34,8 @@ Pair!(BigInt, SymmetricKey)
                     in string password,
                     in string group_id,
                     in string hash_id,
-                    in Vector!ubyte salt,
-                    in BigInt B,
+                    const ref Vector!ubyte salt,
+                    const ref BigInt B,
                     RandomNumberGenerator rng)
 {
     DLGroup group = DLGroup(group_id);
@@ -75,7 +75,7 @@ Pair!(BigInt, SymmetricKey)
 */
 BigInt generateSrp6Verifier(in string identifier,
                               in string password,
-                              in Vector!ubyte salt,
+                              const ref Vector!ubyte salt,
                               in string group_id,
                               in string hash_id)
 {
@@ -93,7 +93,7 @@ BigInt generateSrp6Verifier(in string identifier,
 * @param g = the group generator
 * @return group identifier
 */
-string srp6GroupIdentifier(in BigInt N, in BigInt g)
+string srp6GroupIdentifier(const ref BigInt N, const ref BigInt g)
 {
     /*
     This function assumes that only one 'standard' SRP parameter set has
@@ -130,7 +130,7 @@ public:
     * @param rng = a random number generator
     * @return SRP-6 B value
     */
-    BigInt step1(in BigInt v,
+    BigInt step1(const ref BigInt v,
                  in string group_id,
                  in string hash_id,
                  RandomNumberGenerator rng)
@@ -160,7 +160,7 @@ public:
     * @param A = the client's value
     * @return shared symmetric key
     */
-    SymmetricKey step2(in BigInt A)
+    SymmetricKey step2(const ref BigInt A)
     {
         if (A <= 0 || A >= m_p)
             throw new Exception("Invalid SRP parameter from client");
@@ -182,8 +182,8 @@ private:
     
 BigInt hashSeq(in string hash_id,
                 size_t pad_to,
-                in BigInt in1,
-                in BigInt in2)
+                const ref BigInt in1,
+                const ref BigInt in2)
 {
     Unique!HashFunction hash_fn = globalState().algorithmFactory().makeHashFunction(hash_id);
     
@@ -196,7 +196,7 @@ BigInt hashSeq(in string hash_id,
 BigInt computeX(in string hash_id,
                  in string identifier,
                  in string password,
-                 in Vector!ubyte salt)
+                 const ref Vector!ubyte salt)
 {
     Unique!HashFunction hash_fn = globalState().algorithmFactory().makeHashFunction(hash_id);
     

@@ -103,9 +103,9 @@ import botan.libstate.libstate;
 private shared size_t total_tests;
 
 SecureVector!ubyte hkdf(string hkdf_algo,
-                         in SecureVector!ubyte ikm,
-                         in SecureVector!ubyte salt,
-                         in SecureVector!ubyte info,
+                         const ref SecureVector!ubyte ikm,
+                         const ref SecureVector!ubyte salt,
+                         const ref SecureVector!ubyte info,
                          size_t L)
 {
     AlgorithmFactory af = globalState().algorithmFactory();

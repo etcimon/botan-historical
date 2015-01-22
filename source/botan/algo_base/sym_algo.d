@@ -47,10 +47,15 @@ public:
         setKey(key.ptr, key.length);
     }
     
-    final void setKey(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
-    {
-        setKey(key.ptr, key.length);
-    }
+	final void setKey(int Alloc)(in FreeListRef!(Vector!( ubyte, Alloc )) key)
+	{
+		setKey(key.ptr, key.length);
+	}
+
+	final void setKey(int Alloc)(const ref Vector!( ubyte, Alloc ) key)
+	{
+		setKey(key.ptr, key.length);
+	}
     
     /**
     * Set the symmetric key of this object.

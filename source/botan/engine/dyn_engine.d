@@ -17,8 +17,8 @@ import botan.utils.dyn_load.dyn_load;
 final class DynamicallyLoadedEngine : Engine
 {
 private:
-	DynamicallyLoadedLibrary m_lib;
-	Engine m_engine;
+    DynamicallyLoadedLibrary m_lib;
+    Engine m_engine;
 public:
     /**
     * @param lib_path = full pathname to DLL to load
@@ -96,12 +96,12 @@ public:
         return m_engine.getCipher(algo_spec, dir, af);
     }
 
-	static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+    static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
-	ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
-	{
-		return m_engine.modExp(n, hints);
-	}
+    ModularExponentiator modExp(const ref BigInt n, PowerMod.UsageHints hints) const
+    {
+        return m_engine.modExp(n, hints);
+    }
 
     KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
     {

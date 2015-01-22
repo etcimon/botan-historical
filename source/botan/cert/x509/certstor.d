@@ -23,7 +23,7 @@ public:
     /**
     * Subject DN and (optionally) key identifier
     */
-    X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const;
+    X509Certificate findCert(in X509DN subject_dn, const ref Vector!ubyte key_id) const;
 
     X509CRL findCrlFor(in X509Certificate subject) const;
 
@@ -78,7 +78,7 @@ public:
         return subjects;
     }
 
-    override X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
+    override X509Certificate findCert(in X509DN subject_dn, const ref Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -133,7 +133,7 @@ private:
 final class CertificateStoreOverlay : CertificateStore
 {
 public:
-    this(in Vector!X509Certificate certs)
+    this(const ref Vector!X509Certificate certs)
     {
         m_certs = certs;
     }
@@ -148,7 +148,7 @@ public:
         return subjects;
     }
 
-    override X509Certificate findCert(in X509DN subject_dn, in Vector!ubyte key_id) const
+    override X509Certificate findCert(in X509DN subject_dn, const ref Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -157,8 +157,8 @@ private:
 }
 
 X509Certificate certSearch(in X509DN subject_dn, 
-                           in Vector!ubyte key_id, 
-                           in Vector!X509Certificate certs)
+                           const ref Vector!ubyte key_id, 
+                           const ref Vector!X509Certificate certs)
 {
     foreach (cert; certs[])
     {

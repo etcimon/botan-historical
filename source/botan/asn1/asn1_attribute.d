@@ -28,19 +28,19 @@ public:
     /*
     * Create an Attribute
     */
-    this(OID attr_oid, Vector!ubyte attr_value)
+    this(OID attr_oid, ref Vector!ubyte attr_value)
     {
         oid = attr_oid;
-        parameters = attr_value;
+        parameters = attr_value.dup;
     }
     
     /*
     * Create an Attribute
     */
-    this(in string attr_oid, Vector!ubyte attr_value)
+    this(in string attr_oid, ref Vector!ubyte attr_value)
     {
         oid = OIDS.lookup(attr_oid);
-        parameters = attr_value;
+        parameters = attr_value.dup;
     }
     
     /*

@@ -32,10 +32,10 @@ public:
 
     abstract Vector!ubyte send(in HandshakeMessage msg);
 
-    abstract const(Vector!ubyte) format(in Vector!ubyte handshake_msg,
+    abstract const(Vector!ubyte) format(const ref Vector!ubyte handshake_msg,
                                         HandshakeType handshake_type) const;
 
-    abstract void addRecord(in Vector!ubyte record,
+    abstract void addRecord(const ref Vector!ubyte record,
                             RecordType type,
                             ulong sequence_number);
 
@@ -51,7 +51,7 @@ public:
 package final class StreamHandshakeIO : HandshakeIO
 {
 public:
-    this(void delegate(ubyte, in Vector!ubyte) writer) 
+    this(void delegate(ubyte, const ref Vector!ubyte) writer) 
     {
         m_send_hs = writer;
     }
@@ -76,7 +76,7 @@ public:
         return buf;
     }
 
-    override const(Vector!ubyte) format(in Vector!ubyte msg, HandshakeType type) const
+    override const(Vector!ubyte) format(const ref Vector!ubyte msg, HandshakeType type) const
     {
         Vector!ubyte send_buf = Vector!ubyte(4 + msg.length);
         
@@ -91,7 +91,7 @@ public:
         return send_buf;
     }
 
-    override void addRecord(in Vector!ubyte record, RecordType record_type, ulong)
+    override void addRecord(const ref Vector!ubyte record, RecordType record_type, ulong)
     {
         if (record_type == HANDSHAKE)
         {
@@ -134,7 +134,7 @@ public:
 
 private:
     Vector!ubyte m_queue;
-    void delegate(ubyte, in Vector!ubyte) m_send_hs;
+    void delegate(ubyte, const ref Vector!ubyte) m_send_hs;
 }
 
 /**
@@ -143,7 +143,7 @@ private:
 package final class DatagramHandshakeIO : HandshakeIO
 {
 public:
-    this(ConnectionSequenceNumbers seq, void delegate(ushort, ubyte, in Vector!ubyte) writer) 
+    this(ConnectionSequenceNumbers seq, void delegate(ushort, ubyte, const ref Vector!ubyte) writer) 
     {
         m_seqs = seq;
         m_flights.length = 1;
@@ -206,12 +206,12 @@ public:
         return no_fragment.dup;
     }
 
-    override const(Vector!ubyte) format(in Vector!ubyte msg, HandshakeType type) const
+    override const(Vector!ubyte) format(const ref Vector!ubyte msg, HandshakeType type) const
     {
         return formatWSeq(msg, type, cast(ushort) (m_in_message_seq - 1));
     }
 
-    override void addRecord(in Vector!ubyte record,
+    override void addRecord(const ref Vector!ubyte record,
                              RecordType record_type,
                              ulong record_sequence)
     {
@@ -314,7 +314,7 @@ private:
         return send_buf;
     }
 
-    Vector!ubyte formatWSeq(in Vector!ubyte msg,
+    Vector!ubyte formatWSeq(const ref Vector!ubyte msg,
                      HandshakeType type,
                      ushort msg_sequence) const
     {
@@ -412,7 +412,7 @@ private:
     ushort m_mtu = 1280 - 40 - 8;
     ushort m_in_message_seq = 0;
     ushort m_out_message_seq = 0;
-    void delegate(ushort, ubyte, in Vector!ubyte) m_send_hs;
+    void delegate(ushort, ubyte, const ref Vector!ubyte) m_send_hs;
 
     static struct FlightData {
         ushort epoch;

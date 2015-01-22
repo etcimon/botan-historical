@@ -188,7 +188,7 @@ public:
 
     override size_t minimumFinalSize() const { return 0; }
 
-    override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -307,7 +307,7 @@ public:
 
     override size_t minimumFinalSize() const { return tagSize(); }
 
-    override void update(SecureVector!ubyte buffer, size_t offset)
+    override void update(ref SecureVector!ubyte buffer, size_t offset)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -470,7 +470,7 @@ private:
         return m_L[i];
     }
     
-    SecureVector!ubyte polyDouble(in SecureVector!ubyte input)
+    SecureVector!ubyte polyDouble(const ref SecureVector!ubyte input)
     {
         import botan.mac.cmac : CMAC;
         return CMAC.polyDouble(input);
@@ -533,7 +533,7 @@ import botan.hash.sha2_32;
 import botan.block.aes;
 
 Vector!ubyte ocbDecrypt(in SymmetricKey key,
-                         in Vector!ubyte nonce,
+                         const ref Vector!ubyte nonce,
                          const(ubyte)* ct, size_t ct_len,
                          const(ubyte)* ad, size_t ad_len)
 {
@@ -551,7 +551,7 @@ Vector!ubyte ocbDecrypt(in SymmetricKey key,
 }
 
 Vector!ubyte ocbEncrypt(in SymmetricKey key,
-                         in Vector!ubyte nonce,
+                         const ref Vector!ubyte nonce,
                          const(ubyte)* pt, size_t pt_len,
                          const(ubyte)* ad, size_t ad_len)
 {
@@ -580,25 +580,25 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
 }
 
 Vector!ubyte ocbEncrypt(int Alloc, int Alloc2)(in SymmetricKey key,
-                                       in Vector!ubyte nonce,
-                                       in FreeListRef!(VectorImpl!(ubyte, Alloc)) pt,
-                                       in FreeListRef!(VectorImpl!(ubyte, Alloc2)) ad)
+                                       const ref Vector!ubyte nonce,
+                                       const ref Vector!(ubyte, Alloc) pt,
+                                       const ref Vector!(ubyte, Alloc2) ad)
 {
     return ocbEncrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
 Vector!ubyte ocbDecrypt(int Alloc, int Alloc2)(in SymmetricKey key,
-                                       in Vector!ubyte nonce,
-                                       in FreeListRef!(VectorImpl!(ubyte, Alloc)) pt,
-                                       in FreeListRef!(VectorImpl!(ubyte, Alloc2)) ad)
+                                       const ref Vector!ubyte nonce,
+                                       const ref Vector!(ubyte, Alloc) pt,
+                                       const ref Vector!(ubyte, Alloc2) ad)
 {
     return ocbDecrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
 Vector!ubyte ocbEncrypt(OCBEncryption ocb,
-                         in Vector!ubyte nonce,
-                         in Vector!ubyte pt,
-                         in Vector!ubyte ad)
+                         const ref Vector!ubyte nonce,
+                         const ref Vector!ubyte pt,
+                         const ref Vector!ubyte ad)
 {
     ocb.setAssociatedData(&ad[0], ad.length);
     

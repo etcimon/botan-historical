@@ -54,7 +54,7 @@ Vector!string parse(string line)
 }
 
 // c==expected, d==a op b, e==a op= b
-size_t results(string op, in BigInt a, in BigInt b, in BigInt c, in BigInt d, in BigInt e)
+size_t results(string op, const ref BigInt a, const ref BigInt b, const ref BigInt c, const ref BigInt d, const ref BigInt e)
 {
     string op1 = "operator" ~ op;
     string op2 = op1 ~ "=";
@@ -80,7 +80,7 @@ size_t results(string op, in BigInt a, in BigInt b, in BigInt c, in BigInt d, in
     }
 }
 
-size_t checkAdd(in Vector!string args)
+size_t checkAdd(const ref Vector!string args)
 {
     //logTrace("Add: ", cast(ubyte[])args[0][]);
     BigInt a = BigInt(args[0]);
@@ -102,7 +102,7 @@ size_t checkAdd(in Vector!string args)
     return results("+", a, b, c, d, e);
 }
 
-size_t checkSub(in Vector!string args)
+size_t checkSub(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -115,7 +115,7 @@ size_t checkSub(in Vector!string args)
     return results("-", a, b, c, d, e);
 }
 
-size_t checkMul(in Vector!string args)
+size_t checkMul(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -146,7 +146,7 @@ size_t checkMul(in Vector!string args)
     return results("*", a, b, c, d, e);
 }
 
-size_t checkSqr(in Vector!string args)
+size_t checkSqr(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -160,7 +160,7 @@ size_t checkSqr(in Vector!string args)
     return results("sqr", a, a, b, c, d);
 }
 
-size_t checkDiv(in Vector!string args)
+size_t checkDiv(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -173,7 +173,7 @@ size_t checkDiv(in Vector!string args)
     return results("/", a, b, c, d, e);
 }
 
-size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
+size_t checkMod(const ref Vector!string args, RandomNumberGenerator rng)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -205,7 +205,7 @@ size_t checkMod(in Vector!string args, RandomNumberGenerator rng)
     return results("%(word)", a, b, c, BigInt(d2), e);
 }
 
-size_t checkShl(in Vector!string args)
+size_t checkShl(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     size_t b = args[1].to!size_t;
@@ -218,7 +218,7 @@ size_t checkShl(in Vector!string args)
     return results("<<", a, BigInt(b), c, d, e);
 }
 
-size_t checkShr(in Vector!string args)
+size_t checkShr(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     size_t b = args[1].to!size_t;
@@ -232,7 +232,7 @@ size_t checkShr(in Vector!string args)
 }
 
 /* Make sure that (a^b)%m == r */
-size_t checkPowmod(in Vector!string args)
+size_t checkPowmod(const ref Vector!string args)
 {
     BigInt a = BigInt(args[0]);
     BigInt b = BigInt(args[1]);
@@ -255,7 +255,7 @@ size_t checkPowmod(in Vector!string args)
 }
 
 /* Make sure that n is prime or not prime, according to should_be_prime */
-size_t isPrimeTest(in Vector!string args, RandomNumberGenerator rng)
+size_t isPrimeTest(const ref Vector!string args, RandomNumberGenerator rng)
 {
     BigInt n = BigInt(args[0]);
     bool should_be_prime = cast(bool)(args[1] == "1");
@@ -267,7 +267,7 @@ size_t isPrimeTest(in Vector!string args, RandomNumberGenerator rng)
         logError("ERROR: isPrime");
         logDebug("n = ", n);
         logDebug(isPrime, " != ", should_be_prime);
-		return 1;
+        return 1;
     }
     return 0;
 }
@@ -288,34 +288,34 @@ static if (!SKIP_BIGINT_TEST) unittest
     
     size_t total_errors = 0;
     size_t errors = 0, alg_count = 0;
-	size_t total_alg;
+    size_t total_alg;
     string algorithm;
     bool first = true;
     size_t counter = 0;
     
-	AutoSeededRNG rng = AutoSeededRNG();
+    AutoSeededRNG rng = AutoSeededRNG();
     
     while(!test_data.eof)
     {
         if (test_data.error)
             throw new StreamIOError("File I/O error reading from " ~ filename);
-		string line_data = test_data.readln();
-		if (!line_data) break;
-		Vector!ubyte line = Vector!ubyte(line_data[0 .. $-1].strip());
+        string line_data = test_data.readln();
+        if (!line_data) break;
+        Vector!ubyte line = Vector!ubyte(line_data[0 .. $-1].strip());
         if (line.length == 0) continue;
         
         // Do line continuation
         while(line[line.length-1] == '\\' && !test_data.eof())
         {
             line.removeBack();
-			line_data = test_data.readln();
-			if (!line_data) break;
+            line_data = test_data.readln();
+            if (!line_data) break;
             string nextline = line_data[0 .. $-1].strip();
             while(nextline.length > 0) {
                 if (nextline[$-1] == '\\') nextline = nextline[0 .. $-1];
                 line ~= nextline;
-				line_data = test_data.readln();
-				if (!line_data) break;
+                line_data = test_data.readln();
+                if (!line_data) break;
                 nextline = line_data[0 .. $-1].strip();
             }
         }
@@ -328,7 +328,7 @@ static if (!SKIP_BIGINT_TEST) unittest
             algorithm = line[].ptr[1 .. line.length - 1].idup;
             
             total_errors += errors;
-			total_alg += alg_count;
+            total_alg += alg_count;
             errors = 0;
             alg_count = 0;
             counter = 0;
@@ -372,10 +372,10 @@ static if (!SKIP_BIGINT_TEST) unittest
             logError("ERROR: BigInt " ~ algorithm ~ " failed test #" ~ alg_count.to!string);
     }
 
-	testReport("Bigint " ~ algorithm, alg_count, errors);
-	
-	total_errors += errors;
-	total_alg += alg_count;
+    testReport("Bigint " ~ algorithm, alg_count, errors);
+    
+    total_errors += errors;
+    total_alg += alg_count;
     
     testReport("BigInt", total_alg, total_errors);
 }

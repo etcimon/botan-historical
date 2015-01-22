@@ -49,7 +49,7 @@ public:
     /*
     * EMSA_X931 Encode Operation
     */
-    override SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                            size_t output_bits,
                                            RandomNumberGenerator)
     {
@@ -59,8 +59,8 @@ public:
     /*
     * EMSA_X931 Verify Operation
     */
-    bool verify(in SecureVector!ubyte coded,
-                in SecureVector!ubyte raw,
+    bool verify(const ref SecureVector!ubyte coded,
+                const ref SecureVector!ubyte raw,
                 size_t key_bits)
     {
         try
@@ -82,9 +82,9 @@ private:
 
 private:
 
-SecureVector!ubyte emsa2Encoding(in SecureVector!ubyte msg,
+SecureVector!ubyte emsa2Encoding(const ref SecureVector!ubyte msg,
                                    size_t output_bits,
-                                   in SecureVector!ubyte empty_hash,
+                                   const ref SecureVector!ubyte empty_hash,
                                    ubyte hash_id)
 {
     const size_t HASH_SIZE = empty_hash.length;

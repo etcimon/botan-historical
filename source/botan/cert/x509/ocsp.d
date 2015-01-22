@@ -196,9 +196,9 @@ void decodeOptionalList(BERDecoder ber,
 
 /// Does not use trusted roots
 /// Throws if not trusted
-void checkSignature(in Vector!ubyte tbs_response,
+void checkSignature(const ref Vector!ubyte tbs_response,
                      const AlgorithmIdentifier sig_algo,
-                     in Vector!ubyte signature,
+                     const ref Vector!ubyte signature,
                      const X509Certificate cert)
 {
     Unique!PublicKey pub_key = cert.subjectPublicKey();
@@ -218,11 +218,11 @@ void checkSignature(in Vector!ubyte tbs_response,
 
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
-void checkSignature(in Vector!ubyte tbs_response,
+void checkSignature(const ref Vector!ubyte tbs_response,
                      const AlgorithmIdentifier sig_algo,
-                     in Vector!ubyte signature,
+                     const ref Vector!ubyte signature,
                      const CertificateStore trusted_roots,
-                     in Vector!X509Certificate certs)
+                     const ref Vector!X509Certificate certs)
 {
     if (certs.length < 1)
         throw new InvalidArgument("Short cert chain for checkSignature");

@@ -116,7 +116,7 @@ public:
         m_buffer_pos += input_size;
     }
     
-    void write(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input)
+    void write(int Alloc)(const ref Vector!( ubyte, Alloc ) input)
     {
         write(input.ptr, input.length);
     }

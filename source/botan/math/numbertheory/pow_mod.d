@@ -34,7 +34,7 @@ public:
 */
 class PowerMod
 {
-	enum NOGC = true;
+    enum NOGC = true;
 public:
     alias UsageHints = ushort;
     enum : UsageHints {
@@ -90,7 +90,7 @@ public:
     /*
     * Set the modulus
     */
-    void setModulus(in BigInt n, UsageHints hints = NO_HINTS)
+    void setModulus(const ref BigInt n, UsageHints hints = NO_HINTS)
     {
         m_core.free();
         if (n != 0)
@@ -111,7 +111,7 @@ public:
     /*
     * Set the base
     */
-    void setBase(in BigInt b)
+    void setBase(const ref BigInt b)
     {
 
         if (b.isZero() || b.isNegative())
@@ -126,7 +126,7 @@ public:
     /*
     * Set the exponent
     */
-    void setExponent(in BigInt e)
+    void setExponent(const ref BigInt e)
     {
         if (e.isNegative())
             throw new InvalidArgument("PowerMod.setExponent: arg must be > 0");
@@ -146,7 +146,7 @@ public:
         return m_core.execute();
     }
 
-    this(in BigInt n, UsageHints hints = NO_HINTS)
+    this(const ref BigInt n, UsageHints hints = NO_HINTS)
     {
         setModulus(n, hints);
     }
@@ -166,16 +166,16 @@ private:
 */
 class FixedExponentPowerModImpl : PowerMod
 {
-	enum NOGC = true;
+    enum NOGC = true;
 public:
-    BigInt opCall(in BigInt b)
+    BigInt opCall(const ref BigInt b)
     { setBase(b); return execute(); }
 
     /*
     * FixedExponentPowerMod Constructor
     */
-    this(in BigInt e,
-         in BigInt n,
+    this(const ref BigInt e,
+         const ref BigInt n,
          UsageHints hints = NO_HINTS)
     { 
         super(n, UsageHints(hints | EXP_IS_FIXED | chooseExpHints(e, n)));
@@ -190,15 +190,15 @@ public:
 */
 class FixedBasePowerModImpl : PowerMod
 {
-	enum NOGC = true;
+    enum NOGC = true;
 public:
-    BigInt opCall(in BigInt e)
+    BigInt opCall(const ref BigInt e)
     { setExponent(e); return execute(); }
 
     /*
     * FixedBasePowerMod Constructor
     */
-    this(in BigInt b, in BigInt n, UsageHints hints = NO_HINTS)
+    this(const ref BigInt b, const ref BigInt n, UsageHints hints = NO_HINTS)
     {
         super(n, UsageHints(hints | BASE_IS_FIXED | chooseBaseHints(b, n)));
         setBase(b);
@@ -210,7 +210,7 @@ public:
 /*
 * Choose potentially useful hints
 */
-PowerMod.UsageHints chooseBaseHints(in BigInt b, in BigInt n)
+PowerMod.UsageHints chooseBaseHints(const ref BigInt b, const ref BigInt n)
 {
     if (b == 2)
         return cast(PowerMod.UsageHints)(PowerMod.BASE_IS_2 | PowerMod.BASE_IS_SMALL);
@@ -229,7 +229,7 @@ PowerMod.UsageHints chooseBaseHints(in BigInt b, in BigInt n)
 /*
 * Choose potentially useful hints
 */
-PowerMod.UsageHints chooseExpHints(in BigInt e, in BigInt n)
+PowerMod.UsageHints chooseExpHints(const ref BigInt e, const ref BigInt n)
 {
     const size_t e_bits = e.bits();
     const size_t n_bits = n.bits();

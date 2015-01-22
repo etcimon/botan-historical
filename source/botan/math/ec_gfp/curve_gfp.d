@@ -20,15 +20,23 @@ import botan.constants;
 */
 struct CurveGFp
 {
-public:
-    /**
+	this(CurveGFp curve) {
+		logTrace("curveGFp constructor");
+	}
+
+	this(BigInt p, BigInt a, BigInt b, size_t m_p_words, BigInt r2, BigInt a_r, BigInt b_r, word p_dash) {
+		logTrace("curveGFp constructor 2");
+	}
+	
+	/**
     * Construct the elliptic curve E: y^2 = x^3 + ax + b over GF(p)
     * @param p = prime number of the field
     * @param a = first coefficient
     * @param b = second coefficient
     */
     this(BigInt p, BigInt a, BigInt b)
-    {        
+    {
+		logTrace("CurveGFp constructor 3");
         m_p = p;
         m_a = a;
         m_b = b;
@@ -36,12 +44,12 @@ public:
         m_p_dash = montyInverse(m_p.wordAt(0));
         BigInt r = BigInt.powerOf2(m_p_words * BOTAN_MP_WORD_BITS);
 
-        m_r2  = (r * r) % p;
-        m_a_r = (a * r) % p;
-        m_b_r = (b * r) % p;
+        m_r2  = (r * r) % m_p;
+        m_a_r = (m_a * r) % m_p;
+        m_b_r = (m_b * r) % m_p;
     }
 
-    /**
+	/**
     * @return curve coefficient a
     */
     const(BigInt) getA() const { return m_a; }
@@ -86,20 +94,17 @@ public:
     * swaps the states of this and other, does not throw
     * @param other = curve to swap values with
     */
-    void swap(CurveGFp other)
+    void swap(ref CurveGFp other)
     {
+		logTrace("curveGFp swap");
         m_p.swap(other.m_p);
-
         m_a.swap(other.m_a);
         m_b.swap(other.m_b);
-
         m_a_r.swap(other.m_a_r);
         m_b_r.swap(other.m_b_r);
-
-        .swap(m_p_words, other.m_p_words);
-
+        m_p_words = other.m_p_words;
         m_r2.swap(other.m_r2);
-        .swap(m_p_dash, other.m_p_dash);
+        m_p_dash = other.m_p_dash;
     }
 
     /**
@@ -107,7 +112,7 @@ public:
     * @param other = curve to compare with
     * @return true iff this is the same curve as other
     */
-    bool opEquals(in CurveGFp other) const
+    bool opEquals(const ref CurveGFp other) const
     {
         return (m_p == other.m_p &&
                   m_a == other.m_a &&
@@ -120,36 +125,56 @@ public:
     * @param rhs = a curve
     * @return true iff lhs is not the same as rhs
     */
-    int opCmp(in CurveGFp rhs) const
+    int opCmp(ref CurveGFp rhs) const
     {
         if (this == rhs) return 0;
         else return -1;
     }
 
     @property CurveGFp dup() const {
-        CurveGFp ret = CurveGFp(m_p.dup, m_a.dup, m_b.dup);
-        ret.m_p_words = m_p_words;
-        ret.m_r2 = m_r2.dup;
-        ret.m_a_r = m_a_r.dup;
-        ret.m_b_r = m_b_r.dup;
-        ret.m_p_dash = m_p_dash;
-        return ret;
+		logTrace("CurveGFp dup");
+		logDebug(toArray()[]);
+		return CurveGFp(m_p.dup(), m_a.dup(), m_b.dup());
     }
 
-    const ~this() { }
-private:
-    // Curve parameters
-    BigInt m_p, m_a, m_b;
+	@disable this(this);
 
-    size_t m_p_words; // cache of m_p.sigWords()
+	string toString() const {
+		return toArray()[].idup;
+	}
 
-    // Montgomery parameters
-    BigInt m_r2, m_a_r, m_b_r;
-    word m_p_dash;
-}
+	Array!ubyte toArray() const {
+		Array!ubyte ret;
+		ret ~= "m_p: ";
+		ret ~= m_p.toString();
+		ret ~= "\nm_a: ";
+		ret ~= m_a.toString();
+		ret ~= "\nm_b: ";
+		ret ~= m_b.toString();
+		ret ~= "\nm_r2: ";
+		ret ~= m_r2.toString();
+		ret ~= "\nm_a_r: ";
+		ret ~= m_a_r.toString();
+		ret ~= "\nm_b_r: ";
+		ret ~= m_b_r.toString();
+		ret ~= "\nm_p_dash: ";
+		ret ~= m_p_dash.to!string;
+		ret ~= "\nm_p_words: ";
+		ret ~= m_p_words.to!string;
+		ret ~= "\n";
+		return ret;
+	}
 
-void swap(CurveGFp curve1, CurveGFp curve2)
-{
-    import std.algorithm : swap;
-    curve1.swap(curve2);
+	~this() {
+	}
+
+	// Curve parameters
+	BigInt m_p, m_a, m_b;
+	
+	size_t m_p_words; // cache of m_p.sigWords()
+	
+	// Montgomery parameters
+	BigInt m_r2, m_a_r, m_b_r;
+	word m_p_dash;
+
 }

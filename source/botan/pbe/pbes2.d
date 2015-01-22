@@ -110,7 +110,7 @@ public:
     * @param params = the PBES2 parameters
     * @param passphrase = the passphrase to use for decryption
     */
-    this(in Vector!ubyte params, in string passphrase) 
+    this(const ref Vector!ubyte params, in string passphrase) 
     {
         m_direction = DECRYPTION;
         m_block_cipher = null;

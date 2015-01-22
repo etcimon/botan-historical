@@ -99,7 +99,7 @@ string base64Encode(const(ubyte)* input,
 * @param input = some input
 * @return base64adecimal representation of input
 */
-string base64Encode(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) input)
+string base64Encode(int Alloc)(const ref Vector!( ubyte, Alloc ) input)
 {
     return base64Encode(input.ptr, input.length);
 }
@@ -283,7 +283,7 @@ SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
                          exception if whitespace is encountered
 * @return decoded base64 output
 */
-SecureVector!ubyte base64Decode(in Vector!ubyte input, bool ignore_ws = true)
+SecureVector!ubyte base64Decode(const ref Vector!ubyte input, bool ignore_ws = true)
 {
     return base64Decode(input[], ignore_ws);
 }

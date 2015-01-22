@@ -26,8 +26,9 @@ enum {
     VulnerableAllocator = 1
 }
 
-alias VulnerableAllocatorImpl = AutoFreeListAllocator!(MallocAllocator);
-
+static if (BOTAN_HAS_LOCKING_ALLOCATOR)
+alias VulnerableAllocatorImpl = LockAllocator!(AutoFreeListAllocator!(MallocAllocator));
+else alias VulnerableAllocatorImpl = AutoFreeListAllocator!(MallocAllocator);
 R getAllocator(R)() {
     static __gshared R alloc;
     if (!alloc)
@@ -66,8 +67,8 @@ T[] allocArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true)(size
     auto ret = cast(T[])mem;
     static if ( MANAGED )
     {
-		static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
-		else enum NOGC = false;
+        static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+        else enum NOGC = false;
 
         static if( hasIndirections!T && !NOGC )
             GC.addRange(mem.ptr, mem.length);
@@ -88,17 +89,17 @@ void freeArray(T, int ALLOCATOR = VulnerableAllocator, bool MANAGED = true, bool
     else
         auto allocator = getAllocator!SecureAllocatorImpl();
 
-	static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
-	else enum NOGC = false;
+    static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+    else enum NOGC = false;
 
-	static if (MANAGED && hasIndirections!T && !NOGC) {
+    static if (MANAGED && hasIndirections!T && !NOGC) {
         GC.removeRange(array.ptr);
-	}
+    }
     static if (DESTROY && hasElaborateDestructor!T) { // calls destructors
         size_t i;
-        foreach (e; array) {
-			static if (is(T == struct) && isPointer!T) .destroy(*e);
-			else .destroy(e);
+        foreach (ref e; array) {
+            static if (is(T == struct) && isPointer!T) .destroy(*e);
+            else .destroy(e);
             if (++i == max_destroy) break;
         }
     }
@@ -306,18 +307,18 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 {
     enum ElemSize = AllocSize!T;
     
-	static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
-	else enum NOGC = false;
+    static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+    else enum NOGC = false;
 
-	static if( is(T == class) ){
-		alias TR = T;
-	} else static if (__traits(isAbstractClass, T)) {
-		alias TR = T;
-	} else static if (is(T == interface)) {
-		alias TR = T;
-	} else {
-		alias TR = T*;
-	}
+    static if( is(T == class) ){
+        alias TR = T;
+    } else static if (__traits(isAbstractClass, T)) {
+        alias TR = T;
+    } else static if (is(T == interface)) {
+        alias TR = T;
+    } else {
+        alias TR = T*;
+    }
 
     TR alloc(ARGS...)(ARGS args)
     {
@@ -331,9 +332,9 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
     void free(TR obj)
     {
         static if( INIT ){
-			auto objc = obj;
-			static if (is(TR == T*)) .destroy(*objc);
-			else .destroy(objc);
+            auto objc = obj;
+            static if (is(TR == T*)) .destroy(*objc);
+            else .destroy(objc);
         }
         static if( hasIndirections!T && !NOGC ) GC.removeRange(cast(void*)obj);
         getAllocator!VulnerableAllocatorImpl().free((cast(void*)obj)[0 .. ElemSize]);
@@ -343,8 +344,8 @@ template FreeListObjectAlloc(T, bool USE_GC = true, bool INIT = true)
 struct FreeListRef(T, bool INIT = true)
 {
     enum isFreeListRef = true;
-	static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
-	else enum NOGC = false;
+    static if (__traits(hasMember, T, "NOGC")) enum NOGC = T.NOGC;
+    else enum NOGC = false;
     enum ElemSize = AllocSize!T;
     
     static if( is(T == class) ){
@@ -368,7 +369,7 @@ struct FreeListRef(T, bool INIT = true)
         auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);
         ret.m_refCount = cast(ulong*)getAllocator!VulnerableAllocatorImpl().alloc(ulong.sizeof).ptr;
         (*ret.m_refCount) = 1;
-		static if( hasIndirections!T && !NOGC) GC.addRange(mem.ptr, ElemSize);
+        static if( hasIndirections!T && !NOGC) GC.addRange(mem.ptr, ElemSize);
         static if( INIT ) ret.m_object = cast(TR)emplace!(Unqual!T)(mem, args);
         else ret.m_object = cast(TR)mem.ptr;
         return ret;
@@ -411,14 +412,14 @@ struct FreeListRef(T, bool INIT = true)
         
     }
 
-    void opAssign(U)(in U other) const
+    void opAssign(U : FreeListRef)(in U other) const
     {
         if (other.m_object is this.m_object) return;
         static if (is(U == FreeListRef))
             (cast(FreeListRef*)&this).opAssignImpl(*cast(U*)&other);
     }
 
-    ref typeof(this) opAssign(U)(in U other) const
+    ref typeof(this) opAssign(U : FreeListRef)(in U other) const
     {
         if (other.m_object is this.m_object) return;
         static if (is(U == FreeListRef))
@@ -466,7 +467,7 @@ struct FreeListRef(T, bool INIT = true)
             static if (is(TR == T*)) .destroy(*objc);
             else .destroy(objc);
         }
-		static if( hasIndirections!T && !NOGC ) GC.removeRange(cast(void*)m_object);
+        static if( hasIndirections!T && !NOGC ) GC.removeRange(cast(void*)m_object);
         getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_object)[0 .. ElemSize]);
         getAllocator!VulnerableAllocatorImpl().free((cast(void*)m_refCount)[0 .. ulong.sizeof]);
     }
@@ -601,7 +602,7 @@ struct FreeListRef(T, bool INIT = true)
     }
 
     //pragma(msg, T.stringof);
-    static if (T.stringof == `VectorImpl!(ubyte, 2)`) {
+    static if (T.stringof == `Vector!(ubyte, 2)`) {
         void opOpAssign(string op, U)(U input)
             if (op == "^")
         {

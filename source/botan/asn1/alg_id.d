@@ -78,18 +78,18 @@ public:
     /*
     * Create an AlgorithmIdentifier
     */
-    this(OID alg_id, Vector!ubyte param)
+    this(OID alg_id, ref Vector!ubyte param)
     {
         m_oid = alg_id;
-        m_parameters = param;
+        m_parameters = Array!ubyte(param[]);
     }
 
     /*
     * Create an AlgorithmIdentifier
     */
-    this(in string alg_id, Vector!ubyte param) {
+    this(in string alg_id, ref Vector!ubyte param) {
         m_oid = OIDS.lookup(alg_id);
-        m_parameters = param;
+		m_parameters = Array!ubyte(param[]);
     }
 
     /*
@@ -97,7 +97,7 @@ public:
      */
     this(const ref AlgorithmIdentifier other) {
         m_oid = OID(other.m_oid);
-        m_parameters = other.m_parameters.dup;
+		m_parameters = Array!ubyte(other.m_parameters[]);
     }
 
     /*
@@ -125,19 +125,19 @@ public:
         return *cast(OID*) &m_oid;
     }
 
-    @property Vector!ubyte parameters() const {
-        return *cast(Vector!ubyte*) &m_parameters;
+    @property Array!ubyte parameters() const {
+        return *cast(Array!ubyte*) &m_parameters;
     }
 
     @property void oid(OID oid) {
         m_oid = oid;
     }
 
-    @property void parameters(Vector!ubyte param) {
-        m_parameters = param;
+    @property void parameters(ref Vector!ubyte param) {
+		m_parameters = Array!ubyte(param[]);
     }
 
 private:
     OID m_oid;
-    Vector!ubyte m_parameters;
+    Array!ubyte m_parameters;
 }

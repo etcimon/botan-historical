@@ -26,7 +26,7 @@ class IFSchemePublicKey : PublicKey
 {
 public:
 
-    this(in AlgorithmIdentifier, in SecureVector!ubyte key_bits, 
+    this(in AlgorithmIdentifier, const ref SecureVector!ubyte key_bits, 
          in string algo_name,
          bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
@@ -126,7 +126,7 @@ protected:
 final class IFSchemePrivateKey : IFSchemePublicKey, PrivateKey
 {
 public:
-    this(RandomNumberGenerator rng, in AlgorithmIdentifier aid, in SecureVector!ubyte key_bits,
+    this(RandomNumberGenerator rng, in AlgorithmIdentifier aid, const ref SecureVector!ubyte key_bits,
          in string algo_name, bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
         BigInt n, e;

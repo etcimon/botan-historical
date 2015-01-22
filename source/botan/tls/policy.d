@@ -158,7 +158,7 @@ public:
     /**
     * Choose an elliptic curve to use
     */
-    string chooseCurve(in Vector!string curve_names) const
+    string chooseCurve(const ref Vector!string curve_names) const
     {
         const Vector!string our_curves = allowedEccCurves();
 
@@ -363,7 +363,7 @@ private:
 struct CiphersuitePreferenceOrdering
 {
 public:
-    this(in Vector!string ciphers, in Vector!string macs, in Vector!string kex, in Vector!string sigs)
+    this(const ref Vector!string ciphers, const ref Vector!string macs, const ref Vector!string kex, const ref Vector!string sigs)
     {
         m_ciphers = ciphers;
         m_macs = macs;

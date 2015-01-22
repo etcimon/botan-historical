@@ -169,7 +169,7 @@ double timeOp(Duration runtime, void delegate() op)
 }
 
 private double findFirstIn(in HashMap!(string, double) m, 
-                             in Vector!string keys)
+                             const ref Vector!string keys)
 {
     foreach (key; keys[])
     {

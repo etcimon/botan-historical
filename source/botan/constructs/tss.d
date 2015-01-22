@@ -97,7 +97,7 @@ public:
     * @param shares = the list of shares
     */
 
-    static SecureVector!ubyte reconstruct(in Vector!RTSS shares)
+    static SecureVector!ubyte reconstruct(const ref Vector!RTSS shares)
     {
         __gshared immutable size_t RTSS_HEADER_SIZE = 20;
         

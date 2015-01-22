@@ -39,7 +39,7 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-    abstract bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session);
+    abstract bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session);
 
     /**
     * Try to load a saved session (using info about server)
@@ -53,7 +53,7 @@ public:
     /**
     * Remove this session id from the cache, if it exists
     */
-    abstract void removeEntry(in Vector!ubyte session_id);
+    abstract void removeEntry(const ref Vector!ubyte session_id);
 
     /**
     * Save a session on a best effort basis; the manager may not in
@@ -81,13 +81,13 @@ public:
 final class TLSSessionManagerNoop : TLSSessionManager
 {
 public:
-    override bool loadFromSessionId(in Vector!ubyte, ref TLSSession)
+    override bool loadFromSessionId(const ref Vector!ubyte, ref TLSSession)
     { return false; }
 
     override bool loadFromServerInfo(in TLSServerInformation, ref TLSSession)
     { return false; }
 
-    override void removeEntry(in Vector!ubyte) {}
+    override void removeEntry(const ref Vector!ubyte) {}
 
     override void save(in TLSSession) {}
 
@@ -116,7 +116,7 @@ public:
         
     }
 
-    override bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session)
+    override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
     {
         
         return loadFromSessionStr(hexEncode(session_id), session);
@@ -142,7 +142,7 @@ public:
         return false;
     }
 
-    override void removeEntry(in Vector!ubyte session_id)
+    override void removeEntry(const ref Vector!ubyte session_id)
     {        
         auto key = hexEncode(session_id);
         auto val = m_sessions.get(key);

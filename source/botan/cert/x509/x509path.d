@@ -258,9 +258,9 @@ private:
 * PKIX Path Validation
 */
 PathValidationResult 
-    x509PathValidate(in Vector!X509Certificate end_certs,
+    x509PathValidate(const ref Vector!X509Certificate end_certs,
                      in PathValidationRestrictions restrictions,
-                     in Vector!CertificateStore certstores)
+                     const ref Vector!CertificateStore certstores)
 {
     if (end_certs.empty)
         throw new InvalidArgument("x509PathValidate called with no subjects");
@@ -290,7 +290,7 @@ PathValidationResult
 */
 PathValidationResult x509PathValidate(in X509Certificate end_cert,
                                       in PathValidationRestrictions restrictions,
-                                      in Vector!CertificateStore certstores)
+                                      const ref Vector!CertificateStore certstores)
 {
     Vector!X509Certificate certs;
     certs.pushBack(cast(X509Certificate)end_cert);
@@ -316,7 +316,7 @@ PathValidationResult x509PathValidate(in X509Certificate end_cert,
 /**
 * PKIX Path Validation
 */
-PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
+PathValidationResult x509PathValidate(const ref Vector!X509Certificate end_certs,
                                       in PathValidationRestrictions restrictions,
                                       in CertificateStore store)
 {
@@ -328,7 +328,7 @@ PathValidationResult x509PathValidate(in Vector!X509Certificate end_certs,
 
 const(X509Certificate) findIssuingCert(in X509Certificate cert_,
                                        ref CertificateStore end_certs, 
-                                       in Vector!CertificateStore certstores)
+                                       const ref Vector!CertificateStore certstores)
 {
     const X509DN issuer_dn = cert_.issuerDn();
     const Vector!ubyte auth_key_id = cert_.authorityKeyId();
@@ -346,7 +346,7 @@ const(X509Certificate) findIssuingCert(in X509Certificate cert_,
 }
 
 const(X509CRL) findCrlsFor(in X509Certificate cert,
-                           in Vector!CertificateStore certstores)
+                           const ref Vector!CertificateStore certstores)
 {
     foreach (certstore; certstores[])
     {
@@ -378,9 +378,9 @@ const(X509CRL) findCrlsFor(in X509Certificate cert,
 }
 
 Vector!( RedBlackTree!CertificateStatusCode )
-    checkChain(in Vector!X509Certificate cert_path,
+    checkChain(const ref Vector!X509Certificate cert_path,
                 in PathValidationRestrictions restrictions,
-                in Vector!CertificateStore certstores)
+                const ref Vector!CertificateStore certstores)
 {
     const RedBlackTree!string trusted_hashes = restrictions.trustedHashes();
     

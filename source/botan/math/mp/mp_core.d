@@ -1535,36 +1535,36 @@ word word_madd2(word a, word b, word* c)
         *c = cast(word)(s >> BOTAN_MP_WORD_BITS);
         return cast(word)(s);
     } else {
-		version(D_InlineAsm_X86_64) {
-			word* _a = &a;
-			asm pure nothrow @nogc {
+        version(D_InlineAsm_X86_64) {
+            word* _a = &a;
+            asm pure nothrow @nogc {
 
-				mov RAX, a;
-				mov RBX, b;
-				mul RBX;
-				mov RCX, c;
-				mov RBX, [RCX];
-				add RAX, RBX;
-				adc RDX, 0;
-				mov [RCX], RDX;
-				mov RBX, _a;
-				mov [RBX], RAX;
-			}
-			return a;
-		}
-		else {
-	        static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
-	        
-	        word[2] res;
-	        
-	        mul64x64_128(a, b, res);
-	        
-	        res[0] += *c;
-	        res[1] += (res[0] < *c); // carry?
-	        
-	        *c = res[1];
-	        return res[0];
-		}
+                mov RAX, a;
+                mov RBX, b;
+                mul RBX;
+                mov RCX, c;
+                mov RBX, [RCX];
+                add RAX, RBX;
+                adc RDX, 0;
+                mov [RCX], RDX;
+                mov RBX, _a;
+                mov [RBX], RAX;
+            }
+            return a;
+        }
+        else {
+            static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
+            
+            word[2] res;
+            
+            mul64x64_128(a, b, res);
+            
+            res[0] += *c;
+            res[1] += (res[0] < *c); // carry?
+            
+            *c = res[1];
+            return res[0];
+        }
     }
 }
 
@@ -1579,39 +1579,39 @@ word word_madd3(word a, word b, word c, word* d)
         return cast(word)(s);
     } else {
         version(D_InlineAsm_X86_64) {
-			word* _a = &a;
-			asm pure nothrow @nogc {
-				mov RAX, a;
-				mov RBX, b;
-				mul RBX;
-				mov RBX, d;
-				mov RCX, c;
-				add RAX, RCX;
-				adc RDX, 0;
-				add RAX, [RBX];
-				adc RDX, 0;
-				mov [RBX], RDX;
-				mov RBX, _a;
-				mov [RBX], RAX;
-			}
-			return a;
-		}
-		else {
-			static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
-	        
-	        word[2] res;
-	        
-	        mul64x64_128(a, b, res);
-	        
-	        res[0] += c;
-	        res[1] += (res[0] < c); // carry?
-	        
-	        res[0] += *d;
-	        res[1] += (res[0] < *d); // carry?
-	        
-	        *d = res[1];
-	        return res[0];
-		}
+            word* _a = &a;
+            asm pure nothrow @nogc {
+                mov RAX, a;
+                mov RBX, b;
+                mul RBX;
+                mov RBX, d;
+                mov RCX, c;
+                add RAX, RCX;
+                adc RDX, 0;
+                add RAX, [RBX];
+                adc RDX, 0;
+                mov [RBX], RDX;
+                mov RBX, _a;
+                mov [RBX], RAX;
+            }
+            return a;
+        }
+        else {
+            static assert(BOTAN_MP_WORD_BITS == 64, "Unexpected word size");
+            
+            word[2] res;
+            
+            mul64x64_128(a, b, res);
+            
+            res[0] += c;
+            res[1] += (res[0] < c); // carry?
+            
+            res[0] += *d;
+            res[1] += (res[0] < *d); // carry?
+            
+            *d = res[1];
+            return res[0];
+        }
     }
 }
 

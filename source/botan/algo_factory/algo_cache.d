@@ -136,7 +136,7 @@ public:
         foreach(const ref string provider, const ref T instance; m_algorithms[algo]) {
             providers.pushBack(provider);
         }
-        return providers;
+        return providers.dup;
     }
 
     /**

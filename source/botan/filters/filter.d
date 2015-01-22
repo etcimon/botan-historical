@@ -100,18 +100,18 @@ public:
     /**
     * @param input = some input for the filter
     */
-    final void send(in SecureVector!ubyte input) { send(input.ptr, input.length); }
+    final void send(const ref SecureVector!ubyte input) { send(input.ptr, input.length); }
 
     /**
     * @param input = some input for the filter
     */
-    final void send(in Vector!ubyte input) { send(input.ptr, input.length); }
+    final void send(const ref Vector!ubyte input) { send(input.ptr, input.length); }
 
     /**
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-    final void send(in SecureVector!ubyte input, size_t length)
+    final void send(const ref SecureVector!ubyte input, size_t length)
     {
         send(input.ptr, length);
     }
@@ -120,7 +120,7 @@ public:
     * @param input = some input for the filter
     * @param length = the number of bytes of in to send
     */
-    final void send(in Vector!ubyte input, size_t length)
+    final void send(const ref Vector!ubyte input, size_t length)
     {
         send(input.ptr, length);
     }

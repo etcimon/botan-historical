@@ -21,7 +21,7 @@ import botan.filters.filters;
 import botan.filters.hex_filt;
 import botan.math.numbertheory.numthry;
 
-void dumpData(in Vector!ubyte output, in Vector!ubyte expected)
+void dumpData(const ref Vector!ubyte output, const ref Vector!ubyte expected)
 {
     Pipe pipe = Pipe(new HexEncoder);
     

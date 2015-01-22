@@ -169,7 +169,7 @@ public:
     * Deserialize an TLSAlert message
     * @param buf = the serialized alert
     */
-    this(in SecureVector!ubyte buf)
+    this(const ref SecureVector!ubyte buf)
     {
         if (buf.length != 2)
             throw new DecodingError("TLSAlert: Bad size " ~ to!string(buf.length) ~ " for alert message");

@@ -49,7 +49,7 @@ alias HashMap(Key, Value, int ALLOCATOR = VulnerableAllocator) = FreeListRef!(Ha
 
 struct HashMapImpl(Key, Value, int ALLOCATOR)
 {
-	enum NOGC = true;
+    enum NOGC = true;
     alias Traits = DefaultHashMapTraits!Key;
     struct TableEntry {
         UnConst!Key key;
@@ -75,6 +75,7 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
     
     void remove(Key key)
     {
+		logTrace("Remove key: ", Key.stringof, " val: ", Value.stringof);
         auto idx = findIndex(key);
         assert (idx != size_t.max, "Removing non-existent element.");
         auto i = idx;
@@ -260,14 +261,14 @@ struct HashMapImpl(Key, Value, int ALLOCATOR)
         if (!m_hasher) {
 
             
-            static if ((__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toVector") ) ||
-                        __traits(hasMember, Key, "toVector"))
+            static if ((__traits(hasMember, Key, "isFreeListRef") && __traits(hasMember, typeof(*(Key())), "toArray") ) ||
+                        __traits(hasMember, Key, "toArray"))
             {
                 m_hasher = (Key k) {
                     import std.typecons : scoped;
                     import botan.hash.md4;
                     import botan.utils.containers.vector : Vector;
-                    Vector!ubyte s = k.toVector();
+                    Vector!ubyte s = k.toArray();
                     auto md4 = scoped!MD4();
                     md4.update(s);
                     auto hash = md4.finished();

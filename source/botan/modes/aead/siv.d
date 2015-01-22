@@ -39,7 +39,7 @@ public:
         return SecureVector!ubyte();
     }
 
-    override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
@@ -210,7 +210,7 @@ public:
     // Interface fallthrough
     override string provider() const { return "core"; }
     override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-    override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+    override void update(ref SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
     override size_t updateGranularity() const { return super.updateGranularity(); }
     override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
     override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }
@@ -268,7 +268,7 @@ public:
     // Interface fallthrough
     override string provider() const { return "core"; }
     override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len) { return super.start(nonce, nonce_len); }
-    override void update(SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
+    override void update(ref SecureVector!ubyte blocks, size_t offset = 0) { super.update(blocks, offset); }
     override size_t updateGranularity() const { return super.updateGranularity(); }
     override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
     override bool validNonceLength(size_t nonce_len) const { return super.validNonceLength(nonce_len); }

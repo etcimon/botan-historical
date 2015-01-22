@@ -200,7 +200,7 @@ public:
         }
     }
 protected:
-    this(in Vector!uint other_SBOX) {
+    this(const ref Vector!uint other_SBOX) {
         m_SBOX = other_SBOX.dup; 
         m_EK = 8;
     }

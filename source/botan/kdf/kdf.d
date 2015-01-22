@@ -15,7 +15,7 @@ import botan.utils.types;
 import botan.libstate.libstate;
 import botan.algo_base.scan_token;
 import botan.constants;
-static if (BOTAN_HAS_KDF1)     		   import botan.kdf.kdf1;
+static if (BOTAN_HAS_KDF1)                import botan.kdf.kdf1;
 static if (BOTAN_HAS_KDF2)             import botan.kdf.kdf2;
 static if (BOTAN_HAS_X942_PRF)         import botan.kdf.prf_x942;
 static if (BOTAN_HAS_SSL_V3_PRF)       import botan.kdf.prf_ssl3;
@@ -38,7 +38,7 @@ public:
     * @param salt = a diversifier
     */
     SecureVector!ubyte deriveKey(size_t key_len,
-                                 in SecureVector!ubyte secret,
+                                 const ref SecureVector!ubyte secret,
                                  in string salt = "") const
     {
         return deriveKey(key_len, secret.ptr, secret.length,
@@ -54,8 +54,8 @@ public:
     */
     
     SecureVector!ubyte deriveKey(int Alloc, int Alloc2)(size_t key_len,
-                                                in FreeListRef!(VectorImpl!( ubyte, Alloc )) secret,
-                                                in FreeListRef!(VectorImpl!( ubyte, Alloc2 )) salt) const
+                                                        const ref Vector!( ubyte, Alloc ) secret,
+                                                        const ref Vector!( ubyte, Alloc2 ) salt) const
     {
         return deriveKey(key_len, secret.ptr, secret.length, salt.ptr, salt.length);
     }
@@ -68,7 +68,7 @@ public:
     * @param salt_len = size of salt in bytes
     */
     SecureVector!ubyte deriveKey(size_t key_len,
-                                 in SecureVector!ubyte secret,
+                                 const ref SecureVector!ubyte secret,
                                  const(ubyte)* salt,
                                  size_t salt_len) const
     {

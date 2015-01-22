@@ -31,7 +31,7 @@ public:
 
     size_t maxInputBits() const { return (m_pub.groupP().bits() - 1); }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
         m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
@@ -92,7 +92,7 @@ public:
     }
 
     this(in AlgorithmIdentifier alg_id,
-         in SecureVector!ubyte key_bits,
+         const ref SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
         m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);

@@ -79,7 +79,7 @@ public:
     * @param y
     * @return (x * y) % p
     */
-    BigInt multiply(in BigInt x, in BigInt y) const
+    BigInt multiply(const ref BigInt x, const ref BigInt y) const
     { return reduce(x * y); }
 
     /**
@@ -87,7 +87,7 @@ public:
     * @param x
     * @return (x * x) % p
     */
-    BigInt square(in BigInt x) const
+    BigInt square(const ref BigInt x) const
     { return reduce(x.square()); }
 
     /**
@@ -95,7 +95,7 @@ public:
     * @param x
     * @return (x * x * x) % p
     */
-    BigInt cube(in BigInt x) const
+    BigInt cube(const ref BigInt x) const
     { return multiply(x, this.square(x)); }
 
     bool initialized() const { return (m_mod_words != 0); }

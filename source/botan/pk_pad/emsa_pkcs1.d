@@ -45,7 +45,7 @@ public:
     }
 
     override SecureVector!ubyte
-        encodingOf(in SecureVector!ubyte msg,
+        encodingOf(const ref SecureVector!ubyte msg,
                     size_t output_bits,
                     RandomNumberGenerator)
     {
@@ -56,8 +56,8 @@ public:
                               m_hash_id.ptr, m_hash_id.length);
     }
 
-    override bool verify(in SecureVector!ubyte coded,
-                         in SecureVector!ubyte raw,
+    override bool verify(const ref SecureVector!ubyte coded,
+                         const ref SecureVector!ubyte raw,
                          size_t key_bits)
     {
         if (raw.length != m_hash.outputLength)
@@ -98,15 +98,15 @@ public:
         return ret;
     }
 
-    override SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                     size_t output_bits,
                                     RandomNumberGenerator)
     {
         return emsa3Encoding(msg, output_bits, null, 0);
     }
 
-    override bool verify(in SecureVector!ubyte coded,
-                         in SecureVector!ubyte raw,
+    override bool verify(const ref SecureVector!ubyte coded,
+                         const ref SecureVector!ubyte raw,
                          size_t key_bits)
     {
         try
@@ -125,7 +125,7 @@ private:
 
 private:
 
-SecureVector!ubyte emsa3Encoding(in SecureVector!ubyte msg,
+SecureVector!ubyte emsa3Encoding(const ref SecureVector!ubyte msg,
                                 size_t output_bits,
                                 const(ubyte)* hash_id,
                                 size_t hash_id_length)

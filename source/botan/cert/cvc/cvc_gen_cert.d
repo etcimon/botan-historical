@@ -97,7 +97,7 @@ public:
     * @param tbs = the data to be signed
     * @result the correctly encoded body of the object
     */
-    static Vector!ubyte buildCertBody(in Vector!ubyte tbs)
+    static Vector!ubyte buildCertBody(const ref Vector!ubyte tbs)
     {
         return DEREncoder()
                 .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)

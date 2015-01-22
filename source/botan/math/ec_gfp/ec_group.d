@@ -45,10 +45,10 @@ public:
     * @param order = the order of the base point
     * @param cofactor = the cofactor
     */
-    this(CurveGFp curve, PointGFp base_point, BigInt order, BigInt cofactor) 
+    this(ref CurveGFp curve, ref PointGFp base_point, BigInt order, BigInt cofactor) 
     {
-        m_curve = curve;
-        m_base_point = base_point;
+        m_curve = curve.dup;
+        m_base_point = base_point.dup;
         m_order = order;
         m_cofactor = cofactor;
         m_oid = "";
@@ -58,7 +58,7 @@ public:
     * Decode a BER encoded ECC domain parameter set
     * @param ber_data = the bytes of the BER encoding
     */
-    this(in Vector!ubyte ber_data)
+    this(const ref Vector!ubyte ber_data)
     {
         m_curve = CurveGFp.init;
         m_base_point = PointGFp.init;
@@ -126,7 +126,7 @@ public:
         }
     }
 
-    void BER_decode(in Vector!ubyte ber_data) {
+    void BER_decode(const ref Vector!ubyte ber_data) {
         assert(ber_data.length > 0);
         BERDecoder ber = BERDecoder(ber_data);
         BERObject obj = ber.getNextObject();
@@ -228,13 +228,13 @@ public:
     * Return domain parameter curve
     * @result domain parameter curve
     */
-    const(CurveGFp) getCurve() const { return m_curve; }
+    ref const(CurveGFp) getCurve() const { return m_curve; }
 
     /**
     * Return domain parameter curve
     * @result domain parameter curve
     */
-    const(PointGFp) getBasePoint() const { return m_base_point; }
+    ref const(PointGFp) getBasePoint() const { return m_base_point; }
 
     /**
     * Return the order of the base point
@@ -271,7 +271,9 @@ public:
     }
 
     @property ECGroup dup() const {
-        ECGroup other = ECGroup(m_curve.dup, m_base_point.dup, m_order.dup, m_cofactor.dup);
+		auto curve = m_curve.dup;
+		auto base_point = m_base_point.dup;
+        ECGroup other = ECGroup(curve, base_point, m_order.dup, m_cofactor.dup);
         other.m_oid = m_oid.idup;
         return other;
     }

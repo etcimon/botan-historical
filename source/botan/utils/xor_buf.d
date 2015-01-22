@@ -81,24 +81,24 @@ pure {
         }
     }
 }
-void xorBuf(int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
-                                      FreeListRef!(VectorImpl!( ubyte, Alloc2 )) input,
+void xorBuf(int Alloc, int Alloc2)(ref Vector!( ubyte, Alloc ) output,
+                                   ref Vector!( ubyte, Alloc2 ) input,
                                    size_t n)
 {
     xorBuf(output.ptr, input.ptr, n);
 }
 
-void xorBuf(int Alloc)(FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
-                          const(ubyte)* input,
+void xorBuf(int Alloc)(ref Vector!( ubyte, Alloc ) output,
+                       const(ubyte)* input,
                        size_t n)
 {
     xorBuf(output.ptr, input, n);
 }
 
-void xorBuf(int Alloc, int Alloc2)(FreeListRef!(VectorImpl!( ubyte, Alloc )) output,
-                                      const(ubyte)* input,
-                                      FreeListRef!(VectorImpl!( ubyte, Alloc2 )) input2,
-                                     size_t n)
+void xorBuf(int Alloc, int Alloc2)(ref Vector!( ubyte, Alloc ) output,
+                                   const(ubyte)* input,
+                                   ref Vector!( ubyte, Alloc2 ) input2,
+                                   size_t n)
 {
     xorBuf(output.ptr, input, input2.ptr, n);
 }

@@ -25,7 +25,7 @@ public:
         m_s = s;
     }
 
-    this(in Vector!ubyte ber)
+    this(const ref Vector!ubyte ber)
     {
         BERDecoder(ber)
                 .startCons(ASN1Tag.SEQUENCE)
@@ -86,7 +86,7 @@ private:
     BigInt m_s;
 }
 
-ECDSASignature decodeConcatenation(in Vector!ubyte concat)
+ECDSASignature decodeConcatenation(const ref Vector!ubyte concat)
 {
     if (concat.length % 2 != 0)
         throw new InvalidArgument("Erroneous length of signature");

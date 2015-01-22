@@ -33,9 +33,9 @@ struct FPE {
     * @param key = a random key
     * @param tweak = will modify the ciphertext (think of as an IV)
     */
-    static BigInt fe1Encrypt(in BigInt n0, in BigInt X0,
+    static BigInt fe1Encrypt(const ref BigInt n0, const ref BigInt X0,
                              in SymmetricKey key,
-                             in Vector!ubyte tweak)
+                             const ref Vector!ubyte tweak)
     {
         BigInt n = n0.dup;
         FPEEncryptor F = scoped!FPEEncryptor(key, n, tweak);
@@ -67,7 +67,7 @@ struct FPE {
     * @param key = is the key used for encryption
     * @param tweak = the same tweak used for encryption
     */
-    static BigInt fe1Decrypt(in BigInt n0, in BigInt X0, in SymmetricKey key, in Vector!ubyte tweak)
+    static BigInt fe1Decrypt(const ref BigInt n0, const ref BigInt X0, in SymmetricKey key, const ref Vector!ubyte tweak)
     {
         BigInt n = n0.dup;
         auto F = scoped!FPEEncryptor(key, n, tweak);
@@ -145,7 +145,7 @@ void factor(BigInt n, ref BigInt a, ref BigInt b)
 * so 3 rounds is safe. The FPE factorization routine should always
 * return a >= b, so just confirm that and return 3.
 */
-size_t rounds(in BigInt a, in BigInt b)
+size_t rounds(const ref BigInt a, const ref BigInt b)
 {
     if (a < b)
         throw new LogicError("FPE rounds: a < b");
@@ -158,7 +158,7 @@ size_t rounds(in BigInt a, in BigInt b)
 final class FPEEncryptor
 {
 public:
-    this(in SymmetricKey key, in BigInt n, in Vector!ubyte tweak)
+    this(in SymmetricKey key, const ref BigInt n, const ref Vector!ubyte tweak)
     {
 
         m_mac = new HMAC(new SHA256);
@@ -179,7 +179,7 @@ public:
     }
 
     
-    BigInt opCall(size_t round_no, in BigInt R)
+    BigInt opCall(size_t round_no, const ref BigInt R)
     {
         SecureVector!ubyte r_bin = BigInt.encodeLocked(R);
 

@@ -36,7 +36,7 @@ public:
     * Add new input to process.
     * @param input = the input to process as a SecureVector
     */
-    final void update(in SecureVector!ubyte input)
+    final void update(const ref SecureVector!ubyte input)
     {
         addData(input.ptr, input.length);
     }
@@ -45,7 +45,7 @@ public:
     * Add new input to process.
     * @param input = the input to process as a Vector
     */
-    final void update(in Vector!ubyte input)
+    final void update(const ref Vector!ubyte input)
     {
         addData(input.ptr, input.length);
     }
@@ -142,7 +142,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(in SecureVector!ubyte input)
+    final SecureVector!ubyte process(const ref SecureVector!ubyte input)
     {
         addData(input.ptr, input.length);
         return finished();
@@ -154,7 +154,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(in Vector!ubyte input)
+    final SecureVector!ubyte process(const ref Vector!ubyte input)
     {
         addData(input.ptr, input.length);
         return finished();

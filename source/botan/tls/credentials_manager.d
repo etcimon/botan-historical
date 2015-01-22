@@ -60,7 +60,7 @@ public:
     */
     abstract void verifyCertificateChain(in string type,
                                          in string purported_hostname,
-                                         in Vector!X509Certificate cert_chain)
+                                         const ref Vector!X509Certificate cert_chain)
     {
         if (cert_chain.empty)
             throw new InvalidArgument("Certificate chain was empty");
@@ -98,7 +98,7 @@ public:
     *
     * @param context = specifies a context relative to type.
     */
-    abstract Vector!X509Certificate certChain(in Vector!string cert_key_types,
+    abstract Vector!X509Certificate certChain(const ref Vector!string cert_key_types,
                                               in string type,
                                               in string context)
     {
@@ -234,7 +234,7 @@ public:
 
 private:
 
-bool certInSomeStore(in Vector!CertificateStore trusted_CAs, in X509Certificate trust_root)
+bool certInSomeStore(const ref Vector!CertificateStore trusted_CAs, in X509Certificate trust_root)
 {
     foreach (const ref CertificateStore CAs; trusted_CAs[])
         if (CAs.certificateKnown(trust_root))

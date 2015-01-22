@@ -33,7 +33,7 @@ public:
          RandomNumberGenerator rng,
          in TLSServerInformation server_info = TLSServerInformation(),
          in TLSProtocolVersion offer_version = TLSProtocolVersion.latestTlsVersion(),
-         string delegate(in Vector!string) next_protocol = null)
+         string delegate(const ref Vector!string) next_protocol = null)
     {
         m_read_fn = read_fn;
         m_channel = new TLSClient(write_fn, &dataCb, &alertCb, &handshakeCb, session_manager, creds,

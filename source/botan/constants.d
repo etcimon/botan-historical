@@ -1,6 +1,6 @@
 module botan.constants;
 
-const LogLevel = Debug;
+const LogLevel = Trace;
 
 const SKIP_TRANSFORM_TEST = true;
 const SKIP_X509_TEST = true;
@@ -12,7 +12,8 @@ const SKIP_TSS_TEST = true;
 const SKIP_HASH_TEST = true;
 const SKIP_KDF_TEST = true;
 const SKIP_MAC_TEST = true;
-const SKIP_BIGINT_TEST = false;
+const SKIP_BIGINT_TEST = true;
+const SKIP_EC_GFP_TEST = false;
 
 const BOTAN_VERSION_MAJOR = 2;
 const BOTAN_VERSION_MINOR = 0;
@@ -22,7 +23,6 @@ const BOTAN_VERSION_RELEASE_TYPE = "unreleased";
 const BOTAN_VERSION_VC_REVISION = "123";
 const BOTAN_DISTRIBUTION_INFO = "unspecified";
 
-// Guessing these are okay this way.
 const BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS = true;
 const BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK = true;
 const BOTAN_TARGET_HAS_NATIVE_UINT128 = false;
@@ -84,48 +84,48 @@ else                          const BOTAN_HAS_SIMD_SCALAR = false;
 
 version(No_SSE_Intrinsics){   const BOTAN_NO_SSE_INTRINSICS = true;      static assert(!BOTAN_HAS_SIMD_SSE2);             }
 else                          const BOTAN_NO_SSE_INTRINSICS = false;
-//version(Locking_Allocator){   const BOTAN_HAS_LOCKING_ALLOCATOR = true;                                                 }
-//else                          const BOTAN_HAS_LOCKING_ALLOCATOR = false;
+version(Locking_Allocator){   const BOTAN_HAS_LOCKING_ALLOCATOR = true;                                                   }
+else                          const BOTAN_HAS_LOCKING_ALLOCATOR = false;
 
 version(Bench)           {    const BOTAN_HAS_BENCHMARK = true;                                                           }
 else                          const BOTAN_HAS_BENCHMARK = false;
 
-version(Self_Tests)		 {    const BOTAN_HAS_SELFTESTS = true;															  }
-else					 	  const BOTAN_HAS_SELFTESTS = false;
+version(Self_Tests)      {    const BOTAN_HAS_SELFTESTS = true;                                                           }
+else                           const BOTAN_HAS_SELFTESTS = false;
 version(RT_Test)         {    const BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD = true;                                        }
 else                          const BOTAN_PUBLIC_KEY_STRONG_CHECKS_ON_LOAD = false;
 version(RT_Test_Priv)    {    const BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD = true;                                       }
 else                          const BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_LOAD = false;
 version(RT_Test_Priv_Gen){    const BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE = true;                                   }
 else                          const BOTAN_PRIVATE_KEY_STRONG_CHECKS_ON_GENERATE = false;
-version(PUBKEY)			 {	  const BOTAN_HAS_PUBLIC_KEY_CRYPTO = true;													  }
-else						  const BOTAN_HAS_PUBLIC_KEY_CRYPTO = false;
-version(TLS)			 {	  const BOTAN_HAS_TLS = true;																  }
-else						  const BOTAN_HAS_TLS = false;
-version(X509)			 {	  const BOTAN_HAS_X509_CERTIFICATES = true;													  }
-else						  const BOTAN_HAS_X509_CERTIFICATES = false;																  
-version(CVC)			 {	  const BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES = true;										  }
-else					      const BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES = false;
-version(SQLite)			 {	  const BOTAN_HAS_SQLITE = true;															  }
-else						  const BOTAN_HAS_SQLITE = false;
-version(AONT)			 {	  const BOTAN_HAS_AONT = true;																  }
-else						  const BOTAN_HAS_AONT = false;
-version(CryptoBox)		 {	  const BOTAN_HAS_CRYPTOBOX = true;															  }
-else						  const BOTAN_HAS_CRYPTOBOX = false;
-version(CryptoBox_PSK)	 {	  const BOTAN_HAS_CRYPTOBOX_PSK = true;														  }
-else						  const BOTAN_HAS_CRYPTOBOX_PSK = false;
-version(FPE_FE1)		 {	  const BOTAN_HAS_FPE_FE1 = true;															  }
-else						  const BOTAN_HAS_FPE_FE1 = false;
-version(RFC3394)		 {	  const BOTAN_HAS_RFC3394_KEYWRAP = true;													  }
-else						  const BOTAN_HAS_RFC3394_KEYWRAP = false;
-version(PassHash9)		 {	  const BOTAN_HAS_PASSHASH9 = true;															  }
-else						  const BOTAN_HAS_PASSHASH9 = false;
-version(BCrypt)			 {	  const BOTAN_HAS_BCRYPT = true;															  }
-else					 	  const BOTAN_HAS_BCRYPT = false;
-version(SRP6)			 {	  const BOTAN_HAS_SRP6 = true;																  }
-else						  const BOTAN_HAS_SRP6 = false;
-version(TSS)			 {	  const BOTAN_HAS_THRESHOLD_SECRET_SHARING = true;											  }
-else						  const BOTAN_HAS_THRESHOLD_SECRET_SHARING = false;
+version(PUBKEY)          {    const BOTAN_HAS_PUBLIC_KEY_CRYPTO = true;                                                   }
+else                          const BOTAN_HAS_PUBLIC_KEY_CRYPTO = false;
+version(TLS)             {    const BOTAN_HAS_TLS = true;                                                                 }
+else                          const BOTAN_HAS_TLS = false;
+version(X509)            {    const BOTAN_HAS_X509_CERTIFICATES = true;                                                   }
+else                          const BOTAN_HAS_X509_CERTIFICATES = false;
+version(CVC)             {    const BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES = true;                                        }
+else                          const BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES = false;
+version(SQLite)          {    const BOTAN_HAS_SQLITE = true;                                                              }
+else                          const BOTAN_HAS_SQLITE = false;
+version(AONT)            {    const BOTAN_HAS_AONT = true;                                                                }
+else                          const BOTAN_HAS_AONT = false;
+version(CryptoBox)       {    const BOTAN_HAS_CRYPTOBOX = true;                                                           }
+else                          const BOTAN_HAS_CRYPTOBOX = false;
+version(CryptoBox_PSK)   {    const BOTAN_HAS_CRYPTOBOX_PSK = true;                                                       }
+else                          const BOTAN_HAS_CRYPTOBOX_PSK = false;
+version(FPE_FE1)         {    const BOTAN_HAS_FPE_FE1 = true;                                                             }
+else                          const BOTAN_HAS_FPE_FE1 = false;
+version(RFC3394)         {    const BOTAN_HAS_RFC3394_KEYWRAP = true;                                                     }
+else                          const BOTAN_HAS_RFC3394_KEYWRAP = false;
+version(PassHash9)       {    const BOTAN_HAS_PASSHASH9 = true;                                                           }
+else                          const BOTAN_HAS_PASSHASH9 = false;
+version(BCrypt)          {    const BOTAN_HAS_BCRYPT = true;                                                              }
+else                          const BOTAN_HAS_BCRYPT = false;
+version(SRP6)            {    const BOTAN_HAS_SRP6 = true;                                                                }
+else                          const BOTAN_HAS_SRP6 = false;
+version(TSS)             {    const BOTAN_HAS_THRESHOLD_SECRET_SHARING = true;                                            }
+else                          const BOTAN_HAS_THRESHOLD_SECRET_SHARING = false;
 version(KDF1)            {    const BOTAN_HAS_KDF1 = true;                                                                }
 else                          const BOTAN_HAS_KDF1 = false;
 version(KDF2)            {    const BOTAN_HAS_KDF2 = true;                                                                }

@@ -33,7 +33,7 @@ public:
     * @param dom_par = the domain parameters associated with this key
     * @param public_point = the public point defining this key
     */
-    this(in ECGroup dom_par, in PointGFp public_point) 
+    this(const ref ECGroup dom_par, const ref PointGFp public_point) 
     {
         m_pub = new ECPublicKey(dom_par, public_point, algoName, true, 2);
         m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
@@ -42,7 +42,7 @@ public:
     /**
     * Construct from X.509 algorithm id and subject public key bits
     */
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
         OID ecc_param_id;
         
@@ -66,7 +66,7 @@ public:
         BigInt x = BigInt(bits.ptr, part_size);
         BigInt y = BigInt(&bits[part_size], part_size);
         
-        PointGFp public_point = PointGFp(domain().getCurve().dup, x, y);
+        PointGFp public_point = PointGFp(domain().getCurve(), x, y);
         m_pub = new ECPublicKey(domain_params, public_point, algoName, true, 2);
 
         m_pub.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
@@ -122,7 +122,7 @@ final class GOST3410PrivateKey : GOST3410PublicKey
 {
 public:
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits)
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
         m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 2);
         m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
@@ -135,7 +135,7 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-    this(RandomNumberGenerator rng, in ECGroup domain, BigInt x = 0)
+    this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = 0)
     {
         m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 2);
         m_priv.setCB(null, &x509SubjectPublicKey, &algorithmIdentifier);
@@ -314,7 +314,8 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     
     foreach (gost; gost_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!GOST3410PrivateKey(rng, ECGroup(OIDS.lookup(gost)));
+		auto ec = ECGroup(OIDS.lookup(gost));
+        auto key = scoped!GOST3410PrivateKey(rng, ec);
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key.Scoped_payload, rng);
     }
@@ -332,7 +333,7 @@ size_t gostVerify(string group_id,
     AutoSeededRNG rng;
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-    PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve().dup);
+    PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve());
     
     auto gost = scoped!GOST3410PublicKey(group, public_point);
     

@@ -114,7 +114,7 @@ protected:
 private:
     
 void comb4p_round(SecureVector!ubyte output,
-                  in SecureVector!ubyte input,
+                  const ref SecureVector!ubyte input,
                   ubyte round_no,
                   HashFunction h1,
                   HashFunction h2)

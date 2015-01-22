@@ -14,7 +14,7 @@ pure:
 */
 void clearMem(T)(T* ptr, size_t n)
 {
-	setMem(ptr,n,0);
+    setMem(ptr,n,0);
 }
 
 /**

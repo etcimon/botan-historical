@@ -122,7 +122,7 @@ public:
         delete m_db;
     }
 
-    override bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session)
+    override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions where session_id = ?1");
         
@@ -172,7 +172,7 @@ public:
         return false;
     }
 
-    override void removeEntry(in Vector!ubyte session_id)
+    override void removeEntry(const ref Vector!ubyte session_id)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "delete from tls_sessions where session_id = ?1");
         

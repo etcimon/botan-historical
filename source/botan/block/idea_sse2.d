@@ -119,35 +119,35 @@ __m128i mul(__m128i X, ushort K_16) pure
 */
 void transpose_in(__m128i* B0, __m128i* B1, __m128i* B2, __m128i* B3) pure
 {
-	const SHUF = _MM_SHUFFLE(1, 3, 0, 2);
-	const SHUF2 = _MM_SHUFFLE(3, 1, 2, 0);
+    const SHUF = _MM_SHUFFLE(1, 3, 0, 2);
+    const SHUF2 = _MM_SHUFFLE(3, 1, 2, 0);
 
-	__m128i T0;
-	__m128i T1;
-	__m128i T2;
-	__m128i T3;
-	{
-		__m128i B0_ = *B0;
-		__m128i B1_ = *B1;
-		__m128i B2_ = *B2;
-		__m128i B3_ = *B3;
-		T0 = _mm_unpackhi_epi32(B0_, B1_);
-		T1 = _mm_unpacklo_epi32(B0_, B1_);
-		T2 = _mm_unpackhi_epi32(B2_, B3_);
-		T3 = _mm_unpacklo_epi32(B2_, B3_);
-	}
+    __m128i T0;
+    __m128i T1;
+    __m128i T2;
+    __m128i T3;
+    {
+        __m128i B0_ = *B0;
+        __m128i B1_ = *B1;
+        __m128i B2_ = *B2;
+        __m128i B3_ = *B3;
+        T0 = _mm_unpackhi_epi32(B0_, B1_);
+        T1 = _mm_unpacklo_epi32(B0_, B1_);
+        T2 = _mm_unpackhi_epi32(B2_, B3_);
+        T3 = _mm_unpacklo_epi32(B2_, B3_);
+    }
 
-	{
-	    __m128i T4 = _mm_unpacklo_epi32(T0, T1);
-	    __m128i T5 = _mm_unpackhi_epi32(T0, T1);
-	    __m128i T6 = _mm_unpacklo_epi32(T2, T3);
-	    __m128i T7 = _mm_unpackhi_epi32(T2, T3);
-	    
-	    T0 = _mm_shufflehi_epi16!SHUF(T4);
-	    T1 = _mm_shufflehi_epi16!SHUF(T5);
-	    T2 = _mm_shufflehi_epi16!SHUF(T6);
-	    T3 = _mm_shufflehi_epi16!SHUF(T7);
-	}
+    {
+        __m128i T4 = _mm_unpacklo_epi32(T0, T1);
+        __m128i T5 = _mm_unpackhi_epi32(T0, T1);
+        __m128i T6 = _mm_unpacklo_epi32(T2, T3);
+        __m128i T7 = _mm_unpackhi_epi32(T2, T3);
+        
+        T0 = _mm_shufflehi_epi16!SHUF(T4);
+        T1 = _mm_shufflehi_epi16!SHUF(T5);
+        T2 = _mm_shufflehi_epi16!SHUF(T6);
+        T3 = _mm_shufflehi_epi16!SHUF(T7);
+    }
 
     T0 = _mm_shufflelo_epi16!SHUF(T0);
     T1 = _mm_shufflelo_epi16!SHUF(T1);
@@ -170,21 +170,21 @@ void transpose_in(__m128i* B0, __m128i* B1, __m128i* B2, __m128i* B3) pure
 */
 void transpose_out(__m128i* B0, __m128i* B1, __m128i* B2, __m128i* B3) pure
 {
-	__m128i T0;
-	__m128i T1;
-	__m128i T2;
-	__m128i T3;
+    __m128i T0;
+    __m128i T1;
+    __m128i T2;
+    __m128i T3;
     
-	{
-		__m128i B0_ = *B0;
-		__m128i B1_ = *B1;
-		__m128i B2_ = *B2;
-		__m128i B3_ = *B3;
-		T0 = _mm_unpacklo_epi64(B0_, B1_);
-		T1 = _mm_unpacklo_epi64(B2_, B3_);
-		T2 = _mm_unpackhi_epi64(B0_, B1_);
-		T3 = _mm_unpackhi_epi64(B2_, B3_);
-	}
+    {
+        __m128i B0_ = *B0;
+        __m128i B1_ = *B1;
+        __m128i B2_ = *B2;
+        __m128i B3_ = *B3;
+        T0 = _mm_unpacklo_epi64(B0_, B1_);
+        T1 = _mm_unpacklo_epi64(B2_, B3_);
+        T2 = _mm_unpackhi_epi64(B0_, B1_);
+        T3 = _mm_unpackhi_epi64(B2_, B3_);
+    }
 
     const SHUF = _MM_SHUFFLE(3, 1, 2, 0);
 

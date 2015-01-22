@@ -138,7 +138,7 @@ public:
     /*
     * Return the GMP-based modular exponentiator
     */
-    ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints) const
+    ModularExponentiator modExp(const ref BigInt n, PowerMod.UsageHints) const
     {
         return new GMPModularExponentiator(n);
     }
@@ -152,8 +152,8 @@ public:
 final class GMPModularExponentiator : ModularExponentiator
 {
 public:
-    override void setBase(in BigInt b) { m_base = b; }
-    override void setExponent(in BigInt e) { m_exp = e; }
+    override void setBase(const ref BigInt b) { m_base = b; }
+    override void setExponent(const ref BigInt e) { m_exp = e; }
     override BigInt execute() const
     {
         GMP_MPZ r;
@@ -164,7 +164,7 @@ public:
     override ModularExponentiator copy() const
     { return new GMPModularExponentiator(this); }
     
-    this(in BigInt n) { m_mod = n; }
+    this(const ref BigInt n) { m_mod = n; }
 private:
     GMP_MPZ m_base, m_exp, m_mod;
 }
@@ -234,7 +234,7 @@ public:
     /*
     * GMP_MPZ Constructor
     */
-    this(in BigInt input = 0)
+    this(const ref BigInt input = 0)
     {
         mpz_init(value);
         if (input != 0)
@@ -462,7 +462,7 @@ static if (BOTAN_HAS_DSA) {
             }
             
         private:
-            BigInt privateOp(in BigInt m) const
+            BigInt privateOp(const ref BigInt m) const
             {
                 GMP_MPZ j1, j2;
                 GMP_MPZ h = GMP_MPZ(m);
@@ -518,7 +518,7 @@ static if (BOTAN_HAS_DSA) {
             }
             
         private:
-            BigInt publicOp(in BigInt m) const
+            BigInt publicOp(const ref BigInt m) const
             {
                 if (m >= n)
                     throw new InvalidArgument("RSA public op - input is too large");

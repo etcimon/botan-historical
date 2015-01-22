@@ -23,10 +23,15 @@ public:
     * Begin processing a message.
     * @param nonce = the per message nonce
     */    
-    final SecureVector!ubyte startVec(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) nonce)
-    {
-        return start(nonce.ptr, nonce.length);
-    }
+	final SecureVector!ubyte startVec(int Alloc)(in FreeListRef!(Vector!( ubyte, Alloc )) nonce)
+	{
+		return start(nonce.ptr, nonce.length);
+	}
+
+	final SecureVector!ubyte startVec(int Alloc)(const ref Vector!( ubyte, Alloc ) nonce)
+	{
+		return start(nonce.ptr, nonce.length);
+	}
 
     /**
     * Begin processing a message.
@@ -40,7 +45,7 @@ public:
     * @param blocks = in/out paramter which will possibly be resized
     * @param offset = an offset into blocks to begin processing
     */
-    void update(SecureVector!ubyte blocks, size_t offset = 0);
+    void update(ref SecureVector!ubyte blocks, size_t offset = 0);
 
     /**
     * Complete processing of a message.
@@ -110,10 +115,15 @@ public:
         return keySpec().validKeylength(length);
     }
 
-    final void setKey(int Alloc)(in FreeListRef!(VectorImpl!( ubyte, Alloc )) key)
-    {
-        setKey(key.ptr, key.length);
-    }
+	final void setKey(int Alloc)(in FreeListRef!(Vector!( ubyte, Alloc )) key)
+	{
+		setKey(key.ptr, key.length);
+	}
+
+	final void setKey(int Alloc)(const ref Vector!( ubyte, Alloc ) key)
+	{
+		setKey(key.ptr, key.length);
+	}
 
     final void setKey(in SymmetricKey key)
     {
@@ -151,9 +161,9 @@ Transformation getTransform(string algo)
 }
 
 SecureVector!ubyte transformTest(string algo,
-                                 in SecureVector!ubyte nonce,
-                                 in SecureVector!ubyte /*key*/,
-                                 in SecureVector!ubyte input)
+                                 const ref SecureVector!ubyte nonce,
+                                 const ref SecureVector!ubyte /*key*/,
+                                 const ref SecureVector!ubyte input)
 {
     Unique!Transformation transform = getTransform(algo);
 

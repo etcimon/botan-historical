@@ -32,7 +32,7 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-    static string encode(in Vector!ubyte data, in string label, size_t line_width = 64)
+    static string encode(const ref Vector!ubyte data, in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);
     }
@@ -40,7 +40,7 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-    static string encode(in SecureVector!ubyte data, in string label, size_t line_width = 64)
+    static string encode(const ref SecureVector!ubyte data, in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);
     }

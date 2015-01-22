@@ -124,7 +124,7 @@ public:
     *          an executable to one of these directories then we will
     *          run arbitrary code.
     */
-    this(in Vector!string trusted_path, size_t proc_cnt = 0)
+    this(const ref Vector!string trusted_path, size_t proc_cnt = 0)
     {
         m_trusted_paths = trusted_path;
         m_concurrent = concurrent_processes(proc_cnt);
@@ -317,7 +317,7 @@ public:
 
 private:
 
-string find_full_path_if_exists(in Vector!string trusted_path, in string proc)
+string find_full_path_if_exists(const ref Vector!string trusted_path, in string proc)
 {
     foreach (dir; trusted_path[])
     {

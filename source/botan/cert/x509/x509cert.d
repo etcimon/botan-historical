@@ -499,7 +499,7 @@ public:
         doDecode();
     }
 
-    this(in Vector!ubyte input)
+    this(const ref Vector!ubyte input)
     {
         super(input, "CERTIFICATE/X509 CERTIFICATE");
         m_self_signed = false;
@@ -657,7 +657,7 @@ AlternativeName createAltName(in DataStore info)
 /*
 * Lookup each OID in the vector
 */
-Vector!string lookupOids(in Vector!string input)
+Vector!string lookupOids(const ref Vector!string input)
 {
     Vector!string output = Vector!string();
     
@@ -668,7 +668,7 @@ Vector!string lookupOids(in Vector!string input)
 
 
 bool certSubjectDnsMatch(in string name,
-                         in Vector!string cert_names)
+                         const ref Vector!string cert_names)
 {
     foreach (const cn; cert_names[])
     {

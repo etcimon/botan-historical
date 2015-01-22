@@ -38,8 +38,8 @@ import botan.utils.exceptn;
 class ECPublicKey : PublicKey
 {
 public:
-    this(in ECGroup dom_par, 
-         in PointGFp pub_point, 
+    this(const ref ECGroup dom_par, 
+		 const ref PointGFp pub_point, 
          in string algo_name, 
          in bool msg_compat, 
          in short msg_parts = 1) 
@@ -58,7 +58,7 @@ public:
     }
 
     this(in AlgorithmIdentifier alg_id, 
-         in SecureVector!ubyte key_bits, 
+         const ref SecureVector!ubyte key_bits, 
          in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {
         m_check_key = null;
@@ -70,7 +70,7 @@ public:
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
-        m_public_key = OS2ECP(key_bits.dup, domain().getCurve().dup);
+        m_public_key = OS2ECP(key_bits.dup, domain().getCurve());
     }
 
     final void setCB(in bool delegate(RandomNumberGenerator, bool) const check_key = null,
@@ -128,7 +128,7 @@ public:
     * domain parameters of this point are not set
     * @result the domain parameters of this key
     */
-    final const(ECGroup) domain() const { return m_domain_params; }
+    final ref const(ECGroup) domain() const { return m_domain_params; }
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
@@ -193,7 +193,7 @@ public:
     /**
     * ECPrivateKey constructor
     */
-    this(RandomNumberGenerator rng, in ECGroup ec_group, in BigInt private_key, 
+    this(RandomNumberGenerator rng, const ref ECGroup ec_group, const ref BigInt private_key, 
          in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {        
         if (private_key == 0)
@@ -208,7 +208,7 @@ public:
         super(ec_group, public_key, algo_name, msg_compat, msg_parts);
     }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, 
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, 
          in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {
         PointGFp public_key;
@@ -234,11 +234,12 @@ public:
         }
         else
         {
-            public_key = OS2ECP(public_key_bits, ECGroup(alg_id.parameters).getCurve().dup);
+            public_key = OS2ECP(public_key_bits, ECGroup(alg_id.parameters).getCurve());
             // OS2ECP verifies that the point is on the curve
         }
 
-        super(ECGroup(alg_id.parameters), public_key, algo_name, msg_compat, msg_parts);
+		ECGroup ec = ECGroup(alg_id.parameters);
+        super(ec, public_key, algo_name, msg_compat, msg_parts);
     }
 
     SecureVector!ubyte pkcs8PrivateKey() const

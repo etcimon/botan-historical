@@ -119,7 +119,7 @@ protected:
     /*
     * Tiger Pass
     */
-    void pass(ref ulong A, ref ulong B, ref ulong C, in SecureVector!ulong m_X, ubyte mul)
+    void pass(ref ulong A, ref ulong B, ref ulong C, const ref SecureVector!ulong m_X, ubyte mul)
     {
         C ^= m_X[0];
         A -= SBOX1[get_byte(7, C)] ^ SBOX2[get_byte(5, C)] ^

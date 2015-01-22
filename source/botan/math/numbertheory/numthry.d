@@ -35,7 +35,7 @@ import std.conv : to;
 /*
 * Multiply-Add Operation
 */
-BigInt mulAdd(in BigInt a, in BigInt b, in BigInt c)
+BigInt mulAdd(const ref BigInt a, const ref BigInt b, const ref BigInt c)
 {
     if (c.isNegative() || c.isZero())
         throw new InvalidArgument("mulAdd: Third argument must be > 0");
@@ -66,7 +66,7 @@ BigInt mulAdd(in BigInt a, in BigInt b, in BigInt c)
 * @param c = an integer
 * @return (a-b)*c
 */
-BigInt subMul(BigInt a, in BigInt b, in BigInt c)
+BigInt subMul(BigInt a, const ref BigInt b, const ref BigInt c)
 {
     if (a.isNegative() || b.isNegative())
         throw new InvalidArgument("subMul: First two arguments must be >= 0");
@@ -82,7 +82,7 @@ BigInt subMul(BigInt a, in BigInt b, in BigInt c)
 * @param n = an integer
 * @return absolute value of n
 */
- BigInt abs(in BigInt n) { return n.abs(); }
+ BigInt abs(const ref BigInt n) { return n.abs(); }
 
 /**
 * Compute the greatest common divisor
@@ -90,7 +90,7 @@ BigInt subMul(BigInt a, in BigInt b, in BigInt c)
 * @param y = a positive integer
 * @return gcd(x,y)
 */
-BigInt gcd(in BigInt a, in BigInt b)
+BigInt gcd(const ref BigInt a, const ref BigInt b)
 {
     if (a.isZero() || b.isZero()) return BigInt(0);
     if (a == 1 || b == 1)         return BigInt(1);
@@ -120,7 +120,7 @@ BigInt gcd(in BigInt a, in BigInt b)
 * @param y = a positive integer
 * @return z, smallest integer such that z % x == 0 and z % y == 0
 */
-BigInt lcm(in BigInt a, in BigInt b)
+BigInt lcm(const ref BigInt a, const ref BigInt b)
 {
     return ((a * b) / gcd(a, b));
 }
@@ -130,7 +130,7 @@ BigInt lcm(in BigInt a, in BigInt b)
 * @param x = an integer
 * @return (x*x)
 */
-BigInt square(in BigInt x)
+BigInt square(const ref BigInt x)
 {
     const size_t x_sw = x.sigWords();
     
@@ -147,7 +147,7 @@ BigInt square(in BigInt x)
 * @param modulus = a positive integer
 * @return y st (x*y) % modulus == 1
 */
-BigInt inverseMod(in BigInt n, in BigInt mod)
+BigInt inverseMod(const ref BigInt n, const ref BigInt mod)
 {
     if (mod.isZero())
         throw new BigInt.DivideByZero();
@@ -206,7 +206,7 @@ BigInt inverseMod(in BigInt n, in BigInt mod)
 * @param n = is an odd integer > 1
 * @return (n / m)
 */
-int jacobi(in BigInt a, in BigInt n)
+int jacobi(const ref BigInt a, const ref BigInt n)
 {
     if (a.isNegative())
         throw new InvalidArgument("jacobi: first argument must be non-negative");
@@ -251,7 +251,7 @@ int jacobi(in BigInt a, in BigInt n)
 * @param m = a positive modulus
 * @return (b^x) % m
 */
-BigInt powerMod(in BigInt base, in BigInt exp, in BigInt mod)
+BigInt powerMod(const ref BigInt base, const ref BigInt exp, const ref BigInt mod)
 {
     auto pow_mod = scoped!PowerMod(mod);
 
@@ -392,7 +392,7 @@ word montyInverse(word input)
 *            value of n such that 2^n divides x evenly. Returns zero if
 *            n is less than or equal to zero.
 */
-size_t lowZeroBits(in BigInt n)
+size_t lowZeroBits(const ref BigInt n)
 {
     size_t low_zero = 0;
     
@@ -423,7 +423,7 @@ size_t lowZeroBits(in BigInt n)
 * @param is_random = true if n was randomly chosen by us
 * @return true if all primality tests passed, otherwise false
 */
-bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_random = false)
+bool isPrime(const ref BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_random = false)
 {
     import std.range : assumeSorted, SortedRange, empty;
     if (n == 2)
@@ -457,13 +457,13 @@ bool isPrime(in BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_r
     return true;
 }
 
-bool quickCheckPrime(in BigInt n, RandomNumberGenerator rng)
+bool quickCheckPrime(const ref BigInt n, RandomNumberGenerator rng)
 { return isPrime(n, rng, 32); }
 
-bool checkPrime(in BigInt n, RandomNumberGenerator rng)
+bool checkPrime(const ref BigInt n, RandomNumberGenerator rng)
 { return isPrime(n, rng, 56); }
 
-bool verifyPrime(in BigInt n, RandomNumberGenerator rng)
+bool verifyPrime(const ref BigInt n, RandomNumberGenerator rng)
 { return isPrime(n, rng, 80); }
 
 /**
@@ -477,7 +477,7 @@ bool verifyPrime(in BigInt n, RandomNumberGenerator rng)
 * @return random prime with the specified criteria
 */
 BigInt randomPrime(RandomNumberGenerator rng,
-                    size_t bits, in BigInt coprime = 1,
+                    size_t bits, const BigInt coprime = 1,
                     size_t equiv = 1, size_t modulo = 2)
 {
     if (bits <= 1)
@@ -694,7 +694,7 @@ bool fips1863ValidSize(size_t pbits, size_t qbits)
 * the common case for crypto, so worth special casing. See note 14.64
 * in Handbook of Applied Cryptography for more details.
 */
-BigInt inverseModOddModulus(in BigInt n, in BigInt mod)
+BigInt inverseModOddModulus(const ref BigInt n, const ref BigInt mod)
 {
     BigInt u = mod.dup, v = n.dup;
     BigInt B = 0, D = 1;
@@ -734,7 +734,7 @@ BigInt inverseModOddModulus(in BigInt n, in BigInt mod)
 
 bool mrWitness(T : ModularReducer)(ref BigInt y,
                                    auto ref T reducer_n,
-                                   in BigInt n_minus_1, size_t s)
+                                   const ref BigInt n_minus_1, size_t s)
 {
     if (y == 1 || y == n_minus_1)
         return false;

@@ -122,7 +122,7 @@ public:
         super(cipher, feedback_bits);
     }
 
-    override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         size_t sz = buffer.length - offset;
@@ -178,7 +178,7 @@ public:
         super(cipher, feedback_bits);
     }
 
-    override void update(SecureVector!ubyte buffer, size_t offset = 0)
+    override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
         size_t sz = buffer.length - offset;

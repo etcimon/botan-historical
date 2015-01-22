@@ -380,7 +380,7 @@ enum : CHATValues {
     FINGERPRINT = 0x01
 }
 
-void encodeEacBigint(ref DEREncoder der, in BigInt x, ASN1Tag tag)
+void encodeEacBigint(ref DEREncoder der, const ref BigInt x, ASN1Tag tag)
 {
     der.encode(BigInt.encode1363(x, x.bytes()), ASN1Tag.OCTET_STRING, tag);
 }
@@ -390,7 +390,7 @@ Vector!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
     if (key.domainFormat() == EC_DOMPAR_ENC_OID)
         throw new EncodingError("CVC encoder: cannot encode parameters by OID");
     
-    const ECGroup domain = key.domain();
+    const ECGroup domain = key.domain().dup;
     
     // This is why we can't have nice things
     

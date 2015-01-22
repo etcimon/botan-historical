@@ -63,7 +63,7 @@ public:
     /**
     * EGD_EntropySource constructor
     */
-    this(in Vector!string paths)
+    this(const ref Vector!string paths)
     {
         foreach (path; paths[])
             m_sockets.pushBack(EGDSocket(path));

@@ -20,7 +20,7 @@ import botan.utils.types;
 * @param h = the message hash already reduced mod q
 * @param hash = the hash function used to generate h
 */
-BigInt generateRfc6979Nonce(in BigInt x, in BigInt q, in BigInt h, in string hash)
+BigInt generateRfc6979Nonce(const ref BigInt x, const ref BigInt q, const ref BigInt h, in string hash)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     

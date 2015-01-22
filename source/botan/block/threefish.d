@@ -132,7 +132,7 @@ protected:
                  m_K[4] ^ m_K[5] ^ m_K[6] ^ m_K[7] ^ 0x1BD11BDAA9FC1A22;
     }
 public:
-    final void skeinFeedfwd(in SecureVector!ulong M, in SecureVector!ulong T)
+    final void skeinFeedfwd(const ref SecureVector!ulong M, const ref SecureVector!ulong T)
     {
         assert(m_K.length == 9, "Key was set");
         assert(M.length == 8, "Single block");

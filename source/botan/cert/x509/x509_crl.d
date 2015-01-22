@@ -165,7 +165,7 @@ public:
     * @param throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
-    this(in Vector!ubyte vec,
+    this(const ref Vector!ubyte vec,
          bool throw_on_unknown_critical_ = false)
     {
         m_throw_on_unknown_critical = throw_on_unknown_critical_;

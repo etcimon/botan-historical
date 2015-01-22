@@ -31,9 +31,9 @@ import core.atomic;
 
 private shared size_t total_tests;
 SecureVector!ubyte runMode(string algo, CipherDir dir, 
-                           in SecureVector!ubyte pt, 
-                           in SecureVector!ubyte nonce, 
-                           in SecureVector!ubyte key)
+                           const ref SecureVector!ubyte pt, 
+                           const ref SecureVector!ubyte nonce, 
+                           const ref SecureVector!ubyte key)
 {
     /*
     Unique!CipherMode cipher = getCipher(algo, dir);

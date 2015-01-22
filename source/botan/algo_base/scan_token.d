@@ -27,13 +27,13 @@ public:
     */
     this(string algo_spec)
     {
-        m_args = Vector!string();
-        m_mode_info = Vector!string();
+        m_args = Array!string();
+        m_mode_info = Array!string();
         m_orig_algo_spec = algo_spec;
         
         Vector!( Pair!(size_t, string)  ) names;
         size_t level = 0;
-        Vector!ubyte def_buf;
+        Array!ubyte def_buf;
         def_buf.reserve(8);
         auto accum = makePair(level, def_buf);
         
@@ -64,7 +64,7 @@ public:
                     if (accum.second.length > 0) {
                         names ~= makePair(accum.first, derefAlias(accum.second[]));
                     }
-                    Vector!ubyte str;
+                    Array!ubyte str;
                     str.reserve(8);
                     accum = makePair(level, str);
                 }
@@ -256,13 +256,13 @@ private:
     
     string m_orig_algo_spec;
     string m_alg_name;
-    Vector!string m_args;
-    Vector!string m_mode_info;
+    Array!string m_args;
+    Array!string m_mode_info;
 }
 
 private:
 
-string makeArg(Vector!(Pair!(size_t, string)) names, size_t start)
+string makeArg(ref Vector!(Pair!(size_t, string)) names, size_t start)
 {
     Appender!string output;
     output ~= names[start].second;

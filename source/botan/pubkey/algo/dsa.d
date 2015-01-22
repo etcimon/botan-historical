@@ -28,7 +28,7 @@ public:
     size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
     size_t maxInputBits() const { return m_pub.groupQ().bits(); }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits) 
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
         m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
     }
@@ -76,7 +76,7 @@ public:
         super(dl_group, y1);
     }
 
-    this(in AlgorithmIdentifier alg_id, in SecureVector!ubyte key_bits, RandomNumberGenerator rng)
+    this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     {
         m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
         super(m_priv);

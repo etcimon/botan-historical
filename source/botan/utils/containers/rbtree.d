@@ -609,7 +609,7 @@ struct RBNode(V)
 final class RedBlackTreeImpl(T, alias less = "a < b", int Alloc)
     if(is(typeof(binaryFun!less(T.init, T.init))))
 {
-	enum NOGC = true;
+    enum NOGC = true;
     enum allowDuplicates = false;
 
     import std.range : Take;

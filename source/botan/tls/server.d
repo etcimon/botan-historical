@@ -77,7 +77,7 @@ protected:
     override void processHandshakeMsg(in HandshakeState active_state,
                                         HandshakeState state_base,
                                         HandshakeType type,
-                                        in Vector!ubyte contents)
+                                        const ref Vector!ubyte contents)
     {
         ServerHandshakeState state = cast(ServerHandshakeState)(state_base);
         
@@ -656,7 +656,7 @@ ushort chooseCiphersuite(in TLSPolicy policy,
 /*
 * Choose which compression algorithm to use
 */
-ubyte chooseCompression(in TLSPolicy policy, in Vector!ubyte c_comp)
+ubyte chooseCompression(in TLSPolicy policy, const ref Vector!ubyte c_comp)
 {
     Vector!ubyte s_comp = policy.compression();
     

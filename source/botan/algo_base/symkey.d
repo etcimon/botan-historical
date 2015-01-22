@@ -130,13 +130,11 @@ public:
     * @param input = a bytestring
     */
     this(ref SecureVector!ubyte input) { 
-        if (*input is null) input = SecureVector!ubyte(); 
-        m_bits = input; 
+        m_bits = input.dup; 
     }
 
     this(SecureVector!ubyte input) { 
-        assert(*input !is null); 
-        m_bits = input; 
+        m_bits = input.dup; 
     }
     /**
     * Create a new OctetString
@@ -151,7 +149,7 @@ public:
     * @param y = an octet string
     * @return if x is equal to y
     */
-    bool opEquals(in OctetString other) const
+    bool opEquals(const ref OctetString other) const
     {
         return (bitsOf() == other.bitsOf());
     }
@@ -162,7 +160,7 @@ public:
     * @param y = an octet string
     * @return if x is not equal to y
     */
-    int opCmp(in OctetString other) const
+    int opCmp(const ref OctetString other) const
     {
         if (this == other) return 0;
         else if (bitsOf()[] < other.bitsOf()[])
@@ -170,7 +168,7 @@ public:
         else return 1;
     }
 
-    void opOpAssign(string op)(in OctetString other)
+    void opOpAssign(string op)(const ref OctetString other)
         if (op == "~")
     {
         this = this ~ other;
@@ -182,7 +180,7 @@ public:
     * @param y = an octet string
     * @return x concatenated with y
     */
-    OctetString opBinary(string op)(in OctetString other)
+    OctetString opBinary(string op)(const ref OctetString other)
         if (op == "~") 
     {
         SecureVector!ubyte output;
@@ -197,7 +195,7 @@ public:
     * @param y = an octet string
     * @return x XORed with y
     */
-    OctetString opBinary(string op)(in OctetString other)
+    OctetString opBinary(string op)(const ref OctetString other)
         if (op == "^") 
     {
         SecureVector!ubyte ret = SecureVector!ubyte(max(length(), other.length));
@@ -209,9 +207,7 @@ public:
 
     @property OctetString dup() const
     {
-        OctetString ret;
-        ret.m_bits = m_bits.dup;
-        return ret;
+        return OctetString(m_bits.dup);
     }
 
 private:

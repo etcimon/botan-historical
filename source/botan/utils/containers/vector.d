@@ -12,7 +12,7 @@ void TRACE(T...)(T t) {
 /**
 * Existence check for values
 */
-bool valueExists(T, int Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) vec, in T val)
+bool valueExists(T, int Alloc)(const ref Vector!(T, Alloc) vec, in T val)
 {
     for (size_t i = 0; i != vec.length; ++i)
         if (vec[i] == val)
@@ -20,16 +20,16 @@ bool valueExists(T, int Alloc)(in FreeListRef!(VectorImpl!(T, Alloc)) vec, in T 
     return false;
 }
 
-template Vector(T, int ALLOCATOR = VulnerableAllocator) 
-    if (!is (T == FreeListRef!(VectorImpl!(T, ALLOCATOR))))
+template Array(T, int ALLOCATOR = VulnerableAllocator) 
+    if (!is (T == FreeListRef!(Vector!(T, ALLOCATOR))))
 {
-    alias Vector = FreeListRef!(VectorImpl!(T, ALLOCATOR));
+    alias Array = FreeListRef!(Vector!(T, ALLOCATOR));
 }
 
 /// An array that uses a custom allocator.
-struct VectorImpl(T, int ALLOCATOR)
+struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 {
-	enum NOGC = true;
+    enum NOGC = true;
 
     @disable this(this);
 
@@ -239,11 +239,11 @@ struct VectorImpl(T, int ALLOCATOR)
     */
     static struct Range
     {
-        private VectorImpl!(T, ALLOCATOR)* _outer;
+        private Vector!(T, ALLOCATOR)* _outer;
         private size_t _a, _b;
         import std.traits : isNarrowString;
 
-        private this(ref VectorImpl!(T, ALLOCATOR) data, size_t a, size_t b)
+        private this(ref Vector!(T, ALLOCATOR) data, size_t a, size_t b)
         {
             _outer = &data;
             _a = a;
@@ -370,11 +370,16 @@ struct VectorImpl(T, int ALLOCATOR)
 
         Complexity: $(BIGOH n).
      */
-    @property FreeListRef!(VectorImpl!(T, ALLOCATOR)) dup() const
-    {
-        return FreeListRef!(VectorImpl!(T, ALLOCATOR))(cast(T[])_data._payload);
-    }
-    
+	@property Vector!(T, ALLOCATOR) dup() const
+	{
+		return Vector!(T, ALLOCATOR)(cast(T[])_data._payload);
+	}
+
+	@property FreeListRef!(Vector!(T, ALLOCATOR)) dupr() const
+	{
+		return FreeListRef!(Vector!(T, ALLOCATOR))(cast(T[])_data._payload);
+	}
+
     /**
         Property returning $(D true) if and only if the container has no
         elements.
@@ -536,13 +541,13 @@ struct VectorImpl(T, int ALLOCATOR)
         {
             _data.length = value.length;
             _data._payload.ptr[0 .. value.length] = value[0 .. $];
-        } else static if (is (Stuff == FreeListRef!(VectorImpl!(T, ALLOCATOR)))) {
+        } else static if (is (Stuff == Vector!(T, ALLOCATOR))) {
             _data.length = value._data.length;
             _data._payload[] = value._data._payload[];
         }
         else {
             _data.length = value.length;
-            _data._payload[] = value;
+            _data._payload[] = cast(T[]) value;
         }
     }
     
@@ -591,7 +596,7 @@ struct VectorImpl(T, int ALLOCATOR)
         if (op == "~")
     {
         TRACE("Appending stuff");
-        FreeListRef!(VectorImpl!(T, ALLOCATOR)) result;
+        FreeListRef!(Vector!(T, ALLOCATOR)) result;
         // @@@BUG@@ result ~= this[] doesn't work
         auto r = this[];
         result ~= r;
@@ -599,6 +604,16 @@ struct VectorImpl(T, int ALLOCATOR)
         result ~= stuff[];
         return result;
     }
+
+	void opOpAssign(string op, U)(U input)
+		if (op == "^")
+	{
+		import botan.utils.xor_buf;
+		if (this.length < input.length)
+			this.resize(input.length);
+		
+		xorBuf(this.ptr, input.ptr, input.length);
+	}
 
     /**
         Forwards to $(D pushBack(stuff)).
@@ -615,7 +630,7 @@ struct VectorImpl(T, int ALLOCATOR)
         }
     }
 
-    void swap(ref FreeListRef!(VectorImpl!(T, ALLOCATOR)) other) {
+    void swap(ref Vector!(T, ALLOCATOR) other) {
         this._data._payload[0 .. $] = other._data._payload[0  .. $];
         other.clear();
     }
@@ -656,7 +671,7 @@ struct VectorImpl(T, int ALLOCATOR)
 
     import std.traits : isNumeric;
 
-    int opCmp(int Alloc)(FreeListRef!(VectorImpl!(T, Alloc)) other) const 
+    int opCmp(int Alloc)(ref Vector!(T, Alloc) other) const 
     {
         if (this[] == other[])
             return 0;
@@ -705,7 +720,12 @@ struct VectorImpl(T, int ALLOCATOR)
         return _data.pushBack(cast(ubyte[]) stuff);
     }
 
-    size_t pushBack(ref FreeListRef!(VectorImpl!(T, ALLOCATOR)) rhs)
+	size_t pushBack(ref Vector!(T, ALLOCATOR) rhs)
+	{
+		return pushBack(rhs[]);
+	}
+
+    size_t pushBack(ref FreeListRef!(Vector!(T, ALLOCATOR)) rhs)
     {
         return pushBack(rhs[]);
     }
@@ -873,22 +893,38 @@ struct VectorImpl(T, int ALLOCATOR)
         return 1;
     }
 
-    bool opEquals(in FreeListRef!(VectorImpl!(T, ALLOCATOR)) other_) const {
-        import botan.constants : logTrace;
-        if (other_ is null && _data._payload.length == 0)
-            return true;
-        else if (other_ is null)
-            return false;
-        if (other_.length != length)
-            return false;
-        foreach  (const size_t i, const ref T t; _data._payload) {
-            if (t != other_[i])
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+	bool opEquals(in FreeListRef!(Vector!(T, ALLOCATOR)) other_) const {
+		import botan.constants : logTrace;
+		if (other_ is null && _data._payload.length == 0)
+			return true;
+		else if (other_ is null)
+			return false;
+		if (other_.length != length)
+			return false;
+		foreach  (const size_t i, const ref T t; _data._payload) {
+			if (t != other_[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool opEquals()(auto ref Vector!(T, ALLOCATOR) other_) const {
+		import botan.constants : logTrace;
+		if (_data._payload.length == 0)
+			return true;
+		if (other_.length != length)
+			return false;
+
+		foreach  (const size_t i, const ref T t; _data._payload) {
+			if (t != other_[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
     
 }
 

@@ -40,7 +40,7 @@ public:
         return m_hash.finished();
     }
 
-    SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                   size_t output_bits,
                                   RandomNumberGenerator rng)
     {
@@ -49,8 +49,8 @@ public:
         return emsa1Encoding(msg, output_bits);
     }
 
-    bool verify(in SecureVector!ubyte coded,
-                in SecureVector!ubyte raw, size_t key_bits)
+    bool verify(const ref SecureVector!ubyte coded,
+                const ref SecureVector!ubyte raw, size_t key_bits)
     {
         try {
             if (raw.length != m_hash.outputLength)
@@ -85,7 +85,7 @@ public:
 
 private:
 
-SecureVector!ubyte emsa1Encoding(in SecureVector!ubyte msg_, size_t output_bits)
+SecureVector!ubyte emsa1Encoding(const ref SecureVector!ubyte msg_, size_t output_bits)
 {
     SecureVector!ubyte msg = msg_.dup;
     if (8*msg.length <= output_bits)

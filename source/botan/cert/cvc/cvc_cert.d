@@ -208,7 +208,7 @@ protected:
 * @param rng = a random number generator
 */
 EAC11CVC makeCvcCert(ref PKSigner signer,
-                     in Vector!ubyte public_key,
+                     const ref Vector!ubyte public_key,
                      in ASN1Car car,
                      in ASN1Chr chr,
                      in ubyte holder_auth_templ,
@@ -245,7 +245,7 @@ EAC11CVC makeCvcCert(ref PKSigner signer,
 * Decode an EAC encoding ECDSA key
 */
 
-ECDSAPublicKey decodeEac11Key(in Vector!ubyte,
+ECDSAPublicKey decodeEac11Key(const ref Vector!ubyte,
                               ref AlgorithmIdentifier)
 {
     throw new InternalError("decodeEac11Key: Unimplemented");

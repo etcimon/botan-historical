@@ -221,7 +221,7 @@ ulong FLINV(ulong v, ulong K)
 * Camellia Encryption
 */
 void encrypt(const(ubyte)* input, ubyte* output, size_t blocks,
-             in SecureVector!ulong SK, in size_t rounds)
+             const ref SecureVector!ulong SK, in size_t rounds)
 {
     foreach (size_t i; 0 .. blocks)
     {
@@ -265,7 +265,7 @@ void encrypt(const(ubyte)* input, ubyte* output, size_t blocks,
 * Camellia Decryption
 */
 void decrypt(const(ubyte)* input, ubyte* output, size_t blocks,
-             in SecureVector!ulong SK, in size_t rounds)
+             const ref SecureVector!ulong SK, in size_t rounds)
 {
     foreach (size_t i; 0 .. blocks)
     {

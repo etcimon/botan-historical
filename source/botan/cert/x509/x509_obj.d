@@ -87,7 +87,7 @@ public:
     static Vector!ubyte makeSigned(ref PKSigner signer,
                                    RandomNumberGenerator rng,
                                    in AlgorithmIdentifier algo,
-                                   in SecureVector!ubyte tbs_bits)
+                                   const ref SecureVector!ubyte tbs_bits)
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
@@ -198,7 +198,7 @@ protected:
     /*
     * Create a generic X.509 object
     */
-    this(in Vector!ubyte vec, in string labels)
+    this(const ref Vector!ubyte vec, in string labels)
     {
         auto stream = DataSourceMemory(vec.ptr, vec.length);
         init(cast(DataSource)stream, labels);

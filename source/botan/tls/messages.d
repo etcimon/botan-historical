@@ -91,7 +91,7 @@ public:
 
     const(Vector!ubyte) cookie() const { return m_cookie; }
 
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         if (buf.length < 3)
             throw new DecodingError("Hello verify request too small");
@@ -110,7 +110,7 @@ public:
         m_cookie[] = buf.ptr[3 .. buf.length];
     }
 
-    this(in Vector!ubyte client_hello_bits, in string client_identity, in SymmetricKey secret_key)
+    this(const ref Vector!ubyte client_hello_bits, in string client_identity, in SymmetricKey secret_key)
     {
         Unique!MessageAuthenticationCode hmac = retrieveMac("HMAC(SHA-256)").clone();
         hmac.setKey(secret_key);
@@ -326,7 +326,7 @@ public:
     /*
     * Read a counterparty client hello
     */
-    this(in Vector!ubyte buf, HandshakeType type)
+    this(const ref Vector!ubyte buf, HandshakeType type)
     {
         if (type == CLIENT_HELLO)
             deserialize(buf);
@@ -368,7 +368,7 @@ protected:
     /*
     * Deserialize a TLSClient Hello message
     */
-    void deserialize(in Vector!ubyte buf)
+    void deserialize(const ref Vector!ubyte buf)
     {
         if (buf.length == 0)
             throw new DecodingError("ClientHello: Packet corrupted");
@@ -412,7 +412,7 @@ protected:
         }
     }
 
-    void deserializeSslv2(in Vector!ubyte buf)
+    void deserializeSslv2(const ref Vector!ubyte buf)
     {
         if (buf.length < 12 || buf[0] != 1)
             throw new DecodingError("ClientHello: SSLv2 hello corrupted");
@@ -579,7 +579,7 @@ public:
     /*
     * Deserialize a TLSServer Hello message
     */
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         if (buf.length < 38)
             throw new DecodingError("ServerHello: Packet corrupted");
@@ -649,7 +649,7 @@ public:
     /*
     * Read a TLSClient Key Exchange message
     */
-    this(in Vector!ubyte contents,
+    this(const ref Vector!ubyte contents,
          in HandshakeState state,
          in PrivateKey server_rsa_kex_key,
          TLSCredentialsManager creds,
@@ -925,7 +925,7 @@ public:
                 
                 Vector!ubyte ecdh_key = reader.getRange!ubyte(1, 1, 255);
                 
-                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve().dup));
+                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve()));
                 
                 auto priv_key = scoped!ECDHPrivateKey(rng, group);
                 
@@ -1047,7 +1047,7 @@ public:
     /**
     * Deserialize a Certificate message
     */
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         if (buf.length < 3)
             throw new DecodingError("Certificate: Message malformed");
@@ -1150,7 +1150,7 @@ public:
     /**
     * Deserialize a Certificate Request message
     */
-    this(in Vector!ubyte buf, TLSProtocolVersion _version)
+    this(const ref Vector!ubyte buf, TLSProtocolVersion _version)
     {
         if (buf.length < 4)
             throw new DecodingError("Certificate_Req: Bad certificate request");
@@ -1308,7 +1308,7 @@ public:
     /*
     * Deserialize a Certificate Verify message
     */
-    this(in Vector!ubyte buf,
+    this(const ref Vector!ubyte buf,
          TLSProtocolVersion _version)
     {
         TLSDataReader reader = TLSDataReader("CertificateVerify", buf);
@@ -1420,7 +1420,7 @@ public:
     /*
     * Deserialize a Hello Request message
     */
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         if (buf.length)
             throw new DecodingError("Bad HelloRequest, has non-zero size");
@@ -1479,7 +1479,7 @@ public:
     /**
     * Deserialize a TLSServer Key Exchange message
     */
-    this(in Vector!ubyte buf,
+    this(const ref Vector!ubyte buf,
          in string kex_algo,
          in string sig_algo,
          TLSProtocolVersion _version) 
@@ -1728,7 +1728,7 @@ public:
     /*
     * Deserialize a TLSServer Hello Done message
     */
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         if (buf.length)
             throw new DecodingError("ServerHello_Done: Must be empty, and is not");
@@ -1753,7 +1753,7 @@ public:
 
     string protocol() const { return m_protocol; }
 
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         TLSDataReader reader = TLSDataReader("NextProtocol", buf);
         
@@ -1817,7 +1817,7 @@ public:
         hash.update = io.send(this);
     }
 
-    this(in Vector!ubyte buf)
+    this(const ref Vector!ubyte buf)
     {
         if (buf.length < 6)
             throw new DecodingError("TLSSession ticket message too short to be valid");
@@ -1890,7 +1890,7 @@ ubyte certTypeNameToCode(in string name)
 }
 
 
-SecureVector!ubyte stripLeadingZeros(in SecureVector!ubyte input)
+SecureVector!ubyte stripLeadingZeros(const ref SecureVector!ubyte input)
 {
     size_t leading_zeros = 0;
     

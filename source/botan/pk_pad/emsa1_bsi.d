@@ -32,7 +32,7 @@ public:
     /*
     * EMSA1 BSI Encode Operation
     */
-    override SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                  size_t output_bits,
                                  RandomNumberGenerator rng)
     {
@@ -47,8 +47,8 @@ public:
 
     // Interface fallthrough
     override SecureVector!ubyte rawData() { return super.rawData(); }
-    override bool verify(in SecureVector!ubyte coded,
-                         in SecureVector!ubyte raw, size_t key_bits)
+    override bool verify(const ref SecureVector!ubyte coded,
+                         const ref SecureVector!ubyte raw, size_t key_bits)
     {
         return super.verify(coded, raw, key_bits);
     }

@@ -44,7 +44,7 @@ public:
 
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
     
-    this(in Vector!ubyte input)
+    this(const ref Vector!ubyte input)
     {
         m_buf.insert(input.ptr[0 .. input.length]);
     }
@@ -67,7 +67,7 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
     class AllOnceRNG : FixedOutputRNG
     {
     public:
-        this(in Vector!ubyte input) {
+        this(const ref Vector!ubyte input) {
             super(input);
         }
         
@@ -172,10 +172,10 @@ unittest
 
     import std.functional : toDelegate;
 
-	static if (BOTAN_HAS_HMAC_DRBG)
+    static if (BOTAN_HAS_HMAC_DRBG)
     fails += runTestsBb(hmac_drbg_vec, "RNG", "Out", true, toDelegate(&hmacDrbgTest));
     
-	static if (BOTAN_HAS_X931_RNG)
+    static if (BOTAN_HAS_X931_RNG)
     fails += runTestsBb(x931_vec, "RNG", "Out", true,
                           (string[string] m) {
                                 return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));

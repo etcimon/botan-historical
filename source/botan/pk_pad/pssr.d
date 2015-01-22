@@ -62,7 +62,7 @@ public:
     /*
     * PSSR Encode Operation
     */
-    override SecureVector!ubyte encodingOf(in SecureVector!ubyte msg,
+    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                            size_t output_bits,
                                            RandomNumberGenerator rng)
     {
@@ -98,8 +98,8 @@ public:
     /*
     * PSSR Decode/Verify Operation
     */
-    override bool verify(in SecureVector!ubyte const_coded,
-                         in SecureVector!ubyte raw, size_t key_bits)
+    override bool verify(const ref SecureVector!ubyte const_coded,
+                         const ref SecureVector!ubyte raw, size_t key_bits)
     {
         const size_t HASH_SIZE = m_hash.outputLength;
         const size_t KEY_BYTES = (key_bits + 7) / 8;

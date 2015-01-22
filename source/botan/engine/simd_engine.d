@@ -93,10 +93,10 @@ public:
     KeyedFilter getCipher(in string algo_spec, CipherDir dir, AlgorithmFactory af) const
     { return null; }
     
-	static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
+    static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
-	ModularExponentiator modExp(in BigInt n, PowerMod.UsageHints hints) const
-	{ return null; }
+    ModularExponentiator modExp(const ref BigInt n, PowerMod.UsageHints hints) const
+    { return null; }
 
     KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const
     { return null; }

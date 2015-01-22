@@ -36,7 +36,7 @@ public:
     /*
     * Set the other parties public key
     */
-    void setOtherKey(in Vector!ubyte ok)
+    void setOtherKey(const ref Vector!ubyte ok)
     {
         m_other_key = ok.dup;
     }
