@@ -131,7 +131,7 @@ public:
         if (!m_dir)
             m_dir = new DirectoryWalker(m_path);
         
-        SecureVector!ubyte io_buffer = accum.getIoBuffer(4096);
+        SecureVector!ubyte* io_buffer = &accum.getIoBuffer(4096);
         foreach (size_t i; 0 .. MAX_FILES_READ_PER_POLL)
         {
             int fd = m_dir.nextFd();

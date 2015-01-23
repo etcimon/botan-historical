@@ -485,7 +485,7 @@ public:
                 foreach (hash_prototype; hash_prototypes[])
                     hashes.pushBack(hash_prototype.clone());
                 
-                return new Parallel(hashes);
+                return new Parallel(hashes.move());
             }
         }
         
@@ -553,10 +553,10 @@ public:
     {
         if (n.isOdd()) {
             logTrace("Loading MontgomeryExponentiator");
-            return new MontgomeryExponentiator(n.dup, hints);
+            return new MontgomeryExponentiator(n, hints);
         }
         logTrace("Loading FixedWindowExponentiator");
-        return new FixedWindowExponentiator(n.dup, hints);
+        return new FixedWindowExponentiator(n, hints);
     }
 
     override KeyAgreement getKeyAgreementOp(in PrivateKey key, RandomNumberGenerator rng) const

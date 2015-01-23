@@ -330,7 +330,7 @@ public:
     }
 
 private:
-    void gcmMultiply(SecureVector!ubyte x) const
+    void gcmMultiply(ref SecureVector!ubyte x) const
     {
         static if (BOTAN_HAS_GCM_CLMUL) {
             if (CPUID.hasClmul())
@@ -367,7 +367,7 @@ private:
         storeBigEndian!ulong(x.ptr, Z[0], Z[1]);
     }
 
-    void ghashUpdate(SecureVector!ubyte ghash, const(ubyte)* input, size_t length)
+    void ghashUpdate()(auto ref SecureVector!ubyte ghash, const(ubyte)* input, size_t length)
     {
         __gshared immutable size_t BS = 16;
         
@@ -388,8 +388,8 @@ private:
         }
     }
 
-    void addFinalBlock(SecureVector!ubyte hash,
-                         size_t ad_len, size_t text_len)
+    void addFinalBlock(ref SecureVector!ubyte hash,
+                       size_t ad_len, size_t text_len)
     {
         SecureVector!ubyte final_block = SecureVector!ubyte(16);
         storeBigEndian!ulong(final_block.ptr, 8*ad_len, 8*text_len);

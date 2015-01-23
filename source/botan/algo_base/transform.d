@@ -23,12 +23,12 @@ public:
     * Begin processing a message.
     * @param nonce = the per message nonce
     */    
-	final SecureVector!ubyte startVec(int Alloc)(in FreeListRef!(Vector!( ubyte, Alloc )) nonce)
+	final SecureVector!ubyte startVec(int Alloc)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) nonce)
 	{
 		return start(nonce.ptr, nonce.length);
 	}
 
-	final SecureVector!ubyte startVec(int Alloc)(const ref Vector!( ubyte, Alloc ) nonce)
+	final SecureVector!ubyte startVec(int Alloc)(auto const ref Vector!( ubyte, Alloc ) nonce)
 	{
 		return start(nonce.ptr, nonce.length);
 	}

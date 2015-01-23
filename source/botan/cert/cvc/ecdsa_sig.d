@@ -62,8 +62,8 @@ public:
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
-                .encode(getR().move())
-                .encode(getS().move())
+                .encode(getR())
+                .encode(getS())
                 .endCons()
                 .getContentsUnlocked();
     }

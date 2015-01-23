@@ -45,7 +45,7 @@ public:
     {
         __gshared immutable size_t READ_ATTEMPT = 32;
         
-        SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
+        SecureVector!ubyte* io_buffer = &accum.getIoBuffer(READ_ATTEMPT);
         
         ubyte[] io_buf_mutable = io_buffer.ptr[0 .. READ_ATTEMPT];
         foreach (socket; m_sockets[])
@@ -63,7 +63,7 @@ public:
     /**
     * EGD_EntropySource constructor
     */
-    this(const ref Vector!string paths)
+    this()(auto const ref Vector!string paths)
     {
         foreach (path; paths[])
             m_sockets.pushBack(EGDSocket(path));

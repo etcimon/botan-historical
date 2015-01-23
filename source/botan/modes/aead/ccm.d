@@ -142,16 +142,16 @@ protected:
         assert((len >> (len_bytes*8)) == 0, "Message length fits in field");
     }
 
-    final void inc(SecureVector!ubyte C)
+    final void inc(ref SecureVector!ubyte C)
     {
         for (size_t i = 0; i != C.length; ++i)
             if (++C[C.length-i-1])
                 break;
     }
 
-    final const(SecureVector!ubyte) adBuf() const { return m_ad_buf; }
+    final ref const(SecureVector!ubyte) adBuf() const { return m_ad_buf; }
 
-    final const(SecureVector!ubyte) msgBuf() const { return m_msg_buf; }
+    final ref const(SecureVector!ubyte) msgBuf() const { return m_msg_buf; }
 
     final SecureVector!ubyte formatB0(size_t sz)
     {
@@ -220,7 +220,7 @@ public:
         
         assert(sz >= tagSize(), "We have the tag");
         
-        const SecureVector!ubyte ad = adBuf();
+        const SecureVector!ubyte* ad = &adBuf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
         BlockCipher E = cipher();
@@ -230,7 +230,7 @@ public:
         
         for (size_t i = 0; i != ad.length; i += BS)
         {
-            xorBuf(T.ptr, &ad[i], BS);
+            xorBuf(T.ptr, &(*ad)[i], BS);
             E.encrypt(T);
         }
         
@@ -310,7 +310,7 @@ public:
         const size_t sz = buffer.length - offset;
         ubyte* buf = &buffer[offset];
         
-        const SecureVector!ubyte ad = adBuf();
+        const SecureVector!ubyte* ad = &adBuf();
         assert(ad.length % BS == 0, "AD is block size multiple");
         
         BlockCipher E = cipher();
@@ -320,7 +320,7 @@ public:
         
         for (size_t i = 0; i != ad.length; i += BS)
         {
-            xorBuf(T.ptr, &ad[i], BS);
+            xorBuf(T.ptr, &(*ad)[i], BS);
             E.encrypt(T);
         }
         

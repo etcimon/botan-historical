@@ -217,8 +217,8 @@ public:
     {
         bool equals = true;
 
-        Pair!(OID, string)[] attr1;
-        Pair!(OID, string)[] attr2;
+        Pair!(const(OID)*, const(string)*)[] attr1;
+        Pair!(const(OID)*, const(string)*)[] attr2;
 
         scope(exit) {
             if (attr1) freeArray(attr1); 
@@ -227,20 +227,20 @@ public:
         }
 
         {
-            MultiMap!(OID, string) map1 = getAttributes();
-            MultiMap!(OID, string) map2 = dn2.getAttributes();
+			MultiMap!(OID, string) map1 = getAttributes();
+			MultiMap!(OID, string) map2 = dn2.getAttributes();
 
-            attr1 = allocArray!(Pair!(OID, string))(map1.length);
-            attr2 = allocArray!(Pair!(OID, string))(map2.length);
+			attr1 = allocArray!(Pair!(const(OID)*, const(string)*))(map1.length);
+			attr2 = allocArray!(Pair!(const(OID)*, const(string)*))(map2.length);
 
             size_t i;
             foreach (const ref OID oid, const ref string val; map1) {
-                attr1[i] = makePair(oid.dup, val);
+                attr1[i] = makePair(&oid, &val);
                 i++;
             }
             i=0;
             foreach (const ref OID oid, const ref string val; map2) {
-                attr2[i] = makePair(oid.dup, val);
+                attr2[i] = makePair(&oid, &val);
                 i++;
             }
         }
@@ -265,20 +265,20 @@ public:
                 equals = false;
                 break;
             }
-            if (!p1.first && !p2.first) {
+            if (!*p1.first && !*p2.first) {
                 break;
             }
 
-            if (!p1.first || !p2.first) {
+            if (!*p1.first || !*p2.first) {
                 equals = false;
                 break;
             }
-            if (p1.first != p2.first) {
+            if (*p1.first != *p2.first) {
                 equals = false;
                 return false;
             }
 
-            if (!x500NameCmp(p1.second, p2.second)) {
+            if (!x500NameCmp(*p1.second, *p2.second)) {
                 equals = false;
                 return false;
             }

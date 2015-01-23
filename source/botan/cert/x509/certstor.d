@@ -157,7 +157,7 @@ public:
         return certSearch(subject_dn, key_id, m_certs);
     }
 private:
-    const Vector!X509Certificate m_certs;
+    Vector!X509Certificate m_certs;
 }
 
 X509Certificate certSearch(in X509DN subject_dn, 

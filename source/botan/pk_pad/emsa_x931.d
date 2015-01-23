@@ -82,7 +82,7 @@ private:
 
 private:
 
-SecureArray!ubyte emsa2Encoding(const ref SecureVector!ubyte msg,
+SecureVector!ubyte emsa2Encoding(const ref SecureVector!ubyte msg,
                                 size_t output_bits,
 								const ref SecureVector!ubyte empty_hash,
                                 ubyte hash_id)
@@ -98,7 +98,7 @@ SecureArray!ubyte emsa2Encoding(const ref SecureVector!ubyte msg,
     
     const bool empty_input = (msg == empty_hash);
     
-    SecureArray!ubyte output = SecureArray!ubyte(output_length);
+    SecureVector!ubyte output = SecureVector!ubyte(output_length);
     
     output[0] = (empty_input ? 0x4B : 0x6B);
     output[output_length - 3 - HASH_SIZE] = 0xBA;

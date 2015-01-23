@@ -57,7 +57,7 @@ struct CryptoBox {
         output ~= cipher_key_salt[];
         output ~= mac_key_salt[];
         output ~= cipher_iv.bitsOf()[];
-        output ~= ctext;
+        output ~= ctext[];
 
         mac.update(output);
         

@@ -23,7 +23,7 @@ import botan.utils.containers.hashmap;
 /*
 * Parse a SCAN-style algorithm name
 */
-Array!string parseAlgorithmName(in string scan_name)
+Vector!string parseAlgorithmName(in string scan_name)
 {
     import std.array : Appender;
     if (scan_name.find('(') == -1 &&
@@ -34,7 +34,7 @@ Array!string parseAlgorithmName(in string scan_name)
     }
     string name = scan_name;
     Vector!ubyte substring;
-    Array!string elems;
+    Vector!string elems;
     size_t level = 0;
     
     elems.pushBack(name[0 .. name.find('(')]);
@@ -76,7 +76,7 @@ Array!string parseAlgorithmName(in string scan_name)
     if (substring.length > 0)
         throw new InvalidAlgorithmName(scan_name);
     
-    return elems;
+    return elems.move();
 }
 
 /**
@@ -85,7 +85,7 @@ Array!string parseAlgorithmName(in string scan_name)
 * @param delim = the delimitor
 * @return string split by delim
 */
-Array!string splitter(in string str, char delim)
+Vector!string splitter(in string str, char delim)
 {
     return splitOnPred(str, (char c) { return c == delim; });
 }
@@ -94,11 +94,11 @@ Array!string splitter(in string str, char delim)
 * Split a string on a character predicate
 * @param str = the input string
 */
-Array!string splitOnPred(in string str,
+Vector!string splitOnPred(in string str,
                          bool delegate(char) pred)
 {
-    Array!string elems;
-    if (str == "") return elems;
+    Vector!string elems;
+    if (str == "") return elems.move();
     import std.array : Appender;
     Vector!ubyte substr;
     foreach(const char c; str)
@@ -117,7 +117,7 @@ Array!string splitOnPred(in string str,
         throw new InvalidArgument("Unable to split string: " ~ str);
     elems.pushBack(substr[].idup);
     
-    return elems;
+    return elems.move();
 }
 
 /**
@@ -192,11 +192,11 @@ string stringJoin(const ref Vector!string strs, char delim)
 * @param oid = the OID in string form
 * @return OID components
 */
-Array!uint parseAsn1Oid(in string oid)
+Vector!uint parseAsn1Oid(in string oid)
 {
     import std.array : Appender, array;
     Vector!ubyte substring;
-    Array!uint oid_elems;
+    Vector!uint oid_elems;
     
 
     foreach (char c; oid)
@@ -220,7 +220,7 @@ Array!uint parseAsn1Oid(in string oid)
 
     if (oid_elems.length < 2)
         throw new InvalidOID(oid);
-    return oid_elems;
+    return oid_elems.move();
 }
 
 /**

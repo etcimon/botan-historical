@@ -225,7 +225,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
         
         if (nonce.length)
         {
-            auto bad_nonce = nonce;
+            auto bad_nonce = nonce.dup;
             bad_nonce[0] ^= 1;
             vec = expected_ct.dup;
             

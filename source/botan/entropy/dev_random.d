@@ -59,7 +59,7 @@ public:
         if (select(max_fd + 1, &read_set, (fd_set*).init, (fd_set*).init, &timeout) < 0)
             return;
         
-        SecureVector!ubyte io_buffer = accum.getIoBuffer(READ_ATTEMPT);
+        SecureVector!ubyte* io_buffer = &accum.getIoBuffer(READ_ATTEMPT);
 
         foreach (device; m_devices[])
         {
@@ -77,7 +77,7 @@ public:
     Device_EntropySource constructor
     Open a file descriptor to each (available) device in fsnames
     */
-    this(const ref Vector!string fsnames)
+    this()(auto const ref Vector!string fsnames)
     {
         enum O_NONBLOCK = 0;
         enum O_NOCTTY = 0;

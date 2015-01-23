@@ -17,6 +17,16 @@ import botan.libstate.libstate;
 import botan.math.numbertheory.numthry;
 import botan.utils.types;
 
+struct SRP6KeyPair {
+	BigInt privkey;
+	SymmetricKey pubkey;
+
+	this()(auto ref BigInt priv, SymmetricKey pub) {
+		privkey = priv.move();
+		pubkey = pub;
+	}
+}
+
 /**
 * SRP6a Client side
 * @param username = the username we are attempting login for
@@ -29,7 +39,7 @@ import botan.utils.types;
 *
 * @return (A,K) the client public key and the shared secret key
 */
-Pair!(BigInt, SymmetricKey)
+SRP6KeyPair
     srp6ClientAgree(in string identifier,
                     in string password,
                     in string group_id,
@@ -61,7 +71,7 @@ Pair!(BigInt, SymmetricKey)
     
     SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
-    return makePair(A, Sk);
+    return SRP6KeyPair(A, Sk);
 }
 
 
@@ -130,10 +140,10 @@ public:
     * @param rng = a random number generator
     * @return SRP-6 B value
     */
-    BigInt step1(const ref BigInt v,
-                 in string group_id,
-                 in string hash_id,
-                 RandomNumberGenerator rng)
+    ref const(BigInt) step1(const ref BigInt v,
+			                in string group_id,
+			                in string hash_id,
+			                RandomNumberGenerator rng)
     {
         DLGroup group = DLGroup(group_id);
         const BigInt g = group.getG();
@@ -148,7 +158,7 @@ public:
         m_B = (v*k + powerMod(g, b, p)) % p;
         
         m_v = v.dup;
-        m_b = b;
+        m_b = b.move();
         m_p = p.dup;
         m_hash_id = hash_id;
         

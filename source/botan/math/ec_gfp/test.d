@@ -27,7 +27,7 @@ string toString(PointGFp point) {
 
 PointGFp createRandomPoint(RandomNumberGenerator rng, const ref CurveGFp curve)
 {
-    const BigInt p = curve.getP();
+    const BigInt* p = &curve.getP();
     
     ModularReducer mod_p = ModularReducer(p.dup);
     
@@ -71,7 +71,7 @@ size_t testPointTurnOnSpRedMul()
     BigInt bi_b_secp = BigInt.decode(&sv_b_secp[0], sv_b_secp.length);
 	logTrace("secp160r1");
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-	logTrace("Built secp160r1: ", secp160r1.toArray()[]);
+	logTrace("Built secp160r1: ", secp160r1.toVector()[]);
 	logTrace("OS2ECP");
     PointGFp p_G = OS2ECP(sv_G_secp_comp, secp160r1);
     
@@ -782,7 +782,7 @@ size_t testMultSecMass()
     for(int i = 0; i<50; i++)
     {
         PointGFp a = createRandomPoint(rng, dom_pars.getCurve());
-        BigInt scal = BigInt(BigInt(rng, 40));
+        BigInt scal = BigInt(rng, 40);
         PointGFp b = a * scal;
         PointGFp c = a.dup;
         

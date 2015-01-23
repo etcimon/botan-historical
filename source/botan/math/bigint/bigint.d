@@ -130,7 +130,7 @@ public:
             base = Hexadecimal;
         }
         
-		this.m_reg = decode(cast(const(ubyte)*)(str.ptr) + markers, str.length - markers, base);
+		this.swap( decode(cast(const(ubyte)*)(str.ptr) + markers, str.length - markers, base) );
 
         if (negative) setSign(Negative);
         else          setSign(Positive);
@@ -144,8 +144,7 @@ public:
     */
     this(const(ubyte)* input, size_t length, Base base = Binary)
     {
-		this.m_reg = decode(input, length, base);
-        this.m_signedness = model.m_signedness;
+		this.swap( decode(input, length, base) );
     }
 
     /**
@@ -184,7 +183,7 @@ public:
 		this(payload.ptr, payload.length);
 	}
 
-	this(ref SecureVector!word reg, ref Sign sign) {
+	this()(auto ref SecureVector!word reg, Sign sign) {
 		import std.algorithm : swap;
 		m_reg.swap(reg);
 		swap(m_signedness, sign);
@@ -192,13 +191,11 @@ public:
 
 	/**
     * Move assignment
-
-	ref BigInt opAssign(BigInt other)
+	*/
+	void opAssign(BigInt other)
 	{
-		if (&this !is &other)
-			this.swap(other);
-		return this;
-	}*/
+		this.swap(other);
+	}
 
     /**
     * Copy assignment
@@ -354,7 +351,8 @@ public:
     void opOpAssign(string op)(in word y)
         if (op == "*")
     {
-        this *= BigInt(y);
+        const BigInt b_y = BigInt(y);
+		this *= b_y;
     }
 
     /**
@@ -475,7 +473,7 @@ public:
     * Unary negation operator
     * @return negative this
     */
-    BigInt opUnary(string op)()
+    BigInt opUnary(string op)() const
         if (op == "-")
     {
         BigInt ret = this.dup;
@@ -571,7 +569,6 @@ public:
     */
     bool isZero() const
     {
-        if (!m_reg) return true;
         const size_t sw = sigWords();
         foreach (size_t i; 0 .. sw)
             if (m_reg[i] > 0)
@@ -1229,9 +1226,9 @@ public:
     BigInt opBinary(string op)(auto const ref BigInt y) const
         if (op == "/")
     {
-        const BigInt x = this;
+        const BigInt* x = &this;
         BigInt q, r;
-        divide(x, y, q, r);
+        divide(*x, y, q, r);
         return q.move();
     }
 
@@ -1248,16 +1245,16 @@ public:
 	BigInt opBinary(string op)(auto const ref BigInt mod) const
         if (op == "%")
     {
-        const BigInt n = this;
+        const BigInt* n = &this;
         if (mod.isZero())
             throw new BigInt.DivideByZero();
         if (mod.isNegative())
             throw new InvalidArgument("BigInt.operator%: modulus must be > 0");
-        if (n.isPositive() && mod.isPositive() && n < mod)
+        if (n.isPositive() && mod.isPositive() && *n < mod)
             return n.dup;
         
 		BigInt q, r;
-        divide(n, mod, q, r);
+        divide(*n, mod, q, r);
 		return r.move();
     }
 
@@ -1267,7 +1264,7 @@ public:
     word opBinary(string op)(word mod) const
         if (op == "%")
     {
-        const BigInt n = this;
+        const BigInt* n = &this;
         if (mod == 0)
             throw new BigInt.DivideByZero();
         
@@ -1292,7 +1289,7 @@ public:
     {
         const BigInt* x = &this;
         if (shift == 0)
-            return x.move();
+            return x.dup();
         
         const size_t shift_words = shift / MP_WORD_BITS,
             shift_bits  = shift % MP_WORD_BITS;
@@ -1311,7 +1308,7 @@ public:
         if (op == ">>")
     {
         if (shift == 0)
-            return BigInt(this);
+            return this.dup;
         if (bits() <= shift)
             return BigInt(0);
         
@@ -1324,8 +1321,8 @@ public:
         return y.move();
     }
 
-	@property BigInt move() const {
-		return BigInt(this);
+	@property BigInt move() {
+		return BigInt(m_reg, m_signedness);
 	}
 
     @property BigInt dup() const {

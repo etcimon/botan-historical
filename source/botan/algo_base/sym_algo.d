@@ -47,12 +47,12 @@ public:
         setKey(key.ptr, key.length);
     }
     
-	final void setKey(int Alloc)(in FreeListRef!(Vector!( ubyte, Alloc )) key)
+	final void setKey(int Alloc)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) key)
 	{
 		setKey(key.ptr, key.length);
 	}
 
-	final void setKey(int Alloc)(const ref Vector!( ubyte, Alloc ) key)
+	final void setKey(int Alloc)(auto const ref Vector!( ubyte, Alloc ) key)
 	{
 		setKey(key.ptr, key.length);
 	}

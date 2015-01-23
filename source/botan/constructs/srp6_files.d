@@ -52,36 +52,37 @@ public:
             else
                 continue; // unknown group, ignored
             
-            m_entries[username] = SRP6Data(v, salt, group_id);
+            m_entries[username] = SRP6Data(&v, &salt, group_id);
         }
     }
 
     bool lookupUser(in string username,
-                     ref BigInt v,
-                       ref Vector!ubyte salt,
-                     ref string group_id) const
+                    ref BigInt v,
+                    ref Vector!ubyte salt,
+                    ref string group_id) const
     {
         SRP6Data entry = m_entries.get(username);
-        if (entry == SRP6Data.init)
+        if (**entry == SRP6DataImpl.init)
             return false;
 
-        v = entry.v;
-        salt = entry.salt;
+        v = entry.v.dup;
+        salt = entry.salt.dup;
         group_id = entry.group_id;
         
         return true;
     }
 
 private:
-    struct SRP6Data
+	alias SRP6Data = FreeListRef!SRP6DataImpl;
+    struct SRP6DataImpl
     {
 
-        this(const ref BigInt _v,
-             const ref Vector!ubyte _salt,
+        this(BigInt* _v,
+             Vector!ubyte* _salt,
              in string _group_id) 
         {
-            v = _v.dup;
-            salt = _salt.dup; 
+            v = (*_v).move();
+            salt = (*_salt).move(); 
             group_id = _group_id;
         }
 

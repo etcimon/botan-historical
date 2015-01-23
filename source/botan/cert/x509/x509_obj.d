@@ -62,12 +62,12 @@ public:
     */
     final string hashUsedForSignature() const
     {
-        Array!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
+        Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
         
         if (sig_info.length != 2)
             throw new InternalError("Invalid name format found for " ~ m_sig_algo.oid.toString());
         
-        Array!string pad_and_hash = parseAlgorithmName(sig_info[1]);
+        Vector!string pad_and_hash = parseAlgorithmName(sig_info[1]);
         
         if (pad_and_hash.length != 2)
             throw new InternalError("Invalid name format " ~ sig_info[1]);

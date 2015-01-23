@@ -47,7 +47,7 @@ public:
     /*
     * OAEP Pad Operation
     */
-    override SecureArray!ubyte pad(const(ubyte)* input, size_t in_length, size_t key_length,
+    override SecureVector!ubyte pad(const(ubyte)* input, size_t in_length, size_t key_length,
                              	   RandomNumberGenerator rng) const
     {
         key_length /= 8;
@@ -55,7 +55,7 @@ public:
         if (key_length < in_length + 2*m_Phash.length + 1)
             throw new InvalidArgument("OAEP: Input is too large");
         
-        SecureArray!ubyte output = SecureArray!ubyte(key_length);
+        SecureVector!ubyte output = SecureVector!ubyte(key_length);
         
         rng.randomize(output.ptr, m_Phash.length);
         
@@ -75,7 +75,7 @@ public:
     /*
     * OAEP Unpad Operation
     */
-    override SecureArray!ubyte unpad(const(ubyte)* input_, size_t in_length, size_t key_length) const
+    override SecureVector!ubyte unpad(const(ubyte)* input_, size_t in_length, size_t key_length) const
     {
         /*
         Must be careful about error messages here; if an attacker can
@@ -95,7 +95,7 @@ public:
         if (in_length > key_length)
             in_length = 0;
         
-        SecureArray!ubyte input = SecureArray!ubyte(key_length);
+        SecureVector!ubyte input = SecureVector!ubyte(key_length);
         bufferInsert(input, key_length - in_length, input_, in_length);
         
         mgf1Mask(*m_hash,
@@ -137,9 +137,9 @@ public:
         if (bad_input)
             throw new DecodingError("Invalid OAEP encoding");
 
-        return SecureArray!ubyte(input.ptr[delim_idx + 1 .. input.length]);
+        return SecureVector!ubyte(input.ptr[delim_idx + 1 .. input.length]);
     }
 
-    SecureArray!ubyte m_Phash;
+    SecureVector!ubyte m_Phash;
     Unique!HashFunction m_hash;
 }

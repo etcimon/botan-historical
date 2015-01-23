@@ -257,7 +257,7 @@ public:
         SecureArray!ubyte buffer = SecureVector!ubyte(remaining(msg));
         size_t got = read(buffer.ptr, buffer.length, msg);
         buffer.resize(got);
-        return buffer;
+        return buffer.move();
     }
 
     /**

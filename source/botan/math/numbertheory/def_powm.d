@@ -27,21 +27,21 @@ public:
     /*
     * Set the exponent
     */
-    override void setExponent(BigInt e)
+    override void setExponent(const ref BigInt e)
     {
-        m_exp = e;
+        m_exp = e.dup;
     }
 
     /*
     * Set the base
     */
-    override void setBase(BigInt base)
+	override void setBase(const ref BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
         m_g.resize((1 << m_window_bits));
         m_g[0] = 1;
-        m_g[1] = base;
+        m_g[1] = base.dup;
         
         for (size_t i = 2; i != m_g.length; ++i)
             m_g[i] = m_reducer.multiply(m_g[i-1], m_g[0]);
@@ -79,7 +79,7 @@ public:
         return ret;
     }
 
-    this(BigInt n, PowerMod.UsageHints _hints)
+	this()(auto const ref BigInt n, PowerMod.UsageHints _hints)
     {
         m_reducer = ModularReducer(n);
         m_hints = _hints;
@@ -105,16 +105,16 @@ public:
     /*
     * Set the exponent
     */
-    override void setExponent(BigInt exp)
+	override void setExponent(const ref BigInt exp)
     {
-        m_exp = exp;
+        m_exp = exp.dup;
         m_exp_bits = exp.bits();
     }
 
     /*
     * Set the base
     */
-    override void setBase(BigInt base)
+	override void setBase(const ref BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         m_g.resize((1 << m_window_bits));
@@ -181,7 +181,7 @@ public:
             
             const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
-            const BigInt y = m_g[nibble];
+            const BigInt* y = &m_g[nibble];
 
 
             bigint_monty_mul(z.mutablePtr(), z_size, x.ptr, x.length, x.sigWords(), y.ptr, y.length, y.sigWords(),
@@ -215,9 +215,9 @@ public:
     /*
     * Montgomery_Exponentiator Constructor
     */
-    this(BigInt mod, PowerMod.UsageHints hints)
+	this()(auto const ref BigInt mod, PowerMod.UsageHints hints)
     {
-        m_modulus = mod;
+        m_modulus = mod.dup;
         m_mod_words = m_modulus.sigWords();
         m_window_bits = 1;
         m_hints = hints;

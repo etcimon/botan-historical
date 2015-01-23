@@ -37,9 +37,9 @@ public:
     * @param secret = the secret input
     * @param salt = a diversifier
     */
-    SecureVector!ubyte deriveKey(size_t key_len,
-                                 const ref SecureVector!ubyte secret,
-                                 in string salt = "") const
+    SecureVector!ubyte deriveKey()(size_t key_len,
+			                       auto const ref SecureVector!ubyte secret,
+			                       in string salt = "") const
     {
         return deriveKey(key_len, secret.ptr, secret.length,
                          cast(const(ubyte)*)(salt.ptr),
@@ -53,9 +53,9 @@ public:
     * @param salt = a diversifier
     */
     
-    SecureVector!ubyte deriveKey(int Alloc, int Alloc2)(size_t key_len,
-                                                        const ref Vector!( ubyte, Alloc ) secret,
-                                                        const ref Vector!( ubyte, Alloc2 ) salt) const
+    SecureVector!ubyte deriveKey(int Alloc)(size_t key_len,
+                                            auto const ref SecureVector!ubyte secret,
+                                           auto const ref Vector!( ubyte, Alloc ) salt) const
     {
         return deriveKey(key_len, secret.ptr, secret.length, salt.ptr, salt.length);
     }
@@ -67,10 +67,10 @@ public:
     * @param salt = a diversifier
     * @param salt_len = size of salt in bytes
     */
-    SecureVector!ubyte deriveKey(size_t key_len,
-                                 const ref SecureVector!ubyte secret,
-                                 const(ubyte)* salt,
-                                 size_t salt_len) const
+    SecureVector!ubyte deriveKey()(size_t key_len,
+			                       auto const ref SecureVector!ubyte secret,
+			                       const(ubyte)* salt,
+			                       size_t salt_len) const
     {
         return deriveKey(key_len,
                          secret.ptr, secret.length,

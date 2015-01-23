@@ -28,19 +28,19 @@ public:
         m_hash = hash;
     }
 
-    size_t hashOutputLength() const { return m_hash.outputLength; }
+	override size_t hashOutputLength() const { return m_hash.outputLength; }
 
-    void update(const(ubyte)* input, size_t length)
+	override void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
 
-	SecureVector!ubyte rawData()
+	override ref SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-	SecureVector!ubyte encodingOf(const ref SecureArray!ubyte msg,
+	override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                   size_t output_bits,
                                   RandomNumberGenerator rng)
     {
@@ -49,7 +49,7 @@ public:
         return emsa1Encoding(msg, output_bits);
     }
 
-	bool verify(const ref SecureVector!ubyte coded,
+	override bool verify(const ref SecureVector!ubyte coded,
 				const ref SecureVector!ubyte raw, size_t key_bits)
     {
         try {
@@ -85,16 +85,16 @@ public:
 
 private:
 
-SecureVector!ubyte emsa1Encoding(const ref SecureArray!ubyte msg_, size_t output_bits)
+SecureVector!ubyte emsa1Encoding(const ref SecureVector!ubyte msg_, size_t output_bits)
 {
 	SecureVector!ubyte msg = msg_.dup;
     if (8*msg.length <= output_bits)
-        return msg;
+        return msg.move;
     
     size_t shift = 8*msg.length - output_bits;
     
     size_t byte_shift = shift / 8, bit_shift = shift % 8;
-	SecureVector!ubyte digest = SecureArray!ubyte(msg.length - byte_shift);
+	SecureVector!ubyte digest = SecureVector!ubyte(msg.length - byte_shift);
     
     for (size_t j = 0; j != msg.length - byte_shift; ++j)
         digest[j] = msg[j];

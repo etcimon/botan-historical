@@ -28,7 +28,7 @@ import botan.utils.types;
 * @param af = an algorithm factory
 * @return key encrypted under kek
 */
-SecureVector!ubyte rfc3394Keywrap(const ref SecureVector!ubyte key,
+SecureVector!ubyte rfc3394Keywrap()(auto const ref SecureVector!ubyte key,
                                     in SymmetricKey kek,
                                     AlgorithmFactory af)
 {
@@ -79,7 +79,7 @@ SecureVector!ubyte rfc3394Keywrap(const ref SecureVector!ubyte key,
 * @param af = an algorithm factory
 * @return key decrypted under kek
 */
-SecureVector!ubyte rfc3394Keyunwrap(const ref SecureVector!ubyte key,
+SecureVector!ubyte rfc3394Keyunwrap()(auto const ref SecureVector!ubyte key,
                                       in SymmetricKey kek,
                                       AlgorithmFactory af)
 {

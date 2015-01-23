@@ -124,7 +124,13 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
                 auto startEmplace = length;
                 reserve(newLength);
                 _payload = _payload.ptr[0 .. newLength];
-                initializeAll(_payload.ptr[startEmplace .. length]);
+                static if (!isImplicitlyConvertible!(T, T)) {
+					T t;
+					foreach (size_t i; startEmplace .. length) 
+						memcpy((cast(void*)_payload.ptr) + i * T.sizeof, &t, T.sizeof); 
+
+				} else
+					initializeAll(_payload.ptr[startEmplace .. length]);
             }
         }
         
@@ -175,9 +181,28 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
             _capacity = elements;
         }
         
+		size_t pushBack(Stuff)(auto ref Stuff stuff)
+			if (!isImplicitlyConvertible!(T, T) && is(T == Stuff))
+		{
+			TRACE("Vector.append @disabled this(this)");
+			if (_capacity == length)
+			{
+				reserve(1 + capacity * 3 / 2);
+			}
+			assert(capacity > length && _payload.ptr);
+
+			T* t = &stuff;
+
+			memcpy((cast(void*)_payload.ptr) + _payload.length * T.sizeof, t, T.sizeof);
+			memset(t, 0, T.sizeof);
+			_payload = _payload.ptr[0 .. _payload.length + 1];
+
+			return 1;
+		}
+
         // Insert one item
-        size_t pushBack(Stuff)(Stuff stuff)
-            if (isImplicitlyConvertible!(Stuff, T))
+        size_t pushBack(Stuff)(auto ref Stuff stuff)
+			if (isImplicitlyConvertible!(T, T) && isImplicitlyConvertible!(Stuff, T))
         {
             TRACE("Vector.append");
             if (_capacity == length)
@@ -191,8 +216,8 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         }
         
         /// Insert a range of items
-        size_t pushBack(Stuff)(Stuff stuff)
-            if (isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
+        size_t pushBack(Stuff)(auto ref Stuff stuff)
+			if (isInputRange!Stuff && (isImplicitlyConvertible!(ElementType!Stuff, T) || is(T == ElementType!Stuff)))
         {
             TRACE("Vector.append 2");
             static if (hasLength!Stuff)
@@ -201,7 +226,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
                 reserve(oldLength + stuff.length);
             }
             size_t result;
-            foreach (item; stuff)
+            foreach (ref item; stuff)
             {
                 pushBack(item);
                 ++result;
@@ -224,9 +249,10 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
     /**
         Constructor taking a number of items
      */
-    this(U)(U[] values...) if (isImplicitlyConvertible!(U, T))
-    {
-        _data = Data(cast(T[])values);
+	this(U)(U[] values...) 
+		if (isImplicitlyConvertible!(U, T))
+	{
+		_data = Data(cast(T[])values);
     }
     
     /**
@@ -383,7 +409,19 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
      */
 	@property Vector!(T, ALLOCATOR) dup() const
 	{
-		return Vector!(T, ALLOCATOR)(cast(T[])_data._payload);
+		static if (__traits(compiles, { T a; T b; a = b; } ()))
+			return Vector!(T, ALLOCATOR)(cast(T[])_data._payload);
+		else static if (__traits(hasMember, T, "dup")) // Element is @disable this(this) but has dup()
+		{
+			Vector!(T, ALLOCATOR) vec = Vector!(T, ALLOCATOR)(length);
+			// swap each element with a duplicate
+			foreach (size_t i, ref el; _data._payload) {
+				T t = el.dup;
+				memcpy(vec._data._payload.ptr + i, &t, T.sizeof);
+				memset(&t, 0, T.sizeof);
+			}
+			return vec.move();
+		} else static assert(false, "Cannot dup() the element: " ~ T.stringof);
 	}
 
 	/// ditto
@@ -541,9 +579,14 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         return _data._payload[i];
     }
 
-    void opIndexAssign(U)(U val, size_t i)
+    void opIndexAssign(U)(auto ref U val, size_t i)
     {
-        _data._payload[i] = cast(T) val;
+		static if (__traits(compiles, {_data._payload[i] = cast(T) val; }()))
+        	_data._payload[i] = cast(T) val;
+		else { // swap
+			memcpy(_data._payload.ptr + i, &val, U.sizeof);
+			memset(&val, 0, U.sizeof);
+		}
     }
 
     ref const(T) opIndex(size_t i) const
@@ -627,7 +670,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         return result;
     }
 
-	void opOpAssign(string op, U)(U input)
+	void opOpAssign(string op, U)(auto ref U input)
 		if (op == "^")
 	{
 		import botan.utils.xor_buf;
@@ -640,7 +683,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
     /**
         Forwards to $(D pushBack(stuff)).
      */
-    void opOpAssign(string op, Stuff)(Stuff stuff)
+    void opOpAssign(string op, Stuff)(auto ref Stuff stuff)
         if (op == "~")
     {
 		static if (is (Stuff == FreeListRef!(typeof(this)))) {
@@ -651,7 +694,7 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
 		}
         else
         {
-            insertBack(stuff);
+			insertBack(stuff);
         }
     }
 
@@ -739,9 +782,9 @@ struct Vector(T, int ALLOCATOR = VulnerableAllocator)
         Complexity: $(BIGOH m * log(n)), where $(D m) is the number of
         elements in $(D stuff)
     */
-    size_t insertBack(Stuff)(Stuff stuff)
-        if (isImplicitlyConvertible!(Stuff, T) ||
-            isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
+    size_t insertBack(Stuff)(auto ref Stuff stuff)
+        if (isImplicitlyConvertible!(Stuff, T) || is( T == Stuff ) ||
+			(isInputRange!Stuff && (isImplicitlyConvertible!(ElementType!Stuff, T) || (is(T == ElementType!Stuff) && !isImplicitlyConvertible!(T, T))) ))
     {
         return _data.pushBack(stuff);
     }

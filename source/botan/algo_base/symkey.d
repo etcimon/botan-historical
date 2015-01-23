@@ -129,18 +129,10 @@ public:
     * Create a new OctetString
     * @param input = a bytestring
     */
-    this(ref SecureVector!ubyte input) { 
-        m_bits = input.dup; 
-    }
+	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
 
-    this(SecureVector!ubyte input) { 
-        m_bits = input.dup; 
-    }
-    /**
-    * Create a new OctetString
-    * @param input = a bytestring
-    */
-    this(Vector!ubyte input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
+	/// ditto
+	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**
@@ -168,7 +160,7 @@ public:
         else return 1;
     }
 
-    void opOpAssign(string op)(const ref OctetString other)
+    void opOpAssign(string op)(auto const ref OctetString other)
         if (op == "~")
     {
         this = this ~ other;
@@ -180,12 +172,12 @@ public:
     * @param y = an octet string
     * @return x concatenated with y
     */
-    OctetString opBinary(string op)(const ref OctetString other)
+    OctetString opBinary(string op)(auto const ref OctetString other)
         if (op == "~") 
     {
         SecureVector!ubyte output;
-        output = cast(SecureVector!ubyte)bitsOf();
-        output ~= cast(SecureVector!ubyte)other.bitsOf();
+        output = bitsOf();
+        output ~= other.bitsOf();
         return OctetString(output);
     }
     
@@ -195,7 +187,7 @@ public:
     * @param y = an octet string
     * @return x XORed with y
     */
-    OctetString opBinary(string op)(const ref OctetString other)
+    OctetString opBinary(string op)(auto const ref OctetString other)
         if (op == "^") 
     {
         SecureVector!ubyte ret = SecureVector!ubyte(max(length(), other.length));
@@ -211,7 +203,7 @@ public:
     }
 
 private:
-    SecureVector!ubyte m_bits;
+    SecureArray!ubyte m_bits;
 }
 
 /**

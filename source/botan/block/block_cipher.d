@@ -114,7 +114,7 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void encrypt(int Alloc, int Alloc2)(const ref Vector!( ubyte, Alloc ) input,
+    final void encrypt(int Alloc, int Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
     {
         return encryptN(input.ptr, output.ptr, input.length / this.blockSize());
@@ -125,7 +125,7 @@ public:
     * @param input = the input buffer (multiple of blockSize())
     * @param output = the output buffer (same size as input)
     */
-    final void decrypt(int Alloc, int Alloc2)(const ref Vector!( ubyte, Alloc ) input,
+    final void decrypt(int Alloc, int Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
     {
         return decryptN(input.ptr, output.ptr, input.length / this.blockSize());

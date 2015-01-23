@@ -152,9 +152,9 @@ public:
     * Create a PKCS#10 Request from binary data.
     * @param vec = a std::vector containing the DER value
     */
-    this(in Vector!(ubyte, ALLOC)* input)
+    this(int ALLOC)(in Vector!(ubyte, ALLOC)* input)
     {
-        super(input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
+        super(*input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
         doDecode();
     }
 private:

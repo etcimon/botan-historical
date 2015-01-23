@@ -39,7 +39,7 @@ public:
         m_hash.update(input, length);
     }
 
-	override SecureVector!ubyte rawData()
+	override ref SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -91,14 +91,14 @@ public:
         m_message ~= input[0 .. length];
     }
 
-	override SecureVector!ubyte rawData()
+	override ref SecureVector!ubyte rawData()
     {
 		return m_message;
     }
 
 	override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
-                                          size_t output_bits,
-                                          RandomNumberGenerator)
+                                           size_t output_bits,
+                                           RandomNumberGenerator)
     {
         return emsa3Encoding(msg, output_bits, null, 0);
     }
@@ -123,7 +123,7 @@ private:
 
 private:
 
-SecureArray!ubyte emsa3Encoding(const ref SecureVector!ubyte msg,
+SecureVector!ubyte emsa3Encoding(const ref SecureVector!ubyte msg,
                                 size_t output_bits,
                                 const(ubyte)* hash_id,
                                 size_t hash_id_length)
@@ -132,7 +132,7 @@ SecureArray!ubyte emsa3Encoding(const ref SecureVector!ubyte msg,
     if (output_length < hash_id_length + msg.length + 10)
         throw new EncodingError("emsa3Encoding: Output length is too small");
     
-    SecureArray!ubyte T = SecureArray!ubyte(output_length);
+    SecureVector!ubyte T = SecureVector!ubyte(output_length);
     const size_t P_LENGTH = output_length - msg.length - hash_id_length - 2;
     
     T[0] = 0x01;

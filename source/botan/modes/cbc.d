@@ -92,7 +92,7 @@ protected:
         return *m_padding;
     }
 
-    final SecureVector!ubyte state() { return m_state; }
+    final ref SecureVector!ubyte state() { return m_state; }
 
     final ubyte* statePtr() { return m_state.ptr; }
 

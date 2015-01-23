@@ -22,7 +22,7 @@ public:
     /*
     * EMSA-Raw Encode Operation
     */
-    void update(const(ubyte)* input, size_t length)
+	override void update(const(ubyte)* input, size_t length)
     {
         m_message ~= input[0 .. length];
     }
@@ -30,17 +30,17 @@ public:
     /*
     * Return the raw (unencoded) data
     */
-	SecureVector!ubyte rawData()
+	override SecureVector!ubyte rawData()
     {
-        SecureArray!ubyte output;
+        SecureVector!ubyte output;
         std.algorithm.swap(m_message, output);
-        return output;
+        return output.move;
     }
 
     /*
     * EMSA-Raw Encode Operation
     */
-	SecureVector!ubyte encodingOf(const ref SecureArray!ubyte msg,
+	SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                   size_t,
                                   RandomNumberGenerator)
     {

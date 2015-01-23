@@ -22,7 +22,7 @@ import botan.utils.exceptn;
 interface BlockCipherModePaddingMethod
 {
 public:
-    abstract void addPadding(SecureVector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
+    abstract void addPadding(ref SecureVector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
 
     /**
     * @param block = the last block
@@ -53,7 +53,7 @@ public:
     /*
     * Pad with PKCS #7 Method
     */
-    override void addPadding(SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
+    override void addPadding(ref SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
     {
         const ubyte pad_value = cast(ubyte)( block_size - last_byte_pos );
         
@@ -92,7 +92,7 @@ public:
     /*
     * Pad with ANSI X9.23 Method
     */
-    override void addPadding(SecureVector!ubyte buffer,
+    override void addPadding(ref SecureVector!ubyte buffer,
                                  size_t last_byte_pos,
                                  size_t block_size) const
     {
@@ -131,7 +131,7 @@ public:
     /*
     * Pad with One and Zeros Method
     */
-    override void addPadding(SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
+    override void addPadding(ref SecureVector!ubyte buffer, size_t last_byte_pos, size_t block_size) const
     {
         buffer.pushBack(0x80);
         
@@ -168,7 +168,7 @@ public:
 final class NullPadding : BlockCipherModePaddingMethod
 {
 public:
-    override void addPadding(SecureVector!ubyte, size_t, size_t) const {}
+    override void addPadding(ref SecureVector!ubyte, size_t, size_t) const {}
 
     override size_t unpad(const(ubyte)*, size_t size) const { return size; }
 

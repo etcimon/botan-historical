@@ -18,22 +18,22 @@ import botan.math.mp.mp_core;
 struct ModularReducer
 {
 public:
-    const(BigInt) getModulus() const { return m_modulus; }
+    ref const(BigInt) getModulus() const { return m_modulus; }
 
     /*
     * Barrett Reduction
     */
-    BigInt reduce(BigInt x) const
+    BigInt reduce()(auto const ref BigInt x) const
     {
-        const BigInt modulus = m_modulus;
+        const BigInt* modulus = &m_modulus;
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
         
-        if (x.cmp(modulus, false) < 0)
+        if (x.cmp(*modulus, false) < 0)
         {
             if (x.isNegative())
-                return x + modulus; // make positive
-            return x;
+                return x + *modulus; // make positive
+            return x.dup;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
         {
@@ -43,11 +43,11 @@ public:
             t1 *= m_mu;
             
             t1 >>= (MP_WORD_BITS * (m_mod_words + 1));
-            t1 *= modulus;
+            t1 *= *modulus;
             
             t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
-            BigInt t2 = x;
+            BigInt t2 = x.dup;
             t2.setSign(BigInt.Positive);
             t2.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
@@ -58,18 +58,18 @@ public:
                 t2 += BigInt.powerOf2(MP_WORD_BITS * (m_mod_words + 1));
             }
             
-            while (t2 >= modulus)
-                t2 -= modulus;
+            while (t2 >= *modulus)
+                t2 -= *modulus;
             
             if (x.isPositive())
-                return t2;
+                return t2.move();
             else
-                return (modulus - t2);
+                return (*modulus - t2);
         }
         else
         {
             // too big, fall back to normal division
-            return (x % modulus);
+            return (x % *modulus);
         }
     }
 
@@ -79,7 +79,7 @@ public:
     * @param y
     * @return (x * y) % p
     */
-    BigInt multiply(const ref BigInt x, const ref BigInt y) const
+    BigInt multiply()(auto const ref BigInt x, auto const ref BigInt y) const
     { return reduce(x * y); }
 
     /**
@@ -87,7 +87,7 @@ public:
     * @param x
     * @return (x * x) % p
     */
-    BigInt square(const ref BigInt x) const
+    BigInt square()(auto const ref BigInt x) const
     { return reduce(x.square()); }
 
     /**
@@ -95,18 +95,18 @@ public:
     * @param x
     * @return (x * x * x) % p
     */
-    BigInt cube(const ref BigInt x) const
+    BigInt cube()(auto const ref BigInt x) const
     { return multiply(x, this.square(x)); }
 
     bool initialized() const { return (m_mod_words != 0); }
     /*
     * ModularReducer Constructor
     */
-    this(BigInt mod)
+    this()(auto const ref BigInt mod)
     {
         if (mod <= 0)
             throw new InvalidArgument("ModularReducer: modulus must be positive");
-        m_modulus = mod;
+        m_modulus = mod.dup;
         m_mod_words = m_modulus.sigWords();
         
         m_modulus_2 = square(m_modulus);

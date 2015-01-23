@@ -179,10 +179,10 @@ public:
     /*
     * PKVerifierFilter Constructor
     */
-    this(ref PKVerifier v, SecureVector!ubyte sig) 
+    this(ref PKVerifier v, in SecureVector!ubyte sig) 
     {
         m_verifier = &v;
-        m_signature = sig;
+        m_signature = sig.dup;
     }
 
     ~this() {  }

@@ -336,7 +336,7 @@ PKCS10Request createCertReq(in X509CertOptions opts,
             
     const Vector!ubyte req = X509Object.makeSigned(signer, rng, sig_algo, tbs_req.getContents());
     
-    return PKCS10Request(req);
+    return PKCS10Request(&req);
 }
 
 /*

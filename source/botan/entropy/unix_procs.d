@@ -63,7 +63,7 @@ public:
         __gshared immutable size_t MS_WAIT_TIME = 32;
         __gshared immutable double ENTROPY_ESTIMATE = 1.0 / 1024;
         
-        SecureVector!ubyte io_buffer = accum.getIoBuffer(4*1024); // page
+        SecureVector!ubyte* io_buffer = &accum.getIoBuffer(4*1024); // page
         
         while (!accum.pollingGoalAchieved())
         {
@@ -124,9 +124,9 @@ public:
     *          an executable to one of these directories then we will
     *          run arbitrary code.
     */
-    this(const ref Vector!string trusted_path, size_t proc_cnt = 0)
+    this()(auto const ref Vector!string trusted_path, size_t proc_cnt = 0)
     {
-        m_trusted_paths = trusted_path;
+        m_trusted_paths = trusted_path.dup;
         m_concurrent = concurrent_processes(proc_cnt);
     }
 private:
@@ -282,7 +282,7 @@ private:
     }
 
 
-    const Vector!string m_trusted_paths;
+    Vector!string m_trusted_paths;
     const size_t m_concurrent;
 
     Vector!(string[]) m_sources;

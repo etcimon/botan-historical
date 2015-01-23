@@ -37,11 +37,10 @@ struct FPE {
                              in SymmetricKey key,
                              const ref Vector!ubyte tweak)
     {
-        BigInt n = n0.dup;
-        FPEEncryptor F = scoped!FPEEncryptor(key, n, tweak);
+        FPEEncryptor F = scoped!FPEEncryptor(key, n0, tweak);
         
         BigInt a, b;
-        factor(n, a, b);
+        factor(n0.dup, a, b);
         
         const size_t r = rounds(a, b);
         
@@ -69,11 +68,10 @@ struct FPE {
     */
     static BigInt fe1Decrypt(const ref BigInt n0, const ref BigInt X0, in SymmetricKey key, const ref Vector!ubyte tweak)
     {
-        BigInt n = n0.dup;
-        auto F = scoped!FPEEncryptor(key, n, tweak);
+        auto F = scoped!FPEEncryptor(key, n0, tweak);
         
         BigInt a, b;
-        factor(n, a, b);
+		factor(n0.dup, a, b);
         
         const size_t r = rounds(a, b);
         
@@ -158,7 +156,7 @@ size_t rounds(const ref BigInt a, const ref BigInt b)
 final class FPEEncryptor
 {
 public:
-    this(in SymmetricKey key, const ref BigInt n, const ref Vector!ubyte tweak)
+    this()(in SymmetricKey key, auto const ref BigInt n, const ref Vector!ubyte tweak)
     {
 
         m_mac = new HMAC(new SHA256);

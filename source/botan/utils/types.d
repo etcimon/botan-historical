@@ -56,6 +56,7 @@ Pair!(T, U) makePair(T, U)(T first, U second)
     return Pair!(T, U)(first, second);
 }
 
+
 private template UnConst(T) {
     static if (is(T U == const(U))) {
         alias UnConst = U;

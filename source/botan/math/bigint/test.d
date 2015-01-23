@@ -54,7 +54,8 @@ Vector!string parse(string line)
 }
 
 // c==expected, d==a op b, e==a op= b
-size_t results(string op, const ref BigInt a, const ref BigInt b, const ref BigInt c, const ref BigInt d, const ref BigInt e)
+size_t results()(string op, auto const ref BigInt a, auto const ref BigInt b, auto const ref BigInt c, 
+				 auto const ref BigInt d, auto const ref BigInt e)
 {
     string op1 = "operator" ~ op;
     string op2 = op1 ~ "=";
@@ -65,12 +66,12 @@ size_t results(string op, const ref BigInt a, const ref BigInt b, const ref BigI
     {
         logError("ERROR: " ~ op1);
         
-        logDebug("a = ", a);
-        logDebug("b = ", b);
+        logDebug("a = ", a.toString());
+        logDebug("b = ", b.toString());
         
-        logDebug("c = ", c);
-        logDebug("d = ", d);
-        logDebug("e = ", e);
+        logDebug("c = ", c.toString());
+        logDebug("d = ", d.toString());
+        logDebug("e = ", e.toString());
         
         if (d != e)
         {
@@ -244,11 +245,11 @@ size_t checkPowmod(const ref Vector!string args)
     if (c != r)
     {
         logTrace("ERROR: powerMod");
-        logTrace("a = ", a);
-        logTrace("b = ", b);
-        logTrace("m = ", m);
-        logTrace("c = ", c);
-        logTrace("r = ", r);
+        logTrace("a = ", a.toString());
+        logTrace("b = ", b.toString());
+        logTrace("m = ", m.toString());
+        logTrace("c = ", c.toString());
+        logTrace("r = ", r.toString());
         return 1;
     }
     return 0;
@@ -265,7 +266,7 @@ size_t isPrimeTest(const ref Vector!string args, RandomNumberGenerator rng)
     if (isPrime != should_be_prime)
     {
         logError("ERROR: isPrime");
-        logDebug("n = ", n);
+        logDebug("n = ", n.toString());
         logDebug(isPrime, " != ", should_be_prime);
         return 1;
     }

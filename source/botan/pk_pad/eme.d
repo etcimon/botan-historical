@@ -29,7 +29,7 @@ public:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-    final SecureArray!ubyte encode(const(ubyte)* msg, size_t msg_len,
+    final SecureVector!ubyte encode(const(ubyte)* msg, size_t msg_len,
                             		size_t key_bits,
                             		RandomNumberGenerator rng) const
     {
@@ -43,7 +43,7 @@ public:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-	final SecureArray!ubyte encode(const ref SecureArray!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
+	final SecureVector!ubyte encode(const ref SecureVector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
     {
         return pad(msg.ptr, msg.length, key_bits, rng);
     }
@@ -55,7 +55,7 @@ public:
     * @param key_bits = length of the key in bits
     * @return plaintext
     */
-    final SecureArray!ubyte decode(const(ubyte)* msg, size_t msg_len, size_t key_bits) const
+    final SecureVector!ubyte decode(const(ubyte)* msg, size_t msg_len, size_t key_bits) const
     {
         return unpad(msg, msg_len, key_bits);
     }
@@ -67,7 +67,7 @@ public:
     * @param key_bits = length of the key in bits
     * @return plaintext
     */
-    final SecureArray!ubyte decode(const ref SecureArray!ubyte msg, size_t key_bits) const
+    final SecureVector!ubyte decode(const ref SecureVector!ubyte msg, size_t key_bits) const
     {
         return unpad(msg.ptr, msg.length, key_bits);
     }
@@ -82,7 +82,7 @@ protected:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-    abstract SecureArray!ubyte pad(const(ubyte)* input,
+    abstract SecureVector!ubyte pad(const(ubyte)* input,
                                      size_t in_length,
                                      size_t key_length,
                                      RandomNumberGenerator rng) const;
@@ -94,5 +94,5 @@ protected:
     * @param key_length = length of the key in bits
     * @return plaintext
     */
-    abstract SecureArray!ubyte unpad(const(ubyte)* input, size_t in_length, size_t key_length) const;
+    abstract SecureVector!ubyte unpad(const(ubyte)* input, size_t in_length, size_t key_length) const;
 }

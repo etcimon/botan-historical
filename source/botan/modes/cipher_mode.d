@@ -8,10 +8,11 @@ module botan.modes.cipher_mode;
 
 public import botan.algo_base.transform;
 import botan.constants; 
+
 /**
 * Interface for cipher modes
 */
-class CipherMode : KeyedTransform, Transformation
+abstract class CipherMode : KeyedTransform, Transformation
 {
 public:
     /**
@@ -30,10 +31,10 @@ import botan.filters.filters;
 import core.atomic;
 
 private shared size_t total_tests;
-SecureVector!ubyte runMode(string algo, CipherDir dir, 
-                           const ref SecureVector!ubyte pt, 
-                           const ref SecureVector!ubyte nonce, 
-                           const ref SecureVector!ubyte key)
+SecureVector!ubyte runMode()(string algo, CipherDir dir, 
+                             auto const ref SecureVector!ubyte pt, 
+                             auto const ref SecureVector!ubyte nonce, 
+                             auto const ref SecureVector!ubyte key)
 {
     /*
     Unique!CipherMode cipher = getCipher(algo, dir);

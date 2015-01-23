@@ -48,7 +48,7 @@ public:
         // Create RTSS header in each share
         foreach (ubyte i; 0 .. N)
         {
-            shares[i].m_contents = SecureVector!ubyte();
+            shares[i].m_contents = SecureArray!ubyte();
             shares[i].m_contents ~= identifier.ptr[0 .. 16];
             shares[i].m_contents ~= rtssHashId(hash.name);
             shares[i].m_contents ~= M;
@@ -89,7 +89,7 @@ public:
             }
         }
         
-        return shares;
+        return shares.move();
     }
 
 
@@ -97,11 +97,11 @@ public:
     * @param shares = the list of shares
     */
 
-    static SecureVector!ubyte reconstruct(const ref Vector!RTSS shares)
+    static SecureVector!ubyte reconstruct()(auto const ref Vector!RTSS shares)
     {
         __gshared immutable size_t RTSS_HEADER_SIZE = 20;
         
-        foreach (share; shares[])
+        foreach (ref share; shares[])
         {
             if (share.length != shares[0].length)
                 throw new DecodingError("Different sized RTSS shares detected");
@@ -181,7 +181,7 @@ public:
     */
     this(in string hex_input)
     {
-        m_contents = hexDecodeLocked(hex_input);
+        m_contents = SecureArray!ubyte(hexDecodeLocked(hex_input)[]);
     }
 
 
@@ -217,7 +217,7 @@ public:
     */
     bool initialized() const { return (m_contents.length > 0); }
 private:
-    SecureVector!ubyte m_contents;
+    SecureArray!ubyte m_contents;
 }
 
 

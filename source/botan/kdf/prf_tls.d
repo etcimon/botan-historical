@@ -27,8 +27,8 @@ public:
     * TLS PRF
     */
     override SecureVector!ubyte derive(size_t key_len,
-                            const(ubyte)* secret, size_t secret_len,
-                            const(ubyte)* seed, size_t seed_len) const
+			                           const(ubyte)* secret, size_t secret_len,
+			                           const(ubyte)* seed, size_t seed_len) const
     {
         SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
@@ -96,7 +96,7 @@ private:
 /*
 * TLS PRF P_hash function
 */
-void P_hash(SecureVector!ubyte output,
+void P_hash(ref SecureVector!ubyte output,
             MessageAuthenticationCode mac,
             const(ubyte)* secret, size_t secret_len,
             const(ubyte)* seed, size_t seed_len) 

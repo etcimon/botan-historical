@@ -34,7 +34,7 @@ public:
     * @param size = requested size for the I/O buffer
     * @return cached I/O buffer for repeated polls
     */
-    SecureVector!ubyte getIoBuffer(size_t size)
+    ref SecureVector!ubyte getIoBuffer(size_t size)
     {
         m_io_buffer.clear();
         m_io_buffer.resize(size);
@@ -56,7 +56,7 @@ public:
     void add(const void* bytes, size_t length, double entropy_bits_per_byte)
     {
         m_done = m_accum_fn(cast(const(ubyte)*)(bytes),
-                                  length, entropy_bits_per_byte * length);
+                            length, entropy_bits_per_byte * length);
     }
 
     /**

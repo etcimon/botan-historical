@@ -109,7 +109,7 @@ protected:
 
     final StreamCipher ctr() { return *m_ctr; }
 
-    final void setCtrIv(SecureVector!ubyte V)
+    final void setCtrIv(ref SecureVector!ubyte V)
     {
         V[8] &= 0x7F;
         V[12] &= 0x7F;
@@ -117,7 +117,7 @@ protected:
         ctr().setIv(V.ptr, V.length);
     }
 
-    final SecureVector!ubyte msgBuf() { return m_msg_buf; }
+    final ref const(SecureVector!ubyte) msgBuf() { return m_msg_buf; }
 
     final SecureVector!ubyte S2V(const(ubyte)* text, size_t text_len)
     {

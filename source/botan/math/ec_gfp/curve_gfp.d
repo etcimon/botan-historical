@@ -34,12 +34,12 @@ struct CurveGFp
     * @param a = first coefficient
     * @param b = second coefficient
     */
-    this(BigInt p, BigInt a, BigInt b)
+    this()(auto const ref BigInt p, auto const ref BigInt a, auto const ref BigInt b)
     {
 		logTrace("CurveGFp constructor 3");
-        m_p = p;
-        m_a = a;
-        m_b = b;
+        m_p = p.dup;
+        m_a = a.dup;
+        m_b = b.dup;
         m_p_words = m_p.sigWords();
         m_p_dash = montyInverse(m_p.wordAt(0));
         BigInt r = BigInt.powerOf2(m_p_words * BOTAN_MP_WORD_BITS);
@@ -52,33 +52,33 @@ struct CurveGFp
 	/**
     * @return curve coefficient a
     */
-    const(BigInt) getA() const { return m_a; }
+    ref const(BigInt) getA() const { return m_a; }
 
     /**
     * @return curve coefficient b
     */
-    const(BigInt) getB() const { return m_b; }
+    ref const(BigInt) getB() const { return m_b; }
 
     /**
     * Get prime modulus of the field of the curve
     * @return prime modulus of the field of the curve
     */
-    const(BigInt) getP() const { return m_p; }
+    ref const(BigInt) getP() const { return m_p; }
 
     /**
     * @return Montgomery parameter r^2 % p
     */
-    const(BigInt) getR2() const { return m_r2; }
+    ref const(BigInt) getR2() const { return m_r2; }
 
     /**
     * @return a * r mod p
     */
-    const(BigInt) getAR() const { return m_a_r; }
+    ref const(BigInt) getAR() const { return m_a_r; }
 
     /**
     * @return b * r mod p
     */
-    const(BigInt) getBR() const { return m_b_r; }
+    ref const(BigInt) getBR() const { return m_b_r; }
 
     /**
     * @return Montgomery parameter p-dash
@@ -94,7 +94,7 @@ struct CurveGFp
     * swaps the states of this and other, does not throw
     * @param other = curve to swap values with
     */
-    void swap(ref CurveGFp other)
+    void swap()(auto const ref CurveGFp other)
     {
 		logTrace("curveGFp swap");
         m_p.swap(other.m_p);
@@ -133,17 +133,17 @@ struct CurveGFp
 
     @property CurveGFp dup() const {
 		logTrace("CurveGFp dup");
-		logDebug(toArray()[]);
+		logDebug(toVector()[]);
 		return CurveGFp(m_p.dup(), m_a.dup(), m_b.dup());
     }
 
 	@disable this(this);
 
 	string toString() const {
-		return toArray()[].idup;
+		return toVector()[].idup;
 	}
 
-	Array!ubyte toArray() const {
+	Array!ubyte toVector() const {
 		Array!ubyte ret;
 		ret ~= "m_p: ";
 		ret ~= m_p.toString();

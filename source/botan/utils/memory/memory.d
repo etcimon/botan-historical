@@ -363,7 +363,7 @@ struct FreeListRef(T, bool INIT = true)
     private void function(void*) m_free;
     private size_t m_magic = 0x1EE75817; // workaround for compiler bug
     
-    static FreeListRef opCall(ARGS...)(ARGS args)
+    static FreeListRef opCall(ARGS...)(auto ref ARGS args)
     {
         FreeListRef ret;
         auto mem = getAllocator!VulnerableAllocatorImpl().alloc(ElemSize);

@@ -45,12 +45,13 @@ public:
     * @param order = the order of the base point
     * @param cofactor = the cofactor
     */
-    this(ref CurveGFp curve, ref PointGFp base_point, BigInt order, BigInt cofactor) 
+    this()(auto const ref CurveGFp curve, auto const ref PointGFp base_point, 
+		   auto const ref BigInt order, auto const ref BigInt cofactor) 
     {
         m_curve = curve.dup;
         m_base_point = base_point.dup;
-        m_order = order;
-        m_cofactor = cofactor;
+        m_order = order.dup;
+        m_cofactor = cofactor.dup;
         m_oid = "";
     }
 
@@ -58,7 +59,7 @@ public:
     * Decode a BER encoded ECC domain parameter set
     * @param ber_data = the bytes of the BER encoding
     */
-    this(const ref Vector!ubyte ber_data)
+    this()(auto const ref Vector!ubyte ber_data)
     {
         m_curve = CurveGFp.init;
         m_base_point = PointGFp.init;
@@ -240,13 +241,13 @@ public:
     * Return the order of the base point
     * @result order of the base point
     */
-    const(BigInt) getOrder() const { return m_order; }
+    ref const(BigInt) getOrder() const { return m_order; }
 
     /**
     * Return the cofactor
     * @result the cofactor
     */
-    const(BigInt) getCofactor() const { return m_cofactor; }
+    ref const(BigInt) getCofactor() const { return m_cofactor; }
 
     bool initialized() const { return !m_base_point.isZero(); }
 

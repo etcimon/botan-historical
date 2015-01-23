@@ -54,7 +54,7 @@ public:
         foreach (hash; m_hashes[])
             hash_copies.pushBack(hash.clone());
         
-        return new Parallel(hash_copies);
+        return new Parallel(hash_copies.move());
     }
 
     /*
@@ -73,9 +73,9 @@ public:
     * Constructor
     * @param hash_input = a set of hashes to compute in parallel
     */
-    this(Vector!HashFunction hash_input)
+    this()(auto ref Vector!HashFunction hash_input)
     {
-        m_hashes = hash_input;
+        m_hashes = hash_input.move();
     }
 
     /*

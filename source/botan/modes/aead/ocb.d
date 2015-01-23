@@ -236,7 +236,7 @@ public:
             checksum[i % checksum.length] ^= m_checksum[i];
         
         // now compute the tag
-        SecureVector!ubyte mac = m_offset;
+        SecureVector!ubyte mac = m_offset.move();
         mac ^= checksum;
         mac ^= m_L.dollar();
         
@@ -247,7 +247,6 @@ public:
         buffer ~= mac.ptr[0 .. tagSize()];
         
         zeroise(m_checksum);
-        zeroise(m_offset);
         m_block_index = 0;
     }
 
@@ -272,7 +271,7 @@ private:
             const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
             const size_t proc_bytes = proc_blocks * BS;
             
-            const offsets = L.computeOffsets(m_offset, m_block_index, proc_blocks);
+            const SecureVector!ubyte* offsets = &L.computeOffsets(m_offset, m_block_index, proc_blocks);
             
             xorBuf(m_checksum.ptr, buffer, proc_bytes);
             
@@ -360,7 +359,7 @@ public:
             checksum[i % checksum.length] ^= m_checksum[i];
         
         // compute the mac
-        SecureVector!ubyte mac = m_offset;
+        SecureVector!ubyte mac = m_offset.move();
         mac ^= checksum;
         mac ^= m_L.dollar();
         
@@ -370,7 +369,6 @@ public:
         
         // reset state
         zeroise(m_checksum);
-        zeroise(m_offset);
         m_block_index = 0;
         
         // compare mac
@@ -408,7 +406,7 @@ private:
             const size_t proc_blocks = std.algorithm.min(blocks, par_blocks);
             const size_t proc_bytes = proc_blocks * BS;
             
-            const offsets = L.computeOffsets(m_offset, m_block_index, proc_blocks);
+            const SecureVector!ubyte* offsets = &L.computeOffsets(m_offset, m_block_index, proc_blocks);
             
             xorBuf(buffer, offsets.ptr, proc_bytes);
             m_cipher.decryptN(buffer, buffer, proc_blocks);
@@ -437,18 +435,18 @@ public:
         m_L_star.resize(cipher.blockSize());
         cipher.encrypt(m_L_star);
         m_L_dollar = polyDouble(star());
-        m_L.pushBack(polyDouble(dollar()));
+        m_L ~= polyDouble(dollar());
     }
     
-    const(SecureVector!ubyte) star() const { return m_L_star; }
+    ref const(SecureVector!ubyte) star() const { return m_L_star; }
     
-    const(SecureVector!ubyte) dollar() const { return m_L_dollar; }
+    ref const(SecureVector!ubyte) dollar() const { return m_L_dollar; }
     
-    SecureVector!ubyte opCall(size_t i) { return get(i); }
+    ref const(SecureVector!ubyte) opIndex(size_t i) { return get(i); }
     
-    SecureVector!ubyte computeOffsets(SecureVector!ubyte offset,
-                                      size_t block_index,
-                                      size_t blocks)
+    ref const(SecureVector!ubyte) computeOffsets(ref SecureVector!ubyte offset,
+                                     			 size_t block_index,
+                                     			 size_t blocks)
     {
         m_offset_buf.resize(blocks*BS);
         
@@ -462,7 +460,7 @@ public:
     }
     
 private:
-    SecureVector!ubyte get(size_t i)
+    ref SecureVector!ubyte get(size_t i)
     {
         while (m_L.length <= i)
             m_L.pushBack(polyDouble(m_L.back()));
@@ -499,7 +497,7 @@ SecureVector!ubyte ocbHash(LComputer L,
     foreach (size_t i; 0 .. ad_blocks)
     {
         // this loop could run in parallel
-        offset ^= L(ctz(i+1));
+        offset ^= L[ctz(i+1)];
         
         buf = offset;
         xorBuf(buf.ptr, &ad[BS*i], BS);
