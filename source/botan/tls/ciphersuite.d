@@ -510,7 +510,7 @@ public:
             initialized = true;
             all_ciphersuites = gatherKnownCiphersuites();
         }
-        return all_ciphersuites;
+        return all_ciphersuites.dup();
     }
 
     /**

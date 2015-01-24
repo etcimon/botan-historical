@@ -189,7 +189,7 @@ public:
         assert(selfTestSignature(encoded, plain_sig), "Signature was consistent");
         
         if (m_op.messageParts() == 1 || m_sig_format == IEEE_1363)
-            return plain_sig;
+            return plain_sig.move();
         
         if (m_sig_format == DER_SEQUENCE)
         {
@@ -450,7 +450,7 @@ public:
     }
 
 private:
-    bool validateSignature(const ref SecureVector!ubyte msg, const(ubyte)* sig, size_t sig_len)
+    bool validateSignature()(auto const ref SecureVector!ubyte msg, const(ubyte)* sig, size_t sig_len)
     {
         if (m_op.withRecovery())
         {
@@ -488,8 +488,8 @@ public:
     * @param params_len = the length of params in bytes
     */
     SymmetricKey deriveKey(size_t key_len, const(ubyte)* input,
-                            size_t in_len, const(ubyte)* params,
-                            size_t params_len) const
+                           size_t in_len, const(ubyte)* params,
+                           size_t params_len) const
     {
         SecureVector!ubyte z = (cast(KeyAgreement)*m_op).agree(input, in_len);
 
@@ -507,7 +507,8 @@ public:
     * @param params = extra derivation params
     * @param params_len = the length of params in bytes
     */
-    SymmetricKey deriveKey(size_t key_len, const ref Vector!ubyte input, const(ubyte)* params, size_t params_len) const
+    SymmetricKey deriveKey()(size_t key_len, auto const ref Vector!ubyte input, 
+							 const(ubyte)* params, size_t params_len) const
     {
         return deriveKey(key_len, input.ptr, input.length, params, params_len);
     }
@@ -530,9 +531,9 @@ public:
     * @param input = the other parties key
     * @param params = extra derivation params
     */
-    SymmetricKey deriveKey(size_t key_len,
-                                    const ref Vector!ubyte input,
-                                    in string params = "") const
+    SymmetricKey deriveKey()(size_t key_len,
+                             auto const ref Vector!ubyte input,
+                             in string params = "") const
     {
         return deriveKey(key_len, input.ptr, input.length,
                                 cast(const(ubyte)*)(params.ptr),
@@ -672,7 +673,7 @@ protected:
             if (m_eme)
                 return m_eme.decode(decrypted, m_op.maxInputBits());
             else
-                return decrypted;
+                return decrypted.move();
         }
         catch(InvalidArgument)
         {

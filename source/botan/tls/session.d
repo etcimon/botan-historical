@@ -49,15 +49,15 @@ public:
          in string srp_identifier)
     {
         m_start_time = Clock.currTime();
-        m_identifier = session_identifier;
-        m_session_ticket = ticket;
-        m_master_secret = master_secret;
+        m_identifier = session_identifier.move();
+        m_session_ticket = ticket.move();
+        m_master_secret = master_secret.move();
         m_version = _version;
         m_ciphersuite = ciphersuite;
         m_compression_method = compression_method;
         m_connection_side = side;
         m_fragment_size = fragment_size;
-        m_peer_certs = certs;
+        m_peer_certs = certs.move();
         m_server_info = server_info;
         m_srp_identifier = srp_identifier;
     }
@@ -248,12 +248,12 @@ public:
     /**
     * Get the saved master secret
     */
-    const(SecureVector!ubyte) masterSecret() const { return m_master_secret; }
+    ref const(SecureVector!ubyte) masterSecret() const { return m_master_secret; }
 
     /**
     * Get the session identifier
     */
-    const(Vector!ubyte) sessionId() const { return m_identifier; }
+    ref const(Vector!ubyte) sessionId() const { return m_identifier; }
 
     /**
     * Get the negotiated maximum fragment size (or 0 if default)
@@ -263,7 +263,7 @@ public:
     /**
     * Return the certificate chain of the peer (possibly empty)
     */
-    const(Vector!X509Certificate) peerCerts() const { return m_peer_certs; }
+    ref const(Vector!X509Certificate) peerCerts() const { return m_peer_certs; }
 
     /**
     * Get the wall clock time this session began
@@ -281,11 +281,17 @@ public:
     /**
     * Return the session ticket the server gave us
     */
-    const(Vector!ubyte) sessionTicket() const { return m_session_ticket; }
+    ref const(Vector!ubyte) sessionTicket() const { return m_session_ticket; }
 
     TLSServerInformation serverInfo() const { return m_server_info; }
 
+	@property TLSSession move() {
+		return TLSSession(m_identifier.move(), m_master_secret.move(), m_version, m_ciphersuite, m_compression_method, m_connection_side, 
+						  m_fragment_size, m_peer_certs.move(), m_session_ticket.move(), m_server_info, m_srp_identifier);
+	}
+
 private:
+
     enum { TLS_SESSION_PARAM_STRUCT_VERSION = 0x2994e301 }
 
     SysTime m_start_time;

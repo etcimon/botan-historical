@@ -22,6 +22,12 @@ import botan.utils.types;
 import botan.utils.containers.hashmap;
 import std.typecons : Tuple;
 
+struct NextRecord
+{
+	HandshakeType type;
+	Vector!ubyte data;
+}
+
 /**
 * Handshake IO Interface
 */
@@ -42,7 +48,7 @@ public:
     /**
     * Returns (HANDSHAKE_NONE, Vector!(  )()) if no message currently available
     */
-    abstract Pair!(HandshakeType, Vector!ubyte ) getNextRecord(bool expecting_ccs);
+    abstract NextRecord getNextRecord(bool expecting_ccs);
 }
 
 /**
@@ -73,7 +79,7 @@ public:
         
         Vector!ubyte buf = format(msg_bits, msg.type()).dup;
         m_send_hs(HANDSHAKE, buf);
-        return buf;
+        return buf.move();
     }
 
     override const(Vector!ubyte) format(const ref Vector!ubyte msg, HandshakeType type) const
@@ -110,7 +116,7 @@ public:
             throw new DecodingError("Unknown message type in handshake processing");
     }
 
-    override Pair!(HandshakeType, Vector!ubyte ) getNextRecord(bool)
+    override NextRecord getNextRecord(bool)
     {
         if (m_queue.length >= 4)
         {
@@ -125,11 +131,11 @@ public:
                 Vector!ubyte ret = Vector!ubyte(m_queue.ptr[4 + length .. m_queue.length]);
                 m_queue = ret;
                 
-                return makePair(type, contents);
+                return NextRecord(type, contents.move());
             }
         }
 
-        return makePair(HANDSHAKE_NONE, Vector!ubyte());
+        return NextRecord(HANDSHAKE_NONE, Vector!ubyte());
     }
 
 private:
@@ -161,7 +167,7 @@ public:
         ushort epoch = m_seqs.currentWriteEpoch();
         HandshakeType msg_type = msg.type();
         
-        FlightData msg_info = FlightData(epoch, msg_type, msg_bits);
+        FlightData msg_info = FlightData(epoch, msg_type, msg_bits.dupr());
         
         if (msg_type == HANDSHAKE_CCS)
         {
@@ -184,14 +190,14 @@ public:
             while (frag_offset != msg_bits.length)
             {
                 const size_t frag_len =    std.algorithm.min(msg_bits.length - frag_offset, parts_size);
-                
-                m_send_hs(epoch, HANDSHAKE, 
-                          formatFragment(cast(const(ubyte)*)&msg_bits[frag_offset],
-                                         frag_len,
-                                         cast(ushort)frag_offset,
-                                         cast(ushort)msg_bits.length,
-                                         msg_type,
-                                         m_out_message_seq));
+				auto frag = formatFragment(cast(const(ubyte)*)&msg_bits[frag_offset],
+										   frag_len,
+										   cast(ushort)frag_offset,
+										   cast(ushort)msg_bits.length,
+										   msg_type,
+										   m_out_message_seq);
+
+                m_send_hs(epoch, HANDSHAKE, frag);
                 
                 frag_offset += frag_len;
             }
@@ -261,7 +267,7 @@ public:
         }
     }
 
-    override Pair!(HandshakeType, Vector!ubyte) getNextRecord(bool expecting_ccs)
+    override NextRecord getNextRecord(bool expecting_ccs)
     {
         if (!m_flights[$-1].empty)
             m_flights.pushBack(Vector!ushort());
@@ -273,16 +279,16 @@ public:
                 const ushort current_epoch = m_messages[cast(ushort)0].epoch();
 
                 if (m_ccs_epochs.canFind(current_epoch))
-                    return makePair(HANDSHAKE_CCS, Vector!ubyte());
+                    return NextRecord(HANDSHAKE_CCS, Vector!ubyte());
             }
             
-            return makePair(HANDSHAKE_NONE, Vector!ubyte());
+            return NextRecord(HANDSHAKE_NONE, Vector!ubyte());
         }
         
         auto rec = m_messages.get(m_in_message_seq, HandshakeReassembly.init);
         
         if (rec is HandshakeReassembly.init || !rec.complete())
-            return makePair(HANDSHAKE_NONE, Vector!ubyte());
+            return NextRecord(HANDSHAKE_NONE, Vector!ubyte());
         
         m_in_message_seq += 1;
         
@@ -385,12 +391,12 @@ private:
 
         ushort epoch() const { return m_epoch; }
 
-        Pair!(HandshakeType, Vector!ubyte) message() const
+        NextRecord message() const
         {
             if (!complete())
                 throw new InternalError("DatagramHandshakeIO - message not complete");
             
-            return makePair(cast(HandshakeType)(m_msg_type), m_message.dup);
+            return NextRecord(cast(HandshakeType)(m_msg_type), m_message.dup);
         }
 
         private:
@@ -399,7 +405,7 @@ private:
             ushort m_epoch = 0;
 
             HashMap!(size_t, ubyte) m_fragments;
-            Vector!ubyte m_message;
+            Array!ubyte m_message;
     }
 
     ConnectionSequenceNumbers m_seqs;
@@ -417,7 +423,7 @@ private:
     static struct FlightData {
         ushort epoch;
         ubyte msg_type;
-        Vector!ubyte msg_bits;
+        Array!ubyte msg_bits;
     }
 }
 

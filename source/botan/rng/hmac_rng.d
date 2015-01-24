@@ -226,10 +226,10 @@ private:
 
 private:
 
-void hmacPrf(MessageAuthenticationCode prf,
-              SecureVector!ubyte K,
-              ref uint counter,
-              in string label)
+void hmacPrf()(MessageAuthenticationCode prf,
+               ref SecureVector!ubyte K,
+               ref uint counter,
+               in string label)
 {
     
     auto timestamp = Clock.currStdTime();

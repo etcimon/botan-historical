@@ -61,15 +61,15 @@ public:
                 size_t consumed = 0;
                 
                 const size_t needed = .readRecord(m_readbuf,
-                                                 input,
-                                                 input_size,
-                                                 consumed,
-                                                 record,
-                                                 record_sequence,
-                                                 record_version,
-                                                 record_type,
-                                                 *m_sequence_numbers,
-                                                 get_cipherstate);
+                                                  input,
+                                                  input_size,
+                                                  consumed,
+                                                  record,
+                                                  record_sequence,
+                                                  record_version,
+                                                  record_type,
+                                                  *m_sequence_numbers,
+                                                  get_cipherstate);
                 
                 assert(consumed <= input_size, "Record reader consumed sane amount");
                 
@@ -92,19 +92,19 @@ public:
                         if (record_version.isDatagramProtocol())
                             (*m_sequence_numbers).readAccept(record_sequence);
                     }
-                    
-                    m_pending_state.handshakeIo().addRecord(unlock(record), record_type, record_sequence);
+					auto rec = unlock(record);
+                    m_pending_state.handshakeIo().addRecord(rec, record_type, record_sequence);
                     
                     while (true)
                     {
                         if (HandshakeState pending = *m_pending_state) {
                             auto msg = pending.getNextHandshakeMsg();
                             
-                            if (msg.first == HANDSHAKE_NONE) // no full handshake yet
+                            if (msg.type == HANDSHAKE_NONE) // no full handshake yet
                                 break;
                             
                             processHandshakeMsg(activeState(), pending,
-                                                msg.first, msg.second);
+                                                msg.type, msg.data);
                         } else break;
                     }
                 }
@@ -115,21 +115,20 @@ public:
                     
                     HeartbeatMessage heartbeat = HeartbeatMessage(unlock(record));
                     
-                    const Vector!ubyte payload = heartbeat.payload();
+                    const Vector!ubyte* payload = &heartbeat.payload();
                     
                     if (heartbeat.isRequest())
                     {
                         if (!pendingState())
                         {
-                            HeartbeatMessage response = HeartbeatMessage(HeartbeatMessage.RESPONSE,
-                                                       payload.ptr, payload.length);
-                            
-                            sendRecord(HEARTBEAT, response.contents());
+                            HeartbeatMessage response = HeartbeatMessage(HeartbeatMessage.RESPONSE, payload.ptr, payload.length);
+							auto rec = response.contents();
+                            sendRecord(HEARTBEAT, rec);
                         }
                     }
                     else
                     {
-                        m_alert_cb(TLSAlert(TLSAlert.HEARTBEAT_PAYLOAD), cast(ubyte[])payload[]);
+                        m_alert_cb(TLSAlert(TLSAlert.HEARTBEAT_PAYLOAD), cast(ubyte[])(*payload)[]);
                     }
                 }
                 else if (record_type == APPLICATION_DATA)
@@ -156,8 +155,9 @@ public:
                 
                 if (alert_msg.isFatal())
                 {
-                    if (auto active = activeState())
-                        m_session_manager.removeEntry(active.serverHello().sessionId());
+                    if (auto active = activeState()) {
+						m_session_manager.removeEntry(active.serverHello().sessionId().dup);
+					}
                 }
                         
                 if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY)
@@ -247,7 +247,8 @@ public:
         {
             try
             {
-                sendRecord(ALERT, alert.serialize());
+				auto rec = alert.serialize();
+                sendRecord(ALERT, rec);
             }
             catch (Throwable) { /* swallow it */ }
         }
@@ -255,10 +256,11 @@ public:
         if (alert.type() == TLSAlert.NO_RENEGOTIATION)
             m_pending_state.free();
         
-        if (alert.isFatal())
-            if (auto active = activeState())
-                m_session_manager.removeEntry(active.serverHello().sessionId());
-        
+        if (alert.isFatal()) {
+            if (auto active = activeState()) {
+				m_session_manager.removeEntry(active.serverHello().sessionId().dup);
+			}
+		}
         if (alert.type() == TLSAlert.CLOSE_NOTIFY || alert.isFatal())
             resetState();
     }
@@ -350,8 +352,8 @@ public:
         if (heartbeatSendingAllowed())
         {
             HeartbeatMessage heartbeat = HeartbeatMessage(HeartbeatMessage.REQUEST, payload, payload_size);
-
-            sendRecord(HEARTBEAT, heartbeat.contents());
+			auto rec = heartbeat.contents();
+            sendRecord(HEARTBEAT, rec);
         }
     }
 
@@ -363,10 +365,10 @@ public:
     /**
     * @return certificate chain of the peer (may be empty)
     */
-    const(Vector!X509Certificate) peerCertChain() const
+    Vector!X509Certificate peerCertChain() const
     {
         if (const HandshakeState active = activeState())
-            return getPeerCertChain(active);
+            return getPeerCertChain(active).dup;
         return Vector!X509Certificate();
     }
 
@@ -385,7 +387,7 @@ public:
         {
             Unique!KDF prf = active.protocolSpecificPrf();
             
-            const(SecureVector!ubyte) master_secret = active.sessionKeys().masterSecret();
+            const(SecureVector!ubyte)* master_secret = &active.sessionKeys().masterSecret();
             
             Vector!ubyte salt;
             salt ~= label;
@@ -402,7 +404,7 @@ public:
                 salt ~= context;
             }
             
-            return SymmetricKey(prf.deriveKey(length, master_secret, salt));
+            return SymmetricKey(prf.deriveKey(length, *master_secret, salt));
         }
         else
             throw new Exception("key_material_export connection not active");
@@ -411,7 +413,7 @@ public:
     this(void delegate(in ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
          void delegate(in TLSAlert, in ubyte[]) alert_cb,
-         bool delegate(in TLSSession) handshake_cb,
+         bool delegate(const ref TLSSession) handshake_cb,
          TLSSessionManager session_manager,
          RandomNumberGenerator rng,
          size_t reserved_io_buffer_size)
@@ -444,8 +446,7 @@ protected:
     abstract void initiateHandshake(HandshakeState state,
                                     bool force_full_renegotiation);
 
-    abstract const(Vector!X509Certificate)
-        getPeerCertChain(in HandshakeState state) const;
+    abstract Vector!X509Certificate getPeerCertChain(in HandshakeState state) const;
 
     abstract HandshakeState newHandshakeState(HandshakeIO io);
 
@@ -528,10 +529,10 @@ protected:
         
         // flip side as we are reading
         ConnectionCipherState read_state = new ConnectionCipherState(pending.Version(),
-                                                                 (side == CLIENT) ? SERVER : CLIENT,
-                                                                 false,
-                                                                 pending.ciphersuite(),
-                                                                 pending.sessionKeys());
+                                                                     (side == CLIENT) ? SERVER : CLIENT,
+                                                                     false,
+                                                                     pending.ciphersuite(),
+                                                                     pending.sessionKeys());
         
         m_read_cipher_states[epoch] = read_state;
     }
@@ -575,7 +576,7 @@ protected:
         
         if (secure_renegotiation)
         {
-            const Vector!ubyte data = client_hello.renegotiationInfo();
+            Vector!ubyte data = client_hello.renegotiationInfo();
             
             if (data != secureRenegotiationDataForClientHello())
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSClient sent bad values for secure renegotiation");
@@ -603,10 +604,10 @@ protected:
         }
     }
 
-    const(Vector!ubyte) secureRenegotiationDataForClientHello() const
+    Vector!ubyte secureRenegotiationDataForClientHello() const
     {
         if (auto active = activeState())
-            return active.clientFinished().verifyData();
+            return active.clientFinished().verifyData().dup;
         return Vector!ubyte();
     }
 
@@ -616,7 +617,7 @@ protected:
         {
             Vector!ubyte buf = active.clientFinished().verifyData().dup;
             buf ~= active.serverFinished().verifyData()[];
-            return buf;
+            return buf.move();
         }
         
         return Vector!ubyte();
@@ -642,7 +643,7 @@ protected:
 
     TLSSessionManager sessionManager() { return m_session_manager; }
 
-    bool saveSession(in TLSSession session) const { return m_handshake_cb(session); }
+    bool saveSession(const ref TLSSession session) const { return m_handshake_cb(session); }
 
 private:
 
@@ -668,8 +669,7 @@ private:
                           record_type, record.ptr, record.length);
     }
 
-    void sendRecordUnderEpoch(ushort epoch, ubyte record_type,
-                                 const ref Vector!ubyte record)
+    void sendRecordUnderEpoch(ushort epoch, ubyte record_type, const ref Vector!ubyte record)
     {
         sendRecordArray(epoch, record_type, record.ptr, record.length);
     }
@@ -771,7 +771,7 @@ private:
     const(HandshakeState) pendingState() const { return *m_pending_state; }
 
     /* callbacks */
-    bool delegate(in TLSSession) m_handshake_cb;
+    bool delegate(const ref TLSSession) m_handshake_cb;
     void delegate(in ubyte[]) m_data_cb;
     void delegate(in TLSAlert, in ubyte[]) m_alert_cb;
     void delegate(in ubyte[]) m_output_fn;

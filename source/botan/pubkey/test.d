@@ -200,7 +200,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
     
     for(size_t i = 0; i != 3; ++i)
     {
-        auto bad_sig = sig;
+        auto bad_sig = sig.dup;
         
         const size_t idx = (test_rng.nextByte() * 256 + test_rng.nextByte()) % sig.length;
         bad_sig[idx] ^= nonzeroByte(test_rng);

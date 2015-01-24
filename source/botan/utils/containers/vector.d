@@ -12,7 +12,7 @@ void TRACE(T...)(T t) {
 /**
 * Existence check for values
 */
-bool valueExists(T, int Alloc)(const ref Vector!(T, Alloc) vec, in T val)
+bool valueExists(T, int Alloc)(auto const ref Vector!(T, Alloc) vec, in T val)
 {
     for (size_t i = 0; i != vec.length; ++i)
         if (vec[i] == val)

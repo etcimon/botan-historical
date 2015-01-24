@@ -99,7 +99,7 @@ protected:
     /**
      * Can to get the handshake complete notification override
     */
-    abstract bool handshakeComplete(in TLSSession) { return true; }
+    abstract bool handshakeComplete(const ref TLSSession) { return true; }
 
     /**
     * Can to get notification of alerts override
@@ -108,7 +108,7 @@ protected:
 
 private:
 
-    final bool handshakeCb(in TLSSession session)
+    final bool handshakeCb(const ref TLSSession session)
     {
         return this.handshakeComplete(session);
     }

@@ -22,10 +22,10 @@ public:
     /*
     * Blind a number
     */
-    BigInt blind(const ref BigInt i)
+    BigInt blind()(auto const ref BigInt i)
     {
         if (!m_reducer.initialized())
-            return *cast(BigInt*)&i;
+            return i.dup;
         
         m_e = m_reducer.square(m_e);
         m_d = m_reducer.square(m_d);
@@ -35,10 +35,10 @@ public:
     /*
     * Unblind a number
     */
-    BigInt unblind(const ref BigInt i) const
+    BigInt unblind()(auto const ref BigInt i) const
     {
         if (!m_reducer.initialized())
-            return *cast(BigInt*)&i;
+            return i.dup;
         return m_reducer.multiply(i, m_d);
     }
 
@@ -50,14 +50,16 @@ public:
     * @param d = the inverse of mask (depends on algo)
     * @param n = modulus of the group operations are performed in
     */
-    this(BigInt e, BigInt d, BigInt n)
+	this()(auto const ref BigInt e, 
+		   auto const ref BigInt d, 
+		   auto const ref BigInt n)
     {
         if (e < 1 || d < 1 || n < 1)
             throw new InvalidArgument("Blinder: Arguments too small");
         
         m_reducer = ModularReducer(n);
-        m_e = e;
-        m_d = d;
+        m_e = e.dup;
+        m_d = d.dup;
     }
 
 private:

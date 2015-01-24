@@ -45,8 +45,8 @@ public:
     {
         m_check_key = check_key;
         m_algo_name = algo_name;
-        m_n = n;
-        m_e = e; 
+        m_n = n.move();
+        m_e = e.move(); 
     }
 
     /// Used for object casting to the right type in the factory.
@@ -90,12 +90,12 @@ public:
     /**
     * @return public modulus
     */
-    final const(BigInt) getN() const { return m_n; }
+    final ref const(BigInt) getN() const { return m_n; }
 
     /**
     * @return public exponent
     */
-    final const(BigInt) getE() const { return m_e; }
+    final ref const(BigInt) getE() const { return m_e; }
 
     final size_t maxInputBits() const { return (m_n.bits() - 1); }
 
@@ -143,7 +143,7 @@ public:
                 .decode(m_c)
                 .endCons();
         
-        super(n, e, algo_name, check_key);
+        super(n.move(), e.move(), algo_name, check_key);
 
         loadCheck(rng);
     }
@@ -157,13 +157,13 @@ public:
          in string algo_name,
          bool delegate(RandomNumberGenerator, bool) const check_key = null)
     {
-        BigInt e = exp;
-        m_p = prime1;
-        m_q = prime2;
-        BigInt n = mod.isNonzero() ? mod : m_p * m_q;
-        super(n, e, algo_name, check_key);
+        BigInt e = exp.move();
+        m_p = prime1.move();
+        m_q = prime2.move();
+        BigInt n = mod.isNonzero() ? mod.move() : m_p * m_q;
+        super(n.move(), e.move(), algo_name, check_key); // defines m_e and m_n
 
-        m_d = d_exp;
+        m_d = d_exp.move();
         
         if (m_d == 0)
         {
@@ -213,23 +213,23 @@ public:
     * Get the first prime p.
     * @return prime p
     */
-    const(BigInt) getP() const { return m_p; }
+    ref const(BigInt) getP() const { return m_p; }
 
     /**
     * Get the second prime q.
     * @return prime q
     */
-    const(BigInt) getQ() const { return m_q; }
+    ref const(BigInt) getQ() const { return m_q; }
 
     /**
     * Get d with exp * d = 1 mod (p - 1, q - 1).
     * @return d
     */
-    const(BigInt) getD() const { return m_d; }
+    ref const(BigInt) getD() const { return m_d; }
 
-    const(BigInt) getC() const { return m_c; }
-    const(BigInt) getD1() const { return m_d1; }
-    const(BigInt) getD2() const { return m_d2; }
+    ref const(BigInt) getC() const { return m_c; }
+    ref const(BigInt) getD1() const { return m_d1; }
+    ref const(BigInt) getD2() const { return m_d2; }
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {

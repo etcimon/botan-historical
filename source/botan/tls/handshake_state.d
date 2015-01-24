@@ -90,17 +90,17 @@ public:
         m_hand_expecting_mask |= bitmaskForHandshakeType(handshake_msg);
     }
 
-    Pair!(HandshakeType, Vector!ubyte) getNextHandshakeMsg()
+    NextRecord getNextHandshakeMsg()
     {
         const bool expecting_ccs = cast(bool)(bitmaskForHandshakeType(HANDSHAKE_CCS) & m_hand_expecting_mask);
         
         return m_handshake_io.getNextRecord(expecting_ccs);
     }
 
-    const(Vector!ubyte) sessionTicket() const
+    Vector!ubyte sessionTicket() const
     {
         if (newSessionTicket() && !newSessionTicket().ticket().empty())
-            return newSessionTicket().ticket();
+            return newSessionTicket().ticket().dup;
         
         return clientHello().sessionTicket();
     }
@@ -371,23 +371,23 @@ public:
     const(Finished) clientFinished() const
     { return *m_client_finished; }
 
-    const(TLSCiphersuite) ciphersuite() const { return m_ciphersuite; }
+    ref const(TLSCiphersuite) ciphersuite() const { return m_ciphersuite; }
 
-    const(TLSSessionKeys) sessionKeys() const { return m_session_keys; }
+    ref const(TLSSessionKeys) sessionKeys() const { return m_session_keys; }
 
     void computeSessionKeys()
     {
         m_session_keys = TLSSessionKeys(this, clientKex().preMasterSecret().dup, false);
     }
 
-    void computeSessionKeys(SecureVector!ubyte resume_master_secret)
+    void computeSessionKeys()(auto ref SecureVector!ubyte resume_master_secret)
     {
         m_session_keys = TLSSessionKeys(this, resume_master_secret, true);
     }
 
-    HandshakeHash hash() { return m_handshake_hash; }
+    ref HandshakeHash hash() { return m_handshake_hash; }
 
-    const(HandshakeHash) hash() const { return m_handshake_hash; }
+    ref const(HandshakeHash) hash() const { return m_handshake_hash; }
 
     void noteMessage(in HandshakeMessage msg)
     {
@@ -517,7 +517,7 @@ string chooseHash(in string sig_algo,
         throw new InternalError("Unknown TLS signature algo " ~ sig_algo);
     }
     
-    const Vector!(Pair!(string, string)) supported_algos = for_client_auth ? cert_req.supportedAlgos() : client_hello.supportedAlgos();
+    Vector!(Pair!(string, string)) supported_algos = for_client_auth ? cert_req.supportedAlgos() : client_hello.supportedAlgos();
     
     if (!supported_algos.empty())
     {

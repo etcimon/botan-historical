@@ -98,15 +98,15 @@ public:
     this(in ECPrivateKey key) 
     {
         m_curve = key.domain().getCurve().dup;
-        m_cofactor = key.domain().getCofactor();
-        m_l_times_priv = inverseMod(m_cofactor, key.domain().getOrder()) * key.privateValue();
+        m_cofactor = &key.domain().getCofactor();
+        m_l_times_priv = inverseMod(*m_cofactor, key.domain().getOrder()) * key.privateValue();
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
         PointGFp point = OS2ECP(w, w_len, m_curve);
         
-        PointGFp S = (point * m_cofactor) * m_l_times_priv;
+        PointGFp S = (point * (*m_cofactor)) * m_l_times_priv;
 
         assert(S.onTheCurve(), "ECDH agreed value was on the curve");
         
@@ -115,7 +115,7 @@ public:
     }
 private:
     CurveGFp m_curve;
-    const BigInt m_cofactor;
+    const BigInt* m_cofactor;
     BigInt m_l_times_priv;
 }
 

@@ -129,9 +129,9 @@ public:
     {
         assert(ecdsa.algoName == ECDSAPublicKey.algoName);
         m_base_point = ecdsa.domain().getBasePoint().dup;
-        m_order = ecdsa.domain().getOrder();
-        m_x = ecdsa.privateValue();
-        m_mod_order = ModularReducer(m_order.dup);
+        m_order = &ecdsa.domain().getOrder();
+        m_x = &ecdsa.privateValue();
+        m_mod_order = ModularReducer(*m_order);
     }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
@@ -148,12 +148,12 @@ public:
             BigInt k;
             k.randomize(rng, m_order.bits());
             
-            while (k >= m_order)
+            while (k >= *m_order)
                 k.randomize(rng, m_order.bits() - 1);
             
             PointGFp k_times_P = m_base_point * k;
             r = m_mod_order.reduce(k_times_P.getAffineX());
-            s = m_mod_order.multiply(inverseMod(k, m_order), mulAdd(m_x, r, m));
+            s = m_mod_order.multiply(inverseMod(k, *m_order), mulAdd(*m_x, r, m));
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_order.bytes());
@@ -168,8 +168,8 @@ public:
 
 private:
     PointGFp m_base_point;
-    const BigInt m_order;
-    const BigInt m_x;
+    const BigInt* m_order;
+    const BigInt* m_x;
     ModularReducer m_mod_order;
 }
 
@@ -192,7 +192,7 @@ public:
         assert(ecdsa.algoName == ECDSAPublicKey.algoName);
         m_base_point = ecdsa.domain().getBasePoint().dup;
         m_public_point = ecdsa.publicPoint().dup;
-        m_order = ecdsa.domain().getOrder();
+        m_order = &ecdsa.domain().getOrder();
     }
 
     override size_t messageParts() const { return 2; }
@@ -213,23 +213,23 @@ public:
         BigInt r = BigInt(sig, sig_len / 2);
         BigInt s = BigInt(sig + sig_len / 2, sig_len / 2);
         
-        if (r <= 0 || r >= m_order || s <= 0 || s >= m_order)
+        if (r <= 0 || r >= *m_order || s <= 0 || s >= *m_order)
             return false;
         
-        BigInt w = inverseMod(s, m_order);
+        BigInt w = inverseMod(s, *m_order);
         
         PointGFp R = PointGFp.multiExponentiate(m_base_point, e, m_public_point, r) * w;
         
         if (R.isZero())
             return false;
         
-        return (R.getAffineX() % m_order == r);
+        return (R.getAffineX() % (*m_order) == r);
     }
 
 private:
     PointGFp m_base_point;
     PointGFp m_public_point;
-    const BigInt m_order;
+    const BigInt* m_order;
 }
 
 static if (BOTAN_TEST):
@@ -715,17 +715,17 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
 
 
 size_t ecdsaSigKat(string group_id,
-                     string x,
-                     string hash,
-                     string msg,
-                     string nonce,
-                     string signature)
+                   string x,
+                   string hash,
+                   string msg,
+                   string nonce,
+                   string signature)
 {
     atomicOp!"+="(total_tests, 1);
     AutoSeededRNG rng;
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-    auto ecdsa = scoped!ECDSAPrivateKey(rng, group, BigInt(x));
+    auto ecdsa = new ECDSAPrivateKey(rng, group, BigInt(x));
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     

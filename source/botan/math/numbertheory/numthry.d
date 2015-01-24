@@ -475,9 +475,9 @@ bool verifyPrime(const ref BigInt n, RandomNumberGenerator rng)
 * @param equiv_mod = the modulus equiv should be checked against
 * @return random prime with the specified criteria
 */
-BigInt randomPrime(RandomNumberGenerator rng,
-                    size_t bits, const BigInt coprime = 1,
-                    size_t equiv = 1, size_t modulo = 2)
+BigInt randomPrime()(RandomNumberGenerator rng,
+                     size_t bits, const ref BigInt coprime,
+                     size_t equiv = 1, size_t modulo = 2)
 {
     if (bits <= 1)
         throw new InvalidArgument("randomPrime: Can't make a prime of " ~ to!string(bits) ~ " bits");
@@ -541,6 +541,14 @@ BigInt randomPrime(RandomNumberGenerator rng,
     }
 }
 
+/// ditto
+BigInt randomPrime()(RandomNumberGenerator rng,
+	size_t bits, const BigInt coprime = 1,
+	size_t equiv = 1, size_t modulo = 2)
+{
+	return randomPrime(rng, bits, coprime, equiv, modulo);
+}
+
 /**
 * Return a random 'safe' prime, of the form p=2*q+1 with q prime
 * @param rng = a random number generator
@@ -597,11 +605,11 @@ Vector!ubyte generateDsaPrimes(RandomNumberGenerator rng,
 * @return true if seed generated a valid DSA parameter set, otherwise
              false. p_out and q_out are only valid if true was returned.
 */
-bool generateDsaPrimes(RandomNumberGenerator rng,
-                       AlgorithmFactory af,
-                       ref BigInt p_out, ref BigInt q_out,
-                       size_t pbits, size_t qbits,
-                       ref Vector!ubyte seed_c)
+bool generateDsaPrimes()(RandomNumberGenerator rng,
+                         AlgorithmFactory af,
+                         ref BigInt p_out, ref BigInt q_out,
+                         size_t pbits, size_t qbits,
+                         auto const ref Vector!ubyte seed_c)
 {
     if (!fips1863ValidSize(pbits, qbits))
         throw new InvalidArgument(
@@ -618,7 +626,7 @@ bool generateDsaPrimes(RandomNumberGenerator rng,
     struct Seed
     {
     public:
-        this(ref Vector!ubyte s) { m_seed = s.move(); }
+        this()(auto const ref Vector!ubyte s) { m_seed = s.dup(); }
         
         ref T opCast(T : Vector!ubyte)() { return m_seed; }
         

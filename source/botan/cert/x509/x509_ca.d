@@ -107,13 +107,14 @@ public:
     * @param next_update = the time to set in next update in seconds
     * as the offset from the current time
     */
-    X509CRL updateCRL(in X509CRL crl,
-                      Vector!CRLEntry new_revoked,
-                      RandomNumberGenerator rng,
-                      Duration next_update = 0.seconds) const
+    X509CRL updateCRL()(in X509CRL crl,
+                        auto const ref Vector!CRLEntry new_revoked,
+                        RandomNumberGenerator rng,
+                        Duration next_update = 0.seconds) const
     {
 
-        Vector!CRLEntry revoked = crl.getRevoked().dup;        
+        Vector!CRLEntry revoked = crl.getRevoked().dup;
+		revoked ~= new_revoked[];
         return makeCRL(revoked, crl.crlNumber() + 1, next_update, rng);
     }
 

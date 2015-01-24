@@ -37,11 +37,11 @@ public:
         return send_buf;
     }
 
-    const(Vector!ubyte) payload() const { return m_payload; }
+    ref const(Vector!ubyte) payload() const { return m_payload; }
 
     bool isRequest() const { return m_type == REQUEST; }
 
-    this(const ref Vector!ubyte buf)
+    this()(auto const ref Vector!ubyte buf)
     {
         TLSDataReader reader = TLSDataReader("Heartbeat", buf);
         

@@ -28,12 +28,12 @@ import botan.pubkey.workfactor;
 struct DLGroup
 {
 public:
-
+	@disable this(this);
     /**
     * Get the prime m_p.
     * @return prime m_p
     */
-    const(BigInt) getP() const
+    ref const(BigInt) getP() const
     {
         initCheck();
         return m_p;
@@ -43,7 +43,7 @@ public:
     * Get the prime q.
     * @return prime q
     */
-    const(BigInt) getQ() const
+	ref const(BigInt) getQ() const
     {
         initCheck();
         if (m_q == 0)
@@ -55,7 +55,7 @@ public:
     * Get the base m_g.
     * @return base m_g
     */
-    const(BigInt) getG() const
+    ref const(BigInt) getG() const
     {
         initCheck();
         return m_g;
@@ -175,8 +175,8 @@ public:
     * @param ber = a vector containing the DER/BER encoded group
     * @param format = the format of the encoded group
     */
-    void BER_decode(const ref Vector!ubyte data,
-                    Format format)
+    void BER_decode()(auto const ref Vector!ubyte data,
+                      Format format)
     {
         BigInt new_p, new_q, new_g;
         
@@ -307,7 +307,7 @@ public:
     * @param pbits = the desired bit size of the prime p
     * @param qbits = the desired bit size of the prime q.
     */
-    this(RandomNumberGenerator rng, Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
+    this()(RandomNumberGenerator rng, auto const ref Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
     {
         if (!generateDsaPrimes(rng, globalState().algorithmFactory(), m_p, m_q, pbits, qbits, seed))
             throw new InvalidArgument("DLGroup: The seed given does not "
@@ -323,7 +323,7 @@ public:
     * @param p1 = the prime p
     * @param g1 = the base m_g
     */
-    this(const ref BigInt p1, const ref BigInt g1)
+    this()(auto const ref BigInt p1, auto const ref BigInt g1)
     {
         initialize(p1, BigInt(0), g1);
     }
@@ -334,12 +334,31 @@ public:
     * @param q1 = the prime m_q
     * @param g1 = the base m_g
     */
-    this(const ref BigInt p1, const ref BigInt q1, const ref BigInt g1)
+    this()(auto const ref BigInt p1, auto const ref BigInt q1, auto const ref BigInt g1)
     {
         initialize(p1, q1, g1);
     }
 
+	/**
+	 * Duplicate this object
+	 */
+	@property DLGroup dup() const {
+		return DLGroup(m_initialized, m_p.dup, m_q.dup, m_g.dup);
+	}
+
+	@property DLGroup move() {
+		return DLGroup(m_initialized, m_p.move(), m_q.move(), m_g.move());
+	}
+
 private:
+	// move constructor
+	this(bool initialized, BigInt p1, BigInt q1, BigInt g1) {
+		m_p = p1.move;
+		m_q = q1.move;
+		m_g = g1.move;
+		m_initialized = initialized;
+	}
+
     /*
     * Create generator of the q-sized subgroup (DSA style generator)
     */
@@ -366,7 +385,9 @@ private:
             throw new InvalidState("DLP group cannot be used uninitialized");
     }
 
-    void initialize(const ref BigInt p1, const ref BigInt q1, const ref BigInt g1)
+    void initialize()(auto const ref BigInt p1, 
+					  auto const ref BigInt q1,
+					  auto const ref BigInt g1)
     {
         if (p1 < 3)
             throw new InvalidArgument("DLGroup: Prime invalid");

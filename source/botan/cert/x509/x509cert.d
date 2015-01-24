@@ -46,7 +46,7 @@ public:
     * Get the public key associated with this certificate.
     * @return subject public key of this certificate
     */
-    const(PublicKey) subjectPublicKey() const
+    PublicKey subjectPublicKey() const
     {
         Vector!ubyte keybits = subjectPublicKeyBits().dup;
         logTrace("Key Bits: ", keybits[]);

@@ -29,7 +29,7 @@ PointGFp createRandomPoint(RandomNumberGenerator rng, const ref CurveGFp curve)
 {
     const BigInt* p = &curve.getP();
     
-    ModularReducer mod_p = ModularReducer(p.dup);
+    ModularReducer mod_p = ModularReducer(*p);
     
     while(true)
     {

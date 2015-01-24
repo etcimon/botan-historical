@@ -25,7 +25,7 @@ public:
     this(string type, const ref Vector!ubyte buf_input) 
     {
         m_typename = type;
-        m_buf = buf_input; 
+        m_buf = &buf_input; 
         m_offset = 0;
     }
 
@@ -54,8 +54,8 @@ public:
     ushort get_uint()
     {
         assertAtLeast(4);
-        ushort result = cast(ushort) make_uint(m_buf[m_offset  ], m_buf[m_offset+1],
-                                               m_buf[m_offset+2], m_buf[m_offset+3]);
+        ushort result = cast(ushort) make_uint((*m_buf)[m_offset  ], (*m_buf)[m_offset+1],
+                                               (*m_buf)[m_offset+2], (*m_buf)[m_offset+3]);
         m_offset += 4;
         return result;
     }
@@ -63,7 +63,7 @@ public:
     ushort get_ushort()
     {
         assertAtLeast(2);
-        ushort result = make_ushort(m_buf[m_offset], m_buf[m_offset+1]);
+        ushort result = make_ushort((*m_buf)[m_offset], (*m_buf)[m_offset+1]);
         m_offset += 2;
         return result;
     }
@@ -71,7 +71,7 @@ public:
     ubyte get_byte()
     {
         assertAtLeast(1);
-        ubyte result = m_buf[m_offset];
+        ubyte result = (*m_buf)[m_offset];
         m_offset += 1;
         return result;
     }
@@ -84,7 +84,7 @@ public:
         Container result = Container(num_elems);
 
         foreach (size_t i; 0 .. num_elems)
-            result[i] = loadBigEndian!T(&m_buf[m_offset], i);
+            result[i] = loadBigEndian!T(&(*m_buf)[m_offset], i);
 
         m_offset += num_elems * T.sizeof;
 
@@ -167,7 +167,7 @@ private:
     }
 
     string m_typename;
-    const Vector!ubyte m_buf;
+    const Vector!ubyte* m_buf;
     size_t m_offset;
 }
 
@@ -196,13 +196,13 @@ void appendTlsLengthValue(T, int Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* v
 }
 
 void appendTlsLengthValue(T, int Alloc, int Alloc2)(ref Vector!( ubyte, Alloc ) buf, 
-                                                    const ref Vector!( T, Alloc2 ) vals, 
+                                                    auto const ref Vector!( T, Alloc2 ) vals, 
                                                     size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTlsLengthValue(int Alloc)(const ref Vector!( ubyte, Alloc ) buf, 
+void appendTlsLengthValue(int Alloc)(ref Vector!( ubyte, Alloc ) buf, 
                                      in string str, size_t tag_size)
 {
     appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);

@@ -49,25 +49,25 @@ SRP6KeyPair
                     RandomNumberGenerator rng)
 {
     DLGroup group = DLGroup(group_id);
-    const BigInt g = group.getG();
-    const BigInt p = group.getP();
+    const BigInt* g = &group.getG();
+    const BigInt* p = &group.getP();
     
-    const size_t p_bytes = group.getP().bytes();
+    const size_t p_bytes = p.bytes();
     
-    if (B <= 0 || B >= p)
+    if (B <= 0 || B >= *p)
         throw new Exception("Invalid SRP parameter from server");
     
-    BigInt k = hashSeq(hash_id, p_bytes, p, g);
+    BigInt k = hashSeq(hash_id, p_bytes, *p, *g);
     
     BigInt a = BigInt(rng, 256);
     
-    BigInt A = powerMod(g, a, p);
+    BigInt A = powerMod(*g, a, *p);
     
     BigInt u = hashSeq(hash_id, p_bytes, A, B);
     
     BigInt x = computeX(hash_id, identifier, password, salt);
     
-    BigInt S = powerMod((B - (k * powerMod(g, x, p))) % p, (a + (u * x)), p);
+    BigInt S = powerMod((B - (k * powerMod(*g, x, *p))) % (*p), (a + (u * x)), *p);
     
     SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
@@ -146,16 +146,16 @@ public:
 			                RandomNumberGenerator rng)
     {
         DLGroup group = DLGroup(group_id);
-        const BigInt g = group.getG();
-        const BigInt p = group.getP();
+        const BigInt* g = &group.getG();
+        const BigInt* p = &group.getP();
         
         m_p_bytes = p.bytes();
         
-        BigInt k = hashSeq(hash_id, m_p_bytes, p, g);
+        BigInt k = hashSeq(hash_id, m_p_bytes, *p, *g);
         
         BigInt b = BigInt(rng, 256);
         
-        m_B = (v*k + powerMod(g, b, p)) % p;
+        m_B = (v*k + powerMod(*g, b, *p)) % (*p);
         
         m_v = v.dup;
         m_b = b.move();
@@ -170,7 +170,7 @@ public:
     * @param A = the client's value
     * @return shared symmetric key
     */
-    SymmetricKey step2(const ref BigInt A)
+    SymmetricKey step2()(auto const ref BigInt A)
     {
         if (A <= 0 || A >= m_p)
             throw new Exception("Invalid SRP parameter from client");
@@ -190,10 +190,10 @@ private:
 
 private:
     
-BigInt hashSeq(in string hash_id,
-                size_t pad_to,
-                const ref BigInt in1,
-                const ref BigInt in2)
+BigInt hashSeq()(in string hash_id,
+                 size_t pad_to,
+                 auto const ref BigInt in1,
+                 auto const ref BigInt in2)
 {
     Unique!HashFunction hash_fn = globalState().algorithmFactory().makeHashFunction(hash_id);
     
@@ -204,9 +204,9 @@ BigInt hashSeq(in string hash_id,
 }
 
 BigInt computeX(in string hash_id,
-                 in string identifier,
-                 in string password,
-                 const ref Vector!ubyte salt)
+                in string identifier,
+                in string password,
+                const ref Vector!ubyte salt)
 {
     Unique!HashFunction hash_fn = globalState().algorithmFactory().makeHashFunction(hash_id);
     

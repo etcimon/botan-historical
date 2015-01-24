@@ -39,7 +39,9 @@ public:
     /**
     * Initialize a new cipher state
     */
-    this(TLSProtocolVersion _version, ConnectionSide side, bool our_side, in TLSCiphersuite suite, in TLSSessionKeys keys) 
+    this()(TLSProtocolVersion _version, 
+		   ConnectionSide side, bool our_side, 
+		   in TLSCiphersuite suite, auto const ref TLSSessionKeys keys) 
     {
         m_start_time = Clock.currTime();
         m_is_ssl3 = _version == TLSProtocolVersion.SSL_V3;
@@ -103,7 +105,7 @@ public:
 
     AEADMode aead() { return *m_aead; }
 
-    const(SecureVector!ubyte) aeadNonce(ulong seq) const
+    ref const(SecureVector!ubyte) aeadNonce(ulong seq)
     {
         assert(m_aead, "Using AEAD mode");
         assert(m_nonce.length == 12, "Expected nonce size");
@@ -111,7 +113,7 @@ public:
         return m_nonce;
     }
 
-    const(SecureVector!ubyte) aeadNonce(const(ubyte)* record, size_t record_len) const
+    ref const(SecureVector!ubyte) aeadNonce(const(ubyte)* record, size_t record_len)
     {
         assert(m_aead, "Using AEAD mode");
         assert(m_nonce.length == 12, "Expected nonce size");
@@ -121,7 +123,7 @@ public:
     }
 
 
-    const(SecureVector!ubyte) formatAd(ulong msg_sequence, ubyte msg_type, TLSProtocolVersion _version, ushort msg_length)
+    ref const(SecureVector!ubyte) formatAd(ulong msg_sequence, ubyte msg_type, TLSProtocolVersion _version, ushort msg_length)
     {
         m_ad.clear();
         foreach (size_t i; 0 .. 8)
@@ -146,7 +148,7 @@ public:
 
     MessageAuthenticationCode mac() { return *m_mac; }
 
-    SecureVector!ubyte cbcState() { return m_block_cipher_cbc_state; }
+    ref SecureVector!ubyte cbcState() { return m_block_cipher_cbc_state; }
 
     size_t blockSize() const { return m_block_size; }
 
@@ -226,7 +228,7 @@ void writeRecord(ref SecureVector!ubyte output,
     {
         const size_t ctext_size = aead.outputLength(msg_length);
         
-        auto nonce = cipherstate.aeadNonce(msg_sequence);
+        const(SecureVector!ubyte)* nonce = &cipherstate.aeadNonce(msg_sequence);
         const size_t implicit_nonce_bytes = 4; // FIXME, take from ciphersuite
         const size_t explicit_nonce_bytes = 8;
         
@@ -243,7 +245,7 @@ void writeRecord(ref SecureVector!ubyte output,
         aead.setAssociatedDataVec(cipherstate.formatAd(msg_sequence, msg_type, _version, cast(ushort) msg_length));
         
         output ~= nonce.ptr[implicit_nonce_bytes .. implicit_nonce_bytes + explicit_nonce_bytes];
-        output ~= aead.startVec(nonce);
+        output ~= aead.startVec(*nonce);
         
         const size_t offset = output.length;
         output ~= msg[0 .. msg_length];
@@ -305,7 +307,7 @@ void writeRecord(ref SecureVector!ubyte output,
     }
     else if (BlockCipher bc = cipherstate.blockCipher())
     {
-        SecureVector!ubyte cbc_state = cipherstate.cbcState();
+        SecureVector!ubyte* cbc_state = &cipherstate.cbcState();
         
         assert(buf_size % block_size == 0,
                      "Buffer is an even multiple of block size");
@@ -323,7 +325,7 @@ void writeRecord(ref SecureVector!ubyte output,
             bc.encrypt(&buf[block_size*i]);
         }
         
-        cbc_state[] = buf[block_size*(blocks-1) .. block_size*blocks];
+        (*cbc_state)[] = buf[block_size*(blocks-1) .. block_size*blocks];
     }
     else
         throw new InternalError("NULL cipher not supported");
@@ -333,15 +335,15 @@ void writeRecord(ref SecureVector!ubyte output,
 * Decode a TLS record
 * @return zero if full message, else number of bytes still needed
 */
-size_t readRecord(SecureVector!ubyte readbuf,
-                   const(ubyte)* input, size_t input_sz,
-                   ref size_t consumed,
-                   SecureVector!ubyte record,
-                   ref ulong record_sequence,
-                   ref TLSProtocolVersion record_version,
-                   ref RecordType record_type,
-                   ConnectionSequenceNumbers sequence_numbers,
-                   in const(ConnectionCipherState) delegate(ushort) get_cipherstate)
+size_t readRecord(ref SecureVector!ubyte readbuf,
+                  const(ubyte)* input, size_t input_sz,
+                  ref size_t consumed,
+                  ref SecureVector!ubyte record,
+                  ref ulong record_sequence,
+                  ref TLSProtocolVersion record_version,
+                  ref RecordType record_type,
+                  ConnectionSequenceNumbers sequence_numbers,
+                  in const(ConnectionCipherState) delegate(ushort) get_cipherstate)
 {
     consumed = 0;
     if (readbuf.length < TLS_HEADER_SIZE) // header incomplete?
@@ -471,7 +473,7 @@ size_t readRecord(SecureVector!ubyte readbuf,
 
 private:
                     
-size_t fillBufferTo(SecureVector!ubyte readbuf, ref const(ubyte)* input, 
+size_t fillBufferTo(ref SecureVector!ubyte readbuf, ref const(ubyte)* input, 
                     ref size_t input_size, ref size_t input_consumed, 
                     size_t desired)
 {
@@ -569,7 +571,7 @@ void cbcDecryptRecord(const(ubyte)* record_contents, size_t record_len,
     cipherstate.cbcState() = last_ciphertext;
 }
 
-void decryptRecord(SecureVector!ubyte output,
+void decryptRecord(ref SecureVector!ubyte output,
                    const(ubyte)* record_contents, size_t record_len,
                    ulong record_sequence,
                    TLSProtocolVersion record_version,
@@ -578,7 +580,7 @@ void decryptRecord(SecureVector!ubyte output,
 {
     if (Unique!AEADMode aead = cipherstate.aead())
     {
-        auto nonce = cipherstate.aeadNonce(record_contents, record_len);
+        const(SecureVector!ubyte)* nonce = &cipherstate.aeadNonce(record_contents, record_len);
         __gshared immutable size_t nonce_length = 8; // fixme, take from ciphersuite
         
         assert(record_len > nonce_length, "Have data past the nonce");
@@ -589,7 +591,7 @@ void decryptRecord(SecureVector!ubyte output,
         
         aead.setAssociatedDataVec(cipherstate.formatAd(record_sequence, record_type, record_version, cast(ushort) ptext_size));
         
-        output ~= aead.startVec(nonce);
+        output ~= aead.startVec(*nonce);
         
         const size_t offset = output.length;
         output ~= msg[0 .. msg_length];

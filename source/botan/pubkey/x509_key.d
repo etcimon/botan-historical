@@ -241,7 +241,7 @@ unittest
     
     X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), ca_key, hash_fn, rng);
     /* Create user #1's key and cert request */
-    auto user1_key = scoped!DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
+    auto user1_key = new DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
     
     PKCS10Request user1_req = x509self.createCertReq(reqOpts1(), user1_key, "SHA-1", rng);
     

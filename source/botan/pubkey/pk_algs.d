@@ -79,8 +79,8 @@ PublicKey makePublicKey(in AlgorithmIdentifier alg_id, const ref SecureVector!ub
 }
 
 PrivateKey makePrivateKey(in AlgorithmIdentifier alg_id,
-                             const ref SecureVector!ubyte key_bits,
-                             RandomNumberGenerator rng)
+                          const ref SecureVector!ubyte key_bits,
+                          RandomNumberGenerator rng)
 {
     const string alg_name = OIDS.lookup(alg_id.oid);
     if (alg_name == "")

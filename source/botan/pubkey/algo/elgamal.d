@@ -128,20 +128,20 @@ public:
     this(in DLSchemePublicKey key)
     {
         assert(key.algoName == ElGamalPublicKey.algoName);
-        const BigInt p = key.groupP();
+        const BigInt* p = &key.groupP();
         
-        m_powermod_g_p = FixedBasePowerMod(key.groupG(), p);
-        m_powermod_y_p = FixedBasePowerMod(key.getY(), p);
-        m_mod_p = ModularReducer(p.dup);
+        m_powermod_g_p = FixedBasePowerMod(key.groupG(), *p);
+        m_powermod_y_p = FixedBasePowerMod(key.getY(), *p);
+        m_mod_p = ModularReducer(*p);
     }
 
     override SecureVector!ubyte encrypt(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-        const BigInt p = m_mod_p.getModulus();
+        const BigInt* p = &m_mod_p.getModulus();
         
         BigInt m = BigInt(msg, msg_len);
         
-        if (m >= p)
+        if (m >= *p)
             throw new InvalidArgument("ElGamal encryption: Input is too large");
 
         BigInt k = BigInt(rng, 2 * dlWorkFactor(p.bits()));
@@ -180,18 +180,18 @@ public:
     this(in DLSchemePrivateKey key, RandomNumberGenerator rng)
     {
         assert(key.algoName == ElGamalPublicKey.algoName);
-        const BigInt p = key.groupP();
+        const BigInt* p = &key.groupP();
         
-        m_powermod_x_p = FixedExponentPowerMod(key.getX(), p);
-        m_mod_p = ModularReducer(p.dup);
+        m_powermod_x_p = FixedExponentPowerMod(key.getX(), *p);
+        m_mod_p = ModularReducer(*p);
         
         BigInt k = BigInt(rng, p.bits() - 1);
-        m_blinder = Blinder(k, (*m_powermod_x_p)(k), p.dup);
+        m_blinder = Blinder(k, (*m_powermod_x_p)(k), *p);
     }
 
     override SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
     {
-        const BigInt p = m_mod_p.getModulus();
+        const BigInt* p = &m_mod_p.getModulus();
         
         const size_t p_bytes = p.bytes();
         
@@ -201,12 +201,12 @@ public:
         BigInt a = BigInt(msg, p_bytes);
         BigInt b = BigInt(msg + p_bytes, p_bytes);
         
-        if (a >= p || b >= p)
+        if (a >= *p || b >= *p)
             throw new InvalidArgument("ElGamal decryption: Invalid message");
         
         a = m_blinder.blind(a);
         
-        BigInt r = m_mod_p.multiply(b, inverseMod((*m_powermod_x_p)(a), p));
+        BigInt r = m_mod_p.multiply(b, inverseMod((*m_powermod_x_p)(a), *p));
         
         return BigInt.encodeLocked(m_blinder.unblind(r));
     }
@@ -235,9 +235,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     
     foreach (elg; elg_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!ElGamalPrivateKey(rng, DLGroup(elg));
+        auto key = new ElGamalPrivateKey(rng, DLGroup(elg));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(key.Scoped_payload, rng);
+        fails += validateSaveAndLoad(key, rng);
     }
     
     return fails;
@@ -256,12 +256,12 @@ size_t elgamalKat(string p,
     
     const BigInt p_bn = BigInt(p);
     const BigInt g_bn = BigInt(g);
-    const BigInt x_bn = BigInt(x);
+    BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, g_bn);
-    auto privkey = scoped!ElGamalPrivateKey(rng, group, x_bn.dup);
+    auto privkey = new ElGamalPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = scoped!ElGamalPublicKey(privkey);
+    auto pubkey = new ElGamalPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";

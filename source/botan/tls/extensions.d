@@ -58,7 +58,7 @@ public:
     /**
     * @return serialized binary for the extension
     */
-    abstract const(Vector!ubyte) serialize() const;
+    abstract Vector!ubyte serialize() const;
 
     /**
     * @return if we should encode this extension or not
@@ -129,7 +129,7 @@ public:
         
         buf ~= (cast(const(ubyte)*)m_sni_host_name.ptr)[0 .. m_sni_host_name.length];
         
-        return buf;
+        return buf.move();
     }
 
     override @property bool empty() const { return m_sni_host_name == ""; }
@@ -173,7 +173,7 @@ public:
         
         appendTlsLengthValue(buf, srp_bytes, m_srp_identifier.length, 1);
         
-        return buf;
+        return buf.move();
     }
 
     override @property bool empty() const { return m_srp_identifier == ""; }
@@ -195,7 +195,7 @@ public:
 
     this(Vector!ubyte bits)
     {
-        m_reneg_data = bits;
+        m_reneg_data = bits.move();
     }
 
     this(ref TLSDataReader reader, ushort extension_size)
@@ -206,13 +206,13 @@ public:
             throw new DecodingError("Bad encoding for secure renegotiation extn");
     }
 
-    const(Vector!ubyte) renegotiationInfo() const { return m_reneg_data; }
+    ref const(Vector!ubyte) renegotiationInfo() const { return m_reneg_data; }
 
     override Vector!ubyte serialize() const
     {
         Vector!ubyte buf;
         appendTlsLengthValue(buf, m_reneg_data, 1);
-        return buf;
+        return buf.move();
     }
 
     override @property bool empty() const { return false; } // always send this
@@ -296,7 +296,7 @@ public:
 
     override HandshakeExtensionType type() const { return staticType(); }
 
-    const(Vector!string) protocols() const { return m_protocols; }
+    ref const(Vector!string) protocols() const { return m_protocols; }
 
     /**
     * Empty extension, used by client
@@ -308,7 +308,7 @@ public:
     */
     this(Vector!string protocols) 
     {
-        m_protocols = protocols; 
+        m_protocols = protocols.move(); 
     }
 
     this(ref TLSDataReader reader, ushort extension_size)
@@ -343,7 +343,7 @@ public:
                 appendTlsLengthValue(buf, cast(const(ubyte)*) p.ptr, p.length, 1);
         }
         
-        return buf;
+        return buf.move();
     }
 
     override @property bool empty() const { return false; }
@@ -364,7 +364,7 @@ public:
     /**
     * @return contents of the session ticket
     */
-    const(Vector!ubyte) contents() const { return m_ticket; }
+    ref const(Vector!ubyte) contents() const { return m_ticket; }
 
     /**
     * Create empty extension, used by both client and server
@@ -376,7 +376,7 @@ public:
     */
     this(Vector!ubyte session_ticket)
     {
-        m_ticket = session_ticket;
+        m_ticket = session_ticket.move();
     }
 
     /**
@@ -387,7 +387,7 @@ public:
         m_ticket = reader.getElem!(ubyte, Vector!ubyte)(extension_size);
     }
 
-    override const(Vector!ubyte) serialize() const { return m_ticket; }
+    override Vector!ubyte serialize() const { return m_ticket.dup; }
 
     override @property bool empty() const { return false; }
 private:
@@ -475,9 +475,9 @@ public:
         throw new InvalidArgument("name_to_curve_id unknown name " ~ name);
     }
 
-    const(Vector!string) curves() const { return m_curves; }
+    ref const(Vector!string) curves() const { return m_curves; }
 
-    override const(Vector!ubyte) serialize() const
+    override Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(2);
         
@@ -491,12 +491,12 @@ public:
         buf[0] = get_byte(0, cast(ushort) (buf.length-2));
         buf[1] = get_byte(1, cast(ushort) (buf.length-2));
         
-        return buf;
+        return buf.move();
     }
 
     this(Vector!string curves) 
     {
-        m_curves = curves;
+        m_curves = curves.move();
     }
 
     this(ref TLSDataReader reader, ushort extension_size)
@@ -611,7 +611,7 @@ public:
         throw new InternalError("Unknown sig ID " ~ name ~ " for signature_algorithms");
     }
 
-    const(Vector!( Pair!(string, string)  )) supportedSignatureAlgorthms() const
+    ref const(Vector!( Pair!(string, string)  )) supportedSignatureAlgorthms() const
     {
         return m_supported_algos;
     }
@@ -637,19 +637,19 @@ public:
         buf[0] = get_byte(0, cast(ushort) (buf.length-2));
         buf[1] = get_byte(1, cast(ushort) (buf.length-2));
         
-        return buf;
+        return buf.move();
     }
 
     override @property bool empty() const { return false; }
 
-    this(const ref Vector!string hashes, const ref Vector!string sigs)
+    this()(auto const ref Vector!string hashes, auto const ref Vector!string sigs)
     {
         for (size_t i = 0; i != hashes.length; ++i)
             for (size_t j = 0; j != sigs.length; ++j)
                 m_supported_algos.pushBack(makePair(hashes[i], sigs[j]));
     }
     
-    this(TLSDataReader reader,
+    this(ref TLSDataReader reader,
          ushort extension_size)
     {
         ushort len = reader.get_ushort();
@@ -674,7 +674,7 @@ public:
 
     this(Vector!( Pair!(string, string)  ) algos) 
     {
-        m_supported_algos = algos;
+        m_supported_algos = algos.move();
     }
 
 private:
@@ -697,7 +697,7 @@ public:
     {
         Vector!ubyte heartbeat = Vector!ubyte(1);
         heartbeat[0] = (m_peer_allowed_to_send ? 1 : 2);
-        return heartbeat;
+        return heartbeat.move();
     }
 
     override @property bool empty() const { return false; }
@@ -754,7 +754,7 @@ public:
         extensions[extn.type()] = extn;
     }
 
-    const(Vector!ubyte) serialize() const
+    Vector!ubyte serialize() const
     {
         Vector!ubyte buf = Vector!ubyte(2); // 2 bytes for length field
         
@@ -785,7 +785,7 @@ public:
         if (buf.length == 2)
             return Vector!ubyte();
         
-        return buf;
+        return buf.move();
     }
 
     void deserialize(ref TLSDataReader reader)

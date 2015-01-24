@@ -30,7 +30,7 @@ public:
     void update(const(ubyte)* input, size_t length)
     { m_data ~= input[0 .. length]; }
 
-    void update(const ref Vector!ubyte input)
+    void update(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     { m_data ~= input[]; }
 
     /**
@@ -59,7 +59,7 @@ public:
     /**
     * Return a SSLv3 Handshake Hash
     */
-    SecureVector!ubyte finalSSL3(const ref SecureVector!ubyte secret) const
+    SecureVector!ubyte finalSSL3()(auto const ref SecureVector!ubyte secret) const
     {
         const ubyte PAD_INNER = 0x36, PAD_OUTER = 0x5C;
         
@@ -98,7 +98,7 @@ public:
         return output;
     }
 
-    const(Vector!ubyte) getContents() const
+    ref const(Vector!ubyte) getContents() const
     { return m_data; }
 
     void reset() { m_data.clear(); }

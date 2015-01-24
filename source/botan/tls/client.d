@@ -64,7 +64,7 @@ public:
     this(void delegate(in ubyte[]) socket_output_fn,
          void delegate(in ubyte[]) proc_cb,
          void delegate(in TLSAlert, in ubyte[]) alert_cb,
-         bool delegate(in TLSSession) handshake_cb,
+         bool delegate(const ref TLSSession) handshake_cb,
          TLSSessionManager session_manager,
          TLSCredentialsManager creds,
          in TLSPolicy policy,
@@ -85,11 +85,10 @@ public:
     }
 
 protected:
-    override const(Vector!X509Certificate)
-        getPeerCertChain(in HandshakeState state) const
+    override Vector!X509Certificate getPeerCertChain(in HandshakeState state) const
     {
         if (state.serverCerts())
-            return state.serverCerts().certChain();
+            return state.serverCerts().certChain().dup;
         return Vector!X509Certificate();
     }
 
@@ -213,7 +212,7 @@ protected:
             }
             
             if (!valueExists(state.clientHello().compressionMethods(),
-                              state.serverHello().compressionMethod()))
+                             state.serverHello().compressionMethod()))
             {
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE,
                                         "TLSServer replied with compression method we didn't send");
@@ -318,21 +317,21 @@ protected:
             
             state.serverCerts(new Certificate(contents));
             
-            const Vector!X509Certificate server_certs = state.serverCerts().certChain();
+            const Vector!X509Certificate* server_certs = &state.serverCerts().certChain();
             
             if (server_certs.empty)
                 throw new TLSException(TLSAlert.HANDSHAKE_FAILURE, "TLSClient: No certificates sent by server");
             
             try
             {
-                m_creds.verifyCertificateChain("tls-client", m_info.hostname(), server_certs);
+                m_creds.verifyCertificateChain("tls-client", m_info.hostname(), *server_certs);
             }
             catch(Exception e)
             {
                 throw new TLSException(TLSAlert.BAD_CERTIFICATE, e.msg);
             }
             
-            PublicKey peer_key = server_certs[0].subjectPublicKey();
+            PublicKey peer_key = (*server_certs)[0].subjectPublicKey();
             
             if (peer_key.algoName != state.ciphersuite().sigAlgo())
                 throw new TLSException(TLSAlert.ILLEGAL_PARAMETER, "Certificate key type did not match ciphersuite");
@@ -370,9 +369,9 @@ protected:
             
             if (state.receivedHandshakeMsg(CERTIFICATE_REQUEST))
             {
-                const Vector!string types = state.certReq().acceptableCertTypes();
+                const(Vector!string)* types = &state.certReq().acceptableCertTypes();
                 
-                Vector!X509Certificate client_certs = m_creds.certChain(types, "tls-client", m_info.hostname());
+                Vector!X509Certificate client_certs = m_creds.certChain(*types, "tls-client", m_info.hostname());
                 
                 state.clientCerts(new Certificate(state.handshakeIo(), state.hash(), client_certs));
             }
@@ -404,7 +403,8 @@ protected:
             
             if (state.serverHello().nextProtocolNotification())
             {
-                const string protocol = state.client_npn_cb(state.serverHello().nextProtocols());
+				auto next_proto = state.serverHello().nextProtocols();
+                const string protocol = state.client_npn_cb(next_proto);
                 
                 state.nextProtocol(new NextProtocol(state.handshakeIo(), state.hash(), protocol));
             }
@@ -445,7 +445,8 @@ protected:
                 
                 if (state.serverHello().nextProtocolNotification())
                 {
-                    const string protocol = state.client_npn_cb(state.serverHello().nextProtocols());
+					auto next_proto = state.serverHello().nextProtocols();
+                    const string protocol = state.client_npn_cb(next_proto);
                     
                     state.nextProtocol(new NextProtocol(state.handshakeIo(), state.hash(), protocol));
                 }
@@ -455,20 +456,20 @@ protected:
             
             Vector!ubyte session_id = state.serverHello().sessionId().dup;
             
-            const Vector!ubyte session_ticket = state.sessionTicket();
+            Vector!ubyte session_ticket = state.sessionTicket();
             
             if (session_id.empty && !session_ticket.empty)
                 session_id = makeHelloRandom(rng());
             
-            TLSSession session_info = TLSSession(session_id,
+            TLSSession session_info = TLSSession(session_id.dup,
                                                  state.sessionKeys().masterSecret().dup,
                                                  state.serverHello().Version(),
                                                  state.serverHello().ciphersuite(),
                                                  state.serverHello().compressionMethod(),
                                                  CLIENT,
                                                  state.serverHello().fragmentSize(),
-                                                 getPeerCertChain(state).dup,
-                                                 session_ticket.dup,
+                                                 getPeerCertChain(state),
+                                                 session_ticket.move(),
                                                  m_info,
                                                 "");
             
@@ -478,8 +479,9 @@ protected:
             {
                 if (should_save)
                     sessionManager().save(session_info);
-                else
-                    sessionManager().removeEntry(session_info.sessionId());
+                else {
+					sessionManager().removeEntry(session_info.sessionId().dup);
+				}
             }
             
             activateSession();

@@ -29,14 +29,14 @@ public:
     const(InitializationVector) clientIv() const { return m_c_iv; }
     const(InitializationVector) serverIv() const { return m_s_iv; }
 
-    const(SecureVector!ubyte) masterSecret() const { return m_master_sec; }
+    ref const(SecureVector!ubyte) masterSecret() const { return m_master_sec; }
 
     @disable this();
 
     /**
     * TLSSessionKeys Constructor
     */
-    this(in HandshakeState state, SecureVector!ubyte pre_master_secret, bool resuming)
+    this()(in HandshakeState state, auto ref SecureVector!ubyte pre_master_secret, bool resuming)
     {
         const size_t cipher_keylen = state.ciphersuite().cipherKeylen();
         const size_t mac_keylen = state.ciphersuite().macKeylen();
@@ -54,14 +54,14 @@ public:
         
         if (resuming)
         {
-            m_master_sec = pre_master_secret;
+            m_master_sec = pre_master_secret.dup;
         }
         else
         {
             SecureVector!ubyte salt;
             
             if (state.Version() != TLSProtocolVersion.SSL_V3)
-                salt ~= MASTER_SECRET_MAGIC;
+                salt ~= cast(ubyte[])MASTER_SECRET_MAGIC;
             
             salt ~= state.clientHello().random()[];
             salt ~= state.serverHello().random()[];
@@ -71,7 +71,7 @@ public:
         
         SecureVector!ubyte salt;
         if (state.Version() != TLSProtocolVersion.SSL_V3)
-            salt ~= KEY_GEN_MAGIC;
+            salt ~= cast(ubyte[])KEY_GEN_MAGIC;
         salt ~= state.serverHello().random()[];
         salt ~= state.clientHello().random()[];
         

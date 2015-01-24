@@ -73,7 +73,7 @@ public:
         else
             m_priv.loadCheck(rng);
 
-        super(dl_group, y1);
+        super(dl_group.move(), y1.move());
     }
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng)
@@ -121,8 +121,8 @@ public:
     this(in DLSchemePrivateKey dsa)
     { 
         assert(dsa.algoName == DSAPublicKey.algoName);
-        m_q = dsa.groupQ();
-        m_x = dsa.getX();
+        m_q = &dsa.groupQ();
+        m_x = &dsa.getX();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
         m_mod_q = dsa.groupQ().dup;
     }
@@ -144,23 +144,23 @@ public:
             BigInt k;
             do
                 k.randomize(rng, m_q.bits());
-            while (k >= m_q);
+            while (k >= *m_q);
 
             static void handler(shared(Tid) tid, shared(ModularReducer*) mod_q_2, 
                                 shared(FixedBasePowerModImpl) powermod_g_p2, shared(BigInt*) k2, shared(BigInt*) r2){ 
                 BigInt* K = cast(BigInt*) r2;
                 BigInt reduced = (cast(ModularReducer*)mod_q_2).reduce((cast(FixedBasePowerModImpl)powermod_g_p2)(*K));
-                *K = reduced;
+                *K = reduced.move();
                 send(cast(Tid) tid, true); 
             }
 
             spawn(&handler, cast(shared(Tid))thisTid(), cast(shared(ModularReducer*))&m_mod_q, 
                   cast(shared)*m_powermod_g_p, cast(shared(BigInt*))&k, cast(shared(BigInt*))&r);
 
-            s = inverseMod(k, m_q);
+            s = inverseMod(k, *m_q);
             bool done = receiveOnly!(bool)();
 
-            s = m_mod_q.multiply(s, mulAdd(m_x, r, i));
+            s = m_mod_q.multiply(s, mulAdd(*m_x, r, i));
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());
@@ -169,8 +169,8 @@ public:
         return output;
     }
 private:
-    const BigInt m_q;
-    const BigInt m_x;
+	const BigInt* m_q;
+	const BigInt* m_x;
     FixedBasePowerMod m_powermod_g_p;
     ModularReducer m_mod_q;
 }
@@ -192,10 +192,10 @@ public:
     this(in DLSchemePublicKey dsa) 
     {
         assert(dsa.algoName == DSAPublicKey.algoName);
-        m_q = dsa.groupQ();
-        m_y = dsa.getY();
+        m_q = &dsa.groupQ();
+        m_y = &dsa.getY();
         m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
-        m_powermod_y_p = FixedBasePowerMod(m_y, dsa.groupP());
+        m_powermod_y_p = FixedBasePowerMod(*m_y, dsa.groupP());
         m_mod_p = ModularReducer(dsa.groupP().dup);
         m_mod_q = ModularReducer(dsa.groupQ().dup);
     }
@@ -210,7 +210,7 @@ public:
     override bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len)
     {
         import std.concurrency : spawn, receiveOnly, send, thisTid;
-        const BigInt q = m_mod_q.getModulus();
+        const BigInt* q = &m_mod_q.getModulus();
         
         if (sig_len != 2*q.bytes() || msg_len > q.bytes())
             return false;
@@ -219,16 +219,16 @@ public:
         BigInt s = BigInt(sig + q.bytes(), q.bytes());
         BigInt i = BigInt(msg, msg_len);
         BigInt s_i;
-        if (r <= 0 || r >= q || s <= 0 || s >= q)
+        if (r <= 0 || r >= *q || s <= 0 || s >= *q)
             return false;
         
-        s = inverseMod(s, q);
+        s = inverseMod(s, *q);
         static void handler(shared(Tid) tid, shared(FixedBasePowerModImpl) powermod_g_p2, 
                             shared(ModularReducer*) mod_q2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
         { 
             BigInt* K = cast(BigInt*) s_i2;
             BigInt res = (cast(FixedBasePowerModImpl)powermod_g_p2)((*cast(ModularReducer*)mod_q2).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2));
-            *K = res;
+            *K = res.move();
             send(cast(Tid) tid, true); 
         }
         spawn(&handler, cast(shared)thisTid(), cast(shared(FixedBasePowerModImpl))*m_powermod_g_p, cast(shared(ModularReducer*))&m_mod_q, 
@@ -243,8 +243,8 @@ public:
     }
 
 private:
-    const BigInt m_q;
-    const BigInt m_y;
+    const BigInt* m_q;
+	const BigInt* m_y;
 
     FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
     ModularReducer m_mod_p, m_mod_q;
@@ -267,9 +267,9 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
     string[] dsa_list = ["dsa/jce/1024", "dsa/botan/2048", "dsa/botan/3072"];
     foreach (dsa; dsa_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!DSAPrivateKey(rng, DLGroup(dsa));
+        auto key = new DSAPrivateKey(rng, DLGroup(dsa));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(key.Scoped_payload, rng);
+        fails += validateSaveAndLoad(key, rng);
     }
     
     return fails;
@@ -294,9 +294,9 @@ size_t dsaSigKat(string p,
     BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, q_bn, g_bn);
-    auto privkey = scoped!DSAPrivateKey(rng, group, x_bn);
+    auto privkey = new DSAPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = scoped!DSAPublicKey(privkey);
+    auto pubkey = new DSAPublicKey(privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     

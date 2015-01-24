@@ -168,7 +168,7 @@ class FixedExponentPowerModImpl : PowerMod
 {
     enum NOGC = true;
 public:
-    BigInt opCall(const ref BigInt b)
+    BigInt opCall()(auto const ref BigInt b)
     { setBase(b); return execute(); }
 
     /*
@@ -192,7 +192,7 @@ class FixedBasePowerModImpl : PowerMod
 {
     enum NOGC = true;
 public:
-    BigInt opCall(const ref BigInt e)
+    BigInt opCall()(auto const ref BigInt e)
     { setExponent(e); return execute(); }
 
     /*

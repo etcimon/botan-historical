@@ -798,7 +798,7 @@ SecureVector!ubyte EC2OSP(const ref PointGFp point, ubyte format)
         throw new InvalidArgument("illegal point encoding format specification");
 }
 
-PointGFp OS2ECP(const(ubyte)* data, size_t data_len, const ref CurveGFp curve)
+PointGFp OS2ECP()(const(ubyte)* data, size_t data_len, auto const ref CurveGFp curve)
 {
 	logTrace("data_len: ", data_len);
     if (data_len <= 1) {
@@ -849,7 +849,7 @@ PointGFp OS2ECP(const(ubyte)* data, size_t data_len, const ref CurveGFp curve)
     return result.dup;
 }
 
-PointGFp OS2ECP(int Alloc)(const ref Vector!( ubyte, Alloc ) data, const ref CurveGFp curve)
+PointGFp OS2ECP(int Alloc)(auto const ref Vector!( ubyte, Alloc ) data, auto const ref CurveGFp curve)
 { return OS2ECP(data.ptr, data.length, curve); }
 
 private:

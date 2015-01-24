@@ -166,9 +166,9 @@ public:
     this(in ECPrivateKey gost_3410)
     {
         assert(gost_3410.algoName == GOST3410PublicKey.algoName);
-        m_base_point = gost_3410.domain().getBasePoint().dup;
-        m_order = gost_3410.domain().getOrder();
-        m_x = gost_3410.privateValue();
+        m_base_point = &gost_3410.domain().getBasePoint();
+        m_order = &gost_3410.domain().getOrder();
+        m_x = &gost_3410.privateValue();
     }
 
     override size_t messageParts() const { return 2; }
@@ -181,22 +181,22 @@ public:
         BigInt k;
         do
             k.randomize(rng, m_order.bits()-1);
-        while (k >= m_order);
+        while (k >= *m_order);
         
         BigInt e = decodeLittleEndian(msg, msg_len);
         
-        e %= m_order;
+        e %= *m_order;
         if (e == 0)
             e = 1;
         
-        PointGFp k_times_P = m_base_point * k;
+        PointGFp k_times_P = (*m_base_point) * k;
         
         assert(k_times_P.onTheCurve(),
                      "GOST 34.10 k*g is on the curve");
         
-        BigInt r = k_times_P.getAffineX() % m_order;
+        BigInt r = k_times_P.getAffineX() % (*m_order);
         
-        BigInt s = (r*m_x + k*e) % m_order;
+        BigInt s = (r*(*m_x) + k*e) % (*m_order);
         
         if (r == 0 || s == 0)
             throw new InvalidState("GOST 34.10: r == 0 || s == 0");
@@ -208,9 +208,9 @@ public:
     }
 
 private:
-    PointGFp m_base_point;
-    const BigInt m_order;
-    const BigInt m_x;
+    const PointGFp* m_base_point;
+    const BigInt* m_order;
+    const BigInt* m_x;
 }
 
 /**
@@ -230,9 +230,9 @@ public:
     this(in ECPublicKey gost) 
     {
         assert(gost.algoName == GOST3410PublicKey.algoName);
-        m_base_point = gost.domain().getBasePoint().dup;
-        m_public_point = gost.publicPoint().dup;
-        m_order = gost.domain().getOrder();
+        m_base_point = &gost.domain().getBasePoint();
+        m_public_point = &gost.publicPoint();
+        m_order = &gost.domain().getOrder();
     }
 
     override size_t messageParts() const { return 2; }
@@ -253,20 +253,20 @@ public:
         BigInt s = BigInt(sig, sig_len / 2);
         BigInt r = BigInt(sig + sig_len / 2, sig_len / 2);
         
-        if (r <= 0 || r >= m_order || s <= 0 || s >= m_order)
+        if (r <= 0 || r >= (*m_order) || s <= 0 || s >= (*m_order))
             return false;
         
-        e %= m_order;
+        e %= (*m_order);
         if (e == 0)
             e = 1;
         
-        BigInt v = inverseMod(e, m_order);
+        BigInt v = inverseMod(e, (*m_order));
         
-        BigInt z1 = (s*v) % m_order;
-        BigInt z2 = (-r*v) % m_order;
+        BigInt z1 = (s*v) % (*m_order);
+        BigInt z2 = (-r*v) % (*m_order);
         
-        PointGFp R = PointGFp.multiExponentiate(m_base_point, z1,
-                                                m_public_point, z2);
+        PointGFp R = PointGFp.multiExponentiate(*m_base_point, z1,
+                                                *m_public_point, z2);
         
         if (R.isZero())
             return false;
@@ -275,9 +275,9 @@ public:
     }
     const ~this() { destroy(cast(GOST3410VerificationOperation)this); }
 private:
-    PointGFp m_base_point;
-    PointGFp m_public_point;
-    const BigInt m_order;
+    const PointGFp* m_base_point;
+    const PointGFp* m_public_point;
+    const BigInt* m_order;
 }
 
 

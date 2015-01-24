@@ -158,7 +158,7 @@ public:
     /**
     * Choose an elliptic curve to use
     */
-    string chooseCurve(const ref Vector!string curve_names) const
+    string chooseCurve(in Vector!string curve_names) const
     {
         const Vector!string our_curves = allowedEccCurves();
 
@@ -259,15 +259,14 @@ public:
     /**
     * Return allowed ciphersuites, in order of preference
     */
-    Vector!ushort ciphersuiteList(TLSProtocolVersion _version,
-                                       bool have_srp) const
+    Vector!ushort ciphersuiteList(TLSProtocolVersion _version, bool have_srp) const
     {
         const Vector!string ciphers = allowedCiphers();
         const Vector!string macs = allowedMacs();
         const Vector!string kex = allowedKeyExchangeMethods();
         const Vector!string sigs = allowedSignatureMethods();
         
-        CiphersuitePreferenceOrdering order = CiphersuitePreferenceOrdering(ciphers, macs, kex, sigs);
+        CiphersuitePreferenceOrdering order = CiphersuitePreferenceOrdering(ciphers.dup(), macs.dup(), kex.dup(), sigs.dup());
         
         Appender!(TLSCiphersuite[]) ciphersuites;
         
@@ -363,12 +362,12 @@ private:
 struct CiphersuitePreferenceOrdering
 {
 public:
-    this(const ref Vector!string ciphers, const ref Vector!string macs, const ref Vector!string kex, const ref Vector!string sigs)
+	this(Vector!string ciphers, Vector!string macs, Vector!string kex, Vector!string sigs)
     {
-        m_ciphers = ciphers;
-        m_macs = macs;
-        m_kex = kex; 
-        m_sigs = sigs;
+        m_ciphers = ciphers.move();
+		m_macs = macs.move();
+		m_kex = kex.move(); 
+		m_sigs = sigs.move();
     }
     
     bool compare(U : TLSCiphersuite)(in TLSCiphersuite a, auto ref U b) const

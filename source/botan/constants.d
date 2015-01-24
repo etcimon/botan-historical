@@ -417,7 +417,7 @@ enum { // LogLevel
 void logTrace(ARGS...)(ARGS args) {
     static if (LogLevel <= Trace) {
         import std.stdio: writeln;
-        writeln("T: ", args);
+		writeln("T: ", args);
     }
 }
 

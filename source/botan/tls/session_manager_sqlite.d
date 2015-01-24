@@ -122,7 +122,7 @@ public:
         delete m_db;
     }
 
-    override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
+	override bool loadFromSessionId(const Vector!ubyte session_id, ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions where session_id = ?1");
         
@@ -146,7 +146,7 @@ public:
     }
 
     override bool loadFromServerInfo(in TLSServerInformation server,
-                                        ref TLSSession session)
+                                     ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions"
                                                        ~ " where hostname = ?1 and hostport = ?2"
@@ -172,7 +172,7 @@ public:
         return false;
     }
 
-    override void removeEntry(const ref Vector!ubyte session_id)
+    override void removeEntry(const Vector!ubyte session_id)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "delete from tls_sessions where session_id = ?1");
         
@@ -181,7 +181,7 @@ public:
         stmt.spin();
     }
 
-    override void save(in TLSSession session)
+    override void save(const ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "insert or replace into tls_sessions"
                                ~ " values(?1, ?2, ?3, ?4, ?5)");
@@ -201,8 +201,8 @@ public:
     { return m_session_lifetime; }
 
 private:
-    @disable this(in TLSSessionManagerSQLite);
-    @disable TLSSessionManagerSQLite opAssign(in TLSSessionManagerSQLite);
+    @disable this(const ref TLSSessionManagerSQLite);
+    @disable TLSSessionManagerSQLite opAssign(const ref TLSSessionManagerSQLite);
 
     void pruneSessionCache()
     {

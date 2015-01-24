@@ -39,7 +39,7 @@ public:
         m_hash.update(input, length);
     }
 
-	override ref SecureVector!ubyte rawData()
+	override SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
@@ -91,9 +91,9 @@ public:
         m_message ~= input[0 .. length];
     }
 
-	override ref SecureVector!ubyte rawData()
+	override SecureVector!ubyte rawData()
     {
-		return m_message;
+		return m_message.dup;
     }
 
 	override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,

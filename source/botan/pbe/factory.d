@@ -84,7 +84,7 @@ PBE getPbe(in string algo_spec,
 * @param passphrase = the passphrase to use for decryption
 * @return pointer to the PBE with the specified parameters
 */
-PBE getPbe(in OID pbe_oid, const ref Vector!ubyte params, in string passphrase)
+PBE getPbe()(in OID pbe_oid, auto const ref Vector!ubyte params, in string passphrase)
 {
     SCANToken request = SCANToken(OIDS.lookup(pbe_oid));
     

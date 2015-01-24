@@ -288,7 +288,7 @@ public:
 
     ref DEREncoder encodeList(T, int Alloc)(const ref Vector!(T, Alloc) values)
     {
-        foreach (const value; values[])
+        foreach (const ref value; values[])
             encode(value);
         return this;
     }

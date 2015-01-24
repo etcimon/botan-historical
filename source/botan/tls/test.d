@@ -52,7 +52,7 @@ public:
             }
         }
         
-        return chain;
+        return chain.move();
     }
     
     override void verifyCertificateChain(in string type, in string purported_hostname,
@@ -153,7 +153,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
     
     Vector!ubyte c2s_q, s2c_q, c2s_data, s2c_data;
     
-    auto handshake_complete = delegate(in TLSSession session) {
+    auto handshake_complete = delegate(const ref TLSSession session) {
         if (session.Version() != offer_version)
             logTrace("Wrong version negotiated");
         return true;

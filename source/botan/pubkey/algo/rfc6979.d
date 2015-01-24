@@ -68,7 +68,7 @@ size_t rfc6979Testcase(string q_str,
     
     if (gen_k != exp_k)
     {
-        logTrace("RFC 6979 test #", testcase, " failed; generated k=", gen_k);
+        logTrace("RFC 6979 test #", testcase, " failed; generated k=", gen_k.toString());
         return 1;
     }
     

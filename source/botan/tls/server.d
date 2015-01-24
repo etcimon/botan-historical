@@ -32,7 +32,7 @@ public:
     this(void delegate(in ubyte[]) output_fn,
          void delegate(in ubyte[]) data_cb,
          void delegate(in TLSAlert, in ubyte[]) alert_cb,
-         bool delegate(in TLSSession) handshake_cb,
+         bool delegate(const ref TLSSession) handshake_cb,
          TLSSessionManager session_manager,
          TLSCredentialsManager creds,
          in TLSPolicy policy,
@@ -43,7 +43,7 @@ public:
         super(output_fn, data_cb, alert_cb, handshake_cb, session_manager, rng, io_buf_sz);
         m_policy = policy;
         m_creds = creds;
-        m_possible_protocols = next_protocols;
+        m_possible_protocols = next_protocols.move();
     }
 
     /**
@@ -53,10 +53,10 @@ public:
     string nextProtocol() const { return m_next_protocol; }
 
 protected:
-    override const(Vector!X509Certificate) getPeerCertChain(in HandshakeState state) const
+    override Vector!X509Certificate getPeerCertChain(in HandshakeState state) const
     {
         if (state.clientCerts())
-            return state.clientCerts().certChain();
+            return state.clientCerts().certChain().dup();
         return Vector!X509Certificate();
     }
 
@@ -205,7 +205,7 @@ protected:
                                                   secureRenegotiationDataForServerHello(),
                                                   offer_new_session_ticket,
                                                   state.clientHello().nextProtocolNotification(),
-                                                  m_possible_protocols,
+                                                  m_possible_protocols.dup(),
                                                   state.clientHello().supportsHeartbeats(),
                                                   rng()));
                 
@@ -215,7 +215,7 @@ protected:
                 
                 if (!saveSession(session_info))
                 {
-                    sessionManager().removeEntry(session_info.sessionId());
+                    sessionManager().removeEntry(session_info.sessionId().dup);
                     
                     if (state.serverHello().supportsSessionTicket()) // send an empty ticket
                     {
@@ -252,7 +252,7 @@ protected:
             }
             else // new session
             {
-                HashMap!(string, Vector!X509Certificate) cert_chains;
+                HashMap!(string, Array!X509Certificate) cert_chains;
                 
                 const string sni_hostname = state.clientHello().sniHostname();
                 
@@ -289,7 +289,7 @@ protected:
                                         secureRenegotiationDataForServerHello(),
                                         state.clientHello().supportsSessionTicket() && have_session_ticket_key,
                                         state.clientHello().nextProtocolNotification(),
-                                        m_possible_protocols,
+                                        m_possible_protocols.dup(),
                                         state.clientHello().supportsHeartbeats(),
                                         rng()
                     )
@@ -355,7 +355,7 @@ protected:
                     state.certReq(new CertificateReq(state.handshakeIo(),
                                                        state.hash(),
                                                        m_policy,
-                                                       client_auth_CAs,
+                                                       client_auth_CAs.move(),
                                                        state.Version()));
                     
                     state.setExpectedNext(CERTIFICATE);
@@ -396,9 +396,9 @@ protected:
         {
             state.clientVerify(new CertificateVerify(contents, state.Version()));
             
-            const Vector!X509Certificate client_certs = state.clientCerts().certChain();
+            const(Vector!X509Certificate)* client_certs = &state.clientCerts().certChain();
             
-            const bool sig_valid = state.clientVerify().verify(client_certs[0], state);
+            const bool sig_valid = state.clientVerify().verify((*client_certs)[0], state);
             
             state.hash().update(state.handshakeIo().format(contents, type));
             
@@ -412,7 +412,7 @@ protected:
             
             try
             {
-                m_creds.verifyCertificateChain("tls-server", "", client_certs);
+                m_creds.verifyCertificateChain("tls-server", "", *client_certs);
             }
             catch(Exception e)
             {
@@ -461,7 +461,7 @@ protected:
                                                      state.serverHello().compressionMethod(),
                                                      SERVER,
                                                      state.serverHello().fragmentSize(),
-                                                     getPeerCertChain(state).dup,
+                                                     getPeerCertChain(state),
                                                      Vector!ubyte(),
                                                      TLSServerInformation(state.clientHello().sniHostname()),
                                                      state.srpIdentifier()
@@ -477,9 +477,9 @@ protected:
                             
                             state.newSessionTicket(
                                 new NewSessionTicket(state.handshakeIo(),
-                                                   state.hash(),
-                                                   session_info.encrypt(ticket_key, rng()),
-                                                   m_policy.sessionTicketLifetime())
+                                                     state.hash(),
+                                                     session_info.encrypt(ticket_key, rng()),
+                                                     m_policy.sessionTicketLifetime())
                                 );
                         }
                         catch (Throwable) {}
@@ -527,13 +527,13 @@ private:
 
 private:
 
-bool checkForResume(TLSSession session_info,
-                      TLSSessionManager session_manager,
-                      TLSCredentialsManager credentials,
-                      in ClientHello clientHello,
-                      Duration session_ticket_lifetime)
+bool checkForResume(ref TLSSession session_info,
+                    TLSSessionManager session_manager,
+                    TLSCredentialsManager credentials,
+                    in ClientHello clientHello,
+                    Duration session_ticket_lifetime)
 {
-    const Vector!ubyte client_session_id = clientHello.sessionId();
+    const(Vector!ubyte)* client_session_id = &clientHello.sessionId();
     const Vector!ubyte session_ticket = clientHello.sessionTicket();
     
     if (session_ticket.empty)
@@ -542,7 +542,7 @@ bool checkForResume(TLSSession session_info,
             return false;
         
         // not found
-        if (!session_manager.loadFromSessionId(client_session_id, session_info))
+        if (!session_manager.loadFromSessionId(client_session_id.dup, session_info))
             return false;
     }
     else
@@ -600,14 +600,14 @@ bool checkForResume(TLSSession session_info,
 ushort chooseCiphersuite(in TLSPolicy policy,
                          TLSProtocolVersion _version,
                          TLSCredentialsManager creds,
-                         in HashMap!(string, Vector!X509Certificate) cert_chains,
+                         in HashMap!(string, Array!X509Certificate) cert_chains,
                          in ClientHello client_hello)
 {
     const bool our_choice = policy.serverUsesOwnCiphersuitePreferences();
     
     const bool have_srp = creds.attemptSrp("tls-server", client_hello.sniHostname());
     
-    const Vector!ushort client_suites = client_hello.ciphersuites();
+    const(Vector!ushort)* client_suites = &client_hello.ciphersuites();
     
     const Vector!ushort server_suites = policy.ciphersuiteList(_version, have_srp);
     
@@ -617,14 +617,13 @@ ushort chooseCiphersuite(in TLSPolicy policy,
     const bool have_shared_ecc_curve = (policy.chooseCurve(client_hello.supportedEccCurves()) != "");
     
     Vector!ushort pref_list = server_suites.dup;
-    Vector!ushort other_list = client_suites.dup;
-    
+       
     if (!our_choice)
-        std.algorithm.swap(pref_list, other_list);
+		pref_list[] = *client_suites;
     
     foreach (suite_id; pref_list[])
     {
-        if (!valueExists(other_list, suite_id))
+		if (!valueExists(*client_suites, suite_id))
             continue;
         
         TLSCiphersuite suite = TLSCiphersuite.byId(suite_id);
@@ -632,7 +631,7 @@ ushort chooseCiphersuite(in TLSPolicy policy,
         if (!have_shared_ecc_curve && suite.eccCiphersuite())
             continue;
         
-        if (suite.sigAlgo() != "" && cert_chains.get(suite.sigAlgo(), Vector!X509Certificate(0)) == Vector!X509Certificate(0))
+        if (suite.sigAlgo() != "" && cert_chains.get(suite.sigAlgo(), Array!X509Certificate(0)) == Array!X509Certificate(0))
             continue;
         
         /*
@@ -668,19 +667,19 @@ ubyte chooseCompression(in TLSPolicy policy, const ref Vector!ubyte c_comp)
     return NO_COMPRESSION;
 }
 
-HashMap!(string, Vector!X509Certificate) 
+HashMap!(string, Array!X509Certificate) 
     getServerCerts(in string hostname, TLSCredentialsManager creds)
 {
     string[] cert_types = [ "RSA", "DSA", "ECDSA", null ];
     
-    HashMap!(string, Vector!X509Certificate) cert_chains;
+    HashMap!(string, Array!X509Certificate) cert_chains;
     
     for (size_t i = 0; cert_types[i]; ++i)
     {
         Vector!X509Certificate certs = creds.certChainSingleType(cert_types[i], "tls-server", hostname);
         
         if (!certs.empty)
-            cert_chains[cert_types[i]] = certs;
+            cert_chains[cert_types[i]] = certs.dupr;
     }
     
     return cert_chains;

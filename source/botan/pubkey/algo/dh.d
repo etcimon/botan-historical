@@ -41,7 +41,7 @@ public:
     * @param grp = the DL group to use in the key
     * @param y = the public value y
     */
-    this(DLGroup grp, BigInt y1)
+    this()(auto const ref DLGroup grp, auto const ref BigInt y1)
     {
         m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
     }
@@ -66,9 +66,9 @@ public:
     * @param key_bits = the subject public key
     * @param rng = a random number generator
     */
-    this(in AlgorithmIdentifier alg_id,
-         const ref SecureVector!ubyte key_bits,
-         RandomNumberGenerator rng) 
+    this()(in AlgorithmIdentifier alg_id,
+           auto const ref SecureVector!ubyte key_bits,
+           RandomNumberGenerator rng) 
     {
 
         m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
@@ -84,27 +84,26 @@ public:
     * @param grp = the group to be used in the key
     * @param x_args = the key's secret value (or if zero, generate a new key)
     */
-    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
+    this()(RandomNumberGenerator rng, auto const ref DLGroup grp, BigInt x_args = 0)
     {
         
-        if (x_arg == 0)
-        {
-            const BigInt p = grp.getP();
-            x_arg.randomize(rng, 2 * dlWorkFactor(p.bits()));
-        }
+		const BigInt* p = &grp.getP();
 
-        BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
+		if (x_args == 0)
+			x_args.randomize(rng, 2 * dlWorkFactor(p.bits()));
+
+		BigInt y1 = powerMod(grp.getG(), x_args, *p);
         
-        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, (bool delegate(RandomNumberGenerator, bool) const).init, &maxInputBits);
+		m_priv = new DLSchemePrivateKey(grp, y1, x_args, DLGroup.ANSI_X9_42, algoName, 0, (bool delegate(RandomNumberGenerator, bool) const).init, &maxInputBits);
 
-        if (x_arg == 0)
+		if (x_args == 0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
         super(m_priv);
     }
 
-    this(RandomNumberGenerator rng, DLGroup grp) { this(rng, grp, BigInt(0)); }
+    this()(RandomNumberGenerator rng, auto const ref DLGroup grp) { this(rng, grp, BigInt(0)); }
     this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
@@ -131,10 +130,10 @@ public:
     this(in DLSchemePrivateKey dh, RandomNumberGenerator rng) 
     {
         assert(dh.algoName == DHPublicKey.algoName);
-        m_p = dh.groupP();
+        m_p = dh.groupP().dup;
         m_powermod_x_p = FixedExponentPowerMod(dh.getX(), m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, m_p)), m_p.dup);
+        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, m_p)), m_p);
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
@@ -144,13 +143,13 @@ public:
         if (input <= 1 || input >= m_p - 1)
             throw new InvalidArgument("DH agreement - invalid key provided");
         
-        BigInt r = m_blinder.unblind((*m_powermod_x_p)(m_blinder.blind(input)));
+        const BigInt r = m_blinder.unblind((*m_powermod_x_p)(m_blinder.blind(input)));
         
         return BigInt.encode1363(r, m_p.bytes());
     }
 
 private:
-    const BigInt m_p;
+    BigInt m_p;
 
     FixedExponentPowerMod m_powermod_x_p;
     Blinder m_blinder;
@@ -198,8 +197,8 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
     
     DLGroup domain = DLGroup(p_bn, g_bn);
     
-    auto mykey = scoped!DHPrivateKey(rng, domain, x_bn);
-    auto otherkey = scoped!DHPublicKey(domain, y_bn);
+    auto mykey = new DHPrivateKey(rng, domain, x_bn.move());
+    auto otherkey = new DHPublicKey(domain, y_bn.move());
     
     if (kdf == "")
         kdf = "Raw";

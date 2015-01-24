@@ -36,7 +36,7 @@ public:
     /*
     * Set the other parties public key
     */
-    void setOtherKey(const ref Vector!ubyte ok)
+    void setOtherKey()(auto const ref Vector!ubyte ok)
     {
         m_other_key = ok.dup;
     }
@@ -192,8 +192,8 @@ size_t dliesKat(string p,
     
     DLGroup domain = DLGroup(p_bn, g_bn);
     
-    auto from = scoped!DHPrivateKey(rng, domain, x1_bn);
-    auto to = scoped!DHPrivateKey(rng, domain, x2_bn);
+    auto from = new DHPrivateKey(rng, domain, x1_bn.move());
+    auto to = new DHPrivateKey(rng, domain, x2_bn.move());
     
     const string opt_str = "KDF2(SHA-1)/HMAC(SHA-1)/16";
 

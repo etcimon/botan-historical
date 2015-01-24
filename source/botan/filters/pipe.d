@@ -146,18 +146,18 @@ public:
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-    void processMsg(SecureVector!ubyte input)
+    void processMsg(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
-        processMsg(cast(const(ubyte)*)input.ptr, input.length);
+        processMsg(input.ptr, input.length);
     }
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-    void processMsg(Vector!ubyte input)
+    void processMsg(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input)
     {
-        processMsg(cast(const(ubyte)*)input.ptr, input.length);
+        processMsg(input.ptr, input.length);
     }
 
     /**

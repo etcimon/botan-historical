@@ -36,7 +36,7 @@ public:
 
     this(BigInt mod, BigInt exponent)
     {
-        m_pub = new IFSchemePublicKey(mod, exponent, algoName);
+        m_pub = new IFSchemePublicKey(mod.move(), exponent.move(), algoName);
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
@@ -66,7 +66,7 @@ public:
          BigInt e, BigInt d = 0,
          BigInt n = 0)
     {
-        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+		m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
         super(m_priv);
     }
 
@@ -87,14 +87,14 @@ public:
         
         do
         {
-            p = randomPrime(rng, (bits + 1) / 2, e.dup / 2, 3, 4);
-            q = randomPrime(rng, bits - p.bits(), e.dup / 2, ((p % 8 == 3) ? 7 : 3), 8);
+            p = randomPrime(rng, (bits + 1) / 2, e / 2, 3, 4);
+            q = randomPrime(rng, bits - p.bits(), e / 2, ((p % 8 == 3) ? 7 : 3), 8);
             n = p * q;
         } while (n.bits() != bits);
         
         d = inverseMod(e, lcm(p - 1, q - 1) >> 1);
 
-        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+		m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
 
         super(m_priv);
         genCheck(rng);
@@ -111,7 +111,7 @@ public:
         if (!strong)
             return true;
         
-        if ((m_priv.getE().dup * m_priv.getD()) % (lcm(m_priv.getP() - 1, m_priv.getQ() - 1) / 2) != 1)
+        if ((m_priv.getE() * m_priv.getD()) % (lcm(m_priv.getP() - 1, m_priv.getQ() - 1) / 2) != 1)
             return false;
         
         return signatureConsistencyCheck(rng, m_priv, "EMSA2(SHA-1)");
@@ -142,13 +142,13 @@ public:
     this(in IFSchemePrivateKey rw) 
     {
         assert(rw.algoName == RWPublicKey.algoName);
-        m_n = rw.getN();
-        m_e = rw.getE();
-        m_q = rw.getQ();
-        m_c = rw.getC();
+        m_n = &rw.getN();
+        m_e = &rw.getE();
+        m_q = &rw.getQ();
+        m_c = &rw.getC();
         m_powermod_d1_p = FixedExponentPowerMod(rw.getD1(), rw.getP());
         m_powermod_d2_q = FixedExponentPowerMod(rw.getD2(), rw.getQ());
-        m_mod_p = ModularReducer(rw.getP().dup);
+        m_mod_p = ModularReducer(rw.getP());
         m_blinder = Blinder.init;
     }
     override size_t messageParts() const { return 1; }
@@ -161,15 +161,15 @@ public:
 
         if (!m_blinder.initialized()) {
             BigInt k = BigInt(rng, std.algorithm.min(160, m_n.bits() - 1));
-            m_blinder = Blinder(powerMod(k, m_e, m_n), inverseMod(k, m_n), m_n.dup);
+            m_blinder = Blinder(powerMod(k, *m_e, *m_n), inverseMod(k, *m_n), *m_n);
         }
 
         BigInt i = BigInt(msg, msg_len);
         
-        if (i >= m_n || i % 16 != 12)
+        if (i >= *m_n || i % 16 != 12)
             throw new InvalidArgument("Rabin-Williams: invalid input");
         
-        if (jacobi(i, m_n) != 1)
+        if (jacobi(i, *m_n) != 1)
             i >>= 1;
         
         i = m_blinder.blind(i);
@@ -186,23 +186,22 @@ public:
         const BigInt j2 = (*m_powermod_d2_q)(i);
         bool ok = receiveOnly!bool();
         
-        j1 = m_mod_p.reduce(subMul(j1, j2, m_c));
+        j1 = m_mod_p.reduce(subMul(j1, j2, *m_c));
         
-        const BigInt r = m_blinder.unblind(mulAdd(j1, m_q, j2));
+        BigInt r = m_blinder.unblind(mulAdd(j1, *m_q, j2));
         
-        BigInt min_val = r.dup;
-        BigInt cmp2 = m_n - r;
-
+		BigInt cmp2 = *m_n - r;
+        BigInt min_val = r.move();
         if (cmp2 < min_val)
-            min_val = cmp2;
+            min_val = cmp2.move();
 
         return BigInt.encode1363(min_val, m_n.bytes());
     }
 private:
-    const BigInt m_n;
-    const BigInt m_e;
-    const BigInt m_q;
-    const BigInt m_c;
+    const BigInt* m_n;
+    const BigInt* m_e;
+    const BigInt* m_q;
+    const BigInt* m_c;
 
     FixedExponentPowerMod m_powermod_d1_p, m_powermod_d2_q;
     ModularReducer m_mod_p;
@@ -226,7 +225,7 @@ public:
     this(in IFSchemePublicKey rw)
     {
         assert(rw.algoName == RWPublicKey.algoName);
-        m_n = rw.getN();
+        m_n = &rw.getN();
         m_powermod_e_n = FixedExponentPowerMod(rw.getE(), rw.getN());
     }
     override size_t messageParts() const { return 1; }
@@ -243,7 +242,7 @@ public:
     {
         BigInt m = BigInt(msg, msg_len);
         
-        if ((m > (m_n.dup >> 1)) || m.isNegative())
+        if ((m > (*m_n >> 1)) || m.isNegative())
             throw new InvalidArgument("RW signature verification: m > n / 2 || m < 0");
         
         BigInt r = (*m_powermod_e_n)(m);
@@ -252,7 +251,7 @@ public:
         if (r % 8 == 6)
             return BigInt.encodeLocked(r*2);
         
-        r = m_n - r;
+        r = (*m_n) - r;
         if (r % 16 == 12)
             return BigInt.encodeLocked(r);
         if (r % 8 == 6)
@@ -262,7 +261,7 @@ public:
     }
 
 private:
-    const BigInt m_n;
+    const BigInt* m_n;
     FixedExponentPowerMod m_powermod_e_n;
 }
 
@@ -295,9 +294,9 @@ size_t rwSigKat(string e,
     atomicOp!"+="(total_tests, 1);
     AutoSeededRNG rng;
     
-    auto privkey = scoped!RWPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = new RWPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = scoped!RWPublicKey(privkey);
+    auto pubkey = new RWPublicKey(privkey);
     
     PKVerifier verify = PKVerifier(pubkey, padding);
     PKSigner sign = PKSigner(privkey, padding);
@@ -316,7 +315,7 @@ size_t rwSigVerify(string e,
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
     
-    auto key = scoped!RWPublicKey(n_bn, e_bn);
+    auto key = new RWPublicKey(n_bn.move(), e_bn.move());
     
     PKVerifier verify = PKVerifier(key, padding);
     

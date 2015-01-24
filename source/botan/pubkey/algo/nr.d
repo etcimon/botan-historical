@@ -131,8 +131,8 @@ public:
     this(in DLSchemePrivateKey nr)
     {
         assert(nr.algoName == NRPublicKey.algoName);
-        m_q = nr.groupQ();
-        m_x = nr.getX();
+        m_q = &nr.groupQ();
+        m_x = &nr.getX();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ().dup);
     }
@@ -143,7 +143,7 @@ public:
         
         BigInt f = BigInt(msg, msg_len);
         
-        if (f >= m_q)
+        if (f >= *m_q)
             throw new InvalidArgument("NR_Signature_Operation: Input is out of range");
         
         BigInt c, d;
@@ -153,10 +153,10 @@ public:
             BigInt k;
             do
                 k.randomize(rng, m_q.bits());
-            while (k >= m_q);
+            while (k >= *m_q);
             
             c = m_mod_q.reduce((*m_powermod_g_p)(k) + f);
-            d = m_mod_q.reduce(k - m_x * c);
+            d = m_mod_q.reduce(k - (*m_x) * c);
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());
@@ -165,8 +165,8 @@ public:
         return output;
     }
 private:
-    const BigInt m_q;
-    const BigInt m_x;
+    const BigInt* m_q;
+    const BigInt* m_x;
     FixedBasePowerMod m_powermod_g_p;
     ModularReducer m_mod_q;
 }
@@ -188,12 +188,12 @@ public:
     this(in DLSchemePublicKey nr) 
     {
         assert(nr.algoName == NRPublicKey.algoName);
-        m_q = nr.groupQ();
-        m_y = nr.getY();
+        m_q = &nr.groupQ();
+        m_y = &nr.getY();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
-        m_powermod_y_p = FixedBasePowerMod(m_y, nr.groupP());
-        m_mod_p = ModularReducer(nr.groupP().dup);
-        m_mod_q = ModularReducer(nr.groupQ().dup);
+        m_powermod_y_p = FixedBasePowerMod(*m_y, nr.groupP());
+        m_mod_p = ModularReducer(nr.groupP());
+        m_mod_q = ModularReducer(nr.groupQ());
     }
 
     override size_t messageParts() const { return 2; }
@@ -209,14 +209,14 @@ public:
 
     override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
-        const BigInt q = m_mod_q.getModulus(); // todo: why not use m_q?
+        const BigInt* q = &m_mod_q.getModulus(); // todo: why not use m_q?
         if (msg_len != 2*q.bytes())
             throw new InvalidArgument("NR verification: Invalid signature");
         
         BigInt c = BigInt(msg, q.bytes());
         BigInt d = BigInt(msg + q.bytes(), q.bytes());
         
-        if (c.isZero() || c >= q || d >= q)
+        if (c.isZero() || c >= *q || d >= *q)
             throw new InvalidArgument("NR verification: Invalid signature");
         import std.concurrency : spawn, receiveOnly, send, thisTid;
         BigInt c_dup = c.dup;
@@ -236,8 +236,8 @@ public:
         return BigInt.encodeLocked(m_mod_q.reduce(c - i));
     }
 private:
-    const BigInt m_q;
-    const BigInt m_y;
+    const BigInt* m_q;
+    const BigInt* m_y;
 
     FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
     ModularReducer m_mod_p, m_mod_q;
@@ -262,9 +262,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (nr; nr_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!NRPrivateKey(rng, DLGroup(nr));
+        auto key = new NRPrivateKey(rng, DLGroup(nr));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(key.Scoped_payload, rng);
+        fails += validateSaveAndLoad(key, rng);
     }
     
     return fails;
@@ -283,9 +283,9 @@ size_t nrSigKat(string p, string q, string g, string x,
     
     DLGroup group = DLGroup(p_bn, q_bn, g_bn);
     
-    auto privkey = scoped!NRPrivateKey(rng, group, x_bn);
+    auto privkey = new NRPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = scoped!NRPublicKey(privkey);
+    auto pubkey = new NRPublicKey(privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     

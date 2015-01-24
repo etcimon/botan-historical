@@ -70,7 +70,7 @@ public:
         m_domain_params = ECGroup(alg_id.parameters);
         m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
         
-        m_public_key = OS2ECP(key_bits.dup, domain().getCurve());
+        m_public_key = OS2ECP(key_bits, domain().getCurve());
     }
 
     final void setCB(in bool delegate(RandomNumberGenerator, bool) const check_key = null,
@@ -259,7 +259,7 @@ public:
     * Get the private key value of this key object.
     * @result the private key value of this key object
     */
-    const(BigInt) privateValue() const
+    ref const(BigInt) privateValue() const
     {
         if (m_private_key == 0)
             throw new InvalidState("ECPrivateKey.private_value - uninitialized");

@@ -102,11 +102,11 @@ import botan.libstate.libstate;
 
 private shared size_t total_tests;
 
-SecureVector!ubyte hkdf(string hkdf_algo,
-                         const ref SecureVector!ubyte ikm,
-                         const ref SecureVector!ubyte salt,
-                         const ref SecureVector!ubyte info,
-                         size_t L)
+SecureVector!ubyte hkdf()(string hkdf_algo,
+                          auto const ref SecureVector!ubyte ikm,
+						  auto const ref SecureVector!ubyte salt,
+						  auto const ref SecureVector!ubyte info,
+                          size_t L)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     
@@ -133,10 +133,10 @@ size_t hkdfTest(string algo, string ikm, string salt, string info, string okm, s
     import core.atomic;
     atomicOp!"+="(total_tests, 1);
     const string got = hexEncode(hkdf(algo, 
-                                       hexDecodeLocked(ikm), 
-                                       hexDecodeLocked(salt), 
-                                       hexDecodeLocked(info),
-                                       L));
+                                      hexDecodeLocked(ikm), 
+                                      hexDecodeLocked(salt), 
+                                      hexDecodeLocked(info),
+                                      L));
     
     if (got != okm)
     {

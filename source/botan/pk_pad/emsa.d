@@ -34,8 +34,16 @@ public:
     * @return encoded signature
     */
 	abstract SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
-                                          size_t output_bits,
-                                          RandomNumberGenerator rng);
+                                           size_t output_bits,
+                                           RandomNumberGenerator rng);
+
+	/// ditto
+	final SecureVector!ubyte encodingOf(const SecureVector!ubyte msg,
+										  size_t output_bits,
+										  RandomNumberGenerator rng)
+	{
+		return encodingOf(msg, output_bits, rng);
+	}
 
     /**
     * Verify the encoding

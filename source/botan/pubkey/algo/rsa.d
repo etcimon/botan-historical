@@ -40,7 +40,7 @@ public:
     */
     this(BigInt n, BigInt e)
     {
-        m_pub = new IFSchemePublicKey(n, e, algoName);
+        m_pub = new IFSchemePublicKey(n.move(), e.move(), algoName);
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
@@ -94,7 +94,7 @@ public:
     */
     this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = 0, BigInt n = 0)
     {
-        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+        m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
         super(m_priv);
     }
 
@@ -122,7 +122,7 @@ public:
         
         d = inverseMod(e, lcm(p - 1, q - 1));
 
-        m_priv = new IFSchemePrivateKey(rng, p, q, e, d, n, algoName, &checkKey);
+        m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
         super(m_priv);
         genCheck(rng);
     }
@@ -151,15 +151,15 @@ public:
     this(in IFSchemePrivateKey rsa, RandomNumberGenerator rng) 
     {
         assert(rsa.algoName == RSAPublicKey.algoName);
-        m_n = rsa.getN();
-        m_q = rsa.getQ();
-        m_c = rsa.getC();
+        m_n = &rsa.getN();
+        m_q = &rsa.getQ();
+        m_c = &rsa.getC();
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
         m_powermod_d1_p = FixedExponentPowerMod(rsa.getD1(), rsa.getP());
         m_powermod_d2_q = FixedExponentPowerMod(rsa.getD2(), rsa.getQ());
-        m_mod_p = rsa.getP().dup;
+        m_mod_p = ModularReducer(rsa.getP());
         BigInt k = BigInt(rng, m_n.bits() - 1);
-        m_blinder = Blinder((*m_powermod_e_n)(k), inverseMod(k, m_n), m_n.dup);
+        m_blinder = Blinder((*m_powermod_e_n)(k), inverseMod(k, *m_n), *m_n);
     }
     override size_t messageParts() const { return 1; }
     override size_t messagePartSize() const { return 0; }
@@ -193,9 +193,9 @@ public:
         return BigInt.encodeLocked(x);
     }
 private:
-    BigInt privateOp(const ref BigInt m) const
+    BigInt privateOp()(auto const ref BigInt m) const
     {
-        if (m >= m_n)
+        if (m >= *m_n)
             throw new InvalidArgument("RSA private op - input is too large");
         BigInt j1;
         auto tid = spawn((shared(Tid) tid, shared(FixedExponentPowerModImpl) powermod_d1_p2, shared(BigInt*) m2, shared(BigInt*) j1_2)
@@ -205,16 +205,16 @@ private:
             send(cast(Tid)tid, true);
         }, 
         cast(shared) thisTid(), cast(shared(FixedExponentPowerModImpl))*m_powermod_d1_p, cast(shared(BigInt*))&m, cast(shared(BigInt*))&j1);
-        BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m.dup);
+        BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m);
         bool done = receiveOnly!bool();
-        j1 = m_mod_p.reduce(subMul(j1, j2, m_c));
+        j1 = m_mod_p.reduce(subMul(j1, j2, *m_c));
         
-        return mulAdd(j1, m_q, j2);
+        return mulAdd(j1, *m_q, j2);
     }
 
-    const BigInt m_n;
-    const BigInt m_q;
-    const BigInt m_c;
+    const BigInt* m_n;
+    const BigInt* m_q;
+    const BigInt* m_c;
     FixedExponentPowerMod m_powermod_e_n, m_powermod_d1_p, m_powermod_d2_q;
     ModularReducer m_mod_p;
     Blinder m_blinder;
@@ -237,7 +237,7 @@ public:
     this(in IFSchemePublicKey rsa)
     {
         assert(rsa.algoName == RSAPublicKey.algoName);
-        m_n = rsa.getN();
+        m_n = &rsa.getN();
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
     }
     override size_t messageParts() const { return 1; }
@@ -265,12 +265,12 @@ public:
 private:
     BigInt publicOp(const ref BigInt m) const
     {
-        if (m >= m_n)
+        if (m >= *m_n)
             throw new InvalidArgument("RSA public op - input is too large");
-        return (cast(FixedExponentPowerModImpl)*m_powermod_e_n)(m.dup);
+        return (cast(FixedExponentPowerModImpl)*m_powermod_e_n)(m);
     }
 
-    const BigInt m_n;
+    const BigInt* m_n;
     FixedExponentPowerMod m_powermod_e_n;
 }
 
@@ -297,9 +297,9 @@ size_t rsaesKat(string e,
     atomicOp!"+="(total_tests, 1);
     AutoSeededRNG rng;
     
-    auto privkey = scoped!RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = new RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = scoped!RSAPublicKey(privkey);
+    auto pubkey = new RSAPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";
@@ -321,9 +321,9 @@ size_t rsaSigKat(string e,
     atomicOp!"+="(total_tests, 1);
     AutoSeededRNG rng;
     
-    auto privkey = scoped!RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = new RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = scoped!RSAPublicKey(privkey);
+    auto pubkey = new RSAPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";
@@ -346,7 +346,7 @@ size_t rsaSigVerify(string e,
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
     
-    auto key = scoped!RSAPublicKey(n_bn, e_bn);
+    auto key = new RSAPublicKey(n_bn.move(), e_bn.move());
     
     if (padding == "")
         padding = "Raw";

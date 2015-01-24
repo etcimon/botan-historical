@@ -28,14 +28,14 @@ public:
         m_hash = hash;
     }
 
-	override size_t hashOutputLength() const { return m_hash.outputLength; }
+	size_t hashOutputLength() const { return m_hash.outputLength; }
 
 	override void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
 
-	override ref SecureVector!ubyte rawData()
+	override SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
