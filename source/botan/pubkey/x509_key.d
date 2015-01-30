@@ -112,7 +112,7 @@ PublicKey loadKey(in string filename)
 * @param enc = the memory region containing the DER or PEM encoded key
 * @return new public key object
 */
-PublicKey loadKey(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) enc)
+PublicKey loadKey(ALLOC)(auto const ref Vector!(ubyte, ALLOC) enc)
 {
     auto source = DataSourceMemory(&enc);
     return x509_key.loadKey(cast(DataSource)source);

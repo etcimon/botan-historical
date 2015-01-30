@@ -13,9 +13,11 @@ import botan.utils.exceptn;
 import std.c.string;
 import std.c.stdio;
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import etc.c.zlib;
 import std.c.stdlib;
+import botan.constants;
+import botan.utils.mem_ops;
 
 /**
 * Zlib Compression Filter
@@ -294,7 +296,7 @@ private:
 class Zlib_Alloc_Info
 {
 public:
-    HashMap!(void*, size_t) current_allocs;
+    HashMapRef!(void*, size_t) current_allocs;
 }
 
 /*

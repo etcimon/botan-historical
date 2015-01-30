@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.tls.version_;
 import botan.tls.magic;
 import botan.tls.exceptn;
@@ -30,7 +30,7 @@ public:
     void update(const(ubyte)* input, size_t length)
     { m_data ~= input[0 .. length]; }
 
-    void update(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
+    void update(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     { m_data ~= input[]; }
 
     /**

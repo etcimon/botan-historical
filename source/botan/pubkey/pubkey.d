@@ -72,7 +72,7 @@ public:
     * @param rng = the random number source to use
     * @return encrypted message
     */
-    final Vector!ubyte encrypt(int Alloc)(const ref Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
+    final Vector!ubyte encrypt(Alloc)(const ref Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
     {
         return enc(input.ptr, input.length, rng);
     }
@@ -109,7 +109,7 @@ public:
     * @param input = the ciphertext
     * @return decrypted message
     */
-    final SecureVector!ubyte decrypt(int Alloc)(auto const ref Vector!( ubyte, Alloc ) input) const
+    final SecureVector!ubyte decrypt(Alloc)(auto const ref Vector!( ubyte, Alloc ) input) const
     {
         return dec(input.ptr, input.length);
     }
@@ -145,10 +145,10 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-	Vector!ubyte signMessage(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
+	Vector!ubyte signMessage(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
-	Vector!ubyte signMessage(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input, RandomNumberGenerator rng)
+	Vector!ubyte signMessage(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
     /**
@@ -171,8 +171,8 @@ public:
     * Add a message part.
     * @param input = the message part to add
     */
-	void update(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input) { update(input.ptr, input.length); }
-	void update(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { update(input.ptr, input.length); }
+	void update(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) { update(input.ptr, input.length); }
+	void update(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { update(input.ptr, input.length); }
 
     /**
     * Get the signature of the so far processed message (provided by the
@@ -197,7 +197,7 @@ public:
                 throw new EncodingError("PKSigner: strange signature size found");
             const size_t SIZE_OF_PART = plain_sig.length / m_op.messageParts();
 
-            Vector!BigInt sig_parts = Vector!BigInt(m_op.messageParts());
+			Vector!(RefCounted!BigInt) sig_parts = Vector!(RefCounted!BigInt)(m_op.messageParts());
             for (size_t j = 0; j != sig_parts.length; ++j)
                 sig_parts[j].binaryDecode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
             
@@ -320,15 +320,15 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-	bool verifyMessage(int Alloc, int Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
+	bool verifyMessage(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
 		auto const ref Vector!( ubyte, Alloc2 ) sig)
 	{
 		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
 	}
 
 	/// ditto
-	bool verifyMessage(int Alloc, int Alloc2)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) msg, 
-											  auto const ref FreeListRef!(Vector!( ubyte, Alloc2 )) sig)
+	bool verifyMessage(Alloc, Alloc2)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) msg, 
+									  auto const ref RefCounted!(Vector!( ubyte, Alloc2 ), Alloc2) sig)
 	{
 		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
 	}
@@ -404,7 +404,7 @@ public:
     * @param sig = the signature to be verified
     * @return true if the signature is valid, false otherwise
     */
-    bool checkSignature(int Alloc)(auto const ref Vector!( ubyte, Alloc ) sig)
+    bool checkSignature(Alloc)(auto const ref Vector!( ubyte, Alloc ) sig)
     {
         return checkSignature(sig.ptr, sig.length);
     }

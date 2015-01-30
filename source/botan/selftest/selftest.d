@@ -22,8 +22,8 @@ import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.engine.core_engine;
 import botan.algo_base.symkey;
-import botan.utils.containers.multimap;
-import botan.utils.containers.hashmap;
+import memutils.dictionarylist;
+import memutils.hashmap;
 import botan.utils.exceptn;
 import botan.utils.types;
 
@@ -146,14 +146,14 @@ bool passesSelfTests(AlgorithmFactory af)
 * @param af = an algorithm factory
 * @returns map from provider name to test result for that provider
 */
-HashMap!(string, bool)
+HashMapRef!(string, bool)
     algorithmKat(in SCANToken algo_name,
-                  in HashMap!(string, string) vars,
+                  in HashMapRef!(string, string) vars,
                   AlgorithmFactory af)
 {
     const auto result = algorithmKatDetailed(algo_name, vars, af);
     
-    HashMap!(string, bool) pass_or_fail;
+    HashMapRef!(string, bool) pass_or_fail;
     
     foreach (const ref string key, const ref string val; result)
         pass_or_fail[key] = (val == "PASSED");
@@ -169,9 +169,9 @@ HashMap!(string, bool)
 * @param af = an algorithm factory
 * @returns map from provider name to test result for that provider
 */
-HashMap!(string, string)
+HashMapRef!(string, string)
     algorithmKatDetailed(in SCANToken algo_name,
-                         in HashMap!(string, string) vars,
+                         in HashMapRef!(string, string) vars,
                          AlgorithmFactory af)
 {
     logTrace("Testing ", algo_name);
@@ -179,7 +179,7 @@ HashMap!(string, string)
     
     Vector!string providers = af.providersOf(algo);
     logTrace("Providers: ", providers[]);
-    HashMap!(string, string) all_results;
+    HashMapRef!(string, string) all_results;
     
     if (providers.empty) { // no providers, nothing to do
         logTrace("Warning: ", algo_name.toString(), " has no providers");
@@ -283,7 +283,7 @@ HashMap!(string, string)
 
 private:
 
-void verifyResults(in string algo, in HashMap!(string, string) results)
+void verifyResults(in string algo, in HashMapRef!(string, string) results)
 {
     foreach (const ref string key, const ref string value; results)
     {
@@ -295,7 +295,7 @@ void verifyResults(in string algo, in HashMap!(string, string) results)
 
 void hashTest(AlgorithmFactory af, in string name, in string input, in string output)
 {
-    HashMap!(string, string) vars;
+    HashMapRef!(string, string) vars;
     vars["input"] = input;
     vars["output"] = output;
     
@@ -308,7 +308,7 @@ void macTest(AlgorithmFactory af,
               in string output,
               in string key)
 {
-    HashMap!(string, string) vars;
+    HashMapRef!(string, string) vars;
     vars["input"] = input;
     vars["output"] = output;
     vars["key"] = key;
@@ -333,12 +333,12 @@ void cipherKat(AlgorithmFactory af,
     SymmetricKey key = SymmetricKey(key_str);
     InitializationVector iv = InitializationVector(iv_str);
     
-    HashMap!(string, string) vars;
+    HashMapRef!(string, string) vars;
     vars["key"] = key_str;
     vars["iv"] = iv_str;
     vars["input"] = input;
     
-    HashMap!(string, bool) results;
+    HashMapRef!(string, bool) results;
     
     vars["output"] = ecb_out;
     verifyResults(algo ~ "/ECB", algorithmKatDetailed(SCANToken(algo ~ "/ECB"), vars, af));

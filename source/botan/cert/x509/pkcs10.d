@@ -26,8 +26,9 @@ import botan.asn1.oids;
 import botan.codec.pem;
 import botan.utils.types;
 import botan.utils.exceptn;
+import botan.utils.mem_ops;
 
-alias PKCS10Request = FreeListRef!PKCS10RequestImpl;
+alias PKCS10Request = RefCounted!PKCS10RequestImpl;
 
 /**
 * PKCS #10 Certificate Request.
@@ -152,7 +153,7 @@ public:
     * Create a PKCS#10 Request from binary data.
     * @param vec = a std::vector containing the DER value
     */
-    this(int ALLOC)(in Vector!(ubyte, ALLOC)* input)
+    this(ALLOC)(in Vector!(ubyte, ALLOC)* input)
     {
         super(*input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
         doDecode();
@@ -181,7 +182,7 @@ private:
                                   public_key.type_tag, public_key.class_tag);
         
         m_info.add("X509.Certificate.public_key", 
-                   PEM.encode(putInSequence(unlock(**public_key.value)), "PUBLIC KEY"));
+                   PEM.encode(putInSequence(unlock(*public_key.value)), "PUBLIC KEY"));
         
         BERObject attr_bits = cert_req_info.getNextObject();
         

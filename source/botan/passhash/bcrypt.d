@@ -14,6 +14,7 @@ import botan.utils.loadstor;
 import botan.block.blowfish;
 import botan.codec.base64;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.string : toStringz;
 import std.conv : to;
 

@@ -11,6 +11,7 @@ static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 public import botan.pubkey.algo.dl_group;
 public import botan.pubkey.pubkey;
+import botan.utils.mem_ops;
 import botan.pubkey.x509_key;
 import botan.pubkey.pkcs8;
 import botan.math.numbertheory.numthry;

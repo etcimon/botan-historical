@@ -7,7 +7,7 @@
 module botan.codec.hex;
 
 import botan.constants;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.codec.hex;
 import botan.utils.mem_ops;
 import botan.utils.types;
@@ -68,13 +68,13 @@ string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true
 * @param uppercase = should output be upper or lower case?
 * @return hexadecimal representation of input
 */
-string hexEncode(int Alloc)(auto const ref Vector!( ubyte, Alloc ) input, bool uppercase = true)
+string hexEncode(Alloc)(auto const ref Vector!( ubyte, Alloc ) input, bool uppercase = true)
 {
 	return hexEncode(input.ptr, input.length, uppercase);
 }
 
 /// ditto
-string hexEncode(int Alloc)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) input, bool uppercase = true)
+string hexEncode(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) input, bool uppercase = true)
 {
 	return hexEncode(input.ptr, input.length, uppercase);
 }

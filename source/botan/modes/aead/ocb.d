@@ -475,7 +475,7 @@ private:
     }
     
     SecureVector!ubyte m_L_dollar, m_L_star;
-    Vector!( SecureVector!ubyte ) m_L;
+    Vector!( SecureArray!ubyte ) m_L;
     SecureVector!ubyte m_offset_buf;
 }
 
@@ -577,7 +577,7 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     return unlock(buf);
 }
 
-Vector!ubyte ocbEncrypt(int Alloc, int Alloc2)(in SymmetricKey key,
+Vector!ubyte ocbEncrypt(Alloc, Alloc2)(in SymmetricKey key,
                                        const ref Vector!ubyte nonce,
                                        const ref Vector!(ubyte, Alloc) pt,
                                        const ref Vector!(ubyte, Alloc2) ad)
@@ -585,7 +585,7 @@ Vector!ubyte ocbEncrypt(int Alloc, int Alloc2)(in SymmetricKey key,
     return ocbEncrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
 }
 
-Vector!ubyte ocbDecrypt(int Alloc, int Alloc2)(in SymmetricKey key,
+Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
                                        const ref Vector!ubyte nonce,
                                        const ref Vector!(ubyte, Alloc) pt,
                                        const ref Vector!(ubyte, Alloc2) ad)

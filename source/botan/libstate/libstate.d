@@ -16,11 +16,11 @@ import botan.engine.engine;
 import botan.utils.cpuid;
 import botan.asn1.oids;
 import botan.engine.core_engine;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 import std.algorithm;
 import core.sync.mutex;
 import botan.entropy.entropy_src;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 
 import botan.constants;
 static if (BOTAN_HAS_SELFTESTS)

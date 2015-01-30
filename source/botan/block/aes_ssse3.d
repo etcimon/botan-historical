@@ -12,7 +12,7 @@ static if (BOTAN_HAS_AES && BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
 import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.types;
-
+import botan.utils.mem_ops;
 import botan.utils.simd.tmmintrin;
 
 

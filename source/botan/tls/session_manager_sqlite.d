@@ -14,6 +14,7 @@ import botan.utils.sqlite3.sqlite3;
 import botan.libstate.lookup;
 import botan.codec.hex;
 import botan.utils.loadstor;
+import botan.utils.mem_ops;
 import std.datetime;
 
 
@@ -122,7 +123,7 @@ public:
         delete m_db;
     }
 
-	override bool loadFromSessionId(const Vector!ubyte session_id, ref TLSSession session)
+	override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "select session from tls_sessions where session_id = ?1");
         
@@ -172,7 +173,7 @@ public:
         return false;
     }
 
-    override void removeEntry(const Vector!ubyte session_id)
+	override void removeEntry(const ref Vector!ubyte session_id)
     {
         sqlite3_statement stmt = sqlite3_statement(m_db, "delete from tls_sessions where session_id = ?1");
         

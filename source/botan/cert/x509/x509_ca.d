@@ -27,6 +27,7 @@ import botan.cert.x509.key_constraint;
 import botan.rng.rng;
 import std.datetime;
 import std.algorithm;
+import botan.utils.mem_ops;
 
 /**
 * This class represents X.509 Certificate Authorities (CAs).
@@ -132,7 +133,7 @@ public:
     * @param extensions = an optional list of certificate extensions
     * @returns newly minted certificate
     */
-    static X509Certificate makeCert(int ALLOC)(ref PKSigner signer,
+    static X509Certificate makeCert(ALLOC)(ref PKSigner signer,
 			                                    RandomNumberGenerator rng,
 			                                    in AlgorithmIdentifier sig_algo,
 			                                    auto const ref Vector!(ubyte, ALLOC) pub_key,

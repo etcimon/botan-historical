@@ -11,6 +11,7 @@ import botan.filters.data_src;
 import botan.filters.filter;
 import botan.utils.types;
 import botan.utils.mem_ops;
+import botan.constants;
 import std.algorithm;
 /**
 * A queue that knows how to zeroise itself

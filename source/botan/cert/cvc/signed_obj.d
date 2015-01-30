@@ -19,6 +19,7 @@ import botan.asn1.oids;
 import botan.utils.types;
 import botan.utils.exceptn;
 import botan.codec.pem;
+import botan.utils.mem_ops;
 
 import std.algorithm : splitter;
 
@@ -70,7 +71,7 @@ public:
     * @return true if the signature was created by the private key
     * associated with this public key
     */
-	bool checkSignature(int ALLOC)(PublicKey pub_key, auto ref Vector!(ubyte, ALLOC) sig) const
+	bool checkSignature(ALLOC)(PublicKey pub_key, auto ref Vector!(ubyte, ALLOC) sig) const
     {
         try
         {

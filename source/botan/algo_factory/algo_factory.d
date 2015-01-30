@@ -8,7 +8,6 @@ module botan.algo_factory.algo_factory;
 
 import botan.constants;
 import botan.algo_factory.algo_cache;
-import botan.utils.containers.multimap;
 import botan.engine.engine;
 import botan.utils.exceptn;
 
@@ -307,29 +306,29 @@ private:
 T engineGetAlgo(T)(Engine, in SCANToken, AlgorithmFactory)
 { static assert(false, "Invalid engine"); }
 
-BlockCipher engineGetAlgo(T : BlockCipher, U : SCANToken)(Engine engine, 
-                                                          auto ref U request, 
-                                                          AlgorithmFactory af)
+BlockCipher engineGetAlgo(T : BlockCipher)(Engine engine, 
+                                           auto ref SCANToken request, 
+                                           AlgorithmFactory af)
 { return engine.findBlockCipher(request, af); }
 
-StreamCipher engineGetAlgo(T : StreamCipher, U : SCANToken)(Engine engine, 
-                                                            auto ref U request, 
-                                                            AlgorithmFactory af)
+StreamCipher engineGetAlgo(T : StreamCipher)(Engine engine, 
+                                             auto ref SCANToken request, 
+                                             AlgorithmFactory af)
 { return engine.findStreamCipher(request, af); }
 
-HashFunction engineGetAlgo(T : HashFunction, U : SCANToken)(Engine engine, 
-                                                            auto ref U request, 
-                                                            AlgorithmFactory af)
+HashFunction engineGetAlgo(T : HashFunction)(Engine engine, 
+                                             auto ref SCANToken request, 
+                                             AlgorithmFactory af)
 { return engine.findHash(request, af); }
 
-MessageAuthenticationCode engineGetAlgo(T : MessageAuthenticationCode, U : SCANToken)(Engine engine, 
-                                                                                      auto ref U request,
-                                                                                      AlgorithmFactory af)
+MessageAuthenticationCode engineGetAlgo(T : MessageAuthenticationCode)(Engine engine, 
+                                                                       auto ref SCANToken request,
+                                                                       AlgorithmFactory af)
 { return engine.findMac(request, af); }
 
-PBKDF engineGetAlgo(T : PBKDF, U : SCANToken)(Engine engine, 
-                                              auto ref U request, 
-                                              AlgorithmFactory af)
+PBKDF engineGetAlgo(T : PBKDF)(Engine engine, 
+                               auto ref SCANToken request, 
+                               AlgorithmFactory af)
 { return engine.findPbkdf(request, af); }
 
 const(T) factoryPrototype(T)(in string algo_spec,

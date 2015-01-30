@@ -250,7 +250,6 @@ static if (BOTAN_HAS_RSA) import botan.pubkey.algo.rsa;
 import botan.cert.x509.x509cert;
 import botan.pubkey.pkcs8;
 import botan.asn1.oids;
-import botan.utils.memory.memory;
 import botan.codec.hex;
 import core.atomic;
 private shared size_t total_tests;

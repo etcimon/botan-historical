@@ -9,10 +9,10 @@ import botan.constants;
 public import botan.utils.exceptn;
 import botan.utils.parsing;
 import botan.codec.hex;
-import botan.utils.containers.multimap;
-import botan.utils.memory.zeroise;
+import memutils.dictionarylist;
+import memutils.vector;
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import std.traits : isNumeric;
 import std.conv : to;
 
@@ -33,9 +33,9 @@ public:
     /*
     * Search based on an arbitrary predicate
     */
-    MultiMap!(string, string) searchFor(bool delegate(string, string) predicate) const
+    DictionaryListRef!(string, string) searchFor(bool delegate(string, string) predicate) const
     {
-        MultiMap!(string, string) output;
+        DictionaryListRef!(string, string) output;
 
         foreach (const ref string key, const ref string val; m_contents)
             if (predicate(key, val))
@@ -148,13 +148,13 @@ public:
     /*
     * Insert a single key and value
     */
-    void add(int ALLOC)(in string key, auto const ref Vector!(ubyte, ALLOC) val)
+    void add(ALLOC)(in string key, auto const ref Vector!(ubyte, ALLOC) val)
     {
         logTrace("Adding Secure: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     
-    void add(int ALLOC)(in string key, auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) val)
+	void add(ALLOC)(in string key, auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) val)
     {
         logTrace("Adding Vector: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
@@ -163,7 +163,7 @@ public:
     /*
     * Insert a mapping of key/value pairs
     */
-    void add(in MultiMap!(string, string) input)
+    void add(in DictionaryListRef!(string, string) input)
     {
         foreach (const ref string k, const ref string v; input)
             m_contents.insert(k, v);
@@ -182,5 +182,5 @@ public:
     }
 
 private:
-    MultiMap!(string, string) m_contents;
+    DictionaryListRef!(string, string) m_contents;
 }

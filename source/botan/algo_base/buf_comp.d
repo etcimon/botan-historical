@@ -7,7 +7,7 @@
 
 module botan.algo_base.buf_comp;
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.get_byte;
 import botan.utils.types;
 
@@ -36,7 +36,7 @@ public:
     * Add new input to process.
     * @param input = the input to process as a SecureVector
     */
-	final void update(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
+	final void update(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC)) input)
 	{
 		addData(input.ptr, input.length);
 	}
@@ -45,7 +45,7 @@ public:
     * Add new input to process.
     * @param input = the input to process as a Vector
     */
-    final void update(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input)
+    final void update(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
     {
         addData(input.ptr, input.length);
     }
@@ -142,7 +142,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input)
+	final SecureVector!ubyte process(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
         addData(input.ptr, input.length);
         return finished();
@@ -154,7 +154,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-    final SecureVector!ubyte process(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
+    final SecureVector!ubyte process(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
         addData(input.ptr, input.length);
         return finished();

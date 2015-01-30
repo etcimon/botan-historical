@@ -11,6 +11,7 @@ static if (BOTAN_HAS_AES && BOTAN_HAS_AES_NI && BOTAN_HAS_SIMD_SSE2):
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.simd.wmmintrin;
+import botan.utils.mem_ops;
 
 /**
 * AES-128 using AES-NI

@@ -10,6 +10,7 @@ public import botan.hash.hash;
 import botan.utils.exceptn;
 import botan.utils.loadstor;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * MDx Hash Function Base Class

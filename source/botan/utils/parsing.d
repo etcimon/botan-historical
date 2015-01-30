@@ -14,7 +14,7 @@ import botan.utils.parsing;
 import botan.utils.exceptn;
 import botan.utils.charset;
 import botan.utils.get_byte;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 /**
 * Parse a SCAN-style algorithm name
 * @param scan_name = the name
@@ -30,7 +30,7 @@ Vector!string parseAlgorithmName(in string scan_name)
         scan_name.find(')') == -1) {
         Vector!string str;
         str ~= scan_name;
-        return str;
+        return str.move();
     }
     string name = scan_name;
     Vector!ubyte substring;
@@ -53,7 +53,7 @@ Vector!string parseAlgorithmName(in string scan_name)
                     elems.pushBack(substring[1 .. $]);
                 else
                     elems.pushBack(substring[]);
-                return elems;
+                return elems.move();
             }
             
             if (level == 0 || (level == 1 && pos != (name.length - 1)))

@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 public import botan.pubkey.pubkey;
+import botan.utils.mem_ops;
 import botan.math.bigint.bigint;
 import botan.filters.data_src;
 import botan.libstate.libstate;

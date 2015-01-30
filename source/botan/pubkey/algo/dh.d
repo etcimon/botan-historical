@@ -18,7 +18,6 @@ import botan.pubkey.pk_ops;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.workfactor;
 import botan.rng.rng;
-import botan.utils.memory.memory;
 
 /**
 * This class represents Diffie-Hellman public keys.

@@ -19,6 +19,7 @@ import botan.asn1.ber_dec;
 import botan.asn1.der_enc;
 import botan.libstate.libstate;
 import botan.asn1.oids;
+import botan.utils.mem_ops;
 import botan.codec.pem;
 
 alias ECGroupEncoding = ubyte;

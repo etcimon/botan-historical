@@ -120,7 +120,7 @@ public:
     void opOpAssign(string op)(const ref PointGFp rhs)
         if (op == "+")
     {
-        Vector!BigInt ws = Vector!BigInt(9);
+        Vector!(RefCounted!BigInt) ws = Vector!(RefCounted!BigInt)(9);
         add(rhs, ws);
     }
 
@@ -168,7 +168,7 @@ public:
         if (scalar.isZero()) {
 			return PointGFp(point.getCurve()); // zero point
 		}
-        Vector!BigInt ws = Vector!BigInt(9);
+		Vector!(RefCounted!BigInt) ws = Vector!(RefCounted!BigInt)(9);
         
         if (scalar.abs() <= 2) // special cases for small values
         {
@@ -280,7 +280,7 @@ public:
         PointGFp H = PointGFp(p1_curve); // create as zero
         size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
         
-        Vector!BigInt ws = Vector!BigInt(9);
+		Vector!(RefCounted!BigInt) ws = Vector!(RefCounted!BigInt)(9);
         
         while (bits_left)
         {
@@ -535,7 +535,7 @@ private:
     * Point addition
     * @param workspace = temp space, at least 11 elements
     */
-    void add()(auto const ref PointGFp rhs, ref Vector!BigInt ws_bn)
+    void add()(auto const ref PointGFp rhs, ref Vector!(RefCounted!BigInt) ws_bn)
     {
         if (isZero())
         {
@@ -549,16 +549,16 @@ private:
         
         const BigInt* p = &m_curve.getP();
         
-        BigInt* rhs_z2 = &ws_bn[0];
-        BigInt* U1 = &ws_bn[1];
-        BigInt* S1 = &ws_bn[2];
+        BigInt* rhs_z2 = &*ws_bn[0];
+        BigInt* U1 = &*ws_bn[1];
+        BigInt* S1 = &*ws_bn[2];
         
-        BigInt* lhs_z2 = &ws_bn[3];
-        BigInt* U2 = &ws_bn[4];
-        BigInt* S2 = &ws_bn[5];
+        BigInt* lhs_z2 = &*ws_bn[3];
+        BigInt* U2 = &*ws_bn[4];
+        BigInt* S2 = &*ws_bn[5];
         
-        BigInt* H = &ws_bn[6];
-        BigInt* r = &ws_bn[7];
+        BigInt* H = &*ws_bn[6];
+        BigInt* r = &*ws_bn[7];
         
         montySqr(*rhs_z2, rhs.m_coord_z);
         montyMult(*U1, m_coord_x, *rhs_z2);
@@ -619,7 +619,7 @@ private:
     * Point doubling
     * @param workspace = temp space, at least 9 elements
     */
-    void mult2(ref Vector!BigInt ws_bn)
+    void mult2(ref Vector!(RefCounted!BigInt) ws_bn)
     {
         if (isZero())
             return;
@@ -631,15 +631,15 @@ private:
         
         const BigInt* p = &m_curve.getP();
         
-        BigInt* y_2 = &ws_bn[0];
-        BigInt* S = &ws_bn[1];
-        BigInt* z4 = &ws_bn[2];
-        BigInt* a_z4 = &ws_bn[3];
-        BigInt* M = &ws_bn[4];
-        BigInt* U = &ws_bn[5];
-        BigInt* x = &ws_bn[6];
-        BigInt* y = &ws_bn[7];
-        BigInt* z = &ws_bn[8];
+        BigInt* y_2 = &*ws_bn[0];
+        BigInt* S = &*ws_bn[1];
+        BigInt* z4 = &*ws_bn[2];
+        BigInt* a_z4 = &*ws_bn[3];
+        BigInt* M = &*ws_bn[4];
+        BigInt* U = &*ws_bn[5];
+        BigInt* x = &*ws_bn[6];
+        BigInt* y = &*ws_bn[7];
+        BigInt* z = &*ws_bn[8];
         
         montySqr(*y_2, m_coord_y);
         
@@ -849,7 +849,7 @@ PointGFp OS2ECP()(const(ubyte)* data, size_t data_len, auto const ref CurveGFp c
     return result.dup;
 }
 
-PointGFp OS2ECP(int Alloc)(auto const ref Vector!( ubyte, Alloc ) data, auto const ref CurveGFp curve)
+PointGFp OS2ECP(Alloc)(auto const ref Vector!( ubyte, Alloc ) data, auto const ref CurveGFp curve)
 { return OS2ECP(data.ptr, data.length, curve); }
 
 private:

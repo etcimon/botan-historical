@@ -15,9 +15,11 @@ import botan.rng.rng;
 import botan.tls.channel;
 import botan.tls.session_manager;
 import botan.tls.version_;
-import botan.utils.containers.circular_buffer;
+import botan.utils.mem_ops;
+import memutils.circularbuffer;
+import memutils.utils;
 
-alias SecureRingBuffer(T) = CircularBuffer!( T, 0, SecureAllocator);
+alias SecureRingBuffer(T) = CircularBuffer!( T, 0, SecureMem);
 
 /**
 * Blocking TLS Client
@@ -45,7 +47,7 @@ public:
     */
     final void doHandshake()
     {
-        Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
+        Vector!ubyte readbuf = Vector!ubyte(TLS_DEFAULT_BUFFERSIZE);
         
         while (!m_channel.isClosed() && !m_channel.isActive())
         {
@@ -66,7 +68,7 @@ public:
     */
     final size_t read(ubyte* buf, size_t buf_len)
     {
-        Vector!ubyte readbuf = Vector!ubyte(BOTAN_DEFAULT_BUFFER_SIZE);
+        Vector!ubyte readbuf = Vector!ubyte(TLS_DEFAULT_BUFFERSIZE);
         
         while (m_plaintext.empty && !m_channel.isClosed())
         {

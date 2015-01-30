@@ -19,8 +19,9 @@ import botan.libstate.lookup;
 import botan.hash.hash;
 import botan.asn1.oids;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
-alias CertID = FreeListRef!CertIDImpl;
+alias CertID = RefCounted!CertIDImpl;
 
 final class CertIDImpl : ASN1Object
 {
@@ -109,7 +110,7 @@ package:
     BigInt m_subject_serial;
 }
 
-alias SingleResponse = FreeListRef!SingleResponseImpl;
+alias SingleResponse = RefCounted!SingleResponseImpl;
 
 final class SingleResponseImpl : ASN1Object
 {

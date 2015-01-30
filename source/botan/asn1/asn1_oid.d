@@ -17,7 +17,7 @@ import botan.utils.parsing;
 import std.array;
 import botan.utils.types;
 
-alias OID = FreeListRef!OIDImpl;
+alias OID = RefCounted!OIDImpl;
 
 /**
 * This class represents ASN.1 object identifiers.
@@ -127,10 +127,9 @@ public:
     * Compare two OIDs.
     * @return true if they are equal, false otherwise
     */
-    bool opEquals(in OID oid_) const
+    bool opEquals(in OID oid) const
     {
-        OIDImpl oid = *oid_;
-        return this.opEquals(oid);
+        return this.opEquals(*oid);
     }
 
     bool opEquals(in OIDImpl oid) const
@@ -258,7 +257,7 @@ public:
 
     @property OID dup() const {
         OID oid = OID();
-        if (m_id !is null)
+        if (m_id)
             oid.m_id = m_id.dupr;
         else oid.m_id = Array!uint();
         return oid;

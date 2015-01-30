@@ -14,6 +14,8 @@ import botan.utils.loadstor;
 import botan.utils.get_byte;
 import botan.utils.rotate;
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
+
 /**
 * Twofish, an AES finalist
 */

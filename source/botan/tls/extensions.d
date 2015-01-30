@@ -10,10 +10,10 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 package:
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.tls.magic;
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.tls.reader;
 import botan.tls.exceptn;
 import botan.tls.alert;
@@ -815,7 +815,7 @@ public:
     this(ref TLSDataReader reader) { deserialize(reader); }
 
 private:
-    HashMap!(HandshakeExtensionType, Extension) extensions;
+    HashMapRef!(HandshakeExtensionType, Extension) extensions;
 }
 
 

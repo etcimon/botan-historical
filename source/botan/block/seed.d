@@ -14,6 +14,7 @@ import std.range : iota;
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.get_byte;
+import botan.utils.mem_ops;
 
 /**
 * SEED, a Korean block cipher

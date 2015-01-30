@@ -13,6 +13,7 @@ import botan.mac.mac;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;
 import std.algorithm;
+import botan.utils.mem_ops;
 
 /**
 * DES/3DES-based MAC from ANSI X9.19

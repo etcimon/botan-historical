@@ -18,7 +18,7 @@ import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.ecdsa_sig;
 import botan.pubkey.algo.ecdsa;
 
-alias EAC11Req = FreeListRef!EAC11ReqImpl;
+alias EAC11Req = RefCounted!EAC11ReqImpl;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */

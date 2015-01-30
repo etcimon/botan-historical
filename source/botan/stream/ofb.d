@@ -12,6 +12,7 @@ static if (BOTAN_HAS_OFB):
 import botan.stream.stream_cipher;
 import botan.block.block_cipher;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
 
 /**
 * Output Feedback Mode

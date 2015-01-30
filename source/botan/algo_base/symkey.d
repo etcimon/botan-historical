@@ -11,9 +11,8 @@ import botan.rng.rng;
 import botan.filters.pipe;
 import botan.codec.hex;
 import std.algorithm;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.types;
-// import string;
 
 /**
 * Octet String
@@ -129,10 +128,10 @@ public:
     * Create a new OctetString
     * @param input = a bytestring
     */
-	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
+	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
 
 	/// ditto
-	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
+	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**

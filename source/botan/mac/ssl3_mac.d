@@ -95,8 +95,8 @@ protected:
         m_ikey.resize(inner_hash_length);
         m_okey.resize(inner_hash_length);
         
-        std.algorithm.fill(m_ikey.range, cast(ubyte) 0x36);
-        std.algorithm.fill(m_okey.range, cast(ubyte) 0x5C);
+		std.algorithm.fill(m_ikey.ptr[0 .. m_ikey.length], cast(ubyte) 0x36);
+		std.algorithm.fill(m_okey.ptr[0 .. m_ikey.length], cast(ubyte) 0x5C);
         
         copyMem(m_ikey.ptr, key, length);
         copyMem(m_okey.ptr, key, length);

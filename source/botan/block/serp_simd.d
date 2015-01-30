@@ -13,6 +13,7 @@ import botan.simd.simd_32;
 import botan.utils.loadstor;
 import botan.block.serpent;
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
 
 /**
 * Serpent implementation using SIMD

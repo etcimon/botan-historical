@@ -12,6 +12,7 @@ static if (BOTAN_HAS_THREEFISH_512_AVX2):
 import botan.block.threefish;
 import botan.utils.simd.immintrin;
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
 
 /**
 * Threefish-512

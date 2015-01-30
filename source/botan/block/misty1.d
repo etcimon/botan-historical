@@ -13,6 +13,7 @@ import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.parsing;
 import std.conv : to;
+import botan.utils.mem_ops;
 
 /**
 * MISTY1

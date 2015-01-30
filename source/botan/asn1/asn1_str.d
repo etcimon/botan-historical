@@ -16,7 +16,7 @@ import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.types;
 
-alias ASN1String = FreeListRef!ASN1StringImpl;
+alias ASN1String = RefCounted!ASN1StringImpl;
 
 /**
 * Simple String
@@ -65,7 +65,7 @@ public:
         return transcode(m_iso_8859_str, LATIN1_CHARSET, LOCAL_CHARSET);
     }
 
-    bool opEquals(in FreeListRef!(ASN1StringImpl) other) const
+    bool opEquals(in RefCounted!(ASN1StringImpl) other) const
     {
         if (m_tag != other.tagging()) return false;
         if (m_iso_8859_str != other.iso8859()) return false;

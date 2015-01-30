@@ -169,7 +169,7 @@ private:
     Unique!StreamCipher m_ctr;
     Unique!MessageAuthenticationCode m_cmac;
     SecureVector!ubyte m_nonce, m_msg_buf;
-    Vector!( SecureVector!ubyte ) m_ad_macs;
+    Vector!( SecureArray!ubyte ) m_ad_macs;
 }
 
 /**

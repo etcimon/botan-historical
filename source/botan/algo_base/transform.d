@@ -6,7 +6,7 @@
 */
 module botan.algo_base.transform;
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.algo_base.key_spec;
 import botan.utils.exceptn;
 import botan.algo_base.symkey;
@@ -23,12 +23,12 @@ public:
     * Begin processing a message.
     * @param nonce = the per message nonce
     */    
-	final SecureVector!ubyte startVec(int Alloc)(auto const ref FreeListRef!(Vector!( ubyte, Alloc )) nonce)
+	final SecureVector!ubyte startVec(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) nonce)
 	{
 		return start(nonce.ptr, nonce.length);
 	}
 
-	final SecureVector!ubyte startVec(int Alloc)(auto const ref Vector!( ubyte, Alloc ) nonce)
+	final SecureVector!ubyte startVec(Alloc)(auto const ref Vector!( ubyte, Alloc ) nonce)
 	{
 		return start(nonce.ptr, nonce.length);
 	}
@@ -115,12 +115,12 @@ public:
         return keySpec().validKeylength(length);
     }
 
-	final void setKey(int Alloc)(in FreeListRef!(Vector!( ubyte, Alloc )) key)
+	final void setKey(Alloc)(in RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
 	{
 		setKey(key.ptr, key.length);
 	}
 
-	final void setKey(int Alloc)(const ref Vector!( ubyte, Alloc ) key)
+	final void setKey(Alloc)(const ref Vector!( ubyte, Alloc ) key)
 	{
 		setKey(key.ptr, key.length);
 	}

@@ -15,7 +15,7 @@ public import botan.tls.server_info;
 public import botan.rng.rng;
 import botan.tls.handshake_state;
 import botan.tls.messages;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 import botan.utils.types;
 
 /**
@@ -471,7 +471,7 @@ protected:
                                                  getPeerCertChain(state),
                                                  session_ticket.move(),
                                                  m_info,
-                                                "");
+                                                 "");
             
             const bool should_save = saveSession(session_info);
             
@@ -480,7 +480,8 @@ protected:
                 if (should_save)
                     sessionManager().save(session_info);
                 else {
-					sessionManager().removeEntry(session_info.sessionId().dup);
+					auto entry = &session_info.sessionId();
+					sessionManager().removeEntry(*entry);
 				}
             }
             

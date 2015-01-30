@@ -28,6 +28,7 @@ import botan.utils.types;
 import std.datetime;
 import std.algorithm : splitter;
 import core.sync.mutex;
+import botan.utils.mem_ops;
 
 struct OCSPRequest
 {
@@ -196,7 +197,7 @@ void decodeOptionalList(BERDecoder ber,
 
 /// Does not use trusted roots
 /// Throws if not trusted
-void checkSignature(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
+void checkSignature(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
 			                   const AlgorithmIdentifier sig_algo,
 			                   const ref Vector!ubyte signature,
 			                   const X509Certificate cert)
@@ -218,7 +219,7 @@ void checkSignature(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response
 
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
-void checkSignature(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
+void checkSignature(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
                   			   const AlgorithmIdentifier sig_algo,
                   			   const ref Vector!ubyte signature,
                   			   const CertificateStore trusted_roots,

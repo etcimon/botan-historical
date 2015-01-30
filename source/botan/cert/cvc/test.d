@@ -22,7 +22,6 @@ import botan.cert.cvc.cvc_ado;
 import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.signed_obj;
 import botan.utils.types;
-import botan.utils.memory.memory;
 import std.datetime;
 
 

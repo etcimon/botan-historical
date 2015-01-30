@@ -16,6 +16,7 @@ import botan.utils.xor_buf;
 import botan.utils.parsing;
 import botan.utils.mem_ops;
 import std.conv : to;
+import botan.utils.mem_ops;
 
 /**
 * Lion is a block cipher construction designed by Ross Anderson and

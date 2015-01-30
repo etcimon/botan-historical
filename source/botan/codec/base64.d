@@ -5,7 +5,7 @@
 * Distributed under the terms of the botan license.
 */
 module botan.codec.base64;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.codec.base64;
 import botan.utils.mem_ops;
 import botan.utils.rounding;
@@ -99,7 +99,7 @@ string base64Encode(const(ubyte)* input,
 * @param input = some input
 * @return base64adecimal representation of input
 */
-string base64Encode(int Alloc)(auto const ref Vector!( ubyte, Alloc ) input)
+string base64Encode(Alloc)(auto const ref Vector!( ubyte, Alloc ) input)
 {
     return base64Encode(input.ptr, input.length);
 }

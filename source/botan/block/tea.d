@@ -11,6 +11,8 @@ static if (BOTAN_HAS_TEA):
 
 import botan.block.block_cipher;
 import botan.utils.loadstor;
+import botan.utils.mem_ops;
+
 /**
 * TEA
 */

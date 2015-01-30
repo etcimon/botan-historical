@@ -9,7 +9,7 @@ module botan.constructs.tss;
 import botan.constants;
 static if (BOTAN_HAS_THRESHOLD_SECRET_SHARING && BOTAN_HAS_SHA1 && BOTAN_HAS_SHA2_32):
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.hash.hash;
 import botan.rng.rng;
 import botan.utils.loadstor;

@@ -6,7 +6,35 @@
 */
 module botan.utils.mem_ops;
 import botan.utils.types;
+import std.algorithm : min;
+
+
+Vector!T unlock(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
+	if (is(ALLOC == SecureMem))
+{
+	return Vector!T(input[]);
+}
+
+RefCounted!(Vector!T) unlock(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
+	if (is(ALLOC == SecureMem))
+{
+	return RefCounted!(Vector!T)(input[]);
+}
+
+/**
+* Zeroise the values then free the memory
+* @param vec = the vector to zeroise and free
+*/
+void zap(T, Alloc)(ref Vector!(T, Alloc) vec)
+{
+	import std.traits : hasIndirections;
+	static if (!hasIndirections!T && !is(Alloc == SecureMem))
+		zeroise(vec);
+	vec.clear();
+}
+
 pure:
+
 /**
 * Zeroise memory
 * @param ptr = a pointer to an array
@@ -52,3 +80,32 @@ bool sameMem(T)(in T* p1, in T* p2, in size_t n)
 {
     return ((cast(const(ubyte)*)p1)[0 .. n] == (cast(const(ubyte)*)p2)[0 .. n]);
 }
+
+
+size_t bufferInsert(T, Alloc)(ref Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
+{
+	const size_t to_copy = min(input_length, buf.length - buf_offset);
+	copyMem(&buf[buf_offset], input, to_copy);
+	return to_copy;
+}
+
+size_t bufferInsert(T, Alloc, Alloc2)(ref Vector!(T, Alloc) buf, size_t buf_offset, const ref Vector!(T, Alloc2) input)
+{
+	const size_t to_copy = min(input.length, buf.length - buf_offset);
+	copyMem(&buf[buf_offset], input.ptr, to_copy);
+	return to_copy;
+}
+
+/**
+* Zeroise the values; length remains unchanged
+* @param vec = the vector to zeroise
+*/
+void zeroise(T, Alloc)(ref Vector!(T, Alloc) vec)
+{
+	clearMem(vec.ptr, vec.length);
+}
+
+void zeroise(T)(T[] mem) {
+	clearMem(mem.ptr, mem.length);
+}
+

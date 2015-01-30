@@ -7,7 +7,7 @@
 module botan.utils.http_util.http_util;
 
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.utils.parsing;
 import botan.codec.hex;
 import std.datetime;
@@ -32,7 +32,7 @@ struct HTTPResponse
 public:
 
     this(uint status_code, in string status_message,
-         in string _body, HashMap!(string, string) headers)
+         in string _body, HashMapRef!(string, string) headers)
     {
         m_status_code = status_code;
         m_status_message = status_message;
@@ -44,7 +44,7 @@ public:
 
     string _body() const { return m_body; }
 
-    const(HashMap!(string, string)) headers() const { return m_headers; }
+    const(HashMapRef!(string, string)) headers() const { return m_headers; }
 
     string statusMessage() const { return m_status_message; }
 
@@ -69,13 +69,13 @@ private:
     uint m_status_code;
     string m_status_message = "Uninitialized";
     string m_body;
-    HashMap!(string, string) m_headers;
+    HashMapRef!(string, string) m_headers;
 }
 
-HTTPResponse httpSync(in string verb,
+HTTPResponse httpSync()(in string verb,
                    in string url,
                    in string content_type,
-                   const ref Vector!ubyte _body,
+                   auto const ref Vector!ubyte _body,
                    size_t allowable_redirects)
 {
     const auto protocol_host_sep = url.indexOf("://");
@@ -151,7 +151,7 @@ HTTPResponse httpSync(in string verb,
 
     reply = reply[idx + 1 .. $];
     
-    HashMap!(string, string) headers;
+    HashMapRef!(string, string) headers;
     string header_line;
     while (reply[0] != '\r')
     {
@@ -223,7 +223,7 @@ HTTPResponse GET_sync(in string url, size_t allowable_redirects = 1)
     return httpSync("GET", url, "", Vector!ubyte(), allowable_redirects);
 }
 
-HTTPResponse POST_sync(int ALLOC)(in string url, in string content_type,
+HTTPResponse POST_sync(ALLOC)(in string url, in string content_type,
                       			  auto const ref Vector!(ubyte, ALLOC) _body,
                       			  size_t allowable_redirects = 1)
 {

@@ -14,6 +14,7 @@ public import botan.pubkey.pubkey;
 import botan.mac.mac;
 import botan.kdf.kdf;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
 
 /**
 * DLIES Encryption

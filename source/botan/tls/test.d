@@ -11,7 +11,6 @@ import botan.cert.x509.x509self;
 import botan.cert.x509.x509_ca;
 import botan.pubkey.algo.rsa;
 import botan.codec.hex;
-import botan.utils.memory.memory;
 import botan.utils.types;
 import std.stdio;
 import std.datetime;
@@ -31,7 +30,7 @@ public:
     
     override Vector!CertificateStore trustedCertificateAuthorities(in string, in string)
     {
-        return m_stores;
+        return m_stores.dup;
     }
 
     override Vector!X509Certificate certChain(const ref Vector!string cert_key_types, in string type, in string) 

@@ -18,7 +18,7 @@ import botan.utils.types;
 import std.conv : to;
 import std.array : Appender;
 
-alias X509Time = FreeListRef!X509TimeImpl;
+alias X509Time = RefCounted!X509TimeImpl;
 
 /**
 * X.509 Time

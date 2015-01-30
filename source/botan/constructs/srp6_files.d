@@ -10,8 +10,9 @@ import botan.constants;
 static if (BOTAN_HAS_SRP6):
 import botan.math.bigint.bigint;
 import botan.utils.parsing;
+import botan.utils.mem_ops;
 import botan.codec.base64;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import std.stdio;
 import std.array;
 
@@ -62,7 +63,7 @@ public:
                     ref string group_id) const
     {
         SRP6Data entry = m_entries.get(username);
-        if (**entry == SRP6DataImpl.init)
+        if (*entry == SRP6DataImpl.init)
             return false;
 
         v = entry.v.dup;
@@ -73,7 +74,7 @@ public:
     }
 
 private:
-	alias SRP6Data = FreeListRef!SRP6DataImpl;
+	alias SRP6Data = RefCounted!SRP6DataImpl;
     struct SRP6DataImpl
     {
 
@@ -91,5 +92,5 @@ private:
         string group_id;
     }
 
-    HashMap!(string, SRP6Data) m_entries;
+    HashMapRef!(string, SRP6Data) m_entries;
 }

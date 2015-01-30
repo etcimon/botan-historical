@@ -39,7 +39,7 @@ public:
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
-        m_g.resize((1 << m_window_bits));
+        m_g.resize(1 << m_window_bits);
         m_g[0] = 1;
         m_g[1] = base.dup;
         
@@ -91,7 +91,7 @@ private:
     ModularReducer m_reducer;
     BigInt m_exp;
     size_t m_window_bits;
-    Vector!BigInt m_g;
+    Vector!(RefCounted!BigInt) m_g;
     PowerMod.UsageHints m_hints;
 }
 
@@ -181,7 +181,7 @@ public:
             
             const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
-            const BigInt* y = &m_g[nibble];
+            const BigInt* y = &*m_g[nibble];
 
 
             bigint_monty_mul(z.mutablePtr(), z_size, x.ptr, x.length, x.sigWords(), y.ptr, y.length, y.sigWords(),
@@ -237,6 +237,6 @@ private:
     word m_mod_prime;
     size_t m_mod_words, m_exp_bits, m_window_bits;
     PowerMod.UsageHints m_hints;
-    Vector!BigInt m_g;
+    Vector!(RefCounted!BigInt) m_g;
 }
 

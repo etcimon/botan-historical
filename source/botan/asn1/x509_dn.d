@@ -17,12 +17,12 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.utils.parsing;
 import botan.utils.types;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 import botan.asn1.oids;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import std.array : Appender;
 
-alias X509DN = FreeListRef!X509DNImpl;
+alias X509DN = RefCounted!X509DNImpl;
 
 /**
 * Distinguished Name
@@ -93,9 +93,9 @@ public:
     /*
     * Get the attributes of this X509DN
     */
-    MultiMap!(OID, string) getAttributes() const
+    DictionaryListRef!(OID, string) getAttributes() const
     {
-        MultiMap!(OID, string) retval;
+        DictionaryListRef!(OID, string) retval;
         foreach (const ref OID oid, const ref ASN1String asn1_str; m_dn_info)
             retval.insert(oid, asn1_str.value());
         return retval;
@@ -108,7 +108,7 @@ public:
     {
         const OID oid = OIDS.lookup(derefInfoField(attr));
         
-        auto range = m_dn_info.equalRange(oid);
+        auto range = m_dn_info.getValuesAt(oid);
         
         Vector!string values;
         foreach (const ref ASN1String asn1_string; range)
@@ -119,9 +119,9 @@ public:
     /*
     * Get the contents of this X.500 Name
     */
-    MultiMap!(string, string) contents() const
+    DictionaryListRef!(string, string) contents() const
     {
-        MultiMap!(string, string) retval;
+        DictionaryListRef!(string, string) retval;
         foreach (const ref OID key, const ref ASN1String value; m_dn_info)
             retval.insert(OIDS.lookup(key), value.value());
         return retval;
@@ -152,7 +152,7 @@ public:
             if (name.value() == str)
                 exists = true;
         }
-        m_dn_info.equalRange(oid, &search_func);
+        m_dn_info.getValuesAt(oid, &search_func);
 
         if (!exists) {
             m_dn_info.insert(oid, ASN1String(str));
@@ -195,7 +195,7 @@ public:
     /*
     * Create an X509DN
     */
-    this(in MultiMap!(OID, string) args)
+    this(in DictionaryListRef!(OID, string) args)
     {
         foreach (const ref OID oid, const ref string val; args)
             addAttribute(oid, val);
@@ -204,7 +204,7 @@ public:
     /*
     * Create an X509DN
     */
-    this(in MultiMap!(string, string) args)
+    this(in DictionaryListRef!(string, string) args)
     {
         foreach (const ref string key, const ref string val; args)
             addAttribute(OIDS.lookup(key), val);
@@ -216,22 +216,22 @@ public:
     bool opEquals(in X509DN dn2) const
     {
         bool equals = true;
-
-        Pair!(const(OID)*, const(string)*)[] attr1;
-        Pair!(const(OID)*, const(string)*)[] attr2;
+		alias OIDPair = Pair!(const(OID)*, const(string)*);
+		OIDPair[] attr1;
+		OIDPair[] attr2;
 
         scope(exit) {
-            if (attr1) freeArray(attr1); 
-            if (attr2) freeArray(attr2);
+			if (attr1) ThisThread.free!(OIDPair[])(attr1); 
+			if (attr2) ThisThread.free!(OIDPair[])(attr2);
             logTrace("Equals? ", equals);
         }
 
         {
-			MultiMap!(OID, string) map1 = getAttributes();
-			MultiMap!(OID, string) map2 = dn2.getAttributes();
+			DictionaryListRef!(OID, string) map1 = getAttributes();
+			DictionaryListRef!(OID, string) map2 = dn2.getAttributes();
 
-			attr1 = allocArray!(Pair!(const(OID)*, const(string)*))(map1.length);
-			attr2 = allocArray!(Pair!(const(OID)*, const(string)*))(map2.length);
+			attr1 = ThisThread.alloc!(OIDPair[])(map1.length);
+			attr2 = ThisThread.alloc!(OIDPair[])(map2.length);
 
             size_t i;
             foreach (const ref OID oid, const ref string val; map1) {
@@ -324,7 +324,7 @@ public:
     override string toString()
     {
         Appender!string output;
-        MultiMap!(string, string) contents = contents();
+        DictionaryListRef!(string, string) contents = contents();
 
         foreach(const ref string key, const ref string val; contents)
         {
@@ -338,7 +338,7 @@ public:
 	}
 
 private:
-    MultiMap!(OID, ASN1String) m_dn_info;
+    DictionaryListRef!(OID, ASN1String) m_dn_info;
     Vector!ubyte m_dn_bits;
 }
 
@@ -346,7 +346,7 @@ private:
 * DER encode a RelativeDistinguishedName
 */
 void doAva(DEREncoder encoder,
-           in MultiMap!(OID, string) dn_info,
+           in DictionaryListRef!(OID, string) dn_info,
            ASN1Tag string_type, in string oid_str,
            bool must_exist = false)
 {
@@ -357,7 +357,7 @@ void doAva(DEREncoder encoder,
         throw new EncodingError("X509DN: No entry for " ~ oid_str);
     if (!exists) return;
 
-    dn_info.equalRange(oid, (in string val) {
+    dn_info.getValuesAt(oid, (in string val) {
                  encoder.startCons(ASN1Tag.SET)
                 .startCons(ASN1Tag.SEQUENCE)
                 .encode(oid)

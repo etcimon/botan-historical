@@ -13,6 +13,7 @@ import botan.block.serpent;
 import botan.utils.loadstor;
 import botan.utils.asm_x86_32.asm_x86_32;
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
 
 /**
 * Serpent implementation in x86-32 assembly

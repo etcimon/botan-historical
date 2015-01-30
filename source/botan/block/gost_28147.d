@@ -14,6 +14,7 @@ import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.exceptn;
 import botan.utils.get_byte;
+import botan.utils.mem_ops;
 
 /**
 * The GOST 28147-89 block cipher uses a set of 4 bit Sboxes, however

@@ -19,7 +19,7 @@ import botan.asn1.oids;
 import botan.utils.types;
 import std.datetime;
 
-alias CRLEntry = FreeListRef!CRLEntryImpl;
+alias CRLEntry = RefCounted!CRLEntryImpl;
 
 alias CRLCode = uint;
 /**

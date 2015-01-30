@@ -14,6 +14,7 @@ import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * DJB's ChaCha (http://cr.yp.to/chacha.html)

@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 public import botan.asn1.asn1_oid;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.utils.types;
 import core.sys.posix.signal;
 import core.sys.posix.unistd;
@@ -363,8 +363,8 @@ public:
     }
     
 private:
-    HashMap!(string, OID) m_str2oid;
-    HashMap!(OID, string) m_oid2str;
+    HashMapRef!(string, OID) m_str2oid;
+    HashMapRef!(OID, string) m_oid2str;
 }
 
 OIDMap globalOidMap()
@@ -372,8 +372,8 @@ OIDMap globalOidMap()
     static OIDMap map;
     if (!map.m_str2oid) {
         logTrace("Loading OID map");
-        map.m_str2oid = HashMap!(string, OID)();
-        map.m_oid2str = HashMap!(OID, string)();
+        map.m_str2oid = HashMapRef!(string, OID)();
+        map.m_oid2str = HashMapRef!(OID, string)();
     }
 
     return map;

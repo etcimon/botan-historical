@@ -6,7 +6,7 @@
 */
 module botan.entropy.entropy_src;
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.types;
 
 /**

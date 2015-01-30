@@ -10,6 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_CASCADE):
 
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
 
 /**
 * Block Cipher Cascade

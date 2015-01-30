@@ -14,7 +14,6 @@ import botan.filters.data_src;
 import botan.math.bigint.bigint;
 import botan.utils.get_byte;
 import botan.utils.types;
-import botan.utils.memory.memory;
 
 public:
 /**
@@ -30,7 +29,7 @@ public:
     BERObject getNextObject()
     {
         BERObject next;
-        if (next.value is null) {
+        if (next.value) {
             next.value = typeof(next.value)();
         }
         if (m_pushed.type_tag != ASN1Tag.NO_OBJECT)
@@ -49,7 +48,7 @@ public:
         size_t length = decodeLength(m_source);
         next.value.resize(length);
         if (length != 0)
-            if (m_source.read(&(next.value[0]), length) != length)
+            if (m_source.read(next.value.ptr, length) != length)
                 throw new BERDecodingError("Value truncated");
         logTrace("Value: ", next.value[]);
         if (next.type_tag == ASN1Tag.EOC && next.class_tag == ASN1Tag.UNIVERSAL)
@@ -116,7 +115,7 @@ public:
                              ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
         BERObject obj = getNextObject();
-        if (*obj.value is null) obj.value = typeof(obj.value)();
+        if (!obj.value) obj.value = typeof(obj.value)();
         obj.assertIsA(type_tag, class_tag | ASN1Tag.CONSTRUCTED);
         
         BERDecoder result = BERDecoder(&obj.value[0], obj.value.length);
@@ -148,7 +147,7 @@ public:
     /*
     * Save all the bytes remaining in the m_source
     */
-    ref BERDecoder rawBytes(T, int ALLOC)(ref Vector!(T, ALLOC) output)
+    ref BERDecoder rawBytes(T, ALLOC)(ref Vector!(T, ALLOC) output)
     {
         output.clear();
         ubyte buf;
@@ -157,7 +156,7 @@ public:
         return this;
     }
 
-	ref BERDecoder rawBytes(T, int ALLOC)(ref FreeListRef!(Vector!(T, ALLOC)) output)
+	ref BERDecoder rawBytes(T, ALLOC)(ref RefCounted!(Vector!(T, ALLOC), ALLOC) output)
 	{
 		output.clear();
 		ubyte buf;
@@ -352,7 +351,7 @@ public:
         obj.assertIsA(type_tag, class_tag);
         
         if (real_type == ASN1Tag.OCTET_STRING)
-            buffer = unlock(**(obj.value));
+            buffer = unlock(*(obj.value));
         else
         {
             if (obj.value[0] >= 8)
@@ -476,7 +475,7 @@ public:
     /*
     * Decode a list of homogenously typed values
     */
-    ref BERDecoder decodeList(T, int Alloc)(auto ref Vector!(T, Alloc) vec,
+    ref BERDecoder decodeList(T, Alloc)(auto ref Vector!(T, Alloc) vec,
                                             ASN1Tag type_tag = ASN1Tag.SEQUENCE,
                                             ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
@@ -497,11 +496,11 @@ public:
     }
 
     /// ditto
-	ref BERDecoder decodeList(T, int Alloc)(auto ref FreeListRef!(Vector!(T, Alloc)) vec,
+	ref BERDecoder decodeList(T, Alloc)(auto ref RefCounted!(Vector!(T, Alloc), Alloc) vec,
 											ASN1Tag type_tag = ASN1Tag.SEQUENCE,
 											ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
 	{
-		return decodeList(**vec, type_tag, class_tag); 
+		return decodeList(*vec, type_tag, class_tag); 
 	}
 
     ref BERDecoder decodeAndCheck(T)(in T expected,
@@ -524,7 +523,7 @@ public:
     /*
         * Decode an OPTIONAL string type
         */
-	ref BERDecoder decodeOptionalString(int Alloc)(ref Vector!( ubyte, Alloc ) output,
+	ref BERDecoder decodeOptionalString(Alloc)(ref Vector!( ubyte, Alloc ) output,
                                                    ASN1Tag real_type,
                                                    ushort type_no,
                                                    ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
@@ -594,7 +593,7 @@ public:
     /*
     * BERDecoder Constructor
     */
-	this(T, int ALLOC)(auto const ref Vector!(T, ALLOC) data)
+	this(T, ALLOC)(auto const ref Vector!(T, ALLOC) data)
 	{
 		m_pushed = BERObject.init;
 		m_pushed.value = SecureArray!ubyte();
@@ -605,7 +604,7 @@ public:
 	}
 
 	/// ditto
-	this(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) data)
+	this(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) data)
 	{
 		m_pushed = BERObject.init;
 		m_pushed.value = SecureArray!ubyte();

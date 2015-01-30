@@ -15,8 +15,8 @@ import botan.tls.handshake_state;
 import botan.tls.messages;
 import botan.tls.alert;
 import botan.rng.rng;
-import botan.utils.containers.multimap;
-import botan.utils.containers.hashmap;
+import memutils.dictionarylist;
+import memutils.hashmap;
 import botan.utils.types;
 import std.datetime;
 
@@ -215,7 +215,8 @@ protected:
                 
                 if (!saveSession(session_info))
                 {
-                    sessionManager().removeEntry(session_info.sessionId().dup);
+					auto entry = &session_info.sessionId();
+                    sessionManager().removeEntry(*entry);
                     
                     if (state.serverHello().supportsSessionTicket()) // send an empty ticket
                     {
@@ -252,7 +253,7 @@ protected:
             }
             else // new session
             {
-                HashMap!(string, Array!X509Certificate) cert_chains;
+                HashMapRef!(string, Array!X509Certificate) cert_chains;
                 
                 const string sni_hostname = state.clientHello().sniHostname();
                 
@@ -542,7 +543,7 @@ bool checkForResume(ref TLSSession session_info,
             return false;
         
         // not found
-        if (!session_manager.loadFromSessionId(client_session_id.dup, session_info))
+        if (!session_manager.loadFromSessionId(*client_session_id, session_info))
             return false;
     }
     else
@@ -600,7 +601,7 @@ bool checkForResume(ref TLSSession session_info,
 ushort chooseCiphersuite(in TLSPolicy policy,
                          TLSProtocolVersion _version,
                          TLSCredentialsManager creds,
-                         in HashMap!(string, Array!X509Certificate) cert_chains,
+                         in HashMapRef!(string, Array!X509Certificate) cert_chains,
                          in ClientHello client_hello)
 {
     const bool our_choice = policy.serverUsesOwnCiphersuitePreferences();
@@ -667,12 +668,12 @@ ubyte chooseCompression(in TLSPolicy policy, const ref Vector!ubyte c_comp)
     return NO_COMPRESSION;
 }
 
-HashMap!(string, Array!X509Certificate) 
+HashMapRef!(string, Array!X509Certificate) 
     getServerCerts(in string hostname, TLSCredentialsManager creds)
 {
     string[] cert_types = [ "RSA", "DSA", "ECDSA", null ];
     
-    HashMap!(string, Array!X509Certificate) cert_chains;
+    HashMapRef!(string, Array!X509Certificate) cert_chains;
     
     for (size_t i = 0; cert_types[i]; ++i)
     {

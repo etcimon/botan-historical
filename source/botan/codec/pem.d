@@ -32,7 +32,7 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-    static string encode(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) data, 
+    static string encode(ALLOC)(auto const ref Vector!(ubyte, ALLOC) data, 
 									in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);
@@ -41,7 +41,7 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-    static string encode(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) data, 
+	static string encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) data, 
 									in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);

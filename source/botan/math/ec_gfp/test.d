@@ -6,7 +6,6 @@ static if (BOTAN_TEST && BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 import botan.test;
 
 import botan.codec.hex;
-import botan.utils.memory.memory;
 import botan.rng.auto_rng;
 import botan.math.numbertheory.numthry;
 import botan.math.ec_gfp.curve_gfp;
@@ -15,6 +14,7 @@ import botan.math.ec_gfp.ec_group;
 import botan.math.numbertheory.reducer;
 import botan.asn1.oids;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 size_t total_tests;
 

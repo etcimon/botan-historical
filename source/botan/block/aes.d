@@ -14,6 +14,7 @@ import botan.algo_base.sym_algo;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * AES-128

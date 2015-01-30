@@ -11,6 +11,7 @@ static if (BOTAN_HAS_DES):
 
 import botan.block.des;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
 
 /**
 * DESX

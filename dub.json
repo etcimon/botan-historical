@@ -45,6 +45,9 @@
             "versions": ["Locking_Allocator", "SHA2_32", "SHA2_64", "MD4", "MD5", "SHA1", "CRC24"]
         }
     ],
-    "dependencies": { "backtrace-d": "~master" }, 
+    "dependencies": {
+			"backtrace-d": { "version": "~master" },
+			"memutils": { "version": "~master", "path": "../memutils" } 
+	}, 
     "libs": ["dl", "bz2", "lzma"]
 }

@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_TLS):
 
 import botan.utils.exceptn;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.loadstor;
 import botan.utils.types;
 import botan.utils.get_byte;
@@ -174,7 +174,7 @@ private:
 /**
 * Helper function for encoding length-tagged vectors
 */
-void appendTlsLengthValue(T, int Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
+void appendTlsLengthValue(T, Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* vals, 
                                         size_t vals_size, size_t tag_size)
 {
     const size_t T_size = T.sizeof;
@@ -195,14 +195,14 @@ void appendTlsLengthValue(T, int Alloc)(ref Vector!( ubyte, Alloc ) buf, in T* v
             buf.pushBack(get_byte(j, vals[i]));
 }
 
-void appendTlsLengthValue(T, int Alloc, int Alloc2)(ref Vector!( ubyte, Alloc ) buf, 
+void appendTlsLengthValue(T, Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) buf, 
                                                     auto const ref Vector!( T, Alloc2 ) vals, 
                                                     size_t tag_size)
 {
     appendTlsLengthValue(buf, vals.ptr, vals.length, tag_size);
 }
 
-void appendTlsLengthValue(int Alloc)(ref Vector!( ubyte, Alloc ) buf, 
+void appendTlsLengthValue(Alloc)(ref Vector!( ubyte, Alloc ) buf, 
                                      in string str, size_t tag_size)
 {
     appendTlsLengthValue(buf, cast(const(ubyte)*)(str.ptr), str.length, tag_size);

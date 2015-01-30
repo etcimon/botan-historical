@@ -20,11 +20,11 @@ import std.datetime;
 import botan.utils.types;
 import std.array : Appender;
 
-alias ASN1Car = FreeListRef!ASN1CarImpl;
-alias ASN1Chr = FreeListRef!ASN1ChrImpl;
-alias ASN1Cex = FreeListRef!ASN1CexImpl;
-alias ASN1Ced = FreeListRef!ASN1CedImpl;
-alias EACTime = FreeListRef!EACTimeImpl;
+alias ASN1Car = RefCounted!ASN1CarImpl;
+alias ASN1Chr = RefCounted!ASN1ChrImpl;
+alias ASN1Cex = RefCounted!ASN1CexImpl;
+alias ASN1Ced = RefCounted!ASN1CedImpl;
+alias EACTime = RefCounted!EACTimeImpl;
 
 /**
 * This class represents CVC EAC Time objects.

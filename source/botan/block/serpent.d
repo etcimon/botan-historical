@@ -13,6 +13,7 @@ import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * Serpent, an AES finalist

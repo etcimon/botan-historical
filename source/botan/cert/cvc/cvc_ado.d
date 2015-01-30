@@ -23,7 +23,7 @@ import botan.asn1.asn1_obj;
 import botan.utils.types;
 import std.typecons : scoped;
 
-alias EAC11ADO = FreeListRef!EAC11ADOImpl;
+alias EAC11ADO = RefCounted!EAC11ADOImpl;
 /**
 * This class represents a TR03110 (EAC) v1.1 CVC ADO request
 */
@@ -60,7 +60,7 @@ public:
     * @param tbs_bits = the TBS data to sign
     * @param rng = a random number generator
     */
-	static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
                                   			  auto const ref Vector!(ubyte, ALLOC) tbs_bits,
                                   			  RandomNumberGenerator rng)
     {
@@ -74,9 +74,9 @@ public:
                 .getContentsUnlocked();
     }
 
-	static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
-											 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits,
-											 RandomNumberGenerator rng)
+	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
+										  RandomNumberGenerator rng)
 	{
 		return makeSigned(signer, **tbs_bits, rng);
 	}
@@ -202,16 +202,16 @@ protected:
 
 
 package:
-	static void decodeInfo(int ALLOC)(DataSource source,
-									  auto ref FreeListRef!(Vector!(ubyte, ALLOC)) res_tbs_bits,
-									  ref ECDSASignature res_sig)
+	static void decodeInfo(ALLOC)(DataSource source,
+								  auto ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
+								  ref ECDSASignature res_sig)
 	{
 		return decodeInfo(source, **res_tbs_bits, res_sig);
 	}
 
-    static void decodeInfo(int ALLOC)(DataSource source,
-                           			  auto ref Vector!(ubyte, ALLOC) res_tbs_bits,
-                           			  ref ECDSASignature res_sig)
+    static void decodeInfo(ALLOC)(DataSource source,
+                           		  auto ref Vector!(ubyte, ALLOC) res_tbs_bits,
+                           		  ref ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         Vector!ubyte cert_inner_bits;

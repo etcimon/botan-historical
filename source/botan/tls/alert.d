@@ -9,7 +9,7 @@ module botan.tls.alert;
 import botan.constants;
 static if (BOTAN_HAS_TLS):
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.exceptn;
 import botan.utils.types;
 import std.conv : to;

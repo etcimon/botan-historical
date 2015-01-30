@@ -22,7 +22,8 @@ import botan.rng.rng;
 import botan.pubkey.pkcs8;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
-import botan.utils.memory.zeroise;
+import memutils.vector;
+import botan.utils.mem_ops;
 import botan.utils.exceptn;
 
 /**

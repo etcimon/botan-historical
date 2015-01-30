@@ -24,11 +24,11 @@ import botan.tls.heartbeats;
 import botan.tls.record;
 import botan.tls.seq_numbers;
 import botan.utils.rounding;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 import botan.utils.loadstor;
 import botan.utils.types;
 import botan.utils.get_byte;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import std.string : toStringz;
 
 /**
@@ -156,7 +156,8 @@ public:
                 if (alert_msg.isFatal())
                 {
                     if (auto active = activeState()) {
-						m_session_manager.removeEntry(active.serverHello().sessionId().dup);
+						auto entry = &active.serverHello().sessionId();
+						m_session_manager.removeEntry(*entry);
 					}
                 }
                         
@@ -231,7 +232,7 @@ public:
     /**
     * Inject plaintext intended for counterparty
     */
-    void send(int Alloc)(const ref Vector!( char, Alloc ) val)
+    void send(Alloc)(const ref Vector!( char, Alloc ) val)
     {
         send(val.ptr, val.length);
     }
@@ -258,7 +259,8 @@ public:
         
         if (alert.isFatal()) {
             if (auto active = activeState()) {
-				m_session_manager.removeEntry(active.serverHello().sessionId().dup);
+				auto entry = &active.serverHello().sessionId();
+				m_session_manager.removeEntry(*entry);
 			}
 		}
         if (alert.type() == TLSAlert.CLOSE_NOTIFY || alert.isFatal())
@@ -788,8 +790,8 @@ private:
     Unique!HandshakeState m_pending_state;
 
     /* cipher states for each epoch */
-    HashMap!(ushort, ConnectionCipherState) m_write_cipher_states;
-    HashMap!(ushort, ConnectionCipherState) m_read_cipher_states;
+    HashMapRef!(ushort, ConnectionCipherState) m_write_cipher_states;
+    HashMapRef!(ushort, ConnectionCipherState) m_read_cipher_states;
 
     /* I/O buffers */
     SecureVector!ubyte m_writebuf;

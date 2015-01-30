@@ -17,14 +17,14 @@ import botan.asn1.asn1_alt_name;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oids;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 import botan.utils.charset;
 import botan.utils.parsing;
 import botan.utils.loadstor;
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 
-alias AlternativeName = FreeListRef!AlternativeNameImpl;
+alias AlternativeName = RefCounted!AlternativeNameImpl;
 
 /**
 * Alternative Name
@@ -124,9 +124,9 @@ public:
     /*
     * Return all of the alternative names
     */
-    MultiMap!(string, string) contents() const
+    DictionaryListRef!(string, string) contents() const
     {
-        MultiMap!(string, string) names;
+        DictionaryListRef!(string, string) names;
 
         foreach(const ref string k, const ref string v; m_alt_info) {
             names.insert(k, v);
@@ -152,7 +152,7 @@ public:
             if (val == str)
                 exists = true;
         }
-        m_alt_info.equalRange(type, &adder);
+        m_alt_info.getValuesAt(type, &adder);
 
         if (!exists)
             m_alt_info.insert(type, str);
@@ -161,7 +161,7 @@ public:
     /*
     * Get the attributes of this alternative name
     */
-    const(MultiMap!(string, string)) getAttributes() const
+    const(DictionaryListRef!(string, string)) getAttributes() const
     {
         return m_alt_info;
     }
@@ -179,7 +179,7 @@ public:
     /*
     * Get the otherNames
     */
-    const(MultiMap!(OID, ASN1String)) getOthernames() const
+    const(DictionaryListRef!(OID, ASN1String)) getOthernames() const
     {
         return m_othernames;
     }
@@ -207,8 +207,8 @@ public:
     }
 
 private:
-    MultiMap!(string, string) m_alt_info;
-    MultiMap!(OID, ASN1String) m_othernames;
+    DictionaryListRef!(string, string) m_alt_info;
+    DictionaryListRef!(OID, ASN1String) m_othernames;
 }
 
 
@@ -232,7 +232,7 @@ bool isStringType(ASN1Tag tag)
 * DER encode an AlternativeName entry
 */
 void encodeEntries(DEREncoder encoder,
-                   in MultiMap!(string, string) attr,
+                   in DictionaryListRef!(string, string) attr,
                    string type, ASN1Tag tagging)
 {
     void checker(in string alt_name) {
@@ -250,5 +250,5 @@ void encodeEntries(DEREncoder encoder,
             encoder.addObject(tagging, ASN1Tag.CONTEXT_SPECIFIC, ip_buf.ptr, 4);
         }
     }
-    attr.equalRange(type, &checker);
+    attr.getValuesAt(type, &checker);
 }

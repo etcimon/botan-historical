@@ -13,7 +13,7 @@ import std.array : Appender;
 import botan.utils.types;
 import std.conv : to;
 import core.sync.mutex;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 
 /**
 A class encapsulating a SCAN name (similar to JCE conventions)
@@ -62,7 +62,7 @@ public:
                 else
                 {
                     if (accum.second.length > 0) {
-                        names ~= makePair(accum.first, derefAlias(accum.second[]));
+                        names ~= makePair(accum.first, derefAlias(cast(string)accum.second[]));
                     }
                     Array!ubyte str;
                     str.reserve(8);
@@ -75,7 +75,7 @@ public:
         }
         
         if (accum.second.length > 0) {
-            names ~= makePair(accum.first, derefAlias(accum.second[]));
+            names ~= makePair(accum.first, derefAlias(cast(string)accum.second[]));
         }
         if (level != 0)
             throw new DecodingError(decoding_error ~ "Missing close paren");
@@ -252,7 +252,7 @@ public:
     
 
 private:
-    static HashMap!(string, string) s_alias_map;
+    static HashMapRef!(string, string) s_alias_map;
     
     string m_orig_algo_spec;
     string m_alg_name;

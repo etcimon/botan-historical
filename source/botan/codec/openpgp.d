@@ -13,7 +13,7 @@ import botan.utils.charset;
 import botan.checksum.crc24;
 import botan.filters.data_src;
 import std.array : Appender;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.utils.types;
 
 /**
@@ -23,7 +23,7 @@ import botan.utils.types;
 * @param headers = a set of key/value pairs included in the header
 */
 string PGP_encode(const(ubyte)* input, size_t length, in string label,
-                  in HashMap!(string, string) headers)
+                  in HashMapRef!(string, string) headers)
 {
     const string PGP_HEADER = "-----BEGIN PGP " ~ label ~ "-----";
     const string PGP_TRAILER = "-----END PGP " ~ label ~ "-----";
@@ -63,7 +63,7 @@ string PGP_encode(const(ubyte)* input, size_t length, in string label,
 */
 string PGP_encode(const(ubyte)* input, size_t length, in string type)
 {
-    HashMap!(string, string) empty;
+    HashMapRef!(string, string) empty;
     return PGP_encode(input, length, type, empty);
 }
 
@@ -75,7 +75,7 @@ string PGP_encode(const(ubyte)* input, size_t length, in string type)
 */
 SecureVector!ubyte PGP_decode(DataSource source,
                             ref string label,
-                            ref HashMap!(string, string) headers)
+                            ref HashMapRef!(string, string) headers)
 {
     __gshared immutable size_t RANDOM_CHAR_LIMIT = 5;
     
@@ -199,6 +199,6 @@ SecureVector!ubyte PGP_decode(DataSource source,
 */
 SecureVector!ubyte PGP_decode(DataSource source, ref string label)
 {
-    HashMap!(string, string) ignored;
+    HashMapRef!(string, string) ignored;
     return PGP_decode(source, label, ignored);
 }

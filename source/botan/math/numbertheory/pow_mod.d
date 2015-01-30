@@ -14,8 +14,8 @@ import botan.math.bigint.bigint;
 import botan.libstate.libstate;
 import botan.engine.engine;
 
-alias FixedExponentPowerMod = FreeListRef!FixedExponentPowerModImpl;
-alias FixedBasePowerMod = FreeListRef!FixedBasePowerModImpl;
+alias FixedExponentPowerMod = RefCounted!FixedExponentPowerModImpl;
+alias FixedBasePowerMod = RefCounted!FixedBasePowerModImpl;
 
 /**
 * Modular Exponentiator Interface

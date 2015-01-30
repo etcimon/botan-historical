@@ -13,6 +13,7 @@ import botan.block.block_cipher;
 import botan.stream.stream_cipher;
 import botan.utils.xor_buf;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * CTR-BE (Counter mode, big-endian)

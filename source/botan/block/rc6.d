@@ -13,6 +13,7 @@ import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import std.algorithm;
+import botan.utils.mem_ops;
 
 /**
 * RC6, Ron Rivest's AES candidate

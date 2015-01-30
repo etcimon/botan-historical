@@ -20,7 +20,7 @@ import botan.asn1.asn1_time;
 import std.algorithm;
 import std.datetime;
 import botan.utils.types;
-import botan.utils.containers.rbtree;
+import memutils.rbtree : RBTreeRef;
 version(Have_vibe_d) {
     import vibe.core.concurrency;
 }
@@ -49,7 +49,7 @@ public:
         m_require_revocation_information = require_rev;
         m_ocsp_all_intermediates = ocsp_all;
         m_minimum_key_strength = key_strength;
-        m_trusted_hashes = RedBlackTree!string();
+        m_trusted_hashes = RBTreeRef!string();
         if (key_strength <= 80)
             m_trusted_hashes.insert("SHA-160");
         
@@ -58,7 +58,7 @@ public:
         m_trusted_hashes.insert("SHA-384");
         m_trusted_hashes.insert("SHA-512");
 
-        foreach (string val; m_trusted_hashes[]) {
+        foreach (string val; (*m_trusted_hashes)[]) {
             logTrace("m_trusted_hashes: ", val);
         }
     }
@@ -75,7 +75,7 @@ public:
     this(bool require_rev, 
          size_t minimum_key_strength, 
          bool ocsp_all_intermediates, 
-         RedBlackTree!string trusted_hashes) 
+         RBTreeRef!string trusted_hashes) 
     {
         m_require_revocation_information = require_rev;
         m_ocsp_all_intermediates = ocsp_all_intermediates;
@@ -89,7 +89,7 @@ public:
     bool ocspAllIntermediates() const
     { return m_ocsp_all_intermediates; }
 
-    const(RedBlackTree!string) trustedHashes() const
+    const(RBTreeRef!string) trustedHashes() const
     { return m_trusted_hashes; }
 
     size_t minimumKeyStrength() const
@@ -98,7 +98,7 @@ public:
 private:
     bool m_require_revocation_information;
     bool m_ocsp_all_intermediates;
-    RedBlackTree!string m_trusted_hashes;
+    RBTreeRef!string m_trusted_hashes;
     size_t m_minimum_key_strength;
 }
 
@@ -114,9 +114,9 @@ public:
     * @return the set of hash functions you are implicitly
     * trusting by trusting this result.
     */
-    RedBlackTree!string trustedHashes() const
+    RBTreeRef!string trustedHashes() const
     {
-        RedBlackTree!string hashes;
+        RBTreeRef!string hashes;
         foreach (cert_path; m_cert_path[])
             hashes.insert(cert_path.hashUsedForSignature());
         return hashes;
@@ -155,7 +155,7 @@ public:
     /**
     * Return a set of status codes for each certificate in the chain
     */
-    ref const(Vector!(RedBlackTree!CertificateStatusCode)) allStatuses() const
+    ref const(Vector!(RBTreeRef!CertificateStatusCode)) allStatuses() const
     { return m_all_status; }
 
     /**
@@ -226,7 +226,7 @@ public:
         }
     }
 
-    this()(auto const ref Vector!(RedBlackTree!CertificateStatusCode ) status,
+    this()(auto const ref Vector!(RBTreeRef!CertificateStatusCode ) status,
            auto const ref Vector!X509Certificate cert_chainput)
     {
         m_overall = CertificateStatusCode.VERIFIED;
@@ -250,7 +250,7 @@ public:
 
 private:
     CertificateStatusCode m_overall;
-    Vector!( RedBlackTree!CertificateStatusCode ) m_all_status;
+    Vector!( RBTreeRef!CertificateStatusCode ) m_all_status;
     Vector!X509Certificate m_cert_path;
 }
 
@@ -377,12 +377,12 @@ const(X509CRL) findCrlsFor(in X509Certificate cert,
     return X509CRL.init;
 }
 
-Vector!( RedBlackTree!CertificateStatusCode )
+Vector!( RBTreeRef!CertificateStatusCode )
     checkChain(const ref Vector!X509Certificate cert_path,
                 in PathValidationRestrictions restrictions,
                 const ref Vector!CertificateStore certstores)
 {
-    const RedBlackTree!string trusted_hashes = restrictions.trustedHashes();
+    const RBTreeRef!string trusted_hashes = restrictions.trustedHashes();
     
     const bool self_signed_ee_cert = (cert_path.length == 1);
     
@@ -394,7 +394,7 @@ Vector!( RedBlackTree!CertificateStatusCode )
 
     Mutex mtx = new Mutex;
     
-    Vector!( RedBlackTree!CertificateStatusCode ) cert_status = Vector!( RedBlackTree!CertificateStatusCode )( cert_path.length );
+    Vector!( RBTreeRef!CertificateStatusCode ) cert_status = Vector!( RBTreeRef!CertificateStatusCode )( cert_path.length );
     
     foreach (size_t i; 0 .. cert_path.length)
     {
@@ -472,7 +472,7 @@ Vector!( RedBlackTree!CertificateStatusCode )
                     logTrace("Got response for ID#", id.to!string);
                     ocsp = ocsp_data[id];
                 }
-                if (ocsp == OCSPResponse.init)
+                if (ocsp is OCSPResponse.init)
                     throw new Exception("OSCP.responder is undefined");
                 auto ocsp_status = ocsp.statusFor(ca, subject);
                 

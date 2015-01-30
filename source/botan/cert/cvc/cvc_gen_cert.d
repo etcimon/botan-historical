@@ -97,7 +97,7 @@ public:
     * @param tbs = the data to be signed
     * @result the correctly encoded body of the object
     */
-	static Vector!ubyte buildCertBody(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs)
+	static Vector!ubyte buildCertBody(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs)
     {
         return DEREncoder()
                 .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
@@ -112,7 +112,7 @@ public:
     * @param rng = a random number generator
     * @result the DER encoded signed generalized CVC object
     */
-	static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
                                   			  auto const ref Vector!(ubyte, ALLOC) tbs_bits,
                                   			  RandomNumberGenerator rng)
     {
@@ -126,9 +126,9 @@ public:
                 .getContentsUnlocked();
     }
 
-	static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
-											 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits,
-											 RandomNumberGenerator rng)
+	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
+										  RandomNumberGenerator rng)
 	{
 		return makeSigned(signer, **tbs_bits, rng);
 	}
@@ -139,7 +139,7 @@ protected:
     ASN1Chr m_chr;
     bool m_self_signed;
 package:
-    static void decodeInfo(int ALLOC)(DataSource source,
+    static void decodeInfo(ALLOC)(DataSource source,
 			                          ref Vector!(ubyte, ALLOC) res_tbs_bits,
 			                          ECDSASignature res_sig)
     {
@@ -154,9 +154,9 @@ package:
         res_sig = decodeConcatenation(concat_sig);
     }
 
-	static void decodeInfo(int ALLOC)(DataSource source,
-									  ref FreeListRef!(Vector!(ubyte, ALLOC)) res_tbs_bits,
-									  ECDSASignature res_sig)
+	static void decodeInfo(ALLOC)(DataSource source,
+								  ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
+								  ECDSASignature res_sig)
 	{
 		return decodeInfo(source, **res_tbs_bits, res_sig);
 	}

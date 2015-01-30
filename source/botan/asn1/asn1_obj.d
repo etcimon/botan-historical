@@ -15,8 +15,8 @@ public import botan.asn1.ber_dec;
 public import botan.asn1.alg_id;
 public import botan.filters.data_src;
 import botan.utils.parsing;
-import botan.utils.memory.zeroise : SecureArray;
 import botan.utils.exceptn;
+import memutils.vector : SecureArray;
 import std.conv : to;
 import botan.utils.types;
 
@@ -85,7 +85,7 @@ struct BERObject
 {
 public:
     void opAssign(in BERObject ber) {
-        if (ber.value !is null)
+        if (ber.value)
             value = *cast(SecureArray!ubyte*)&ber.value;
         else value = SecureArray!ubyte();
         type_tag = ber.type_tag;
@@ -110,7 +110,7 @@ public:
     */
     string toString()
     {
-        if (!*value) value = SecureArray!ubyte();
+        if (!value) value = SecureArray!ubyte();
         return cast(string) value[].idup;
     }
 
@@ -152,7 +152,7 @@ class BERBadTag : BERDecodingError
 /*
 * Put some arbitrary bytes into a ASN1Tag.SEQUENCE
 */
-Vector!ubyte putInSequence(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) contents)
+Vector!ubyte putInSequence(ALLOC)(auto const ref Vector!(ubyte, ALLOC) contents)
 {
     return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
@@ -162,7 +162,7 @@ Vector!ubyte putInSequence(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) conte
 }
 
 /// ditto
-Vector!ubyte putInSequence(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) contents)
+Vector!ubyte putInSequence(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) contents)
 {
 	return DEREncoder()
 			.startCons(ASN1Tag.SEQUENCE)

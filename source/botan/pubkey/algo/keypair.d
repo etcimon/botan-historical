@@ -12,6 +12,7 @@ static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 public import botan.pubkey.pk_keys;
 public import botan.pubkey.pubkey;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * Tests whether the key is consistent for encryption; whether

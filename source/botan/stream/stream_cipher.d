@@ -37,13 +37,13 @@ public:
     final void cipher1(ref ubyte[] buf)
     { cipher(buf.ptr, buf.ptr, buf.length); }
 
-    final void encipher(int Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
+    final void encipher(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
     { cipher(inoutput.ptr, inoutput.ptr, inoutput.length); }
 
-    final void encrypt(int Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
+    final void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
     { cipher(inoutput.ptr, inoutput.ptr, inoutput.length); }
 
-    final void decrypt(int Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
+    final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) inoutput)
     { cipher(inoutput.ptr, inoutput.ptr, inoutput.length); }
 
     /**

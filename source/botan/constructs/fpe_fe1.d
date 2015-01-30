@@ -17,6 +17,7 @@ import botan.hash.sha2_32;
 import botan.mac.mac;
 import botan.utils.exceptn;
 import botan.utils.types;
+import botan.utils.mem_ops;
 import std.algorithm : swap;
 import std.exception;
 
@@ -37,7 +38,7 @@ struct FPE {
                              in SymmetricKey key,
                              const ref Vector!ubyte tweak)
     {
-        FPEEncryptor F = scoped!FPEEncryptor(key, n0, tweak);
+        Unique!FPEEncryptor F = new FPEEncryptor(key, n0, tweak);
         
         BigInt a, b;
         factor(n0.dup, a, b);
@@ -51,7 +52,7 @@ struct FPE {
             BigInt L = X / b;
             BigInt R = X % b;
             
-            BigInt W = (L + F(i, R)) % a;
+            BigInt W = (L + (*F)(i, R)) % a;
             X = a * R + W;
         }
         

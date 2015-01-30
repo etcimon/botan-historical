@@ -21,7 +21,7 @@ import std.conv;
 import botan.utils.types;
 import std.datetime;
 import botan.rng.rng;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 // import string;
 import std.datetime;
 
@@ -35,7 +35,7 @@ import std.datetime;
 * @param buf_size = size of buffer to benchmark against, in KiB
 * @return results a map from op type to operations per second
 */
-HashMap!(string, double)
+HashMapRef!(string, double)
     timeAlgorithmOps(in string name,
                        AlgorithmFactory af,
                        in string provider,
@@ -59,7 +59,7 @@ HashMap!(string, double)
             
             const SymmetricKey key = SymmetricKey(rng, bc.maximumKeylength());
             
-            HashMap!(string, double) ret;
+            HashMapRef!(string, double) ret;
             ret["key schedule"] = timeOp(runtime / 8, { bc.setKey(key); });
             ret["encrypt"] = mb_mult * timeOp(runtime / 2, { bc.encrypt(buffer); });
             ret["decrypt"] = mb_mult * timeOp(runtime / 2, { bc.decrypt(buffer); });
@@ -72,7 +72,7 @@ HashMap!(string, double)
             Unique!StreamCipher sc = proto.clone();
             
             const SymmetricKey key = SymmetricKey(rng, sc.maximumKeylength());
-            HashMap!(string, double) ret;
+            HashMapRef!(string, double) ret;
             ret["key schedule"] = timeOp(runtime / 8, { sc.setKey(key); });
             ret[""] = mb_mult * timeOp(runtime, { sc.encipher(buffer); });
             return ret;
@@ -82,7 +82,7 @@ HashMap!(string, double)
         const HashFunction proto = af.prototypeHashFunction(name, provider);
         if (proto) {
             Unique!HashFunction h = proto.clone();
-            HashMap!(string, double) ret;
+            HashMapRef!(string, double) ret;
             ret[""] = mb_mult * timeOp(runtime, { h.update(buffer); });
             return ret;
         }
@@ -94,7 +94,7 @@ HashMap!(string, double)
             Unique!MessageAuthenticationCode mac = proto.clone();
             
             const SymmetricKey key = SymmetricKey(rng, mac.maximumKeylength());
-            HashMap!(string, double) ret;
+            HashMapRef!(string, double) ret;
             ret["key schedule"] =timeOp(runtime / 8, { mac.setKey(key); });
             ret[""] = mb_mult * timeOp(runtime, { mac.update(buffer); });
             return ret;
@@ -107,7 +107,7 @@ HashMap!(string, double)
         if (!enc.isEmpty && !dec.isEmpty)
         {
             const SymmetricKey key = SymmetricKey(rng, enc.keySpec().maximumKeylength());
-            HashMap!(string, double) ret;
+            HashMapRef!(string, double) ret;
             ret["key schedule"] = timeOp(runtime / 4, { enc.setKey(key); dec.setKey(key); }) / 2;
             ret["encrypt"] = mb_mult * timeOp(runtime / 2, { enc.update(buffer, 0); buffer.resize(buf_size*1024); });
             ret["decrypt"] = mb_mult * timeOp(runtime / 2, { dec.update(buffer, 0); buffer.resize(buf_size*1024); });
@@ -116,7 +116,7 @@ HashMap!(string, double)
     }
     
             
-    return HashMap!(string, double)();
+    return HashMapRef!(string, double)();
 }
 
 /**
@@ -128,7 +128,7 @@ HashMap!(string, double)
 * @param buf_size = size of buffer to benchmark against, in KiB
 * @return results a map from provider to speed in mebibytes per second
 */
-HashMap!(string, double)
+HashMapRef!(string, double)
     algorithmBenchmark(in string name,
                         AlgorithmFactory af,
                         RandomNumberGenerator rng,
@@ -137,7 +137,7 @@ HashMap!(string, double)
 {
     const Vector!string providers = af.providersOf(name);
     
-    HashMap!(string, double) all_results; // provider . ops/sec
+    HashMapRef!(string, double) all_results; // provider . ops/sec
     
     if (!providers.empty)
     {
@@ -168,7 +168,7 @@ double timeOp(Duration runtime, void delegate() op)
     return reps.to!double / sw.peek().seconds.to!double; // ie, return ops per second
 }
 
-private double findFirstIn(in HashMap!(string, double) m, 
+private double findFirstIn(in HashMapRef!(string, double) m, 
                              const ref Vector!string keys)
 {
     foreach (key; keys[])

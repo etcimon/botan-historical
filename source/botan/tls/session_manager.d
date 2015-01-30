@@ -17,7 +17,7 @@ import botan.codec.hex;
 import std.datetime;
 import core.sync.mutex;
 import std.datetime;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.tls.magic;
 
 /**
@@ -39,7 +39,7 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-	abstract bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session);
+	abstract bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session);
 
     /**
     * Try to load a saved session (using info about server)
@@ -53,7 +53,7 @@ public:
     /**
     * Remove this session id from the cache, if it exists
     */
-    abstract void removeEntry(in Vector!ubyte session_id);
+    abstract void removeEntry(const ref Vector!ubyte session_id);
 
 
     /**
@@ -82,13 +82,13 @@ public:
 final class TLSSessionManagerNoop : TLSSessionManager
 {
 public:
-	override bool loadFromSessionId(in Vector!ubyte, ref TLSSession)
+	override bool loadFromSessionId(const ref Vector!ubyte, ref TLSSession)
     { return false; }
 
     override bool loadFromServerInfo(in TLSServerInformation, ref TLSSession)
     { return false; }
 
-	override void removeEntry(in Vector!ubyte) {}
+	override void removeEntry(const ref Vector!ubyte) {}
 
     override void save(const ref TLSSession) {}
 
@@ -117,7 +117,7 @@ public:
         
     }
 
-	override bool loadFromSessionId(in Vector!ubyte session_id, ref TLSSession session)
+	override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
     {
         
         return loadFromSessionStr(hexEncode(session_id), session);
@@ -143,7 +143,7 @@ public:
         return false;
     }
 
-	override void removeEntry(in Vector!ubyte session_id)
+	override void removeEntry(const ref Vector!ubyte session_id)
     {        
         auto key = hexEncode(session_id);
         auto val = m_sessions.get(key);
@@ -193,7 +193,7 @@ private:
         
         try
         {
-            sess = TLSSession.decrypt(**val, m_session_key);
+            sess = TLSSession.decrypt(*val, m_session_key);
         }
         catch (Throwable)
         {
@@ -219,8 +219,11 @@ private:
         import std.algorithm : countUntil;
         auto i = m_sessions_ordered[].countUntil(val);
         
-        if (i != m_sessions_ordered.length)
-            m_sessions_ordered[] = Vector!string(m_sessions_ordered[0 .. i]) ~ m_sessions_ordered[i+1 .. $];
+        if (i != m_sessions_ordered.length) {
+			auto tmp = m_sessions_ordered.ptr[i+1 .. m_sessions_ordered.length];
+			m_sessions_ordered[] = Vector!string(m_sessions_ordered[0 .. i]);
+			m_sessions_ordered ~= tmp;
+		}
         else
             m_sessions_ordered.length = m_sessions_ordered.length - 1;
 

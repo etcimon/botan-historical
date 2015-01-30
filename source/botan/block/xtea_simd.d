@@ -15,6 +15,7 @@ import botan.utils.loadstor;
 import botan.simd.simd_32;
 import std.range : iota;
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
 
 /**
 * XTEA implemented using SIMD operations

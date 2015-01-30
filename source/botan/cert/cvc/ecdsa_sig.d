@@ -13,6 +13,8 @@ static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 import botan.math.bigint.bigint;
 import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
+import botan.utils.mem_ops;
+
 /**
 * Class representing an ECDSA signature
 */

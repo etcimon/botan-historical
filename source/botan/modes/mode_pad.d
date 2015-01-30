@@ -6,7 +6,7 @@
 */
 module botan.modes.mode_pad;
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.exceptn;
 // import string;
 

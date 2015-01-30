@@ -10,7 +10,7 @@ import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
 public import botan.asn1.alg_id;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.asn1.asn1_oid;
 import botan.rng.rng;
 import botan.asn1.der_enc;

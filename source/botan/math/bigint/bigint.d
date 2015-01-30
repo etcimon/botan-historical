@@ -14,7 +14,7 @@ public import botan.math.mp.mp_types;
 public import botan.utils.types;
 import botan.constants;
 import botan.rng.rng;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.charset;
 import botan.codec.hex;
 import botan.math.bigint.divide;
@@ -175,11 +175,11 @@ public:
 		this.swap(other);
     }
     
-	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) payload, in Sign sign) {
+	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) payload, in Sign sign) {
 		this(payload.ptr, payload.length);
 	}
 
-	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) payload, in Sign sign) {
+	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) payload, in Sign sign) {
 		this(payload.ptr, payload.length);
 	}
 
@@ -880,13 +880,13 @@ public:
     * Read integer value from a ubyte array (SecureVector!ubyte)
     * @param buf = the array to load from
     */
-	void binaryDecode(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) buf)
+	void binaryDecode(ALLOC)(auto const ref Vector!(ubyte, ALLOC) buf)
 	{
 		binaryDecode(buf.ptr, buf.length);
 	}
 
 	/// ditto
-	void binaryDecode(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) buf)
+	void binaryDecode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) buf)
 	{
 		binaryDecode(buf.ptr, buf.length);
 	}
@@ -1070,7 +1070,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static BigInt decode(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) buf, Base base = Binary)
+	static BigInt decode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) buf, Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
     }
@@ -1081,7 +1081,7 @@ public:
     * @param base = number-base of the integer in buf
     * @result BigInt representing the integer in the ubyte array
     */
-    static BigInt decode(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) buf, Base base = Binary)
+    static BigInt decode(ALLOC)(auto const ref Vector!(ubyte, ALLOC) buf, Base base = Binary)
     {
         return BigInt.decode(buf.ptr, buf.length, base);
     }

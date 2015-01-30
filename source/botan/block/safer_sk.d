@@ -14,6 +14,7 @@ import botan.utils.rotate;
 import botan.utils.parsing;
 import botan.utils.rotate;
 import std.conv : to;
+import botan.utils.mem_ops;
 
 ubyte opCast(T : ubyte)(int val) {
     return cast(ubyte) val;

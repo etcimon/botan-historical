@@ -14,6 +14,7 @@ import botan.hash.mdx_hash;
 import botan.utils.loadstor;
 import botan.utils.rotate;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * MD4

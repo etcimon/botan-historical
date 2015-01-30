@@ -8,16 +8,16 @@
 module botan.filters.data_src;
 
 import botan.constants;
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.types;
 import std.stdio;
 import botan.utils.exceptn;
 import botan.utils.mem_ops;
 import std.algorithm;
 
-alias DataSource = FreeListRef!DataSourceImpl;
-alias DataSourceMemory = FreeListRef!DataSourceMemoryImpl;
-alias DataSourceStream = FreeListRef!DataSourceStreamImpl;
+alias DataSource = RefCounted!DataSourceImpl;
+alias DataSourceMemory = RefCounted!DataSourceMemoryImpl;
+alias DataSourceStream = RefCounted!DataSourceStreamImpl;
 
 /**
 * This class represents an abstract data source object.
@@ -170,7 +170,7 @@ public:
     * Construct a memory source that reads from a referenced vector
     * @param input = the MemoryRegion to read from
     */
-    this(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
+	this(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
     {
 		m_source = SecureVector!ubyte(input[]);
         m_offset = 0;
@@ -180,7 +180,7 @@ public:
     * Construct a memory source that reads from a vector
     * @param input = the MemoryRegion to read from
     */
-	this(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input) {
+	this(T, ALLOC)(auto const ref Vector!(T, ALLOC) input) {
 		m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
 		m_offset = 0;
 	}
@@ -189,7 +189,7 @@ public:
     * Construct a memory source that reads from a vector*
     * @param input = the MemoryRegion to read from
     */
-	this(T, int ALLOC)(const Vector!(T, ALLOC)* input) {
+	this(T, ALLOC)(const Vector!(T, ALLOC)* input) {
 		m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
 		m_offset = 0;
 	}

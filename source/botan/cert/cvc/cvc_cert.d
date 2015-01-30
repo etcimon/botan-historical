@@ -19,7 +19,7 @@ import botan.utils.types;
 
 
 
-alias EAC11CVC = FreeListRef!EAC11CVCImpl;
+alias EAC11CVC = RefCounted!EAC11CVCImpl;
 
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
@@ -207,7 +207,7 @@ protected:
 * @param cex = the CEX to appear in the certificate
 * @param rng = a random number generator
 */
-EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
+EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
 			                    const ref Vector!(ubyte, ALLOC) public_key,
 			                    in ASN1Car car,
 			                    in ASN1Chr chr,
@@ -241,14 +241,14 @@ EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
     return EAC11CVC(cast(DataSource)source);
 }
 
-EAC11CVC makeCvcCert(int ALLOC)(ref PKSigner signer,
-								auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) public_key,
-								in ASN1Car car,
-								in ASN1Chr chr,
-								in ubyte holder_auth_templ,
-								in ASN1Ced ced,
-								in ASN1Cex cex,
-								RandomNumberGenerator rng)
+EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
+							auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) public_key,
+							in ASN1Car car,
+							in ASN1Chr chr,
+							in ubyte holder_auth_templ,
+							in ASN1Ced ced,
+							in ASN1Cex cex,
+							RandomNumberGenerator rng)
 {
 	return makeCvcCert(signer, **public_key, car, chr, holder_auth_templ, ced, cex, rng);
 }

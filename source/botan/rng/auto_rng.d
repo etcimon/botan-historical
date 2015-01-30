@@ -8,8 +8,8 @@ module botan.rng.auto_rng;
 
 public import botan.rng.rng;
 import botan.utils.types;
-import botan.utils.memory.memory;
-alias AutoSeededRNG = FreeListRef!AutoSeededRNGImpl;
+
+alias AutoSeededRNG = RefCounted!AutoSeededRNGImpl;
 final class AutoSeededRNGImpl : RandomNumberGenerator
 {
 public:

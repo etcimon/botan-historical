@@ -26,9 +26,10 @@ const BOTAN_DISTRIBUTION_INFO = "unspecified";
 const BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS = true;
 const BOTAN_TARGET_UNALIGNED_MEMORY_ACCESS_OK = true;
 const BOTAN_TARGET_HAS_NATIVE_UINT128 = false;
-const BOTAN_DEFAULT_BUFFER_SIZE = 4096;
+const DEFAULT_BUFFERSIZE = 4096;
+const TLS_DEFAULT_BUFFERSIZE = 4096;
+
 const BOTAN_MEM_POOL_CHUNK_SIZE = 64*1024;
-const BOTAN_MLOCK_ALLOCATOR_MAX_ALLOCATION = 524_287;
 const BOTAN_BLOCK_CIPHER_PAR_MULT = 4;
 
 version(X86) { const BOTAN_HAS_X86_ARCH = true; const BOTAN_HAS_X86_64_ARCH = false; const BOTAN_HAS_ARM_ARCH = false; }
@@ -415,30 +416,30 @@ enum { // LogLevel
 }
 
 void logTrace(ARGS...)(ARGS args) {
-    static if (LogLevel <= Trace) {
-        import std.stdio: writeln;
+	static if (LogLevel <= Trace) {
+		import std.stdio: writeln;
 		writeln("T: ", args);
-    }
+	}
 }
 
 void logInfo(ARGS...)(ARGS args) {
-    static if (LogLevel <= Info) {
-        import std.stdio: writeln;
-        writeln("I: ", args);
-    }
+	static if (LogLevel <= Info) {
+		import std.stdio: writeln;
+		writeln("I: ", args);
+	}
 }
 
 void logDebug(ARGS...)(ARGS args) {
-    
-    static if (LogLevel <= Debug) {
-        import std.stdio: writeln;
-        writeln("D: ", args);
-    }
+	
+	static if (LogLevel <= Debug) {
+		import std.stdio: writeln;
+		writeln("D: ", args);
+	}
 }
 
 void logError(ARGS...)(ARGS args) {
-    static if (LogLevel <= Error) {
-        import std.stdio: writeln, stderr;
-        stderr.writeln("E: ", args);
-    }
+	static if (LogLevel <= Error) {
+		import std.stdio: writeln, stderr;
+		stderr.writeln("E: ", args);
+	}
 }

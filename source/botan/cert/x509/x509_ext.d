@@ -24,7 +24,8 @@ import botan.utils.charset;
 import botan.utils.bit_ops;
 import std.algorithm;
 import botan.utils.types;
-import botan.utils.containers.multimap;
+import botan.utils.mem_ops;
+import memutils.dictionarylist;
 
 /**
 * X.509 Certificate Extension
@@ -66,7 +67,7 @@ protected:
     abstract void decodeInner(const ref Vector!ubyte);
 }
 
-alias X509Extensions = FreeListRef!X509ExtensionsImpl;
+alias X509Extensions = RefCounted!X509ExtensionsImpl;
 
 /**
 * X.509 Certificate Extension List
@@ -515,7 +516,7 @@ protected:
     void contentsTo(ref DataStore subject_info,
                     ref DataStore issuer_info) const
     {
-        MultiMap!(string, string) contents = getAltName().contents();
+        DictionaryListRef!(string, string) contents = getAltName().contents();
         
         if (m_oid_name_str == "X509v3.SubjectAlternativeName")
             subject_info.add(contents);
@@ -896,7 +897,7 @@ protected:
 final class CRLDistributionPoints : CertificateExtension
 {
 public:
-    alias DistributionPoint = FreeListRef!DistributionPointImpl;
+    alias DistributionPoint = RefCounted!DistributionPointImpl;
     final class DistributionPointImpl : ASN1Object
     {
     public:
@@ -953,7 +954,7 @@ protected:
         {
             auto point = distribution_point.point().contents();
             
-            point.equalRange("URI", (in string val) {
+            point.getValuesAt("URI", (in string val) {
                 info.add("CRL.DistributionPoint", val);
             });
         }
@@ -963,7 +964,7 @@ protected:
 }
 
 
-alias PolicyInformation = FreeListRef!PolicyInformationImpl;
+alias PolicyInformation = RefCounted!PolicyInformationImpl;
 
 /*
 * A policy specifier

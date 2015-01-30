@@ -9,7 +9,7 @@ module botan.kdf.kdf;
 import botan.constants;
 static if (BOTAN_HAS_TLS || BOTAN_HAS_PUBLIC_KEY_CRYPTO):
 
-import botan.utils.memory.zeroise;
+import memutils.vector;
 import botan.utils.types;
 
 import botan.libstate.libstate;
@@ -53,7 +53,7 @@ public:
     * @param salt = a diversifier
     */
     
-    SecureVector!ubyte deriveKey(int Alloc)(size_t key_len,
+    SecureVector!ubyte deriveKey(Alloc)(size_t key_len,
                                             auto const ref SecureVector!ubyte secret,
                                            auto const ref Vector!( ubyte, Alloc ) salt) const
     {

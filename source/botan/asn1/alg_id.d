@@ -16,7 +16,7 @@ import botan.asn1.der_enc;
 import botan.asn1.ber_dec;
 import botan.asn1.oids;
 
-alias AlgorithmIdentifier = FreeListRef!AlgorithmIdentifierImpl;
+alias AlgorithmIdentifier = RefCounted!AlgorithmIdentifierImpl;
 
 /**
 * Algorithm Identifier

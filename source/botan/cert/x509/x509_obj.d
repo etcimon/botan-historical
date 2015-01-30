@@ -84,7 +84,7 @@ public:
     * @param tbs = the tbs bits to be signed
     * @return signed X509 object
     */
-    static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
+    static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
                                   			 RandomNumberGenerator rng,
                                  			 in AlgorithmIdentifier algo,
                                  			 auto const ref Vector!(ubyte, ALLOC) tbs_bits)
@@ -99,10 +99,10 @@ public:
     }
 
 	/// ditto
-	static Vector!ubyte makeSigned(int ALLOC)(ref PKSigner signer,
-											 RandomNumberGenerator rng,
-											 in AlgorithmIdentifier algo,
-										  	 auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) tbs_bits)
+	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+										  RandomNumberGenerator rng,
+										  in AlgorithmIdentifier algo,
+										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits)
 	{
 		return makeSigned(signer, rng, algo, **tbs_bits);
 	}
@@ -206,7 +206,7 @@ protected:
 	/*
     * Create a generic X.509 object
     */
-	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) vec, in string labels)
+	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) vec, in string labels)
 	{
 		auto stream = DataSourceMemory(vec.ptr, vec.length);
 		init(cast(DataSource)stream, labels);
@@ -215,7 +215,7 @@ protected:
 	/*
     * Create a generic X.509 object
     */
-	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) vec, in string labels)
+	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) vec, in string labels)
 	{
 		auto stream = DataSourceMemory(vec.ptr, vec.length);
 		init(cast(DataSource)stream, labels);

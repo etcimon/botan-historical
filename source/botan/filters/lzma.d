@@ -13,8 +13,10 @@ import botan.utils.exceptn;
 import std.conv;
 import std.c.string;
 import std.c.stdlib;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.utils.types;
+import botan.constants;
+import botan.utils.mem_ops;
 
 /**
 * Lzma Compression Filter
@@ -284,7 +286,7 @@ private:
 class Lzma_Alloc_Info
 {
 public:
-    HashMap!(void*, size_t) current_allocs;
+    HashMapRef!(void*, size_t) current_allocs;
 }
 
 

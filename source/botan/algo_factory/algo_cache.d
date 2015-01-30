@@ -8,7 +8,7 @@ module botan.algo_factory.algo_cache;
 
 import botan.constants;
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 /**
 * @param prov_name = a provider name
 * @return weight for this provider
@@ -47,7 +47,7 @@ public:
     */
     const(T) get(string algo_spec, string requested_provider) const
     {
-        HashMap!(string, T) algo = findAlgorithm(algo_spec);
+        HashMapRef!(string, T) algo = findAlgorithm(algo_spec);
         if (algo.length == 0) // algo not found at all (no providers)
             return null;
         
@@ -100,7 +100,7 @@ public:
             m_aliases[requested_name] = algo.name;
         }
         if (m_algorithms.get(algo.name).length == 0)
-            m_algorithms[algo.name] = HashMap!(string, T)();
+            m_algorithms[algo.name] = HashMapRef!(string, T)();
 
         if (!(m_algorithms[algo.name].get(provider)))
             m_algorithms[algo.name][provider] = algo;
@@ -157,9 +157,9 @@ public:
     }
 
     this() {
-        m_aliases = HashMap!(string, string)();
-        m_pref_providers = HashMap!(string, string)();
-        m_algorithms = HashMap!(string, HashMap!(string, T))();
+        m_aliases = HashMapRef!(string, string)();
+        m_pref_providers = HashMapRef!(string, string)();
+        m_algorithms = HashMapRef!(string, HashMapRef!(string, T))();
     }
 
 private:
@@ -168,9 +168,9 @@ private:
     * Look for an algorithm implementation in the cache, also checking aliases
     * Assumes object lock is held
     */
-    HashMap!(string, T) findAlgorithm(in string algo_spec) const
+    HashMapRef!(string, T) findAlgorithm(in string algo_spec) const
     {
-        HashMap!(string, T) algo = m_algorithms.get(algo_spec);
+        HashMapRef!(string, T) algo = m_algorithms.get(algo_spec);
         // Not found? Check if a known alias
         if (!algo)
         {
@@ -181,15 +181,15 @@ private:
                 return m_algorithms.get(_alias);
             }
             else {
-                return HashMap!(string, T)();
+                return HashMapRef!(string, T)();
             }
         }
         return algo;
     }
 
-    HashMap!(string, string) m_aliases;
-    HashMap!(string, string) m_pref_providers;
+    HashMapRef!(string, string) m_aliases;
+    HashMapRef!(string, string) m_pref_providers;
 
              // algo_name     //provider // instance
-    HashMap!(string, HashMap!(string, T)) m_algorithms;
+    HashMapRef!(string, HashMapRef!(string, T)) m_algorithms;
 }

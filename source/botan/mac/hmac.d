@@ -13,6 +13,8 @@ public import botan.mac.mac;
 import botan.hash.hash;
 import std.algorithm : fill;
 import botan.utils.xor_buf;
+import botan.utils.mem_ops;
+import std.range : refRange;
 /**
 * HMAC
 */
@@ -93,8 +95,8 @@ protected:
         m_ikey.resize(m_hash.hashBlockSize);
         m_okey.resize(m_hash.hashBlockSize);
         
-        std.algorithm.fill(m_ikey.range, cast(ubyte)0x36);
-        std.algorithm.fill(m_okey.range, cast(ubyte)0x5C);
+        std.algorithm.fill(m_ikey.ptr[0 .. m_ikey.length], cast(ubyte)0x36);
+		std.algorithm.fill(m_okey.ptr[0 .. m_okey.length], cast(ubyte)0x5C);
         
         if (length > m_hash.hashBlockSize)
         {

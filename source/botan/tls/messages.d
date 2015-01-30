@@ -12,7 +12,7 @@ package:
 
 import botan.tls.handshake_state;
 import botan.tls.session_key;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 
 public import botan.algo_base.sym_algo;
 public import botan.tls.session;
@@ -1030,7 +1030,7 @@ final class Certificate : HandshakeMessage
 {
 public:
     override const(HandshakeType) type() const { return CERTIFICATE; }
-    ref const(Vector!X509Certificate) certChain() const { return **m_certs; }
+    ref const(Vector!X509Certificate) certChain() const { return *m_certs; }
 
     size_t count() const { return m_certs.length; }
     @property bool empty() const { return m_certs.empty; }

@@ -187,12 +187,12 @@ public:
     * Retrieve SRP verifier parameters
     */
     abstract bool srpVerifier(in string type,
-                               in string context,
-                               in string identifier,
-                               ref string group_name,
-                               ref BigInt verifier,
-                               ref Vector!ubyte salt,
-                               bool generate_fake_on_unknown)
+                              in string context,
+                              in string identifier,
+                              ref string group_name,
+                              ref BigInt verifier,
+                              ref Vector!ubyte salt,
+                              bool generate_fake_on_unknown)
     {
         return false;
     }

@@ -19,7 +19,7 @@ import botan.tls.seq_numbers;
 import botan.utils.exceptn;
 import std.algorithm : count;
 import botan.utils.types;
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import std.typecons : Tuple;
 
 struct NextRecord
@@ -404,14 +404,14 @@ private:
             size_t m_msg_length = 0;
             ushort m_epoch = 0;
 
-            HashMap!(size_t, ubyte) m_fragments;
+            HashMapRef!(size_t, ubyte) m_fragments;
             Array!ubyte m_message;
     }
 
     ConnectionSequenceNumbers m_seqs;
     HashMap!(ushort, HandshakeReassembly) m_messages;
     ushort[] m_ccs_epochs;
-    Vector!( Vector!ushort ) m_flights;
+    Vector!( Array!ushort ) m_flights;
     HashMap!(ushort, FlightData ) m_flight_data;
 
     // default MTU is IPv6 min MTU minus UDP/IP headers

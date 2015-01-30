@@ -79,14 +79,14 @@ public:
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the SecureVector containing the data to write
     */
-    void write(T, int ALLOC)(auto const ref FreeListRef!(Vector!(T, ALLOC)) input)
+	void write(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
     { write(input.ptr, input.length); }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the std::vector containing the data to write
     */
-    void write(T, int ALLOC)(auto const ref Vector!(T, ALLOC) input)
+    void write(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
     { write(input.ptr, input.length); }
 
     /**
@@ -146,7 +146,7 @@ public:
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-    void processMsg(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
+    void processMsg(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
         processMsg(input.ptr, input.length);
     }
@@ -155,7 +155,7 @@ public:
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-    void processMsg(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input)
+	void processMsg(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
         processMsg(input.ptr, input.length);
     }

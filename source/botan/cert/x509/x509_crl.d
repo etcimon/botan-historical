@@ -21,7 +21,7 @@ import botan.asn1.oids;
 import botan.asn1.asn1_time;
 import botan.utils.types;
 
-alias X509CRL = FreeListRef!X509CRLImpl;
+alias X509CRL = RefCounted!X509CRLImpl;
 
 /**
 * This class represents X.509 Certificate Revocation Lists (CRLs).

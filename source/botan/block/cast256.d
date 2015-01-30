@@ -15,6 +15,7 @@ import botan.block.block_cipher;
 import botan.block.cast_sboxes;
 import botan.utils.loadstor;
 import botan.utils.rotate;
+import botan.utils.mem_ops;
 
 /**
 * CAST-256

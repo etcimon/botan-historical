@@ -9,8 +9,10 @@ module botan.filters.bzip2;
 import botan.filters.filter;
 import botan.utils.exceptn;
 
-import botan.utils.containers.hashmap;
+import memutils.hashmap;
 import botan.utils.types;
+import botan.utils.mem_ops;
+import botan.constants;
 import std.c.string;
 import std.c.stdlib;
 
@@ -253,7 +255,7 @@ private:
 final class Bzip_Alloc_Info
 {
 public:
-    HashMap!(void*, size_t) current_allocs;
+    HashMapRef!(void*, size_t) current_allocs;
 }
 
 

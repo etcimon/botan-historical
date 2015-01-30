@@ -16,7 +16,7 @@ import botan.pubkey.algo.dl_group;
 import botan.tls.ciphersuite;
 import botan.tls.magic;
 import botan.tls.exceptn;
-import botan.utils.containers.multimap;
+import memutils.dictionarylist;
 import std.datetime;
 import std.algorithm : uniq, sort;
 import std.array : array, Appender;
@@ -427,5 +427,5 @@ public:
         return false; // equal (?!?)
     }
 private:
-    const Vector!string m_ciphers, m_macs, m_kex, m_sigs;
+    Vector!string m_ciphers, m_macs, m_kex, m_sigs;
 }

@@ -26,15 +26,15 @@ import botan.asn1.asn1_time;
 import botan.libstate.lookup;
 import botan.math.bigint.bigint;
 import botan.utils.types;
-import botan.utils.memory.memory : FreeListRef;
-import botan.utils.containers.multimap;
-import botan.utils.containers.hashmap;
+import memutils.refcounted;
+import memutils.dictionarylist;
+import memutils.hashmap;
 import botan.utils.parsing;
-import botan.utils.types : Vector;
+import botan.utils.types : Vector, RefCounted;
 import std.algorithm;
 import std.array : Appender;
 
-alias X509Certificate = FreeListRef!X509CertificateImpl;
+alias X509Certificate = RefCounted!X509CertificateImpl;
 
 /**
 * This class represents X.509 Certificate
@@ -499,14 +499,14 @@ public:
         doDecode();
     }
 
-	this(int ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
+	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
 	{
 		super(input, "CERTIFICATE/X509 CERTIFICATE");
 		m_self_signed = false;
 		doDecode();
 	}
 
-	this(int ALLOC)(auto const ref FreeListRef!(Vector!(ubyte, ALLOC)) input)
+	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
 	{
 		super(input, "CERTIFICATE/X509 CERTIFICATE");
 		m_self_signed = false;
@@ -664,7 +664,7 @@ AlternativeName createAltName(in DataStore info)
 /*
 * Lookup each OID in the vector
 */
-Vector!string lookupOids(int ALLOC)(auto const ref Vector!(string, ALLOC) input)
+Vector!string lookupOids(ALLOC)(auto const ref Vector!(string, ALLOC) input)
 {
     Vector!string output = Vector!string();
     
@@ -674,7 +674,7 @@ Vector!string lookupOids(int ALLOC)(auto const ref Vector!(string, ALLOC) input)
 }
 
 
-bool certSubjectDnsMatch(int ALLOC)(in string name,
+bool certSubjectDnsMatch(ALLOC)(in string name,
                          			auto const ref Vector!(string, ALLOC) cert_names)
 {
     foreach (const cn; cert_names[])

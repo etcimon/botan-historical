@@ -15,6 +15,7 @@ import botan.utils.parsing;
 import std.algorithm;
 import botan.block.block_cipher;
 import std.conv : to;
+import botan.utils.mem_ops;
 
 /**
 * RC5

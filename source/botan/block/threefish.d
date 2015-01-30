@@ -13,6 +13,7 @@ import botan.utils.rotate;
 import botan.utils.loadstor;
 import botan.block.block_cipher;
 import botan.utils.types;
+import botan.utils.mem_ops;
 
 /**
 * Threefish-512

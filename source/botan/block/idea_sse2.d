@@ -12,6 +12,7 @@ static if (BOTAN_HAS_IDEA_SSE2 && BOTAN_HAS_SIMD_SSE2):
 import botan.block.idea;
 import botan.utils.simd.emmintrin;
 import botan.block.block_cipher;
+import botan.utils.mem_ops;
 /**
 * IDEA in SSE2
 */

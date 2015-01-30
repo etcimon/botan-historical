@@ -17,7 +17,7 @@ import botan.asn1.asn1_obj;
 import botan.asn1.asn1_oid;
 import botan.utils.types;
 
-alias Attribute = FreeListRef!AttributeImpl;
+alias Attribute = RefCounted!AttributeImpl;
 
 /**
 * Attribute
