@@ -252,6 +252,7 @@ import botan.pubkey.pubkey;
 import botan.codec.hex;
 import botan.rng.auto_rng;
 import core.atomic;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 
@@ -307,7 +308,7 @@ unittest
     File nr_sig = File("../test_data/pubkey/nr.vec", "r");
     
     fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
         return nrSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
     });
     

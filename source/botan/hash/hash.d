@@ -36,6 +36,7 @@ import botan.test;
 import botan.libstate.libstate;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 
@@ -107,7 +108,7 @@ static if (!SKIP_HASH_TEST) unittest
         File vec = File(input, "r");
 
         return runTestsBb(vec, "Hash", "Out", true,
-                            (string[string] m) {
+                            (ref HashMap!(string, string) m) {
                                 return hashTest(m["Hash"], m["In"], m["Out"]);
                             });
     };

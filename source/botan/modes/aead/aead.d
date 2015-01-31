@@ -160,6 +160,7 @@ import botan.test;
 import botan.codec.hex;
 import core.atomic;
 shared size_t total_tests;
+import memutils.hashmap;
 
 size_t aeadTest(string algo, string input, string expected, string nonce_hex, string ad_hex, string key_hex)
 {
@@ -275,7 +276,7 @@ unittest
         File vec = File(input, "r");
         
         return runTestsBb(vec, "AEAD", "Out", true,
-                            (string[string] m)
+                            (ref HashMap!(string, string) m)
                             {
             return aeadTest(m["AEAD"], m["In"], m["Out"],
             m["Nonce"], m["AD"], m["Key"]);

@@ -177,6 +177,7 @@ HashMapRef!(string, string)
     logTrace("Testing ", algo_name);
     const string algo = algo_name.algoNameAndArgs();
     
+	logTrace("algoNameAndArgs: ", algo);
     Vector!string providers = af.providersOf(algo);
     logTrace("Providers: ", providers[]);
     HashMapRef!(string, string) all_results;

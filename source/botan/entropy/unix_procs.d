@@ -24,6 +24,8 @@ import core.sys.posix.signal;
 import std.c.stdlib;
 import std.string : toStringz;
 
+extern(C) int getrusage(int, rusage*);
+
 /**
 * Entropy source for generic Unix. Runs various programs trying to
 * gather data hard for a remote attacker to guess. Probably not too

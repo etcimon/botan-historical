@@ -224,6 +224,7 @@ import botan.codec.hex;
 import botan.pubkey.algo.dl_group;
 import botan.rng.auto_rng;
 import core.atomic;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 
@@ -284,7 +285,7 @@ unittest
     File elgamal_enc = File("../test_data/pubkey/elgamal.vec", "r");
     
     fails += runTestsBb(elgamal_enc, "ElGamal Encryption", "Ciphertext", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
         return elgamalKat(m["P"], m["G"], m["X"], m["Msg"],
         m["Padding"], m["Nonce"], m["Ciphertext"]);
     });

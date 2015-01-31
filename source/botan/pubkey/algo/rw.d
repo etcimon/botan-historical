@@ -272,6 +272,7 @@ import botan.pubkey.test;
 import botan.rng.auto_rng;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 
 shared size_t total_tests;
 __gshared immutable string padding = "EMSA2(SHA-1)";
@@ -337,12 +338,12 @@ unittest
     File rw_verify = File("../test_data/pubkey/rw_verify.vec", "r");
     
     fails += runTestsBb(rw_sig, "RW Signature", "Signature", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
         return rwSigKat(m["E"], m["P"], m["Q"], m["Msg"], m["Signature"]);
     });
     
     fails += runTestsBb(rw_verify, "RW Verify", "Signature", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
         return rwSigVerify(m["E"], m["N"], m["Msg"], m["Signature"]);
     });
 

@@ -79,7 +79,7 @@ public:
         static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO) 
             OIDS.setDefaults();
 
-        m_algorithm_factory = Unique!AlgorithmFactory(new AlgorithmFactory);
+        m_algorithm_factory = new AlgorithmFactory;
         
         static if (BOTAN_HAS_ENGINE_GNU_MP) {
             logTrace("Loading GNU MP Engine");
@@ -134,6 +134,7 @@ public:
     {
         if (!m_algorithm_factory)
             throw new InvalidState("Uninitialized in algorithmFactory");
+		logDebug("Algorithm factory: ", cast(void*)*m_algorithm_factory);
         return *m_algorithm_factory;
     }
 
@@ -163,7 +164,7 @@ public:
         }
     }
 
-    ~this() { }
+	~this() { logDebug("LibraryState deinit"); }
 private:
     static Vector!( EntropySource ) entropySources()
     {

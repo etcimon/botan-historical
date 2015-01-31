@@ -315,6 +315,7 @@ struct OIDMap
 public:
     void addOid(in OID oid, in string str)
     {
+		logError("addOid: ", str);
         addStr2oid(oid, str);
         addOid2str(oid, str);
     }
@@ -363,18 +364,13 @@ public:
     }
     
 private:
-    HashMapRef!(string, OID) m_str2oid;
-    HashMapRef!(OID, string) m_oid2str;
+    HashMap!(string, OID) m_str2oid;
+    HashMap!(OID, string) m_oid2str;
 }
 
-OIDMap globalOidMap()
+ref OIDMap globalOidMap()
 {
     static OIDMap map;
-    if (!map.m_str2oid) {
-        logTrace("Loading OID map");
-        map.m_str2oid = HashMapRef!(string, OID)();
-        map.m_oid2str = HashMapRef!(OID, string)();
-    }
 
     return map;
 }

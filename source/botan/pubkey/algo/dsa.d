@@ -258,6 +258,7 @@ import botan.pubkey.test;
 import botan.rng.auto_rng;
 import botan.pubkey.pubkey;
 import botan.codec.hex;
+import memutils.hashmap;
 
 import core.atomic;
 private shared size_t total_tests;
@@ -318,7 +319,7 @@ unittest
     File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
     
     fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
-                          (string[string] m)
+                          (ref HashMap!(string, string) m)
                           {
         return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
     });

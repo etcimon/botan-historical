@@ -165,6 +165,7 @@ import botan.pubkey.algo.dh;
 import botan.codec.hex;
 import botan.asn1.oids;
 import core.atomic;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 
@@ -223,7 +224,7 @@ unittest
     File dh_sig = File("../test_data/pubkey/dh.vec", "r");
     
     fails += runTestsBb(dh_sig, "DH Kex", "K", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
                                 return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m["KDF"], m["OutLen"], m["K"]);
                             });
 

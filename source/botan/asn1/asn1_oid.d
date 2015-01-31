@@ -101,7 +101,7 @@ public:
     * Get this OID as list (vector) of its components.
     * @return vector representing this OID
     */
-    const(Array!uint) getId() const { return m_id; }
+	ref const(Vector!uint) getId() const { return m_id; }
 
     /**
     * Get this OID as a string
@@ -109,41 +109,36 @@ public:
     */
     override string toString() const
     {
-        return toArray()[].idup;
+		return toVector()[].idup;
     }
 
-    Array!ubyte toArray() const {
-        Array!ubyte oid_str;
+	Vector!ubyte toVector() const {
+		Vector!ubyte oid_str;
         foreach (size_t i; 0 .. m_id.length)
         {
             oid_str ~= to!string(m_id[i]);
             if (i != m_id.length - 1)
                 oid_str ~= '.';
         }
-        return oid_str;
+        return oid_str.move();
     }
 
     /**
     * Compare two OIDs.
     * @return true if they are equal, false otherwise
     */
-    bool opEquals(in OID oid) const
-    {
-        return this.opEquals(*oid);
-    }
-
     bool opEquals(in OIDImpl oid) const
     {
-        if ((!oid || !oid.m_id || oid.m_id.length == 0) && (!m_id || m_id.length == 0)) return true;
-        else if (!oid) return false;
-        else if (!m_id) return false;
+		logTrace("opEquals ", cast(void*) this);
+		if(oid) logTrace("opEquals ", cast(void*) oid);
+        if ((!oid || oid.m_id.length == 0) && m_id.length == 0) return true;
+		else if (!oid || oid.m_id.length == 0) return false;
+		else if (m_id.length == 0) return false;
         
         if (m_id.length != oid.m_id.length)
             return false;
         
-        foreach (size_t i; 0 .. m_id.length)
-            if (m_id[i] != oid.m_id[i])
-                return false;
+        if (m_id != oid.m_id) return false;
         return true;
     }
 
@@ -176,7 +171,7 @@ public:
     */
     int opCmp(in OID b) const
     {
-        if (this == b) return 0;
+        if (this == *b) return 0;
         else return -1;
     }
     
@@ -189,18 +184,18 @@ public:
     bool opBinary(string op)(in OID b)
         if (op == "<")
     {
-        const Vector!uint oid1 = getId();
-        const Vector!uint oid2 = b.getId();
+        const Vector!uint* oid1 = &getId();
+        const Vector!uint* oid2 = &b.getId();
         
         if (oid1.length < oid2.length)
             return true;
         if (oid1.length > oid2.length)
             return false;
-        foreach (const i, const oid; oid1[])
+        foreach (const i, const oid; (*oid1)[])
         {
-            if (oid < oid2[i])
+            if (oid < (*oid2)[i])
                 return true;
-            if (oid > oid2[i])
+            if (oid > (*oid2)[i])
                 return false;
         }
         return false;
@@ -226,7 +221,7 @@ public:
     {
         if (oid_str == "")
             return;
-
+		logTrace("Loading ", oid_str);
         try
         {
             m_id = parseAsn1Oid(oid_str);
@@ -247,21 +242,19 @@ public:
 
     this(const ref OID other)
     {
-        m_id = other.m_id.dupr;
+        m_id = other.m_id.dup;
     }
 
     this(const OIDImpl other)
     {
-        m_id = other.m_id.dupr;
+		m_id = other.m_id.dup;
     }
 
     @property OID dup() const {
         OID oid = OID();
-        if (m_id)
-            oid.m_id = m_id.dupr;
-        else oid.m_id = Array!uint();
+		oid.m_id = m_id.dup;
         return oid;
     }
 private:
-    Array!uint m_id;
+	Vector!uint m_id;
 }

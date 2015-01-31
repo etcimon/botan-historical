@@ -178,7 +178,7 @@ static if (!SKIP_KDF_TEST) unittest
     logTrace("Testing kdf.d ...");
     auto test = delegate(string input) {
         return runTests(input, "KDF", "Output", true,
-                         (string[string] vec)
+                         (ref HashMap!(string, string) vec)
                          {
             Unique!KDF kdf = getKdf(vec["KDF"]);
             

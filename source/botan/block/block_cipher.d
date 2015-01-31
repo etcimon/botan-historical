@@ -199,6 +199,7 @@ import botan.libstate.libstate;
 import botan.algo_factory.algo_factory;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 
 shared size_t total_tests;
 
@@ -271,7 +272,7 @@ static if (!SKIP_BLOCK_TEST) unittest {
         logTrace("Testing file `" ~ input ~ " ...");
         File vec = File(input, "r");
         return runTestsBb(vec, "BlockCipher", "Out", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
                               return blockTest(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
                           });
     }

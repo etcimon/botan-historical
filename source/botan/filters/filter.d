@@ -232,8 +232,8 @@ public:
     abstract void endMsg() {}
     abstract @property string name() const;
 
-    SecureArray!ubyte m_write_queue;
-    Array!Filter m_next;
+    SecureVector!ubyte m_write_queue;
+    Vector!Filter m_next;
     size_t m_port_num, m_filter_owns;
 
     // true if filter belongs to a pipe -. prohibit filter sharing!

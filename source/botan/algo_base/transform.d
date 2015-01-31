@@ -182,7 +182,7 @@ static if (!SKIP_TRANSFORM_TEST) unittest
     File vec = File("../test_data/transform.vec", "r");
     
     size_t fails = runTests(vec, "Transform", "Output", true,
-                     (string[string] m) {
+                     (ref HashMap!(string, string) m) {
                         atomicOp!"+="(total_tests, 1);
                         return hexEncode(transformTest(m["Transform"],
                                             hexDecodeLocked(m["Nonce"]),

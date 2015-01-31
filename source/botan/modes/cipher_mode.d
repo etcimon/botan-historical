@@ -29,6 +29,7 @@ import botan.codec.hex;
 import botan.libstate.lookup;
 import botan.filters.filters;
 import core.atomic;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 SecureVector!ubyte runMode()(string algo, CipherDir dir, 
@@ -86,7 +87,7 @@ unittest {
         File vec = File(input, "r");
         
         return runTestsBb(vec, "Mode", "Out", true,
-                            (string[string] m) {
+                            (ref HashMap!(string, string) m) {
                                 return modeTest(m["Mode"], m["In"], m["Out"], m["Key"], m["Nonce"]);
                             });
     };

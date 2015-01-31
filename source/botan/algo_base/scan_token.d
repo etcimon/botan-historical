@@ -83,7 +83,7 @@ public:
         if (names.length == 0)
             throw new DecodingError(decoding_error ~ "Empty name");
         
-        m_alg_name = names[0].second[].dup;
+        m_alg_name = names[0].second[].idup;
 
         if (names.length == 1)
             return;
@@ -203,7 +203,7 @@ public:
     
     static void addAlias(string _alias, in string basename)
     {
-        if (s_alias_map.get(_alias, null) is null)
+        if (!s_alias_map.get(_alias, null))
             s_alias_map[_alias] = basename;
     }
 
@@ -214,7 +214,7 @@ public:
         if (name)
             return name;
         else
-            return input.dup;
+            return input.idup;
     }
 
     static void setDefaultAliases()

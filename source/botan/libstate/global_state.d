@@ -18,7 +18,7 @@ private LibraryState g_lib_state;
 LibraryState globalState()
 {
     if (!g_lib_state) {
-
+		logError("Initializing global state");
         import backtrace.backtrace;
         import std.stdio : stdout;
         install(stdout, PrintOptions.init, 0);

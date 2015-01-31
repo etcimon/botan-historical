@@ -252,6 +252,7 @@ import botan.pubkey.pkcs8;
 import botan.asn1.oids;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 private shared size_t total_tests;
 
 string toHex(const Vector!ubyte bin)
@@ -765,7 +766,7 @@ unittest
     File ecdsa_sig = File("../test_data/pubkey/ecdsa.vec", "r");
 
     fails += runTestsBb(ecdsa_sig, "ECDSA Signature", "Signature", true,
-                              (string[string] m) {
+                              (ref HashMap!(string, string) m) {
                                 return ecdsaSigKat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
                             });
 

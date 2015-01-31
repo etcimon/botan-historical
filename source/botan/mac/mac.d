@@ -104,7 +104,7 @@ static if (!SKIP_MAC_TEST) unittest {
         File vec = File(input, "r");
         
         return runTestsBb(vec, "Mac", "Out", true,
-                            (string[string] m) {
+                            (ref HashMap!(string, string) m) {
                                 return macTest(m["Mac"], m["Key"], m["In"], m["Out"]);
                             });
     };

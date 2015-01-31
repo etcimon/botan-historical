@@ -47,7 +47,10 @@ public:
     */
     const(T) get(string algo_spec, string requested_provider) const
     {
+		scope(exit) logDebug("Search successful");
         HashMapRef!(string, T) algo = findAlgorithm(algo_spec);
+
+		logTrace("Searching ", algo_spec, " in algo length: ", m_algorithms.length);
         if (algo.length == 0) // algo not found at all (no providers)
             return null;
         
@@ -72,14 +75,14 @@ public:
             
             if (prototype is null || prov_weight > prototype_prov_weight)
             {
-                prototype = cast(T) instance;
+                prototype = cast(T)instance;
                 prototype_provider = provider;
                 prototype_prov_weight = prov_weight;
             }
         }
 
         logTrace("Returning provider: ", prototype_provider);
-        return prototype;
+        return cast(const)prototype;
     }
 
     /**
@@ -92,18 +95,24 @@ public:
              in string requested_name,
              in string provider)
     {
-        if (!algo)
+		logTrace("Start adding ", requested_name, " provider ", provider);
+        if (!algo) {
+			logError("Tried adding null algorithm");
             return;
+		}
                 
         if (algo.name != requested_name && m_aliases.get(requested_name) == null)
         {
             m_aliases[requested_name] = algo.name;
         }
-        if (m_algorithms.get(algo.name).length == 0)
+        if (!m_algorithms.get(algo.name)) {
             m_algorithms[algo.name] = HashMapRef!(string, T)();
+		}
 
-        if (!(m_algorithms[algo.name].get(provider)))
+        if (m_algorithms[algo.name].get(provider) is null) {
+			logDebug("Adding ", algo.name, " provider ", provider);
             m_algorithms[algo.name][provider] = algo;
+		}
 
     }
 
@@ -129,14 +138,15 @@ public:
     {
         Vector!string providers;
         string algo = m_aliases.get(algo_name);
-        if (m_algorithms.get(algo).length == 0)
+		if (m_algorithms.get(algo).length == 0)
             algo = algo_name;
-        if (m_algorithms.get(algo).length == 0) 
+        if (m_algorithms.get(algo).length == 0) {
             return Vector!string();
-        foreach(const ref string provider, const ref T instance; m_algorithms[algo]) {
+		}
+        foreach(const ref string provider, const ref T instance; *(m_algorithms[algo])) {
             providers.pushBack(provider);
         }
-        return providers.dup;
+        return providers.move();
     }
 
     /**
@@ -153,13 +163,7 @@ public:
         }*/
 
         /// Let the GC handle this
-        (*m_algorithms).clear();
-    }
-
-    this() {
-        m_aliases = HashMapRef!(string, string)();
-        m_pref_providers = HashMapRef!(string, string)();
-        m_algorithms = HashMapRef!(string, HashMapRef!(string, T))();
+        m_algorithms.clear();
     }
 
 private:
@@ -187,9 +191,9 @@ private:
         return algo;
     }
 
-    HashMapRef!(string, string) m_aliases;
-    HashMapRef!(string, string) m_pref_providers;
+    HashMap!(string, string) m_aliases;
+    HashMap!(string, string) m_pref_providers;
 
              // algo_name     //provider // instance
-    HashMapRef!(string, HashMapRef!(string, T)) m_algorithms;
+    HashMap!(string, HashMapRef!(string, T)) m_algorithms;
 }

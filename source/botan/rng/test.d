@@ -9,6 +9,7 @@ import botan.rng.rng;
 import botan.utils.parsing;
 import core.atomic;
 import std.stdio;
+public import memutils.hashmap;
 
 class FixedOutputRNG : RandomNumberGenerator
 {
@@ -128,7 +129,7 @@ size_t x931Test(string algo,
 }
 
 static if (BOTAN_HAS_HMAC_DRBG)
-size_t hmacDrbgTest(string[string] m)
+size_t hmacDrbgTest(ref HashMap!(string, string) m)
 {
     atomicOp!"+="(total_tests, 1);
     const string algo = m["RNG"];
@@ -177,7 +178,7 @@ unittest
     
     static if (BOTAN_HAS_X931_RNG)
     fails += runTestsBb(x931_vec, "RNG", "Out", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
                                 return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));
                             });
 

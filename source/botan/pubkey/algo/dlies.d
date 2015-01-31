@@ -173,6 +173,7 @@ import botan.libstate.lookup;
 import botan.pubkey.algo.dh;
 import std.conv : to;
 import core.atomic;
+import memutils.hashmap;
 
 shared size_t total_tests;
 
@@ -222,7 +223,7 @@ unittest
     File dlies = File("../test_data/pubkey/dlies.vec", "r");
     
     fails += runTestsBb(dlies, "DLIES Encryption", "Ciphertext", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
                                 return dliesKat(m["P"], m["G"], m["X1"], m["X2"], m["Msg"], m["Ciphertext"]);
                             });
     

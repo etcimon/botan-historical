@@ -99,6 +99,7 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.codec.hex;
 import botan.libstate.libstate;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 
@@ -153,7 +154,7 @@ unittest
     File vec = File("../test_data/hkdf.vec", "r");
     
     size_t fails = runTestsBb(vec, "HKDF", "OKM", true,
-                                (string[string] m)
+                                (ref HashMap!(string, string) m)
                                 {
         return hkdfTest(m["HKDF"], m["IKM"], m["salt"], m["info"], m["OKM"], to!uint(m["L"]));
     });

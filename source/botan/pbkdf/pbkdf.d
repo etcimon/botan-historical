@@ -133,10 +133,11 @@ unittest {
     logTrace("Testing pbkdf.d ...");
     import botan.test;
     import botan.codec.hex;
+	import memutils.hashmap;
 
     auto test = delegate(string input) {
         return runTests(input, "PBKDF", "Output", true,
-                         (string[string] vec) {
+                         (ref HashMap!(string, string) vec) {
                             Unique!PBKDF pbkdf = getPbkdf(vec["PBKDF"]);
                             
                             const size_t iterations = to!size_t(vec["Iterations"]);

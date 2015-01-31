@@ -116,6 +116,7 @@ static if (BOTAN_HAS_SALSA20)         import botan.stream.salsa20;
 final class CoreEngine : Engine
 {
 public:
+	~this() { logError("Destroying CoreEngine"); }
     string providerName() const { return "core"; }
 
     override KeyedFilter getCipher(in string algo_spec,

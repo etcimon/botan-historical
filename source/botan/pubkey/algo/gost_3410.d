@@ -303,6 +303,7 @@ import botan.pubkey.pubkey;
 import botan.asn1.oids;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 
 private shared size_t total_tests;
 
@@ -359,7 +360,7 @@ unittest
     File ecdsa_sig = File("../test_data/pubkey/gost_3410.vec", "r");
     
     fails += runTestsBb(ecdsa_sig, "GOST-34.10 Signature", "Signature", true,
-                          (string[string] m) {
+                          (ref HashMap!(string, string) m) {
                                 return gostVerify(m["Group"], m["Pubkey"], m["Hash"], m["Msg"], m["Signature"]);
                             });
     

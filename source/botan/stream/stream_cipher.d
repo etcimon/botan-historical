@@ -72,7 +72,7 @@ import botan.test;
 import botan.libstate.libstate;
 import botan.codec.hex;
 import core.atomic;
-
+import memutils.hashmap;
 private shared size_t total_tests;
 
 size_t streamTest(string algo,
@@ -137,7 +137,7 @@ unittest
         File vec = File(input, "r");
         
         return runTestsBb(vec, "StreamCipher", "Out", true,
-                            (string[string] m) {
+                            (ref HashMap!(string, string) m) {
                                 return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m["Nonce"]);
                             });
     };

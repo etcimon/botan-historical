@@ -25,6 +25,7 @@ public:
     BlockCipher findBlockCipher(in SCANToken request,
                                 AlgorithmFactory af) const
     {
+		logDebug("AESNI findBlockCipher");
         static if (BOTAN_HAS_AES_NI) {
             if (CPUID.hasAesNi())
             {
@@ -37,7 +38,7 @@ public:
             }
             else { logDebug("AES-NI not supported"); }
         }
-        
+		logDebug("Returning null");
         return null;
     }
 

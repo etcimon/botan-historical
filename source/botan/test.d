@@ -8,6 +8,7 @@ public import std.algorithm : sort, canFind, walkLength;
 public import std.string : indexOf, lastIndexOf;
 public import botan.utils.types;
 public import botan.libstate.libstate;
+import memutils.hashmap;
 import std.file;
 import std.array;
 import std.exception;
@@ -95,10 +96,10 @@ void testReport(string name, size_t ran, size_t failed)
 }
 
 size_t runTestsBb(ref File src,
-                    string name_key,
-                    string output_key,
-                    bool clear_between_cb,
-                    size_t delegate(string[string]) cb)
+                  string name_key,
+                  string output_key,
+                  bool clear_between_cb,
+                  size_t delegate(ref HashMap!(string, string)) cb)
 {
     scope(failure) { logError("failure in file: ", src.name); }
     if(src.eof || src.error)
@@ -107,7 +108,7 @@ size_t runTestsBb(ref File src,
         return 1;
     }
     
-    string[string] vars;
+    HashMap!(string, string) vars;
     size_t test_fails = 0, algo_fail = 0;
     size_t test_count = 0, algo_count = 0;
     
@@ -157,12 +158,12 @@ size_t runTestsBb(ref File src,
             try
             {
                 const size_t fails = cb(vars);
-                
                 if(fails)
                 {
                     logTrace(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
                     algo_fail += fails;
                 }
+				logDebug("No fails");
             }
             catch(Exception e)
             {
@@ -172,20 +173,25 @@ size_t runTestsBb(ref File src,
             
             if(clear_between_cb)
             {
-                vars = string[string].init;
+				logDebug("clear between cb");
+				vars.clear();
+				logDebug("reinit done, adding ", fixed_name, " to vars[", name_key, "]");
                 vars[name_key] = fixed_name;
+				logDebug("done clear");
             }
         }
     }
     
     test_count += algo_count;
     test_fails += algo_fail;
+	logDebug("done +=");
     
     if(fixed_name != "" && (algo_count > 0 || algo_fail > 0))
         testReport(fixed_name, algo_count, algo_fail);
     else
         testReport(name_key, test_count, test_fails);
     
+	logDebug("after test report");
     return test_fails;
 }
 
@@ -193,7 +199,7 @@ size_t runTests(string filename,
                  string name_key,
                  string output_key,
                  bool clear_between_cb,
-                 string delegate(string[string]) cb)
+			     string delegate(ref HashMap!(string, string)) cb)
 {
     File vec = File(filename, "r");
     
@@ -210,10 +216,10 @@ size_t runTests(ref File src,
                  string name_key,
                  string output_key,
                  bool clear_between_cb,
-                 string delegate(string[string]) cb)
+				 string delegate(ref HashMap!(string, string)) cb)
 {
     return runTestsBb(src, name_key, output_key, clear_between_cb, 
-                        (string[string] vars)
+                        (ref HashMap!(string, string) vars)
                         {
                             const string got = cb(vars);
                             if(got != vars[output_key])

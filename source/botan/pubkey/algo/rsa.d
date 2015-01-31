@@ -282,6 +282,7 @@ import botan.rng.auto_rng;
 import botan.pubkey.pubkey;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 
 shared size_t total_tests;
 
@@ -391,21 +392,21 @@ unittest
     
     
     fails += runTestsBb(rsa_enc, "RSA Encryption", "Ciphertext", true,
-                          (string[string] m)
+                          (ref HashMap!(string, string) m)
                           {
         return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"],
         m["Padding"], m["Nonce"], m["Ciphertext"]);
     });
     
     fails += runTestsBb(rsa_sig, "RSA Signature", "Signature", true,
-                          (string[string] m)
+                          (ref HashMap!(string, string) m)
                           {
         return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"],
         m["Padding"], m["Nonce"], m["Signature"]);
     });
     
     fails += runTestsBb(rsa_verify, "RSA Verify", "Signature", true,
-                          (string[string] m)
+                          (ref HashMap!(string, string) m)
                           {
         return rsaSigVerify(m["E"], m["N"], m["Msg"],
         m["Padding"], m["Signature"]);
