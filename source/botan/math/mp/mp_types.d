@@ -43,5 +43,5 @@ else static if (BOTAN_MP_WORD_BITS == 64) {
 
 
 __gshared immutable word MP_WORD_MASK = ~cast(word)(0);
-__gshared immutable word MP_WORD_TOP_BIT = cast(word)(1) << (8*(word).sizeof - 1);
+__gshared immutable word MP_WORD_TOP_BIT = (cast(word) 1) << (8*(word).sizeof - 1);
 __gshared immutable word MP_WORD_MAX = MP_WORD_MASK;

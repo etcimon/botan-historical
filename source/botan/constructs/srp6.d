@@ -61,13 +61,13 @@ SRP6KeyPair
     
     BigInt a = BigInt(rng, 256);
     
-    BigInt A = powerMod(*g, a, *p);
+	BigInt A = powerMod(*g, a, *p);
     
     BigInt u = hashSeq(hash_id, p_bytes, A, B);
     
     BigInt x = computeX(hash_id, identifier, password, salt);
     
-    BigInt S = powerMod((B - (k * powerMod(*g, x, *p))) % (*p), (a + (u * x)), *p);
+	BigInt S = powerMod((B - (k * powerMod(*g, x, *p))) % (*p), (a + (u * x)), *p);
     
     SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
@@ -89,10 +89,10 @@ BigInt generateSrp6Verifier(in string identifier,
                               in string group_id,
                               in string hash_id)
 {
-    const BigInt x = computeX(hash_id, identifier, password, salt);
+    BigInt x = computeX(hash_id, identifier, password, salt);
     
     DLGroup group = DLGroup(group_id);
-    return powerMod(group.getG(), x, group.getP());
+	return powerMod(group.getG(), x, group.getP());
 }
 
 
@@ -155,7 +155,7 @@ public:
         
         BigInt b = BigInt(rng, 256);
         
-        m_B = (v*k + powerMod(*g, b, *p)) % (*p);
+		m_B = (v*k + powerMod(*g, b, *p)) % (*p);
         
         m_v = v.dup;
         m_b = b.move();

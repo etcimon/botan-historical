@@ -34,7 +34,6 @@ public:
 */
 class PowerMod
 {
-    enum NOGC = true;
 public:
     alias UsageHints = ushort;
     enum : UsageHints {
@@ -151,10 +150,10 @@ public:
         setModulus(n, hints);
     }
 
-    this(in PowerMod other)
+    this(PowerMod other)
     {
         if (other.m_core)
-            m_core = other.m_core.copy();
+            m_core = other.m_core.release();
     }
 
 private:
@@ -166,7 +165,6 @@ private:
 */
 class FixedExponentPowerModImpl : PowerMod
 {
-    enum NOGC = true;
 public:
     BigInt opCall()(auto const ref BigInt b)
     { setBase(b); return execute(); }
@@ -190,7 +188,6 @@ public:
 */
 class FixedBasePowerModImpl : PowerMod
 {
-    enum NOGC = true;
 public:
     BigInt opCall()(auto const ref BigInt e)
     { setExponent(e); return execute(); }

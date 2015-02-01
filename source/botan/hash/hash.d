@@ -102,7 +102,7 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 
 static if (!SKIP_HASH_TEST) unittest
 {
-    logTrace("Testing hash.d ...");
+    logDebug("Testing hash.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

@@ -186,7 +186,7 @@ size_t keywrapTest(string key_str,
 
 static if (!SKIP_RFC3394_TEST) unittest
 {
-    logTrace("Testing rfc3394.d ...");
+    logDebug("Testing rfc3394.d ...");
 
     size_t fails = 0;
     

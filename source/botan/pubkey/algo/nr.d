@@ -298,7 +298,7 @@ size_t nrSigKat(string p, string q, string g, string x,
 
 unittest
 {
-    logTrace("Testing nr.d ...");
+    logDebug("Testing nr.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

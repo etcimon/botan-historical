@@ -315,7 +315,7 @@ import botan.codec.hex;
 
 static if (!SKIP_TSS_TEST) unittest
 {
-    logTrace("Testing tss.d ...");
+    logDebug("Testing tss.d ...");
     AutoSeededRNG rng = AutoSeededRNG();
     
     size_t fails = 0;

@@ -165,7 +165,7 @@ size_t hmacDrbgTest(ref HashMap!(string, string) m)
 
 unittest
 {
-    logTrace("Testing rng/test.d ...");
+    logDebug("Testing rng/test.d ...");
     File hmac_drbg_vec = File("../test_data/hmac_drbg.vec", "r");
     File x931_vec = File("../test_data/x931.vec", "r");
     

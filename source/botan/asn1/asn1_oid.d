@@ -129,9 +129,7 @@ public:
     */
     bool opEquals(in OIDImpl oid) const
     {
-		logTrace("opEquals ", cast(void*) this);
-		if(oid) logTrace("opEquals ", cast(void*) oid);
-        if ((!oid || oid.m_id.length == 0) && m_id.length == 0) return true;
+		if ((!oid || oid.m_id.length == 0) && m_id.length == 0) return true;
 		else if (!oid || oid.m_id.length == 0) return false;
 		else if (m_id.length == 0) return false;
         

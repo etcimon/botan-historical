@@ -158,7 +158,7 @@ import botan.rng.auto_rng;
 
 unittest
 {
-    logTrace("Testing passhash9.d ...");
+    logDebug("Testing passhash9.d ...");
     size_t fails = 0;
     
     const string input = "secret";

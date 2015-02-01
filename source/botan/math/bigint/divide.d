@@ -69,7 +69,7 @@ void divide()(auto const ref BigInt x, auto const ref BigInt y_arg, ref BigInt q
             return;
         }
         
-        BigInt temp = y.dup << (MP_WORD_BITS * (n-t));
+        BigInt temp = y << (MP_WORD_BITS * (n-t));
         
         while (r >= temp) { r -= temp; q_words[n-t] += 1; }
         

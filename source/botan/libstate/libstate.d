@@ -134,7 +134,7 @@ public:
     {
         if (!m_algorithm_factory)
             throw new InvalidState("Uninitialized in algorithmFactory");
-		logDebug("Algorithm factory: ", cast(void*)*m_algorithm_factory);
+		// logDebug("Algorithm factory: ", cast(void*)*m_algorithm_factory);
         return *m_algorithm_factory;
     }
 

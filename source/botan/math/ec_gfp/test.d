@@ -66,15 +66,18 @@ size_t testPointTurnOnSpRedMul()
     Vector!ubyte sv_a_secp = hexDecode(a_secp);
     Vector!ubyte sv_b_secp = hexDecode(b_secp);
     Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
+	logTrace("A: ", sv_a_secp.ptr[0 .. sv_a_secp.length]);
     BigInt bi_p_secp = BigInt.decode(&sv_p_secp[0], sv_p_secp.length);
     BigInt bi_a_secp = BigInt.decode(&sv_a_secp[0], sv_a_secp.length);
-    BigInt bi_b_secp = BigInt.decode(&sv_b_secp[0], sv_b_secp.length);
+	logTrace("A: ", bi_a_secp.toString());
+	BigInt bi_b_secp = BigInt.decode(&sv_b_secp[0], sv_b_secp.length);
 	logTrace("secp160r1");
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
 	logTrace("Built secp160r1: ", secp160r1.toVector()[]);
 	logTrace("OS2ECP");
     PointGFp p_G = OS2ECP(sv_G_secp_comp, secp160r1);
     
+	logTrace("small bigint");
     BigInt d = BigInt("459183204582304");
     
 	logTrace("r1");
@@ -813,7 +816,7 @@ static if (!SKIP_EC_GFP_TEST) unittest
 	import botan.libstate.global_state;
 	auto state = globalState(); // ensure initialized
 
-    logTrace("Testing ec_gfp/test.d ...");
+    logDebug("Testing ec_gfp/test.d ...");
     size_t fails = 0;
     
 	logTrace("testPointTurnOnSpRedMul");

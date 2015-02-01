@@ -279,7 +279,7 @@ static if (!SKIP_BIGINT_TEST) unittest
     auto state = globalState(); // ensure initialized
 
     import std.stdio : writeln;
-    logTrace("Testing bigint/test.d ...");
+    logDebug("Testing bigint/test.d ...");
     import std.array;
     const string filename = "../test_data/mp_valid.dat";
     File test_data = File(filename, "r");

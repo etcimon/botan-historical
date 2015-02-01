@@ -7,6 +7,7 @@
 module botan.utils.rounding;
 
 import botan.utils.types;
+
 /**
 * Round up
 * @param n = an integer

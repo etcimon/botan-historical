@@ -327,7 +327,7 @@ size_t rwSigVerify(string e,
 
 unittest
 {
-    logTrace("Testing rw.d ...");
+    logDebug("Testing rw.d ...");
     size_t fails = 0;
     
     AutoSeededRNG rng;

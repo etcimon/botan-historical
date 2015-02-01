@@ -270,7 +270,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
 
 unittest
 {
-    logTrace("Testing aead.d ...");
+    logDebug("Testing aead.d ...");
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

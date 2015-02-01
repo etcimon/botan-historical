@@ -309,7 +309,7 @@ size_t dsaSigKat(string p,
 
 unittest
 {
-    logTrace("Testing dsa.d ...");
+    logDebug("Testing dsa.d ...");
     size_t fails;
     
     AutoSeededRNG rng;

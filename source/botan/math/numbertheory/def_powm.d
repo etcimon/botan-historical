@@ -22,7 +22,6 @@ import botan.constants;
 */
 final class FixedWindowExponentiator : ModularExponentiator
 {
-    enum NOGC = true;
 public:
     /*
     * Set the exponent
@@ -40,11 +39,11 @@ public:
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
         
         m_g.resize(1 << m_window_bits);
-        m_g[0] = 1;
-        m_g[1] = base.dup;
+        m_g[0] = RefCounted!BigInt(1);
+        m_g[1] = RefCounted!BigInt(base.dup);
         
         for (size_t i = 2; i != m_g.length; ++i)
-            m_g[i] = m_reducer.multiply(m_g[i-1], m_g[0]);
+            m_g[i] = RefCounted!BigInt(m_reducer.multiply(*m_g[i-1], *m_g[0]));
     }
 
     /*
@@ -100,7 +99,6 @@ private:
 */
 class MontgomeryExponentiator : ModularExponentiator
 {
-    enum NOGC = true;
 public:
     /*
     * Set the exponent
@@ -122,26 +120,26 @@ public:
         BigInt z = BigInt(BigInt.Positive, 2 * (m_mod_words + 1));
         SecureVector!word workspace = SecureVector!word(z.length);
         
-        m_g[0] = BigInt(1);
+        m_g[0] = RefCounted!BigInt(1);
         
         bigint_monty_mul(z.mutablePtr(), z.length, m_g[0].ptr, m_g[0].length, m_g[0].sigWords(), m_R2_mod.ptr, 
                          m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
-        m_g[0] = z.dup;
+		m_g[0] = RefCounted!BigInt(z.dup);
         
-        m_g[1] = (base >= m_modulus) ? (base % m_modulus) : base.dup;
+		m_g[1] = (base >= m_modulus) ? RefCounted!BigInt(base % m_modulus) : RefCounted!BigInt(base.dup);
         
         bigint_monty_mul(z.mutablePtr(), z.length, m_g[1].ptr, m_g[1].length, m_g[1].sigWords(), m_R2_mod.ptr, 
                          m_R2_mod.length, m_R2_mod.sigWords(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
         
-        m_g[1] = z.dup;
+		m_g[1] = RefCounted!BigInt(z.dup);
         
-        const BigInt x = m_g[1].dup;
+        const BigInt* x = &*m_g[1];
         const size_t x_sig = x.sigWords();
         
         for (size_t i = 2; i != m_g.length; ++i)
         {
-            const BigInt y = m_g[i-1].dup;
+            const BigInt* y = &*m_g[i-1];
             const size_t y_sig = y.sigWords();
             
             bigint_monty_mul(z.mutablePtr(), z.length,
@@ -150,7 +148,7 @@ public:
                              m_modulus.ptr, m_mod_words, m_mod_prime,
                              workspace.ptr);
             
-            m_g[i] = z.dup;
+			m_g[i] = RefCounted!BigInt(z.dup);
         }
     }
 

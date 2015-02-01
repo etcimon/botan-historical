@@ -77,7 +77,7 @@ size_t rfc6979Testcase(string q_str,
 
 unittest
 {
-    logTrace("Testing rfc6979.d ...");
+    logDebug("Testing rfc6979.d ...");
     
     size_t fails = 0;
     

@@ -32,15 +32,14 @@ import std.traits : isNumeric;
 */
 struct BigInt
 {
-    enum NOGC = true;
 public:
     /*
     * Write the BigInt into a vector
     */
 	Vector!ubyte toVector(Base base = Decimal) const
     {
-        Array!ubyte buffer = BigInt.encode(this, base);
-		Array!ubyte ret;
+        Vector!ubyte buffer = BigInt.encode(this, base);
+		Vector!ubyte ret;
         size_t skip = 0;
         while(skip < buffer.length && buffer[skip] == '0')
             ++skip;
@@ -170,11 +169,11 @@ public:
     /**
     * Move constructor
     */
-    this(ref BigInt other)
+    this()(auto ref BigInt other)
     {
 		this.swap(other);
-    }
-    
+    }    
+
 	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) payload, in Sign sign) {
 		this(payload.ptr, payload.length);
 	}
@@ -206,13 +205,13 @@ public:
     * Swap this value with another
     * @param other = BigInt to swap values with
     */
-	void swap()(auto const ref BigInt other)
+	void swap()(auto ref BigInt other)
     {
 		if (other.m_reg.length > 0) {
-			auto val = other.m_reg.ptr[0 .. other.length];
-			m_reg[] = val;
+			m_reg.swap(other.m_reg);
 		}
         else {
+			m_reg.reserve(1);
 			m_reg[] = [cast(word)0];
 		}
 
@@ -462,12 +461,12 @@ public:
     /**
     * Increment operator
     */
-    BigInt opUnary(string op)() if (op == "++") { return (this + BigInt(1)); }
+	ref BigInt opUnary(string op)() if (op == "++") { this += BigInt(1); return this; }
 
     /**
     * Decrement operator
     */
-    BigInt opUnary(string op)() if (op == "--") { return (this - BigInt(1)); }
+	ref BigInt opUnary(string op)() if (op == "--") { this -= BigInt(1); return this; }
 
     /**
     * Unary negation operator
@@ -495,7 +494,8 @@ public:
     */
     void clear() 
     { 
-        zeroise(m_reg);
+		import std.c.string : memset;
+		memset(m_reg.ptr, 0, word.sizeof*m_reg.length);
     }
 
     /**
@@ -816,7 +816,8 @@ public:
     */
     void growTo(size_t n)
     {
-        m_reg.resize(roundUp!size_t(n, 8));
+		if (n >= size())
+        	m_reg.resize(roundUp!size_t(n, 8));
     }
 
     /**
@@ -848,8 +849,9 @@ public:
     void binaryEncode(ubyte* output) const
     {
         const size_t sig_bytes = bytes();
-        foreach (size_t i; 0 .. sig_bytes)
+        foreach (size_t i; 0 .. sig_bytes) {
             output[sig_bytes-i-1] = byteAt(i);
+		}
     }
 
     /**
@@ -863,7 +865,6 @@ public:
         
         clear();
         m_reg.resize(roundUp!size_t((length / WORD_BYTES) + 1, 8));
-        
         foreach (size_t i; 0 .. (length / WORD_BYTES))
         {
             const size_t top = length - WORD_BYTES*i;
@@ -904,7 +905,7 @@ public:
         else if (base == Hexadecimal)
             return 2*bytes();
         else if (base == Decimal)
-            return cast(size_t)(((cast(double)bits()) * LOG_2_BASE_10) + 1.0);
+            return cast(size_t)((bits() * LOG_2_BASE_10) + 1);
         else
             throw new InvalidArgument("Unknown base for BigInt encoding");
     }

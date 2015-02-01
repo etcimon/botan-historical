@@ -350,7 +350,7 @@ size_t gostVerify(string group_id,
 
 unittest
 {
-    logTrace("Testing gost_3410.d ...");
+    logDebug("Testing gost_3410.d ...");
     size_t fails = 0;
 
     AutoSeededRNG rng;

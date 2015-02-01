@@ -130,7 +130,7 @@ public:
 }
 
 unittest {
-    logTrace("Testing pbkdf.d ...");
+    logDebug("Testing pbkdf.d ...");
     import botan.test;
     import botan.codec.hex;
 	import memutils.hashmap;

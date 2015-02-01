@@ -266,10 +266,10 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
 static if (!SKIP_BLOCK_TEST) unittest {
 
 
-    logTrace("Testing block_cipher.d ...");
+    logDebug("Testing block_cipher.d ...");
     size_t test_bc(string input)
     {
-        logTrace("Testing file `" ~ input ~ " ...");
+        logDebug("Testing file `" ~ input ~ " ...");
         File vec = File(input, "r");
         return runTestsBb(vec, "BlockCipher", "Out", true,
                           (ref HashMap!(string, string) m) {

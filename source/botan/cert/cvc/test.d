@@ -581,7 +581,7 @@ void testCvcChain(RandomNumberGenerator rng)
 static if (!SKIP_CVC_TEST) unittest
 {
 
-    logTrace("Testing cvc/test.d ...");
+    logDebug("Testing cvc/test.d ...");
     AutoSeededRNG rng = AutoSeededRNG();
     
     logTrace("testEncGenSelfsigned");

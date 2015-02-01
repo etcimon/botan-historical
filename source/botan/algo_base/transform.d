@@ -178,7 +178,7 @@ SecureVector!ubyte transformTest(string algo,
 
 static if (!SKIP_TRANSFORM_TEST) unittest
 {
-    logTrace("Testing transform.d ...");
+    logDebug("Testing transform.d ...");
     File vec = File("../test_data/transform.vec", "r");
     
     size_t fails = runTests(vec, "Transform", "Output", true,

@@ -47,10 +47,9 @@ public:
     */
     const(T) get(string algo_spec, string requested_provider) const
     {
-		scope(exit) logDebug("Search successful");
         HashMapRef!(string, T) algo = findAlgorithm(algo_spec);
 
-		logTrace("Searching ", algo_spec, " in algo length: ", m_algorithms.length);
+		// logTrace("Searching ", algo_spec, " in algo length: ", m_algorithms.length);
         if (algo.length == 0) // algo not found at all (no providers)
             return null;
         
@@ -81,7 +80,7 @@ public:
             }
         }
 
-        logTrace("Returning provider: ", prototype_provider);
+        // logTrace("Returning provider: ", prototype_provider);
         return cast(const)prototype;
     }
 
@@ -110,7 +109,6 @@ public:
 		}
 
         if (m_algorithms[algo.name].get(provider) is null) {
-			logDebug("Adding ", algo.name, " provider ", provider);
             m_algorithms[algo.name][provider] = algo;
 		}
 

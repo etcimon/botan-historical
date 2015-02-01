@@ -20,14 +20,6 @@ import botan.constants;
 */
 struct CurveGFp
 {
-	this(CurveGFp curve) {
-		logTrace("curveGFp constructor");
-	}
-
-	this(BigInt p, BigInt a, BigInt b, size_t m_p_words, BigInt r2, BigInt a_r, BigInt b_r, word p_dash) {
-		logTrace("curveGFp constructor 2");
-	}
-	
 	/**
     * Construct the elliptic curve E: y^2 = x^3 + ax + b over GF(p)
     * @param p = prime number of the field
@@ -36,14 +28,12 @@ struct CurveGFp
     */
     this()(auto const ref BigInt p, auto const ref BigInt a, auto const ref BigInt b)
     {
-		logTrace("CurveGFp constructor 3");
         m_p = p.dup;
         m_a = a.dup;
         m_b = b.dup;
         m_p_words = m_p.sigWords();
         m_p_dash = montyInverse(m_p.wordAt(0));
         BigInt r = BigInt.powerOf2(m_p_words * BOTAN_MP_WORD_BITS);
-
         m_r2  = (r * r) % m_p;
         m_a_r = (m_a * r) % m_p;
         m_b_r = (m_b * r) % m_p;
@@ -94,7 +84,7 @@ struct CurveGFp
     * swaps the states of this and other, does not throw
     * @param other = curve to swap values with
     */
-    void swap()(auto const ref CurveGFp other)
+    void swap()(auto ref CurveGFp other)
     {
 		logTrace("curveGFp swap");
         m_p.swap(other.m_p);
@@ -134,17 +124,19 @@ struct CurveGFp
     @property CurveGFp dup() const {
 		logTrace("CurveGFp dup");
 		logDebug(toVector()[]);
-		return CurveGFp(m_p.dup(), m_a.dup(), m_b.dup());
+		return CurveGFp(m_p, m_a, m_b);
     }
 
 	@disable this(this);
 
 	string toString() const {
+		scope(exit) logDebug("ToString ret");
 		return toVector()[].idup;
 	}
 
-	Array!ubyte toVector() const {
-		Array!ubyte ret;
+	Vector!ubyte toVector() const {
+		logDebug("toVector");
+		Vector!ubyte ret;
 		ret ~= "m_p: ";
 		ret ~= m_p.toString();
 		ret ~= "\nm_a: ";
@@ -162,7 +154,7 @@ struct CurveGFp
 		ret ~= "\nm_p_words: ";
 		ret ~= m_p_words.to!string;
 		ret ~= "\n";
-		return ret;
+		return ret.move();
 	}
 
 	~this() {

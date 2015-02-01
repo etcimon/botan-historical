@@ -50,6 +50,7 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.libstate.libstate;
 import botan.codec.hex;
+import memutils.hashmap;
 import core.atomic;
 
 private shared size_t total_tests;
@@ -99,7 +100,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
 }
 
 static if (!SKIP_MAC_TEST) unittest {  
-    logTrace("Testing mac.d ...");  
+    logDebug("Testing mac.d ...");  
     auto test = delegate(string input) {
         File vec = File(input, "r");
         

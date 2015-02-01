@@ -163,7 +163,6 @@ size_t runTestsBb(ref File src,
                     logTrace(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
                     algo_fail += fails;
                 }
-				logDebug("No fails");
             }
             catch(Exception e)
             {
@@ -173,25 +172,20 @@ size_t runTestsBb(ref File src,
             
             if(clear_between_cb)
             {
-				logDebug("clear between cb");
 				vars.clear();
-				logDebug("reinit done, adding ", fixed_name, " to vars[", name_key, "]");
                 vars[name_key] = fixed_name;
-				logDebug("done clear");
             }
         }
     }
     
     test_count += algo_count;
     test_fails += algo_fail;
-	logDebug("done +=");
     
     if(fixed_name != "" && (algo_count > 0 || algo_fail > 0))
         testReport(fixed_name, algo_count, algo_fail);
     else
         testReport(name_key, test_count, test_fails);
     
-	logDebug("after test report");
     return test_fails;
 }
 

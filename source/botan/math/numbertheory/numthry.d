@@ -161,7 +161,10 @@ BigInt inverseMod()(auto const ref BigInt n, auto const ref BigInt mod)
         return inverseModOddModulus(n, mod);
     
     BigInt u = mod.dup, v = n.dup;
-    BigInt A = 1, B = 0, C = 0, D = 1;
+	BigInt A = BigInt(1);
+	BigInt B = BigInt(0);
+	BigInt C = BigInt(0);
+	BigInt D = BigInt(1);
     
     while (u.isNonzero())
     {
@@ -703,8 +706,10 @@ bool fips1863ValidSize(size_t pbits, size_t qbits)
 */
 BigInt inverseModOddModulus(const ref BigInt n, const ref BigInt mod)
 {
-    BigInt u = mod.dup, v = n.dup;
-    BigInt B = 0, D = 1;
+	BigInt u = mod.dup;
+	BigInt v = n.dup;
+	BigInt B = 0;
+	BigInt D = 1;
     
     while (u.isNonzero())
     {
@@ -727,7 +732,7 @@ BigInt inverseModOddModulus(const ref BigInt n, const ref BigInt mod)
         }
         
         if (u >= v) { u -= v; B -= D; }
-        else         { v -= u; D -= B; }
+        else        { v -= u; D -= B; }
     }
     
     if (v != 1)

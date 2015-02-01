@@ -644,7 +644,7 @@ size_t testOcbLong(size_t taglen, in string expected)
 
 unittest
 {
-    logTrace("Testing ocb.d ...");
+    logDebug("Testing ocb.d ...");
     size_t fails = 0;
     
     fails += testOcbLong(128, "B2B41CBF9B05037DA7F16C24A35C1C94");

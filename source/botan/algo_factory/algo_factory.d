@@ -32,12 +32,7 @@ public:
     void addEngine(Engine engine)
     {
         clearCaches();
-		logDebug("Push back: ", cast(void*)engine);
         m_engines.pushBack(engine);
-
-		foreach (e ; m_engines[]) {
-			logDebug("Now has: ", cast(void*) e);
-		}
     }
     
     /**
@@ -343,7 +338,7 @@ const(T) factoryPrototype(T)(in string algo_spec,
                              AlgorithmFactory af,
                              AlgorithmCache!T cache) {
 
-    logTrace("Searching for algo ", algo_spec, " & provider: ", provider);
+    logTrace("Searching for algo ", algo_spec, " | engine: ", provider ? provider : "All");
 
     if (const T cache_hit = cache.get(algo_spec, provider)) 
         return cache_hit;
@@ -355,16 +350,10 @@ const(T) factoryPrototype(T)(in string algo_spec,
 
     foreach (engine; engines[])
     {
-		logDebug("Checking next engine: ", cast(void*) engine);
         if (provider == "" || engine.providerName() == provider)
-        {
-			logDebug("Engine get algo ", engine.providerName());
-            if (T impl = engineGetAlgo!T(engine, scan_name, af)) {
-				logDebug("Adding");
+            if (T impl = engineGetAlgo!T(engine, scan_name, af))
                 cache.add(impl, algo_spec, engine.providerName());
-			} else
-				logDebug("Nope");
-        }
+        
     }
 
     return cache.get(algo_spec, provider);

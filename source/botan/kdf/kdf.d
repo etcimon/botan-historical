@@ -15,7 +15,7 @@ import botan.utils.types;
 import botan.libstate.libstate;
 import botan.algo_base.scan_token;
 import botan.constants;
-static if (BOTAN_HAS_KDF1)                import botan.kdf.kdf1;
+static if (BOTAN_HAS_KDF1)             import botan.kdf.kdf1;
 static if (BOTAN_HAS_KDF2)             import botan.kdf.kdf2;
 static if (BOTAN_HAS_X942_PRF)         import botan.kdf.prf_x942;
 static if (BOTAN_HAS_SSL_V3_PRF)       import botan.kdf.prf_ssl3;
@@ -54,8 +54,8 @@ public:
     */
     
     SecureVector!ubyte deriveKey(Alloc)(size_t key_len,
-                                            auto const ref SecureVector!ubyte secret,
-                                           auto const ref Vector!( ubyte, Alloc ) salt) const
+                                        auto const ref SecureVector!ubyte secret,
+                                        auto const ref Vector!( ubyte, Alloc ) salt) const
     {
         return deriveKey(key_len, secret.ptr, secret.length, salt.ptr, salt.length);
     }
@@ -172,10 +172,11 @@ static if (BOTAN_TEST):
 import botan.libstate.lookup;
 import botan.codec.hex;
 import botan.test;
+import memutils.hashmap;
 
 static if (!SKIP_KDF_TEST) unittest
 {
-    logTrace("Testing kdf.d ...");
+    logDebug("Testing kdf.d ...");
     auto test = delegate(string input) {
         return runTests(input, "KDF", "Output", true,
                          (ref HashMap!(string, string) vec)
@@ -184,7 +185,7 @@ static if (!SKIP_KDF_TEST) unittest
             
             const size_t outlen = to!uint(vec["OutputLen"]);
             const auto salt = hexDecode(vec["Salt"]);
-            const auto secret = hexDecode(vec["Secret"]);
+            const auto secret = hexDecodeLocked(vec["Secret"]);
             
             const auto key = kdf.deriveKey(outlen, secret, salt);
             

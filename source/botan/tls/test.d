@@ -278,7 +278,7 @@ public:
 
 unittest
 {
-    logTrace("Testing tls/test.d ...");
+    logDebug("Testing tls/test.d ...");
     size_t errors = 0;
     
     TestPolicy default_policy;

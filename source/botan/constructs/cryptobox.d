@@ -171,7 +171,7 @@ import botan.rng.auto_rng;
 
 static if (!SKIP_CRYPTOBOX_TEST) unittest
 {
-    logTrace("Testing cryptobox.d ...");
+    logDebug("Testing cryptobox.d ...");
     import botan.libstate.global_state;
     auto state = globalState(); // ensure initialized
     size_t fails = 0;
