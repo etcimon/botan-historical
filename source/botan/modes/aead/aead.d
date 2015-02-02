@@ -268,7 +268,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     return fail;
 }
 
-unittest
+static if (!SKIP_AEAD_TEST) unittest
 {
     logDebug("Testing aead.d ...");
     auto test = delegate(string input)

@@ -326,7 +326,8 @@ public:
     */
     this()(auto const ref BigInt p1, auto const ref BigInt g1)
     {
-        initialize(p1, BigInt(0), g1);
+		auto bi = BigInt(0);
+        initialize(p1, bi, g1);
     }
 
     /**

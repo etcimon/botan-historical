@@ -276,13 +276,13 @@ public:
     override bool acceptableProtocolVersion(TLSProtocolVersion) const { return true; }
 }
 
-unittest
+static if (!SKIP_TLS_TEST) unittest
 {
     logDebug("Testing tls/test.d ...");
     size_t errors = 0;
     
     TestPolicy default_policy;
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     TLSCredentialsManager basic_creds = createCreds(rng);
     
     errors += basicTestHandshake(rng, TLSProtocolVersion(TLSProtocolVersion.SSL_V3), basic_creds, default_policy);

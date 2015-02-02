@@ -331,7 +331,7 @@ size_t gostVerify(string group_id,
                    string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
     PointGFp public_point = OS2ECP(hexDecode(x), group.getCurve());
@@ -348,12 +348,12 @@ size_t gostVerify(string group_id,
     return 0;
 }
 
-unittest
+static if (!SKIP_GOST_TEST) unittest
 {
     logDebug("Testing gost_3410.d ...");
     size_t fails = 0;
 
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
 
     fails += testPkKeygen(rng);
 

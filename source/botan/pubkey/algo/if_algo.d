@@ -193,7 +193,7 @@ public:
             auto tmp = m_check_key;
             (cast(IFSchemePrivateKey)this).m_check_key = null;
             scope(exit) (cast(IFSchemePrivateKey)this).m_check_key = tmp;
-            return m_check_key(rng, strong);
+            return tmp(rng, strong);
         }
 
         if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)

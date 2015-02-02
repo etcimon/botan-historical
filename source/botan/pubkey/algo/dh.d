@@ -102,7 +102,7 @@ public:
         super(m_priv);
     }
 
-    this()(RandomNumberGenerator rng, auto const ref DLGroup grp) { this(rng, grp, BigInt(0)); }
+	this()(RandomNumberGenerator rng, auto const ref DLGroup grp) { auto bi = BigInt(0); this(rng, grp, bi.move()); }
     this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
 
     alias m_priv this;
@@ -177,9 +177,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (dh; dh_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = scoped!DHPrivateKey(rng, DLGroup(dh));
+        Unique!DHPrivateKey key = new DHPrivateKey(rng, DLGroup(dh));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(key.Scoped_payload, rng);
+        fails += validateSaveAndLoad(*key, rng);
     }
     
     return fails;
@@ -188,7 +188,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 size_t dhSigKat(string p, string g, string x, string y, string kdf, string outlen, string key)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     BigInt p_bn = BigInt(p);
     BigInt g_bn = BigInt(g);
@@ -212,12 +212,12 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
     return validateKas(kas, "DH/" ~ kdf, otherkey.publicValue(), key, keylen);
 }
 
-unittest
+static if (!SKIP_DH_TEST) unittest
 {
     logDebug("Testing dh.d ...");
     size_t fails = 0;
 
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
 
     fails += testPkKeygen(rng);
 

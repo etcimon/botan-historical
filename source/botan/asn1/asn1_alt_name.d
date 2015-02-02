@@ -60,7 +60,7 @@ public:
     /*
     * Decode a BER encoded AlternativeName
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         BERDecoder names = source.startCons(ASN1Tag.SEQUENCE);
         

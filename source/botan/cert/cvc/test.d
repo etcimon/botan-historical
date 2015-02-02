@@ -81,9 +81,10 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     
     // creating a non sense selfsigned cert w/o dom pars
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.11"));
-    auto key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    Unique!ECDSAPrivateKey key = new ECDSAPrivateKey(rng, dom_pars);
     key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
-    EAC11CVC cert = createSelfSignedCert(key, opts, rng);
+	assert(*key !is null);
+    EAC11CVC cert = createSelfSignedCert(cast(PrivateKey)*key, opts, rng);
     {
         Array!ubyte der = cert.BER_encode();
         File cert_file = File("../test_data/ecc/my_cv_cert.ber", "wb+");
@@ -195,7 +196,7 @@ void testEncGenReq(RandomNumberGenerator rng)
     
     // creating a non sense selfsigned cert w/o dom pars
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
-    auto key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto key = ECDSAPrivateKey(rng, dom_pars);
     key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     EAC11Req req = createCvcReq(key, opts.chr, opts.hash_alg, rng);
     {
@@ -254,7 +255,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     // creating a non sense selfsigned cert w/o dom pars
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.11"));
     //cout " ~mod = " ~ hex << dom_pars.getCurve().getP());
-    auto req_key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto req_key = ECDSAPrivateKey(rng, dom_pars);
     req_key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     //EAC11Req req = createCvcReq(req_key, opts);
     EAC11Req req = createCvcReq(req_key, opts.chr, opts.hash_alg, rng);
@@ -265,7 +266,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
     }
     
     // create an ado with that req
-    auto ado_key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto ado_key = ECDSAPrivateKey(rng, dom_pars);
     EAC11CVCOptions ado_opts;
     ado_opts.car = ASN1Car("my_ado_car");
     ado_opts.hash_alg = "SHA-256"; // must be equal to req´s hash alg, because ado takes his sig_algo from it´s request
@@ -300,13 +301,13 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
     
     // creating a non sense selfsigned cert w/o dom pars
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.11"));
-    auto req_key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto req_key = ECDSAPrivateKey(rng, dom_pars);
     req_key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     //EAC11Req req = createCvcReq(req_key, opts);
     EAC11Req req = createCvcReq(req_key, opts.chr, opts.hash_alg, rng);
     
     // create an ado with that req
-    auto ado_key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto ado_key = ECDSAPrivateKey(rng, dom_pars);
     EAC11CVCOptions ado_opts;
     ado_opts.car = ASN1Car("my_ado_car1");
     ado_opts.hash_alg = "SHA-224"; // must be equal to req's hash alg, because ado takes his sig_algo from it's request
@@ -318,11 +319,11 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
     //opts2.cpi = 0;
     opts2.chr = ASN1Chr("my_opt_chr");
     opts2.hash_alg = "SHA-160"; // this is the only difference
-    auto req_key2 = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto req_key2 = ECDSAPrivateKey(rng, dom_pars);
     req_key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
     //EAC11Req req2 = createCvcReq(req_key2, opts2, rng);
     EAC11Req req2 = createCvcReq(req_key2, opts2.chr, opts2.hash_alg, rng);
-    auto ado_key2 = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto ado_key2 = ECDSAPrivateKey(rng, dom_pars);
     EAC11CVCOptions ado_opts2;
     ado_opts2.car = ASN1Car("my_ado_car1");
     ado_opts2.hash_alg = "SHA-160"; // must be equal to req's hash alg, because ado takes his sig_algo from it's request
@@ -489,7 +490,7 @@ void testCvcChain(RandomNumberGenerator rng)
     size_t total_tests;
     scope(exit)testReport("testCvcChain", total_tests, fails);
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
-    auto cvca_privk = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto cvca_privk = ECDSAPrivateKey(rng, dom_pars);
     string hash = "SHA-224";
     ASN1Car car = ASN1Car("DECVCA00001");
     EAC11CVC cvca_cert = cvc_self.createCvca(cvca_privk, hash, car, true, true, 12, rng);
@@ -499,7 +500,7 @@ void testCvcChain(RandomNumberGenerator rng)
         cvca_file.write(cast(string) cvca_sv.ptr[0 .. cvca_sv.length]);
     }
     
-    auto cvca_privk2 = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto cvca_privk2 = ECDSAPrivateKey(rng, dom_pars);
     ASN1Car car2 = ASN1Car("DECVCA00002");
     EAC11CVC cvca_cert2 = cvc_self.createCvca(cvca_privk2, hash, car2, true, true, 12, rng);
     EAC11CVC link12 = cvc_self.linkCvca(cvca_cert, cvca_privk, cvca_cert2, rng);
@@ -517,7 +518,7 @@ void testCvcChain(RandomNumberGenerator rng)
     mixin( CHECK(` link12_reloaded.checkSignature(*cvca1_rel_pk) `) );
     
     // create first round dvca-req
-    auto dvca_priv_key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto dvca_priv_key = ECDSAPrivateKey(rng, dom_pars);
     EAC11Req dvca_req = cvc_self.createCvcReq(dvca_priv_key, ASN1Chr("DEDVCAEPASS"), hash, rng);
     {
         File dvca_file = File("../test_data/ecc/cvc_chain_dvca_req.cer", "wb+");
@@ -532,7 +533,7 @@ void testCvcChain(RandomNumberGenerator rng)
     helperWriteFile(dvca_cert1, "test_data/ecc/cvc_chain_dvca_cert1.cer");
     
     // make a second round dvca ado request
-    auto dvca_priv_key2 = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto dvca_priv_key2 = ECDSAPrivateKey(rng, dom_pars);
     EAC11Req dvca_req2 = cvc_self.createCvcReq(dvca_priv_key2, ASN1Chr("DEDVCAEPASS"), hash, rng);
     {
         File dvca_file2 = File("../test_data/ecc/cvc_chain_dvca_req2.cer", "wb+");
@@ -563,7 +564,7 @@ void testCvcChain(RandomNumberGenerator rng)
     CHECK_MESSAGE(`dvca_cert2.getChr().iso8859() == "DEDVCAEPASS00002"`, "chr = ` ~ dvca_cert2.getChr().iso8859() ~ `");
     
     // make a first round IS request
-    auto is_priv_key = scoped!ECDSAPrivateKey(rng, dom_pars);
+    auto is_priv_key = ECDSAPrivateKey(rng, dom_pars);
     EAC11Req is_req = cvc_self.createCvcReq(is_priv_key, ASN1Chr("DEIS"), hash, rng);
     helperWriteFile(is_req, "test_data/ecc/cvc_chain_is_req.cer");
     
@@ -582,7 +583,7 @@ static if (!SKIP_CVC_TEST) unittest
 {
 
     logDebug("Testing cvc/test.d ...");
-    AutoSeededRNG rng = AutoSeededRNG();
+    auto rng = AutoSeededRNG();
     
     logTrace("testEncGenSelfsigned");
     testEncGenSelfsigned(rng);

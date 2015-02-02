@@ -59,22 +59,22 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
                               RandomNumberGenerator rng)
 {
     // NOTE: we ignore the value of opt.chr
-    
-    const ECDSAPrivateKey priv_key = cast(const ECDSAPrivateKey) key;
+    Unique!ECDSAPrivateKey priv_key = new ECDSAPrivateKey(key);
     
     if (!priv_key)
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     
     ASN1Chr chr = ASN1Chr(opt.car.value());
     
-    AlgorithmIdentifier sig_algo;
+	auto sig_algo = AlgorithmIdentifier();
     string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
+	logDebug(padding_and_hash);
     sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
     sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
     
-    PKSigner signer = PKSigner(priv_key, padding_and_hash);
+    PKSigner signer = PKSigner(key, padding_and_hash);
     
-	Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+	Vector!ubyte enc_public_key = eac11Encoding(cast(ECPublicKey)key, sig_algo.oid);
     
     return makeCvcCert(signer,
                        enc_public_key,

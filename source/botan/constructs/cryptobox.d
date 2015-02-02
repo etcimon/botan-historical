@@ -176,7 +176,7 @@ static if (!SKIP_CRYPTOBOX_TEST) unittest
     auto state = globalState(); // ensure initialized
     size_t fails = 0;
     
-    AutoSeededRNG rng = AutoSeededRNG();
+    auto rng = AutoSeededRNG();
     
     __gshared immutable ubyte[3] msg = [ 0xAA, 0xBB, 0xCC ];
     string ciphertext = CryptoBox.encrypt(msg.ptr, msg.length, "secret password", rng);

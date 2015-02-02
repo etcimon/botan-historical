@@ -293,7 +293,7 @@ size_t rwSigKat(string e,
                   string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     auto privkey = new RWPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
@@ -311,7 +311,7 @@ size_t rwSigVerify(string e,
                      string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
@@ -325,12 +325,12 @@ size_t rwSigVerify(string e,
     return 0;
 }
 
-unittest
+static if (!SKIP_RW_TEST) unittest
 {
     logDebug("Testing rw.d ...");
     size_t fails = 0;
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     fails += testPkKeygen(rng);
     

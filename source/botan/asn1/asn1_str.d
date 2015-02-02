@@ -39,7 +39,7 @@ public:
     /*
     * Decode a BER encoded ASN1String
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         BERObject obj = source.getNextObject();
         CharacterSet charset_is;

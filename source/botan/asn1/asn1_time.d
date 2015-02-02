@@ -46,7 +46,7 @@ public:
     /*
     * Decode a BER encoded X509Time
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         BERObject ber_time = source.getNextObject();
         

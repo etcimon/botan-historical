@@ -293,8 +293,10 @@ BigInt ressol()(auto const ref BigInt a, auto const ref BigInt p)
     if (p == 2)
         return a.dup;
     
-    if (jacobi(a, p) != 1) // not a quadratic residue
-        return -BigInt(1);
+    if (jacobi(a, p) != 1) { // not a quadratic residue
+		auto bi = -BigInt(1);
+        return bi.move();
+	}
     
     if (p % 4 == 3)
         return powerMod(a, ((p+1) >> 2), p);
@@ -332,9 +334,10 @@ BigInt ressol()(auto const ref BigInt a, auto const ref BigInt p)
             ++i;
         }
         
-        if (s <= i)
-            return -BigInt(1);
-        
+        if (s <= i) {
+			auto bi = -BigInt(1);
+			return bi.move();
+		}
         c = powerMod(c, BigInt.powerOf2(s-i-1), p);
         r = mod_p.multiply(r, c);
         c = mod_p.square(c);
@@ -450,7 +453,8 @@ bool isPrime()(auto const ref BigInt n, RandomNumberGenerator rng, size_t prob =
     
     foreach (size_t i; 0 .. test_iterations)
     {
-        const BigInt a = BigInt.randomInteger(rng, BigInt(2), n_minus_1);
+		auto bi = BigInt(2);
+        const BigInt a = BigInt.randomInteger(rng, bi, n_minus_1);
         BigInt y = (*pow_mod)(a);
         if (mrWitness(y, reducer, n_minus_1, s))
             return false;

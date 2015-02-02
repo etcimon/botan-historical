@@ -46,7 +46,7 @@ public:
     /*
     * Decode a BER encoded EACTime
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         BERObject obj = source.getNextObject();
         
@@ -393,7 +393,7 @@ public:
     /*
     * Decode a BER encoded ASN1EACString
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         BERObject obj = source.getNextObject();
         

@@ -62,7 +62,7 @@ PublicKey makePublicKey(in AlgorithmIdentifier alg_id, const ref SecureVector!ub
     
     static if (BOTAN_HAS_ECDSA) {
         if (alg_name == "ECDSA")
-            return new ECDSAPublicKey(alg_id, key_bits);
+            return *ECDSAPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_GOST_34_10_2001) {
@@ -118,7 +118,7 @@ PrivateKey makePrivateKey(in AlgorithmIdentifier alg_id,
     
     static if (BOTAN_HAS_ECDSA) {
         if (alg_name == "ECDSA")
-            return new ECDSAPrivateKey(alg_id, key_bits);
+            return *ECDSAPrivateKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_GOST_34_10_2001) {

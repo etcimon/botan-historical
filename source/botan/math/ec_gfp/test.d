@@ -66,31 +66,23 @@ size_t testPointTurnOnSpRedMul()
     Vector!ubyte sv_a_secp = hexDecode(a_secp);
     Vector!ubyte sv_b_secp = hexDecode(b_secp);
     Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
-	logTrace("A: ", sv_a_secp.ptr[0 .. sv_a_secp.length]);
     BigInt bi_p_secp = BigInt.decode(&sv_p_secp[0], sv_p_secp.length);
     BigInt bi_a_secp = BigInt.decode(&sv_a_secp[0], sv_a_secp.length);
-	logTrace("A: ", bi_a_secp.toString());
 	BigInt bi_b_secp = BigInt.decode(&sv_b_secp[0], sv_b_secp.length);
-	logTrace("secp160r1");
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-	logTrace("Built secp160r1: ", secp160r1.toVector()[]);
-	logTrace("OS2ECP");
     PointGFp p_G = OS2ECP(sv_G_secp_comp, secp160r1);
     
-	logTrace("small bigint");
     BigInt d = BigInt("459183204582304");
     
-	logTrace("r1");
-	logTrace(p_G.toString());
-	logTrace(d.toString());
+	logDebug(p_G.toString());
     PointGFp r1 = p_G * d;
-	logTrace("getaffinex");
+	logDebug(p_G.toString());
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
-	logTrace("pointgfp");
-    PointGFp p_G2 = PointGFp(p_G);
+    PointGFp p_G2 = p_G.dup;
     
     PointGFp r2 = p_G2 * d;
+
     mixin( CHECK_MESSAGE( `r1 == r2`, "error with point mul after extra turn on sp red mul" ) );
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
@@ -102,8 +94,7 @@ size_t testPointTurnOnSpRedMul()
     mixin( CHECK_MESSAGE( `p_r1.getAffineX() == p_r2.getAffineX()`, "error with mult2 after extra turn on sp red mul" ) );
     mixin( CHECK(` p_r1.getAffineX() != 0 `) );
     mixin( CHECK(` p_r2.getAffineX() != 0 `) );
-    r1 *= BigInt(2);
-    
+    r1 *= BigInt(2);    
     r2 *= BigInt(2);
     
     mixin( CHECK_MESSAGE( `r1 == r2`, "error with mult2 after extra turn on sp red mul" ) );
@@ -633,7 +624,7 @@ size_t testEncDecUncompressed521PrimeTooLarge()
     try
     {
 		auto os2ecp = OS2ECP(sv_G_secp_uncomp, secp521r1);
-		p_G = PointGFp(os2ecp);
+		p_G = os2ecp.move();
 		if (!p_G.onTheCurve())
             throw new InternalError("Point not on the curve");
     }
@@ -756,14 +747,14 @@ size_t testPointSwap()
     
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     PointGFp a = createRandomPoint(rng, dom_pars.getCurve());
     PointGFp b = createRandomPoint(rng, dom_pars.getCurve());
     b *= BigInt(20);
     
-    PointGFp c = PointGFp(a);
-    PointGFp d = PointGFp(b);
+    PointGFp c = a.dup;
+    PointGFp d = b.dup;
     
     d.swap(c);
     mixin( CHECK(` a == d `) );
@@ -779,7 +770,7 @@ size_t testMultSecMass()
 {
     size_t fails = 0;
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     for(int i = 0; i<50; i++)

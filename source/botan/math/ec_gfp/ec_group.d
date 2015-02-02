@@ -47,13 +47,13 @@ public:
     * @param cofactor = the cofactor
     */
     this()(auto const ref CurveGFp curve, auto const ref PointGFp base_point, 
-		   auto const ref BigInt order, auto const ref BigInt cofactor) 
+		   auto const ref BigInt order, auto const ref BigInt cofactor, in string oid = "") 
     {
         m_curve = curve.dup;
         m_base_point = base_point.dup;
         m_order = order.dup;
         m_cofactor = cofactor.dup;
-        m_oid = "";
+        m_oid = oid;
     }
 
     /**
@@ -272,14 +272,29 @@ public:
                (getCofactor() == other.getCofactor()));
     }
 
-    @property ECGroup dup() const {
-		auto curve = m_curve.dup;
-		auto base_point = m_base_point.dup;
-        ECGroup other = ECGroup(curve, base_point, m_order.dup, m_cofactor.dup);
-        other.m_oid = m_oid.idup;
-        return other;
-    }
+	public Vector!ubyte toVector() const {
+		Vector!ubyte ret;
+		ret ~= "m_curve: ";
+		ret ~= m_curve.toVector()[];
+		ret ~= "\nm_base_point: ";
+		ret ~= m_base_point.toVector()[];
+		ret ~= "\nm_order: ";
+		ret ~= m_order.toVector()[];
+		ret ~= "\nm_cofactor: ";
+		ret ~= m_cofactor.toVector()[];
+		ret ~= "\nm_oid: ";
+		ret ~= m_oid;
+		return ret.move;
+	}
+	
+	public string toString() const {
+		return toVector()[].idup;
+	}
 
+    @property ECGroup dup() const {
+		return ECGroup(m_curve, m_base_point, m_order, m_cofactor, m_oid);
+	}
+	
 private:
     CurveGFp m_curve;
     PointGFp m_base_point;

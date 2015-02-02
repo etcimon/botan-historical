@@ -1000,7 +1000,8 @@ public:
             const size_t output_size = n.encodedSize(Decimal);
             foreach (size_t j; 0 .. output_size)
             {
-                divide(copy, BigInt(10), copy, remainder);
+				auto bi = BigInt(10);
+                divide(copy, bi, copy, remainder);
                 output[output_size - 1 - j] = digit2char(cast(ubyte)(remainder.wordAt(0)));
                 if (copy.isZero())
                     break;

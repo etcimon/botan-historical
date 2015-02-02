@@ -75,7 +75,7 @@ size_t rfc6979Testcase(string q_str,
     return 0;
 }
 
-unittest
+static if (!SKIP_RFC6979_TEST) unittest
 {
     logDebug("Testing rfc6979.d ...");
     

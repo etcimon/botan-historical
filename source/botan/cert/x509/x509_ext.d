@@ -96,7 +96,7 @@ public:
         }
     }
 
-    override void decodeFrom(BERDecoder from_source)
+    override void decodeFrom(ref BERDecoder from_source)
     {
         CertificateExtension cext;
         foreach (Pair!(CertificateExtension, bool) extension; m_extensions[]) {
@@ -445,7 +445,7 @@ protected:
     Vector!ubyte encodeInner() const
     {
         return DEREncoder()
-            .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(m_key_id, ASN1Tag.OCTET_STRING, (cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC)
                 .endCons()
                 .getContentsUnlocked();
@@ -457,7 +457,7 @@ protected:
     void decodeInner(const ref Vector!ubyte input)
     {
         BERDecoder(input)
-            .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .decodeOptionalString(m_key_id, ASN1Tag.OCTET_STRING, 0);
     }
 
@@ -684,7 +684,7 @@ protected:
             policies.pushBack(PolicyInformation(oid));
         
         return DEREncoder()
-            .startCons(ASN1Tag.SEQUENCE)
+                .startCons(ASN1Tag.SEQUENCE)
                 .encodeList(policies)
                 .endCons()
                 .getContentsUnlocked();
@@ -695,7 +695,7 @@ protected:
     void decodeInner(const ref Vector!ubyte input)
     {
         Vector!( PolicyInformation ) policies;
-        
+		logTrace("Decode list of policies");
         BERDecoder(input).decodeList(policies);
         
         m_oids.clear();
@@ -906,7 +906,7 @@ public:
             throw new Exception("CRLDistributionPoints encoding not implemented");
         }
 
-        override void decodeFrom(BERDecoder ber)
+        override void decodeFrom(ref BERDecoder ber)
         {
             ber.startCons(ASN1Tag.SEQUENCE)
                     .startCons((cast(ASN1Tag) 0), ASN1Tag.CONTEXT_SPECIFIC)
@@ -984,7 +984,7 @@ public:
                 .endCons();
     }
     
-    override void decodeFrom(BERDecoder codec)
+    override void decodeFrom(ref BERDecoder codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(oid)

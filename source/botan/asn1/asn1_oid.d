@@ -58,12 +58,11 @@ public:
     /*
     * Decode a BER encoded OBJECT IDENTIFIER
     */
-    override void decodeFrom(BERDecoder decoder)
+    override void decodeFrom(ref BERDecoder decoder)
     {
         BERObject obj = decoder.getNextObject();
         if (obj.type_tag != ASN1Tag.OBJECT_ID || obj.class_tag != ASN1Tag.UNIVERSAL)
-            throw new BERBadTag("Error decoding OID, unknown tag",
-                                  obj.type_tag, obj.class_tag);
+            throw new BERBadTag("Error decoding OID, unknown tag", obj.type_tag, obj.class_tag);
         if (obj.value.length < 2)
             throw new BERDecodingError("OID encoding is too short");
         clear();
@@ -88,6 +87,8 @@ public:
             }
             m_id.pushBack(component);
         }
+		import botan.asn1.oids : OIDS;
+		assert(OIDS.lookup(OID(this)) !is null);
     }
 
 

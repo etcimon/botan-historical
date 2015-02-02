@@ -70,7 +70,7 @@ public:
     /*
     * Decode a BER encoded CRLEntry
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         BigInt serial_number_bn;
         m_reason = UNSPECIFIED;

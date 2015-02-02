@@ -129,7 +129,7 @@ public:
                       Duration loop_for) const;
 }
 
-unittest {
+static if (!SKIP_PBKDF_TEST) unittest {
     logDebug("Testing pbkdf.d ...");
     import botan.test;
     import botan.codec.hex;

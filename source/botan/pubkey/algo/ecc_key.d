@@ -197,8 +197,10 @@ public:
     this(RandomNumberGenerator rng, const ref ECGroup ec_group, const ref BigInt private_key, 
          in string algo_name, in bool msg_compat, in short msg_parts = 1) 
     {        
-        if (private_key == 0)
-            m_private_key = BigInt.randomInteger(rng, BigInt(1), ec_group.getOrder());
+		if (private_key == 0) {
+			auto bi = BigInt(1);
+			m_private_key = BigInt.randomInteger(rng, bi, ec_group.getOrder());
+		}
         else
             m_private_key = private_key.dup;
 
@@ -206,6 +208,7 @@ public:
         
         assert(public_key.onTheCurve(), "Generated public key point was on the curve");
 
+		logDebug("private key: ", m_private_key.toString());
         super(ec_group, public_key, algo_name, msg_compat, msg_parts);
     }
 

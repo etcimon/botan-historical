@@ -173,9 +173,9 @@ private:
 }
 
 
-void decodeOptionalList(BERDecoder ber,
-                          ASN1Tag tag,
-                          ref Vector!X509Certificate output)
+void decodeOptionalList(ref BERDecoder ber,
+                        ASN1Tag tag,
+                        ref Vector!X509Certificate output)
 {
     BERObject obj = ber.getNextObject();
     

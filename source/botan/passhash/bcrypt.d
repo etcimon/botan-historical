@@ -165,7 +165,7 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.rng.auto_rng;
 
-unittest
+static if (!SKIP_BCRYPT_TEST) unittest
 {
     logDebug("Testing bcrypt.d ...");
     size_t fails = 0;
@@ -184,7 +184,7 @@ unittest
         fails++;
     }
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     for(ushort level = 1; level != 5; ++level)
     {

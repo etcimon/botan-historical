@@ -114,9 +114,9 @@ public:
         if (vals.empty)
             return default_val;
         else if (vals.length > 1)
-            throw new InvalidState("get1_uint: Multiple values for " ~
-                                    key);
-        
+            throw new InvalidState("get1_uint: Multiple values for " ~ key);
+		logDebug("String to uint: ", key, " => ", cast(ubyte[][])vals[]);
+		logDebug("String to uint: ", vals[0]);
         return to!uint(vals[0]);
     }
 
@@ -142,7 +142,8 @@ public:
     void add(T)(in string key, in T val)
         if (isNumeric!T)
     {
-        add(key, to!string(val));
+		logError("add to string: ", cast(long)val, " & ", T.stringof);
+		add(key, to!string(cast(long)val));
     }
     
     /*

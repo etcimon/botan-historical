@@ -160,3 +160,13 @@ public:
 */
 alias X509PublicKey = PublicKey;
 alias PKCS8PrivateKey = PrivateKey;
+
+template UnConst(T) {
+	static if (is(T U == const(U))) {
+		alias UnConst = U;
+	} else static if (is(T V == immutable(V))) {
+		alias UnConst = V;
+	} else static if (is(T W == inout(W))) {
+		alias UnConst = W;
+	} else alias UnConst = T;
+}

@@ -133,7 +133,7 @@ public:
 		return makeSigned(signer, **tbs_bits, rng);
 	}
 
-    ~this() { if (m_pk) delete m_pk; }
+    ~this() { }
 protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;

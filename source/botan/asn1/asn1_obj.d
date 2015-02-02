@@ -16,7 +16,7 @@ public import botan.asn1.alg_id;
 public import botan.filters.data_src;
 import botan.utils.parsing;
 import botan.utils.exceptn;
-import memutils.vector : SecureArray;
+import memutils.vector : SecureVector;
 import std.conv : to;
 import botan.utils.types;
 
@@ -75,7 +75,7 @@ public:
     * Decode whatever this object is from from
     * @param from = the BERDecoder that will be read from
     */
-    void decodeFrom(BERDecoder from);
+    void decodeFrom(ref BERDecoder from);
 }
 
 /**
@@ -84,14 +84,6 @@ public:
 struct BERObject
 {
 public:
-    void opAssign(in BERObject ber) {
-        if (ber.value)
-            value = *cast(SecureArray!ubyte*)&ber.value;
-        else value = SecureArray!ubyte();
-        type_tag = ber.type_tag;
-        class_tag = ber.class_tag;
-    }
-
     /*
     * Check a type invariant on BER data
     */
@@ -110,12 +102,26 @@ public:
     */
     string toString()
     {
-        if (!value) value = SecureArray!ubyte();
         return cast(string) value[].idup;
     }
 
+	void swap(ref BERObject other) {
+		import std.algorithm : swap;
+		swap(type_tag, other.type_tag);
+		swap(class_tag, other.class_tag);
+		value.swap(other.value);
+	}
+
+	BERObject move() {
+		return BERObject(type_tag, class_tag, value.move());
+	}
+
+	BERObject dup() {
+		return BERObject(type_tag, class_tag, value.dup());
+	}
+
     ASN1Tag type_tag, class_tag;
-    SecureArray!ubyte value;
+    SecureVector!ubyte value;
 }
 
 /**

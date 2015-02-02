@@ -80,7 +80,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
     return fails;
 }
 
-unittest {
+static if (!SKIP_CIPHER_MODE_TEST) unittest {
     logDebug("Testing cipher_mode.d ...");
     auto test = delegate(string input)
     {

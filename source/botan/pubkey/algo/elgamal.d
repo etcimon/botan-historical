@@ -253,7 +253,7 @@ size_t elgamalKat(string p,
                    string ciphertext)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     const BigInt p_bn = BigInt(p);
     const BigInt g_bn = BigInt(g);
@@ -273,12 +273,12 @@ size_t elgamalKat(string p,
     return validateEncryption(enc, dec, "ElGamal/" ~ padding, msg, nonce, ciphertext);
 }
 
-unittest
+static if (!SKIP_ELGAMAL_TEST) unittest
 {
     logDebug("Testing elgamal.d ...");
     size_t fails = 0;
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     fails += testPkKeygen(rng);
     

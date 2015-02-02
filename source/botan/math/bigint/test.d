@@ -294,7 +294,7 @@ static if (!SKIP_BIGINT_TEST) unittest
     bool first = true;
     size_t counter = 0;
     
-    AutoSeededRNG rng = AutoSeededRNG();
+    auto rng = AutoSeededRNG();
     
     while(!test_data.eof)
     {

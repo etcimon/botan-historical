@@ -78,7 +78,7 @@ public:
     }
 
 
-    override void decodeFrom(BERDecoder from)
+    override void decodeFrom(ref BERDecoder from)
     {
         from.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_hash_id)
@@ -128,7 +128,7 @@ public:
         throw new Exception("Not implemented (SingleResponse::encodeInto)");
     }
 
-    override void decodeFrom(BERDecoder from)
+    override void decodeFrom(ref BERDecoder from)
     {
         BERObject cert_status;
         X509Extensions extensions;

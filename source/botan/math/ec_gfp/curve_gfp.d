@@ -86,7 +86,6 @@ struct CurveGFp
     */
     void swap()(auto ref CurveGFp other)
     {
-		logTrace("curveGFp swap");
         m_p.swap(other.m_p);
         m_a.swap(other.m_a);
         m_b.swap(other.m_b);
@@ -122,20 +121,18 @@ struct CurveGFp
     }
 
     @property CurveGFp dup() const {
-		logTrace("CurveGFp dup");
-		logDebug(toVector()[]);
 		return CurveGFp(m_p, m_a, m_b);
     }
+
+
 
 	@disable this(this);
 
 	string toString() const {
-		scope(exit) logDebug("ToString ret");
 		return toVector()[].idup;
 	}
 
 	Vector!ubyte toVector() const {
-		logDebug("toVector");
 		Vector!ubyte ret;
 		ret ~= "m_p: ";
 		ret ~= m_p.toString();

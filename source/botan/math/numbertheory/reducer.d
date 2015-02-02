@@ -25,14 +25,13 @@ public:
     */
     BigInt reduce()(auto const ref BigInt x) const
     {
-        const BigInt* modulus = &m_modulus;
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
         
-        if (x.cmp(*modulus, false) < 0)
+		if (x.cmp(m_modulus, false) < 0)
         {
             if (x.isNegative())
-                return x + *modulus; // make positive
+				return x + m_modulus; // make positive
             return x.dup;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
@@ -43,7 +42,7 @@ public:
             t1 *= m_mu;
             
             t1 >>= (MP_WORD_BITS * (m_mod_words + 1));
-            t1 *= *modulus;
+			t1 *= m_modulus;
             
             t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
@@ -58,18 +57,18 @@ public:
                 t2 += BigInt.powerOf2(MP_WORD_BITS * (m_mod_words + 1));
             }
             
-            while (t2 >= *modulus)
-                t2 -= *modulus;
+			while (t2 >= m_modulus)
+				t2 -= m_modulus;
             
             if (x.isPositive())
                 return t2.move();
             else
-                return (*modulus - t2);
+				return m_modulus - t2;
         }
         else
         {
             // too big, fall back to normal division
-            return (x % *modulus);
+			return (x % m_modulus);
         }
     }
 

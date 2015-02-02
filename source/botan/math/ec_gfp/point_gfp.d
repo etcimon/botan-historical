@@ -81,10 +81,9 @@ public:
     /**
     * Move Assignment
     */
-    ref PointGFp opAssign(in PointGFp other)
+    ref PointGFp opAssign(PointGFp other)
     {
-        PointGFp other_ = other.dup;
-        this.swap(other_);
+        this.swap(other);
         return this;
     }
 
@@ -153,8 +152,6 @@ public:
     PointGFp opBinary(string op)(auto const ref BigInt scalar) const
         if (op == "*")
     {
-
-		logTrace("opbinary");
 		assert(this.getCurve().getA() != BigInt(0));
         const PointGFp* point = &this;
         
@@ -212,11 +209,11 @@ public:
             
         } else {
             const size_t window_size = 4;
-            
             Vector!(PointGFp*) Ps = Vector!(PointGFp*)(1 << window_size);
 			auto ps0 = PointGFp(point.getCurve());
+			auto ps1 = point.dup;
 			Ps[0] = &ps0;
-            Ps[1] = point;
+			Ps[1] = &ps1;
             
             for (size_t i = 2; i != Ps.length; ++i)
             {
@@ -231,13 +228,13 @@ public:
                 foreach (size_t i; 0 .. window_size)
                     H.mult2(ws);
                 
-                const uint nibble = scalar.getSubstring(bits_left - window_size,
-                                                         window_size);
+                const uint nibble = scalar.getSubstring(bits_left - window_size, window_size);
 				H.add(*Ps[nibble], ws);
                 
                 bits_left -= window_size;
             }
             
+
             while (bits_left)
             {
                 H.mult2(ws);
@@ -267,8 +264,7 @@ public:
     {
         const PointGFp p3 = p1 + p2;
         
-		CurveGFp p1_curve = p1.m_curve.dup;
-        PointGFp H = PointGFp(p1_curve); // create as zero
+		PointGFp H = PointGFp(p1.m_curve); // create as zero
         size_t bits_left = std.algorithm.max(z1.bits(), z2.bits());
         
 		Vector!(RefCounted!BigInt) ws = Vector!(RefCounted!BigInt)(9);
@@ -293,7 +289,7 @@ public:
         if (z1.isNegative() != z2.isNegative())
             H.negate();
         
-        return H;
+        return H.move();
     }
 
     /**
@@ -328,7 +324,7 @@ public:
         z2 = inverseMod(z2, m_curve.getP());
         
         z2 = montyMult(z2, *r2);
-        return montyMult(m_coord_x, z2);
+		return montyMult(m_coord_x, z2);
     }
 
     /**
@@ -369,7 +365,6 @@ public:
         (or internal computational error), then return false.
         */
 		if (isZero()) {
-			logDebug("isZero");
 			return true;
 		}
 		auto b1 = BigInt(1);
@@ -385,7 +380,6 @@ public:
         if (m_coord_z == z2) // Is z equal to 1 (in Montgomery form)?
         {
 			if (y2 != montyMult(x3 + ax + *b_r, b1)) {
-				logDebug("y2 != monty1");
                 return false;
 			}
         }
@@ -397,7 +391,6 @@ public:
         BigInt b_z6 = montyMult(*b_r, montySqr(z3));
 		auto arg = x3 + ax_z4 + b_z6;
 		if (y2 != montyMult(arg, b1)) {
-			logDebug("y2 != monty2");
             return false;
 		}
         return true;
@@ -419,8 +412,12 @@ public:
 
     @property PointGFp dup() const
     {
-		logTrace("PointGFp.dup()");
-       return PointGFp(m_curve, m_coord_x, m_coord_y);
+       	auto point = PointGFp(m_curve);
+		point.m_coord_x = m_coord_x.dup;
+		point.m_coord_y = m_coord_y.dup;
+		point.m_coord_z = m_coord_z.dup;
+		point.m_ws = m_ws.dup;
+		return point;
     }
 
     /**
@@ -461,7 +458,6 @@ private:
     * @param x = first multiplicand
     * @param y = second multiplicand
     */
-    // Montgomery multiplication
     void montyMult()(ref BigInt z, auto const ref BigInt x, auto const ref BigInt y) const
     {
         //assert(&z != &x && &z != &y);
@@ -677,9 +673,9 @@ private:
         if (*z >= *p)
             *z -= *p;
         
-        m_coord_x = (*x).move;
-        m_coord_y = (*y).move;
-        m_coord_z = (*z).move;
+        m_coord_x = (*x).dup;
+		m_coord_y = (*y).dup;
+		m_coord_z = (*z).dup;
     }
 
     // relational operators
@@ -800,7 +796,6 @@ SecureVector!ubyte EC2OSP(const ref PointGFp point, ubyte format)
 
 PointGFp OS2ECP()(const(ubyte)* data, size_t data_len, auto const ref CurveGFp curve)
 {
-	logTrace("data_len: ", data_len);
     if (data_len <= 1) {
 		return PointGFp(curve); // return zero
 	}
@@ -814,7 +809,6 @@ PointGFp OS2ECP()(const(ubyte)* data, size_t data_len, auto const ref CurveGFp c
         
         const bool y_mod_2 = ((pc & 0x01) == 1);
         y = decompressPoint(y_mod_2, x, curve);
-				logDebug(y.toString());
     }
     else if (pc == 4)
     {
@@ -843,7 +837,6 @@ PointGFp OS2ECP()(const(ubyte)* data, size_t data_len, auto const ref CurveGFp c
 	assert(result.m_curve.getA() != 0);
     if (!result.onTheCurve())
         throw new IllegalPoint("OS2ECP: Decoded point was not on the curve");
-	logDebug("Returning result");
     return result.move();
 }
 
@@ -869,6 +862,5 @@ BigInt decompressPoint(bool yMod2,
     
     if (z.getBit(0) != yMod2)
         z = curve.getP() - z;
-	logDebug("Decompressed to: ", z.toString());
     return z;
 }

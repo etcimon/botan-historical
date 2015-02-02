@@ -41,7 +41,7 @@ public:
     /*
     * Decode a BER encoded AlgorithmIdentifier
     */
-    override void decodeFrom(BERDecoder codec)
+    override void decodeFrom(ref BERDecoder codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(m_oid)

@@ -183,7 +183,6 @@ public:
 	Vector!ubyte signature(RandomNumberGenerator rng)
     {
         Vector!ubyte encoded = unlock(m_emsa.encodingOf(m_emsa.rawData(), m_op.maxInputBits(), rng));
-        
         Vector!ubyte plain_sig = unlock(m_op.sign(encoded.ptr, encoded.length, rng));
         
         assert(selfTestSignature(encoded, plain_sig), "Signature was consistent");
@@ -253,6 +252,7 @@ public:
         
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
+		assert(*m_op !is null && *m_verify_op !is null && *m_emsa !is null);
     }
 private:
     /*
@@ -429,23 +429,17 @@ public:
     this(in PublicKey key, in string emsa_name, SignatureFormat format = IEEE_1363)
     {
         AlgorithmFactory af = globalState().algorithmFactory();
-        logTrace("Started algorithmFactory");
         RandomNumberGenerator rng = globalState().globalRng();
-        logTrace("Started globalRng");
 
         foreach (Engine engine; af.engines[]) {
-            logTrace("engine iterator for: ", engine.providerName());
             m_op = Unique!Verification(engine.getVerifyOp(key, rng));
             if (m_op)
                 break;
         }
-        logTrace("m_op?");
         
         if (!m_op)
             throw new LookupError("Verification with " ~ key.algoName ~ " not supported");
-        logTrace("Get EMSA");
         m_emsa = getEmsa(emsa_name);
-        logTrace("SigFormat");
         m_sig_format = format;
     }
 

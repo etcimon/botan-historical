@@ -229,9 +229,9 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
     return 0;
 }
 
-unittest
+static if (!SKIP_X509_KEY_TEST) unittest
 {
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     const string hash_fn = "SHA-256";
     
     size_t fails = 0;
@@ -248,7 +248,7 @@ unittest
     /* Create user #2's key and cert request */
     static if (BOTAN_HAS_ECDSA) {
         ECGroup ecc_domain = ECGroup(OID("1.2.840.10045.3.1.7"));
-        auto user2_key = scoped!ECDSAPrivateKey(rng, ecc_domain);
+        auto user2_key = ECDSAPrivateKey(rng, ecc_domain);
     } else static if (BOTAN_HAS_RSA) {
         RSAPrivateKey user2_key = scoped!RSAPrivateKey(rng, 1536);
     } else static assert(false, "Must have ECSA or RSA for X509!");

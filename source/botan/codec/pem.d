@@ -21,8 +21,8 @@ struct PEM
     */
     static string encode(const(ubyte)* der, size_t length, in string label, size_t width = 64)
     {
-        immutable(string) PEM_HEADER = "-----BEGIN " ~ label ~ "-----";
-        immutable(string) PEM_TRAILER = "-----END " ~ label ~ "-----";
+        immutable(string) PEM_HEADER = "-----BEGIN " ~ label ~ "-----\n";
+        immutable(string) PEM_TRAILER = "-----END " ~ label ~ "-----\n";
         
         Pipe pipe = Pipe(new Base64Encoder(true, width));
         pipe.processMsg(der, length);

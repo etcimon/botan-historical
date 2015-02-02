@@ -150,7 +150,7 @@ public:
     /*
     * Read a BER encoded X.509 object
     */
-    override void decodeFrom(BERDecoder from)
+    override void decodeFrom(ref BERDecoder from)
     {
         logTrace("Start Decode X509Object");
         from.startCons(ASN1Tag.SEQUENCE)

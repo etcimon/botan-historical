@@ -61,9 +61,10 @@ public:
     this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
     {
         
-        if (x_arg == 0)
-            x_arg = BigInt.randomInteger(rng, BigInt(2), dl_group.getQ() - 1);
-        
+        if (x_arg == 0) {
+			auto bi = BigInt(2);
+            x_arg = BigInt.randomInteger(rng, bi, dl_group.getQ() - 1);
+		}
         BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         
         m_priv = new DLSchemePrivateKey(dl_group, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
@@ -287,7 +288,7 @@ size_t dsaSigKat(string p,
 {
     atomicOp!"+="(total_tests, 1);
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     BigInt p_bn = BigInt(p);
     BigInt q_bn = BigInt(q);
@@ -307,12 +308,12 @@ size_t dsaSigKat(string p,
     return validateSignature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }
 
-unittest
+static if (!SKIP_DSA_TEST) unittest
 {
     logDebug("Testing dsa.d ...");
     size_t fails;
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     fails += testPkKeygen(rng);
     

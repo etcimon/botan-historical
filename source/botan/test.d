@@ -24,12 +24,12 @@ string CHECK_MESSAGE (string expr, string print) {
         try { 
             if (!(" ~ expr ~ ")) { 
                 ++fails; 
-                logTrace( `" ~ print ~ "` ); 
+                logError( `" ~ print ~ "` ); 
             } 
         } 
         catch(Exception e) 
         { 
-            logTrace(__FUNCTION__, ` : ` ~ e.msg); 
+            logError(__FUNCTION__, ` : ` ~ e.msg); 
         }
     }";
 }
@@ -45,11 +45,11 @@ string CHECK (string expr) {
         } );
         try { 
             if (!success)
-            { ++fails; logTrace( q{ ` ~ expr ~ ` } ); } 
+            { ++fails; logError( q{ ` ~ expr ~ ` } ); } 
         } 
         catch(Exception e) 
         { 
-            logTrace(__FUNCTION__ ~ " : " ~ e.msg); 
+            logError(__FUNCTION__ ~ " : " ~ e.msg); 
         }
     }`;
 }

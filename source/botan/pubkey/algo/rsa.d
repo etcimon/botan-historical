@@ -296,7 +296,7 @@ size_t rsaesKat(string e,
                 string output)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     auto privkey = new RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
@@ -320,7 +320,7 @@ size_t rsaSigKat(string e,
                    string output)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     auto privkey = new RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
@@ -342,7 +342,7 @@ size_t rsaSigVerify(string e,
                     string signature)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
@@ -378,12 +378,12 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     return fails;
 }
 
-unittest
+static if (!SKIP_RSA_TEST) unittest
 {
     logDebug("Testing rsa.d ...");
     size_t fails = 0;
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
 
     
     File rsa_enc = File("../test_data/pubkey/rsaes.vec", "r");

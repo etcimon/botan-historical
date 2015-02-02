@@ -185,7 +185,7 @@ size_t dliesKat(string p,
                  string ciphertext)
 {
     atomicOp!"+="(total_tests, 1);
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     BigInt p_bn = BigInt(p);
     BigInt g_bn = BigInt(g);
@@ -215,7 +215,7 @@ size_t dliesKat(string p,
     return validateEncryption(e, d, "DLIES", msg, "", ciphertext);
 }
 
-unittest
+static if (!SKIP_DLIES_TEST) unittest
 {
     logDebug("Testing dlies.d ...");
     size_t fails = 0;

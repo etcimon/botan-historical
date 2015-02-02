@@ -163,7 +163,7 @@ size_t hmacDrbgTest(ref HashMap!(string, string) m)
     return 0;
 }
 
-unittest
+static if (!SKIP_RNG_TEST) unittest
 {
     logDebug("Testing rng/test.d ...");
     File hmac_drbg_vec = File("../test_data/hmac_drbg.vec", "r");

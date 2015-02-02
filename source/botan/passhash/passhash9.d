@@ -156,7 +156,7 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.rng.auto_rng;
 
-unittest
+static if (!SKIP_PASSHASH9_TEST) unittest
 {
     logDebug("Testing passhash9.d ...");
     size_t fails = 0;
@@ -173,7 +173,7 @@ unittest
         fails++;
     }
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     for(ubyte alg_id = 0; alg_id <= 4; ++alg_id)
     {

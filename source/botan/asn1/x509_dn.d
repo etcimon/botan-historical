@@ -58,7 +58,7 @@ public:
     /*
     * Decode a BER encoded DistinguishedName
     */
-    override void decodeFrom(BERDecoder source)
+    override void decodeFrom(ref BERDecoder source)
     {
         Vector!ubyte bits;
         
@@ -149,15 +149,19 @@ public:
         logTrace("Add X509DN Attribute Type: ", OIDS.lookup(oid), ", Value: ", str);
         bool exists;
         void search_func(in ASN1String name) {
-            if (name.value() == str)
+			logDebug(name.value());
+            if (name.value() == str) { 
                 exists = true;
+			}
         }
+		logDebug("Get values at");
         m_dn_info.getValuesAt(oid, &search_func);
-
+		logDebug("Done get values");
         if (!exists) {
             m_dn_info.insert(oid, ASN1String(str));
             m_dn_bits.clear();
         }
+		logDebug("Done add x509dn");
     }
 
     /*

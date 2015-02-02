@@ -71,7 +71,7 @@ public:
         super(m_priv);
     }
 
-    this(RandomNumberGenerator rng, const ref ECGroup domain) { this(rng, domain, BigInt(0)); }
+	this(RandomNumberGenerator rng, const ref ECGroup domain) { auto bi = BigInt(0); this(rng, domain, bi.move()); }
 
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(m_priv); }
 
@@ -219,12 +219,12 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
     return fails;
 }
 
-unittest
+static if (!SKIP_ECDH_TEST) unittest
 {
     logDebug("Testing ecdh.d ...");
     size_t fails = 0;
     
-    AutoSeededRNG rng;
+    auto rng = AutoSeededRNG();
     
     fails += testEcdhNormalDerivation(rng);
     fails += testEcdhSomeDp(rng);

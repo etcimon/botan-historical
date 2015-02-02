@@ -309,7 +309,7 @@ public:
             output ~= "Subject " ~ dn_field ~ ":";
             for (size_t j = 0; j != vals.length; ++j)
                 output ~= " " ~ vals[j];
-            output ~= "";
+            output ~= "\n";
         }
         
         foreach (const dn_field; dn_fields)
@@ -322,40 +322,40 @@ public:
             output ~= "Issuer " ~ dn_field ~ ":";
             for (size_t j = 0; j != vals.length; ++j)
                 output ~= " " ~ vals[j];
-            output ~= "";
+            output ~= "\n";
         }
         
-        output ~= "Version: " ~ x509Version().to!string;
+        output ~= "\nVersion: " ~ x509Version().to!string;
         
-        output ~= "Not valid before: " ~ startTime();
-        output ~= "Not valid after: " ~ endTime();
+		output ~= "\nNot valid before: " ~ startTime();
+		output ~= "\nNot valid after: " ~ endTime();
         
-        output ~= "Constraints:";
+		output ~= "\nConstraints:";
         KeyConstraints constraints = constraints();
         if (constraints == KeyConstraints.NO_CONSTRAINTS)
             output ~= " None";
         else
         {
             if (constraints & KeyConstraints.DIGITAL_SIGNATURE)
-                output ~= "    Digital Signature";
+                output ~= "\n    Digital Signature";
             if (constraints & KeyConstraints.NON_REPUDIATION)
-                output ~= "    Non-Repuidation";
+				output ~= "\n    Non-Repuidation";
             if (constraints & KeyConstraints.KEY_ENCIPHERMENT)
-                output ~= "    Key Encipherment";
+				output ~= "\n    Key Encipherment";
             if (constraints & KeyConstraints.DATA_ENCIPHERMENT)
-                output ~= "    Data Encipherment";
+				output ~= "\n    Data Encipherment";
             if (constraints & KeyConstraints.KEY_AGREEMENT)
-                output ~= "    Key Agreement";
+				output ~= "\n    Key Agreement";
             if (constraints & KeyConstraints.KEY_CERT_SIGN)
-                output ~= "    Cert Sign";
+				output ~= "\n    Cert Sign";
             if (constraints & KeyConstraints.CRL_SIGN)
-                output ~= "    CRL Sign";
+				output ~= "\n    CRL Sign";
         }
         
         const Vector!string policies = policies();
         if (!policies.empty)
         {
-            output ~= "Policies: ";
+			output ~= "\nPolicies: ";
             foreach (const policy; policies[])
                 output ~= "    " ~ policy;
         }
@@ -363,28 +363,28 @@ public:
         const Vector!string ex_constraints = exConstraints();
         if (!ex_constraints.empty)
         {
-            output ~= "Extended Constraints:";
+			output ~= "\nExtended Constraints:";
             foreach (const ex_constraint; ex_constraints[])
                 output ~= "    " ~ ex_constraint;
         }
         
         if (ocspResponder() != "")
-            output ~= "OCSP responder " ~ ocspResponder();
+			output ~= "\nOCSP responder " ~ ocspResponder();
         if (crlDistributionPoint() != "")
-            output ~= "CRL " ~ crlDistributionPoint();
+			output ~= "\nCRL " ~ crlDistributionPoint();
         
-        output ~= "Signature algorithm: " ~ OIDS.lookup(signatureAlgorithm().oid);
+		output ~= "\nSignature algorithm: " ~ OIDS.lookup(signatureAlgorithm().oid);
         
-        output ~= "Serial number: " ~ hexEncode(serialNumber());
+		output ~= "\nSerial number: " ~ hexEncode(serialNumber());
         
         if (authorityKeyId().length)
-            output ~= "Authority keyid: " ~ hexEncode(authorityKeyId());
+			output ~= "\nAuthority keyid: " ~ hexEncode(authorityKeyId());
         
         if (subjectKeyId().length)
-            output ~= "Subject keyid: " ~ hexEncode(subjectKeyId());
+			output ~= "\nSubject keyid: " ~ hexEncode(subjectKeyId());
         
         const X509PublicKey pubkey = subjectPublicKey();
-        output ~= "Public Key:" ~ x509_key.PEM_encode(pubkey);
+		output ~= "\nPublic Key:\n\n" ~ x509_key.PEM_encode(pubkey) ~ "\n";
         
         return output.data;
     }

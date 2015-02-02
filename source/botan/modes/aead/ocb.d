@@ -642,7 +642,7 @@ size_t testOcbLong(size_t taglen, in string expected)
     return 0;
 }
 
-unittest
+static if (!SKIP_OCB_TEST) unittest
 {
     logDebug("Testing ocb.d ...");
     size_t fails = 0;

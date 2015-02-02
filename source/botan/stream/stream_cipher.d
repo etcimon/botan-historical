@@ -129,7 +129,7 @@ size_t streamTest(string algo,
     return fails;
 }
 
-unittest
+static if (!SKIP_STREAM_CIPHER_TEST) unittest
 {
     logDebug("Testing stream_cipher.d ...");
     auto test = delegate(string input)

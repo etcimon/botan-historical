@@ -49,7 +49,5 @@
 			"backtrace-d": { "version": "~master" },
 			"memutils": { "version": "~master", "path": "../memutils" } 
 	}, 
-	"versions": ["DisableDebugger"],
-    "libs": ["dl", "bz2", "lzma"],
-	"buildOptions": ["inline"]
+    "libs": ["dl", "bz2", "lzma"]
 }
