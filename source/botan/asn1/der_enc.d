@@ -29,7 +29,7 @@ struct DEREncoder
 public:
     Vector!ubyte getContentsUnlocked()
     {
-        logTrace("DEREncoder.getContentsUnlocked");
+        //logTrace("DEREncoder.getContentsUnlocked");
         return unlock(getContents()); 
     }
 

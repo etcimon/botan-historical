@@ -301,7 +301,7 @@ private:
     */
     bool passesSanityCheck() const
     {
-        logTrace("Decoded time: ", readableString());
+        //logTrace("Decoded time: ", readableString());
         if (m_year < 1950 || m_year > 2100)
             return false;
         if (m_month == 0 || m_month > 12)

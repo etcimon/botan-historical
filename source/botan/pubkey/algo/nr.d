@@ -18,22 +18,41 @@ import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;
 import std.concurrency;
+import memutils.helpers : Embed;
+
+struct NROptions {
+	enum algoName = "NR";
+	enum format = DLGroup.ANSI_X9_42;
+	enum msgParts = 2;
+
+	/*
+    * Check Private Nyberg-Rueppel Parameters
+    */
+	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+	{
+		if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
+			return false;
+		
+		if (!strong)
+			return true;
+		
+		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
+	}
+
+}
 
 /**
 * Nyberg-Rueppel Public Key
 */
-class NRPublicKey
+struct NRPublicKey
 {
 public:
-    __gshared immutable string algoName = "NR";
-
-    size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
-    size_t maxInputBits() const { return (m_pub.groupQ().bits() - 1); }
-
+	alias Options = NROptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
-        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+		m_pub = new DLSchemePublicKey(Options(), alg_id, key_bits);
     }
 
     /*
@@ -41,13 +60,13 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(Options(), grp, y1);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -55,23 +74,11 @@ public:
 /**
 * Nyberg-Rueppel Private Key
 */
-final class NRPrivateKey : NRPublicKey
+struct NRPrivateKey
 {
 public:
-    /*
-    * Check Private Nyberg-Rueppel Parameters
-    */
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
-    {
-        if (!m_priv.checkKey(rng, strong) || m_priv.m_x >= m_priv.groupQ())
-            return false;
-        
-        if (!strong)
-            return true;
-        
-        return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
-    }
-
+	alias Options = NROptions;
+	__gshared immutable string algoName = Options.algoName;
 
     /*
     * Create a NR private key
@@ -84,9 +91,8 @@ public:
 		}
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+		m_priv = new DLSchemePrivateKey(Options(), grp, y1, x_arg);
 
-        super(m_priv);
         if (x_arg == 0)
             m_priv.genCheck(rng);
         else
@@ -95,17 +101,14 @@ public:
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     { 
-        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+		m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
        
-        super(m_priv);
-
         m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
         
         m_priv.loadCheck(rng);
     }
 
-    alias m_priv this;
-
+	mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 
@@ -264,7 +267,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (nr; nr_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = new NRPrivateKey(rng, DLGroup(nr));
+        auto key = NRPrivateKey(rng, DLGroup(nr));
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key, rng);
     }
@@ -285,9 +288,9 @@ size_t nrSigKat(string p, string q, string g, string x,
     
     DLGroup group = DLGroup(p_bn, q_bn, g_bn);
     
-    auto privkey = new NRPrivateKey(rng, group.move(), x_bn.move());
+    auto privkey = NRPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = new NRPublicKey(privkey);
+    auto pubkey = NRPublicKey(privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     

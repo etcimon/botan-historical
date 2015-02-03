@@ -87,8 +87,8 @@ public:
             }
             m_id.pushBack(component);
         }
-		import botan.asn1.oids : OIDS;
-		assert(OIDS.lookup(OID(this)) !is null);
+		//import botan.asn1.oids : OIDS;
+		//assert(OIDS.lookup(OID(this)) !is null, "Invalid OID: " ~ m_id[].to!string);
     }
 
 
@@ -220,19 +220,19 @@ public:
     {
         if (oid_str == "")
             return;
-		logTrace("Loading ", oid_str);
+		//logTrace("Loading ", oid_str);
         try
         {
             m_id = parseAsn1Oid(oid_str);
         }
         catch (Throwable)
         {
-            logTrace("parseAsn1Oid failure");
+            logError("parseAsn1Oid failure");
             throw new InvalidOID(oid_str);
         }
         
         if (m_id.length < 2 || m_id[0] > 2) {
-            logTrace("Got m_id: ", m_id[]);
+           // logTrace("Got m_id: ", m_id[]);
             throw new InvalidOID(oid_str);
         }
         if ((m_id[0] == 0 || m_id[0] == 1) && m_id[1] > 39)

@@ -335,7 +335,7 @@ public:
     string lookup(in OID oid)
     {
         auto str = m_oid2str.get(oid, string.init);
-        scope(exit) logTrace("OID lookup found: ", str);
+        //scope(exit) logTrace("OID lookup found: ", str);
         if (str)
             return str;
         

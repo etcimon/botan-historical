@@ -169,7 +169,7 @@ public:
 
     override BlockCipher findBlockCipher(in SCANToken request, AlgorithmFactory af) const
     {
-        logTrace("FindBlockCipher Core ", request.algoName);
+        //logTrace("FindBlockCipher Core ", request.algoName);
         
         static if (BOTAN_HAS_AES) {
             if (request.algoName == "AES-128")
@@ -322,7 +322,7 @@ public:
 
     override StreamCipher findStreamCipher(in SCANToken request, AlgorithmFactory af) const
     {
-        logTrace("FindStreamCipher Core ", request.algoName);
+        //logTrace("FindStreamCipher Core ", request.algoName);
         static if (BOTAN_HAS_OFB) {
             if (request.algoName == "OFB" && request.argCount() == 1)
             {
@@ -361,7 +361,7 @@ public:
 
     override HashFunction findHash(in SCANToken request, AlgorithmFactory af) const
     {
-        logTrace("FindHash Core");
+        //logTrace("FindHash Core");
         static if (BOTAN_HAS_ADLER32) {
             if (request.algoName == "Adler32")
                 return new Adler32;
@@ -496,7 +496,7 @@ public:
 
     override MessageAuthenticationCode findMac(in SCANToken request, AlgorithmFactory af) const
     {
-        logTrace("FindMac Core");
+        //logTrace("FindMac Core");
         static if (BOTAN_HAS_CBC_MAC) {
             if (request.algoName == "CBC-MAC" && request.argCount() == 1)
                 return new CBCMAC(af.makeBlockCipher(request.arg(0)));
@@ -529,7 +529,7 @@ public:
 
     override PBKDF findPbkdf(in SCANToken algo_spec, AlgorithmFactory af) const
     {
-        logTrace("FindPbkdf Core");
+        //logTrace("FindPbkdf Core");
         static if (BOTAN_HAS_PBKDF1) {
             if (algo_spec.algoName == "PBKDF1" && algo_spec.argCount() == 1)
                 return new PKCS5_PBKDF1(af.makeHashFunction(algo_spec.arg(0)));
@@ -553,10 +553,10 @@ public:
     override ModularExponentiator modExp(const ref BigInt n, PowerMod.UsageHints hints) const
     {
         if (n.isOdd()) {
-            logTrace("Loading MontgomeryExponentiator");
+            //logTrace("Loading MontgomeryExponentiator");
             return new MontgomeryExponentiator(n, hints);
         }
-        logTrace("Loading FixedWindowExponentiator");
+        //logTrace("Loading FixedWindowExponentiator");
         return new FixedWindowExponentiator(n, hints);
     }
 

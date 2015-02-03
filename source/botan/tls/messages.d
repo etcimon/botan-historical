@@ -669,7 +669,7 @@ public:
             if (!server_rsa_kex_key)
                 throw new InternalError("Expected RSA kex but no server kex key set");
             
-            if (!cast(const RSAPrivateKey)(server_rsa_kex_key))
+            if (server_rsa_kex_key.algoName != "RSA")
                 throw new InternalError("Expected RSA key but got " ~ server_rsa_kex_key.algoName);
             
             auto decryptor = scoped!PKDecryptorEME(server_rsa_kex_key, "PKCS1v15");
@@ -891,9 +891,9 @@ public:
                 
                 if (!group.verifyGroup(rng, true))
                     throw new InternalError("DH group failed validation, possible attack");
-                auto counterparty_key = scoped!DHPublicKey(group, Y);
+                auto counterparty_key = DHPublicKey(group, Y);
                 
-                auto priv_key = scoped!DHPrivateKey(rng, group);
+                auto priv_key = DHPrivateKey(rng, group);
                 
                 auto ka = scoped!PKKeyAgreement(priv_key, "Raw");
                 
@@ -927,9 +927,9 @@ public:
                 
                 Vector!ubyte ecdh_key = reader.getRange!ubyte(1, 1, 255);
                 
-                auto counterparty_key = scoped!ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve()));
+                auto counterparty_key = ECDHPublicKey(group, OS2ECP(ecdh_key, group.getCurve()));
                 
-                auto priv_key = scoped!ECDHPrivateKey(rng, group);
+                auto priv_key = ECDHPrivateKey(rng, group);
                 
                 auto ka = scoped!PKKeyAgreement(priv_key, "Raw");
                 
@@ -988,8 +988,9 @@ public:
             if (!server_public_key)
                 throw new InternalError("No server public key for RSA exchange");
             
-            if (auto rsa_pub = cast(const RSAPublicKey)(server_public_key))
+            if (server_public_key.algoName == "RSA")
             {
+				auto rsa_pub = RSAPublicKey(cast(PublicKey)server_public_key);
                 const TLSProtocolVersion offered_version = state.clientHello().Version();
                 
                 m_pre_master = rng.randomVec(48);
@@ -1601,12 +1602,12 @@ public:
         
         if (kex_algo == "DH" || kex_algo == "DHE_PSK")
         {
-            Unique!DHPrivateKey dh = new DHPrivateKey(rng, policy.dhGroup());
+            DHPrivateKey dh = DHPrivateKey(rng, policy.dhGroup());
 
             appendTlsLengthValue(m_params, BigInt.encode(dh.getDomain().getP()), 2);
             appendTlsLengthValue(m_params, BigInt.encode(dh.getDomain().getG()), 2);
             appendTlsLengthValue(m_params, dh.publicValue(), 2);
-            m_kex_key = dh.release();
+            m_kex_key = dh;
         }
         else if (kex_algo == "ECDH" || kex_algo == "ECDHE_PSK")
         {
@@ -1622,7 +1623,7 @@ public:
 
             ECGroup ec_group = ECGroup(curve_name);
             
-            Unique!ECDHPrivateKey ecdh = new ECDHPrivateKey(rng, ec_group);
+            ECDHPrivateKey ecdh = ECDHPrivateKey(rng, ec_group);
             
             const string ecdh_domain_oid = ecdh.domain().getOid();
             const string domain = OIDS.lookup(OID(ecdh_domain_oid));
@@ -1638,7 +1639,7 @@ public:
             
             appendTlsLengthValue(m_params, ecdh.publicValue(), 1);
             
-            m_kex_key = ecdh.release();
+            m_kex_key = ecdh;
         }
         else if (kex_algo == "SRP_SHA")
         {

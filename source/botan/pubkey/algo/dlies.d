@@ -194,8 +194,8 @@ size_t dliesKat(string p,
     
     DLGroup domain = DLGroup(p_bn, g_bn);
     
-    auto from = new DHPrivateKey(rng, domain, x1_bn.move());
-    auto to = new DHPrivateKey(rng, domain, x2_bn.move());
+    auto from = DHPrivateKey(rng, domain, x1_bn.move());
+    auto to = DHPrivateKey(rng, domain, x2_bn.move());
     
     const string opt_str = "KDF2(SHA-1)/HMAC(SHA-1)/16";
 

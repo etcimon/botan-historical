@@ -146,7 +146,6 @@ public:
         if (str == "")
             return;
 
-        logTrace("Add X509DN Attribute Type: ", OIDS.lookup(oid), ", Value: ", str);
         bool exists;
         void search_func(in ASN1String name) {
 			logDebug(name.value());
@@ -154,14 +153,11 @@ public:
                 exists = true;
 			}
         }
-		logDebug("Get values at");
         m_dn_info.getValuesAt(oid, &search_func);
-		logDebug("Done get values");
         if (!exists) {
             m_dn_info.insert(oid, ASN1String(str));
             m_dn_bits.clear();
         }
-		logDebug("Done add x509dn");
     }
 
     /*
@@ -227,7 +223,6 @@ public:
         scope(exit) {
 			if (attr1) ThisThread.free!(OIDPair[])(attr1); 
 			if (attr2) ThisThread.free!(OIDPair[])(attr2);
-            logTrace("Equals? ", equals);
         }
 
         {

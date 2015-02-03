@@ -59,7 +59,7 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
                               RandomNumberGenerator rng)
 {
     // NOTE: we ignore the value of opt.chr
-    Unique!ECDSAPrivateKey priv_key = new ECDSAPrivateKey(key);
+    ECDSAPrivateKey priv_key = ECDSAPrivateKey(key);
     
     if (!priv_key)
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");

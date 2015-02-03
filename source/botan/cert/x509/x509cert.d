@@ -49,7 +49,6 @@ public:
     PublicKey subjectPublicKey() const
     {
         Vector!ubyte keybits = subjectPublicKeyBits().dup;
-        logTrace("Key Bits: ", keybits[]);
         return x509_key.loadKey(putInSequence(keybits));
     }
 
@@ -266,7 +265,7 @@ public:
     */
     string ocspResponder() const
     {
-        logTrace("Find OSCP responder in DataStore: ", m_subject.toString());
+        //logTrace("Find OSCP responder in DataStore: ", m_subject.toString());
         return m_subject.get1("OCSP.responder", "");
     }
 
@@ -526,7 +525,6 @@ protected:
         X509Time start, end;
         
         BERDecoder tbsCert = BERDecoder(m_tbs_bits);
-        logTrace("ForceDecode X509Cert");
         tbsCert.decodeOptional(_version, (cast(ASN1Tag) 0),
                               (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
                 .decode(serial_bn)
@@ -549,12 +547,9 @@ protected:
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         
-        logDebug("Add dn_bits");
-
         m_subject.add("X509.Certificate.dn_bits", putInSequence(dn_subject.getBits()));
         m_issuer.add("X509.Certificate.dn_bits", putInSequence(dn_issuer.getBits()));
         
-        logDebug("Get public key");
         BERObject public_key = tbsCert.getNextObject();
 
         if (public_key.type_tag != ASN1Tag.SEQUENCE || public_key.class_tag != ASN1Tag.CONSTRUCTED)
@@ -563,12 +558,9 @@ protected:
         
         Vector!ubyte v2_issuer_key_id, v2_subject_key_id;
         
-        logDebug("Get issuer key optional");
         tbsCert.decodeOptionalString(v2_issuer_key_id, ASN1Tag.BIT_STRING, 1);
-        logDebug("Get subject key optional");
         tbsCert.decodeOptionalString(v2_subject_key_id, ASN1Tag.BIT_STRING, 2);
         
-        logDebug("Get exts data");
         BERObject v3_exts_data = tbsCert.getNextObject();
         if (v3_exts_data.type_tag == 3 &&
             v3_exts_data.class_tag == (ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC))
@@ -580,8 +572,7 @@ protected:
             extensions.contentsTo(m_subject, m_issuer);
         }
         else if (v3_exts_data.type_tag != ASN1Tag.NO_OBJECT)
-            throw new BERBadTag("Unknown tag in X.509 cert",
-                                  v3_exts_data.type_tag, v3_exts_data.class_tag);
+            throw new BERBadTag("Unknown tag in X.509 cert", v3_exts_data.type_tag, v3_exts_data.class_tag);
         
         if (tbsCert.moreItems())
             throw new DecodingError("TBSCertificate has more items that expected");

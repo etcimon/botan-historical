@@ -17,20 +17,41 @@ import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import std.concurrency;
+import memutils.helpers : Embed;
+
+struct DSAOptions {
+	enum algoName = "DSA";
+	enum format = DLGroup.ANSI_X9_57;
+	enum msgParts = 2;
+
+	/*
+    * Check Private DSA Parameters
+    */
+	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+	{
+		if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
+			return false;
+		
+		if (!strong)
+			return true;
+		
+		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
+	}
+}
 
 /**
 * DSA Public Key
 */
-class DSAPublicKey
+struct DSAPublicKey
 {
 public:
-    __gshared immutable string algoName = "DSA";
-    size_t messagePartSize() const { return m_pub.groupQ().bytes(); }
-    size_t maxInputBits() const { return m_pub.groupQ().bits(); }
+	alias Options = DSAOptions;
+    __gshared immutable string algoName = Options.algoName;
+
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
-        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(Options(), alg_id, key_bits);
     }
 
     /*
@@ -38,7 +59,7 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_57, algoName, 2, null, &maxInputBits, &messagePartSize);
+        m_pub = new DLSchemePublicKey(Options(), grp, y1);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
@@ -52,10 +73,13 @@ public:
 /**
 * DSA Private Key
 */
-final class DSAPrivateKey : DSAPublicKey
+struct DSAPrivateKey
 {
 public:
-    /*
+	alias Options = DSAOptions;
+	__gshared immutable string algoName = Options.algoName;
+    
+	/*
     * Create a DSA private key
     */
     this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
@@ -67,40 +91,23 @@ public:
 		}
         BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         
-        m_priv = new DLSchemePrivateKey(dl_group, y1, x_arg, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
+        m_priv = new DLSchemePrivateKey(Options(), dl_group, y1, x_arg);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
-
-        super(dl_group.move(), y1.move());
     }
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     {
-        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_57, algoName, 2, &checkKey, &maxInputBits, &messagePartSize);
-        super(m_priv);
+        m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
         m_priv.loadCheck(rng);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-    /*
-    * Check Private DSA Parameters
-    */
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
-    {
-        if (!m_priv.checkKey(rng, strong) || m_priv.m_x >= m_priv.groupQ())
-            return false;
-        
-        if (!strong)
-            return true;
-        
-        return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
-    }
-
-    alias m_priv this;
+	mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 }
@@ -128,9 +135,9 @@ public:
         m_mod_q = dsa.groupQ().dup;
     }
 
-    override size_t messageParts() const { return 2; }
-    override size_t messagePartSize() const { return m_q.bytes(); }
-    override size_t maxInputBits() const { return m_q.bits(); }
+	override size_t messageParts() const { return 2; }
+	override size_t messagePartSize() const { return m_q.bytes(); }
+	override size_t maxInputBits() const { return m_q.bits(); }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
@@ -269,7 +276,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
     string[] dsa_list = ["dsa/jce/1024", "dsa/botan/2048", "dsa/botan/3072"];
     foreach (dsa; dsa_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = new DSAPrivateKey(rng, DLGroup(dsa));
+        auto key = DSAPrivateKey(rng, DLGroup(dsa));
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key, rng);
     }
@@ -296,9 +303,9 @@ size_t dsaSigKat(string p,
     BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, q_bn, g_bn);
-    auto privkey = new DSAPrivateKey(rng, group.move(), x_bn.move());
+    auto privkey = DSAPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = new DSAPublicKey(privkey);
+    auto pubkey = DSAPublicKey(privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     

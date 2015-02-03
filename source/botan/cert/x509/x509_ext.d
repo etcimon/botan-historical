@@ -695,7 +695,7 @@ protected:
     void decodeInner(const ref Vector!ubyte input)
     {
         Vector!( PolicyInformation ) policies;
-		logTrace("Decode list of policies");
+		//logTrace("Decode list of policies");
         BERDecoder(input).decodeList(policies);
         
         m_oids.clear();

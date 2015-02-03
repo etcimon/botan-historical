@@ -25,29 +25,32 @@ import botan.asn1.ber_dec;
 class IFSchemePublicKey : PublicKey
 {
 public:
-
-    this(in AlgorithmIdentifier, const ref SecureVector!ubyte key_bits, 
-         in string algo_name,
-         bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(T)(in T options, in AlgorithmIdentifier, const ref SecureVector!ubyte key_bits)
     {
-        m_check_key = check_key;
+		decodeOptions(options);
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decode(m_n)
                 .decode(m_e)
                 .verifyEnd()
                 .endCons();
-        m_algo_name = algo_name;
     }
 
-    this(BigInt n, BigInt e, in string algo_name, 
-         bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(T)(in T options, BigInt n, BigInt e)
     {
-        m_check_key = check_key;
-        m_algo_name = algo_name;
+		decodeOptions(options);
         m_n = n.move();
         m_e = e.move(); 
     }
+
+	final void decodeOptions(T)(in T options) {
+		static if (__traits(hasMember, T, "checkKey"))
+			m_check_key = &options.checkKey;
+		static if (__traits(hasMember, T, "algoName"))
+			m_algo_name = options.algoName;
+		else static assert(false, "No algoName found in " ~ T.stringof);
+	}
+
 
     /// Used for object casting to the right type in the factory.
     final override @property string algoName() const {
@@ -59,13 +62,6 @@ public:
     */
     override bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (m_check_key) {
-            auto tmp = m_check_key;
-            (cast(IFSchemePublicKey)this).m_check_key = null;
-            scope(exit) (cast(IFSchemePublicKey)this).m_check_key = tmp;
-            return m_check_key(rng, strong);
-        }
-
         if (m_n < 35 || m_n.isEven() || m_e < 2)
             return false;
         return true;
@@ -114,9 +110,10 @@ public:
 
 protected:
     BigInt m_n, m_e;
-    const string m_algo_name;
 
-    bool delegate(RandomNumberGenerator, bool) const m_check_key;
+	// options
+    string m_algo_name;
+    bool function(in IFSchemePrivateKey, RandomNumberGenerator, bool) m_check_key;
 }
 
 /**
@@ -126,8 +123,8 @@ protected:
 final class IFSchemePrivateKey : IFSchemePublicKey, PrivateKey
 {
 public:
-    this(RandomNumberGenerator rng, in AlgorithmIdentifier aid, const ref SecureVector!ubyte key_bits,
-         in string algo_name, bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(T)(in T options, RandomNumberGenerator rng, 
+		    in AlgorithmIdentifier aid, const ref SecureVector!ubyte key_bits)
     {
         BigInt n, e;
         BERDecoder(key_bits)
@@ -143,25 +140,23 @@ public:
                 .decode(m_c)
                 .endCons();
         
-        super(n.move(), e.move(), algo_name, check_key);
+        super(options, n.move(), e.move());
 
         loadCheck(rng);
     }
 
-    this(RandomNumberGenerator rng,
-         BigInt prime1,
-         BigInt prime2,
-         BigInt exp,
-         BigInt d_exp,
-         BigInt mod, 
-         in string algo_name,
-         bool delegate(RandomNumberGenerator, bool) const check_key = null)
+    this(T)(in T options,
+		    RandomNumberGenerator rng,
+            BigInt prime1,
+            BigInt prime2,
+            BigInt exp,
+            BigInt d_exp,
+            BigInt mod)
     {
-        BigInt e = exp.move();
         m_p = prime1.move();
         m_q = prime2.move();
         BigInt n = mod.isNonzero() ? mod.move() : m_p * m_q;
-        super(n.move(), e.move(), algo_name, check_key); // defines m_e and m_n
+        super(options, n.move(), exp.move()); // defines m_e and m_n
 
         m_d = d_exp.move();
         
@@ -189,25 +184,25 @@ public:
     */
     override bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-        if (m_check_key) {
-            auto tmp = m_check_key;
-            (cast(IFSchemePrivateKey)this).m_check_key = null;
-            scope(exit) (cast(IFSchemePrivateKey)this).m_check_key = tmp;
-            return tmp(rng, strong);
-        }
-
-        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
-            return false;
-        
-        if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
-            return false;
-        
-        const size_t prob = (strong) ? 56 : 12;
-        
-        if (!isPrime(m_p, rng, prob) || !isPrime(m_q, rng, prob))
-            return false;
-        return true;
+        if (m_check_key) 
+            return m_check_key(this, rng, strong);
+		return checkKeyImpl(rng, strong);
     }
+
+	final bool checkKeyImpl(RandomNumberGenerator rng, bool strong) const 
+	{		
+		if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
+			return false;
+		
+		if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
+			return false;
+		
+		const size_t prob = (strong) ? 56 : 12;
+		
+		if (!isPrime(m_p, rng, prob) || !isPrime(m_q, rng, prob))
+			return false;
+		return true;
+	}
 
     /**
     * Get the first prime p.

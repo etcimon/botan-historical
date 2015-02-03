@@ -114,7 +114,7 @@ public:
 
 TLSCredentialsManager createCreds(RandomNumberGenerator rng)
 {
-    PrivateKey ca_key = new RSAPrivateKey(rng, 1024);
+    PrivateKey ca_key = RSAPrivateKey(rng, 1024);
     
     X509CertOptions ca_opts;
     ca_opts.common_name = "Test CA";
@@ -123,7 +123,7 @@ TLSCredentialsManager createCreds(RandomNumberGenerator rng)
     
     X509Certificate ca_cert = x509self.createSelfSignedCert(ca_opts, ca_key, "SHA-256", rng);
     
-    PrivateKey server_key = new RSAPrivateKey(rng, 1024);
+    PrivateKey server_key = RSAPrivateKey(rng, 1024);
     
     X509CertOptions server_opts;
     server_opts.common_name = "localhost";

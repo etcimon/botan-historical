@@ -321,7 +321,7 @@ public:
     * @return true if the signature is valid
     */
 	bool verifyMessage(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
-		auto const ref Vector!( ubyte, Alloc2 ) sig)
+									  auto const ref Vector!( ubyte, Alloc2 ) sig)
 	{
 		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
 	}
@@ -368,7 +368,6 @@ public:
     */
     bool checkSignature(const(ubyte)* sig, size_t length)
     {
-        logTrace("CheckSignature");
         try {
             if (m_sig_format == IEEE_1363)
                 return validateSignature(m_emsa.rawData(), sig, length);

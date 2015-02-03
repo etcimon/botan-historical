@@ -32,47 +32,47 @@ PublicKey makePublicKey(in AlgorithmIdentifier alg_id, const ref SecureVector!ub
     
     static if (BOTAN_HAS_RSA) {
         if (alg_name == "RSA")
-            return new RSAPublicKey(alg_id, key_bits);
+            return RSAPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_RW) {
         if (alg_name == "RW")
-            return new RWPublicKey(alg_id, key_bits);
+            return RWPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_DSA) {
         if (alg_name == "DSA")
-            return new DSAPublicKey(alg_id, key_bits);
+            return DSAPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_DIFFIE_HELLMAN) {
         if (alg_name == "DH")
-            return new DHPublicKey(alg_id, key_bits);
+            return DHPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_NYBERG_RUEPPEL) {
         if (alg_name == "NR")
-            return new NRPublicKey(alg_id, key_bits);
+            return NRPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_ELGAMAL) {
         if (alg_name == "ElGamal")
-            return new ElGamalPublicKey(alg_id, key_bits);
+            return ElGamalPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_ECDSA) {
         if (alg_name == "ECDSA")
-            return *ECDSAPublicKey(alg_id, key_bits);
+            return ECDSAPublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_GOST_34_10_2001) {
         if (alg_name == "GOST-34.10")
-            return new GOST3410PublicKey(alg_id, key_bits);
+            return GOST3410PublicKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_ECDH) {
         if (alg_name == "ECDH")
-            return new ECDHPublicKey(alg_id, key_bits);
+            return ECDHPublicKey(alg_id, key_bits);
     }
     
     return null;
@@ -88,47 +88,47 @@ PrivateKey makePrivateKey(in AlgorithmIdentifier alg_id,
     
     static if (BOTAN_HAS_RSA) {
         if (alg_name == "RSA")
-            return new RSAPrivateKey(alg_id, key_bits, rng);
+            return RSAPrivateKey(alg_id, key_bits, rng);
     }
     
     static if (BOTAN_HAS_RW) {
         if (alg_name == "RW")
-            return new RWPrivateKey(alg_id, key_bits, rng);
+            return RWPrivateKey(alg_id, key_bits, rng);
     }
     
     static if (BOTAN_HAS_DSA) {
         if (alg_name == "DSA")
-            return new DSAPrivateKey(alg_id, key_bits, rng);
+            return DSAPrivateKey(alg_id, key_bits, rng);
     }
     
     static if (BOTAN_HAS_DIFFIE_HELLMAN) {
         if (alg_name == "DH")
-            return new DHPrivateKey(alg_id, key_bits, rng);
+            return DHPrivateKey(alg_id, key_bits, rng);
     }
     
     static if (BOTAN_HAS_NYBERG_RUEPPEL) {
         if (alg_name == "NR")
-            return new NRPrivateKey(alg_id, key_bits, rng);
+            return NRPrivateKey(alg_id, key_bits, rng);
     }
     
     static if (BOTAN_HAS_ELGAMAL) {
         if (alg_name == "ElGamal")
-            return new ElGamalPrivateKey(alg_id, key_bits, rng);
+            return ElGamalPrivateKey(alg_id, key_bits, rng);
     }
     
     static if (BOTAN_HAS_ECDSA) {
         if (alg_name == "ECDSA")
-            return *ECDSAPrivateKey(alg_id, key_bits);
+            return ECDSAPrivateKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_GOST_34_10_2001) {
         if (alg_name == "GOST-34.10")
-            return new GOST3410PrivateKey(alg_id, key_bits);
+            return GOST3410PrivateKey(alg_id, key_bits);
     }
     
     static if (BOTAN_HAS_ECDH) {
         if (alg_name == "ECDH")
-            return new ECDHPrivateKey(alg_id, key_bits);
+            return ECDHPrivateKey(alg_id, key_bits);
     }
     
     return null;

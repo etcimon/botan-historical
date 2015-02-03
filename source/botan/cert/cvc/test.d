@@ -81,10 +81,9 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
     
     // creating a non sense selfsigned cert w/o dom pars
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.11"));
-    Unique!ECDSAPrivateKey key = new ECDSAPrivateKey(rng, dom_pars);
+    ECDSAPrivateKey key = ECDSAPrivateKey(rng, dom_pars);
     key.setParameterEncoding(EC_DOMPAR_ENC_IMPLICITCA);
-	assert(*key !is null);
-    EAC11CVC cert = createSelfSignedCert(cast(PrivateKey)*key, opts, rng);
+    EAC11CVC cert = createSelfSignedCert(key, opts, rng);
     {
         Array!ubyte der = cert.BER_encode();
         File cert_file = File("../test_data/ecc/my_cv_cert.ber", "wb+");
@@ -92,7 +91,7 @@ void testEncGenSelfsigned(RandomNumberGenerator rng)
         cert_file.write(cast(string) der.ptr[0 .. der.length]);
     }
     
-    EAC11CVC cert_in = EAC11CVC("test_data/ecc/my_cv_cert.ber");
+    EAC11CVC cert_in = EAC11CVC("../test_data/ecc/my_cv_cert.ber");
     mixin( CHECK(` cert == cert_in `) );
     // encoding it again while it has no dp
     {
@@ -206,7 +205,7 @@ void testEncGenReq(RandomNumberGenerator rng)
     }
     
     // read and check signature...
-    EAC11Req req_in = EAC11Req("test_data/ecc/my_cv_req.ber");
+    EAC11Req req_in = EAC11Req("../test_data/ecc/my_cv_req.ber");
     //req_in.setDomainParameters(dom_pars);
     Unique!PublicKey p_pk = req_in.subjectPublicKey();
     ECDSAPublicKey p_ecdsa_pk = cast(ECDSAPublicKey)(*p_pk);
@@ -221,7 +220,7 @@ void testCvcReqExt(RandomNumberGenerator)
     size_t fails;
     size_t total_tests;
     scope(exit)testReport("testCvcReqExt", total_tests, fails);
-    EAC11Req req_in = EAC11Req("test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
+    EAC11Req req_in = EAC11Req("../test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     //req_in.setDomainParameters(dom_pars);
     Unique!PublicKey p_pk = req_in.subjectPublicKey();
@@ -236,7 +235,7 @@ void testCvcAdoExt(RandomNumberGenerator)
 {    size_t fails;
     size_t total_tests;
     scope(exit)testReport("testCvcAdoExt", total_tests, fails);
-    EAC11ADO req_in = EAC11ADO("test_data/ecc/ado.cvcreq");
+    EAC11ADO req_in = EAC11ADO("../test_data/ecc/ado.cvcreq");
     ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     //cout " ~car = " ~ req_in.getCar().value());
     //req_in.setDomainParameters(dom_pars);
@@ -281,7 +280,7 @@ void testCvcAdoCreation(RandomNumberGenerator rng)
         ado_file.write(ado_der.ptr[0 .. ado_der.length]);
     }
     // read it again and check the signature
-    EAC11ADO ado2 = EAC11ADO("test_data/ecc/ado");
+    EAC11ADO ado2 = EAC11ADO("../test_data/ecc/ado");
     mixin( CHECK(` ado == ado2 `) );
     //ECDSAPublicKey p_ado_pk = cast(ECDSAPublicKey)(&ado_key);
     //bool ver = ado2.checkSignature(*p_ado_pk);
@@ -332,13 +331,13 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
     mixin( CHECK_MESSAGE( `ado2.checkSignature(ado_key2)`, "failure of ado verification after creation" ) );
     
     mixin( CHECK_MESSAGE( `ado != ado2`, "ado s found to be equal where they are not" ) );
-    //      std::ofstream ado_file("test_data/ecc/ado");
+    //      std::ofstream ado_file("../test_data/ecc/ado");
     //      Vector!ubyte ado_der(ado.BER_encode());
     //      ado_file.write((char*)&ado_der[0], ado_der.length);
     //      ado_file.close();
     // read it again and check the signature
     
-    //     EAC11ADO ado2("test_data/ecc/ado");
+    //     EAC11ADO ado2("../test_data/ecc/ado");
     //     ECDSAPublicKey p_ado_pk = cast(ECDSAPublicKey)(&ado_key);
     //     //bool ver = ado2.checkSignature(p_ado_pk);
     //     bool ver = ado2.checkSignature(ado_key);
@@ -388,7 +387,7 @@ void testVerCvca(RandomNumberGenerator)
     size_t fails;
     size_t total_tests;
     scope(exit)testReport("testVerCvca", total_tests, fails);
-    EAC11CVC req_in = EAC11CVC("test_data/ecc/cvca01.cv.crt");
+    EAC11CVC req_in = EAC11CVC("../test_data/ecc/cvca01.cv.crt");
     
     bool exc = false;
     
@@ -413,20 +412,20 @@ void testCopyAndAssignment(RandomNumberGenerator)
     size_t fails;
     size_t total_tests;
     scope(exit)testReport("testCopyAndAssignment", total_tests, fails);
-    EAC11CVC cert_in = EAC11CVC("test_data/ecc/cvca01.cv.crt");
+    EAC11CVC cert_in = EAC11CVC("../test_data/ecc/cvca01.cv.crt");
     EAC11CVC cert_cp = EAC11CVC(cert_in);
     EAC11CVC cert_ass = cert_in;
     mixin( CHECK(` cert_in == cert_cp `) );
     mixin( CHECK(` cert_in == cert_ass `) );
     
-    EAC11ADO ado_in = EAC11ADO("test_data/ecc/ado.cvcreq");
+    EAC11ADO ado_in = EAC11ADO("../test_data/ecc/ado.cvcreq");
     //ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     EAC11ADO ado_cp = EAC11ADO(ado_in);
     EAC11ADO ado_ass = ado_in;
     mixin( CHECK(` ado_in == ado_cp `) );
     mixin( CHECK(` ado_in == ado_ass `) );
     
-    EAC11Req req_in = EAC11Req("test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
+    EAC11Req req_in = EAC11Req("../test_data/ecc/DE1_flen_chars_cvcRequest_ECDSA.der");
     //ECGroup dom_pars = ECGroup(OID("1.3.36.3.3.2.8.1.1.5")); // "german curve"
     EAC11Req req_cp = EAC11Req(req_in);
     EAC11Req req_ass = req_in;
@@ -442,7 +441,7 @@ void testEacStrIllegalValues(RandomNumberGenerator)
     bool exc = false;
     try
     {
-        EAC11CVC("test_data/ecc/cvca_illegal_chars.cv.crt");
+        EAC11CVC("../test_data/ecc/cvca_illegal_chars.cv.crt");
         
     }
     catch (DecodingError)
@@ -454,7 +453,7 @@ void testEacStrIllegalValues(RandomNumberGenerator)
     bool exc2 = false;
     try
     {
-        EAC11CVC("test_data/ecc/cvca_illegal_chars2.cv.crt");
+        EAC11CVC("../test_data/ecc/cvca_illegal_chars2.cv.crt");
         
     }
     catch (DecodingError)
@@ -512,8 +511,8 @@ void testCvcChain(RandomNumberGenerator rng)
     
     // verify the link
     mixin( CHECK(` link12.checkSignature(cvca_privk) `) );
-    EAC11CVC link12_reloaded = EAC11CVC("test_data/ecc/cvc_chain_link12.cer");
-    EAC11CVC cvca1_reloaded = EAC11CVC("test_data/ecc/cvc_chain_cvca.cer");
+    EAC11CVC link12_reloaded = EAC11CVC("../test_data/ecc/cvc_chain_link12.cer");
+    EAC11CVC cvca1_reloaded = EAC11CVC("../test_data/ecc/cvc_chain_cvca.cer");
     Unique!PublicKey cvca1_rel_pk = cvca1_reloaded.subjectPublicKey();
     mixin( CHECK(` link12_reloaded.checkSignature(*cvca1_rel_pk) `) );
     
@@ -530,7 +529,7 @@ void testCvcChain(RandomNumberGenerator rng)
     EAC11CVC dvca_cert1 = cvc_self.signRequest(cvca_cert, cvca_privk, dvca_req, 1, 5, true, 3, 1, rng);
     mixin( CHECK(` dvca_cert1.getCar().iso8859() == "DECVCA00001" `) );
     mixin( CHECK(` dvca_cert1.getChr().iso8859() == "DEDVCAEPASS00001" `) );
-    helperWriteFile(dvca_cert1, "test_data/ecc/cvc_chain_dvca_cert1.cer");
+    helperWriteFile(dvca_cert1, "../test_data/ecc/cvc_chain_dvca_cert1.cer");
     
     // make a second round dvca ado request
     auto dvca_priv_key2 = ECDSAPrivateKey(rng, dom_pars);
@@ -542,7 +541,7 @@ void testCvcChain(RandomNumberGenerator rng)
     }
     
     EAC11ADO dvca_ado2 = createAdoReq(dvca_priv_key, dvca_req2, ASN1Car(dvca_cert1.getChr().iso8859()), rng);
-    helperWriteFile(dvca_ado2, "test_data/ecc/cvc_chain_dvca_ado2.cer");
+    helperWriteFile(dvca_ado2, "../test_data/ecc/cvc_chain_dvca_ado2.cer");
     
     // verify the ado and sign the request too
     
@@ -551,14 +550,14 @@ void testCvcChain(RandomNumberGenerator rng)
     
     //cert_pk.setDomainParameters(dom_pars);
     //logTrace("dvca_cert.public_point.length = " ~ ec::EC2OSP(cert_pk.get_publicPoint(), ec::PointGFp.COMPRESSED).length);
-    EAC11CVC dvca_cert1_reread = EAC11CVC("test_data/ecc/cvc_chain_cvca.cer");
+    EAC11CVC dvca_cert1_reread = EAC11CVC("../test_data/ecc/cvc_chain_cvca.cer");
     mixin( CHECK(` dvca_ado2.checkSignature(cert_pk) `) );
     
     mixin( CHECK(` dvca_ado2.checkSignature(dvca_priv_key) `) ); // must also work
     
     EAC11Req dvca_req2b = EAC11Req(dvca_ado2.getRequest());
-    helperWriteFile(dvca_req2b, "test_data/ecc/cvc_chain_dvca_req2b.cer");
-    mixin( CHECK(` helperFilesEqual("test_data/ecc/cvc_chain_dvca_req2b.cer", "test_data/ecc/cvc_chain_dvca_req2.cer") `) );
+    helperWriteFile(dvca_req2b, "../test_data/ecc/cvc_chain_dvca_req2b.cer");
+    mixin( CHECK(` helperFilesEqual("../test_data/ecc/cvc_chain_dvca_req2b.cer", "../test_data/ecc/cvc_chain_dvca_req2.cer") `) );
     EAC11CVC dvca_cert2 = cvc_self.signRequest(cvca_cert, cvca_privk, dvca_req2b, 2, 5, true, 3, 1, rng);
     mixin( CHECK(` dvca_cert2.getCar().iso8859() == "DECVCA00001" `) );
     CHECK_MESSAGE(`dvca_cert2.getChr().iso8859() == "DEDVCAEPASS00002"`, "chr = ` ~ dvca_cert2.getChr().iso8859() ~ `");
@@ -566,14 +565,14 @@ void testCvcChain(RandomNumberGenerator rng)
     // make a first round IS request
     auto is_priv_key = ECDSAPrivateKey(rng, dom_pars);
     EAC11Req is_req = cvc_self.createCvcReq(is_priv_key, ASN1Chr("DEIS"), hash, rng);
-    helperWriteFile(is_req, "test_data/ecc/cvc_chain_is_req.cer");
+    helperWriteFile(is_req, "../test_data/ecc/cvc_chain_is_req.cer");
     
     // sign the IS request
     //dvca_cert1.setDomainParameters(dom_pars);
     EAC11CVC is_cert1 = cvc_self.signRequest(dvca_cert1, dvca_priv_key, is_req, 1, 5, true, 3, 1, rng);
     mixin( CHECK_MESSAGE( `is_cert1.getCar().iso8859() == "DEDVCAEPASS00001"`, "car = ` ~ is_cert1.getCar().iso8859() ~ `" ) );
     mixin( CHECK(` is_cert1.getChr().iso8859() == "DEIS00001" `) );
-    helperWriteFile(is_cert1, "test_data/ecc/cvc_chain_is_cert.cer");
+    helperWriteFile(is_cert1, "../test_data/ecc/cvc_chain_is_cert.cer");
     
     // verify the signature of the certificate
     mixin( CHECK(` is_cert1.checkSignature(dvca_priv_key) `) );

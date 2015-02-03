@@ -18,31 +18,53 @@ import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.utils.parsing;
 import botan.utils.types;
+import memutils.helpers;
 import std.algorithm;
 import std.concurrency;
 
+struct RWOptions {
+	enum algoName = "RW";
+
+	/*
+    * Check Private Rabin-Williams Parameters
+    */
+	static bool checkKey(in IFSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+	{
+		if (!privkey.checkKeyImpl(rng, strong))
+			return false;
+		
+		if (!strong)
+			return true;
+		
+		if ((privkey.getE() * privkey.getD()) % (lcm(privkey.getP() - 1, privkey.getQ() - 1) / 2) != 1)
+			return false;
+		
+		return signatureConsistencyCheck(rng, privkey, "EMSA2(SHA-1)");
+	}
+}
 /**
 * Rabin-Williams Public Key
 */
-class RWPublicKey
+struct RWPublicKey
 {
 public:
-    __gshared immutable string algoName = "RW";
+	alias Options = RWOptions;
+	__gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-        m_pub = new IFSchemePublicKey(alg_id, key_bits, algoName);
+		m_pub = new IFSchemePublicKey(Options(), alg_id, key_bits);
     }
 
     this(BigInt mod, BigInt exponent)
     {
-        m_pub = new IFSchemePublicKey(mod.move(), exponent.move(), algoName);
+		m_pub = new IFSchemePublicKey(Options(), mod.move(), exponent.move());
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
     this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     IFSchemePublicKey m_pub;
 }
@@ -50,15 +72,17 @@ public:
 /**
 * Rabin-Williams Private Key
 */
-final class RWPrivateKey : RWPublicKey
+struct RWPrivateKey
 {
 public:
+	alias Options = RWOptions;
+	__gshared immutable string algoName = Options.algoName;
+
     this(in AlgorithmIdentifier alg_id,
          const ref SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, algoName, &checkKey);
-        super(m_priv);
+        m_priv = new IFSchemePrivateKey(Options(), rng, alg_id, key_bits);
     }
 
     this(RandomNumberGenerator rng,
@@ -66,8 +90,7 @@ public:
          BigInt e, BigInt d = 0,
          BigInt n = 0)
     {
-		m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
-        super(m_priv);
+		m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
     }
 
     /*
@@ -94,33 +117,14 @@ public:
         
         d = inverseMod(e, lcm(p - 1, q - 1) >> 1);
 
-		m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
+		m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
 
-        super(m_priv);
         genCheck(rng);
     }
 
-    /*
-    * Check Private Rabin-Williams Parameters
-    */
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
-    {
-        if (!m_priv.checkKey(rng, strong))
-            return false;
-        
-        if (!strong)
-            return true;
-        
-        if ((m_priv.getE() * m_priv.getD()) % (lcm(m_priv.getP() - 1, m_priv.getQ() - 1) / 2) != 1)
-            return false;
-        
-        return signatureConsistencyCheck(rng, m_priv, "EMSA2(SHA-1)");
-    }
+	mixin Embed!m_priv;
 
-    alias m_priv this;
-
-    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; super(m_priv); }
-
+    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
 
     IFSchemePrivateKey m_priv;
 }
@@ -281,9 +285,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 {
     atomicOp!"+="(total_tests, 1);
     size_t fails;
-    auto rw1024 = scoped!RWPrivateKey(rng, 1024);
+    auto rw1024 = RWPrivateKey(rng, 1024);
     rw1024.checkKey(rng, true);
-    fails += validateSaveAndLoad(rw1024.Scoped_payload, rng);
+    fails += validateSaveAndLoad(rw1024, rng);
     return fails;
 }
 size_t rwSigKat(string e,
@@ -295,9 +299,9 @@ size_t rwSigKat(string e,
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     
-    auto privkey = new RWPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = RWPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = new RWPublicKey(privkey);
+    auto pubkey = RWPublicKey(privkey);
     
     PKVerifier verify = PKVerifier(pubkey, padding);
     PKSigner sign = PKSigner(privkey, padding);
@@ -316,7 +320,7 @@ size_t rwSigVerify(string e,
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
     
-    auto key = new RWPublicKey(n_bn.move(), e_bn.move());
+    auto key = RWPublicKey(n_bn.move(), e_bn.move());
     
     PKVerifier verify = PKVerifier(key, padding);
     

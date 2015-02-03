@@ -94,7 +94,7 @@ public:
              in string requested_name,
              in string provider)
     {
-		logTrace("Start adding ", requested_name, " provider ", provider);
+		//logTrace("Start adding ", requested_name, " provider ", provider);
         if (!algo) {
 			logError("Tried adding null algorithm");
             return;

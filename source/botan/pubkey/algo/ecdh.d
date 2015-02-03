@@ -15,18 +15,25 @@ public import botan.pubkey.pubkey;
 import botan.pubkey.algo.ecc_key;
 import botan.pubkey.pk_ops;
 import botan.math.bigint.bigint;
+import memutils.helpers : Embed;
+
+struct ECDHOptions {
+	enum algoName = "ECDH";
+	enum msgParts = 1;
+}
 
 /**
 * This class represents ECDH Public Keys.
 */
-class ECDHPublicKey
+struct ECDHPublicKey
 {
 public:
-    __gshared immutable string algoName = "ECDH";
+	alias Options = ECDHOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     { 
-        m_pub = new ECPublicKey(alg_id, key_bits, algoName, false);
+        m_pub = new ECPublicKey(Options(), alg_id, key_bits);
     }
 
     /**
@@ -34,15 +41,15 @@ public:
     * @param dom_par = the domain parameters associated with this key
     * @param public_point = the public point defining this key
     */
-    this(const ref ECGroup dom_par, const ref PointGFp public_point) 
+    this()(auto const ref ECGroup dom_par, auto const ref PointGFp public_point) 
     {
-        m_pub = new ECPublicKey(dom_par, public_point, algoName, false);
+        m_pub = new ECPublicKey(Options(), dom_par, public_point);
     }
 
     this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
     this(PublicKey pkey) { m_pub = cast(ECPublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     ECPublicKey m_pub;
 }
@@ -50,13 +57,15 @@ public:
 /**
 * This class represents ECDH Private Keys.
 */
-final class ECDHPrivateKey : ECDHPublicKey
+struct ECDHPrivateKey
 {
 public:
+	alias Options = ECDHOptions;
+	__gshared immutable string algoName = Options.algoName;
+
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
-        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, false);
-        super(m_priv);
+        m_priv = new ECPrivateKey(Options(), alg_id, key_bits);
     }
 
     /**
@@ -67,15 +76,14 @@ public:
     */
 	this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = BigInt(0)) 
     {
-        m_priv = new ECPrivateKey(rng, domain, x, algoName, false);
-        super(m_priv);
+        m_priv = new ECPrivateKey(Options(), rng, domain, x);
     }
 
 	this(RandomNumberGenerator rng, const ref ECGroup domain) { auto bi = BigInt(0); this(rng, domain, bi.move()); }
 
-    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; super(m_priv); }
+    this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
 
-    alias m_priv this;
+	mixin Embed!m_priv;
 
     ECPrivateKey m_priv;
 
@@ -97,14 +105,14 @@ public:
 
     this(in ECPrivateKey key) 
     {
-        m_curve = key.domain().getCurve().dup;
+        m_curve = &key.domain().getCurve();
         m_cofactor = &key.domain().getCofactor();
         m_l_times_priv = inverseMod(*m_cofactor, key.domain().getOrder()) * key.privateValue();
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
-        PointGFp point = OS2ECP(w, w_len, m_curve);
+        PointGFp point = OS2ECP(w, w_len, *m_curve);
         
         PointGFp S = (point * (*m_cofactor)) * m_l_times_priv;
 
@@ -114,7 +122,7 @@ public:
                                   m_curve.getP().bytes());
     }
 private:
-    CurveGFp m_curve;
+    const CurveGFp* m_curve;
     const BigInt* m_cofactor;
     BigInt m_l_times_priv;
 }
@@ -135,9 +143,9 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
     
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
     
-    ECDHPrivateKey private_a = scoped!ECDHPrivateKey(rng, dom_pars);
+    ECDHPrivateKey private_a = ECDHPrivateKey(rng, dom_pars);
     
-    ECDHPrivateKey private_b = scoped!ECDHPrivateKey(rng, dom_pars); //public_a.getCurve()
+    ECDHPrivateKey private_b = ECDHPrivateKey(rng, dom_pars); //public_a.getCurve()
     
     PKKeyAgreement ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
     PKKeyAgreement kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
@@ -171,8 +179,8 @@ size_t testEcdhSomeDp(RandomNumberGenerator rng)
         OID oid = OID(oid_str);
         ECGroup dom_pars = ECGroup(oid);
         
-        ECDHPrivateKey private_a = scoped!ECDHPrivateKey(rng, dom_pars);
-        ECDHPrivateKey private_b = scoped!ECDHPrivateKey(rng, dom_pars);
+        ECDHPrivateKey private_a = ECDHPrivateKey(rng, dom_pars);
+        ECDHPrivateKey private_b = ECDHPrivateKey(rng, dom_pars);
         
         PKKeyAgreement ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
         PKKeyAgreement kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
@@ -200,8 +208,8 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
         OID oid = OID(oid_str);
         ECGroup dom_pars = ECGroup(oid);
         
-        auto private_a = scoped!ECDHPrivateKey(rng, dom_pars);
-        auto private_b = scoped!ECDHPrivateKey(rng, dom_pars);
+        auto private_a = ECDHPrivateKey(rng, dom_pars);
+        auto private_b = ECDHPrivateKey(rng, dom_pars);
         
         Vector!ubyte key_a = private_a.publicValue();
         Vector!ubyte key_b = private_b.publicValue();

@@ -18,21 +18,25 @@ import botan.pubkey.pk_ops;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.workfactor;
 import botan.rng.rng;
+import memutils.helpers : Embed;
+
+struct DHOptions {
+	enum algoName = "DH";
+	enum format = DLGroup.ANSI_X9_42;
+}
 
 /**
 * This class represents Diffie-Hellman public keys.
 */
-class DHPublicKey
+struct DHPublicKey
 {
 public:
-    __gshared immutable string algoName = "DH";
-
-
-    size_t maxInputBits() const { return groupP().bits(); }
+	alias Options = DHOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = new DLSchemePublicKey(Options(), alg_id, key_bits);
     }
 
     /**
@@ -42,13 +46,13 @@ public:
     */
     this()(auto const ref DLGroup grp, auto const ref BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+		m_pub = new DLSchemePublicKey(Options(), grp, y1);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -56,9 +60,12 @@ public:
 /**
 * This class represents Diffie-Hellman private keys.
 */
-class DHPrivateKey : DHPublicKey
+struct DHPrivateKey
 {
 public:
+	alias Options = DHOptions;
+	__gshared immutable string algoName = Options.algoName;
+
     /**
     * Load a DH private key
     * @param alg_id = the algorithm id
@@ -70,11 +77,10 @@ public:
            RandomNumberGenerator rng) 
     {
 
-        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+		m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
         if (m_priv.getY() == 0)
             m_priv.setY(powerMod(m_priv.groupG(), m_priv.getX(), m_priv.groupP()));
         m_priv.loadCheck(rng);
-        super(m_priv);
     }
 
     /**
@@ -93,19 +99,18 @@ public:
 
 		BigInt y1 = powerMod(grp.getG(), x_args, *p);
         
-		m_priv = new DLSchemePrivateKey(grp, y1, x_args, DLGroup.ANSI_X9_42, algoName, 0, (bool delegate(RandomNumberGenerator, bool) const).init, &maxInputBits);
+		m_priv = new DLSchemePrivateKey(Options(), grp, y1, x_args);
 
 		if (x_args == 0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
-        super(m_priv);
     }
 
 	this()(RandomNumberGenerator rng, auto const ref DLGroup grp) { auto bi = BigInt(0); this(rng, grp, bi.move()); }
-    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-    alias m_priv this;
+	mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 
@@ -129,17 +134,17 @@ public:
     this(in DLSchemePrivateKey dh, RandomNumberGenerator rng) 
     {
         assert(dh.algoName == DHPublicKey.algoName);
-        m_p = dh.groupP().dup;
-        m_powermod_x_p = FixedExponentPowerMod(dh.getX(), m_p);
+        m_p = &dh.groupP();
+        m_powermod_x_p = FixedExponentPowerMod(dh.getX(), *m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, m_p)), m_p);
+        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, *m_p)), *m_p);
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)
     {
         BigInt input = BigInt.decode(w, w_len);
         
-        if (input <= 1 || input >= m_p - 1)
+        if (input <= 1 || input >= *m_p - 1)
             throw new InvalidArgument("DH agreement - invalid key provided");
         
         const BigInt r = m_blinder.unblind((*m_powermod_x_p)(m_blinder.blind(input)));
@@ -148,7 +153,7 @@ public:
     }
 
 private:
-    BigInt m_p;
+    const BigInt* m_p;
 
     FixedExponentPowerMod m_powermod_x_p;
     Blinder m_blinder;
@@ -177,9 +182,9 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (dh; dh_list) {
         atomicOp!"+="(total_tests, 1);
-        Unique!DHPrivateKey key = new DHPrivateKey(rng, DLGroup(dh));
+        DHPrivateKey key = DHPrivateKey(rng, DLGroup(dh));
         key.checkKey(rng, true);
-        fails += validateSaveAndLoad(*key, rng);
+        fails += validateSaveAndLoad(key, rng);
     }
     
     return fails;
@@ -197,8 +202,8 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
     
     DLGroup domain = DLGroup(p_bn, g_bn);
     
-    auto mykey = new DHPrivateKey(rng, domain, x_bn.move());
-    auto otherkey = new DHPublicKey(domain, y_bn.move());
+    auto mykey = DHPrivateKey(rng, domain, x_bn.move());
+    auto otherkey = DHPublicKey(domain, y_bn.move());
     
     if (kdf == "")
         kdf = "Raw";

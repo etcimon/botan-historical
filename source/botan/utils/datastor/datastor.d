@@ -115,8 +115,6 @@ public:
             return default_val;
         else if (vals.length > 1)
             throw new InvalidState("get1_uint: Multiple values for " ~ key);
-		logDebug("String to uint: ", key, " => ", cast(ubyte[][])vals[]);
-		logDebug("String to uint: ", vals[0]);
         return to!uint(vals[0]);
     }
 
@@ -142,7 +140,6 @@ public:
     void add(T)(in string key, in T val)
         if (isNumeric!T)
     {
-		logError("add to string: ", cast(long)val, " & ", T.stringof);
 		add(key, to!string(cast(long)val));
     }
     
@@ -151,13 +148,11 @@ public:
     */
     void add(ALLOC)(in string key, auto const ref Vector!(ubyte, ALLOC) val)
     {
-        logTrace("Adding Secure: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     
 	void add(ALLOC)(in string key, auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) val)
     {
-        logTrace("Adding Vector: ", val[]);
         add(key, hexEncode(val.ptr, val.length));
     }
     

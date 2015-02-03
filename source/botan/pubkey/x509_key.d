@@ -237,11 +237,11 @@ static if (!SKIP_X509_KEY_TEST) unittest
     size_t fails = 0;
     
     /* Create the CA's key and self-signed cert */
-    auto ca_key = scoped!RSAPrivateKey(rng, 2048);
+    auto ca_key = RSAPrivateKey(rng, 2048);
     
     X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), ca_key, hash_fn, rng);
     /* Create user #1's key and cert request */
-    auto user1_key = new DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
+    auto user1_key = DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
     
     PKCS10Request user1_req = x509self.createCertReq(reqOpts1(), user1_key, "SHA-1", rng);
     
@@ -250,7 +250,7 @@ static if (!SKIP_X509_KEY_TEST) unittest
         ECGroup ecc_domain = ECGroup(OID("1.2.840.10045.3.1.7"));
         auto user2_key = ECDSAPrivateKey(rng, ecc_domain);
     } else static if (BOTAN_HAS_RSA) {
-        RSAPrivateKey user2_key = scoped!RSAPrivateKey(rng, 1536);
+        RSAPrivateKey user2_key = RSAPrivateKey(rng, 1536);
     } else static assert(false, "Must have ECSA or RSA for X509!");
     
     PKCS10Request user2_req = x509self.createCertReq(reqOpts2(), user2_key, hash_fn, rng);

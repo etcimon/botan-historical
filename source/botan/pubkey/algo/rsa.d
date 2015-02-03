@@ -18,19 +18,42 @@ import botan.utils.parsing;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;
+import memutils.helpers : Embed;
 import std.concurrency;
+
+struct RSAOptions {
+	enum algoName = "RSA";
+
+	/*
+    * Check Private RSA Parameters
+    */
+	static bool checkKey(in IFSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+	{
+		if (!privkey.checkKeyImpl(rng, strong))
+			return false;
+		
+		if (!strong)
+			return true;
+		
+		if ((privkey.getE() * privkey.getD()) % lcm(privkey.getP() - 1, privkey.getQ() - 1) != 1)
+			return false;
+		
+		return signatureConsistencyCheck(rng, privkey, "EMSA4(SHA-1)");
+	}
+}
 
 /**
 * RSA Public Key
 */
-class RSAPublicKey
+struct RSAPublicKey
 {
 public:
-    __gshared immutable string algoName = "RSA";
+	alias Options = RSAOptions;
+	__gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
-        m_pub = new IFSchemePublicKey(alg_id, key_bits, algoName);
+        m_pub = new IFSchemePublicKey(Options(), alg_id, key_bits);
     }
 
     /**
@@ -40,13 +63,13 @@ public:
     */
     this(BigInt n, BigInt e)
     {
-        m_pub = new IFSchemePublicKey(n.move(), e.move(), algoName);
+		m_pub = new IFSchemePublicKey(Options(), n.move(), e.move());
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
     this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     IFSchemePublicKey m_pub;
 }
@@ -54,30 +77,15 @@ public:
 /**
 * RSA Private Key
 */
-final class RSAPrivateKey : RSAPublicKey
+struct RSAPrivateKey
 {
 public:
-    /*
-    * Check Private RSA Parameters
-    */
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
-    {
-        if (!m_priv.checkKey(rng, strong))
-            return false;
-        
-        if (!strong)
-            return true;
-        
-        if ((m_priv.getE() * m_priv.getD()) % lcm(m_priv.getP() - 1, m_priv.getQ() - 1) != 1)
-            return false;
-        
-        return signatureConsistencyCheck(rng, m_priv, "EMSA4(SHA-1)");
-    }
+	alias Options = RSAOptions;
+	__gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
     {
-        m_priv = new IFSchemePrivateKey(rng, alg_id, key_bits, algoName, &checkKey);
-        super(m_priv);
+		m_priv = new IFSchemePrivateKey(Options(), rng, alg_id, key_bits);
     }
 
     /**
@@ -94,8 +102,7 @@ public:
     */
     this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = 0, BigInt n = 0)
     {
-        m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
-        super(m_priv);
+		m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
     }
 
     /**
@@ -122,14 +129,13 @@ public:
         
         d = inverseMod(e, lcm(p - 1, q - 1));
 
-        m_priv = new IFSchemePrivateKey(rng, p.move(), q.move(), e.move(), d.move(), n.move(), algoName, &checkKey);
-        super(m_priv);
+		m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
         genCheck(rng);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; super(pkey); }
+    this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
 
-    alias m_priv this;
+	mixin Embed!m_priv;
 
     IFSchemePrivateKey m_priv;
 }
@@ -298,9 +304,9 @@ size_t rsaesKat(string e,
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     
-    auto privkey = new RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = new RSAPublicKey(privkey);
+    auto pubkey = RSAPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";
@@ -322,9 +328,9 @@ size_t rsaSigKat(string e,
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     
-    auto privkey = new RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
+    auto privkey = RSAPrivateKey(rng, BigInt(p), BigInt(q), BigInt(e));
     
-    auto pubkey = new RSAPublicKey(privkey);
+    auto pubkey = RSAPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";
@@ -347,7 +353,7 @@ size_t rsaSigVerify(string e,
     BigInt e_bn = BigInt(e);
     BigInt n_bn = BigInt(n);
     
-    auto key = new RSAPublicKey(n_bn.move(), e_bn.move());
+    auto key = RSAPublicKey(n_bn.move(), e_bn.move());
     
     if (padding == "")
         padding = "Raw";
@@ -364,16 +370,16 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     size_t fails;
 
-    auto rsa1024 = scoped!RSAPrivateKey(rng, 1024);
+    auto rsa1024 = RSAPrivateKey(rng, 1024);
     rsa1024.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
 
-    fails += validateSaveAndLoad(rsa1024.Scoped_payload, rng);
+    fails += validateSaveAndLoad(rsa1024, rng);
     
-    auto rsa2048 = scoped!RSAPrivateKey(rng, 2048);
+    auto rsa2048 = RSAPrivateKey(rng, 2048);
     rsa2048.checkKey(rng, true);
     atomicOp!"+="(total_tests, 1);
-    fails += validateSaveAndLoad(rsa2048.Scoped_payload, rng);
+    fails += validateSaveAndLoad(rsa2048, rng);
 
     return fails;
 }

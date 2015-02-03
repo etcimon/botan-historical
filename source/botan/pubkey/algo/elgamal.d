@@ -20,33 +20,53 @@ import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import botan.rng.rng;
 import botan.utils.types;
+import memutils.helpers : Embed;
+
+struct ElGamalOptions {
+	enum algoName = "ElGamal";
+	enum format = DLGroup.ANSI_X9_42;
+
+	/*
+    * Check Private ElGamal Parameters
+    */
+	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+	{
+		if (!privkey.checkKeyImpl(rng, strong))
+			return false;
+		
+		if (!strong)
+			return true;
+		
+		return encryptionConsistencyCheck(rng, privkey, "EME1(SHA-1)");
+	}
+
+}
 
 /**
 * ElGamal Public Key
 */
-class ElGamalPublicKey
+struct ElGamalPublicKey
 {
 public:
-    __gshared immutable string algoName = "ElGamal";
-
-    size_t maxInputBits() const { return (m_pub.groupP().bits() - 1); }
+	alias Options = ElGamalOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-        m_pub = new DLSchemePublicKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+        m_pub = new DLSchemePublicKey(Options(), alg_id, key_bits);
     }
     /*
     * ElGamalPublicKey Constructor
     */
     this(DLGroup grp, BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(grp, y1, DLGroup.ANSI_X9_42, algoName, 0, null, &maxInputBits);
+		m_pub = new DLSchemePublicKey(Options(), grp, y1);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -54,22 +74,11 @@ public:
 /**
 * ElGamal Private Key
 */
-final class ElGamalPrivateKey : ElGamalPublicKey
+struct ElGamalPrivateKey
 {
 public:
-    /*
-    * Check Private ElGamal Parameters
-    */
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
-    {
-        if (!m_priv.checkKey(rng, strong))
-            return false;
-        
-        if (!strong)
-            return true;
-        
-        return encryptionConsistencyCheck(rng, this, "EME1(SHA-1)");
-    }
+	alias Options = ElGamalOptions;
+	__gshared immutable string algoName = Options.algoName;
 
     /*
     * ElGamalPrivateKey Constructor
@@ -81,8 +90,7 @@ public:
         
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-        m_priv = new DLSchemePrivateKey(grp, y1, x_arg, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
-        super(m_priv);
+        m_priv = new DLSchemePrivateKey(Options(), grp, y1, x_arg);
 
         if (x_arg == 0)
             m_priv.genCheck(rng);
@@ -95,16 +103,15 @@ public:
          const ref SecureVector!ubyte key_bits,
          RandomNumberGenerator rng) 
     {
-        m_priv = new DLSchemePrivateKey(alg_id, key_bits, DLGroup.ANSI_X9_42, algoName, 0, &checkKey, &maxInputBits);
-        super(m_priv);
+        m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
 
         m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
         m_priv.loadCheck(rng);
     }
 
-    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; super(pkey); }
+    this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-    alias m_priv this;
+	mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 }
@@ -236,7 +243,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     
     foreach (elg; elg_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = new ElGamalPrivateKey(rng, DLGroup(elg));
+        auto key = ElGamalPrivateKey(rng, DLGroup(elg));
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key, rng);
     }
@@ -260,9 +267,9 @@ size_t elgamalKat(string p,
     BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, g_bn);
-    auto privkey = new ElGamalPrivateKey(rng, group.move(), x_bn.move());
+    auto privkey = ElGamalPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = new ElGamalPublicKey(privkey);
+    auto pubkey = ElGamalPublicKey(privkey);
     
     if (padding == "")
         padding = "Raw";

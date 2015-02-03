@@ -22,13 +22,30 @@ import botan.rng.rng;
 import botan.utils.types;
 import memutils.helpers : Embed;
 
+struct ECDSAOptions {
+	enum algoName = "ECDSA";
+	enum msgParts = 2;
+
+	static bool checkKey(in ECPrivateKey pkey, RandomNumberGenerator rng, bool strong)
+	{
+		if (!pkey.publicPoint().onTheCurve())
+			return false;
+		
+		if (!strong)
+			return true;
+		
+		return signatureConsistencyCheck(rng, pkey, "EMSA1(SHA-1)");
+	}
+}
+
 /**
 * This class represents ECDSA Public Keys.
 */
 struct ECDSAPublicKey
 {
 public:
-    __gshared immutable string algoName = "ECDSA";
+	alias Options = ECDSAOptions;
+	__gshared immutable string algoName = Options.algoName;
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -36,12 +53,12 @@ public:
     */
     this(in ECGroup dom_par, in PointGFp public_point) 
     {
-        m_pub = new ECPublicKey(dom_par, public_point, algoName, true);
+        m_pub = new ECPublicKey(Options(), dom_par, public_point);
     }
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-        m_pub = new ECPublicKey(alg_id, key_bits, algoName, true);
+		m_pub = new ECPublicKey(Options(), alg_id, key_bits);
     }
 
 	this(in PublicKey pkey) {
@@ -63,7 +80,8 @@ public:
 struct ECDSAPrivateKey
 {
 public:
-	__gshared immutable string algoName = "ECDSA";
+	alias Options = ECDSAOptions;
+	__gshared immutable string algoName = Options.algoName;
 
     /**
     * Load a private key
@@ -72,8 +90,7 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-        m_priv = new ECPrivateKey(alg_id, key_bits, algoName, true, 1);
-        m_priv.setCB(&checkKey);
+        m_priv = new ECPrivateKey(Options(), alg_id, key_bits);
     }
 
     /**
@@ -84,23 +101,11 @@ public:
     */
     this()(RandomNumberGenerator rng, auto const ref ECGroup domain, BigInt x = 0)
     {
-        m_priv = new ECPrivateKey(rng, domain, x, algoName, true, 1);
-        m_priv.setCB(&checkKey);
+		m_priv = new ECPrivateKey(Options(), rng, domain, x);
     }
 
     this(in PrivateKey pkey) { 
         m_priv = cast(ECPrivateKey)pkey;
-    }
-
-    bool checkKey(RandomNumberGenerator rng, bool strong) const
-    {
-        if (!publicPoint().onTheCurve())
-            return false;
-        
-        if (!strong)
-            return true;
-        
-        return signatureConsistencyCheck(rng, m_priv, "EMSA1(SHA-1)");
     }
 
 	mixin Embed!m_priv;
@@ -154,7 +159,6 @@ public:
             s = m_mod_order.multiply(inverseMod(k, *m_order), mulAdd(*m_x, r, m));
 
         }
-		logDebug("r: ", r.toString());
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_order.bytes());
         r.binaryEncode(&output[output.length / 2 - r.bytes()]);
@@ -206,32 +210,30 @@ public:
                 		 const(ubyte)* sig, size_t sig_len)
     {
 		logDebug("ECDSA Verification");
-        if (sig_len != m_order.bytes()*2)
+        if (sig_len != m_order.bytes()*2) {
+			logError("length error: ", sig_len, " != ", m_order.bytes()*2);
             return false;
+		}
         
         BigInt e = BigInt(msg, msg_len);
         
         BigInt r = BigInt(sig, sig_len / 2);
         BigInt s = BigInt(sig + sig_len / 2, sig_len / 2);
 		logDebug("r: ", r.toString());
-        if (r <= 0 || r >= *m_order || s <= 0 || s >= *m_order)
+        if (r <= 0 || r >= *m_order || s <= 0 || s >= *m_order) {
+			logError("arg error");
 			return false;
+		}
         
         BigInt w = inverseMod(s, *m_order);
         
 		auto r_1 = PointGFp.multiExponentiate(*m_base_point, e, *m_public_point, r);
-		logDebug("r after exponentiate: ", r.toString());
 		assert(r_1.onTheCurve());
         PointGFp R = r_1 * w;
 		assert(R.onTheCurve());
         if (R.isZero()) 
             return false;
-		BigInt v = R.getAffineX().dup;
-		v %= *m_order;
 
-		logDebug("R GetAffineX: ", (R.getAffineX() % (*m_order)).toString());
-		logDebug("R GetAffineX: ", v.toString());
-		logDebug("r: ", r.toString());
 		return (R.getAffineX() % (*m_order) == r);
     }
 
@@ -334,8 +336,7 @@ static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t testDecodeEcdsaX509()
 {
     X509Certificate cert = X509Certificate("../test_data/ecc/CSCA.CSCA.csca-germany.1.crt");
-	logDebug(cert.toString());
-	logDebug("Cert ToString Called!");
+	//logDebug(cert.toString());
     size_t fails = 0;
     
     mixin( CHECK_MESSAGE( `OIDS.lookup(cert.signatureAlgorithm().oid) == "ECDSA/EMSA1(SHA-224)"`, "error reading signature algorithm from x509 ecdsa certificate" ) );
@@ -354,8 +355,8 @@ size_t testDecodeEcdsaX509()
 static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t testDecodeVerLinkSHA256()
 {
-    X509Certificate root_cert = X509Certificate("test_data/ecc/root2_SHA256.cer");
-    X509Certificate link_cert = X509Certificate("test_data/ecc/link_SHA256.cer");
+    X509Certificate root_cert = X509Certificate("../test_data/ecc/root2_SHA256.cer");
+    X509Certificate link_cert = X509Certificate("../test_data/ecc/link_SHA256.cer");
     
     size_t fails = 0;
     Unique!X509PublicKey pubkey = root_cert.subjectPublicKey();
@@ -368,8 +369,8 @@ static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t testDecodeVerLinkSHA1()
 {
     atomicOp!"+="(total_tests, 1);
-    X509Certificate root_cert = X509Certificate("test_data/ecc/root_SHA1.163.crt");
-    X509Certificate link_cert = X509Certificate("test_data/ecc/link_SHA1.166.crt");
+    X509Certificate root_cert = X509Certificate("../test_data/ecc/root_SHA1.163.crt");
+    X509Certificate link_cert = X509Certificate("../test_data/ecc/link_SHA1.166.crt");
     
     size_t fails = 0;
     Unique!X509PublicKey pubkey = root_cert.subjectPublicKey();
@@ -475,7 +476,7 @@ size_t testCreatePkcs8(RandomNumberGenerator rng)
 
     try
     {
-        RSAPrivateKey rsa_key = scoped!RSAPrivateKey(rng, 1024);
+        RSAPrivateKey rsa_key = RSAPrivateKey(rng, 1024);
 
         //RSAPrivateKey rsa_key2(1024);
         //cout " ~\nequal: " ~  (rsa_key == rsa_key2));
@@ -511,11 +512,11 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     File priv_key = File("../test_data/ecc/dompar_private.pkcs8.pem");
     priv_key.write( pkcs8.PEM_encode(key) );
     
-    Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
+    Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("../test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
     ECDSAPrivateKey loaded_ec_key = cast(ECDSAPrivateKey)(*loaded_key);
     mixin( CHECK_MESSAGE( `loaded_ec_key`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
     
-    Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("test_data/ecc/rsa_private.pkcs8.pem", rng);
+    Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("../test_data/ecc/rsa_private.pkcs8.pem", rng);
     ECDSAPrivateKey loaded_rsa_key = cast(ECDSAPrivateKey)(*loaded_key_1);
     mixin( CHECK_MESSAGE( `!loaded_rsa_key`, "the loaded key is ECDSAPrivateKey -> shouldn't be, is a RSA-Key" ) );
     
@@ -669,7 +670,7 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
         
         try
         {
-            Unique!PKCS8PrivateKey loaded_key_withdp = pkcs8.loadKey("test_data/ecc/withdompar_private.pkcs8.pem", rng);
+            Unique!PKCS8PrivateKey loaded_key_withdp = pkcs8.loadKey("../test_data/ecc/withdompar_private.pkcs8.pem", rng);
             
             logTrace("Unexpected success: loaded key with unknown OID");
             ++fails;
@@ -692,7 +693,7 @@ size_t testEccKeyWithRfc5915Extensions(RandomNumberGenerator rng)
     
     try
     {
-        Unique!PKCS8PrivateKey pkcs8 = pkcs8.loadKey("test_data/ecc/ecc_private_with_rfc5915_ext.pem", rng);
+        Unique!PKCS8PrivateKey pkcs8 = pkcs8.loadKey("../test_data/ecc/ecc_private_with_rfc5915_ext.pem", rng);
         
         if (!cast(ECDSAPrivateKey)(*pkcs8))
         {
