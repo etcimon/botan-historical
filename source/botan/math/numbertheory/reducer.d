@@ -23,19 +23,21 @@ public:
     /*
     * Barrett Reduction
     */
-    BigInt reduce()(auto const ref BigInt x) const
+    BigInt reduce(BigInt x) const
     {
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
-        
 		if (x.cmp(m_modulus, false) < 0)
         {
+			logDebug("x: ", x.toString());
+			logDebug("m_modulus: ", m_modulus.toString());
             if (x.isNegative())
 				return x + m_modulus; // make positive
-            return x.dup;
+            return x.move;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
         {
+			logDebug("2");
             BigInt t1 = x.dup;
             t1.setSign(BigInt.Positive);
             t1 >>= (MP_WORD_BITS * (m_mod_words - 1));
@@ -56,10 +58,9 @@ public:
             {
                 t2 += BigInt.powerOf2(MP_WORD_BITS * (m_mod_words + 1));
             }
-            
 			while (t2 >= m_modulus)
-				t2 -= m_modulus;
-            
+				t2 -= m_modulus;            
+
             if (x.isPositive())
                 return t2.move();
             else
@@ -67,6 +68,8 @@ public:
         }
         else
         {
+			logDebug("Normal division");
+			scope(exit) logDebug("Normal division success");
             // too big, fall back to normal division
 			return (x % m_modulus);
         }
@@ -87,7 +90,10 @@ public:
     * @return (x * x) % p
     */
     BigInt square()(auto const ref BigInt x) const
-    { return reduce(x.square()); }
+    {
+		auto x2 = .square(x);
+		return reduce(x2.move);
+	}
 
     /**
     * Cube mod p
@@ -107,10 +113,8 @@ public:
             throw new InvalidArgument("ModularReducer: modulus must be positive");
         m_modulus = mod.dup;
         m_mod_words = m_modulus.sigWords();
-        
-        m_modulus_2 = square(m_modulus);
-        
-        m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
+        m_modulus_2 = .square(m_modulus);
+		m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
     }
 
     @property ModularReducer dup() const {

@@ -189,7 +189,7 @@ public:
     }
 
     abstract void clear();
-    this() { clear(); }
+    this() { }
 }
 
 static if (BOTAN_TEST):

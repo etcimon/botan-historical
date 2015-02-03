@@ -247,7 +247,7 @@ public:
         
         s = m_mod_p.multiply(s_i, s_r);
         
-        return (m_mod_q.reduce(s) == r);
+        return (m_mod_q.reduce(s.move()) == r);
     }
 
 private:

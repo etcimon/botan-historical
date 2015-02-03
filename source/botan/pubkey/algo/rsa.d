@@ -181,8 +181,14 @@ public:
             algorithms.
         */
         
-        const BigInt m = BigInt(msg, msg_len);
-        const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
+        BigInt m = BigInt(msg, msg_len);
+		logDebug("m: ", m.toString());
+		m = m_blinder.blind(m);
+		logDebug("blind m: ", m.toString());
+		m = privateOp(m);
+		logDebug("m: ", m.toString());
+        BigInt x = m_blinder.unblind(m);
+		logDebug("x: ", x.toString());
         return BigInt.encode1363(x, m_n.bytes());
     }
 
@@ -191,8 +197,8 @@ public:
     */
     override SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)
     {
-        const BigInt m = BigInt(msg, msg_len);
-        const BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
+        BigInt m = BigInt(msg, msg_len);
+        BigInt x = m_blinder.unblind(privateOp(m_blinder.blind(m)));
         
         assert(m == (*m_powermod_e_n)(x), "RSA decrypt passed consistency check");
         
@@ -201,17 +207,24 @@ public:
 private:
     BigInt privateOp()(auto const ref BigInt m) const
     {
+		logDebug("Spawn");
         if (m >= *m_n)
             throw new InvalidArgument("RSA private op - input is too large");
         BigInt j1;
+		logDebug("Spawn");
         auto tid = spawn((shared(Tid) tid, shared(FixedExponentPowerModImpl) powermod_d1_p2, shared(BigInt*) m2, shared(BigInt*) j1_2)
         { 
+				logDebug("access bigint");
             BigInt* ret = cast(BigInt*) j1_2;
+				logDebug("calculated in a foreign thread: ", ret.toString());
             *ret = (cast(FixedExponentPowerModImpl)powermod_d1_p2)(*cast(BigInt*)m2);
             send(cast(Tid)tid, true);
         }, 
         cast(shared) thisTid(), cast(shared(FixedExponentPowerModImpl))*m_powermod_d1_p, cast(shared(BigInt*))&m, cast(shared(BigInt*))&j1);
-        BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m);
+        
+		logDebug("calc powermod");
+		BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m);
+		logDebug("Wait");
         bool done = receiveOnly!bool();
         j1 = m_mod_p.reduce(subMul(j1, j2, *m_c));
         

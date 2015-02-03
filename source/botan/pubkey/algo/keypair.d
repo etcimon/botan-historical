@@ -59,8 +59,8 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
                                in PrivateKey key,
                                in string padding)
 {
-    auto signer = PKSigner(key, padding);
-    auto verifier = PKVerifier(key, padding);
+    PKSigner signer = PKSigner(key, padding);
+	PKVerifier verifier = PKVerifier(key, padding);
     Vector!ubyte message = unlock(rng.randomVec(16));
     
     Vector!ubyte signature;

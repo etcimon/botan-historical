@@ -44,7 +44,7 @@ public:
                                            size_t output_bits,
                                            RandomNumberGenerator rng)
     {
-		logDebug("EMSA1 Encode");
+		//logDebug("EMSA1 Encode");
         if (msg.length != hashOutputLength())
             throw new EncodingError("encodingOf: Invalid size for input");
         return emsa1Encoding(msg, output_bits);
@@ -91,7 +91,7 @@ SecureVector!ubyte emsa1Encoding(const ref SecureVector!ubyte msg_, size_t outpu
 
     if (8*msg.length <= output_bits)
         return msg.move;
-	logDebug("Generate digest");
+	// logDebug("Generate digest");
     size_t shift = 8*msg.length - output_bits;
     
     size_t byte_shift = shift / 8, bit_shift = shift % 8;

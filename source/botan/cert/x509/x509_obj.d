@@ -252,7 +252,7 @@ private:
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-        logDebug("Initialize PEM/BER X.509 Object");
+        //logDebug("Initialize PEM/BER X.509 Object");
         m_PEM_label_pref = m_PEM_labels_allowed[0];
         std.algorithm.sort(m_PEM_labels_allowed);
         

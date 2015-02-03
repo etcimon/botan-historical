@@ -24,12 +24,17 @@ public:
     */
     BigInt blind()(auto const ref BigInt i)
     {
-        if (!m_reducer.initialized())
+		logDebug("blind...");
+        if (!m_reducer.initialized()) {
+			logDebug("no m_reducer...");
             return i.dup;
-        
-        m_e = m_reducer.square(m_e);
+		}
+		logDebug("square... ", m_e.toString());
+		m_e = m_reducer.square(m_e);
+		logDebug("square...");
         m_d = m_reducer.square(m_d);
-        return m_reducer.multiply(i, m_e);
+		logDebug("multiply...");
+		return m_reducer.multiply(i, m_e);
     }
 
     /*

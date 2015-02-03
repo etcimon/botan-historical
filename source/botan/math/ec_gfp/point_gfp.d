@@ -95,8 +95,7 @@ public:
     */
     this()(const ref CurveGFp curve, auto const ref BigInt x, auto const ref BigInt y)
     { 
-		assert(curve.getA() != 0, "Uninitialized curve");
-        m_curve = curve.dup;
+		m_curve = curve.dup;
         m_ws.resize(2 * (curve.getPWords() + 2));
         m_coord_x = montyMult(x, curve.getR2());
         m_coord_y = montyMult(y, curve.getR2());
@@ -152,7 +151,6 @@ public:
     PointGFp opBinary(string op)(auto const ref BigInt scalar) const
         if (op == "*")
     {
-		assert(this.getCurve().getA() != BigInt(0));
         const PointGFp* point = &this;
         
         if (scalar.isZero()) {
@@ -209,15 +207,13 @@ public:
             
         } else {
             const size_t window_size = 4;
-            Vector!(PointGFp*) Ps = Vector!(PointGFp*)(1 << window_size);
-			auto ps0 = PointGFp(point.getCurve());
-			auto ps1 = point.dup;
-			Ps[0] = &ps0;
-			Ps[1] = &ps1;
+            Vector!(RefCounted!PointGFp) Ps = Vector!(RefCounted!PointGFp)(1 << window_size);
+			Ps[0] = RefCounted!PointGFp(point.getCurve());
+			Ps[1] = point.dup;
             
             for (size_t i = 2; i != Ps.length; ++i)
             {
-                Ps[i] = Ps[i-1];
+                Ps[i] = Ps[i-1].dup;
                 Ps[i].add(*point, ws);
             }
             
@@ -229,12 +225,14 @@ public:
                     H.mult2(ws);
                 
                 const uint nibble = scalar.getSubstring(bits_left - window_size, window_size);
+
+
 				H.add(*Ps[nibble], ws);
+				//logDebug("H[", nibble, "] = ", H.getAffineX().toString());
                 
                 bits_left -= window_size;
             }
             
-
             while (bits_left)
             {
                 H.mult2(ws);
@@ -834,7 +832,6 @@ PointGFp OS2ECP()(const(ubyte)* data, size_t data_len, auto const ref CurveGFp c
     else
         throw new InvalidArgument("OS2ECP: Unknown format type " ~ to!string(pc));
     PointGFp result = PointGFp(curve, x, y);
-	assert(result.m_curve.getA() != 0);
     if (!result.onTheCurve())
         throw new IllegalPoint("OS2ECP: Decoded point was not on the curve");
     return result.move();

@@ -199,7 +199,7 @@ public:
         
         assert(public_key.onTheCurve(), "Generated public key point was on the curve");
 
-		logDebug("private key: ", m_private_key.toString());
+		// logTrace("private key: ", m_private_key.toString());
         super(options, ec_group, public_key);
     }
 

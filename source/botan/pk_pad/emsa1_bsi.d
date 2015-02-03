@@ -36,7 +36,7 @@ public:
                                  		   size_t output_bits,
                                	 		   RandomNumberGenerator rng)
     {
-		logDebug("EMSA1BSI Encode");
+		//logDebug("EMSA1BSI Encode");
         if (msg.length != hashOutputLength())
             throw new EncodingError("EMSA1_BSI::encodingOf: Invalid size for input");
         

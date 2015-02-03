@@ -26,15 +26,15 @@ struct ECDSAOptions {
 	enum algoName = "ECDSA";
 	enum msgParts = 2;
 
-	static bool checkKey(in ECPrivateKey pkey, RandomNumberGenerator rng, bool strong)
+	static bool checkKey(in ECPrivateKey privkey, RandomNumberGenerator rng, bool strong)
 	{
-		if (!pkey.publicPoint().onTheCurve())
+		if (!privkey.publicPoint().onTheCurve())
 			return false;
 		
 		if (!strong)
 			return true;
 		
-		return signatureConsistencyCheck(rng, pkey, "EMSA1(SHA-1)");
+		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
 	}
 }
 
@@ -138,7 +138,7 @@ public:
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-		logDebug("ECDSA Sign operation");
+		logTrace("ECDSA Sign operation");
         rng.addEntropy(msg, msg_len);
         
         BigInt m = BigInt(msg, msg_len);
@@ -209,9 +209,8 @@ public:
     override bool verify(const(ubyte)* msg, size_t msg_len,
                 		 const(ubyte)* sig, size_t sig_len)
     {
-		logDebug("ECDSA Verification");
+		logTrace("ECDSA Verification");
         if (sig_len != m_order.bytes()*2) {
-			logError("length error: ", sig_len, " != ", m_order.bytes()*2);
             return false;
 		}
         
@@ -219,21 +218,19 @@ public:
         
         BigInt r = BigInt(sig, sig_len / 2);
         BigInt s = BigInt(sig + sig_len / 2, sig_len / 2);
-		logDebug("r: ", r.toString());
+
         if (r <= 0 || r >= *m_order || s <= 0 || s >= *m_order) {
-			logError("arg error");
+			//logError("arg error");
 			return false;
 		}
         
         BigInt w = inverseMod(s, *m_order);
-        
 		auto r_1 = PointGFp.multiExponentiate(*m_base_point, e, *m_public_point, r);
 		assert(r_1.onTheCurve());
         PointGFp R = r_1 * w;
 		assert(R.onTheCurve());
         if (R.isZero()) 
             return false;
-
 		return (R.getAffineX() % (*m_order) == r);
     }
 
@@ -328,7 +325,6 @@ size_t testHashLargerThanN(RandomNumberGenerator rng)
         logTrace("Corrupt ECDSA signature verified, should not have");
         ++fails;
     }
-    
     return fails;
 }
 
@@ -348,7 +344,7 @@ size_t testDecodeEcdsaX509()
     Unique!X509PublicKey pubkey = cert.subjectPublicKey();
     bool ver_ec = cert.checkSignature(*pubkey);
     mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned x509-ecdsa certificate" ) );
-    
+	assert(!fails);
     return fails;
 }
 

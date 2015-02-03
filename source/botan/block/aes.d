@@ -36,7 +36,6 @@ public:
     
     override void clear()
     {
-        logTrace("Zap");
         zap(m_EK);
         zap(m_DK);
         zap(m_ME);

@@ -310,7 +310,7 @@ public:
                        const(ubyte)* sig, size_t sig_length)
     {
         update(msg, msg_length);
-        logTrace("Done update");
+        //logTrace("Done update");
         return checkSignature(sig, sig_length);
     }
 
