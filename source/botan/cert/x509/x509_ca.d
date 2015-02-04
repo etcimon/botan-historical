@@ -189,6 +189,7 @@ public:
          in PrivateKey key,
          in string hash_fn)
     {
+		m_ca_sig_algo = AlgorithmIdentifier();
         m_cert = c;
         if (!m_cert.isCACert())
             throw new InvalidArgument("X509_CA: This certificate is not for a CA");
@@ -249,7 +250,7 @@ private:
     }    
 
 
-    AlgorithmIdentifier m_ca_sig_algo;
+	AlgorithmIdentifier m_ca_sig_algo;
     X509Certificate m_cert;
     PKSigner m_signer;
 }

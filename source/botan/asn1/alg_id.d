@@ -121,8 +121,9 @@ public:
         else return -1;
     }
 
-    @property OID oid() const {
-        return *cast(OID*) &m_oid;
+    @property const(OID) oid() const {
+		logDebug("OID");
+        return m_oid;
     }
 
     @property Vector!ubyte parameters() const {

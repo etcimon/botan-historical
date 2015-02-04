@@ -160,12 +160,14 @@ public:
         m_n = &rsa.getN();
         m_q = &rsa.getQ();
         m_c = &rsa.getC();
+		m_d1 = &rsa.getD1();
+		m_p = &rsa.getP();
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
-        m_powermod_d1_p = FixedExponentPowerMod(rsa.getD1(), rsa.getP());
         m_powermod_d2_q = FixedExponentPowerMod(rsa.getD2(), rsa.getQ());
         m_mod_p = ModularReducer(rsa.getP());
         BigInt k = BigInt(rng, m_n.bits() - 1);
-        m_blinder = Blinder((*m_powermod_e_n)(k), inverseMod(k, *m_n), *m_n);
+		auto e = (*m_powermod_e_n)(k);
+		m_blinder = Blinder(e, inverseMod(k, *m_n), *m_n);
     }
     override size_t messageParts() const { return 1; }
     override size_t messagePartSize() const { return 0; }
@@ -180,15 +182,10 @@ public:
             PKSigner checks verification consistency for all signature
             algorithms.
         */
-        
         BigInt m = BigInt(msg, msg_len);
-		logDebug("m: ", m.toString());
-		m = m_blinder.blind(m);
-		logDebug("blind m: ", m.toString());
+		m = m_blinder.blind(m.dup);
 		m = privateOp(m);
-		logDebug("m: ", m.toString());
         BigInt x = m_blinder.unblind(m);
-		logDebug("x: ", x.toString());
         return BigInt.encode1363(x, m_n.bytes());
     }
 
@@ -207,34 +204,40 @@ public:
 private:
     BigInt privateOp()(auto const ref BigInt m) const
     {
-		logDebug("Spawn");
         if (m >= *m_n)
             throw new InvalidArgument("RSA private op - input is too large");
         BigInt j1;
-		logDebug("Spawn");
-        auto tid = spawn((shared(Tid) tid, shared(FixedExponentPowerModImpl) powermod_d1_p2, shared(BigInt*) m2, shared(BigInt*) j1_2)
-        { 
-				logDebug("access bigint");
-            BigInt* ret = cast(BigInt*) j1_2;
-				logDebug("calculated in a foreign thread: ", ret.toString());
-            *ret = (cast(FixedExponentPowerModImpl)powermod_d1_p2)(*cast(BigInt*)m2);
-            send(cast(Tid)tid, true);
-        }, 
-        cast(shared) thisTid(), cast(shared(FixedExponentPowerModImpl))*m_powermod_d1_p, cast(shared(BigInt*))&m, cast(shared(BigInt*))&j1);
+		auto tid = spawn((shared(Tid) tid, shared(const BigInt*) d1, shared(const BigInt*) p, shared(const BigInt*) m2, shared(BigInt*) j1_2)
+        	{ 
+				import botan.libstate.libstate : modexpInit;
+				modexpInit(); // enable quick path for powermod
+	            BigInt* ret = cast(BigInt*) j1_2;
+				{
+					auto powermod_d1_p = FixedExponentPowerMod(*cast(const BigInt*)d1, *cast(const BigInt*)p);
+					*ret = (*powermod_d1_p)(*cast(const BigInt*)m2);
+	            	send(cast(Tid) tid, true);
+				}
+				auto done = receiveOnly!bool;
+				destroy(*ret);
+				send(cast(Tid) tid, true);
+             }, 
+			cast(shared) thisTid(), cast(shared)m_d1, cast(shared)m_p, cast(shared)&m, cast(shared)&j1);
         
-		logDebug("calc powermod");
 		BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m);
-		logDebug("Wait");
         bool done = receiveOnly!bool();
-        j1 = m_mod_p.reduce(subMul(j1, j2, *m_c));
-        
-        return mulAdd(j1, *m_q, j2);
+
+		BigInt j3 = m_mod_p.reduce(subMul(j1, j2, *m_c));
+		send(tid, true); // Destroy j1
+		done = receiveOnly!bool(); // wait for destruction...
+        return mulAdd(j3, *m_q, j2);
     }
 
     const BigInt* m_n;
     const BigInt* m_q;
     const BigInt* m_c;
-    FixedExponentPowerMod m_powermod_e_n, m_powermod_d1_p, m_powermod_d2_q;
+	const BigInt* m_d1;
+	const BigInt* m_p;
+    FixedExponentPowerMod m_powermod_e_n, m_powermod_d2_q;
     ModularReducer m_mod_p;
     Blinder m_blinder;
 }

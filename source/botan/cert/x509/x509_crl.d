@@ -189,7 +189,7 @@ protected:
         if (_version != 0 && _version != 1)
             throw new X509CRLError("Unknown X.509 CRL version " ~ to!string(_version+1));
         
-        AlgorithmIdentifier sig_algo_inner;
+        auto sig_algo_inner = AlgorithmIdentifier();
         tbs_crl.decode(sig_algo_inner);
         
         logTrace("Sig algo inner: ", OIDS.lookup(sig_algo_inner.oid));

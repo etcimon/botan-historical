@@ -236,7 +236,7 @@ protected:
         }
     }
     this() { }
-    AlgorithmIdentifier m_sig_algo;
+	AlgorithmIdentifier m_sig_algo;
     Vector!ubyte m_tbs_bits, m_sig;
 
 protected:
@@ -248,6 +248,7 @@ private:
     */
     final void init(DataSource input, in string labels)
     {
+		m_sig_algo = AlgorithmIdentifier();
         m_PEM_labels_allowed = labels.split('/');
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");

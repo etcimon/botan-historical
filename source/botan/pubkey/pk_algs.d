@@ -78,7 +78,8 @@ PublicKey makePublicKey(in AlgorithmIdentifier alg_id, const ref SecureVector!ub
     return null;
 }
 
-PrivateKey makePrivateKey(in AlgorithmIdentifier alg_id,
+// TODO: use Embed!'s release() and make ~this delete the inner object if set
+PrivateKey makePrivateKey(const ref AlgorithmIdentifier alg_id,
                           const ref SecureVector!ubyte key_bits,
                           RandomNumberGenerator rng)
 {

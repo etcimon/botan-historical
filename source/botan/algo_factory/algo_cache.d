@@ -152,18 +152,19 @@ public:
     */
     void clearCache()
     {
-        /*
-        foreach (provider, algorithms; m_algorithms)
+        
+		foreach (const ref string provider, ref HashMapRef!(string, T) algorithms; m_algorithms)
         {
-            foreach (name, instance; algorithms) {
-                delete instance;
+            foreach (const ref string name, ref T instance; algorithms) {
+                if (instance) delete instance;
             }
-        }*/
+        }
 
         /// Let the GC handle this
         m_algorithms.clear();
     }
 
+	~this() { clearCache(); }
 private:
 
     /*

@@ -150,7 +150,8 @@ public:
         m_e = &rw.getE();
         m_q = &rw.getQ();
         m_c = &rw.getC();
-        m_powermod_d1_p = FixedExponentPowerMod(rw.getD1(), rw.getP());
+		m_d1 = &rw.getD1();
+		m_p = &rw.getP();
         m_powermod_d2_q = FixedExponentPowerMod(rw.getD2(), rw.getQ());
         m_mod_p = ModularReducer(rw.getP());
         m_blinder = Blinder.init;
@@ -163,9 +164,10 @@ public:
     {
         rng.addEntropy(msg, msg_len);
 
-        if (!m_blinder.initialized()) {
+        if (!m_blinder.initialized()) { // initialize here because we need rng
             BigInt k = BigInt(rng, std.algorithm.min(160, m_n.bits() - 1));
-            m_blinder = Blinder(powerMod(k, *m_e, *m_n), inverseMod(k, *m_n), *m_n);
+			auto e = powerMod(k, *m_e, *m_n);
+            m_blinder = Blinder(e, inverseMod(k, *m_n), *m_n);
         }
 
         BigInt i = BigInt(msg, msg_len);
@@ -180,32 +182,44 @@ public:
 
         BigInt j1;
 
-        auto tid = spawn((shared Tid tid, shared(FixedExponentPowerModImpl) powermod_d1_p2, shared(BigInt*) i2, shared(BigInt*) j1_2) 
-        {
-            BigInt* ret = cast(BigInt*)j1_2;
-            *ret = (cast(FixedExponentPowerModImpl)powermod_d1_p2)(*cast(BigInt*)i2);
-            send(cast(Tid)tid, true); 
-        }, 
-        cast(shared)thisTid(), cast(shared)*m_powermod_d1_p, cast(shared)&i, cast(shared)&j1);
+        auto tid = spawn((shared Tid tid, shared(const BigInt*) d1, shared(const BigInt*) p, shared(BigInt*) i2, shared(BigInt*) j1_2) 
+			{
+				import botan.libstate.libstate : modexpInit;
+				modexpInit(); // enable quick path for powermod
+            	BigInt* ret = cast(BigInt*)j1_2;
+
+				{
+					auto powermod_d1_p = FixedExponentPowerMod(*cast(const BigInt*)d1, *cast(const BigInt*)p);
+					*ret = (*powermod_d1_p)(*cast(BigInt*)i2);
+					send(cast(Tid) tid, true); // send j1 available signal
+				}
+				auto done = receiveOnly!bool; // can destroy j1
+				destroy(*ret);
+            	send(cast(Tid)tid, true); // signal j1 destroyed
+        	}, 
+        	cast(shared)thisTid(), cast(shared)m_d1, cast(shared)m_p, cast(shared)&i, cast(shared)&j1
+			);
         const BigInt j2 = (*m_powermod_d2_q)(i);
-        bool ok = receiveOnly!bool();
-        
-        j1 = m_mod_p.reduce(subMul(j1, j2, *m_c));
-        
-        BigInt r = m_blinder.unblind(mulAdd(j1, *m_q, j2));
+        bool done = receiveOnly!bool();        
+        BigInt j3 = m_mod_p.reduce(subMul(j1, j2, *m_c));
+		send(cast(Tid)tid, true);
+        BigInt r = m_blinder.unblind(mulAdd(j3, *m_q, j2));
         
 		BigInt cmp2 = *m_n - r;
         BigInt min_val = r.move();
         if (cmp2 < min_val)
             min_val = cmp2.move();
-
-        return BigInt.encode1363(min_val, m_n.bytes());
+		auto ret = BigInt.encode1363(min_val, m_n.bytes());
+		done = receiveOnly!bool(); // make sure j1 is destroyed
+        return ret;
     }
 private:
     const BigInt* m_n;
     const BigInt* m_e;
-    const BigInt* m_q;
-    const BigInt* m_c;
+	const BigInt* m_q;
+	const BigInt* m_c;
+	const BigInt* m_d1;
+	const BigInt* m_p;
 
     FixedExponentPowerMod m_powermod_d1_p, m_powermod_d2_q;
     ModularReducer m_mod_p;

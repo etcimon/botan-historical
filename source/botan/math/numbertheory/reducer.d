@@ -23,21 +23,18 @@ public:
     /*
     * Barrett Reduction
     */
-    BigInt reduce(BigInt x) const
+    BigInt reduce()(BigInt x) const
     {
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
 		if (x.cmp(m_modulus, false) < 0)
         {
-			logDebug("x: ", x.toString());
-			logDebug("m_modulus: ", m_modulus.toString());
             if (x.isNegative())
 				return x + m_modulus; // make positive
             return x.move;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
         {
-			logDebug("2");
             BigInt t1 = x.dup;
             t1.setSign(BigInt.Positive);
             t1 >>= (MP_WORD_BITS * (m_mod_words - 1));
@@ -68,8 +65,6 @@ public:
         }
         else
         {
-			logDebug("Normal division");
-			scope(exit) logDebug("Normal division success");
             // too big, fall back to normal division
 			return (x % m_modulus);
         }
@@ -91,8 +86,7 @@ public:
     */
     BigInt square()(auto const ref BigInt x) const
     {
-		auto x2 = .square(x);
-		return reduce(x2.move);
+		return reduce(x.square());
 	}
 
     /**

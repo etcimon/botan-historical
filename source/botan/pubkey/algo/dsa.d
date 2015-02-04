@@ -131,8 +131,9 @@ public:
         assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = &dsa.groupQ();
         m_x = &dsa.getX();
-        m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
-        m_mod_q = dsa.groupQ().dup;
+		m_g = &dsa.groupG();
+		m_p = &dsa.groupP();
+        m_mod_q = ModularReducer(dsa.groupQ());
     }
 
 	override size_t messageParts() const { return 2; }
@@ -146,7 +147,6 @@ public:
         
         BigInt i = BigInt(msg, msg_len);
         BigInt r = 0, s = 0;
-        
         while (r == 0 || s == 0)
         {
             BigInt k;
@@ -154,21 +154,32 @@ public:
                 k.randomize(rng, m_q.bits());
             while (k >= *m_q);
 
-            static void handler(shared(Tid) tid, shared(ModularReducer*) mod_q_2, 
-                                shared(FixedBasePowerModImpl) powermod_g_p2, shared(BigInt*) k2, shared(BigInt*) r2){ 
-                BigInt* K = cast(BigInt*) r2;
-                BigInt reduced = (cast(ModularReducer*)mod_q_2).reduce((cast(FixedBasePowerModImpl)powermod_g_p2)(*K));
-                *K = reduced.move();
-                send(cast(Tid) tid, true); 
-            }
+			BigInt res;
 
-            spawn(&handler, cast(shared(Tid))thisTid(), cast(shared(ModularReducer*))&m_mod_q, 
-                  cast(shared)*m_powermod_g_p, cast(shared(BigInt*))&k, cast(shared(BigInt*))&r);
+			Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) q, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
+				{ 
+					import botan.libstate.libstate : modexpInit;
+					modexpInit(); // enable quick path for powermod
+
+					BigInt* ret = cast(BigInt*) res2;
+					{
+						auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)q, *cast(const BigInt*)p);
+						*ret = (cast(ModularReducer*)mod_q).reduce((*powermod_g_p)(*cast(BigInt*)k2));
+						send(cast(Tid) tid, true);
+					}
+					bool done = receiveOnly!bool();
+					destroy(*ret);
+					send(cast(Tid)tid, true);
+				}, cast(shared(Tid))thisTid(), cast(shared)&m_mod_q, cast(shared)m_q, cast(shared)m_p, cast(shared)&k, cast(shared)&res
+				);
 
             s = inverseMod(k, *m_q);
             bool done = receiveOnly!(bool)();
-
-            s = m_mod_q.multiply(s, mulAdd(*m_x, r, i));
+			r = res.dup(); // ensure no remote pointers
+			auto s_arg = mulAdd(*m_x, r, i);
+			send(cast(Tid)tid, true);
+			s = m_mod_q.multiply(s, s_arg);
+			done = receiveOnly!bool(); // destroy res
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());
@@ -179,7 +190,8 @@ public:
 private:
 	const BigInt* m_q;
 	const BigInt* m_x;
-    FixedBasePowerMod m_powermod_g_p;
+	const BigInt* m_g;
+	const BigInt* m_p;
     ModularReducer m_mod_q;
 }
 
@@ -202,10 +214,11 @@ public:
         assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = &dsa.groupQ();
         m_y = &dsa.getY();
-        m_powermod_g_p = FixedBasePowerMod(dsa.groupG(), dsa.groupP());
+		m_g = &dsa.groupG();
+		m_p = &dsa.groupP();
         m_powermod_y_p = FixedBasePowerMod(*m_y, dsa.groupP());
-        m_mod_p = ModularReducer(dsa.groupP().dup);
-        m_mod_q = ModularReducer(dsa.groupQ().dup);
+        m_mod_p = ModularReducer(dsa.groupP());
+        m_mod_q = ModularReducer(dsa.groupQ());
     }
 
     override size_t messageParts() const { return 2; }
@@ -231,30 +244,39 @@ public:
             return false;
         
         s = inverseMod(s, *q);
-        static void handler(shared(Tid) tid, shared(FixedBasePowerModImpl) powermod_g_p2, 
-                            shared(ModularReducer*) mod_q2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
-        { 
-            BigInt* K = cast(BigInt*) s_i2;
-            BigInt res = (cast(FixedBasePowerModImpl)powermod_g_p2)((*cast(ModularReducer*)mod_q2).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2));
-            *K = res.move();
-            send(cast(Tid) tid, true); 
-        }
-        spawn(&handler, cast(shared)thisTid(), cast(shared(FixedBasePowerModImpl))*m_powermod_g_p, cast(shared(ModularReducer*))&m_mod_q, 
-              cast(shared(BigInt*))&s, cast(shared(BigInt*))&i, cast(shared(BigInt*))&s_i);
+
+		Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*) mod_q, shared(const BigInt*)q2, shared(const BigInt*)p2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
+			{ 
+				import botan.libstate.libstate : modexpInit;
+				modexpInit(); // enable quick path for powermod
+				BigInt* ret = cast(BigInt*) s_i2;
+				{
+					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)q2, *cast(const BigInt*)p2);
+					*ret = (*powermod_g_p)((*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2));
+					send(cast(Tid) tid, true); 
+				}
+				auto done = receiveOnly!bool();
+				destroy(*ret);
+				send(cast(Tid) tid, true); 
+			}
+			, cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_q, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
         
         BigInt s_r = (*m_powermod_y_p)(m_mod_q.multiply(s, r));
         bool done = receiveOnly!bool();
-        
         s = m_mod_p.multiply(s_i, s_r);
-        
-        return (m_mod_q.reduce(s.move()) == r);
+		send(cast(Tid)tid, true); // trigger destroy s_i
+		auto ret = (m_mod_q.reduce(s.move()) == r);
+		done = receiveOnly!bool();        
+        return ret;
     }
 
 private:
     const BigInt* m_q;
 	const BigInt* m_y;
+	const BigInt* m_g;
+	const BigInt* m_p;
 
-    FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
+    FixedBasePowerMod m_powermod_y_p;
     ModularReducer m_mod_p, m_mod_q;
 }
 

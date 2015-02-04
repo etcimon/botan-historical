@@ -194,8 +194,8 @@ public:
         assert(nr.algoName == NRPublicKey.algoName);
         m_q = &nr.groupQ();
         m_y = &nr.getY();
+		m_p = &nr.groupP();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
-        m_powermod_y_p = FixedBasePowerMod(*m_y, nr.groupP());
         m_mod_p = ModularReducer(nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ());
     }
@@ -223,27 +223,42 @@ public:
         if (c.isZero() || c >= *q || d >= *q)
             throw new InvalidArgument("NR verification: Invalid signature");
         import std.concurrency : spawn, receiveOnly, send, thisTid;
-        BigInt c_dup = c.dup;
+
         BigInt res;
+
         auto tid = spawn(
-            (shared(Tid) tid, shared(FixedBasePowerModImpl) powermod_y_p2, shared(BigInt*) c2, shared(BigInt*) res2) 
+            (shared(Tid) tid, shared(const BigInt*) y, shared(const BigInt*) p, shared(BigInt*) c2, shared(BigInt*) res2) 
             { 
+				import botan.libstate.libstate : modexpInit;
+				modexpInit(); // enable quick path for powermod
                 BigInt* ret = cast(BigInt*) res2;
-                *ret = (cast(FixedBasePowerModImpl)powermod_y_p2)(*cast(BigInt*)c2);
+				{
+					auto powermod_d1_p = FixedExponentPowerMod(*cast(const BigInt*)y, *cast(const BigInt*)p);
+					*ret = (*powermod_d1_p)(*cast(BigInt*)c2);
+					send(cast(Tid) tid, true);
+				}
+				auto done = receiveOnly!bool;
+				destroy(*ret);
                 send(cast(Tid)tid, true); 
             }, 
-        cast(shared)thisTid, cast(shared(FixedBasePowerModImpl))*m_powermod_y_p, cast(shared(BigInt*))&c_dup, cast(shared(BigInt*))&res );
+        	cast(shared)thisTid, cast(shared)m_y, cast(shared)m_p, cast(shared)&c, cast(shared)&res 
+			);
         BigInt g_d = (*m_powermod_g_p)(d);
-
         bool done = receiveOnly!bool();
+
         BigInt i = m_mod_p.multiply(g_d, res);
-        return BigInt.encodeLocked(m_mod_q.reduce(c - i));
+
+		send(cast(Tid)tid, true);
+		auto ret = BigInt.encodeLocked(m_mod_q.reduce(c - i));
+		done = receiveOnly!bool;
+        return ret;
     }
 private:
     const BigInt* m_q;
     const BigInt* m_y;
+	const BigInt* m_p;
 
-    FixedBasePowerMod m_powermod_g_p, m_powermod_y_p;
+    FixedBasePowerMod m_powermod_g_p;
     ModularReducer m_mod_p, m_mod_q;
 }
 

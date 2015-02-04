@@ -137,7 +137,8 @@ public:
         m_p = &dh.groupP();
         m_powermod_x_p = FixedExponentPowerMod(dh.getX(), *m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-        m_blinder = Blinder(k, (*m_powermod_x_p)(inverseMod(k, *m_p)), *m_p);
+		auto d = (*m_powermod_x_p)(inverseMod(k, *m_p));
+        m_blinder = Blinder(k, d, *m_p);
     }
 
     override SecureVector!ubyte agree(const(ubyte)* w, size_t w_len)

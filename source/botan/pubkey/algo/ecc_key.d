@@ -203,7 +203,7 @@ public:
         super(options, ec_group, public_key);
     }
 
-    this(T)(in T options, in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
+    this(T)(in T options, const ref AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
         PointGFp public_key;
         OID key_parameters;
@@ -216,10 +216,11 @@ public:
                 .decodeOptional(key_parameters, (cast(ASN1Tag) 0), ASN1Tag.PRIVATE)
                 .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)
                 .endCons();
-        
+		logDebug("Here");
+		if (*alg_id is null) logDebug("Null");
         if (!key_parameters.empty && key_parameters != alg_id.oid)
             throw new DecodingError("ECPrivateKey - inner and outer OIDs did not match");
-        
+		logDebug("here2");
         if (public_key_bits.empty)
         {
             public_key = domain().getBasePoint() * m_private_key;
@@ -228,6 +229,7 @@ public:
         }
         else
         {
+			logDebug("here3");
             public_key = OS2ECP(public_key_bits, ECGroup(alg_id.parameters).getCurve());
             // OS2ECP verifies that the point is on the curve
         }

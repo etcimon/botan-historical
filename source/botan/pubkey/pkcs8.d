@@ -134,14 +134,16 @@ PrivateKey loadKey(DataSource source,
                    RandomNumberGenerator rng,
                    SingleShotPassphrase get_pass)
 {
-    AlgorithmIdentifier alg_id;
+ 	auto alg_id = AlgorithmIdentifier();
+	logDebug("Before decode");
     SecureVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
-    
+	logDebug("pkcs8 key");
     const string alg_name = OIDS.lookup(alg_id.oid);
+	logDebug("After lookup");
     if (alg_name == "" || alg_name == alg_id.oid.toString())
         throw new PKCS8Exception("Unknown algorithm OID: " ~
                                   alg_id.oid.toString());
-    
+	logDebug("After exception check");
     return makePrivateKey(alg_id, pkcs8_key, rng);
 }
 
@@ -154,7 +156,7 @@ PrivateKey loadKey(DataSource source,
 */
 PrivateKey loadKey(DataSource source,
                    RandomNumberGenerator rng,
-                     in string pass = "")
+                   in string pass   = "")
 {
     return loadKey(source, rng, SingleShotPassphrase(pass));
 }
@@ -224,7 +226,7 @@ SecureVector!ubyte PKCS8_extract(DataSource source,
 */
 SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassphrase, AlgorithmIdentifier pk_alg_id)
 {
-    AlgorithmIdentifier pbe_alg_id;
+	auto pbe_alg_id = AlgorithmIdentifier();
     SecureVector!ubyte key_data, key;
     bool is_encrypted = true;
     

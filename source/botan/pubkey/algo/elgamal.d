@@ -193,7 +193,8 @@ public:
         m_mod_p = ModularReducer(*p);
         
         BigInt k = BigInt(rng, p.bits() - 1);
-        m_blinder = Blinder(k, (*m_powermod_x_p)(k), *p);
+		auto d = (*m_powermod_x_p)(k);
+        m_blinder = Blinder(k, d, *p);
     }
 
     override SecureVector!ubyte decrypt(const(ubyte)* msg, size_t msg_len)

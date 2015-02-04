@@ -37,13 +37,13 @@ public:
 	override void setBase(const ref BigInt base)
     {
         m_window_bits = PowerMod.windowBits(m_exp.bits(), base.bits(), m_hints);
-        
+		auto base_2 = base.dup;
         m_g.resize(1 << m_window_bits);
         m_g[0] = RefCounted!BigInt(1);
-        m_g[1] = RefCounted!BigInt(base.dup);
+        m_g[1] = RefCounted!BigInt(base_2);
         
         for (size_t i = 2; i != m_g.length; ++i)
-            m_g[i] = RefCounted!BigInt(m_reducer.multiply(*m_g[i-1], *m_g[0]));
+            m_g[i] = RefCounted!BigInt(m_reducer.multiply(*(m_g[i-1]), *(m_g[0])));
     }
 
     /*
@@ -53,7 +53,7 @@ public:
     {
         const size_t exp_nibbles = (m_exp.bits() + m_window_bits - 1) / m_window_bits;
         
-        BigInt x = 1;
+        BigInt x = BigInt(1);
         
         for (size_t i = exp_nibbles; i > 0; --i)
         {
@@ -62,9 +62,9 @@ public:
             
             const uint nibble = m_exp.getSubstring(m_window_bits*(i-1), m_window_bits);
             
-            x = m_reducer.multiply(x, m_g[nibble]);
+            x = m_reducer.multiply(x, *(m_g[nibble]));
         }
-        return x;
+        return x.move();
     }
 
     override ModularExponentiator copy() const
@@ -134,12 +134,12 @@ public:
         
 		m_g[1] = RefCounted!BigInt(z.dup);
         
-        const BigInt* x = &*m_g[1];
+        const BigInt* x = &*(m_g[1]);
         const size_t x_sig = x.sigWords();
         
         for (size_t i = 2; i != m_g.length; ++i)
         {
-            const BigInt* y = &*m_g[i-1];
+            const BigInt* y = &*(m_g[i-1]);
             const size_t y_sig = y.sigWords();
             
             bigint_monty_mul(z.mutablePtr(), z.length,
@@ -191,7 +191,7 @@ public:
         x.growTo(2*m_mod_words + 1);
         
         bigint_monty_redc(x.mutablePtr(), m_modulus.ptr, m_mod_words, m_mod_prime, workspace.ptr);
-        return x;
+        return x.move();
     }
 
     override ModularExponentiator copy() const

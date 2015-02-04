@@ -60,7 +60,7 @@ string PEM_encode(in PublicKey key)
 PublicKey loadKey(DataSource source)
 {
     try {
-        AlgorithmIdentifier alg_id;
+		auto alg_id = AlgorithmIdentifier();
         SecureVector!ubyte key_bits;
         
         if (maybeBER(source) && !PEM.matches(source))

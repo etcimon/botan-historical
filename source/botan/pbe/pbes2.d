@@ -124,7 +124,7 @@ public:
                 .verifyEnd()
                 .endCons();
         
-        AlgorithmIdentifier prf_algo;
+        auto prf_algo = AlgorithmIdentifier();
         
         if (kdf_algo.oid != OIDS.lookup("PKCS5.PBKDF2"))
             throw new DecodingError("PBE-PKCS5 v2.0: Unknown KDF algorithm " ~ kdf_algo.oid.toString());

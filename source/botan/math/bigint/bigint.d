@@ -191,7 +191,7 @@ public:
 	/**
     * Move assignment
 	*/
-	void opAssign(BigInt other)
+	void opAssign()(auto ref BigInt other)
 	{
 		this.swap(other);
 	}

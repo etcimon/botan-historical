@@ -70,7 +70,7 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
     string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
 	logDebug(padding_and_hash);
     sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
-    sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
+    sig_algo = AlgorithmIdentifier(cast(OID)sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
     
     PKSigner signer = PKSigner(key, padding_and_hash);
     
@@ -105,10 +105,10 @@ EAC11Req createCvcReq(in PrivateKey key,
     {
         throw new InvalidArgument("CVC_EAC.createSelfSignedCert(): unsupported key type");
     }
-    AlgorithmIdentifier sig_algo;
+    auto sig_algo = AlgorithmIdentifier();
     string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
     sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
-    sig_algo = AlgorithmIdentifier(sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
+	sig_algo = AlgorithmIdentifier(cast(OID)sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
     
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
     

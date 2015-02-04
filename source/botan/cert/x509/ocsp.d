@@ -100,7 +100,7 @@ public:
             BERDecoder basicresponse = BERDecoder(response_bytes.getNextOctetString()).startCons(ASN1Tag.SEQUENCE);
             
             Vector!ubyte tbs_bits;
-            AlgorithmIdentifier sig_algo;
+            auto sig_algo = AlgorithmIdentifier();
             Vector!ubyte signature;
             Vector!X509Certificate certs;
             

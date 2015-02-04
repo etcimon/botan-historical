@@ -520,7 +520,7 @@ protected:
     {
         size_t _version;
         BigInt serial_bn;
-        AlgorithmIdentifier sig_algo_inner;
+        auto sig_algo_inner = AlgorithmIdentifier();
         X509DN dn_issuer, dn_subject;
         X509Time start, end;
         

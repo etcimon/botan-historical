@@ -73,7 +73,7 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
     {
         return false;
     }
-    
+
     if (!verifier.verifyMessage(message, signature))
         return false;
     

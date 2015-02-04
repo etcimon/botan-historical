@@ -56,7 +56,9 @@ static if (BOTAN_HAS_ENTROPY_SRC_WIN32)
 static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
     import botan.entropy.proc_walk;
 
+private bool g_modexp_init;
 
+void modexpInit() { g_modexp_init = true; }
 
 /**
 * Global Library State
@@ -75,12 +77,19 @@ public:
         if (m_initialized)
             return;
 
-        SCANToken.setDefaultAliases();
-        static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO) 
-            OIDS.setDefaults();
+		if (!g_modexp_init) {
+	        SCANToken.setDefaultAliases();
+	        static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO) 
+	            OIDS.setDefaults();
+		}
 
         m_algorithm_factory = new AlgorithmFactory;
         
+		if (g_modexp_init) {
+			algorithmFactory().addEngine(new CoreEngine);
+			m_initialized = true;
+			return;
+		}
         static if (BOTAN_HAS_ENGINE_GNU_MP) {
             logTrace("Loading GNU MP Engine");
             algorithmFactory().addEngine(new GMPEngine);

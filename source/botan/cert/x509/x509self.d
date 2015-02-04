@@ -244,7 +244,7 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
                                      in string hash_fn,
                                      RandomNumberGenerator rng)
 {
-    AlgorithmIdentifier sig_algo;
+    auto sig_algo = AlgorithmIdentifier();
     X509DN subject_dn;
     AlternativeName subject_alt;
     
@@ -291,7 +291,7 @@ PKCS10Request createCertReq(in X509CertOptions opts,
                                in string hash_fn,
                                RandomNumberGenerator rng)
 {
-    AlgorithmIdentifier sig_algo;
+    auto sig_algo = AlgorithmIdentifier();
     X509DN subject_dn;
     AlternativeName subject_alt;
     

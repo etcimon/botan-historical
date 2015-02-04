@@ -94,7 +94,7 @@ package:
     {
         const auto key_bits = cert.subjectPublicKeyBits();
         
-        AlgorithmIdentifier public_key_algid;
+        auto public_key_algid = AlgorithmIdentifier();
         Vector!ubyte public_key_bitstr;
         
         BERDecoder(key_bits)
