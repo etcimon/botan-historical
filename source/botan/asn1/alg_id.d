@@ -49,7 +49,7 @@ public:
                 .endCons();
     }
 
-    this() {}
+	this() { m_oid = OID(); }
 
     /*
     * Create an AlgorithmIdentifier
@@ -137,6 +137,10 @@ public:
     @property void parameters()(auto ref Vector!ubyte param) {
 		m_parameters = param.dup;
     }
+
+	override string toString() const {
+		return m_oid.toString();
+	}
 
 private:
     OID m_oid;

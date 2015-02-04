@@ -74,7 +74,7 @@ public:
             
             while (rdn.moreItems())
             {
-                OID oid;
+                OID oid = OID();
                 ASN1String str = ASN1String();
                 
                 rdn.startCons(ASN1Tag.SEQUENCE)

@@ -83,7 +83,7 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-        OID ecc_param_id;
+        OID ecc_param_id = OID();
         
         // Also includes hash and cipher OIDs... brilliant design guys
         BERDecoder(alg_id.parameters).startCons(ASN1Tag.SEQUENCE).decode(ecc_param_id);

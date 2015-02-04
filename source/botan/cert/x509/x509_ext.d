@@ -109,7 +109,7 @@ public:
         
         while (sequence.moreItems())
         {
-            OID oid;
+            OID oid = OID();
             Vector!ubyte value;
             bool critical;
             
@@ -749,7 +749,7 @@ protected:
         
         while (ber.moreItems())
         {
-            OID oid;
+            OID oid = OID();
             
             BERDecoder info = ber.startCons(ASN1Tag.SEQUENCE);
             
@@ -986,6 +986,7 @@ public:
     
     override void decodeFrom(ref BERDecoder codec)
     {
+		oid = OID();
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(oid)
                 .discardRemaining()

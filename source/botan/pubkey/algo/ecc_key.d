@@ -51,15 +51,23 @@ public:
             throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
     }
 
-    this(T)(in T options, in AlgorithmIdentifier alg_id, 
-         	const ref SecureVector!ubyte key_bits) 
-    {
+	this(T)(in T options, in AlgorithmIdentifier alg_id, 
+		const ref SecureVector!ubyte key_bits) 
+	{
 		decodeOptions(options);
+		
+		m_domain_params = ECGroup(alg_id.parameters);
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;        
+		m_public_key = OS2ECP(key_bits, domain().getCurve());
+	}
 
-        m_domain_params = ECGroup(alg_id.parameters);
-        m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;        
-        m_public_key = OS2ECP(key_bits, domain().getCurve());
-    }
+	protected this(T)(in T options, in AlgorithmIdentifier alg_id) 
+	{
+		decodeOptions(options);
+		
+		m_domain_params = ECGroup(alg_id.parameters);
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+	}
 
 	final void decodeOptions(T)(in T options) {
 		static if (__traits(hasMember, T, "checkKey"))
@@ -205,37 +213,34 @@ public:
 
     this(T)(in T options, const ref AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
+		super(options, alg_id);
         PointGFp public_key;
-        OID key_parameters;
+        OID key_parameters = OID();
+
         SecureVector!ubyte public_key_bits;
         
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(1, "Unknown version code for ECC key")
                 .decodeOctetStringBigint(m_private_key)
-                .decodeOptional(key_parameters, (cast(ASN1Tag) 0), ASN1Tag.PRIVATE)
+                .decodeOptional(key_parameters, (cast(ASN1Tag) 0), ASN1Tag.PRIVATE, key_parameters)
                 .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)
                 .endCons();
-		logDebug("Here");
-		if (*alg_id is null) logDebug("Null");
+
         if (!key_parameters.empty && key_parameters != alg_id.oid)
             throw new DecodingError("ECPrivateKey - inner and outer OIDs did not match");
-		logDebug("here2");
+
         if (public_key_bits.empty)
         {
-            public_key = domain().getBasePoint() * m_private_key;
-            
-            assert(public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
+			m_public_key = domain().getBasePoint() * m_private_key;
+            assert(m_public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
         }
-        else
-        {
-			logDebug("here3");
-            public_key = OS2ECP(public_key_bits, ECGroup(alg_id.parameters).getCurve());
-            // OS2ECP verifies that the point is on the curve
-        }
-
-		ECGroup ec = ECGroup(alg_id.parameters);
-        super(options, ec, public_key);
+		else
+		{
+			m_public_key = OS2ECP(public_key_bits, m_domain_params.getCurve());
+			// OS2ECP verifies that the point is on the curve
+		}
+	logDebug("ctor success");
     }
 
 	override bool checkKey(RandomNumberGenerator rng, bool b) const

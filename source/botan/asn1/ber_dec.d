@@ -411,16 +411,18 @@ public:
             {
                 pushBack(obj);
                 decode(output, type_tag, class_tag);
-
             }
         }
         else
         {
-            output = default_value;
+			static if (__traits(hasMember, T, "isRefCounted"))
+				output = T();
+			else 
+				output = default_value;
             pushBack(obj);
         }
 
-		/*
+
         static if (__traits(hasMember, T, "toString"))
             logTrace("decode Optional ", T.stringof, ": ", output.toString());
 		else static if (__traits(compiles, { to!string(output); }()))
@@ -428,7 +430,7 @@ public:
 		else
 			logTrace("decode Optional ", T.stringof);
 
-*/
+
         return this;
     }
     

@@ -77,7 +77,7 @@ public:
             {
                 auto othername = BERDecoder(obj.value);
                 
-                OID oid;
+                OID oid = OID();
                 othername.decode(oid);
                 if (othername.moreItems())
                 {

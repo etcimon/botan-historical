@@ -134,7 +134,7 @@ public:
         BERObject obj = ber.getNextObject();
         if (obj.type_tag == ASN1Tag.OBJECT_ID)
         {
-            OID dom_par_oid;
+            OID dom_par_oid = OID();
             BERDecoder(ber_data).decode(dom_par_oid);
             string pem = getPemForNamedGroup(OIDS.lookup(dom_par_oid));
             
