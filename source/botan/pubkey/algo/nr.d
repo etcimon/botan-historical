@@ -60,7 +60,7 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(Options(), grp, y1);
+        m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
@@ -85,15 +85,17 @@ public:
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
+		bool x_arg_0;
         if (x_arg == 0) {
+			x_arg_0 = true;
 			auto bi = BigInt(2);
             x_arg = BigInt.randomInteger(rng, bi, grp.getQ() - 1);
 		}
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-		m_priv = new DLSchemePrivateKey(Options(), grp, y1, x_arg);
+		m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
 
-        if (x_arg == 0)
+        if (x_arg_0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
@@ -138,7 +140,7 @@ public:
         m_q = &nr.groupQ();
         m_x = &nr.getX();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
-        m_mod_q = ModularReducer(nr.groupQ().dup);
+        m_mod_q = ModularReducer(nr.groupQ());
     }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
@@ -301,7 +303,7 @@ size_t nrSigKat(string p, string q, string g, string x,
     BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     
-    DLGroup group = DLGroup(p_bn, q_bn, g_bn);
+    DLGroup group = DLGroup(p_bn.move, q_bn.move, g_bn.move);
     
     auto privkey = NRPrivateKey(rng, group.move(), x_bn.move());
     

@@ -217,7 +217,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
                          string random,
                          string exp)
 {
-    FixedOutputRNG fixed_rng = scoped!FixedOutputRNG(hexDecode(random));
+    auto fixed_rng = scoped!FixedOutputRNG(hexDecode(random));
     
     return validateSignature(v, s, algo, input, fixed_rng, rng, exp);
 }

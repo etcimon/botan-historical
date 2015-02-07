@@ -266,10 +266,11 @@ PathValidationResult
         throw new InvalidArgument("x509PathValidate called with no subjects");
     
     Vector!X509Certificate cert_path;
-    cert_path.pushBack(cast(X509Certificate)end_certs[0]);
+	logDebug(end_certs[0].toString());
+    cert_path.pushBack(end_certs[0]);
 
-    auto extra = scoped!CertificateStoreOverlay(end_certs);
-    CertificateStore cert_store = extra.Scoped_payload;
+    Unique!CertificateStoreOverlay extra = new CertificateStoreOverlay(end_certs);
+    CertificateStore cert_store = cast(CertificateStore)*extra;
     
     // iterate until we reach a root or cannot find the issuer
     while (!cert_path.back().isSelfSigned())
@@ -483,7 +484,7 @@ Vector!( RBTreeRef!CertificateStatusCode )
                 
                 // Either way we have a definitive answer, no need to check CRLs
                 if (ocsp_status == CertificateStatusCode.CERT_IS_REVOKED)
-                    return cert_status;
+                    return cert_status.move();
                 else if (ocsp_status == CertificateStatusCode.OCSP_RESPONSE_GOOD)
                     continue;
             }
@@ -519,9 +520,10 @@ Vector!( RBTreeRef!CertificateStatusCode )
         if (crl.isRevoked(subject))
             status.insert(CertificateStatusCode.CERT_IS_REVOKED);
     }
-    
+	logDebug("Done");
     if (self_signed_ee_cert)
         cert_status.back().insert(CertificateStatusCode.CANNOT_ESTABLISH_TRUST);
     
-    return cert_status;
+	logDebug("Done 2");
+    return cert_status.move();
 }

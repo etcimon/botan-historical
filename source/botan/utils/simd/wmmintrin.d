@@ -21,19 +21,19 @@ pure:
 version(GDC) {
 @inline:
     // _mm_aesenc_si128
-    __m128i _mm_aesenc_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesenc_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesenc128(cast(long2) a, cast(long2) b);
     }
 
-    __m128i _mm_aesenclast_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesenclast_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesenclast128(cast(long2) a, cast(long2) b);
     }
 
-    __m128i _mm_aesdec_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesdec_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesdec128(cast(long2) a, cast(long2) b);
     }
 
-    __m128i _mm_aesdeclast_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesdeclast_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesdeclast128(cast(long2) a, cast(long2) b);
     }
 
@@ -45,26 +45,26 @@ version(GDC) {
         return cast(__m128i) __builtin_ia32_aeskeygenassist128(cast(long2) a, b);
     }
 
-    __m128i _mm_clmulepi64_si128(int c)(__m128i a, __m128i b) {
+    __m128i _mm_clmulepi64_si128(int c)(auto ref __m128i a, auto ref __m128i b) {
         return cast(__m128i) __builtin_ia32_pclmulqdq128(cast(long2) a, cast(long2) b, c);
     }
 }
 
 version(LDC) {
     // _mm_aesenc_si128
-    __m128i _mm_aesenc_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesenc_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesenc128(cast(long2) a, cast(long2) b);
     }
     
-    __m128i _mm_aesenclast_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesenclast_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesenclast128(cast(long2) a, cast(long2) b);
     }
     
-    __m128i _mm_aesdec_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesdec_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesdec128(cast(long2) a, cast(long2) b);
     }
     
-    __m128i _mm_aesdeclast_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesdeclast_si128()(auto ref __m128i a, auto const ref __m128i b) {
         return cast(__m128i) __builtin_ia32_aesdeclast128(cast(long2) a, cast(long2) b);
     }
     
@@ -76,13 +76,13 @@ version(LDC) {
         return cast(__m128i) __builtin_ia32_aeskeygenassist128(cast(long2) a, b);
     }
 
-    __m128i _mm_clmulepi64_si128(int c)(__m128i a, __m128i b) {
+    __m128i _mm_clmulepi64_si128(int c)(auto ref __m128i a, auto ref __m128i b) {
         return cast(__m128i) __builtin_ia32_pclmulqdq128(cast(long2) a, cast(long2) b, c);
     }
 }
 
-version(D_Version2) {
-    __m128i _mm_aesenc_si128 (__m128i a, in __m128i b) {
+version(D_InlineAsm_X86_64) {
+    __m128i _mm_aesenc_si128()(auto ref __m128i a, auto const ref __m128i b) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
@@ -98,7 +98,7 @@ version(D_Version2) {
         return a;
     }
 
-    __m128i _mm_aesenclast_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesenclast_si128()(auto ref __m128i a, auto const ref __m128i b) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
@@ -114,7 +114,7 @@ version(D_Version2) {
         return a;
     }
     
-    __m128i _mm_aesdec_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesdec_si128()(auto ref __m128i a, auto const ref __m128i b) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
@@ -131,7 +131,7 @@ version(D_Version2) {
     }
 
 
-    __m128i _mm_aesdeclast_si128(__m128i a, in __m128i b) {
+    __m128i _mm_aesdeclast_si128()(auto ref __m128i a, auto const ref __m128i b) {
         __m128i* _a = &a;
         const(__m128i)* _b = &b;
         
@@ -172,23 +172,24 @@ version(D_Version2) {
         
         return a;
     }
-    
-    __m128i _mm_clmulepi64_si128(int imm)(__m128i a, __m128i b) {
-        /// todo: Enable this after adding PCLMULQDQ in dmd
-        __m128i* _a = &a;
-        __m128i* _b = &b;
-                
-        mixin(`asm pure nothrow {
+
+	__m128i _mm_clmulepi64_si128(string imm)(auto ref __m128i a, auto ref __m128i b) {
+		/// todo: Enable this after adding PCLMULQDQ in dmd
+		__m128i* _a = &a;
+		__m128i* _b = &b;
+		__m128i c;
+		__m128i* _c = &c;
+		
+		mixin(`asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
+			mov RCX, _c;
             movdqu XMM1, [RAX];
             movdqu XMM2, [RBX];
-            db 0x660F3A44, 0xCA, ` ~ imm.to!ubyte.to!string ~ `;
-            movdqu [RAX], XMM1;
+            db 0x66, 0x0F, 0x3A, 0x44, 0xCA, ` ~ imm ~ `; // PCLMULQDQ
+            movdqu [RCX], XMM1;
         }`);
-        
-        return a;
-    }
-
-
+		
+		return c;
+	}
 }

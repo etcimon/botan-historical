@@ -90,9 +90,7 @@ public:
     */
     this(const ref AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-		logDebug("ECDSA ctor");
         m_priv = new ECPrivateKey(Options(), alg_id, key_bits);
-		logDebug("end ctor");
     }
 
     /**
@@ -739,14 +737,15 @@ size_t ecdsaSigKat(string group_id,
     auto rng = AutoSeededRNG();
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-    auto ecdsa = ECDSAPrivateKey(rng, group, BigInt(x));
+	auto bx =  BigInt(x);
+    auto ecdsa = ECDSAPrivateKey(*rng, group, bx.move());
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     
-    PKVerifier verify = PKVerifier(ecdsa, padding);
-    PKSigner sign = PKSigner(ecdsa, padding);
+    PKVerifier verify = PKVerifier(*ecdsa, padding);
+    PKSigner sign = PKSigner(*ecdsa, padding);
     
-    return validateSignature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
+    return validateSignature(verify, sign, "DSA/" ~ hash, msg, *rng, nonce, signature);
 }
 
 static if (!SKIP_ECDSA_TEST) unittest

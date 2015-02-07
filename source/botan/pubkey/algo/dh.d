@@ -44,9 +44,9 @@ public:
     * @param grp = the DL group to use in the key
     * @param y = the public value y
     */
-    this()(auto const ref DLGroup grp, auto const ref BigInt y1)
+    this(DLGroup grp, BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(Options(), grp, y1);
+		m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
@@ -89,19 +89,21 @@ public:
     * @param grp = the group to be used in the key
     * @param x_args = the key's secret value (or if zero, generate a new key)
     */
-    this()(RandomNumberGenerator rng, auto const ref DLGroup grp, BigInt x_args = 0)
+    this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
         
 		const BigInt* p = &grp.getP();
 
-		if (x_args == 0)
-			x_args.randomize(rng, 2 * dlWorkFactor(p.bits()));
-
-		BigInt y1 = powerMod(grp.getG(), x_args, *p);
+		bool x_arg_0;
+		if (x_arg == 0) {
+			x_arg_0 = true;
+			x_arg.randomize(rng, 2 * dlWorkFactor(p.bits()));
+		}
+		BigInt y1 = powerMod(grp.getG(), x_arg, *p);
         
-		m_priv = new DLSchemePrivateKey(Options(), grp, y1, x_args);
+		m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
 
-		if (x_args == 0)
+		if (x_arg_0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
@@ -200,11 +202,9 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
     BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     BigInt y_bn = BigInt(y);
-    
-    DLGroup domain = DLGroup(p_bn, g_bn);
-    
-    auto mykey = DHPrivateKey(rng, domain, x_bn.move());
-    auto otherkey = DHPublicKey(domain, y_bn.move());
+	auto domain = DLGroup(p_bn, g_bn);
+	auto mykey = DHPrivateKey(rng, domain.dup, x_bn.move());
+    auto otherkey = DHPublicKey(domain.move, y_bn.move());
     
     if (kdf == "")
         kdf = "Raw";
@@ -225,15 +225,15 @@ static if (!SKIP_DH_TEST) unittest
 
     auto rng = AutoSeededRNG();
 
-    fails += testPkKeygen(rng);
 
     File dh_sig = File("../test_data/pubkey/dh.vec", "r");
     
     fails += runTestsBb(dh_sig, "DH Kex", "K", true,
                           (ref HashMap!(string, string) m) {
-                                return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m["KDF"], m["OutLen"], m["K"]);
+                                return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m.get("KDF"), m.get("OutLen"), m["K"]);
                             });
 
+	fails += testPkKeygen(rng);
 
     testReport("DH", total_tests, fails);
 

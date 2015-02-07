@@ -107,7 +107,7 @@ public:
     {
         SecureVector!ubyte output = SecureVector!ubyte(outputLength());
         finalResult(output.ptr);
-        return output;
+        return output.move;
     }
 
     /**

@@ -122,7 +122,6 @@ public:
     }
 
     @property const(OID) oid() const {
-		logDebug("OID");
         return m_oid;
     }
 

@@ -215,7 +215,7 @@ private:
                 new EGDEntropySource( Vector!string( [ "/var/run/egd-pool", "/dev/egd-pool" ] ) )
                 );
                 
-        return sources;
+        return sources.move();
     }
 
     __gshared SerializedRNG m_global_prng;

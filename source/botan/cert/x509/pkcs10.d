@@ -171,7 +171,7 @@ private:
         if (_version != 0)
             throw new DecodingError("Unknown version code in PKCS #10 request: " ~ to!string(_version));
         
-        X509DN dn_subject;
+        X509DN dn_subject = X509DN();
         cert_req_info.decode(dn_subject);
         
         m_info.add(dn_subject.contents());

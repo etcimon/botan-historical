@@ -109,10 +109,11 @@ size_t runTestsBb(ref File src,
     }
     
     HashMap!(string, string) vars;
+	vars[name_key] = name_key;
     size_t test_fails = 0, algo_fail = 0;
     size_t test_count = 0, algo_count = 0;
     
-    string fixed_name;
+    string fixed_name = name_key;
     
     string line;
 
@@ -131,7 +132,7 @@ size_t runTestsBb(ref File src,
         
         if(line[0] == '[' && line[$-1] == ']')
         {
-            if(fixed_name != "")
+            if(fixed_name != "" && algo_count > 0)
                 testReport(fixed_name, algo_count, algo_fail);
             
             test_count += algo_count;
@@ -142,9 +143,10 @@ size_t runTestsBb(ref File src,
             vars[name_key] = fixed_name;
             continue;
         }
+		import std.string : strip;
         assert(line[line.indexOf('=') - 1] == ' ' && line[line.indexOf('=') + 1] == ' ', "= must be wrapped with spaces");
-        const string key = line[0 .. line.indexOf('=') - 1];
-        const string val = line[line.indexOf('=') + 2 .. $];
+        const string key = line[0 .. line.indexOf('=') - 1].strip;
+        const string val = line[line.indexOf('=') + 2 .. $].strip;
         
         vars[key] = val;
         

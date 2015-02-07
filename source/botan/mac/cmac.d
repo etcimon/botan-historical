@@ -100,7 +100,7 @@ public:
             }
         }
         
-        return output;
+        return output.move;
     }
 
     /**

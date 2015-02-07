@@ -113,18 +113,18 @@ public:
             decodeOptionalList(basicresponse, (cast(ASN1Tag) 0), certs);
             
             size_t responsedata_version;
-            X509DN name;
+            X509DN name = X509DN();
             Vector!ubyte key_hash;
             X509Time produced_at;
             X509Extensions extensions;
             
             BERDecoder(tbs_bits)
                     .decodeOptional(responsedata_version, (cast(ASN1Tag) 0), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)
-                    .decodeOptional(cast(ASN1Object)*name, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)                    
+                    .decodeOptional(name, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)                    
                     .decodeOptionalString(key_hash, ASN1Tag.OCTET_STRING, 2, ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC)
                     .decode(produced_at)
                     .decodeList(m_responses)
-                    .decodeOptional(*extensions, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC);
+                    .decodeOptional(extensions, (cast(ASN1Tag)1), ASN1Tag.CONSTRUCTED | ASN1Tag.CONTEXT_SPECIFIC);
             
             if (certs.empty)
             {

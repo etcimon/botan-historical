@@ -173,27 +173,31 @@ import botan.libstate.lookup;
 import botan.codec.hex;
 import botan.test;
 import memutils.hashmap;
-
+import core.atomic;
+shared(int) g_total_tests;
 static if (!SKIP_KDF_TEST) unittest
 {
     logDebug("Testing kdf.d ...");
     auto test = delegate(string input) {
         return runTests(input, "KDF", "Output", true,
-                         (ref HashMap!(string, string) vec)
-                         {
-            Unique!KDF kdf = getKdf(vec["KDF"]);
-            
-            const size_t outlen = to!uint(vec["OutputLen"]);
-            const auto salt = hexDecode(vec["Salt"]);
-            const auto secret = hexDecodeLocked(vec["Secret"]);
-            
-            const auto key = kdf.deriveKey(outlen, secret, salt);
-            
-            return hexEncode(key);
-        });
-    };
-    
+            (ref HashMap!(string, string) vec)
+            {
+				logDebug(":: ", vec["KDF"]);
+				atomicOp!"+="(g_total_tests, 1);
+	            Unique!KDF kdf = getKdf(vec["KDF"]);
+	            
+	            const size_t outlen = to!uint(vec["OutputLen"]);
+	            const auto salt = hexDecode(vec["Salt"]);
+	            const auto secret = hexDecodeLocked(vec["Secret"]);
+	            
+	            const auto key = kdf.deriveKey(outlen, secret, salt);
+				auto encoded = hexEncode(key);
+				logDebug("OK");
+	            return encoded;
+	        });
+	    };
+	    
     size_t fails = runTestsInDir("../test_data/kdf", test);
     
-    testReport("kdf", 1, fails);
+    testReport("kdf", g_total_tests, fails);
 }

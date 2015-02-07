@@ -187,6 +187,14 @@ public:
         }
     }
 
+	override string toString() const {
+		import std.array :Appender;
+		Appender!string ret;
+		foreach (ext; m_extensions[])
+			ret ~= ext.first.oidName() ~ "\n";
+		return ret.data;
+	}
+
 private:
 
     /*
@@ -384,7 +392,7 @@ public:
     this() {}
 	this()(auto const ref Vector!ubyte pub_key)
     {
-        SHA160 hash;
+		auto hash = scoped!SHA160();
         m_key_id = unlock(hash.process(pub_key));
     }
 

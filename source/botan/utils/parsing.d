@@ -37,7 +37,7 @@ Vector!string parseAlgorithmName(in string scan_name)
     Vector!string elems;
     size_t level = 0;
     
-    elems.pushBack(name[0 .. name.find('(')]);
+    elems.pushBack(name[0 .. name.find('(')].idup);
     name = name[name.find('(') .. $];
     
     foreach(size_t pos, const char c; name)
@@ -50,9 +50,9 @@ Vector!string parseAlgorithmName(in string scan_name)
             if (level == 1 && pos == (name.length - 1))
             {
                 if (elems.length == 1)
-                    elems.pushBack(substring[1 .. $]);
+                    elems.pushBack(substring[1 .. $].idup);
                 else
-                    elems.pushBack(substring[]);
+                    elems.pushBack(substring[].idup);
                 return elems.move();
             }
             
@@ -64,9 +64,9 @@ Vector!string parseAlgorithmName(in string scan_name)
         if (c == ',' && level == 1)
         {
             if (elems.length == 1)
-                elems.pushBack(substring[1 .. $]);
+                elems.pushBack(substring[1 .. $].idup);
             else
-                elems.pushBack(substring[]);
+                elems.pushBack(substring[].idup);
             substring.clear();
         }
         else

@@ -89,16 +89,16 @@ void xorBuf(Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) output,
 }
 
 void xorBuf(Alloc)(ref Vector!( ubyte, Alloc ) output,
-                       const(ubyte)* input,
-                       size_t n)
+                   const(ubyte)* input,
+                   size_t n)
 {
     xorBuf(output.ptr, input, n);
 }
 
 void xorBuf(Alloc, Alloc2)(ref Vector!( ubyte, Alloc ) output,
-                                   const(ubyte)* input,
-                                   ref Vector!( ubyte, Alloc2 ) input2,
-                                   size_t n)
+                           const(ubyte)* input,
+                           ref Vector!( ubyte, Alloc2 ) input2,
+                            size_t n)
 {
     xorBuf(output.ptr, input, input2.ptr, n);
 }

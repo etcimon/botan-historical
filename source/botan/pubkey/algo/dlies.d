@@ -178,11 +178,11 @@ import memutils.hashmap;
 shared size_t total_tests;
 
 size_t dliesKat(string p,
-                 string g,
-                 string x1,
-                 string x2,
-                 string msg,
-                 string ciphertext)
+                string g,
+                string x1,
+                string x2,
+                string msg,
+                string ciphertext)
 {
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
@@ -191,11 +191,16 @@ size_t dliesKat(string p,
     BigInt g_bn = BigInt(g);
     BigInt x1_bn = BigInt(x1);
     BigInt x2_bn = BigInt(x2);
-    
+
+	logDebug("p_bn: ", p_bn.toString());
+	logDebug("g_bn: ", g_bn.toString());
+	logDebug("x1_bn: ", x1_bn.toString());
+	logDebug("x2_bn: ", x2_bn.toString());
+
     DLGroup domain = DLGroup(p_bn, g_bn);
     
-    auto from = DHPrivateKey(rng, domain, x1_bn.move());
-    auto to = DHPrivateKey(rng, domain, x2_bn.move());
+    auto from = DHPrivateKey(rng, domain.dup, x1_bn.move());
+    auto to = DHPrivateKey(rng, domain.dup, x2_bn.move());
     
     const string opt_str = "KDF2(SHA-1)/HMAC(SHA-1)/16";
 

@@ -60,7 +60,7 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(Options(), grp, y1);
+		m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
@@ -84,15 +84,17 @@ public:
     * ElGamalPrivateKey Constructor
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
-    {        
-        if (x_arg == 0)
+    {    
+		bool x_arg_0;
+        if (x_arg == 0) {
+			x_arg_0 = true;
             x_arg.randomize(rng, 2 * dlWorkFactor(grp.getP().bits()));
-        
+		}
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
-        m_priv = new DLSchemePrivateKey(Options(), grp, y1, x_arg);
+        m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
 
-        if (x_arg == 0)
+        if (x_arg_0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
@@ -263,8 +265,8 @@ size_t elgamalKat(string p,
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     
-    const BigInt p_bn = BigInt(p);
-    const BigInt g_bn = BigInt(g);
+    BigInt p_bn = BigInt(p);
+    BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, g_bn);

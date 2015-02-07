@@ -237,10 +237,9 @@ size_t testZeropoint()
     BigInt bi_a_secp = BigInt("0xffffffffffffffffffffffffffffffff7ffffffc");
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-    
-    PointGFp p1 = PointGFp(secp160r1,
-                           BigInt("16984103820118642236896513183038186009872590470"),
-                           BigInt("1373093393927139016463695321221277758035357890939"));
+	auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
+	auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
+    PointGFp p1 = PointGFp(secp160r1, bi1, bi2);
     
     if (!p1.onTheCurve())
         throw new InternalError("Point not on the curve");
@@ -288,9 +287,9 @@ size_t testCalcWithZeropoint()
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     
-    PointGFp p = PointGFp(curve,
-                          BigInt("16984103820118642236896513183038186009872590470"),
-                          BigInt("1373093393927139016463695321221277758035357890939"));
+	auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
+	auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
+    PointGFp p = PointGFp(curve, bi1, bi2);
     
     if (!p.onTheCurve())
         throw new InternalError("Point not on the curve");
@@ -334,10 +333,9 @@ size_t testAddPoint()
     PointGFp p1 = p_G.dup;
     
     p1 += p0;
-    
-    PointGFp expected = PointGFp(secp160r1,
-                                 BigInt("704859595002530890444080436569091156047721708633"),
-                                 BigInt("1147993098458695153857594941635310323215433166682"));
+	auto bi1 = BigInt("704859595002530890444080436569091156047721708633");
+	auto bi2 = BigInt("1147993098458695153857594941635310323215433166682");
+    PointGFp expected = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` p1 == expected `) );
     return fails;
@@ -372,10 +370,9 @@ size_t testSubPoint()
     PointGFp p1 = p_G.dup;
     
     p1 -= p0;
-    
-    PointGFp expected = PointGFp(secp160r1,
-                                 BigInt("425826231723888350446541592701409065913635568770"),
-                                 BigInt("203520114162904107873991457957346892027982641970"));
+	auto bi1 = BigInt("425826231723888350446541592701409065913635568770");
+	auto bi2 = BigInt("203520114162904107873991457957346892027982641970");
+    PointGFp expected = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` p1 == expected `) );
     return fails;
@@ -438,9 +435,9 @@ size_t testBasicOperations()
     
     PointGFp p0 = p_G.dup;
     
-    PointGFp expected = PointGFp(secp160r1,
-                                 BigInt("425826231723888350446541592701409065913635568770"),
-                                 BigInt("203520114162904107873991457957346892027982641970"));
+	BigInt bi1 = BigInt("425826231723888350446541592701409065913635568770");
+	BigInt bi2 = BigInt("203520114162904107873991457957346892027982641970");
+	PointGFp expected = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` p0 == expected `) );
     p_G *= BigInt(2);
@@ -450,16 +447,17 @@ size_t testBasicOperations()
     mixin( CHECK(` p1.getAffineY() == BigInt("1373093393927139016463695321221277758035357890939") `) );
     
     PointGFp simplePlus = p1 + p0;
-    PointGFp exp_simplePlus = PointGFp(secp160r1,
-                                       BigInt("704859595002530890444080436569091156047721708633"),
-                                       BigInt("1147993098458695153857594941635310323215433166682"));
+
+	bi1 = BigInt("704859595002530890444080436569091156047721708633");
+	bi2 = BigInt("1147993098458695153857594941635310323215433166682");
+	PointGFp exp_simplePlus = PointGFp(secp160r1, bi1, bi2);
     if (simplePlus != exp_simplePlus)
         logTrace(simplePlus.toString() ~ " != " ~ exp_simplePlus.toString());
     
     PointGFp simpleMinus= p1 - p0;
-    PointGFp exp_simpleMinus = PointGFp(secp160r1,
-                                        BigInt("425826231723888350446541592701409065913635568770"),
-                                        BigInt("203520114162904107873991457957346892027982641970"));
+	bi1 = BigInt("425826231723888350446541592701409065913635568770");
+	bi2 = BigInt("203520114162904107873991457957346892027982641970");
+	PointGFp exp_simpleMinus = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` simpleMinus == exp_simpleMinus `) );
     
@@ -698,9 +696,9 @@ size_t testMoreZeropoint()
     BigInt bi_b = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p, bi_a, bi_b);
     
-    PointGFp p1 = PointGFp(curve,
-                           BigInt("16984103820118642236896513183038186009872590470"),
-                           BigInt("1373093393927139016463695321221277758035357890939"));
+	auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
+	auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
+	PointGFp p1 = PointGFp(curve, bi1, bi2);
     
     if (!p1.onTheCurve())
         throw new InternalError("Point not on the curve");

@@ -245,8 +245,8 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
                                      RandomNumberGenerator rng)
 {
     auto sig_algo = AlgorithmIdentifier();
-    X509DN subject_dn;
-    AlternativeName subject_alt;
+	X509DN subject_dn = X509DN();
+    AlternativeName subject_alt = AlternativeName();
     
     opts.sanityCheck();
     
@@ -263,15 +263,11 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
     X509Extensions extensions;
     
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit), true);
-    
+
     extensions.add(new KeyUsage(constraints), true);
-    
     extensions.add(new SubjectKeyID(pub_key));
-    
     extensions.add(new SubjectAlternativeName(subject_alt));
-    
     extensions.add(new ExtendedKeyUsage(*cast(Vector!OID*) &opts.ex_constraints));
-    
     return X509CA.makeCert(signer, rng, sig_algo, pub_key,
                            opts.start, opts.end,
                            subject_dn, subject_dn,
@@ -292,15 +288,14 @@ PKCS10Request createCertReq(in X509CertOptions opts,
                                RandomNumberGenerator rng)
 {
     auto sig_algo = AlgorithmIdentifier();
-    X509DN subject_dn;
-    AlternativeName subject_alt;
+	X509DN subject_dn = X509DN();
+	AlternativeName subject_alt = AlternativeName();
     
     opts.sanityCheck();
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
     PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
     loadInfo(opts, subject_dn, subject_alt);
-    
     __gshared immutable size_t PKCS10_VERSION = 0;
     
     X509Extensions extensions;
@@ -343,8 +338,8 @@ PKCS10Request createCertReq(in X509CertOptions opts,
 * Load information from the X509_Cert_Options
 */
 private void loadInfo(in X509CertOptions opts, 
-                      X509DN subject_dn,
-                      AlternativeName subject_alt)
+                      ref X509DN subject_dn,
+                      ref AlternativeName subject_alt)
 {
     subject_dn.addAttribute("X520.CommonName", opts.common_name);
     subject_dn.addAttribute("X520.Country", opts.country);

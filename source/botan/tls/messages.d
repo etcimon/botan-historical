@@ -719,7 +719,7 @@ public:
         {
             TLSDataReader reader = TLSDataReader("ClientKeyExchange", contents);
             
-            SymmetricKey psk;
+			auto psk = SymmetricKey();
             
             if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
             {
@@ -844,7 +844,7 @@ public:
         {
             TLSDataReader reader = TLSDataReader("ClientKeyExchange", state.serverKex().params());
             
-            SymmetricKey psk;
+			auto psk = SymmetricKey();
             
             if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
             {
@@ -891,9 +891,9 @@ public:
                 
                 if (!group.verifyGroup(rng, true))
                     throw new InternalError("DH group failed validation, possible attack");
-                auto counterparty_key = DHPublicKey(group, Y);
+                auto counterparty_key = DHPublicKey(group.dup, Y.move);
                 
-                auto priv_key = DHPrivateKey(rng, group);
+                auto priv_key = DHPrivateKey(rng, group.move);
                 
                 auto ka = scoped!PKKeyAgreement(priv_key, "Raw");
                 
@@ -1208,7 +1208,7 @@ public:
             Vector!ubyte name_bits = reader.getRangeVector!ubyte(2, 0, 65535);
             
             BERDecoder decoder = BERDecoder(name_bits.ptr, name_bits.length);
-            X509DN name;
+			X509DN name = X509DN();
             decoder.decode(name);
             m_names.pushBack(name);
         }

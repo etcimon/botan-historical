@@ -140,19 +140,28 @@ shared(size_t) total_tests;
 size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
 {
     size_t fails = 0;
-    
+	logDebug("ecgroup");
     ECGroup dom_pars = ECGroup(OID("1.3.132.0.8"));
-    
+
+	logDebug("private_a");
+
     ECDHPrivateKey private_a = ECDHPrivateKey(rng, dom_pars);
     
+	logDebug("private_b");
+
     ECDHPrivateKey private_b = ECDHPrivateKey(rng, dom_pars); //public_a.getCurve()
     
+	logDebug("ka");
+
     PKKeyAgreement ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
     PKKeyAgreement kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
     
+	logDebug("alice");
+
     SymmetricKey alice_key = ka.deriveKey(32, private_b.publicValue());
     SymmetricKey bob_key = kb.deriveKey(32, private_a.publicValue());
-    // 1 test
+	logDebug("bob");
+	// 1 test
     if (alice_key != bob_key)
     {
         logTrace("The two keys didn't match!");
@@ -161,7 +170,8 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
         atomicOp!"+="(total_tests, cast(size_t)1);
         ++fails;
     }
-    
+	logDebug("ok");
+
     return fails;
 }
 

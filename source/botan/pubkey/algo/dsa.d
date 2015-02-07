@@ -29,12 +29,15 @@ struct DSAOptions {
     */
 	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
 	{
+		logDebug("checkKey");
 		if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
 			return false;
-		
+
+		logDebug("checkKey2");
 		if (!strong)
 			return true;
-		
+
+		logDebug("checkKey3");
 		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
 	}
 }
@@ -59,7 +62,7 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-        m_pub = new DLSchemePublicKey(Options(), grp, y1);
+        m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
@@ -84,16 +87,17 @@ public:
     */
     this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
     {
-        
+		bool x_arg_0;
         if (x_arg == 0) {
+			x_arg_0 = true;
 			auto bi = BigInt(2);
             x_arg = BigInt.randomInteger(rng, bi, dl_group.getQ() - 1);
 		}
         BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         
-        m_priv = new DLSchemePrivateKey(Options(), dl_group, y1, x_arg);
+        m_priv = new DLSchemePrivateKey(Options(), dl_group.move, y1.move, x_arg.move);
 
-        if (x_arg == 0)
+        if (x_arg_0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
@@ -142,6 +146,7 @@ public:
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
+		logTrace("DSA Signature");
         import std.concurrency : spawn, receiveOnly, thisTid, send;
         rng.addEntropy(msg, msg_len);
         
@@ -216,9 +221,9 @@ public:
         m_y = &dsa.getY();
 		m_g = &dsa.groupG();
 		m_p = &dsa.groupP();
-        m_powermod_y_p = FixedBasePowerMod(*m_y, dsa.groupP());
-        m_mod_p = ModularReducer(dsa.groupP());
-        m_mod_q = ModularReducer(dsa.groupQ());
+        m_powermod_y_p = FixedBasePowerMod(*m_y, *m_p);
+        m_mod_p = ModularReducer(*m_p);
+        m_mod_q = ModularReducer(*m_q);
     }
 
     override size_t messageParts() const { return 2; }
@@ -230,42 +235,55 @@ public:
     override SecureVector!ubyte verifyMr(const(ubyte)*, size_t) { throw new InvalidState("Message recovery not supported"); }
     override bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len)
     {
+		logTrace("DSA Verification");
         import std.concurrency : spawn, receiveOnly, send, thisTid;
         const BigInt* q = &m_mod_q.getModulus();
         
+		logDebug("m_q_mod: ", q.toString());
+		logDebug("m_q: ", m_q.toString());
+		logDebug("m_y: ", m_y.toString());
+		logDebug("m_g: ", m_g.toString());
+		logDebug("m_p: ", m_p.toString());
         if (sig_len != 2*q.bytes() || msg_len > q.bytes())
             return false;
         
         BigInt r = BigInt(sig, q.bytes());
         BigInt s = BigInt(sig + q.bytes(), q.bytes());
         BigInt i = BigInt(msg, msg_len);
-        BigInt s_i;
         if (r <= 0 || r >= *q || s <= 0 || s >= *q)
             return false;
         
         s = inverseMod(s, *q);
 
-		Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*) mod_q, shared(const BigInt*)q2, shared(const BigInt*)p2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
+		BigInt s_i;
+
+		Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*) mod_q, shared(const BigInt*)g2, shared(const BigInt*)p2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
 			{ 
 				import botan.libstate.libstate : modexpInit;
 				modexpInit(); // enable quick path for powermod
 				BigInt* ret = cast(BigInt*) s_i2;
 				{
-					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)q2, *cast(const BigInt*)p2);
-					*ret = (*powermod_g_p)((*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2));
+					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g2, *cast(const BigInt*)p2);
+					auto mult = (*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2);
+					*ret = (*powermod_g_p)(mult.move);
 					send(cast(Tid) tid, true); 
 				}
 				auto done = receiveOnly!bool();
 				destroy(*ret);
 				send(cast(Tid) tid, true); 
 			}
-			, cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_q, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
-        
-        BigInt s_r = (*m_powermod_y_p)(m_mod_q.multiply(s, r));
+			, cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
+		auto mult = m_mod_q.multiply(s, r);
+        BigInt s_r = (*m_powermod_y_p)(mult.move);
         bool done = receiveOnly!bool();
+		logDebug("s_i: ", s_i.toString());
         s = m_mod_p.multiply(s_i, s_r);
 		send(cast(Tid)tid, true); // trigger destroy s_i
-		auto ret = (m_mod_q.reduce(s.move()) == r);
+		auto r2 = m_mod_q.reduce(s.dup);
+		logDebug("r2: ", r2.toString());
+		logDebug("r: ", r.toString());
+		auto ret = (r2 == r);
+		logDebug("Ret: ", ret);
 		done = receiveOnly!bool();        
         return ret;
     }
@@ -298,7 +316,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
     string[] dsa_list = ["dsa/jce/1024", "dsa/botan/2048", "dsa/botan/3072"];
     foreach (dsa; dsa_list) {
         atomicOp!"+="(total_tests, 1);
-        auto key = DSAPrivateKey(rng, DLGroup(dsa));
+		auto key = DSAPrivateKey(rng, DLGroup(dsa));
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key, rng);
     }
@@ -324,7 +342,7 @@ size_t dsaSigKat(string p,
     BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     
-    DLGroup group = DLGroup(p_bn, q_bn, g_bn);
+    DLGroup group = DLGroup(p_bn.move, q_bn.move, g_bn.move);
     auto privkey = DSAPrivateKey(rng, group.move(), x_bn.move());
     
     auto pubkey = DSAPublicKey(privkey);

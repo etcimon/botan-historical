@@ -146,11 +146,12 @@ public:
         BERDecoder(key_bits).decode(m_y);
     }
 
-    this(T)(in T options, auto const ref DLGroup grp, auto const ref BigInt y1)
+    this(T)(in T options, DLGroup grp, BigInt y1)
     {
 		decodeOptions(options);
-        m_group = grp.dup;
-        m_y = y1.dup;
+        m_group = grp.move;
+        m_y = y1.move;
+
     }
 
 protected:
@@ -192,18 +193,24 @@ public:
 	{
 		const BigInt* p = &groupP();
 		const BigInt* g = &groupG();
-		
-		if (m_y < 2 || m_y >= *p || m_x < 2 || m_x >= *p)
+		if (m_y < 2 || m_y >= *p || m_x < 2 || m_x >= *p) {
+			logDebug("1");
 			return false;
-		if (!m_group.verifyGroup(rng, strong))
+		}
+		if (!m_group.verifyGroup(rng, strong)) {
+			logDebug("2");
 			return false;
+		}
 		
 		if (!strong)
 			return true;
 		
-		if (m_y != powerMod(*g, m_x, *p))
-			return false;
+		if (m_y != powerMod(*g, m_x, *p)) 
+		{
 		
+			logDebug("3");
+			return false;
+		}
 		return true;
 	}
 
@@ -225,15 +232,15 @@ public:
         DLGroup grp;
         grp.BER_decode(alg_id.parameters, options.format);
         BigInt y = powerMod(grp.getG(), m_x, grp.getP());
-		super(options, grp, y);
+		super(options, grp.move, y.move);
     }
 
 	this(T)(in T options, 
-			auto const ref DLGroup grp, 
-		    auto const ref BigInt y1, auto const ref BigInt x_arg)
+			DLGroup grp, 
+		    BigInt y1, BigInt x_arg)
     {
-        m_x = x_arg.dup;
-        super(options, grp, y1);
+        m_x = x_arg.move;
+        super(options, grp.move, y1.move);
     }
 
     /*

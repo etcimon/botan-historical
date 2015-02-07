@@ -138,7 +138,7 @@ static if (!SKIP_STREAM_CIPHER_TEST) unittest
         
         return runTestsBb(vec, "StreamCipher", "Out", true,
                             (ref HashMap!(string, string) m) {
-                                return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m["Nonce"]);
+                                return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m.get("Nonce"));
                             });
     };
     

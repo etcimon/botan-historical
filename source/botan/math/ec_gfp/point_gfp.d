@@ -93,7 +93,7 @@ public:
     * @param x = affine x coordinate
     * @param y = affine y coordinate
     */
-    this()(const ref CurveGFp curve, auto const ref BigInt x, auto const ref BigInt y)
+    this(const ref CurveGFp curve, const ref BigInt x, const ref BigInt y)
     { 
 		m_curve = curve.dup;
         m_ws.resize(2 * (curve.getPWords() + 2));
@@ -209,7 +209,7 @@ public:
             const size_t window_size = 4;
             Vector!(RefCounted!PointGFp) Ps = Vector!(RefCounted!PointGFp)(1 << window_size);
 			Ps[0] = RefCounted!PointGFp(point.getCurve());
-			Ps[1] = point.dup;
+			Ps[1] = RefCounted!PointGFp(point.dup);
             
             for (size_t i = 2; i != Ps.length; ++i)
             {

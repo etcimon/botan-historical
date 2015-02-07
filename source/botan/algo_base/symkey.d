@@ -98,7 +98,7 @@ public:
     * Create a new OctetString
     * @param str = is a hex encoded string
     */
-    this(in string hex_string)
+    this(in string hex_string = "")
     {
         m_bits.resize(1 + hex_string.length / 2);
         m_bits.resize(hexDecode(m_bits.ptr, hex_string));
@@ -162,7 +162,7 @@ public:
     void opOpAssign(string op)(auto const ref OctetString other)
         if (op == "~")
     {
-        this = this ~ other;
+        m_bits ~= other.m_bits[];
     }
 
     /**

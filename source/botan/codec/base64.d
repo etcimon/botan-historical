@@ -181,9 +181,11 @@ size_t base64Decode(ubyte* output,
             else if (input[i] == '\n')
                 bad_char = "\\n";
             else if (input[i] == '\r')
-              bad_char = "\\r";
+            	bad_char = "\\r";
+			else
+				bad_char = input[i].to!string;
 
-            throw new InvalidArgument("base64Decode: invalid base64 character '" ~ bad_char ~ "'");
+            throw new InvalidArgument("base64Decode: invalid base64 character '" ~ bad_char ~ "' in " ~ cast(string)input[0 .. input_length]);
         }
 
         /*

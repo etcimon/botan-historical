@@ -196,7 +196,7 @@ protected:
         if (m_sig_algo != sig_algo_inner)
             throw new X509CRLError("Algorithm identifier mismatch");
         
-        X509DN dn_issuer;
+        X509DN dn_issuer = X509DN();
         tbs_crl.decode(dn_issuer);
         m_info.add(dn_issuer.contents());
         

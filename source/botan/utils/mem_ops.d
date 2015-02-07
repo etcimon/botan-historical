@@ -33,6 +33,24 @@ void zap(T, Alloc)(ref Vector!(T, Alloc) vec)
 	vec.clear();
 }
 
+size_t bufferInsert(T, Alloc)(ref Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
+{
+	import std.algorithm : max;
+	const size_t to_copy = min(input_length, buf.length - buf_offset);
+	buf.resize(max(buf.length, buf_offset + to_copy));
+	copyMem(buf.ptr + buf_offset, input, to_copy);
+	return to_copy;
+}
+
+size_t bufferInsert(T, Alloc, Alloc2)(ref Vector!(T, Alloc) buf, size_t buf_offset, const ref Vector!(T, Alloc2) input)
+{
+	import std.algorithm : max;
+	const size_t to_copy = min(input.length, buf.length - buf_offset);
+	buf.resize(max(buf.length, buf_offset + to_copy));
+	copyMem(&buf[buf_offset], input.ptr, to_copy);
+	return to_copy;
+}
+
 pure:
 
 /**
@@ -81,20 +99,6 @@ bool sameMem(T)(in T* p1, in T* p2, in size_t n)
     return ((cast(const(ubyte)*)p1)[0 .. n] == (cast(const(ubyte)*)p2)[0 .. n]);
 }
 
-
-size_t bufferInsert(T, Alloc)(ref Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
-{
-	const size_t to_copy = min(input_length, buf.length - buf_offset);
-	copyMem(&buf[buf_offset], input, to_copy);
-	return to_copy;
-}
-
-size_t bufferInsert(T, Alloc, Alloc2)(ref Vector!(T, Alloc) buf, size_t buf_offset, const ref Vector!(T, Alloc2) input)
-{
-	const size_t to_copy = min(input.length, buf.length - buf_offset);
-	copyMem(&buf[buf_offset], input.ptr, to_copy);
-	return to_copy;
-}
 
 /**
 * Zeroise the values; length remains unchanged

@@ -30,8 +30,13 @@ public:
     
     override void randomize(ubyte* output, size_t len)
     {
-        for(size_t j = 0; j != len; j++)
-            output[j] = random();
+		if (len <= m_buf.length) {
+			output[0 .. len] = m_buf.ptr[0 .. len];
+			m_buf[] = m_buf.ptr[len .. m_buf.length];
+		} else {
+	        for(size_t j = 0; j != len; j++)
+	            output[j] = random();
+		}
     }
     
     override void addEntropy(const(ubyte)* b, size_t s)
@@ -46,8 +51,8 @@ public:
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
     
     this(const ref Vector!ubyte input)
-    {
-        m_buf.insert(input.ptr[0 .. input.length]);
+    {	
+		m_buf.insert(input.ptr[0 .. input.length]);
     }
     
     this(string in_str)

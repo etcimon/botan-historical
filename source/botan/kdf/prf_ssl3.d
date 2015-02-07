@@ -16,6 +16,7 @@ import botan.hash.hash;
 import botan.hash.sha160;
 import botan.hash.md5;
 import botan.utils.types;
+import std.algorithm : min;
 
 /**
 * PRF used in SSLv3
@@ -32,22 +33,21 @@ public:
     {
         if (key_len > 416)
             throw new InvalidArgument("SSL3_PRF: Requested key length is too large");
+
+        Unique!MD5 md5 = new MD5();
+        Unique!SHA160 sha1 = new SHA160();
         
-        auto md5 = scoped!MD5();
-        auto sha1 = scoped!SHA160();
-        
-        OctetString output;
+		OctetString output = OctetString("");
         
         int counter = 0;
         while (key_len)
         {
-            const size_t produce = std.algorithm.min(key_len, md5.outputLength);
+            size_t produce = min(key_len, md5.outputLength);
             
-            output ~= nextHash(counter++, produce, md5, sha1, secret, secret_len, seed, seed_len);
+            output ~= nextHash(counter++, produce, *md5, *sha1, secret, secret_len, seed, seed_len);
             
             key_len -= produce;
         }
-        
         return output.bitsOf().dup;
     }
 

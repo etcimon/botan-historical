@@ -135,15 +135,10 @@ PrivateKey loadKey(DataSource source,
                    SingleShotPassphrase get_pass)
 {
  	auto alg_id = AlgorithmIdentifier();
-	logDebug("Before decode");
     SecureVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
-	logDebug("pkcs8 key");
     const string alg_name = OIDS.lookup(alg_id.oid);
-	logDebug("After lookup");
     if (alg_name == "" || alg_name == alg_id.oid.toString())
-        throw new PKCS8Exception("Unknown algorithm OID: " ~
-                                  alg_id.oid.toString());
-	logDebug("After exception check");
+        throw new PKCS8Exception("Unknown algorithm OID: " ~ alg_id.oid.toString());
     return makePrivateKey(alg_id, pkcs8_key, rng);
 }
 

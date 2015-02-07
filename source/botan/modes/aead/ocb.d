@@ -192,7 +192,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         assert(sz % BS == 0, "Input length is an even number of blocks");
         
@@ -204,7 +204,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         if (sz)
         {
@@ -310,7 +310,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         assert(sz % BS == 0, "Input length is an even number of blocks");
         
@@ -321,7 +321,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         assert(sz >= tagSize(), "We have the tag");
         

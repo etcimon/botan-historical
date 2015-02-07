@@ -31,7 +31,7 @@ public:
         if (!validNonceLength(nonce_len))
             throw new InvalidIVLength(name, nonce_len);
         
-        m_nonce_mac = eaxPrf(0, this.blockSize(), *m_cmac, nonce, nonce_len);
+        m_nonce_mac[] = eaxPrf(0, this.blockSize(), *m_cmac, nonce, nonce_len)[];
         
         m_ctr.setIv(m_nonce_mac.ptr, m_nonce_mac.length);
         
@@ -45,7 +45,7 @@ public:
 
     override void setAssociatedData(const(ubyte)* ad, size_t length)
     {
-        m_ad_mac = eaxPrf(1, this.blockSize(), *m_cmac, ad, length);
+        m_ad_mac[] = eaxPrf(1, this.blockSize(), *m_cmac, ad, length)[];
     }
 
     override @property string name() const
@@ -143,7 +143,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         m_ctr.cipher(buf, buf, sz);
         m_cmac.update(buf, sz);
@@ -157,8 +157,7 @@ public:
         xorBuf(data_mac, m_nonce_mac, data_mac.length);
         xorBuf(data_mac, m_ad_mac, data_mac.length);
 
-        buffer.resize(offset + tagSize());
-        buffer.ptr[offset .. offset + tagSize()] = data_mac.ptr[0 .. tagSize()];
+        buffer ~= data_mac[0 .. tagSize()];
     }
 
     // Interface fallthrough
@@ -198,7 +197,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         m_cmac.update(buf, sz);
         m_ctr.cipher(buf, buf, sz);
@@ -208,7 +207,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         assert(sz >= tagSize(), "Have the tag as part of final input");
         

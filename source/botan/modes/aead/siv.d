@@ -43,7 +43,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         m_msg_buf ~= buf[0 .. sz];
         buffer.resize(offset); // truncate msg
     }
@@ -128,13 +128,13 @@ protected:
         for (size_t i = 0; i != m_ad_macs.length; ++i)
         {
             V = CMAC.polyDouble(V);
-            V.ptr[0 .. V.length] ^= m_ad_macs[i].ptr[0 .. V.length];
+            V ^= m_ad_macs[i];
         }
         
         if (m_nonce.length)
         {
             V = CMAC.polyDouble(V);
-            V.ptr[0 .. V.length] ^= m_nonce.ptr[0 .. V.length];
+            V ^= m_nonce;
         }
         
         if (text_len < 16)
@@ -188,12 +188,13 @@ public:
 
     override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
+		import std.algorithm : max;
         assert(buffer.length >= offset, "Offset is sane");
 
-        buffer.resize(offset + msgBuf().length);
+        buffer.resize(max(buffer.length, offset + msgBuf().length));
         buffer[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
         
-        SecureVector!ubyte V = S2V(&buffer[offset], buffer.length - offset);
+        SecureVector!ubyte V = S2V(buffer.ptr + offset, buffer.length - offset);
 
         buffer.resize(offset + V.length);
         buffer[offset .. V.length] = V.ptr[0 .. V.length];
@@ -234,9 +235,10 @@ public:
 
     override void finish(ref SecureVector!ubyte buffer, size_t offset)
     {
+		import std.algorithm : max;
         assert(buffer.length >= offset, "Offset is sane");
 
-        buffer.resize(offset + msgBuf().length);
+        buffer.resize(max(buffer.length, offset + msgBuf().length));
         buffer.ptr[offset .. buffer.length] = msgBuf().ptr[0 .. buffer.length];
         
         const size_t sz = buffer.length - offset;
@@ -247,9 +249,9 @@ public:
         
         setCtrIv(V);
         
-        ctr().cipher(&buffer[offset + V.length], &buffer[offset], buffer.length - offset - V.length);
+        ctr().cipher(&buffer[offset + V.length], buffer.ptr + offset, buffer.length - offset - V.length);
         
-        SecureVector!ubyte T = S2V(&buffer[offset], buffer.length - offset - V.length);
+        SecureVector!ubyte T = S2V(buffer.ptr + offset, buffer.length - offset - V.length);
         
         if (T != V)
             throw new IntegrityFailure("SIV tag check failed");

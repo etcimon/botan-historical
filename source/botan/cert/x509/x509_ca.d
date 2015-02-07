@@ -293,7 +293,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
     
     SignatureFormat format = (key.messageParts() > 1) ? DER_SEQUENCE : IEEE_1363;
 
-    padding ~= padding.data ~ '(' ~ proto_hash.name ~ ')';
+    padding ~= '(' ~ proto_hash.name ~ ')';
     
     sig_algo.oid = OIDS.lookup(algo_name ~ "/" ~ padding.data);
     sig_algo.parameters = key.algorithmIdentifier().parameters;

@@ -238,8 +238,9 @@ static if (!SKIP_X509_KEY_TEST) unittest
     
     /* Create the CA's key and self-signed cert */
     auto ca_key = RSAPrivateKey(rng, 2048);
-    
+	logDebug("First CA Cert");
     X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), ca_key, hash_fn, rng);
+	logDebug(ca_cert.toString());
     /* Create user #1's key and cert request */
     auto user1_key = DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
     
@@ -253,11 +254,13 @@ static if (!SKIP_X509_KEY_TEST) unittest
         RSAPrivateKey user2_key = RSAPrivateKey(rng, 1536);
     } else static assert(false, "Must have ECSA or RSA for X509!");
     
+	logDebug("user2_req");
     PKCS10Request user2_req = x509self.createCertReq(reqOpts2(), user2_key, hash_fn, rng);
     
     /* Create the CA object */
     X509CA ca = X509CA(ca_cert, ca_key, hash_fn);
     
+	logDebug("user1_cert");
     /* Sign the requests to create the certs */
     X509Certificate user1_cert = ca.signRequest(user1_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
     

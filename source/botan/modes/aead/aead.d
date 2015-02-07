@@ -80,9 +80,7 @@ AEADMode getAead(in string algo_spec, CipherDir direction)
     const BlockCipher cipher = af.prototypeBlockCipher(cipher_name);
     if (!cipher)
         return null;
-    
     const Vector!string mode_info = parseAlgorithmName(algo_parts[1]);
-    
     if (mode_info.empty)
         return null;
     
@@ -168,16 +166,13 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     const SecureVector!ubyte nonce = hexDecodeLocked(nonce_hex);
     const SecureVector!ubyte ad = hexDecodeLocked(ad_hex);
     const SecureVector!ubyte key = hexDecodeLocked(key_hex);
-    
     Unique!CipherMode enc = getAead(algo, ENCRYPTION);
     Unique!CipherMode dec = getAead(algo, DECRYPTION);
-    
     if (!enc || !dec)
         throw new Exception("Unknown AEAD " ~ algo);
     
     enc.setKey(key);
     dec.setKey(key);
-    
     if (auto aead_enc = cast(AEADMode)(*enc))
         aead_enc.setAssociatedDataVec(ad);
     if (auto aead_dec = cast(AEADMode)(*dec))
@@ -190,6 +185,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     SecureVector!ubyte vec = pt.dup;
     enc.startVec(nonce);
+
     // should first update if possible
     enc.finish(vec);
     
@@ -219,7 +215,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
         try
         {
             dec.finish(vec);
-            logTrace(algo ~ " accepted message with modified message");
+            logError(algo ~ " accepted message with modified message");
             ++fail;
         }
         catch (Throwable) {}
@@ -235,20 +231,22 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             try
             {
                 dec.finish(vec);
-                logTrace(algo ~ " accepted message with modified nonce");
+                logError(algo ~ " accepted message with modified nonce");
                 ++fail;
             }
-            catch (Throwable) {}
+            catch (Exception) {}
         }
         
         if (auto aead_dec = cast(AEADMode)(*dec))
         {
             SecureVector!ubyte bad_ad = ad.dup;
             
-            if (ad.length)
+            if (ad.length) {
                 bad_ad[0] ^= 1;
-            else
+			}
+            else {
                 bad_ad.pushBack(0);
+			}
             
             aead_dec.setAssociatedDataVec(bad_ad);
             
@@ -258,10 +256,10 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             try
             {
                 dec.finish(vec);
-                logTrace(algo ~ " accepted message with modified AD");
+                logError(algo ~ " accepted message with modified AD");
                 ++fail;
             }
-            catch (Throwable) {}
+            catch (Exception) {}
         }
     }
     
@@ -278,8 +276,7 @@ static if (!SKIP_AEAD_TEST) unittest
         return runTestsBb(vec, "AEAD", "Out", true,
                             (ref HashMap!(string, string) m)
                             {
-            return aeadTest(m["AEAD"], m["In"], m["Out"],
-            m["Nonce"], m["AD"], m["Key"]);
+            return aeadTest(m["AEAD"], m["In"], m["Out"], m["Nonce"], m.get("AD"), m["Key"]);
         });
     };
     

@@ -23,7 +23,7 @@ public:
     /*
     * Barrett Reduction
     */
-    BigInt reduce()(BigInt x) const
+    BigInt reduce(BigInt x) const
     {
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
@@ -77,7 +77,9 @@ public:
     * @return (x * y) % p
     */
     BigInt multiply()(auto const ref BigInt x, auto const ref BigInt y) const
-    { return reduce(x * y); }
+    { 
+		return reduce(x * y); 
+	}
 
     /**
     * Square mod p
@@ -101,7 +103,7 @@ public:
     /*
     * ModularReducer Constructor
     */
-    this()(auto const ref BigInt mod)
+    this(const ref BigInt mod)
     {
         if (mod <= 0)
             throw new InvalidArgument("ModularReducer: modulus must be positive");
@@ -112,12 +114,7 @@ public:
     }
 
     @property ModularReducer dup() const {
-        ModularReducer ret = ModularReducer.init;
-        ret.m_modulus = m_modulus.dup;
-        ret.m_modulus_2 = m_modulus_2.dup;
-        ret.m_mu = m_mu.dup;
-        ret.m_mod_words = m_mod_words;
-        return ret;
+		return ModularReducer(m_modulus);
     }
 
 private:

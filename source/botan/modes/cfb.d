@@ -126,7 +126,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         const size_t BS = cipher().blockSize();
         
@@ -182,7 +182,7 @@ public:
     {
         assert(buffer.length >= offset, "Offset is sane");
         size_t sz = buffer.length - offset;
-        ubyte* buf = &buffer[offset];
+        ubyte* buf = buffer.ptr + offset;
         
         const size_t BS = cipher().blockSize();
         

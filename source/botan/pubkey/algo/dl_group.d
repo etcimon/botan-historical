@@ -30,6 +30,7 @@ struct DLGroup
 {
 public:
 	@disable this(this);
+
     /**
     * Get the prime m_p.
     * @return prime m_p
@@ -206,7 +207,7 @@ public:
         }
         else
             throw new InvalidArgument("Unknown DLGroup encoding " ~ to!string(format));
-        
+
         initialize(new_p, new_q, new_g);
     }
 
@@ -217,7 +218,6 @@ public:
     void PEM_decode(in string pem)
     {
         string label;
-        
         auto ber = unlock(PEM.decode(pem, label));
         
         if (label == "DH PARAMETERS")
@@ -324,10 +324,10 @@ public:
     * @param p1 = the prime p
     * @param g1 = the base m_g
     */
-    this()(auto const ref BigInt p1, auto const ref BigInt g1)
+    this(ref BigInt p1, ref BigInt g1)
     {
 		auto bi = BigInt(0);
-        initialize(p1, bi, g1);
+		initialize(p1, bi, g1);
     }
 
     /**
@@ -336,29 +336,46 @@ public:
     * @param q1 = the prime m_q
     * @param g1 = the base m_g
     */
-    this()(auto const ref BigInt p1, auto const ref BigInt q1, auto const ref BigInt g1)
-    {
-        initialize(p1, q1, g1);
-    }
+	this(BigInt p1, BigInt q1, BigInt g1)
+	{
+		initialize(p1, q1, g1);
+	}
 
 	/**
 	 * Duplicate this object
-	 */
+	 */ 
 	@property DLGroup dup() const {
-		return DLGroup(m_initialized, m_p.dup, m_q.dup, m_g.dup);
+		auto p2 = m_p.dup;
+		auto q2 = m_q.dup;
+		auto g2 = m_g.dup;
+		return DLGroup(m_initialized, p2, q2, g2);
 	}
 
 	@property DLGroup move() {
-		return DLGroup(m_initialized, m_p.move(), m_q.move(), m_g.move());
+		return DLGroup(m_initialized, m_p, m_q, m_g);
+	}
+
+	void opAssign(DLGroup other) {
+		m_p = other.m_p.move;
+		m_q = other.m_q.move;
+		m_g = other.m_g.move;
+		m_initialized = other.m_initialized;
 	}
 
 private:
-	// move constructor
-	this(bool initialized, BigInt p1, BigInt q1, BigInt g1) {
-		m_p = p1.move;
-		m_q = q1.move;
-		m_g = g1.move;
-		m_initialized = initialized;
+
+	this(bool initialized, ref BigInt p1, ref BigInt q1, ref BigInt g1)
+	{
+		if (initialized) {
+			m_p = p1.move;
+			m_q = q1.move;
+			m_g = g1.move;
+			m_initialized = true;
+		}
+		else {
+			initialize(p1, q1, g1);
+		}
+	
 	}
 
     /*
@@ -387,9 +404,9 @@ private:
             throw new InvalidState("DLP group cannot be used uninitialized");
     }
 
-    void initialize()(auto const ref BigInt p1, 
-					  auto const ref BigInt q1,
-					  auto const ref BigInt g1)
+    void initialize(ref BigInt p1, 
+					ref BigInt q1,
+					ref BigInt g1)
     {
         if (p1 < 3)
             throw new InvalidArgument("DLGroup: Prime invalid");
@@ -398,9 +415,9 @@ private:
         if (q1 < 0 || q1 >= p1)
             throw new InvalidArgument("DLGroup: Subgroup invalid");
         
-        m_p = p1.dup;
-        m_g = g1.dup;
-        m_q = q1.dup;
+        m_p = p1.move;
+        m_g = g1.move;
+        m_q = q1.move;
         
         m_initialized = true;
     }
@@ -469,7 +486,7 @@ private:
                 ~ "fDKQXkYuNs474553LBgOhgObJ4Oi7Aeij7XFXfBvTFLJ3ivL9pVYFxg5lUl86pVq"
                 ~ "5RXSJhiY+gUQFXKOWoqsqmj//////////wIBAgKCAQB//////////+SH7VEQtGEa"
                 ~ "YmMxRcBuDmiUgScERTPmOgEF31Mdic2RKKUEPMcaAm73yozZ5p0hjZgVhTb5L4ob"
-                ~ "m_p/Catrao4SLyQtq7MS8/Y3omIXTTG/a1hf+uW3oDW/b3HDX9rUTP0tdPkgi+JY/z"
+                ~ "p/Catrao4SLyQtq7MS8/Y3omIXTTG/a1hf+uW3oDW/b3HDX9rUTP0tdPkgi+JY/z"
                 ~ "JJQzKPZyLZ7hAD5cULHfgsxtJBsOKunNNIsf1H6SZ6/Bsq6R7lHWyw4xeasQQqld"
                 ~ "z2qUg7hLSzazhhqnJV5MAni6NgRlDBC+GUgvIxcbZx3xzzuWDAdDAc2TwdF2A9FH"
                 ~ "2uKu+DemKWTvFeX7SqwLjBzKpL51SrVyiukTDEx9AogKuUctRVZVNH//////////"
