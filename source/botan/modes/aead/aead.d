@@ -191,8 +191,8 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     if (vec != expected_ct)
     {
-        logTrace(algo ~ " got ct " ~ hexEncode(vec) ~ " expected " ~ expected);
-        logTrace(algo ~ " \n");
+        logError(algo ~ " got ct " ~ hexEncode(vec) ~ " expected " ~ expected);
+        logError(algo ~ " \n");
         ++fail;
     }
     
@@ -203,7 +203,7 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
     
     if (vec != pt)
     {
-        logTrace(algo ~ " got pt " ~ hexEncode(vec) ~ " expected " ~ input);
+        logError(algo ~ " got pt " ~ hexEncode(vec) ~ " expected " ~ input);
         ++fail;
     }
     
@@ -274,10 +274,10 @@ static if (!SKIP_AEAD_TEST) unittest
         File vec = File(input, "r");
         
         return runTestsBb(vec, "AEAD", "Out", true,
-                            (ref HashMap!(string, string) m)
-                            {
-            return aeadTest(m["AEAD"], m["In"], m["Out"], m["Nonce"], m.get("AD"), m["Key"]);
-        });
+            (ref HashMap!(string, string) m)
+            {
+	            return aeadTest(m["AEAD"], m["In"], m["Out"], m.get("Nonce"), m.get("AD"), m["Key"]);
+	        });
     };
     
     size_t fails = runTestsInDir("../test_data/aead", test);

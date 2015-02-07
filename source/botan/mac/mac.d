@@ -76,7 +76,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
         
         if(!proto)
         {
-            logTrace("Unable to get " ~ algo ~ " from " ~ provider);
+            logError("Unable to get " ~ algo ~ " from " ~ provider);
             ++fails;
             continue;
         }
@@ -91,7 +91,7 @@ size_t macTest(string algo, string key_hex, string in_hex, string out_hex)
         atomicOp!"+="(total_tests, 1);
         if(h != hexDecodeLocked(out_hex))
         {
-            logTrace(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
+            logError(algo ~ " " ~ provider ~ " got " ~ hexEncode(h) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -105,9 +105,9 @@ static if (!SKIP_MAC_TEST) unittest {
         File vec = File(input, "r");
         
         return runTestsBb(vec, "Mac", "Out", true,
-                            (ref HashMap!(string, string) m) {
-                                return macTest(m["Mac"], m["Key"], m["In"], m["Out"]);
-                            });
+            (ref HashMap!(string, string) m) {
+                return macTest(m["Mac"], m["Key"], m["In"], m["Out"]);
+            });
     };
     
     size_t fails = runTestsInDir("../test_data/mac", test);

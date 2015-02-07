@@ -63,8 +63,6 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
     
     string priv_pem = pkcs8.PEM_encode(priv_key);
     
-    try
-    {
         auto input_priv = DataSourceMemory(priv_pem);
         Unique!PrivateKey restored_priv = pkcs8.loadKey(cast(DataSource)input_priv, rng);
         
@@ -78,14 +76,6 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
             logTrace("Restored privkey failed self tests " ~ name);
             ++fails;
         }
-    }
-    catch(Exception e)
-    {
-        logTrace("Exception during load of " ~ name ~ " key: " ~ e.msg);
-        logTrace("PEM for privkey was: " ~ priv_pem);
-        ++fails;
-    }
-    
     return fails;
 }
 
@@ -153,7 +143,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
             try
             {
                 auto bad_ptext = unlock(d.decrypt(bad_ctext));
-                logTrace(algo ~ " failed - decrypted bad data");
+                logError(algo ~ " failed - decrypted bad data");
                 logTrace(hexEncode(bad_ctext) ~ " . " ~ hexEncode(bad_ptext));
                 logTrace(hexEncode(ctext) ~ " . " ~ hexEncode(decrypted));
                 ++fails;
@@ -194,7 +184,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
     
     mixin( PKTEST(` v.verifyMessage(message, sig) `, "Correct signature is valid") );
     
-    clearMem(&sig[0], sig.length);
+    clearMem(sig.ptr, sig.length);
     
     mixin( PKTEST(` !v.verifyMessage(message, sig) `, "All-zero signature is invalid") );
     

@@ -89,12 +89,13 @@ public:
     */
     void assertIsA(ASN1Tag type_tag, ASN1Tag class_tag)
     {
-        if (this.type_tag != type_tag || this.class_tag != class_tag)
+        if (this.type_tag != type_tag || this.class_tag != class_tag) {
             throw new BERDecodingError("Tag mismatch when decoding got " ~
                                          to!string(this.type_tag) ~ "/" ~
-                                         to!string(this.class_tag) ~ " expected " ~
+                                         to!string(this.class_tag) ~ " Value: " ~ value[] ~ " expected " ~
                                          to!string(type_tag) ~ "/" ~
                                          to!string(class_tag));
+		}
     }
 
     /*

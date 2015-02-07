@@ -104,7 +104,7 @@ size_t streamTest(string algo,
         
         if (!proto)
         {
-            logTrace("Unable to get " ~ algo ~ " from provider '" ~ provider ~ "'");
+            logError("Unable to get " ~ algo ~ " from provider '" ~ provider ~ "'");
             ++fails;
             continue;
         }
@@ -113,7 +113,7 @@ size_t streamTest(string algo,
         cipher.setKey(key);
 
         if (nonce.length)
-            cipher.setIv(&nonce[0], nonce.length);
+            cipher.setIv(nonce.ptr, nonce.length);
         
         SecureVector!ubyte buf = pt.dup;
         
@@ -121,7 +121,7 @@ size_t streamTest(string algo,
         
         if (buf != ct)
         {
-            logTrace(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
+            logError(algo ~ " " ~ provider ~ " enc " ~ hexEncode(buf) ~ " != " ~ out_hex);
             ++fails;
         }
     }
@@ -137,9 +137,9 @@ static if (!SKIP_STREAM_CIPHER_TEST) unittest
         File vec = File(input, "r");
         
         return runTestsBb(vec, "StreamCipher", "Out", true,
-                            (ref HashMap!(string, string) m) {
-                                return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m.get("Nonce"));
-                            });
+			(ref HashMap!(string, string) m) {
+				return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m.get("Nonce"));
+			});
     };
     
     size_t fails = runTestsInDir("../test_data/stream", test);

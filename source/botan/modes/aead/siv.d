@@ -42,6 +42,7 @@ public:
     override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
+		logDebug("Update: ", cast(ubyte[])buffer[]);
         const size_t sz = buffer.length - offset;
         ubyte* buf = buffer.ptr + offset;
         m_msg_buf ~= buf[0 .. sz];
@@ -109,7 +110,7 @@ protected:
 
     final StreamCipher ctr() { return *m_ctr; }
 
-    final void setCtrIv(ref SecureVector!ubyte V)
+    final void setCtrIv(SecureVector!ubyte V)
     {
         V[8] &= 0x7F;
         V[12] &= 0x7F;
@@ -131,7 +132,7 @@ protected:
             V ^= m_ad_macs[i];
         }
         
-        if (m_nonce.length)
+        if (m_nonce.length > 0)
         {
             V = CMAC.polyDouble(V);
             V ^= m_nonce;
@@ -146,7 +147,7 @@ protected:
         }
         
         cmac().update(text, text_len - 16);
-        xorBuf(V.ptr, &text[text_len - 16], 16);
+        xorBuf(V.ptr, text + text_len - 16, 16);
         cmac().update(V);
         
         return cmac().finished();
@@ -190,17 +191,22 @@ public:
     {
 		import std.algorithm : max;
         assert(buffer.length >= offset, "Offset is sane");
-
-        buffer.resize(max(buffer.length, offset + msgBuf().length));
-        buffer[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
         
+		if (msgBuf().length > 0)
+		{
+			auto buffer2 = msgBuf().dup;
+			buffer2 ~= buffer;
+			buffer = buffer2.move;
+		}
+
         SecureVector!ubyte V = S2V(buffer.ptr + offset, buffer.length - offset);
-
-        buffer.resize(offset + V.length);
-        buffer[offset .. V.length] = V.ptr[0 .. V.length];
-        
-        setCtrIv(V);
-        ctr().cipher1(&buffer[offset + V.length], buffer.length - offset - V.length);
+		if (V.length > 0) {
+			auto buffer2 = V.dup;
+			buffer2 ~= buffer;
+			buffer = buffer2.move;
+		}
+        setCtrIv(V.dup);
+        ctr().cipher1(buffer.ptr + offset + V.length, buffer.length - offset - V.length);
     }
     
     override size_t outputLength(size_t input_length) const
@@ -238,18 +244,21 @@ public:
 		import std.algorithm : max;
         assert(buffer.length >= offset, "Offset is sane");
 
-        buffer.resize(max(buffer.length, offset + msgBuf().length));
-        buffer.ptr[offset .. buffer.length] = msgBuf().ptr[0 .. buffer.length];
-        
+		if (msgBuf().length > 0) {
+			auto buffer2 = msgBuf().dup;
+			buffer2 ~= buffer;
+			buffer = buffer2.move;
+		}
+
         const size_t sz = buffer.length - offset;
         
         assert(sz >= tagSize(), "We have the tag");
 
         SecureVector!ubyte V = SecureVector!ubyte(buffer.ptr[offset .. offset + 16]);
         
-        setCtrIv(V);
+        setCtrIv(V.dup);
         
-        ctr().cipher(&buffer[offset + V.length], buffer.ptr + offset, buffer.length - offset - V.length);
+        ctr().cipher(buffer.ptr + offset + V.length, buffer.ptr + offset, buffer.length - offset - V.length);
         
         SecureVector!ubyte T = S2V(buffer.ptr + offset, buffer.length - offset - V.length);
         

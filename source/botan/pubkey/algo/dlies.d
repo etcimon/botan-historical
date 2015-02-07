@@ -228,9 +228,9 @@ static if (!SKIP_DLIES_TEST) unittest
     File dlies = File("../test_data/pubkey/dlies.vec", "r");
     
     fails += runTestsBb(dlies, "DLIES Encryption", "Ciphertext", true,
-                          (ref HashMap!(string, string) m) {
-                                return dliesKat(m["P"], m["G"], m["X1"], m["X2"], m["Msg"], m["Ciphertext"]);
-                            });
+		(ref HashMap!(string, string) m) {
+			return dliesKat(m["P"], m["G"], m["X1"], m["X2"], m["Msg"], m["Ciphertext"]);
+		});
     
     testReport("dlies", total_tests, fails);
 }

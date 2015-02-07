@@ -53,7 +53,7 @@ public:
             bufferInsert(m_counter, i*bs, &m_counter[(i-1)*bs], bs);
             
             foreach (size_t j; 0 .. bs)
-                if (++m_counter[i*bs + (bs - 1 - j)])
+                if (++(m_counter[i*bs + (bs - 1 - j)]))
                     break;
         }
         
@@ -119,7 +119,7 @@ protected:
         foreach (size_t i; 0 .. 256)
         {
             foreach (size_t j; 1 .. bs)
-                if (++m_counter[i*bs + (bs - 1 - j)])
+                if (++(m_counter[i*bs + (bs - 1 - j)]))
                     break;
         }
         

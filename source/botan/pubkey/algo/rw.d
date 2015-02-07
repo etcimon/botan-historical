@@ -356,14 +356,14 @@ static if (!SKIP_RW_TEST) unittest
     File rw_verify = File("../test_data/pubkey/rw_verify.vec", "r");
     
     fails += runTestsBb(rw_sig, "RW Signature", "Signature", true,
-                          (ref HashMap!(string, string) m) {
-        return rwSigKat(m["E"], m["P"], m["Q"], m["Msg"], m["Signature"]);
-    });
+		(ref HashMap!(string, string) m) {
+        	return rwSigKat(m["E"], m["P"], m["Q"], m["Msg"], m["Signature"]);
+    	});
     
     fails += runTestsBb(rw_verify, "RW Verify", "Signature", true,
-                          (ref HashMap!(string, string) m) {
-        return rwSigVerify(m["E"], m["N"], m["Msg"], m["Signature"]);
-    });
+		(ref HashMap!(string, string) m) {
+			return rwSigVerify(m["E"], m["N"], m["Msg"], m["Signature"]);
+		});
 
     testReport("rw", total_tests, fails);
 }

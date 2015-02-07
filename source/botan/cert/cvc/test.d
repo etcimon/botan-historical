@@ -333,7 +333,7 @@ void testCvcAdoComparison(RandomNumberGenerator rng)
     mixin( CHECK_MESSAGE( `ado != ado2`, "ado s found to be equal where they are not" ) );
     //      std::ofstream ado_file("../test_data/ecc/ado");
     //      Vector!ubyte ado_der(ado.BER_encode());
-    //      ado_file.write((char*)&ado_der[0], ado_der.length);
+    //      ado_file.write((char*)ado_der.ptr, ado_der.length);
     //      ado_file.close();
     // read it again and check the signature
     

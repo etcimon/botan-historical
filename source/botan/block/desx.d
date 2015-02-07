@@ -50,6 +50,7 @@ public:
             output += BLOCK_SIZE;
         }
     }
+
     override void clear()
     {
         m_des.free();

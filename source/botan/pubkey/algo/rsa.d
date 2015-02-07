@@ -414,25 +414,22 @@ static if (!SKIP_RSA_TEST) unittest
     
     
     fails += runTestsBb(rsa_enc, "RSA Encryption", "Ciphertext", true,
-                          (ref HashMap!(string, string) m)
-                          {
-        return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"],
-        m["Padding"], m["Nonce"], m["Ciphertext"]);
-    });
+		(ref HashMap!(string, string) m)
+		{
+	        return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"], m["Padding"], m["Nonce"], m["Ciphertext"]);
+	    });
     
     fails += runTestsBb(rsa_sig, "RSA Signature", "Signature", true,
-                          (ref HashMap!(string, string) m)
-                          {
-        return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"],
-        m["Padding"], m["Nonce"], m["Signature"]);
-    });
+		(ref HashMap!(string, string) m)
+		{
+			return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"], m["Padding"], m["Nonce"], m["Signature"]);
+		});
     
     fails += runTestsBb(rsa_verify, "RSA Verify", "Signature", true,
-                          (ref HashMap!(string, string) m)
-                          {
-        return rsaSigVerify(m["E"], m["N"], m["Msg"],
-        m["Padding"], m["Signature"]);
-    });
+		(ref HashMap!(string, string) m)
+		{
+			return rsaSigVerify(m["E"], m["N"], m["Msg"], m["Padding"], m["Signature"]);
+		});
     
     testReport("rsa", total_tests, fails);
 }

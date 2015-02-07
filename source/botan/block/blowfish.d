@@ -38,7 +38,7 @@ public:
             uint L = loadBigEndian!uint(input, 0);
             uint R = loadBigEndian!uint(input, 1);
             
-            for (size_t j = 0; j != 16; j += 2)
+            for (size_t j = 0; j < 16; j += 2)
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
@@ -75,7 +75,7 @@ public:
             uint L = loadBigEndian!uint(input, 0);
             uint R = loadBigEndian!uint(input, 1);
             
-            for (size_t j = 17; j != 1; j -= 2)
+            for (int j = 17; j > 1; j -= 2)
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^
@@ -115,20 +115,18 @@ public:
         * time being.
         */
         if (workfactor > 18)
-            throw new InvalidArgument("Requested Bcrypt work factor " ~
-                                       to!string(workfactor) ~ " too large");
+            throw new InvalidArgument("Requested Bcrypt work factor " ~ to!string(workfactor) ~ " too large");
         
-        m_P.resize(18);
-        m_P ~= P_INIT[0 .. 18];
+        m_P.reserve(18);
+        m_P[] = P_INIT[0 .. 18];
         
-        m_S.resize(1024);
-        m_S ~= S_INIT[0 .. 1024];
+        m_S.reserve(1024);
+        m_S[] = S_INIT[0 .. 1024];
         
         key_expansion(key, length, salt);
 
         const ubyte[16] null_salt;
         const size_t rounds = 1 << workfactor;
-        
         for (size_t r = 0; r != rounds; ++r)
         {
             key_expansion(key, length, null_salt);
@@ -156,10 +154,10 @@ protected:
     */
     override void keySchedule(const(ubyte)* key, size_t length)
     {
-        m_P.resize(18);
+        m_P.reserve(18);
         m_P[] = P_INIT[0 .. 18];
         
-        m_S.resize(1024);
+        m_S.reserve(1024);
         m_S[] = S_INIT[0 .. 1024];
         
         immutable ubyte[16] null_salt;
@@ -172,9 +170,9 @@ private:
                        size_t length,
                        in ubyte[16] salt)
     {
-        for (size_t i = 0, j = 0; i != 18; ++i, j += 4)
-            m_P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length],
-        key[(j+2) % length], key[(j+3) % length]);
+        for (size_t i = 0, j = 0; i < 18; ++i, j += 4) {
+            m_P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length], key[(j+2) % length], key[(j+3) % length]);
+		}
         
         uint L = 0, R = 0;
         generate_sbox(m_P, L, R, salt, 0);
@@ -196,12 +194,12 @@ private:
         const uint* S3 = &m_S[512];
         const uint* S4 = &m_S[768];
         
-        for (size_t i = 0; i != box.length; i += 2)
+        for (size_t i = 0; i < box.length; i += 2)
         {
             L ^= loadBigEndian!uint(salt.ptr, (i + salt_off) % 4);
             R ^= loadBigEndian!uint(salt.ptr, (i + salt_off + 1) % 4);
             
-            foreach (size_t j; iota(0, 16, 2))
+			for (size_t j = 0; j < 16; j += 2)
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^

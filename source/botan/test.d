@@ -215,14 +215,14 @@ size_t runTests(ref File src,
 				 string delegate(ref HashMap!(string, string)) cb)
 {
     return runTestsBb(src, name_key, output_key, clear_between_cb, 
-                        (ref HashMap!(string, string) vars)
-                        {
-                            const string got = cb(vars);
-                            if(got != vars[output_key])
-                            {
-                                logTrace(name_key ~ ' ' ~ vars[name_key] ~ " got " ~ got ~ " expected " ~ vars[output_key]);
-                                return 1;
-                            }
-                            return 0;
-                        });
+        (ref HashMap!(string, string) vars)
+        {
+            const string got = cb(vars);
+            if(got != vars[output_key])
+            {
+                logTrace(name_key ~ ' ' ~ vars[name_key] ~ " got " ~ got ~ " expected " ~ vars[output_key]);
+                return 1;
+            }
+            return 0;
+        });
 }

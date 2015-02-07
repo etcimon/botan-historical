@@ -105,7 +105,7 @@ public:
         BigInt x = BigInt(bits.ptr, part_size);
         BigInt y = BigInt(&bits[part_size], part_size);
         
-        PointGFp public_point = PointGFp(domain().getCurve(), x, y);
+		PointGFp public_point = PointGFp(domain_params.getCurve(), x, y);
 		m_pub = new ECPublicKey(Options(), domain_params, public_point);
 
         assert(public_point.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
@@ -362,9 +362,9 @@ static if (!SKIP_GOST_TEST) unittest
     File ecdsa_sig = File("../test_data/pubkey/gost_3410.vec", "r");
     
     fails += runTestsBb(ecdsa_sig, "GOST-34.10 Signature", "Signature", true,
-                          (ref HashMap!(string, string) m) {
-                                return gostVerify(m["Group"], m["Pubkey"], m["Hash"], m["Msg"], m["Signature"]);
-                            });
+		(ref HashMap!(string, string) m) {
+			return gostVerify(m["Group"], m["Pubkey"], m["Hash"], m["Msg"], m["Signature"]);
+		});
     
     testReport("gost_3410", total_tests, fails);
 }

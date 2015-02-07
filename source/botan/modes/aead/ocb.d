@@ -137,17 +137,17 @@ private:
         nonce_buf[15] &= 0xC0;
         
         const bool need_new_stretch = (m_last_nonce != nonce_buf);
-        
+
         if (need_new_stretch)
         {
-            m_last_nonce = nonce_buf;
+            m_last_nonce = nonce_buf.dup;
             
             m_cipher.encrypt(nonce_buf);
             
             foreach (size_t i; 0 .. 8)
                 nonce_buf.pushBack(nonce_buf[i] ^ nonce_buf[i+1]);
             
-            m_stretch = nonce_buf;
+            m_stretch = nonce_buf.move;
         }
         
         // now set the offset from stretch and bottom
@@ -162,7 +162,7 @@ private:
             offset[i] |= cast(ubyte)(m_stretch[i+shift_bytes+1] >> (8-shift_bits));
         }
         
-        return offset;
+        return offset.move;
     }
 
 
@@ -499,7 +499,7 @@ SecureVector!ubyte ocbHash(LComputer L,
         // this loop could run in parallel
         offset ^= L[ctz(i+1)];
         
-        buf = offset;
+        buf = offset.dup;
         xorBuf(buf.ptr, &ad[BS*i], BS);
         
         cipher.encrypt(buf);
@@ -511,7 +511,7 @@ SecureVector!ubyte ocbHash(LComputer L,
     {
         offset ^= L.star();
         
-        buf = offset;
+        buf = offset.dup;
         xorBuf(buf.ptr, &ad[BS*ad_blocks], ad_remainder);
         buf[ad_len % BS] ^= 0x80;
         
@@ -540,7 +540,7 @@ Vector!ubyte ocbDecrypt(in SymmetricKey key,
     ocb.setKey(key);
     ocb.setAssociatedData(ad, ad_len);
     
-    ocb.start(&nonce[0], nonce.length);
+    ocb.start(nonce.ptr, nonce.length);
     
     SecureVector!ubyte buf = SecureVector!ubyte(ct[0 .. ct_len]);
     ocb.finish(buf, 0);
@@ -558,14 +558,14 @@ Vector!ubyte ocbEncrypt(in SymmetricKey key,
     ocb.setKey(key);
     ocb.setAssociatedData(ad, ad_len);
     
-    ocb.start(&nonce[0], nonce.length);
+    ocb.start(nonce.ptr, nonce.length);
     
     SecureVector!ubyte buf = SecureVector!ubyte(pt[0 .. pt_len]);
     ocb.finish(buf, 0);
     
     try
     {
-        Vector!ubyte pt2 = ocbDecrypt(key, nonce, &buf[0], buf.length, ad, ad_len);
+        Vector!ubyte pt2 = ocbDecrypt(key, nonce, buf.ptr, buf.length, ad, ad_len);
         if (pt_len != pt2.length || !sameMem(pt, &pt2[0], pt_len))
             logTrace("OCB failed to decrypt correctly");
     }
@@ -582,7 +582,7 @@ Vector!ubyte ocbEncrypt(Alloc, Alloc2)(in SymmetricKey key,
                                        const ref Vector!(ubyte, Alloc) pt,
                                        const ref Vector!(ubyte, Alloc2) ad)
 {
-    return ocbEncrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
+    return ocbEncrypt(key, nonce, pt.ptr, pt.length, ad.ptr, ad.length);
 }
 
 Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
@@ -590,27 +590,26 @@ Vector!ubyte ocbDecrypt(Alloc, Alloc2)(in SymmetricKey key,
                                        const ref Vector!(ubyte, Alloc) pt,
                                        const ref Vector!(ubyte, Alloc2) ad)
 {
-    return ocbDecrypt(key, nonce, &pt[0], pt.length, &ad[0], ad.length);
+    return ocbDecrypt(key, nonce, pt.ptr, pt.length, ad.ptr, ad.length);
 }
 
 Vector!ubyte ocbEncrypt(OCBEncryption ocb,
-                         const ref Vector!ubyte nonce,
-                         const ref Vector!ubyte pt,
-                         const ref Vector!ubyte ad)
+                        const ref Vector!ubyte nonce,
+                        const ref Vector!ubyte pt,
+                        const ref Vector!ubyte ad)
 {
-    ocb.setAssociatedData(&ad[0], ad.length);
+    ocb.setAssociatedData(ad.ptr, ad.length);
     
-    ocb.start(&nonce[0], nonce.length);
+    ocb.start(nonce.ptr, nonce.length);
 
     SecureVector!ubyte buf = SecureVector!ubyte(pt.ptr[0 .. pt.length]);
     ocb.finish(buf, 0);
-    
     return unlock(buf);
 }
 
 size_t testOcbLong(size_t taglen, in string expected)
 {
-    auto ocb = scoped!OCBEncryption(new AES128, taglen/8);
+    Unique!OCBEncryption ocb = new OCBEncryption(new AES128, taglen/8);
     
     ocb.setKey(SymmetricKey("00000000000000000000000000000000"));
     
@@ -620,16 +619,16 @@ size_t testOcbLong(size_t taglen, in string expected)
     
     for(size_t i = 0; i != 128; ++i)
     {
-        const Vector!ubyte S = Vector!ubyte(i);
+        Vector!ubyte S = Vector!ubyte(i);
         N[11] = i;
         
-        C ~= ocbEncrypt(ocb, N, S, S);
-        C ~= ocbEncrypt(ocb, N, S, empty);
-        C ~= ocbEncrypt(ocb, N, empty, S);
+        C ~= ocbEncrypt(*ocb, N, S, S)[];
+        C ~= ocbEncrypt(*ocb, N, S, empty)[];
+        C ~= ocbEncrypt(*ocb, N, empty, S)[];
     }
     
     N[11] = 0;
-    const Vector!ubyte cipher = ocbEncrypt(ocb, N, empty, C);
+    const Vector!ubyte cipher = ocbEncrypt(*ocb, N, empty, C);
     
     const string cipher_hex = hexEncode(cipher);
     
@@ -644,6 +643,8 @@ size_t testOcbLong(size_t taglen, in string expected)
 
 static if (!SKIP_OCB_TEST) unittest
 {
+	import botan.libstate.libstate;
+	globalState();
     logDebug("Testing ocb.d ...");
     size_t fails = 0;
     

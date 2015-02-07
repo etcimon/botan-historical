@@ -110,7 +110,7 @@ public:
             if (share.length < RTSS_HEADER_SIZE)
                 throw new DecodingError("Missing or malformed RTSS header");
             
-            if (!sameMem(&shares[0].m_contents[0], &share.m_contents[0], RTSS_HEADER_SIZE))
+            if (!sameMem(shares.ptr.m_contents[0], &share.m_contents[0], RTSS_HEADER_SIZE))
                 throw new DecodingError("Different RTSS headers detected");
         }
         

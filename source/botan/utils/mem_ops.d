@@ -12,7 +12,7 @@ import std.algorithm : min;
 Vector!T unlock(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
 	if (is(ALLOC == SecureMem))
 {
-	return Vector!T(input[]);
+	return Vector!T(input.ptr[0 .. input.length]);
 }
 
 RefCounted!(Vector!T) unlock(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)

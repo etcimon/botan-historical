@@ -80,7 +80,7 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
         override SecureVector!ubyte randomVec(size_t)
         {
             SecureVector!ubyte vec = SecureVector!ubyte(this.remaining());
-            this.randomize(&vec[0], vec.length);
+            this.randomize(vec.ptr, vec.length);
             return vec;
         }
     }
@@ -149,7 +149,7 @@ size_t hmacDrbgTest(ref HashMap!(string, string) m)
     
     // now reseed
     const auto reseed_input = hexDecode(m["EntropyInputReseed"]);
-    rng.addEntropy(&reseed_input[0], reseed_input.length);
+    rng.addEntropy(reseed_input.ptr, reseed_input.length);
     
     const string output = m["Out"];
     
@@ -161,7 +161,7 @@ size_t hmacDrbgTest(ref HashMap!(string, string) m)
     
     if (got != output)
     {
-        logTrace(algo ~ " " ~ got ~ " != " ~ output);
+        logError(algo ~ " " ~ got ~ " != " ~ output);
         return 1;
     }
     
@@ -183,9 +183,9 @@ static if (!SKIP_RNG_TEST) unittest
     
     static if (BOTAN_HAS_X931_RNG)
     fails += runTestsBb(x931_vec, "RNG", "Out", true,
-                          (ref HashMap!(string, string) m) {
-                                return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));
-                            });
+		(ref HashMap!(string, string) m) {
+			return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));
+		});
 
 
     testReport("rng", total_tests, fails);

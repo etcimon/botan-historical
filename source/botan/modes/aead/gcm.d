@@ -168,13 +168,9 @@ public:
 
     override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
-		logDebug("Encrypt finish");
 		import std.algorithm : max;
-		logDebug("buffer: ", cast(ubyte[]) buffer[]);
-		logDebug("offset: ", offset);
         update(buffer, offset);
         auto mac = m_ghash.finished();
-		logDebug("finish: ",  cast(ubyte[]) mac[]);
         buffer ~= mac.ptr[0 .. tagSize()];
     }
 
@@ -223,7 +219,6 @@ public:
 
     override void finish(ref SecureVector!ubyte buffer, size_t offset)
     {
-		logDebug("Decrypt finish");
         assert(buffer.length >= offset, "Offset is sane");
         const size_t sz = buffer.length - offset;
 
@@ -271,7 +266,6 @@ public:
     void setAssociatedData(const(ubyte)* input, size_t length)
     {
         zeroise(m_H_ad);
-		logDebug("m_H_ad len: ", m_H_ad.length);
         ghashUpdate(m_H_ad, input, length);
         m_ad_len = length;
     }
@@ -337,15 +331,9 @@ private:
     void gcmMultiply(ref SecureVector!ubyte x)
     {
 		import std.algorithm : max;
-		logDebug("gcmMultiply");
-		x.resize(max(x.length, 16));
-		logDebug("gcmMultiply");
-		logDebug("x: ", cast(ubyte[]) x[]);
-		logDebug("m_H: ", cast(ubyte[]) m_H[]);
-		ubyte[16] x2 = x.ptr[0 .. 16];
         static if (BOTAN_HAS_GCM_CLMUL) {
             if (CPUID.hasClmul()) {
-                gcmMultiplyClmul(*cast(ubyte[16]*) x2.ptr, *cast(ubyte[16]*) m_H.ptr);
+                return gcmMultiplyClmul(*cast(ubyte[16]*) x.ptr, *cast(ubyte[16]*) m_H.ptr);
 			}
         }
         
@@ -375,17 +363,10 @@ private:
         }
         
         storeBigEndian!ulong(x.ptr, Z[0], Z[1]);
-
-		logDebug("X: ", cast(ubyte[])x[]);
-		logDebug("X2:  ", (cast(ubyte*)x2.ptr)[0 .. 16]);
-		assert(x.ptr[0..16] == (cast(ubyte*)x2.ptr)[0 .. 16], "not the same");
     }
 
     void ghashUpdate(ref SecureVector!ubyte ghash, const(ubyte)* input, size_t length)
     {
-		logDebug("in ghashupdate");
-		logDebug("ghash: ", cast(ubyte[])ghash[]);
-		logDebug("input: ", cast(ubyte[]) input[0 .. length]);
         __gshared immutable size_t BS = 16;
         
         /*
@@ -397,7 +378,6 @@ private:
             const size_t to_proc = std.algorithm.min(length, BS);
             
             xorBuf(ghash.ptr, input, to_proc);
-			logDebug("ghash now: ", cast(ubyte[]) ghash[]);
             gcmMultiply(ghash);
             
             input += to_proc;

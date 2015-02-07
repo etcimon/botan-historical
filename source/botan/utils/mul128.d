@@ -15,7 +15,7 @@ import botan.utils.types;
 void mul64x64_128(ulong a, ulong b, ref ulong[2] res) pure
 {
     version (D_InlineAsm_X86_64) {
-        ulong* lo = &res[0];
+        ulong* lo = res.ptr;
         ulong* hi = &res[1];
         asm pure nothrow @nogc {
             mov RAX, a;

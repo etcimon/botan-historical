@@ -24,7 +24,7 @@
             "Entropy_HRTimer", "Entropy_Rdrand", "Entropy_DevRand", "Entropy_EGD", "Entropy_UnixProc", "Entropy_CAPI", 
             "Entropy_Win32", "Entropy_ProcWalk", "X931_RNG", "HMAC_DRBG", "KDF1", "KDF2", "SSL_V3_PRF", "TLS_V10_PRF", "TLS_V12_PRF", "X942_PRF",
             "TLS", "X509", "CVC", "PUBKEY", "FPE_FE1", "RFC3394", "PassHash9", "BCrypt", "SRP6", "TSS", "CryptoBox", "CryptoBox_PSK", "SQLite"],
-        
+        	
             "libs": ["sqlite3"]
         }, 
         {
@@ -49,5 +49,6 @@
 			"backtrace-d": { "version": "~master" },
 			"memutils": { "version": "~master", "path": "../memutils" } 
 	}, 
-    "libs": ["dl", "bz2", "lzma"]
+    "libs": ["dl", "bz2", "lzma"],
+	"buildOptions": ["inline"]
 }

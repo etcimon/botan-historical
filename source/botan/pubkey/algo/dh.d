@@ -229,9 +229,9 @@ static if (!SKIP_DH_TEST) unittest
     File dh_sig = File("../test_data/pubkey/dh.vec", "r");
     
     fails += runTestsBb(dh_sig, "DH Kex", "K", true,
-                          (ref HashMap!(string, string) m) {
-                                return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m.get("KDF"), m.get("OutLen"), m["K"]);
-                            });
+		(ref HashMap!(string, string) m) {
+            return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m.get("KDF"), m.get("OutLen"), m["K"]);
+        });
 
 	fails += testPkKeygen(rng);
 

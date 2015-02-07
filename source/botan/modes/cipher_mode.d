@@ -65,7 +65,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
     atomicOp!"+="(total_tests, 1);
     if (ct != ct2)
     {
-        logTrace(algo ~ " got ct " ~ ct2 ~ " expected " ~ ct);
+        logError(algo ~ " got ct " ~ ct2 ~ " expected " ~ ct);
         ++fails;
     }
     
@@ -73,7 +73,7 @@ size_t modeTest(string algo, string pt, string ct, string key_hex, string nonce_
     atomicOp!"+="(total_tests, 1);
     if (pt != pt2)
     {
-        logTrace(algo ~ " got pt " ~ pt2 ~ " expected " ~ pt);
+        logError(algo ~ " got pt " ~ pt2 ~ " expected " ~ pt);
         ++fails;
     }
     
@@ -87,9 +87,9 @@ static if (!SKIP_CIPHER_MODE_TEST) unittest {
         File vec = File(input, "r");
         
         return runTestsBb(vec, "Mode", "Out", true,
-                            (ref HashMap!(string, string) m) {
-                                return modeTest(m["Mode"], m["In"], m["Out"], m["Key"], m["Nonce"]);
-                            });
+            (ref HashMap!(string, string) m) {
+                return modeTest(m["Mode"], m["In"], m["Out"], m["Key"], m["Nonce"]);
+            });
     };
     
     size_t fails = runTestsInDir("../test_data/modes", test);

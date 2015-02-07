@@ -21,7 +21,7 @@ final class HKDF
 {
 public:
     this(MessageAuthenticationCode extractor,
-          MessageAuthenticationCode prf) 
+         MessageAuthenticationCode prf) 
     {
         m_extractor = extractor;
         m_prf = prf;
@@ -111,21 +111,21 @@ SecureVector!ubyte hkdf()(string hkdf_algo,
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    const string algo = hkdf_algo[5 .. hkdf_algo.length-6+5];
-    
+    const string algo = hkdf_algo[5 .. hkdf_algo.length-1];
+	//logTrace("Testing: HMAC(", algo, ")");
     const MessageAuthenticationCode mac_proto = af.prototypeMac("HMAC(" ~ algo ~ ")");
     
     if (!mac_proto)
         throw new InvalidArgument("Bad HKDF hash '" ~ algo ~ "'");
     
-    HKDF hkdf = scoped!HKDF(mac_proto.clone(), mac_proto.clone());
+    auto hkdf = scoped!HKDF(mac_proto.clone(), mac_proto.clone());
     
-    hkdf.startExtract(&salt[0], salt.length);
-    hkdf.extract(&ikm[0], ikm.length);
+    hkdf.startExtract(salt.ptr, salt.length);
+    hkdf.extract(ikm.ptr, ikm.length);
     hkdf.finishExtract();
     
     SecureVector!ubyte key = SecureVector!ubyte(L);
-    hkdf.expand(&key[0], key.length, &info[0], info.length);
+    hkdf.expand(key.ptr, key.length, info.ptr, info.length);
     return key;
 }
 
@@ -154,10 +154,10 @@ static if (!SKIP_HKDF_TEST) unittest
     File vec = File("../test_data/hkdf.vec", "r");
     
     size_t fails = runTestsBb(vec, "HKDF", "OKM", true,
-                                (ref HashMap!(string, string) m)
-                                {
-        return hkdfTest(m["HKDF"], m["IKM"], m["salt"], m["info"], m["OKM"], to!uint(m["L"]));
-    });
+        (ref HashMap!(string, string) m)
+        {
+	        return hkdfTest(m["HKDF"], m["IKM"], m.get("salt"), m.get("info"), m["OKM"], to!uint(m["L"]));
+	    });
     
     testReport("hkdf", total_tests, fails);
 }

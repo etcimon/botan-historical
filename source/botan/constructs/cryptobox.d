@@ -185,7 +185,7 @@ static if (!SKIP_CRYPTOBOX_TEST) unittest
     {
         string plaintext = CryptoBox.decrypt(ciphertext, "secret password");
         
-        if (plaintext.length != msg.length || !sameMem(cast(const(ubyte)*)(&plaintext[0]), msg.ptr, msg.length))
+        if (plaintext.length != msg.length || !sameMem(cast(const(ubyte)*)(plaintext.ptr), msg.ptr, msg.length))
             ++fails;
         
     }

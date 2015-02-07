@@ -367,10 +367,10 @@ static if (!SKIP_DSA_TEST) unittest
     File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
     
     fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
-                          (ref HashMap!(string, string) m)
-                          {
-        return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-    });
+		(ref HashMap!(string, string) m)
+		{
+		    return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+		});
     
     testReport("dsa", total_tests, fails);
 }

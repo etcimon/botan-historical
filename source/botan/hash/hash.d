@@ -108,9 +108,9 @@ static if (!SKIP_HASH_TEST) unittest
         File vec = File(input, "r");
 
         return runTestsBb(vec, "Hash", "Out", true,
-                            (ref HashMap!(string, string) m) {
-                                return hashTest(m["Hash"], m["In"], m["Out"]);
-                            });
+            (ref HashMap!(string, string) m) {
+                return hashTest(m["Hash"], m["In"], m["Out"]);
+            });
     };
     
     size_t fails = runTestsInDir("../test_data/hash", test);

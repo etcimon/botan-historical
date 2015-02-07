@@ -185,7 +185,7 @@ size_t base64Decode(ubyte* output,
 			else
 				bad_char = input[i].to!string;
 
-            throw new InvalidArgument("base64Decode: invalid base64 character '" ~ bad_char ~ "' in " ~ cast(string)input[0 .. input_length]);
+			throw new InvalidArgument("base64Decode: invalid base64 character (ASCII '" ~ (cast(ubyte) bad_char[0]).to!string ~ "') in " ~ cast(string)(input[0 .. input_length]));
         }
 
         /*
@@ -270,7 +270,7 @@ size_t base64Decode(ubyte* output, in string input, bool ignore_ws = true)
 SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
 {
     SecureVector!ubyte bin;
-    bin.reserve((roundUp!size_t(input.length, 4) * 3) / 4);
+    bin.resize((roundUp!size_t(input.length, 4) * 3) / 4);
 
     size_t written = base64Decode(bin.ptr, input.ptr, input.length, ignore_ws);
     bin.resize(written);

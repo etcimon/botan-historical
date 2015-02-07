@@ -189,7 +189,7 @@ public:
     }
 
     abstract void clear();
-    this() { }
+	this() { clear(); } // TODO: Write some real constructors for each object.
 }
 
 static if (BOTAN_TEST):
@@ -205,14 +205,12 @@ shared size_t total_tests;
 
 size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
 {
-    logTrace("Block Cipher: ", algo);
     const SecureVector!ubyte key = hexDecodeLocked(key_hex);
     const SecureVector!ubyte pt = hexDecodeLocked(in_hex);
     const SecureVector!ubyte ct = hexDecodeLocked(out_hex);
-    logTrace("Fetch algorithm factory");
+
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    logTrace("Fetching providers");
     const auto providers = af.providersOf(algo);
     size_t fails = 0;
     
@@ -223,12 +221,11 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
     {
 
         atomicOp!"+="(total_tests, 1);
-        logTrace("Fetching block cipher");
         const BlockCipher proto = af.prototypeBlockCipher(algo, provider);
         
         if (!proto)
         {
-            logTrace("Unable to get " ~ algo ~ " from " ~ provider);
+            logError("Unable to get " ~ algo ~ " from " ~ provider);
             ++fails;
             continue;
         }
@@ -237,28 +234,27 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         cipher.setKey(key);
         SecureVector!ubyte buf = pt.dup;
         
-        logTrace("Encrypting ", buf[]);
         cipher.encrypt(buf);
-        logTrace(buf[], " Real");
-        logTrace(ct[], " Expected");
         atomicOp!"+="(total_tests, 1);
         if (buf != ct)
         {
+			logTrace(buf[], " Real");
+			logTrace(ct[], " Expected");
             ++fails;
             buf = ct.dup;
         }
-        logTrace("Decrypting ", buf[]);
+
         cipher.decrypt(buf);
-        logTrace(buf[], " Real");
-        logTrace(pt[], " Expected");
 
         atomicOp!"+="(total_tests, 1);
         if (buf != pt)
         {
+			logTrace(buf[], " Real");
+			logTrace(pt[], " Expected");
             ++fails;
         }
     }
-    logTrace("Finished ", algo, " Fails: ", fails);
+    //logTrace("Finished ", algo, " Fails: ", fails);
     assert(fails == 0);
     return fails;
 }
@@ -272,9 +268,9 @@ static if (!SKIP_BLOCK_TEST) unittest {
         logDebug("Testing file `" ~ input ~ " ...");
         File vec = File(input, "r");
         return runTestsBb(vec, "BlockCipher", "Out", true,
-                          (ref HashMap!(string, string) m) {
-                              return blockTest(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
-                          });
+              (ref HashMap!(string, string) m) {
+                  return blockTest(m["BlockCipher"], m["Key"], m["In"], m["Out"]);
+              });
     }
     
     logTrace("Running tests ...");

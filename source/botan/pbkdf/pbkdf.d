@@ -134,23 +134,24 @@ static if (!SKIP_PBKDF_TEST) unittest {
     import botan.test;
     import botan.codec.hex;
 	import memutils.hashmap;
-
+	int total_tests;
     auto test = delegate(string input) {
         return runTests(input, "PBKDF", "Output", true,
-                         (ref HashMap!(string, string) vec) {
-                            Unique!PBKDF pbkdf = getPbkdf(vec["PBKDF"]);
-                            
-                            const size_t iterations = to!size_t(vec["Iterations"]);
-                            const size_t outlen = to!size_t(vec["OutputLen"]);
-                            const auto salt = hexDecode(vec["Salt"]);
-                            const string pass = vec["Passphrase"];
-                            
-                            const auto key = pbkdf.deriveKey(outlen, pass, &salt[0], salt.length, iterations).bitsOf();
-                            return hexEncode(key);
-                        });
+             (ref HashMap!(string, string) vec) {
+				total_tests += 1;
+                Unique!PBKDF pbkdf = getPbkdf(vec["PBKDF"]);
+                
+                const size_t iterations = to!size_t(vec["Iterations"]);
+                const size_t outlen = to!size_t(vec["OutputLen"]);
+                const auto salt = hexDecode(vec["Salt"]);
+                const string pass = vec["Passphrase"];
+                
+                const auto key = pbkdf.deriveKey(outlen, pass, salt.ptr, salt.length, iterations).bitsOf();
+                return hexEncode(key);
+            });
     };
     
     size_t fails = runTestsInDir("../test_data/pbkdf", test);
 
-    testReport("pbkdf", 1, fails);
+    testReport("pbkdf", total_tests, fails);
 }

@@ -265,7 +265,7 @@ private shared size_t total_tests;
 
 string toHex(const Vector!ubyte bin)
 {
-    return hexEncode(&bin[0], bin.length);
+    return hexEncode(bin.ptr, bin.length);
 }
 
 /**
@@ -533,11 +533,11 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     auto sv_G_secp_comp = hexDecode( G_secp_comp );
     auto sv_order_g = hexDecode( order_g );
     
-    //    BigInt bi_p_secp = BigInt.decode( &sv_p_secp[0], sv_p_secp.length );
+    //    BigInt bi_p_secp = BigInt.decode( sv_p_secp.ptr, sv_p_secp.length );
     BigInt bi_p_secp = BigInt("2117607112719756483104013348936480976596328609518055062007450442679169492999007105354629105748524349829824407773719892437896937279095106809");
-    BigInt bi_a_secp = BigInt.decode( &sv_a_secp[0], sv_a_secp.length );
-    BigInt bi_b_secp = BigInt.decode( &sv_b_secp[0], sv_b_secp.length );
-    BigInt bi_order_g = BigInt.decode( &sv_order_g[0], sv_order_g.length );
+    BigInt bi_a_secp = BigInt.decode( sv_a_secp.ptr, sv_a_secp.length );
+    BigInt bi_b_secp = BigInt.decode( sv_b_secp.ptr, sv_b_secp.length );
+    BigInt bi_order_g = BigInt.decode( sv_order_g.ptr, sv_order_g.length );
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     PointGFp p_G = OS2ECP( sv_G_secp_comp, curve );
 	logDebug("params");
@@ -783,9 +783,9 @@ static if (!SKIP_ECDSA_TEST) unittest
     File ecdsa_sig = File("../test_data/pubkey/ecdsa.vec", "r");
 
     fails += runTestsBb(ecdsa_sig, "ECDSA Signature", "Signature", true,
-                              (ref HashMap!(string, string) m) {
-                                return ecdsaSigKat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-                            });
+		(ref HashMap!(string, string) m) {
+			return ecdsaSigKat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+		});
 
 
     testReport("ECDSA", total_tests, fails);

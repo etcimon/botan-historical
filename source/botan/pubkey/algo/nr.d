@@ -329,9 +329,9 @@ static if (!SKIP_NR_TEST) unittest
     File nr_sig = File("../test_data/pubkey/nr.vec", "r");
     
     fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
-                          (ref HashMap!(string, string) m) {
-        return nrSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-    });
+		(ref HashMap!(string, string) m) {
+			return nrSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+		});
     
     testReport("nr", total_tests, fails);
 }

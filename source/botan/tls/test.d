@@ -224,7 +224,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         
         try
         {
-            server.receivedData(&input[0], input.length);
+            server.receivedData(input.ptr, input.length);
         }
         catch(Exception e)
         {
@@ -237,7 +237,7 @@ size_t basicTestHandshake(RandomNumberGenerator rng,
         
         try
         {
-            client.receivedData(&input[0], input.length);
+            client.receivedData(input.ptr, input.length);
         }
         catch(Exception e)
         {

@@ -46,13 +46,11 @@ bool checkBcrypt(in string password, in string hash)
     {
         return false;
     }
-    
-    const ushort workfactor = cast(ushort) to!uint(hash[4 .. 7]);
+    const ushort workfactor = cast(ushort) to!uint(hash[4 .. 6]);
 
-    Vector!ubyte salt = bcryptBase64Decode(hash[7 .. 30].dup);
+    Vector!ubyte salt = bcryptBase64Decode(hash[7 .. 29].dup);
 
     const string compare = makeBcrypt(password, salt, workfactor);
-    
     return (hash == compare);
 }
 
@@ -89,8 +87,10 @@ string bcryptBase64Encode(const(ubyte)* input, size_t length)
     
     char[] b64 = base64Encode(input, length).dup;
 
-    while (b64.length && b64[b64.length-1] == '=')
-        b64 = b64[0 .. $];
+    while (b64.length && b64[b64.length-1] == '=') {
+        b64 = b64[0 .. $-1];
+
+	}
     
     foreach (size_t i; 0 .. b64.length)
         b64[i] = OPENBSD_BASE64_SUB[cast(ubyte) b64[i]];
@@ -127,8 +127,7 @@ Vector!ubyte bcryptBase64Decode(char[] input)
     
     foreach (size_t i; 0 .. input.length)
         input[i] = OPENBSD_BASE64_SUB[cast(ubyte)(input[i])];
-    
-    return unlock(base64Decode(input.to!string));
+	return unlock(base64Decode(cast(string)input));
 }
 
 string makeBcrypt()(in string pass,
@@ -143,13 +142,14 @@ string makeBcrypt()(in string pass,
     
     Vector!ubyte ctext = Vector!ubyte(magic.ptr[0 .. magic.length]);
     
-    Blowfish blowfish;
+	Unique!Blowfish blowfish = new Blowfish;
     
     // Include the trailing NULL ubyte
     blowfish.eksKeySchedule(cast(const(ubyte)*) pass.toStringz, pass.length + 1, salt.ptr[0 .. 16], work_factor);
     
-    foreach (size_t i; 0 .. 64)
+    foreach (size_t i; 0 .. 64)  {
         blowfish.encryptN(ctext.ptr, ctext.ptr, 3);
+	}
     
     string salt_b64 = bcryptBase64Encode(salt.ptr, salt.length);
     
@@ -167,6 +167,8 @@ import botan.rng.auto_rng;
 
 static if (!SKIP_BCRYPT_TEST) unittest
 {
+	import botan.libstate.libstate;
+	globalState();
     logDebug("Testing bcrypt.d ...");
     size_t fails = 0;
     

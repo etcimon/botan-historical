@@ -31,7 +31,7 @@ public:
         BERObject next;
         if (m_pushed.type_tag != ASN1Tag.NO_OBJECT)
         {
-			next = m_pushed.move();
+			next = m_pushed.dup;
             m_pushed.class_tag = m_pushed.type_tag = ASN1Tag.NO_OBJECT;
             return next.move();
         }
@@ -174,10 +174,10 @@ public:
             if (!obj)
                 obj = new T();
         }
-        else static if (__traits(compiles, T())) {
+		else static if (__traits(compiles, { T t = T(); }())) {
             if (obj is T.init) obj = T();
         }
-        //logTrace("Decode obj: ", T.stringof);
+        logTrace("Decode obj: ", T.stringof);
         obj.decodeFrom(this);
         return this;
     }
@@ -249,7 +249,7 @@ public:
         foreach (size_t i; 0 .. 4)
             output = (output << 8) | integer.byteAt(3-i);
         
-        //logTrace("decode size_t: ", output);
+        logTrace("decode size_t: ", output);
 
         return this;
     }
@@ -507,12 +507,12 @@ public:
         
         if (actual != expected)
             throw new DecodingError(error_msg ~ " T " ~ T.stringof ~ " : " ~ actual.to!string ~ ", expected: " ~ expected.to!string);
-        /*
+        
         static if (__traits(hasMember, T, "toString"))
             logTrace("decode and check ", T.stringof, ": ", actual.toString());
         else
             logTrace("decode and check ", T.stringof);
-*/
+
         return this;
     }
     
