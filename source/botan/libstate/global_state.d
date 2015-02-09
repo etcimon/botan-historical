@@ -7,7 +7,6 @@
 module botan.libstate.global_state;
 import botan.constants;
 import botan.libstate.libstate;
-
 /// Thread-Local, no locks needed.
 private LibraryState g_lib_state;
 
@@ -18,7 +17,6 @@ private LibraryState g_lib_state;
 LibraryState globalState()
 {
     if (!g_lib_state) {
-		logError("Initializing global state");
         import backtrace.backtrace;
         import std.stdio : stdout;
         install(stdout, PrintOptions.init, 0);
@@ -43,6 +41,7 @@ LibraryState globalState()
 */
 void setGlobalState(LibraryState new_state)
 {
+	if (g_lib_state) delete g_lib_state;
     g_lib_state = new_state;
 }
 
@@ -76,3 +75,7 @@ bool globalStateExists()
     return (g_lib_state !is LibraryState.init);
 }
 
+static ~this() {
+	import core.thread : thread_isMainThread;
+	if (g_lib_state && !thread_isMainThread) delete g_lib_state; 
+}

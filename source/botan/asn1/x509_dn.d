@@ -107,14 +107,18 @@ public:
     Vector!string getAttribute(in string attr) const
     {
         const OID oid = OIDS.lookup(derefInfoField(attr));
-        
-        auto range = m_dn_info.getValuesAt(oid);
-        
-        Vector!string values;
-        foreach (const ref ASN1String asn1_string; range)
-            values.pushBack(asn1_string.value());
-        return values;
+		return getAttribute(oid);
     }
+
+	private Vector!string getAttribute(in OID oid) const 
+	{
+		auto range = m_dn_info.getValuesAt(oid);
+		
+		Vector!string values;
+		foreach (const ref ASN1String asn1_string; range[])
+			values.pushBack(asn1_string.value());
+		return values.move;
+	}
 
     /*
     * Get the contents of this X.500 Name
@@ -155,7 +159,7 @@ public:
         }
         m_dn_info.getValuesAt(oid, &search_func);
         if (!exists) {
-            m_dn_info.insert(oid, ASN1String(str));
+            m_dn_info.insert(oid, ASN1String(str.idup));
             m_dn_bits.clear();
         }
     }
@@ -215,77 +219,26 @@ public:
     */
     bool opEquals(in X509DN dn2) const
     {
-        bool equals = true;
-		alias OIDPair = Pair!(const(OID)*, const(string)*);
-		OIDPair[] attr1;
-		OIDPair[] attr2;
+		auto attr1 = getAttributes();
+		auto attr2 = dn2.getAttributes();
+		size_t i;
+		foreach (oid, str; *attr1) {
+			i++;
+			bool found;
+			size_t j;
+			foreach (oid2, val; *attr2) {
+				j++;
+				if (j != i) continue;
+				if (x500NameCmp(val, str)) 
+					found = true;
 
-        scope(exit) {
-			if (attr1) ThisThread.free!(OIDPair[])(attr1); 
-			if (attr2) ThisThread.free!(OIDPair[])(attr2);
-        }
+				break;
+			}
+			if (!found) return false;
+		}
+		return true;
 
-        {
-			DictionaryListRef!(OID, string) map1 = getAttributes();
-			DictionaryListRef!(OID, string) map2 = dn2.getAttributes();
-
-			attr1 = ThisThread.alloc!(OIDPair[])(map1.length);
-			attr2 = ThisThread.alloc!(OIDPair[])(map2.length);
-
-            size_t i;
-            foreach (const ref OID oid, const ref string val; map1) {
-                attr1[i] = makePair(&oid, &val);
-                i++;
-            }
-            i=0;
-            foreach (const ref OID oid, const ref string val; map2) {
-                attr2[i] = makePair(&oid, &val);
-                i++;
-            }
-        }
-
-        if (attr1.length != attr2.length) return false;
-
-        auto p1 = attr1.ptr;
-        auto p2 = attr2.ptr;
-
-        auto p1max = (attr1.ptr + attr1.length);
-        auto p2max = (attr2.ptr + attr2.length);
-
-        while (true)
-        {
-            if (p1 == p1max && p2 == p2max)
-                break;
-            if (p1 == p1max)  {
-                equals = false;
-                break;
-            }
-            if (p2 == p2max) {
-                equals = false;
-                break;
-            }
-            if (!*p1.first && !*p2.first) {
-                break;
-            }
-
-            if (!*p1.first || !*p2.first) {
-                equals = false;
-                break;
-            }
-            if (*p1.first != *p2.first) {
-                equals = false;
-                return false;
-            }
-
-            if (!x500NameCmp(*p1.second, *p2.second)) {
-                equals = false;
-                return false;
-            }
-            ++p1;
-            ++p2;
-        }
-        return equals;
-    }
+	}
 
     /*
     * Compare two X509DNs for inequality
@@ -320,18 +273,25 @@ public:
         return false;
     }
 
-    override string toString()
+    override string toString() const
     {
-        Appender!string output;
-        DictionaryListRef!(string, string) contents = contents();
-
-        foreach(const ref string key, const ref string val; contents)
-        {
-            output ~= toShortForm(key) ~ "=" ~ val ~ ' ';
-        }
-        return output.data;
+        return toVector()[].idup;
     }
 
+	Vector!ubyte toVector() const
+	{
+		Vector!ubyte output;
+		DictionaryListRef!(string, string) contents = contents();
+		
+		foreach(const ref string key, const ref string val; contents)
+		{
+			output ~= toShortForm(key);
+			output ~= "=";
+			output ~= val;
+			output ~= ' ';
+		}
+		return output.move();
+	}
 	@property X509DN dup() const {
 		return X509DN(getAttributes());
 	}

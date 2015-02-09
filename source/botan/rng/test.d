@@ -32,7 +32,8 @@ public:
     {
 		if (len <= m_buf.length) {
 			output[0 .. len] = m_buf.ptr[0 .. len];
-			m_buf[] = m_buf.ptr[len .. m_buf.length];
+			auto new_buf = Vector!ubyte(m_buf.ptr[len .. m_buf.length]);
+			m_buf = new_buf.move();
 		} else {
 	        for(size_t j = 0; j != len; j++)
 	            output[j] = random();

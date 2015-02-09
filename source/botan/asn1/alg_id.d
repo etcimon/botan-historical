@@ -32,6 +32,7 @@ public:
     */
     override void encodeInto(ref DEREncoder codec) const
     {
+		logDebug("encoding OID: ", m_oid.toString());
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)
                 .rawBytes(m_parameters)
@@ -138,7 +139,7 @@ public:
     }
 
 	override string toString() const {
-		return m_oid.toString();
+		return m_oid.toString() ~ " & param length: " ~ m_parameters.length.to!string;
 	}
 
 private:

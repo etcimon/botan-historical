@@ -29,7 +29,7 @@ import botan.constructs.srp6;
 import botan.utils.loadstor;
 import botan.constructs.srp6;
 import botan.math.bigint.bigint;
-import botan.math.ec_gfp.ec_group;
+import botan.pubkey.algo.ec_group;
 import botan.math.ec_gfp.point_gfp;
 import botan.pubkey.pkcs8;
 import botan.pubkey.pubkey;

@@ -29,15 +29,12 @@ struct DSAOptions {
     */
 	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
 	{
-		logDebug("checkKey");
 		if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
 			return false;
 
-		logDebug("checkKey2");
 		if (!strong)
 			return true;
 
-		logDebug("checkKey3");
 		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
 	}
 }
@@ -161,21 +158,21 @@ public:
 
 			BigInt res;
 
-			Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) q, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
+			Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) g, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
 				{ 
 					import botan.libstate.libstate : modexpInit;
 					modexpInit(); // enable quick path for powermod
 
 					BigInt* ret = cast(BigInt*) res2;
 					{
-						auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)q, *cast(const BigInt*)p);
+						auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g, *cast(const BigInt*)p);
 						*ret = (cast(ModularReducer*)mod_q).reduce((*powermod_g_p)(*cast(BigInt*)k2));
 						send(cast(Tid) tid, true);
 					}
 					bool done = receiveOnly!bool();
 					destroy(*ret);
 					send(cast(Tid)tid, true);
-				}, cast(shared(Tid))thisTid(), cast(shared)&m_mod_q, cast(shared)m_q, cast(shared)m_p, cast(shared)&k, cast(shared)&res
+				}, cast(shared(Tid))thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&k, cast(shared)&res
 				);
 
             s = inverseMod(k, *m_q);
@@ -239,11 +236,6 @@ public:
         import std.concurrency : spawn, receiveOnly, send, thisTid;
         const BigInt* q = &m_mod_q.getModulus();
         
-		logDebug("m_q_mod: ", q.toString());
-		logDebug("m_q: ", m_q.toString());
-		logDebug("m_y: ", m_y.toString());
-		logDebug("m_g: ", m_g.toString());
-		logDebug("m_p: ", m_p.toString());
         if (sig_len != 2*q.bytes() || msg_len > q.bytes())
             return false;
         
@@ -265,7 +257,7 @@ public:
 				{
 					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g2, *cast(const BigInt*)p2);
 					auto mult = (*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2);
-					*ret = (*powermod_g_p)(mult.move);
+					*ret = (*powermod_g_p)(mult);
 					send(cast(Tid) tid, true); 
 				}
 				auto done = receiveOnly!bool();
@@ -276,14 +268,10 @@ public:
 		auto mult = m_mod_q.multiply(s, r);
         BigInt s_r = (*m_powermod_y_p)(mult.move);
         bool done = receiveOnly!bool();
-		logDebug("s_i: ", s_i.toString());
         s = m_mod_p.multiply(s_i, s_r);
 		send(cast(Tid)tid, true); // trigger destroy s_i
 		auto r2 = m_mod_q.reduce(s.dup);
-		logDebug("r2: ", r2.toString());
-		logDebug("r: ", r.toString());
 		auto ret = (r2 == r);
-		logDebug("Ret: ", ret);
 		done = receiveOnly!bool();        
         return ret;
     }
@@ -342,7 +330,7 @@ size_t dsaSigKat(string p,
     BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     
-    DLGroup group = DLGroup(p_bn.move, q_bn.move, g_bn.move);
+    DLGroup group = DLGroup(p_bn, q_bn, g_bn);
     auto privkey = DSAPrivateKey(rng, group.move(), x_bn.move());
     
     auto pubkey = DSAPublicKey(privkey);
@@ -362,15 +350,15 @@ static if (!SKIP_DSA_TEST) unittest
     
     auto rng = AutoSeededRNG();
     
-    fails += testPkKeygen(rng);
-    
-    File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
-    
-    fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
+	File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
+	
+	fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
 		(ref HashMap!(string, string) m)
 		{
-		    return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+			return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
 		});
+
+    fails += testPkKeygen(rng);
     
     testReport("dsa", total_tests, fails);
 }

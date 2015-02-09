@@ -25,7 +25,7 @@ import std.algorithm;
 final class AlgorithmFactory
 {
 public:
-	~this() { logError("Destroying AlgorithmFactory"); }
+	~this() { clearCaches(); foreach(ref engine; m_engines[]) delete engine; logError("Destroying AlgorithmFactory"); }
     /**
     * @param engine = to add (AlgorithmFactory takes ownership)
     */

@@ -152,7 +152,6 @@ public:
     */
     void clearCache()
     {
-        
 		foreach (const ref string provider, ref HashMapRef!(string, T) algorithms; m_algorithms)
         {
             foreach (const ref string name, ref T instance; algorithms) {
@@ -195,4 +194,17 @@ private:
 
              // algo_name     //provider // instance
     HashMap!(string, HashMapRef!(string, T)) m_algorithms;
+}
+
+shared(int) threads;
+static this() {
+	import core.atomic;
+	atomicOp!"+="(threads, 1);
+	logDebug("Starting, Threads: ", atomicLoad(threads));
+}
+
+static ~this() {
+	import core.atomic;
+	atomicOp!"-="(threads, 1);
+	logDebug("Closing, Threads: ", atomicLoad(threads));
 }

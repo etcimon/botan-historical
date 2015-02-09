@@ -12,7 +12,7 @@ import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && (BOTAN_HAS_ECDH || BOTAN_HAS_ECDSA || BOTAN_HAS_GOST_34_10_2001)):
 
 public import botan.pubkey.pubkey;
-public import botan.math.ec_gfp.ec_group;
+public import botan.pubkey.algo.ec_group;
 public import botan.math.numbertheory.numthry;
 public import botan.math.ec_gfp.curve_gfp;
 public import botan.math.ec_gfp.point_gfp;
@@ -41,6 +41,8 @@ class ECPublicKey : PublicKey
 public:
     this(T)(in T options, const ref ECGroup dom_par, const ref PointGFp pub_point) 
     {
+		logDebug("PublicKey ctor ECGroup/PointGFp");
+		scope(exit) logDebug("End pubkey ctor");
 		decodeOptions(options);
 
         m_domain_params = dom_par.dup;
@@ -54,17 +56,19 @@ public:
 	this(T)(in T options, in AlgorithmIdentifier alg_id, 
 		const ref SecureVector!ubyte key_bits) 
 	{
+		logDebug("PublicKey super ctor");
 		decodeOptions(options);
-		
+
+		logDebug("PublicKey super ecgroup algid parameters");
 		m_domain_params = ECGroup(alg_id.parameters);
-		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;        
+		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		m_public_key = OS2ECP(key_bits, domain().getCurve());
 	}
 
 	protected this(T)(in T options, in AlgorithmIdentifier alg_id) 
 	{
 		decodeOptions(options);
-		
+		logDebug("ECGroup with alg_id.parameters");
 		m_domain_params = ECGroup(alg_id.parameters);
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 	}
@@ -115,8 +119,10 @@ public:
 
     final override Vector!ubyte x509SubjectPublicKey() const
     {
+		logDebug("Encode x509SubjectPublicKey");
         if (m_subject_public_key)
             return m_subject_public_key(this);
+		logDebug("Pass through...");
         return unlock(EC2OSP(publicPoint(), PointGFp.COMPRESSED));
     }
 
@@ -195,7 +201,7 @@ public:
     * ECPrivateKey constructor
     */
 	this(T)(in T options, RandomNumberGenerator rng, const ref ECGroup ec_group, const ref BigInt private_key) 
-    {        
+    {
 		if (private_key == 0) {
 			auto bi = BigInt(1);
 			m_private_key = BigInt.randomInteger(rng, bi, ec_group.getOrder());
@@ -219,6 +225,7 @@ public:
 
         SecureVector!ubyte public_key_bits;
         
+		logDebug("PrivateKey super decode public key");
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(1, "Unknown version code for ECC key")
@@ -226,7 +233,7 @@ public:
                 .decodeOptional(key_parameters, (cast(ASN1Tag) 0), ASN1Tag.PRIVATE, key_parameters)
                 .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)
                 .endCons();
-
+		logDebug("Privatekey super decode finished");
         if (!key_parameters.empty && key_parameters != alg_id.oid)
             throw new DecodingError("ECPrivateKey - inner and outer OIDs did not match");
 
@@ -262,7 +269,11 @@ public:
                 .getContents();
     }
 
-    override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { return super.algorithmIdentifier(); }
+	override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { 
+		if (algoName() == "GOST-34.10")
+			return AlgorithmIdentifier(getOid(), DER_domain());
+		return super.algorithmIdentifier();
+	}
 
     /**
     * Get the private key value of this key object.

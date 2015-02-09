@@ -173,7 +173,6 @@ public:
         }
     }
 
-	~this() { logDebug("LibraryState deinit"); }
 private:
     static Vector!( EntropySource ) entropySources()
     {

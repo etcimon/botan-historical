@@ -127,8 +127,7 @@ class SerializedRNG : RandomNumberGenerator
 public:
     override void randomize(ubyte* output, size_t length)
     {
-        synchronized(m_mtx) m_rng.randomize(output, length);
-        
+        synchronized(m_mtx) m_rng.randomize(output, length);        
     }
 
     override bool isSeeded() const

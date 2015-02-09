@@ -26,7 +26,7 @@ public:
 	X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const;
 
 	final X509Certificate findCert()(in X509DN subject_dn, auto const ref Vector!ubyte key_id) const {
-		return findCert(subject_dn, key_id);
+		return findCertRef(subject_dn, key_id);
 	}
 
     X509CRL findCrlFor(in X509Certificate subject) const;
@@ -149,7 +149,7 @@ public:
         Vector!X509DN subjects;
         foreach (cert; m_certs[])
             subjects.pushBack(cert.subjectDn().dup);
-        return subjects;
+        return subjects.move;
     }
 
 	override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
@@ -175,8 +175,9 @@ X509Certificate certSearch(in X509DN subject_dn,
                 continue;
         }
         
-        if (cert.subjectDn() == subject_dn)
+        if (cert.subjectDn() == subject_dn) {
             return cert;
+		}
     }
     
     return X509Certificate.init;

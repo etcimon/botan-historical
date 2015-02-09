@@ -141,8 +141,9 @@ public:
     }
 
     CertificateStatusCode statusFor(in X509Certificate issuer,
-                                       in X509Certificate subject) const
+                                    in X509Certificate subject) const
     {
+		logDebug("Responses: ", m_responses.length);
         foreach (response; m_responses[])
         {
             if (response.certid().isIdFor(issuer, subject))
@@ -168,6 +169,9 @@ public:
         return CertificateStatusCode.OCSP_CERT_NOT_LISTED;
     }
 
+	@property bool empty() {
+		return m_responses.length == 0;
+	}
 private:
     Array!( SingleResponse ) m_responses;
 }
@@ -252,14 +256,14 @@ else import std.concurrency : Tid, send;
 /// Checks the certificate online
 void onlineCheck(shared(Tid) sender,
                  shared(size_t) id,
-                 shared(Mutex*) mtx,
                  shared(OCSPResponse*) resp,
                  shared(const(X509Certificate)*) issuer,
                  shared(const(X509Certificate)*) subject,
                  shared(const(CertificateStore)*) trusted_roots)
 {
+	/// TODO: Test OCSP with correct BER Decoding
     logTrace("Checking OCSP online");
-    const string responder_url = (*cast(X509Certificate*)subject).ocspResponder();
+	const string responder_url = (*cast(X509Certificate*)issuer).ocspResponder();
     logTrace("Responder url: ", responder_url.length);
 
     if (responder_url.length == 0) {
@@ -277,8 +281,7 @@ void onlineCheck(shared(Tid) sender,
     res.throwUnlessOk();
     
     // Check the MIME type?
-    synchronized(cast(Mutex)*mtx)
-        *cast(OCSPResponse*)resp = OCSPResponse(*(cast(CertificateStore*)trusted_roots), res._body());
+    *cast(OCSPResponse*)resp = OCSPResponse(*(cast(CertificateStore*)trusted_roots), res._body());
     
     send(cast(Tid)sender, cast(size_t)id);
 }

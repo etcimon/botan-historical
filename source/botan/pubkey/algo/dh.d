@@ -11,7 +11,7 @@ static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO && BOTAN_HAS_DIFFIE_HELLMAN):
 
 public import botan.pubkey.algo.dl_algo;
 public import botan.pubkey.pubkey;
-public import botan.math.ec_gfp.ec_group;
+public import botan.pubkey.algo.ec_group;
 import botan.math.numbertheory.pow_mod;
 import botan.pubkey.blinding;
 import botan.pubkey.pk_ops;

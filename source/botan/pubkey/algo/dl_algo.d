@@ -151,7 +151,6 @@ public:
 		decodeOptions(options);
         m_group = grp.move;
         m_y = y1.move;
-
     }
 
 protected:
@@ -239,7 +238,9 @@ public:
 			DLGroup grp, 
 		    BigInt y1, BigInt x_arg)
     {
+		logDebug("grp: ", grp.toString());
         m_x = x_arg.move;
+		logDebug("x: ", m_x.toString());
         super(options, grp.move, y1.move);
     }
 

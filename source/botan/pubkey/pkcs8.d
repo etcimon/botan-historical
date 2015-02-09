@@ -45,7 +45,7 @@ final class PKCS8Exception : DecodingError
 SecureVector!ubyte BER_encode(in PrivateKey key)
 {
     __gshared immutable size_t PKCS8_VERSION = 0;
-    
+	logDebug("PKCS8 PEM encode");
     return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
             .encode(PKCS8_VERSION)
@@ -82,6 +82,7 @@ Vector!ubyte BER_encode(in PrivateKey key,
                         Duration dur = 300.msecs,
                         in string pbe_algo = "")
 {
+	logDebug("PKCS8 PEM encode with password");
     const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
     
     Unique!PBE pbe = getPbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
@@ -151,7 +152,7 @@ PrivateKey loadKey(DataSource source,
 */
 PrivateKey loadKey(DataSource source,
                    RandomNumberGenerator rng,
-                   in string pass   = "")
+                   in string pass = "")
 {
     return loadKey(source, rng, SingleShotPassphrase(pass));
 }
@@ -207,19 +208,21 @@ SecureVector!ubyte PKCS8_extract(DataSource source,
 {
     SecureVector!ubyte key_data;
     
+	logDebug("PKCS8 extract key data");
     BERDecoder(source)
             .startCons(ASN1Tag.SEQUENCE)
             .decode(pbe_alg_id)
             .decode(key_data, ASN1Tag.OCTET_STRING)
             .verifyEnd();
     
-    return key_data;
+	logDebug("PKCS8 extract key data finished");
+    return key_data.move;
 }
 
 /*
 * PEM decode and/or decrypt a private key
 */
-SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassphrase, AlgorithmIdentifier pk_alg_id)
+SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassphrase, ref AlgorithmIdentifier pk_alg_id)
 {
 	auto pbe_alg_id = AlgorithmIdentifier();
     SecureVector!ubyte key_data, key;
@@ -232,8 +235,10 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
         {
             string label;
             key_data = PEM.decode(source, label);
-            if (label == "PRIVATE KEY")
+            if (label == "PRIVATE KEY") {
+				logDebug("Detected private key");
                 is_encrypted = false;
+			}
             else if (label == "ENCRYPTED PRIVATE KEY")
             {
                 auto key_source = DataSourceMemory(key_data);
@@ -252,7 +257,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
     }
     
     if (!is_encrypted)
-        key = key_data;
+        key = key_data.dup;
     
     __gshared immutable size_t MAX_TRIES = 3;
     
@@ -276,6 +281,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
                 key = decryptor.readAll();
             }
             
+			logDebug("PKCS8 get pkcs8 alg id");
             BERDecoder(key)
                     .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck!size_t(0, "Unknown PKCS #8 version number")
@@ -283,6 +289,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
                     .decode(key, ASN1Tag.OCTET_STRING)
                     .discardRemaining()
                     .endCons();
+			logDebug("Done PKCS8 alg id");
             
             break;
         }
@@ -294,7 +301,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
     
     if (key.empty)
         throw new DecodingError("PKCS #8 private key decoding failed");
-    return key;
+    return key.move;
 }
 
 

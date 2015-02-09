@@ -26,6 +26,7 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
                                 in PrivateKey key,
                                 in string padding)
 {
+	logDebug("Encryption consistency check");
     auto encryptor = scoped!PKEncryptorEME(key, padding);
     auto decryptor = scoped!PKDecryptorEME(key, padding);
     
@@ -37,7 +38,6 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
         return true;
     
     Vector!ubyte plaintext = unlock(rng.randomVec(encryptor.maximumInputSize() - 1));
-    
     Vector!ubyte ciphertext = encryptor.encrypt(plaintext, rng);
     if (ciphertext == plaintext)
         return false;
@@ -59,6 +59,7 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
                                in PrivateKey key,
                                in string padding)
 {
+	logDebug("Signature consistency check");
     PKSigner signer = PKSigner(key, padding);
 	PKVerifier verifier = PKVerifier(key, padding);
     Vector!ubyte message = unlock(rng.randomVec(16));

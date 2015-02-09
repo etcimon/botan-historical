@@ -56,15 +56,13 @@ public:
             throw new InvalidArgument("OAEP: Input is too large");
         
         SecureVector!ubyte output = SecureVector!ubyte(key_length);
-        
         rng.randomize(output.ptr, m_Phash.length);
         
         bufferInsert(output, m_Phash.length, m_Phash.ptr, m_Phash.length);
         output[output.length - in_length - 1] = 0x01;
         bufferInsert(output, output.length - in_length, input, in_length);
         
-        mgf1Mask(*m_hash, output.ptr, m_Phash.length,
-        &output[m_Phash.length], output.length - m_Phash.length);
+        mgf1Mask(*m_hash, output.ptr, m_Phash.length, &output[m_Phash.length], output.length - m_Phash.length);
         
         mgf1Mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
         output.ptr, m_Phash.length);

@@ -157,20 +157,20 @@ size_t runTestsBb(ref File src,
         {
             //logTrace(vars[name_key] " ~ " ~ algo_count);
             ++algo_count;
-            try
-            {
+            //try
+            //{
                 const size_t fails = cb(vars);
                 if(fails)
                 {
                     logTrace(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
                     algo_fail += fails;
                 }
-            }
-            catch(Exception e)
-            {
-                logTrace(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
-                ++algo_fail;
-            }
+            //}
+            //catch(Exception e)
+            //{
+            //    logTrace(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
+            //    ++algo_fail;
+            //}
             
             if(clear_between_cb)
             {

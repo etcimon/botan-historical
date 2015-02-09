@@ -231,7 +231,6 @@ Vector!uint parseAsn1Oid(in string oid)
 */
 bool x500NameCmp(in string name1, in string name2)
 {
-    logTrace("x500NameCmp");
     auto p1 = name1.ptr;
     auto p2 = name2.ptr;
     

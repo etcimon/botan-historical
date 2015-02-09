@@ -97,6 +97,7 @@ public:
         ubyte buf;
         while (m_source.readByte(buf))
             continue;
+		logDebug("Discarded");
         return this;
     }
 
@@ -130,8 +131,7 @@ public:
     
     ref BERDecoder getNext(ref BERObject ber)
     {
-        BERObject next = getNextObject();
-        ber = next.move();
+        ber = getNextObject();
         return this;
     }
         
@@ -261,6 +261,7 @@ public:
                           ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
+		logDebug("obj: ", obj.type_tag);
         obj.assertIsA(type_tag, class_tag);
         
         if (obj.value.empty)
@@ -621,6 +622,9 @@ public:
 		return BERDecoder(this, m_pushed.dup());
 	}
 
+	@disable this(this);
+	@disable void opAssign(BERDecoder);
+
 private:
 
     BERDecoder* m_parent;
@@ -646,6 +650,7 @@ size_t decodeTag(DataSource ber, ref ASN1Tag type_tag, ref ASN1Tag class_tag)
     if ((b & 0x1F) != 0x1F)
     {
         type_tag = cast(ASN1Tag)(b & 0x1F);
+		logDebug("tag: ", type_tag);
         class_tag = cast(ASN1Tag)(b & 0xE0);
         return 1;
     }

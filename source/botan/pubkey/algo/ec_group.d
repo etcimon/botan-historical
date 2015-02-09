@@ -6,7 +6,7 @@
 *
 * Distributed under the terms of the botan license.
 */
-module botan.math.ec_gfp.ec_group;
+module botan.pubkey.algo.ec_group;
 
 import botan.constants;
 static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO):
@@ -112,7 +112,6 @@ public:
         try
         {
             Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem_or_oid, "EC PARAMETERS"));
-            
             BER_decode(ber); // throws if not PEM
         }
         catch(DecodingError)
@@ -121,7 +120,6 @@ public:
             
             if (!pem)
                 throw new LookupError("No ECC domain data for " ~ pem_or_oid);
-            
             Vector!ubyte ber = unlock(PEM.decodeCheckLabel(pem, "EC PARAMETERS"));
             BER_decode(ber);
             m_oid = pem_or_oid;
@@ -130,6 +128,7 @@ public:
 
     void BER_decode(const ref Vector!ubyte ber_data) {
         assert(ber_data.length > 0);
+		logDebug("EC_GROUP BER_DECODE");
         BERDecoder ber = BERDecoder(ber_data);
         BERObject obj = ber.getNextObject();
         if (obj.type_tag == ASN1Tag.OBJECT_ID)

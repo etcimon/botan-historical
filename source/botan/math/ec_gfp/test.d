@@ -10,7 +10,7 @@ import botan.rng.auto_rng;
 import botan.math.numbertheory.numthry;
 import botan.math.ec_gfp.curve_gfp;
 import botan.math.ec_gfp.point_gfp;
-import botan.math.ec_gfp.ec_group;
+import botan.pubkey.algo.ec_group;
 import botan.math.numbertheory.reducer;
 import botan.asn1.oids;
 import botan.utils.types;
@@ -74,9 +74,7 @@ size_t testPointTurnOnSpRedMul()
     
     BigInt d = BigInt("459183204582304");
     
-	logDebug(p_G.toString());
     PointGFp r1 = p_G * d;
-	logDebug(p_G.toString());
     mixin( CHECK(` r1.getAffineX() != 0 `) );
     
     PointGFp p_G2 = p_G.dup;

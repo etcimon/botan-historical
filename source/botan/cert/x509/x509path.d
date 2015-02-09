@@ -20,7 +20,7 @@ import botan.asn1.asn1_time;
 import std.algorithm;
 import std.datetime;
 import botan.utils.types;
-import memutils.rbtree : RBTreeRef;
+import memutils.rbtree : RBTreeRef, RBTree;
 version(Have_vibe_d) {
     import vibe.core.concurrency;
 }
@@ -49,7 +49,6 @@ public:
         m_require_revocation_information = require_rev;
         m_ocsp_all_intermediates = ocsp_all;
         m_minimum_key_strength = key_strength;
-        m_trusted_hashes = RBTreeRef!string();
         if (key_strength <= 80)
             m_trusted_hashes.insert("SHA-160");
         
@@ -57,10 +56,6 @@ public:
         m_trusted_hashes.insert("SHA-256");
         m_trusted_hashes.insert("SHA-384");
         m_trusted_hashes.insert("SHA-512");
-
-        foreach (string val; (*m_trusted_hashes)[]) {
-            logTrace("m_trusted_hashes: ", val);
-        }
     }
 
     /**
@@ -79,7 +74,7 @@ public:
     {
         m_require_revocation_information = require_rev;
         m_ocsp_all_intermediates = ocsp_all_intermediates;
-        m_trusted_hashes = trusted_hashes;
+        m_trusted_hashes.insert((*trusted_hashes)[]);
         m_minimum_key_strength = minimum_key_strength;
     }
 
@@ -89,7 +84,7 @@ public:
     bool ocspAllIntermediates() const
     { return m_ocsp_all_intermediates; }
 
-    const(RBTreeRef!string) trustedHashes() const
+    ref const(RBTree!string) trustedHashes() const
     { return m_trusted_hashes; }
 
     size_t minimumKeyStrength() const
@@ -98,7 +93,7 @@ public:
 private:
     bool m_require_revocation_information;
     bool m_ocsp_all_intermediates;
-    RBTreeRef!string m_trusted_hashes;
+    RBTree!string m_trusted_hashes;
     size_t m_minimum_key_strength;
 }
 
@@ -226,12 +221,23 @@ public:
         }
     }
 
-    this()(auto const ref Vector!(RBTreeRef!CertificateStatusCode ) status,
-           auto const ref Vector!X509Certificate cert_chainput)
+    this()(auto ref Vector!(RBTreeRef!CertificateStatusCode ) status,
+		   auto ref Vector!X509Certificate cert_chain)
     {
+		int i = 1;
+		foreach (tree; status[]) {
+			logDebug("Val 1: ");
+			foreach (stat; (*tree)[]) {
+				logDebug("status: ", stat);
+			}
+			i++;
+		}
         m_overall = CertificateStatusCode.VERIFIED;
-        m_all_status = status.dup;
-        m_cert_path = cert_chainput.dup;
+		logDebug("dup status");
+        m_all_status = status.move();
+		logDebug("m_cert_path");
+        m_cert_path = cert_chain.move();
+		logDebug("After m_cert_path");
         // take the "worst" error as overall
         foreach (s; m_all_status[])
         {
@@ -258,11 +264,11 @@ private:
 * PKIX Path Validation
 */
 PathValidationResult 
-    x509PathValidate(const ref Vector!X509Certificate end_certs,
-                     in PathValidationRestrictions restrictions,
-                     const ref Vector!CertificateStore certstores)
+    x509PathValidate()(const ref Vector!X509Certificate end_certs,
+                       auto const ref PathValidationRestrictions restrictions,
+                       const ref Vector!CertificateStore certstores)
 {
-    if (end_certs.empty)
+    if (end_certs.empty) 
         throw new InvalidArgument("x509PathValidate called with no subjects");
     
     Vector!X509Certificate cert_path;
@@ -275,23 +281,26 @@ PathValidationResult
     // iterate until we reach a root or cannot find the issuer
     while (!cert_path.back().isSelfSigned())
     {
+		logDebug("Finding issuer");
         const X509Certificate cert = findIssuingCert(cert_path.back(), cert_store, certstores);
-        if (!cert)
+        if (!cert) {
             return PathValidationResult(CertificateStatusCode.CERT_ISSUER_NOT_FOUND);
-        
+		}
         cert_path.pushBack(cast(X509Certificate) cert);
     }
-    
-    return PathValidationResult(checkChain(cert_path, restrictions, certstores), cert_path);
+
+	auto chain = checkChain(cert_path, restrictions, certstores);
+
+    return PathValidationResult(chain, cert_path);
 }
 
 
 /**
 * PKIX Path Validation
 */
-PathValidationResult x509PathValidate(in X509Certificate end_cert,
-                                      in PathValidationRestrictions restrictions,
-                                      const ref Vector!CertificateStore certstores)
+PathValidationResult x509PathValidate()(in X509Certificate end_cert,
+									    auto const ref PathValidationRestrictions restrictions,
+                                        const ref Vector!CertificateStore certstores)
 {
     Vector!X509Certificate certs;
     certs.pushBack(cast(X509Certificate)end_cert);
@@ -301,9 +310,9 @@ PathValidationResult x509PathValidate(in X509Certificate end_cert,
 /**
 * PKIX Path Validation
 */
-PathValidationResult x509PathValidate(in X509Certificate end_cert,
-                                      in PathValidationRestrictions restrictions,
-                                      in CertificateStore store)
+PathValidationResult x509PathValidate()(in X509Certificate end_cert,
+									    auto const ref PathValidationRestrictions restrictions,
+                                        in CertificateStore store)
 {
     Vector!X509Certificate certs;
     certs.pushBack(cast(X509Certificate)end_cert);
@@ -317,9 +326,9 @@ PathValidationResult x509PathValidate(in X509Certificate end_cert,
 /**
 * PKIX Path Validation
 */
-PathValidationResult x509PathValidate(const ref Vector!X509Certificate end_certs,
-                                      in PathValidationRestrictions restrictions,
-                                      in CertificateStore store)
+PathValidationResult x509PathValidate()(const ref Vector!X509Certificate end_certs,
+                                        auto const ref PathValidationRestrictions restrictions,
+                                        in CertificateStore store)
 {
     Vector!CertificateStore certstores;
     certstores.pushBack(cast(CertificateStore)store);
@@ -331,12 +340,18 @@ const(X509Certificate) findIssuingCert(in X509Certificate cert_,
                                        ref CertificateStore end_certs, 
                                        const ref Vector!CertificateStore certstores)
 {
+
     const X509DN issuer_dn = cert_.issuerDn();
+
     const Vector!ubyte auth_key_id = cert_.authorityKeyId();
     
-    if (const X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id))
+	logDebug("authorityKeyId done");
+
+    if (const X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id)) {
+		logDebug("Found certificate: ", cert.toString());
         return cert;
-    
+	} 
+
     foreach (certstore; certstores[])
     {
         if (const X509Certificate cert = certstore.findCert(issuer_dn, auth_key_id))
@@ -380,10 +395,10 @@ const(X509CRL) findCrlsFor(in X509Certificate cert,
 
 Vector!( RBTreeRef!CertificateStatusCode )
     checkChain(const ref Vector!X509Certificate cert_path,
-                in PathValidationRestrictions restrictions,
-                const ref Vector!CertificateStore certstores)
+               const ref PathValidationRestrictions restrictions,
+               const ref Vector!CertificateStore certstores)
 {
-    const RBTreeRef!string trusted_hashes = restrictions.trustedHashes();
+    const RBTree!string* trusted_hashes = &restrictions.trustedHashes();
     
     const bool self_signed_ee_cert = (cert_path.length == 1);
     
@@ -392,14 +407,14 @@ Vector!( RBTreeRef!CertificateStatusCode )
     Vector!( Tid ) ocsp_responses;
 
     Vector!(OCSPResponse) ocsp_data;
-
-    Mutex mtx = new Mutex;
     
     Vector!( RBTreeRef!CertificateStatusCode ) cert_status = Vector!( RBTreeRef!CertificateStatusCode )( cert_path.length );
     
+	logDebug("Cert path size: ", cert_path.length);
+
     foreach (size_t i; 0 .. cert_path.length)
     {
-        auto status = &cert_status[i];
+        auto status = &*(cert_status[i]);
         
         const bool at_self_signed_root = (i == cert_path.length - 1);
         
@@ -414,9 +429,9 @@ Vector!( RBTreeRef!CertificateStatusCode )
             ocsp_data.length = i + 1;
 
             version(Have_vibe_d)
-                Tid id_ = runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
+                Tid id_ = runTask(&onlineCheck, cast(shared)Tid.getThis(), cast(shared)i, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
             else
-                Tid id_ = spawn(&onlineCheck, cast(shared)thisTid(), cast(shared)i, cast(shared)&mtx, cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
+                Tid id_ = spawn(&onlineCheck, cast(shared)thisTid(), cast(shared)i,  cast(shared)&ocsp_data[i], cast(shared)&issuer, cast(shared)&subject, cast(shared)&trusted);
             ocsp_responses ~= id_;
         }
         // Check all certs for valid time range
@@ -446,7 +461,7 @@ Vector!( RBTreeRef!CertificateStatusCode )
         // Allow untrusted hashes on self-signed roots
         if (!trusted_hashes.empty && !at_self_signed_root)
         {
-            if (subject.hashUsedForSignature() !in trusted_hashes)
+            if (subject.hashUsedForSignature() !in *trusted_hashes)
                 status.insert(CertificateStatusCode.UNTRUSTED_HASH);
         }
     }
@@ -455,7 +470,7 @@ Vector!( RBTreeRef!CertificateStatusCode )
     {
         logTrace("Checking status ", i);
 
-        auto status = &cert_status[i];
+        auto status = &*(cert_status[i]);
         
         const X509Certificate subject = cert_path[i];
         const X509Certificate ca = cert_path[i+1];
@@ -467,13 +482,10 @@ Vector!( RBTreeRef!CertificateStatusCode )
             {
 
                 OCSPResponse ocsp;
-
-                synchronized(mtx) {
-                    size_t id = receiveOnly!(size_t)();
-                    logTrace("Got response for ID#", id.to!string);
-                    ocsp = ocsp_data[id];
-                }
-                if (ocsp is OCSPResponse.init)
+                size_t id = receiveOnly!(size_t)();
+                logTrace("Got response for ID#", id.to!string);
+                ocsp = ocsp_data[id];
+                if (ocsp.empty)
                     throw new Exception("OSCP.responder is undefined");
                 auto ocsp_status = ocsp.statusFor(ca, subject);
                 

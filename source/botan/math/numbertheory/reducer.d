@@ -45,7 +45,7 @@ public:
             
             t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
-            BigInt t2 = x.dup;
+            BigInt t2 = x.move;
             t2.setSign(BigInt.Positive);
             t2.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
@@ -78,7 +78,7 @@ public:
     */
     BigInt multiply()(auto const ref BigInt x, auto const ref BigInt y) const
     { 
-		return reduce(x * y); 
+		return reduce(x * y);
 	}
 
     /**

@@ -45,37 +45,44 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
         
         if (!restored_pub)
         {
-            logTrace("Could not recover " ~ name ~ " public key");
+			logError("Could not recover " ~ name ~ " public key");
             ++fails;
         }
         else if (restored_pub.checkKey(rng, true) == false)
         {
-            logTrace("Restored pubkey failed self tests " ~ name);
+			logError("Restored pubkey failed self tests " ~ name);
             ++fails;
         }
     }
     catch(Exception e)
     {
-        logTrace("Exception during load of " ~ name ~ " key: " ~ e.msg);
+        logError("Exception during load of " ~ name ~ " key: " ~ e.msg);
         logTrace("PEM for pubkey was: " ~ pub_pem);
         ++fails;
     }
     
     string priv_pem = pkcs8.PEM_encode(priv_key);
-    
+    try {
         auto input_priv = DataSourceMemory(priv_pem);
         Unique!PrivateKey restored_priv = pkcs8.loadKey(cast(DataSource)input_priv, rng);
         
         if (!restored_priv)
         {
-            logTrace("Could not recover " ~ name ~ " private key");
+			logError("Could not recover " ~ name ~ " private key");
             ++fails;
         }
         else if (restored_priv.checkKey(rng, true) == false)
         {
-            logTrace("Restored privkey failed self tests " ~ name);
+			logError("Restored privkey failed self tests " ~ name);
             ++fails;
         }
+	}
+	catch(Exception e)
+	{
+		logError("Exception during load of " ~ name ~ " key: " ~ e.msg);
+		logTrace("PEM for pubkey was: " ~ priv_pem);
+		++fails;
+	}
     return fails;
 }
 
@@ -107,14 +114,14 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
 {
     Vector!ubyte message = hexDecode(input);
     Vector!ubyte expected = hexDecode(exp);
-    FixedOutputRNG rng = scoped!FixedOutputRNG(hexDecode(random));
+    auto rng = scoped!FixedOutputRNG(hexDecode(random));
     
     size_t fails = 0;
     
     const Vector!ubyte ctext = e.encrypt(message, rng);
     if (ctext != expected)
     {
-        logTrace("FAILED (encrypt): " ~ algo);
+		logError("FAILED (encrypt): " ~ algo);
         dumpData(ctext, expected);
         ++fails;
     }
@@ -123,14 +130,14 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     
     if (decrypted != message)
     {
-        logTrace("FAILED (decrypt): " ~ algo);
+		logError("FAILED (decrypt): " ~ algo);
         dumpData(decrypted, message);
         ++fails;
     }
     
     if (algo.canFind("/Raw") == -1)
     {
-        AutoSeededRNG arng;
+        auto arng = AutoSeededRNG();
         
         for(size_t i = 0; i != ctext.length; ++i)
         {
@@ -177,7 +184,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
     
     if (sig != expected)
     {
-        logTrace("FAILED (sign): " ~ algo);
+        logError("FAILED (sign): " ~ algo);
         dumpData(sig, expected);
         ++fails;
     }
@@ -224,7 +231,7 @@ size_t validateKas(PKKeyAgreement kas, string algo,
     
     if (got != expected)
     {
-        logTrace("FAILED: " ~ algo);
+        logError("FAILED: " ~ algo);
         dumpData(got, expected);
         ++fails;
     }

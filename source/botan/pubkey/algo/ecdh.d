@@ -153,8 +153,8 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
     
 	logDebug("ka");
 
-    PKKeyAgreement ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
-    PKKeyAgreement kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
+    auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
+	auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
     
 	logDebug("alice");
 
@@ -192,8 +192,8 @@ size_t testEcdhSomeDp(RandomNumberGenerator rng)
         ECDHPrivateKey private_a = ECDHPrivateKey(rng, dom_pars);
         ECDHPrivateKey private_b = ECDHPrivateKey(rng, dom_pars);
         
-        PKKeyAgreement ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
-        PKKeyAgreement kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
+		auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
+		auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
         
         SymmetricKey alice_key = ka.deriveKey(32, private_b.publicValue());
         SymmetricKey bob_key = kb.deriveKey(32, private_a.publicValue());
@@ -224,8 +224,8 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
         Vector!ubyte key_a = private_a.publicValue();
         Vector!ubyte key_b = private_b.publicValue();
         
-        PKKeyAgreement ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
-        PKKeyAgreement kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
+		auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
+		auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
         
         SymmetricKey alice_key = ka.deriveKey(32, key_b);
         SymmetricKey bob_key = kb.deriveKey(32, key_a);

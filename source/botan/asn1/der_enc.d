@@ -256,7 +256,7 @@ public:
     /*
     * Request for an object to encode itself
     */
-    ref DEREncoder encode(in ASN1Object obj)
+    ref DEREncoder encode(T)(auto const ref T obj)
     {
         obj.encodeInto(this);
         return this;
@@ -265,14 +265,14 @@ public:
     /*
     * Conditionally write some values to the stream
     */
-    ref DEREncoder encodeIf (bool cond, DEREncoder codec)
+    ref DEREncoder encodeIf (bool cond, ref DEREncoder codec)
     {
         if (cond)
             return rawBytes(codec.getContents());
         return this;
     }
     
-    ref DEREncoder encodeIf (bool cond, in ASN1Object obj)
+    ref DEREncoder encodeIf(T)(bool cond, auto const ref T obj)
     {
         if (cond)
             encode(obj);
@@ -411,6 +411,7 @@ private:
 */
 SecureArray!ubyte encodeTag(ASN1Tag m_type_tag, ASN1Tag m_class_tag)
 {
+	logDebug("Encode: ", m_type_tag);
     if ((m_class_tag | 0xE0) != 0xE0)
         throw new EncodingError("DEREncoder: Invalid class tag " ~
                                  to!string(m_class_tag));

@@ -16,7 +16,7 @@ public import botan.algo_base.symkey;
 public import botan.utils.types;
 public import botan.rng.rng;
 public import botan.pubkey.pkcs8;
-public import botan.math.ec_gfp.ec_group;
+public import botan.pubkey.algo.ec_group;
 public import botan.pk_pad.emsa : EMSA;
 import botan.pk_pad.eme;
 import botan.pk_pad.emsa;
@@ -246,6 +246,7 @@ public:
             if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
                 break;
         }
+		
         
         if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
             throw new LookupError("Signing with " ~ key.algoName ~ " not supported");

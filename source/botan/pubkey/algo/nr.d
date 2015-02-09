@@ -85,6 +85,7 @@ public:
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
+		logDebug(grp.toString());
 		bool x_arg_0;
         if (x_arg == 0) {
 			x_arg_0 = true;
@@ -92,7 +93,7 @@ public:
             x_arg = BigInt.randomInteger(rng, bi, grp.getQ() - 1);
 		}
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
-        
+
 		m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
 
         if (x_arg_0)
@@ -215,7 +216,7 @@ public:
 
     override SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len)
     {
-        const BigInt* q = &m_mod_q.getModulus(); // todo: why not use m_q?
+        const BigInt* q = &m_mod_q.getModulus(); // TODO: why not use m_q?
         if (msg_len != 2*q.bytes())
             throw new InvalidArgument("NR verification: Invalid signature");
         
@@ -227,7 +228,6 @@ public:
         import std.concurrency : spawn, receiveOnly, send, thisTid;
 
         BigInt res;
-
         auto tid = spawn(
             (shared(Tid) tid, shared(const BigInt*) y, shared(const BigInt*) p, shared(BigInt*) c2, shared(BigInt*) res2) 
             { 
@@ -235,8 +235,8 @@ public:
 				modexpInit(); // enable quick path for powermod
                 BigInt* ret = cast(BigInt*) res2;
 				{
-					auto powermod_d1_p = FixedExponentPowerMod(*cast(const BigInt*)y, *cast(const BigInt*)p);
-					*ret = (*powermod_d1_p)(*cast(BigInt*)c2);
+					auto powermod_y_p = FixedBasePowerMod(*cast(const BigInt*)y, *cast(const BigInt*)p);
+					*ret = (*powermod_y_p)(*cast(BigInt*)c2);
 					send(cast(Tid) tid, true);
 				}
 				auto done = receiveOnly!bool;
@@ -247,7 +247,6 @@ public:
 			);
         BigInt g_d = (*m_powermod_g_p)(d);
         bool done = receiveOnly!bool();
-
         BigInt i = m_mod_p.multiply(g_d, res);
 
 		send(cast(Tid)tid, true);
@@ -295,6 +294,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 size_t nrSigKat(string p, string q, string g, string x, 
                   string hash, string msg, string nonce, string signature)
 {
+	logDebug("msg: ", msg);
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     
@@ -303,10 +303,9 @@ size_t nrSigKat(string p, string q, string g, string x,
     BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     
-    DLGroup group = DLGroup(p_bn.move, q_bn.move, g_bn.move);
-    
+    DLGroup group = DLGroup(p_bn, q_bn, g_bn);
+
     auto privkey = NRPrivateKey(rng, group.move(), x_bn.move());
-    
     auto pubkey = NRPublicKey(privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
@@ -324,14 +323,14 @@ static if (!SKIP_NR_TEST) unittest
     
     auto rng = AutoSeededRNG();
     
-    fails += testPkKeygen(rng);
-    
-    File nr_sig = File("../test_data/pubkey/nr.vec", "r");
-    
-    fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
+	File nr_sig = File("../test_data/pubkey/nr.vec", "r");
+	
+	fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
 		(ref HashMap!(string, string) m) {
 			return nrSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
 		});
+
+    fails += testPkKeygen(rng);
     
     testReport("nr", total_tests, fails);
 }

@@ -228,8 +228,9 @@ private:
 
 		BigInt j3 = m_mod_p.reduce(subMul(j1, j2, *m_c));
 		send(tid, true); // Destroy j1
+		BigInt ret = mulAdd(j3, *m_q, j2);
 		done = receiveOnly!bool(); // wait for destruction...
-        return mulAdd(j3, *m_q, j2);
+        return ret;
     }
 
     const BigInt* m_n;
@@ -383,7 +384,6 @@ size_t rsaSigVerify(string e,
 
 size_t testPkKeygen(RandomNumberGenerator rng)
 {
-
     size_t fails;
 
     auto rsa1024 = RSAPrivateKey(rng, 1024);
@@ -412,23 +412,24 @@ static if (!SKIP_RSA_TEST) unittest
     File rsa_sig = File("../test_data/pubkey/rsa_sig.vec", "r");
     File rsa_verify = File("../test_data/pubkey/rsa_verify.vec", "r");
     
-    
+	fails += testPkKeygen(rng);
+
     fails += runTestsBb(rsa_enc, "RSA Encryption", "Ciphertext", true,
 		(ref HashMap!(string, string) m)
 		{
-	        return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"], m["Padding"], m["Nonce"], m["Ciphertext"]);
+	        return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"], m.get("Padding"), m.get("Nonce"), m["Ciphertext"]);
 	    });
     
     fails += runTestsBb(rsa_sig, "RSA Signature", "Signature", true,
 		(ref HashMap!(string, string) m)
 		{
-			return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"], m["Padding"], m["Nonce"], m["Signature"]);
+			return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"], m.get("Padding"), m.get("Nonce"), m["Signature"]);
 		});
     
     fails += runTestsBb(rsa_verify, "RSA Verify", "Signature", true,
 		(ref HashMap!(string, string) m)
 		{
-			return rsaSigVerify(m["E"], m["N"], m["Msg"], m["Padding"], m["Signature"]);
+			return rsaSigVerify(m["E"], m["N"], m["Msg"], m.get("Padding"), m["Signature"]);
 		});
     
     testReport("rsa", total_tests, fails);

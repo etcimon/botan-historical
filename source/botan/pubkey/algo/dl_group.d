@@ -180,6 +180,7 @@ public:
     void BER_decode()(auto const ref Vector!ubyte data,
                       Format format)
     {
+		logDebug("BER_decode ", format);
         BigInt new_p, new_q, new_g;
         
         BERDecoder decoder = BERDecoder(data);
@@ -239,6 +240,7 @@ public:
     */
     this(in string name)
     {
+		logDebug("DLGroup Name");
         string pem = getPemForNamedGroup(name);
         
         if (!pem)
@@ -336,7 +338,7 @@ public:
     * @param q1 = the prime m_q
     * @param g1 = the base m_g
     */
-	this(BigInt p1, BigInt q1, BigInt g1)
+	this(ref BigInt p1, ref BigInt q1, ref  BigInt g1)
 	{
 		initialize(p1, q1, g1);
 	}
@@ -424,6 +426,24 @@ private:
 
     bool m_initialized;
     BigInt m_p, m_q, m_g;
+
+	public string toString() const {
+		return toVector()[].idup;
+	}
+
+	public Vector!ubyte toVector() const {
+		Vector!ubyte ret;
+		ret ~= "p: ";
+		ret ~= m_p.toVector()[];
+		ret ~= "\n";
+		ret ~= "q: ";
+		ret ~= m_q.toVector()[];
+		ret ~= "\n";
+		ret ~= "g: ";
+		ret ~= m_g.toVector()[];
+		ret ~= "\n";
+		return ret.move;
+	}
 
     /**
     * Return PEM representation of named DL group

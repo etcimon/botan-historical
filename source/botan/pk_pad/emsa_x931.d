@@ -30,7 +30,7 @@ public:
         m_hash = hash;
         m_empty_hash = m_hash.finished();
         
-        m_hash_id = ieee1363HashId(hash.name);
+        m_hash_id = ieee1363HashId(m_hash.name);
         
         if (!m_hash_id)
             throw new EncodingError("EMSA_X931 no hash identifier for " ~ hash.name);
