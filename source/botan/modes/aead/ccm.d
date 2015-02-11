@@ -144,7 +144,7 @@ protected:
     final void inc(ref SecureVector!ubyte C)
     {
         for (size_t i = 0; i != C.length; ++i)
-            if (++(C.ptr[C.length-i-1]))
+            if (++(C[$-i-1]))
                 break;
     }
 
@@ -159,6 +159,7 @@ protected:
         const ubyte b_flags = cast(ubyte) ((m_ad_buf.length ? 64 : 0) + (((tagSize()/2)-1) << 3) + (L()-1));
         
         B0[0] = b_flags;
+		assert(B0.length >= m_nonce.length);
         copyMem(&B0[1], m_nonce.ptr, m_nonce.length);
         encodeLength(sz, &B0[m_nonce.length+1]);
         
@@ -172,6 +173,7 @@ protected:
         const ubyte a_flags = cast(ubyte)(L()-1);
         
         C[0] = a_flags;
+		assert(C.length >= m_nonce.length + 1);
         copyMem(&C[1], m_nonce.ptr, m_nonce.length);
         
         return C.move;

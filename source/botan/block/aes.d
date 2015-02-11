@@ -104,6 +104,7 @@ final class AES256 : BlockCipherFixedParams!(16, 32), BlockCipher, SymmetricAlgo
 public:
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
+		logError("AES256 encryptN");
         aes_encrypt_n(input, output, blocks, m_EK, m_ME);
     }
     

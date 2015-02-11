@@ -225,30 +225,24 @@ public:
 		   auto ref Vector!X509Certificate cert_chain)
     {
 		int i = 1;
-		foreach (tree; status[]) {
-			logDebug("Val 1: ");
-			foreach (stat; (*tree)[]) {
-				logDebug("status: ", stat);
-			}
-			i++;
-		}
+		logDebug("Open RBTree");
         m_overall = CertificateStatusCode.VERIFIED;
-		logDebug("dup status");
+		// take the "worst" error as overall
+		foreach (ref s; status[])
+		{
+			logDebug("Iterate 1");
+			if (!s.empty)
+			{
+				logDebug("!s.empty");
+				auto worst = s.back;
+				// Leave OCSP confirmations on cert-level status only
+				if (worst != CertificateStatusCode.OCSP_RESPONSE_GOOD)
+					m_overall = worst;
+			}
+		}
+		logDebug("AFter iterate");
         m_all_status = status.move();
-		logDebug("m_cert_path");
         m_cert_path = cert_chain.move();
-		logDebug("After m_cert_path");
-        // take the "worst" error as overall
-        foreach (s; m_all_status[])
-        {
-            if (!s.empty)
-            {
-                auto worst = s.back;
-                // Leave OCSP confirmations on cert-level status only
-                if (worst != CertificateStatusCode.OCSP_RESPONSE_GOOD)
-                    m_overall = worst;
-            }
-        }
     }
 
 
@@ -270,9 +264,7 @@ PathValidationResult
 {
     if (end_certs.empty) 
         throw new InvalidArgument("x509PathValidate called with no subjects");
-    
-    Vector!X509Certificate cert_path;
-	logDebug(end_certs[0].toString());
+    Vector!X509Certificate cert_path = Vector!X509Certificate();
     cert_path.pushBack(end_certs[0]);
 
     Unique!CertificateStoreOverlay extra = new CertificateStoreOverlay(end_certs);
@@ -281,16 +273,15 @@ PathValidationResult
     // iterate until we reach a root or cannot find the issuer
     while (!cert_path.back().isSelfSigned())
     {
-		logDebug("Finding issuer");
-        const X509Certificate cert = findIssuingCert(cert_path.back(), cert_store, certstores);
+        X509Certificate cert = findIssuingCert(cert_path.back(), cert_store, certstores);
         if (!cert) {
             return PathValidationResult(CertificateStatusCode.CERT_ISSUER_NOT_FOUND);
 		}
-        cert_path.pushBack(cast(X509Certificate) cert);
+        cert_path.pushBack(cert);
     }
 
 	auto chain = checkChain(cert_path, restrictions, certstores);
-
+	logDebug("After chain");
     return PathValidationResult(chain, cert_path);
 }
 
@@ -336,9 +327,9 @@ PathValidationResult x509PathValidate()(const ref Vector!X509Certificate end_cer
     return x509PathValidate(end_certs, restrictions, certstores);
 }
 
-const(X509Certificate) findIssuingCert(in X509Certificate cert_,
-                                       ref CertificateStore end_certs, 
-                                       const ref Vector!CertificateStore certstores)
+X509Certificate findIssuingCert(in X509Certificate cert_,
+                                ref CertificateStore end_certs, 
+                                const ref Vector!CertificateStore certstores)
 {
 
     const X509DN issuer_dn = cert_.issuerDn();
@@ -347,14 +338,14 @@ const(X509Certificate) findIssuingCert(in X509Certificate cert_,
     
 	logDebug("authorityKeyId done");
 
-    if (const X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id)) {
+    if (X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id)) {
 		logDebug("Found certificate: ", cert.toString());
         return cert;
 	} 
 
     foreach (certstore; certstores[])
     {
-        if (const X509Certificate cert = certstore.findCert(issuer_dn, auth_key_id))
+        if (X509Certificate cert = certstore.findCert(issuer_dn, auth_key_id))
             return cert;
     }
     
@@ -410,6 +401,10 @@ Vector!( RBTreeRef!CertificateStatusCode )
     
     Vector!( RBTreeRef!CertificateStatusCode ) cert_status = Vector!( RBTreeRef!CertificateStatusCode )( cert_path.length );
     
+	foreach (ref e; cert_status) {
+		e.clear(); // touch
+	}
+
 	logDebug("Cert path size: ", cert_path.length);
 
     foreach (size_t i; 0 .. cert_path.length)
@@ -506,16 +501,14 @@ Vector!( RBTreeRef!CertificateStatusCode )
             }
         }
         
-        const X509CRL crl_p = findCrlsFor(subject, certstores);
+        const X509CRL crl = findCrlsFor(subject, certstores);
         
-        if (!crl_p)
+        if (!crl)
         {
             if (restrictions.requireRevocationInformation())
                 status.insert(CertificateStatusCode.NO_REVOCATION_DATA);
             continue;
         }
-        
-        const X509CRL crl = crl_p;
 
         if (!ca.allowedUsage(KeyConstraints.CRL_SIGN))
             status.insert(CertificateStatusCode.CA_CERT_NOT_FOR_CRL_ISSUER);
@@ -532,10 +525,9 @@ Vector!( RBTreeRef!CertificateStatusCode )
         if (crl.isRevoked(subject))
             status.insert(CertificateStatusCode.CERT_IS_REVOKED);
     }
-	logDebug("Done");
+
     if (self_signed_ee_cert)
         cert_status.back().insert(CertificateStatusCode.CANNOT_ESTABLISH_TRUST);
     
-	logDebug("Done 2");
     return cert_status.move();
 }

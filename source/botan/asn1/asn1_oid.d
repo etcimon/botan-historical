@@ -60,9 +60,7 @@ public:
     */
     override void decodeFrom(ref BERDecoder decoder)
     {
-		logDebug("In ASN1 OID");
         BERObject obj = decoder.getNextObject();
-		logDebug("After decoder.getNextObject()");
         if (obj.type_tag != ASN1Tag.OBJECT_ID || obj.class_tag != ASN1Tag.UNIVERSAL)
             throw new BERBadTag("Error decoding OID, unknown tag", obj.type_tag, obj.class_tag);
         if (obj.value.length < 2)

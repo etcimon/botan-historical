@@ -621,10 +621,11 @@ public:
 	override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids.dup); }
 
     this() {}
-    this()(auto const ref Vector!OID o) 
-    {
-        m_oids = o.dup();
-    }
+
+	this()(auto const ref Vector!OID o) 
+	{
+		m_oids = o.dup;
+	}
 
     ref const(Vector!OID) getOids() const { return m_oids; }
 protected:
@@ -873,7 +874,7 @@ protected:
     override Vector!ubyte encodeInner() const
     {
         return DEREncoder()
-            .encode(cast(size_t)(m_reason), ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL)
+            	.encode(cast(size_t)(m_reason), ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL)
                 .getContentsUnlocked();
     }
 

@@ -42,17 +42,17 @@ final class PKCS8Exception : DecodingError
 * @param key = the private key to encode
 * @return BER encoded key
 */
-SecureVector!ubyte BER_encode(in PrivateKey key)
+SecureArray!ubyte BER_encode(in PrivateKey key)
 {
     __gshared immutable size_t PKCS8_VERSION = 0;
-	logDebug("PKCS8 PEM encode");
-    return DEREncoder()
+    auto vec = DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
             .encode(PKCS8_VERSION)
             .encode(key.pkcs8AlgorithmIdentifier())
-            .encode(key.pkcs8PrivateKey(), ASN1Tag.OCTET_STRING)
+			.encode(key.pkcs8PrivateKey(), ASN1Tag.OCTET_STRING)
             .endCons()
-            .getContents();
+            .getContentsRef();
+	return vec;
 }
 
 /**
@@ -62,7 +62,8 @@ SecureVector!ubyte BER_encode(in PrivateKey key)
 */
 string PEM_encode(in PrivateKey key)
 {
-    return PEM.encode(BER_encode(key), "PRIVATE KEY");
+	auto ret = BER_encode(key);
+    return PEM.encode(ret, "PRIVATE KEY");
 }
 
 /**
@@ -90,8 +91,10 @@ Vector!ubyte BER_encode(in PrivateKey key,
     AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.getOid(), pbe.encodeParams());
     
     Pipe key_encrytor = Pipe(*pbe);
-    key_encrytor.processMsg(BER_encode(key));
-    
+	auto ber = BER_encode(key);
+	logDebug("Encode finished");
+    key_encrytor.processMsg(ber);
+	logError("BER_Encode done");
     return DEREncoder()
             .startCons(ASN1Tag.SEQUENCE)
             .encode(pbe_algid)
@@ -140,6 +143,7 @@ PrivateKey loadKey(DataSource source,
     const string alg_name = OIDS.lookup(alg_id.oid);
     if (alg_name == "" || alg_name == alg_id.oid.toString())
         throw new PKCS8Exception("Unknown algorithm OID: " ~ alg_id.oid.toString());
+	logDebug("alg id: ", OIDS.lookup(alg_id.oid));
     return makePrivateKey(alg_id, pkcs8_key, rng);
 }
 
@@ -215,7 +219,7 @@ SecureVector!ubyte PKCS8_extract(DataSource source,
             .decode(key_data, ASN1Tag.OCTET_STRING)
             .verifyEnd();
     
-	logDebug("PKCS8 extract key data finished");
+	logDebug("PKCS8 extract key data finished", pbe_alg_id.toString());
     return key_data.move;
 }
 
@@ -275,13 +279,13 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
                 if (pass.first == false)
                     break;
                 
+				logDebug("PKCS8 get pkcs8 alg id");
                 Pipe decryptor = Pipe(getPbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
                 
                 decryptor.processMsg(key_data);
                 key = decryptor.readAll();
             }
             
-			logDebug("PKCS8 get pkcs8 alg id");
             BERDecoder(key)
                     .startCons(ASN1Tag.SEQUENCE)
                     .decodeAndCheck!size_t(0, "Unknown PKCS #8 version number")

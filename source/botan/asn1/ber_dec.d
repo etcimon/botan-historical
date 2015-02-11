@@ -110,7 +110,7 @@ public:
         BERObject obj = getNextObject();
         obj.assertIsA(type_tag, class_tag | ASN1Tag.CONSTRUCTED);
         
-        BERDecoder result = BERDecoder(&obj.value[0], obj.value.length);
+        BERDecoder result = BERDecoder(obj.value.ptr, obj.value.length);
         result.m_parent = &this;
         return result.move();
     }
@@ -317,7 +317,7 @@ public:
         obj.assertIsA(type_tag, class_tag);
         
         if (real_type == ASN1Tag.OCTET_STRING)
-            buffer[] = obj.value[];
+            buffer = obj.value.move;
         else
         {
             if (obj.value[0] >= 8)
@@ -416,21 +416,24 @@ public:
         }
         else
         {
-			static if (__traits(hasMember, T, "isRefCounted"))
-				output = T();
+			static if (__traits(hasMember, T, "isRefCounted")) {
+				if (default_value is T.init)
+					output = T();
+				else output = default_value;
+			}
 			else 
 				output = default_value;
             pushBack(obj);
         }
 
-
+		/*
         static if (__traits(hasMember, T, "toString"))
             logTrace("decode Optional ", T.stringof, ": ", output.toString());
 		else static if (__traits(compiles, { to!string(output); }()))
 			logTrace("decode Optional ", T.stringof, ": ", output.to!string);
 		else
 			logTrace("decode Optional ", T.stringof);
-
+		*/
 
         return this;
     }

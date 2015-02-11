@@ -89,7 +89,6 @@ Vector!string splitter(in string str, char delim)
 {
     return splitOnPred(str, (char c) { return c == delim; });
 }
-
 /**
 * Split a string on a character predicate
 * @param str = the input string

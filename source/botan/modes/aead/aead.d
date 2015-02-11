@@ -12,7 +12,6 @@ import botan.modes.cipher_mode;
 import botan.block.block_cipher;
 import botan.libstate.libstate;
 import botan.utils.parsing;
-import std.array : split;
 static if (BOTAN_HAS_AEAD_CCM) import botan.modes.aead.ccm;
 static if (BOTAN_HAS_AEAD_EAX) import botan.modes.aead.eax;
 static if (BOTAN_HAS_AEAD_GCM) import botan.modes.aead.gcm;
@@ -69,7 +68,7 @@ AEADMode getAead(in string algo_spec, CipherDir direction)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     
-    const Vector!string algo_parts = algo_spec.split('/');
+    const Vector!string algo_parts = algo_spec.splitter('/');
     if (algo_parts.empty)
         throw new InvalidAlgorithmName(algo_spec);
     

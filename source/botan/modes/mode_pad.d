@@ -8,7 +8,7 @@ module botan.modes.mode_pad;
 
 import memutils.vector;
 import botan.utils.exceptn;
-// import string;
+import botan.constants;
 
 /**
 * Block Cipher Mode Padding Method
@@ -58,7 +58,7 @@ public:
         const ubyte pad_value = cast(ubyte)( block_size - last_byte_pos );
         
         foreach (size_t i; 0 .. pad_value)
-            buffer.pushBack(pad_value);
+            buffer.pushBack(cast(ubyte)pad_value);
     }
 
     /*

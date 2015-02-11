@@ -180,11 +180,9 @@ static if (!SKIP_X509_TEST) unittest
         
         const string[] test_dirs = dirListing(root_test_dir);
         
-        logDebug(test_dirs);
-        for(size_t i = 0; i != test_dirs.length; i++)
+		for(size_t i = 0; i != 74; i++)
         {
             const size_t test_no = i+1;
-			logDebug("NIST X.509 test #", test_no);
 			logError("NIST X.509 test #", test_no);
             
             const string test_dir = test_dirs[i];
@@ -256,7 +254,7 @@ static if (!SKIP_X509_TEST) unittest
 			}
         }
     }
-    catch(Exception e)
+    catch(Throwable e)
     {
         logError(e.toString());
         logTrace(e.msg);

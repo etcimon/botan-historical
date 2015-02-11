@@ -29,6 +29,7 @@ struct RSAOptions {
     */
 	static bool checkKey(in IFSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
 	{
+		logDebug("checkKey");
 		if (!privkey.checkKeyImpl(rng, strong))
 			return false;
 		
@@ -147,15 +148,18 @@ final class RSAPrivateOperation : Signature, Decryption
 {
 public:
     this(in PrivateKey pkey, RandomNumberGenerator rng) {
+		logDebug("pkey");
         this(cast(IFSchemePrivateKey) pkey, rng);
     }
 
     this(in RSAPrivateKey pkey, RandomNumberGenerator rng) {
+		logDebug("rsapkey");
         this(pkey.m_priv, rng);
     }
 
     this(in IFSchemePrivateKey rsa, RandomNumberGenerator rng) 
     {
+		logDebug("ifpkey");
         assert(rsa.algoName == RSAPublicKey.algoName);
         m_n = &rsa.getN();
         m_q = &rsa.getQ();

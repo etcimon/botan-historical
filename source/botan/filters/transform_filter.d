@@ -30,11 +30,11 @@ public:
         
         if (m_final_minimum > m_main_block_mod)
             throw new InvalidArgument("final_minimum > main_block_mod");
-        
-        m_buffer.resize(2 * m_main_block_mod);
+        m_buffer_2.resize(2 * m_main_block_mod);
         m_buffer_pos = 0;
         m_nonce = NonceState(transform.defaultNonceLength() == 0);
         m_transform = transform;
+		m_buffer = m_transform.updateGranularity();
     }
 
     override final void setIv(in InitializationVector iv)
@@ -76,12 +76,15 @@ public:
     {
         if (!input_size)
             return;
-        
+
         if (m_buffer_pos + input_size >= m_main_block_mod + m_final_minimum)
         {
-            size_t to_copy = std.algorithm.min(m_buffer.length - m_buffer_pos, input_size);
-            
-            copyMem(&m_buffer[m_buffer_pos], input, to_copy);
+            size_t to_copy = std.algorithm.min(m_buffer_2.length - m_buffer_pos, input_size);
+
+			// assert(m_buffer_2.length > to_copy);
+
+            copyMem(&m_buffer_2[m_buffer_pos], input, to_copy);
+
             m_buffer_pos += to_copy;
             
             input += to_copy;
@@ -91,11 +94,10 @@ public:
                                                                   m_buffer_pos + input_size - m_final_minimum),
                                                 m_main_block_mod);
             
-            bufferedBlock(m_buffer.ptr, total_to_consume);
-            
+			bufferedBlock(m_buffer_2.ptr, total_to_consume);
             m_buffer_pos -= total_to_consume;
-            
-            copyMem(m_buffer.ptr, m_buffer.ptr + total_to_consume, m_buffer_pos);
+			// assert(m_buffer_2.length > total_to_consume);
+			copyMem(m_buffer_2.ptr, m_buffer_2.ptr + total_to_consume, m_buffer_pos);
         }
         
         if (input_size >= m_final_minimum)
@@ -112,7 +114,8 @@ public:
             }
         }
         
-        copyMem(&m_buffer[m_buffer_pos], input, input_size);
+		// assert(m_buffer_pos + input_size < m_buffer_2.length);
+		copyMem(&m_buffer_2[m_buffer_pos], input, input_size);
         m_buffer_pos += input_size;
     }
     
@@ -160,12 +163,12 @@ protected:
         if (spare_blocks)
         {
             size_t spare_bytes = m_main_block_mod * spare_blocks;
-            bufferedBlock(m_buffer.ptr, spare_bytes);
-            bufferedFinal(&m_buffer[spare_bytes], m_buffer_pos - spare_bytes);
+			bufferedBlock(m_buffer_2.ptr, spare_bytes);
+			bufferedFinal(&m_buffer_2[spare_bytes], m_buffer_pos - spare_bytes);
         }
         else
         {
-            bufferedFinal(m_buffer.ptr, m_buffer_pos);
+			bufferedFinal(m_buffer_2.ptr, m_buffer_pos);
         }
         m_buffer_pos = 0;
 
@@ -190,8 +193,7 @@ private:
         while (input_length)
         {
             const size_t take = std.algorithm.min(m_transform.updateGranularity(), input_length);
-            
-            m_buffer[] = input[0 .. take];
+			m_buffer = SecureVector!ubyte(input[0 .. take]);
             m_transform.update(m_buffer);
             
             send(m_buffer);
@@ -246,7 +248,8 @@ private:
     size_t m_main_block_mod, m_final_minimum;
     NonceState m_nonce;
     Unique!Transformation m_transform;
-    SecureVector!ubyte m_buffer;
+	SecureVector!ubyte m_buffer;
+	SecureVector!ubyte m_buffer_2;
     size_t m_buffer_pos;
 }
 

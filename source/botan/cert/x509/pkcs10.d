@@ -158,12 +158,13 @@ public:
         super(*input, "CERTIFICATE REQUEST/NEW CERTIFICATE REQUEST");
         doDecode();
     }
-private:
+protected:
     /*
     * Deocde the CertificateRequestInfo
     */
-    void forceDecode()
+    override void forceDecode()
     {
+		logDebug("ForceDecode PKCS10Request");
         BERDecoder cert_req_info = BERDecoder(m_tbs_bits);
         
         size_t _version;
@@ -192,7 +193,7 @@ private:
             auto attributes = BERDecoder(attr_bits.value);
             while (attributes.moreItems())
             {
-                Attribute attr;
+                auto attr = Attribute();
                 attributes.decode(attr);
                 handleAttribute(attr);
             }

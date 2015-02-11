@@ -91,7 +91,7 @@ public:
     {
         X509DN crl_issuer = crl.issuerDn();
         
-        foreach (crl_stored; m_crls[])
+        foreach (ref crl_stored; m_crls[])
         {
             // Found an update of a previously existing one; replace it
             if (crl_stored.issuerDn() == crl_issuer)
@@ -139,7 +139,9 @@ final class CertificateStoreOverlay : CertificateStore
 public:
     this(const ref Vector!X509Certificate certs)
     {
-        m_certs = certs.dup();
+		foreach (ref cert; certs[]) {
+			m_certs ~= cert;
+		}
     }
 
     override X509CRL findCrlFor(in X509Certificate subject) const { return X509CRL.init; }

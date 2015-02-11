@@ -38,9 +38,7 @@ public:
             throw new InvalidArgument("X509Time: Bad encoding m_tag");
         
         der.addObject(m_tag, ASN1Tag.UNIVERSAL,
-                       transcode(toString(),
-                          LOCAL_CHARSET,
-                          LATIN1_CHARSET));
+                       transcode(toString(), LOCAL_CHARSET, LATIN1_CHARSET));
     }
 
     /*

@@ -135,9 +135,10 @@ public:
         {
             foreach (size_t i; 0 .. blocks)
             {
-                xorBuf(&buf[BS*i], prev_block, BS);
-                cipher().encrypt(&buf[BS*i]);
-                prev_block = &buf[BS*i];
+				assert(buffer.length >= BS*i);
+                xorBuf(buf + BS*i, prev_block, BS);
+                cipher().encrypt(buf + BS*i);
+                prev_block = buf + BS*i;
             }
             
             state()[] = buf[BS*(blocks-1) .. BS*blocks];
@@ -222,7 +223,7 @@ public:
             const size_t full_blocks = ((sz / BS) - 1) * BS;
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
-            
+			assert(buffer.length > full_blocks+final_bytes);
             SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
@@ -238,7 +239,7 @@ public:
             
             cipher().encrypt(last.ptr);
             
-            buffer ~= last;
+            buffer ~= last[];
         }
     }
 
@@ -294,8 +295,11 @@ public:
             
             xorBuf(m_tempbuf.ptr, statePtr(), BS);
             xorBuf(&m_tempbuf[BS], buf, to_proc - BS);
+						
+			assert(state().length >= BS);
             copyMem(statePtr(), buf + (to_proc - BS), BS);
             
+			assert(buffer.length >= to_proc);
             copyMem(buf, m_tempbuf.ptr, to_proc);
             
             buf += to_proc;

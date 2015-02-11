@@ -22,8 +22,6 @@ import botan.codec.pem;
 import std.algorithm;
 import botan.utils.types;
 import botan.utils.types;
-import std.algorithm : splitter;
-import std.array;
 
 /**
 * This class represents abstract X.509 signed objects as
@@ -62,7 +60,7 @@ public:
     */
     final string hashUsedForSignature() const
     {
-        Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
+        Vector!string sig_info = botan.utils.parsing.splitter(OIDS.lookup(m_sig_algo.oid), '/');
         
         if (sig_info.length != 2)
             throw new InternalError("Invalid name format found for " ~ m_sig_algo.oid.toString());
@@ -104,7 +102,7 @@ public:
 										  in AlgorithmIdentifier algo,
 										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits)
 	{
-		return makeSigned(signer, rng, algo, **tbs_bits);
+		return makeSigned(signer, rng, algo, *tbs_bits);
 	}
 
 
@@ -117,7 +115,7 @@ public:
     {
         assert(pub_key);
         try {
-            Vector!string sig_info = splitter(OIDS.lookup(m_sig_algo.oid), '/');
+			Vector!string sig_info = botan.utils.parsing.splitter(OIDS.lookup(m_sig_algo.oid), '/');
             
             if (sig_info.length != 2 || sig_info[0] != pub_key.algoName)
                 return false;
@@ -151,6 +149,7 @@ public:
     */
     override void decodeFrom(ref BERDecoder from)
     {
+		logDebug("decodeFrom X509Object");
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .rawBytes(m_tbs_bits)
@@ -249,13 +248,12 @@ private:
     final void init(DataSource input, in string labels)
     {
 		m_sig_algo = AlgorithmIdentifier();
-        m_PEM_labels_allowed = labels.split('/');
+		m_PEM_labels_allowed = botan.utils.parsing.splitter(labels, '/');
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-        //logDebug("Initialize PEM/BER X.509 Object");
+        logDebug("Initialize PEM/BER X.509 Object");
         m_PEM_label_pref = m_PEM_labels_allowed[0];
-        std.algorithm.sort(m_PEM_labels_allowed);
         
         try {
             if (maybeBER(input) && !PEM.matches(input))
@@ -267,7 +265,7 @@ private:
             {
                 string got_label;
                 auto ber = DataSourceMemory(PEM.decode(input, got_label));
-                if (m_PEM_labels_allowed.canFind(got_label))
+                if (m_PEM_labels_allowed[].canFind(got_label))
                     throw new DecodingError("Invalid PEM label: " ~ got_label);
                 
                 auto dec = BERDecoder(cast(DataSource)ber);
@@ -280,6 +278,6 @@ private:
         }
     }
 
-    string[] m_PEM_labels_allowed;
+    Vector!string m_PEM_labels_allowed;
     string m_PEM_label_pref;
 }

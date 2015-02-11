@@ -75,9 +75,9 @@ public:
         BigInt serial_number_bn;
         m_reason = UNSPECIFIED;
         
-        BERDecoder entry = source.startCons(ASN1Tag.SEQUENCE);
-        
-        entry.decode(serial_number_bn).decode(m_time);
+		BERDecoder entry = source.startCons(ASN1Tag.SEQUENCE);
+
+		entry.decode(serial_number_bn).decode(m_time);
         
         if (entry.moreItems())
         {

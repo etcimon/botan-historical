@@ -138,8 +138,11 @@ public:
     void processMsg(const(ubyte)* input, size_t length)
     {
         startMsg();
+		logDebug("write");
         write(input, length);
+		logDebug("Done write");
         endMsg();
+		logDebug("EndMsg");
     }
 
     /**
@@ -148,6 +151,7 @@ public:
     */
     void processMsg(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
+		logDebug("Process Msg 1");
         processMsg(input.ptr, input.length);
     }
 
@@ -157,6 +161,7 @@ public:
     */
 	void processMsg(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
+		logDebug("Process Msg 2");
         processMsg(input.ptr, input.length);
     }
 

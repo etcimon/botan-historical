@@ -96,7 +96,8 @@ public:
     * @param block = the input/output buffer (multiple of blockSize())
     */
     final void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
-    {
+	in { assert(block.length == this.blockSize()); }
+	body {
         return encryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
 
@@ -105,7 +106,8 @@ public:
     * @param block = the input/output buffer (multiple of blockSize())
     */
     final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
-    {
+	in { assert(block.length == this.blockSize()); }
+	body {
         return decryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
 
@@ -116,7 +118,8 @@ public:
     */
     final void encrypt(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
-    {
+	in { assert(input.length == this.blockSize()); }
+	body {
         return encryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
     
@@ -127,7 +130,8 @@ public:
     */
     final void decrypt(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
-    {
+	in { assert(input.length == this.blockSize()); }
+    body {
         return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
     /**

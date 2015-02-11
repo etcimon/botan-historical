@@ -24,13 +24,14 @@ import botan.filters.pipe;
 import botan.utils.types;
 import botan.utils.parsing;
 import botan.pubkey.pkcs8;
-import std.array;
 import std.datetime;
+
+alias X509CertOptions = RefCounted!X509CertOptionsImpl;
 
 /**
 * Options for X.509 certificates.
 */
-struct X509CertOptions
+final class X509CertOptionsImpl
 {
 public:
     /**
@@ -125,7 +126,7 @@ public:
     /**
     * The key extended constraints for the subject public key
     */
-    Array!OID ex_constraints;
+    Vector!OID ex_constraints;
 
     /**
     * Check the options set in this object for validity.
@@ -184,9 +185,9 @@ public:
     * Add constraints to the ExtendedKeyUsage extension.
     * @param oid = the oid to add
     */
-    void addExConstraint(OID oid)
+    void addExConstraint()(auto ref OID oid)
     {
-        ex_constraints.pushBack(oid);
+        ex_constraints.pushBack(oid.dup);
     }
 
     /**
@@ -206,27 +207,30 @@ public:
     */
     this(in string initial_opts = "", Duration expiration_time = 365.days)
     {
+		logDebug("ctor");
         is_CA = false;
         path_limit = 0;
         constraints = KeyConstraints.NO_CONSTRAINTS;
         
         auto now = Clock.currTime();
-        
+		logDebug("Make time");
         start = X509Time(now);
         end = X509Time(now + expiration_time);
         
         if (initial_opts == "")
             return;
         
-        Vector!string parsed = initial_opts.split('/');
+		Vector!string parsed = botan.utils.parsing.splitter(initial_opts, '/');
         
+		logDebug("parsed: ", parsed[]);
+
         if (parsed.length > 4)
             throw new InvalidArgument("X.509 cert options: Too many names: " ~ initial_opts);
         
         if (parsed.length >= 1) common_name      = parsed[0];
-        if (parsed.length >= 2) country            = parsed[1];
+        if (parsed.length >= 2) country          = parsed[1];
         if (parsed.length >= 3) organization     = parsed[2];
-        if (parsed.length == 4) org_unit          = parsed[3];
+        if (parsed.length == 4) org_unit         = parsed[3];
     }
 }
 
@@ -239,10 +243,10 @@ public:
 * @param rng = the rng to use
 * @return newly created self-signed certificate
 */
-X509Certificate createSelfSignedCert(in X509CertOptions opts,
-                                     in PrivateKey key,
-                                     in string hash_fn,
-                                     RandomNumberGenerator rng)
+X509Certificate createSelfSignedCert()(auto const ref X509CertOptions opts,
+                                       in PrivateKey key,
+                                       in string hash_fn,
+                                       RandomNumberGenerator rng)
 {
     auto sig_algo = AlgorithmIdentifier();
 	X509DN subject_dn = X509DN();
@@ -267,7 +271,7 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
     extensions.add(new KeyUsage(constraints), true);
     extensions.add(new SubjectKeyID(pub_key));
     extensions.add(new SubjectAlternativeName(subject_alt));
-    extensions.add(new ExtendedKeyUsage(*cast(Vector!OID*) &opts.ex_constraints));
+    extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
     return X509CA.makeCert(signer, rng, sig_algo, pub_key,
                            opts.start, opts.end,
                            subject_dn, subject_dn,
@@ -282,11 +286,12 @@ X509Certificate createSelfSignedCert(in X509CertOptions opts,
 * @param hash_fn = the hash function to use
 * @return newly created PKCS#10 request
 */
-PKCS10Request createCertReq(in X509CertOptions opts,
-                               in PrivateKey key,
-                               in string hash_fn,
-                               RandomNumberGenerator rng)
+PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
+                              in PrivateKey key,
+                              in string hash_fn,
+                              RandomNumberGenerator rng)
 {
+	logDebug("CreatedCertReq");
     auto sig_algo = AlgorithmIdentifier();
 	X509DN subject_dn = X509DN();
 	AlternativeName subject_alt = AlternativeName();
@@ -295,16 +300,27 @@ PKCS10Request createCertReq(in X509CertOptions opts,
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
     PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
+	logDebug("Load info");
     loadInfo(opts, subject_dn, subject_alt);
     __gshared immutable size_t PKCS10_VERSION = 0;
-    
-    X509Extensions extensions;
+	logDebug("Extensions");
+	auto extensions = X509Extensions();
     
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
+	logDebug("BasicConstraints");
+
     extensions.add(new KeyUsage(opts.is_CA ? KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN : findConstraints(key, opts.constraints)));
-    extensions.add(new ExtendedKeyUsage(*cast(Vector!OID*)&opts.ex_constraints));
+    
+	logDebug("KeyUsage");
+	logDebug("ex_Constraints: ");
+	foreach (oid; opts.ex_constraints) {
+		logDebug(oid.toString());
+	}
+	extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
+	logDebug("ExtendedKeyUsage");
     extensions.add(new SubjectAlternativeName(subject_alt));
     
+	logDebug("SubjectAlternativeName");
     DEREncoder tbs_req;
     
     tbs_req.startCons(ASN1Tag.SEQUENCE)
@@ -328,9 +344,9 @@ PKCS10Request createCertReq(in X509CertOptions opts,
                       .getContentsUnlocked()
                       )
                    ).endExplicit().endCons();
-            
+	logDebug("Make Signed");
     const Vector!ubyte req = X509Object.makeSigned(signer, rng, sig_algo, tbs_req.getContents());
-    
+	logDebug("After sign");
     return PKCS10Request(&req);
 }
 

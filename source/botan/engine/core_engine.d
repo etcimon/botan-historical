@@ -578,8 +578,19 @@ public:
     override Signature getSignatureOp(in PrivateKey key, RandomNumberGenerator rng) const
     {
         static if (BOTAN_HAS_RSA) {
-            if (RSAPrivateKey.algoName == key.algoName)
-                return new RSAPrivateOperation(key, rng);
+			logDebug("rng: ", rng.nextByte());
+			logDebug("algo: ", key.algoName());
+            if (RSAPrivateKey.algoName == key.algoName) {
+				logDebug("Here");
+				auto key2 = cast(IFSchemePrivateKey)key;
+				logDebug("Key: ", key2.algoName);
+				logDebug("Key: ", key2.getN().toString());
+				logDebug("Key: ", key2.pkcs8AlgorithmIdentifier().toString());
+
+				auto ret = new RSAPrivateOperation(key2, rng);
+				logDebug("OK");
+				return ret;
+			}
         }
         
         static if (BOTAN_HAS_RW) {

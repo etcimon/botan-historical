@@ -15,10 +15,10 @@ import botan.cert.cvc.eac_obj;
 import botan.cert.cvc.eac_asn_obj;
 import botan.cert.cvc.signed_obj;
 import botan.filters.pipe;
+import botan.pubkey.x509_key;
 import botan.filters.data_src;
 import botan.pubkey.algo.ecdsa;
 import botan.pubkey.pubkey;
-import botan.pubkey.x509_key;
 import botan.cert.cvc.ecdsa_sig;
 import botan.utils.types;
 
@@ -62,7 +62,7 @@ public:
     * @param output = the pipe to push the DER encoded version into
     * @param encoding = the encoding to use. Must be DER.
     */
-    override final void encode(Pipe output, X509Encoding encoding) const
+    override void encode(Pipe output, X509Encoding encoding) const
     {
 		const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
         // fixme: this should be EAC11obj!Derived.tbsData() but linker fails...
@@ -86,7 +86,7 @@ public:
     * Get the to-be-signed (TBS) data of this object.
     * @result the TBS data of this object
     */
-	override final const(Vector!ubyte) tbsData() const
+	override const(Vector!ubyte) tbsData() const
     {
         return buildCertBody(m_tbs_bits);
     }
@@ -138,6 +138,7 @@ protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;
     bool m_self_signed;
+	abstract void forceDecode();
 package:
     static void decodeInfo(ALLOC)(DataSource source,
 			                          ref Vector!(ubyte, ALLOC) res_tbs_bits,

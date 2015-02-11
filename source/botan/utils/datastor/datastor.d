@@ -50,9 +50,10 @@ public:
     Vector!string get(in string looking_for) const
     {
         Vector!string output;
-        foreach (const ref string k, const ref string v; m_contents)
+        foreach (const ref string k, const ref string v; m_contents) {
             if (looking_for == k)
                 output.pushBack(v);
+		}
         return output.move;
     }
 

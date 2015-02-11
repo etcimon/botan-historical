@@ -236,13 +236,14 @@ public:
         m_verify_op = null;
 
         foreach (Engine engine; af.engines[]) {
-
+					logDebug("engine: ", engine.providerName());
+			logDebug("signature op");
             if (!m_op)
                 m_op = Unique!Signature(engine.getSignatureOp(key, rng));
-            
+						logDebug("m_op: ", cast(bool)m_op);
             if (!m_verify_op && prot == ENABLE_FAULT_PROTECTION)
                 m_verify_op = Unique!Verification(engine.getVerifyOp(key, rng));
-            
+															logDebug("m_verify: ", cast(bool)m_verify_op);
             if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
                 break;
         }

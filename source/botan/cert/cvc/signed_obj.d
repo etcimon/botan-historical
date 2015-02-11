@@ -44,7 +44,7 @@ interface SignedObject {
     */
     void encode(Pipe pipe, X509Encoding encoding = PEM_) const;
 protected:
-    void forceDecode();
+	abstract void forceDecode();
 }
 
 /**

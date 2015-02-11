@@ -33,18 +33,27 @@ public:
         return unlock(getContents()); 
     }
 
-    /*
+	/*
     * Return the encoded m_contents
     */
-    SecureVector!ubyte getContents()
-    {
-        if (m_subsequences.length != 0)
-            throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
-        
-        SecureArray!ubyte output;
-        std.algorithm.swap(output, m_contents);
-        return output.move();
-    }
+	SecureVector!ubyte getContents()
+	{
+		if (m_subsequences.length != 0)
+			throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
+		
+		return m_contents.dup;
+	}  
+
+	/*
+    * Return the encoded m_contents
+    */
+	SecureArray!ubyte getContentsRef()
+	{
+		if (m_subsequences.length != 0)
+			throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
+		
+		return m_contents;
+	}
     
     /*
     * Start a new ASN.1 ASN1Tag.SEQUENCE/SET/EXPLICIT
@@ -194,18 +203,20 @@ public:
     */
     ref DEREncoder encode()(auto const ref BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
+		logDebug("Encode BigInt");
+		scope(exit) logDebug("Encoded BigInt");
         if (n == 0)
             return addObject(m_type_tag, m_class_tag, 0);
         
         bool extra_zero = (n.bits() % 8 == 0);
         SecureVector!ubyte m_contents = SecureVector!ubyte(extra_zero + n.bytes());
-        BigInt.encode(&m_contents[extra_zero], n);
+        BigInt.encode(m_contents.ptr + extra_zero, n);
         if (n < 0)
         {
             foreach (size_t i; 0 .. m_contents.length)
                 m_contents[i] = ~m_contents[i];
             for (size_t i = m_contents.length; i > 0; --i)
-                if (++m_contents[i-1])
+                if (++(m_contents[i-1]))
                     break;
         }
         
@@ -308,6 +319,7 @@ public:
     */
     ref DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, const(ubyte)* rep, size_t length)
     {
+		logDebug("AddObject: ", m_type_tag);
         SecureVector!ubyte buffer;
         buffer ~= encodeTag(m_type_tag, m_class_tag)[];
         buffer ~= encodeLength(length)[];
@@ -352,27 +364,27 @@ private:
         /*
         * Return the encoded ASN1Tag.SEQUENCE/SET
         */
-        SecureVector!ubyte getContents()
-        {
-            const ASN1Tag real_class_tag = m_class_tag | ASN1Tag.CONSTRUCTED;
-            
-            if (m_type_tag == ASN1Tag.SET)
-            {    // sort?
-                auto set_contents = m_set_contents[];
-                sort!("a < b", SwapStrategy.stable)(set_contents);
-                foreach (SecureArray!ubyte data; set_contents)
-                    m_contents ~= data[];
-                m_set_contents.clear();
-            }
-            
-            SecureVector!ubyte result;
-            result ~= encodeTag(m_type_tag, real_class_tag)[];
-            result ~= encodeLength(m_contents.length)[];
-            result ~= m_contents[];
-            m_contents.clear();
-            
-            return result.move();
-        }
+		SecureVector!ubyte getContents()
+		{
+			const ASN1Tag real_class_tag = m_class_tag | ASN1Tag.CONSTRUCTED;
+			
+			if (m_type_tag == ASN1Tag.SET)
+			{    // sort?
+				auto set_contents = m_set_contents[];
+				sort!("a < b", SwapStrategy.stable)(set_contents);
+				foreach (SecureArray!ubyte data; set_contents)
+					m_contents ~= data[];
+				m_set_contents.clear();
+			}
+			
+			SecureVector!ubyte result;
+			result ~= encodeTag(m_type_tag, real_class_tag)[];
+			result ~= encodeLength(m_contents.length)[];
+			result ~= m_contents[];
+			m_contents.clear();
+			
+			return result.move();
+		}
 
         /*
         * Add an encoded value to the ASN1Tag.SEQUENCE/SET

@@ -79,7 +79,9 @@ public:
     */
     override void write(const(ubyte)* input, size_t length)
     {
+		logDebug("write to pipe with: ", name());
         m_pipe.write(input, length);
+		logDebug("Flush pipe");
         flushPipe(true);
     }
 
@@ -88,6 +90,7 @@ public:
     */
     override void startMsg()
     {
+		logError("Append to: ", m_block_cipher.name);
         m_pipe.append(getCipher(m_block_cipher.name ~ "/CBC/PKCS7", SymmetricKey(m_key), InitializationVector(m_iv), cast(CipherDir)m_direction));
         
         m_pipe.startMsg();
@@ -113,8 +116,6 @@ public:
     this(const ref Vector!ubyte params, in string passphrase) 
     {
         m_direction = DECRYPTION;
-        m_block_cipher = null;
-        m_prf = null;
         AlgorithmIdentifier kdf_algo, enc_algo;
         
         BERDecoder(params)
@@ -123,7 +124,9 @@ public:
                 .decode(enc_algo)
                 .verifyEnd()
                 .endCons();
-        
+		logDebug("KDF: ", OIDS.lookup(kdf_algo.oid));
+		logDebug("ENC: ", OIDS.lookup(enc_algo.oid));
+		logDebug("pass: ", passphrase);
         auto prf_algo = AlgorithmIdentifier();
         
         if (kdf_algo.oid != OIDS.lookup("PKCS5.PBKDF2"))
@@ -135,34 +138,40 @@ public:
                 .decode(m_iterations)
                 .decodeOptional(m_key_length, ASN1Tag.INTEGER, ASN1Tag.UNIVERSAL)
                 .decodeOptional(prf_algo, ASN1Tag.SEQUENCE, ASN1Tag.CONSTRUCTED,
-                                 AlgorithmIdentifier("HMAC(SHA-160)",
-                                 AlgorithmIdentifierImpl.USE_NULL_PARAM))
+                                 AlgorithmIdentifier("HMAC(SHA-160)", AlgorithmIdentifierImpl.USE_NULL_PARAM))
                 .verifyEnd()
                 .endCons();
         
         AlgorithmFactory af = globalState().algorithmFactory();
         
         string cipher = OIDS.lookup(enc_algo.oid);
-        Vector!string cipher_spec = Vector!string(cipher.split('/'));
+		Vector!string cipher_spec = botan.utils.parsing.splitter(cipher, '/');
         if (cipher_spec.length != 2)
             throw new DecodingError("PBE-PKCS5 v2.0: Invalid cipher spec " ~ cipher);
         
         if (cipher_spec[1] != "CBC")
             throw new DecodingError("PBE-PKCS5 v2.0: Don't know param format for " ~ cipher);
-        
+
+		logDebug("m_iv len 1: ", m_iv.length);
         BERDecoder(enc_algo.parameters).decode(m_iv, ASN1Tag.OCTET_STRING).verifyEnd();
+
+		logDebug("m_iv len 2: ", m_iv.length);
         
-        m_block_cipher = Unique!BlockCipher(af.makeBlockCipher(cipher_spec[0]));
-        m_prf = Unique!MessageAuthenticationCode(af.makeMac(OIDS.lookup(prf_algo.oid)));
+        m_block_cipher = af.makeBlockCipher(cipher_spec[0]);
+		logDebug("block cipher");
+		logDebug("PRF: ", prf_algo.toString(), " => ", OIDS.lookup(prf_algo.oid));
+        m_prf = af.makeMac(OIDS.lookup(prf_algo.oid));
         
+		logDebug("mac");
         if (m_key_length == 0)
             m_key_length = m_block_cipher.maximumKeylength();
         
         if (m_salt.length < 8)
             throw new DecodingError("PBE-PKCS5 v2.0: Encoded salt is too small");
         
-        auto pbkdf = scoped!PKCS5_PBKDF2(m_prf.clone());
+        Unique!PKCS5_PBKDF2 pbkdf = new PKCS5_PBKDF2(m_prf.clone());
         
+		logDebug("derive key");
         m_key = pbkdf.deriveKey(m_key_length, passphrase,
                                 m_salt.ptr, m_salt.length,
                                 m_iterations).bitsOf();

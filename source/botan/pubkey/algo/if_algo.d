@@ -36,7 +36,7 @@ public:
                 .endCons();
     }
 
-    this(T)(in T options, BigInt n, BigInt e)
+    this(T)(in T options, auto ref BigInt n, auto ref BigInt e)
     {
 		decodeOptions(options);
         m_n = n.move();
@@ -140,7 +140,7 @@ public:
                 .decode(m_c)
                 .endCons();
         
-        super(options, n.move(), e.move());
+        super(options, n, e);
 
         loadCheck(rng);
     }

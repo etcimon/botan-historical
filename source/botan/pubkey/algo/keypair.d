@@ -60,12 +60,16 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
                                in string padding)
 {
 	logDebug("Signature consistency check");
+	logDebug("key: ", key.algoName);
+	logDebug("Pad: ", padding);
     PKSigner signer = PKSigner(key, padding);
+	logDebug("verifier");
 	PKVerifier verifier = PKVerifier(key, padding);
+	logDebug("rng");
     Vector!ubyte message = unlock(rng.randomVec(16));
     
     Vector!ubyte signature;
-    
+	logDebug("Signature msg : ", message[]);
     try
     {
         signature = signer.signMessage(message, rng);
@@ -74,7 +78,7 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
     {
         return false;
     }
-
+	logDebug("Verify");
     if (!verifier.verifyMessage(message, signature))
         return false;
     

@@ -12,19 +12,20 @@ static if (BOTAN_HAS_CARD_VERIFIABLE_CERTIFICATES):
 
 public import botan.cert.cvc.cvc_gen_cert;
 public import botan.cert.cvc.eac_asn_obj;
+import botan.filters.pipe;
+import botan.pubkey.x509_key;
+import botan.cert.cvc.signed_obj;
 import botan.asn1.oids;
 import botan.asn1.asn1_obj;
 import botan.pubkey.algo.ecdsa;
 import botan.utils.types;
-
-
 
 alias EAC11CVC = RefCounted!EAC11CVCImpl;
 
 /**
 * This class represents TR03110 (EAC) v1.1 CV Certificates
 */
-final class EAC11CVCImpl : EAC11genCVC!EAC11CVCImpl//Signed_Object
+final class EAC11CVCImpl : EAC11genCVC!EAC11CVCImpl, SignedObject
 {
 public:
     /**
@@ -145,13 +146,17 @@ public:
         m_chat_oid = other.m_chat_oid;
     }
 
+	// Interface fall-through
+	override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+	override void encode(Pipe pipe, X509Encoding encoding = PEM_) const { return super.encode(pipe, encoding); }
+	override const(Vector!ubyte) tbsData() const { return super.tbsData(); }
+
     ~this() {}
 protected:
-
-    /*
+	/*
     * Decode the TBSCertificate data
     */
-    void forceDecode()
+	override void forceDecode()
     {
         Vector!ubyte enc_pk;
         Vector!ubyte enc_chat_val;

@@ -3,7 +3,7 @@ module botan.constants;
 const LogLevel = Trace;
 
 const SKIP_TRANSFORM_TEST = true;
-const SKIP_X509_TEST = false;
+const SKIP_X509_TEST = true;
 const SKIP_BLOCK_TEST = true;
 const SKIP_CVC_TEST = true;
 const SKIP_CRYPTOBOX_TEST = true;
@@ -32,7 +32,7 @@ const SKIP_NR_TEST = true;
 const SKIP_RFC6979_TEST = true;
 const SKIP_RSA_TEST = true;
 const SKIP_RW_TEST = true;
-const SKIP_X509_KEY_TEST = true;
+const SKIP_X509_KEY_TEST = false;
 const SKIP_RNG_TEST = true;
 const SKIP_STREAM_CIPHER_TEST = true;
 const SKIP_TLS_TEST = true;
@@ -162,7 +162,7 @@ else                          const BOTAN_HAS_TLS_V10_PRF = false;
 version(TLS_V12_PRF)     {    const BOTAN_HAS_TLS_V12_PRF = true;                                                         }
 else                          const BOTAN_HAS_TLS_V12_PRF = false;
 version(AES_NI)          {    const BOTAN_HAS_AES_NI = true;                                                              }
-else                          const BOTAN_HASH_AES_NI = false;
+else                          const BOTAN_HAS_AES_NI = false;
 version(Serpent_x86_32)  {    const BOTAN_HAS_SERPENT_X86_32 = true;    static assert(BOTAN_HAS_X86_ARCH, ERR_ARCH);      }
 else                          const BOTAN_HAS_SERPENT_X86_32 = false;
 version(MD4_x86_32)      {    const BOTAN_HAS_MD4_X86_32 = true;        static assert(BOTAN_HAS_X86_ARCH, ERR_ARCH);      }

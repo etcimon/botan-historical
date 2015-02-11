@@ -205,25 +205,26 @@ X509CertOptions reqOpts2()
 
 uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 {
-    PrivateKey copy_priv = pkcs8.copyKey(orig, rng);
-    PublicKey copy_pub = x509_key.copyKey(orig);
+    Unique!PrivateKey copy_priv = pkcs8.copyKey(orig, rng);
+	Unique!PublicKey copy_pub = x509_key.copyKey(orig);
     
     const string passphrase = "I need work! -Mr. T";
-    auto enc_source = DataSourceMemory(pkcs8.PEM_encode(orig, rng, passphrase));
-    PrivateKey copy_priv_enc = pkcs8.loadKey(cast(DataSource)enc_source, rng, passphrase);
-    
+	logError("checkCopy 1");
+	auto pem = pkcs8.PEM_encode(orig, rng, passphrase);
+	logDebug(pem[]);
+	logError("checkCopy _1");
+	auto enc_source = cast(DataSource)DataSourceMemory(pem);
+	Unique!PrivateKey copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
     ulong orig_id = keyId(orig);
-    ulong pub_id = keyId(copy_pub);
-    ulong priv_id = keyId(copy_priv);
-    ulong priv_enc_id = keyId(copy_priv_enc);
-    
-    delete copy_pub;
-    delete copy_priv;
-    delete copy_priv_enc;
-    
+	logDebug("checkCopy 2");
+	ulong pub_id = keyId(*copy_pub);
+    ulong priv_id = keyId(*copy_priv);
+    ulong priv_enc_id = keyId(*copy_priv_enc);
+	logDebug("checkCopy 3");
+
     if (orig_id != pub_id || orig_id != priv_id || orig_id != priv_enc_id)
     {
-        logTrace("Failed copy check for " ~ orig.algoName());
+        logError("Failed copy check for " ~ orig.algoName());
         return 1;
     }
     return 0;
@@ -238,25 +239,38 @@ static if (!SKIP_X509_KEY_TEST) unittest
     
     /* Create the CA's key and self-signed cert */
     auto ca_key = RSAPrivateKey(rng, 2048);
-    X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), ca_key, hash_fn, rng);
+	logError("Create cert");
+    X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), *ca_key, hash_fn, rng);
+	logError("After Create cert");
     /* Create user #1's key and cert request */
-    auto user1_key = DSAPrivateKey(rng, DLGroup("dsa/botan/2048"));
+	auto dl_group = DLGroup("dsa/botan/2048");
+	logError("DSA");
+	auto user1_key = DSAPrivateKey(rng, dl_group.move);
     
-    PKCS10Request user1_req = x509self.createCertReq(reqOpts1(), user1_key, "SHA-1", rng);
+	logError("After DSA");
+	auto opts1 = reqOpts1();
+	logDebug("Crated opts");
+    PKCS10Request user1_req = x509self.createCertReq(opts1, *user1_key, "SHA-1", rng);
     
     /* Create user #2's key and cert request */
     static if (BOTAN_HAS_ECDSA) {
+		logError("before ec");
         ECGroup ecc_domain = ECGroup(OID("1.2.840.10045.3.1.7"));
+		logError("before ecdsa");
         auto user2_key = ECDSAPrivateKey(rng, ecc_domain);
+		logError("After ecdsa");
     } else static if (BOTAN_HAS_RSA) {
-        RSAPrivateKey user2_key = RSAPrivateKey(rng, 1536);
+		logDebug("Use RSA");
+        auto user2_key = RSAPrivateKey(rng, 1536);
     } else static assert(false, "Must have ECSA or RSA for X509!");
     
-    PKCS10Request user2_req = x509self.createCertReq(reqOpts2(), user2_key, hash_fn, rng);
+	logError("PKCS10 Request");
+    PKCS10Request user2_req = x509self.createCertReq(reqOpts2(), *user2_key, hash_fn, rng);
     
     /* Create the CA object */
-    X509CA ca = X509CA(ca_cert, ca_key, hash_fn);
+    X509CA ca = X509CA(ca_cert, *ca_key, hash_fn);
     
+	logError("Sign request");
     /* Sign the requests to create the certs */
     X509Certificate user1_cert = ca.signRequest(user1_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
     
@@ -264,20 +278,20 @@ static if (!SKIP_X509_KEY_TEST) unittest
     X509CRL crl1 = ca.newCRL(rng);
     
     /* Verify the certs */
-    CertificateStoreInMemory store;
+	Unique!CertificateStoreInMemory store = new CertificateStoreInMemory();
     
     store.addCertificate(ca_cert);
     
     PathValidationRestrictions restrictions = PathValidationRestrictions(false);
     
-    PathValidationResult result_u1 = x509PathValidate(user1_cert, restrictions, store);
+    PathValidationResult result_u1 = x509PathValidate(user1_cert, restrictions, *store);
     if (!result_u1.successfulValidation())
     {
         logError("FAILED: User cert #1 did not validate - " ~ result_u1.resultString());
         ++fails;
     }
     
-    PathValidationResult result_u2 = x509PathValidate(user2_cert, restrictions, store);
+    PathValidationResult result_u2 = x509PathValidate(user2_cert, restrictions, *store);
     if (!result_u2.successfulValidation())
     {
         logError("FAILED: User cert #2 did not validate - " ~ result_u2.resultString());
@@ -286,44 +300,51 @@ static if (!SKIP_X509_KEY_TEST) unittest
     
     store.addCrl(crl1);
     
+	logError("Get revoked");
     Vector!CRLEntry revoked;
-    revoked.pushBack(CRLEntry(user1_cert, CESSATION_OF_OPERATION));
-    revoked.pushBack(CRLEntry(user2_cert));
+	auto crl_entry1 = CRLEntry(user1_cert, CESSATION_OF_OPERATION);
+	auto crl_entry2 = CRLEntry(user2_cert);
+	revoked.pushBack(crl_entry1);
+	revoked.pushBack(crl_entry2);
     
     X509CRL crl2 = ca.updateCRL(crl1, revoked, rng);
     
     store.addCrl(crl2);
     
-    result_u1 = x509PathValidate(user1_cert, restrictions, store);
+    result_u1 = x509PathValidate(user1_cert, restrictions, *store);
     if (result_u1.result() != CertificateStatusCode.CERT_IS_REVOKED)
     {
         logError("FAILED: User cert #1 was not revoked - " ~ result_u1.resultString());
         ++fails;
     }
     
-    result_u2 = x509PathValidate(user2_cert, restrictions, store);
+    result_u2 = x509PathValidate(user2_cert, restrictions, *store);
     if (result_u2.result() != CertificateStatusCode.CERT_IS_REVOKED)
     {
         logError("FAILED: User cert #2 was not revoked - " ~ result_u2.resultString());
         ++fails;
     }
-    
+
+	auto crl_entry = CRLEntry(user1_cert, REMOVE_FROM_CRL);
     revoked.clear();
-    revoked.pushBack(CRLEntry(user1_cert, REMOVE_FROM_CRL));
+	revoked.pushBack(crl_entry);
     X509CRL crl3 = ca.updateCRL(crl2, revoked, rng);
     
     store.addCrl(crl3);
     
-    result_u1 = x509PathValidate(user1_cert, restrictions, store);
-    if (!result_u1.successfulValidation())
+	logError("Validate CRL 3");
+    
+	result_u1 = x509PathValidate(user1_cert, restrictions, *store);
+    
+	if (!result_u1.successfulValidation())
     {
         logError("FAILED: User cert #1 was not un-revoked - " ~ result_u1.resultString());
         ++fails;
     }
     
-    checkAgainstCopy(ca_key, rng);
-    checkAgainstCopy(user1_key, rng);
-    checkAgainstCopy(user2_key, rng);
+    checkAgainstCopy(*ca_key, rng);
+    checkAgainstCopy(*user1_key, rng);
+    checkAgainstCopy(*user2_key, rng);
 
     testReport("X509_key", 5, fails);
 }

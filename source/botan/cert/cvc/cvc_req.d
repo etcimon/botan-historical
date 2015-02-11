@@ -16,13 +16,16 @@ import botan.asn1.ber_dec;
 import botan.utils.types;
 import botan.cert.cvc.cvc_cert;
 import botan.cert.cvc.ecdsa_sig;
+import botan.cert.cvc.signed_obj;
+import botan.filters.pipe;
+import botan.pubkey.x509_key;
 import botan.pubkey.algo.ecdsa;
 
 alias EAC11Req = RefCounted!EAC11ReqImpl;
 /**
 * This class represents TR03110 v1.1 EAC CV Certificate Requests.
 */
-final class EAC11ReqImpl : EAC11genCVC!EAC11ReqImpl
+final class EAC11ReqImpl : EAC11genCVC!EAC11ReqImpl, SignedObject
 {
 public:
 
@@ -92,8 +95,13 @@ public:
         m_self_signed = other.m_self_signed;
     }
 
+	// Interface fall-through
+	override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+	override void encode(Pipe pipe, X509Encoding encoding = PEM_) const { return super.encode(pipe, encoding); }
+	override const(Vector!ubyte) tbsData() const { return super.tbsData(); }
+
 protected:
-    void forceDecode()
+	override void forceDecode()
     {
         Vector!ubyte enc_pk;
         BERDecoder tbs_cert = BERDecoder(m_tbs_bits);

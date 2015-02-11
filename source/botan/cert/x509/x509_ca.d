@@ -29,13 +29,14 @@ import std.datetime;
 import std.algorithm;
 import botan.utils.mem_ops;
 
+alias X509CA = RefCounted!X509CAImpl;
+
 /**
 * This class represents X.509 Certificate Authorities (CAs).
 */
-struct X509CA
+final class X509CAImpl
 {
 public:
-
     /**
     * Sign a PKCS#10 Request.
     * @param req = the request to sign
@@ -61,16 +62,22 @@ public:
         X509Extensions extensions;
         
         extensions.add(new BasicConstraints(req.isCA(), req.pathLimit()), true);
+		logDebug("BasicConstraints");
         
         extensions.add(new KeyUsage(constraints), true);
+		logDebug("KeyUsage");
         
         extensions.add(new AuthorityKeyID(m_cert.subjectKeyId().dup));
+		logDebug("AuthorityKeyID");
         extensions.add(new SubjectKeyID(req.rawPublicKey().dup));
+		logDebug("SubjectKeyID");
         
         extensions.add(new SubjectAlternativeName(req.subjectAltName()));
+		logDebug("SubjectAlternativeName");
         
         extensions.add(new ExtendedKeyUsage(req.exConstraints()));
-        
+		logDebug("ExtendedKeyUsage");
+		logDebug("Sig algo: ", m_ca_sig_algo.toString());
         return makeCert(m_signer, rng, m_ca_sig_algo,
                          req.rawPublicKey(),
                          not_before, not_after,
@@ -147,34 +154,34 @@ public:
         __gshared immutable size_t SERIAL_BITS = 128;
         
         BigInt serial_no = BigInt(rng, SERIAL_BITS);
-        
-        Vector!ubyte cert = X509Object.makeSigned(
-            signer, rng, sig_algo,
-            DEREncoder().startCons(ASN1Tag.SEQUENCE)
-            .startExplicit(0)
-            .encode(X509_CERT_VERSION-1)
-            .endExplicit()
-            
-            .encode(serial_no)
-            
-            .encode(sig_algo)
-            .encode(issuer_dn)
-            
-            .startCons(ASN1Tag.SEQUENCE)
-            .encode(not_before)
-            .encode(not_after)
-            .endCons()
-            
-            .encode(subject_dn)
-            .rawBytes(pub_key)
-            
-            .startExplicit(3)
-            .startCons(ASN1Tag.SEQUENCE)
-            .encode(extensions)
-            .endCons()
-            .endExplicit()
-            .endCons()
-            .getContents());
+		logDebug("SigAlgo: ", sig_algo.toString());
+		auto contents =
+			DEREncoder().startCons(ASN1Tag.SEQUENCE)
+				.startExplicit(0)
+				.encode(X509_CERT_VERSION-1)
+				.endExplicit()
+				
+				.encode(serial_no)
+				
+				.encode(sig_algo)
+				.encode(issuer_dn)
+				
+				.startCons(ASN1Tag.SEQUENCE)
+				.encode(not_before)
+				.encode(not_after)
+				.endCons()
+				
+				.encode(subject_dn)
+				.rawBytes(pub_key)
+				
+				.startExplicit(3)
+				.startCons(ASN1Tag.SEQUENCE)
+				.encode(extensions)
+				.endCons()
+				.endExplicit()
+				.endCons()
+				.getContents();
+        Vector!ubyte cert = X509Object.makeSigned(signer, rng, sig_algo, contents.move);
         
         return X509Certificate(cert.move);
     }
@@ -223,30 +230,31 @@ private:
         X509Extensions extensions;
         extensions.add(new AuthorityKeyID(m_cert.subjectKeyId().dup));
         extensions.add(new CRLNumber(crl_number));
-        PKSigner* _signer = cast(PKSigner*)&m_signer;
-        Vector!ubyte crl = X509Object.makeSigned(
-            *_signer, rng, m_ca_sig_algo,
-            DEREncoder().startCons(ASN1Tag.SEQUENCE)
-            .encode(X509_CRL_VERSION-1)
-            .encode(m_ca_sig_algo)
-            .encode(m_cert.issuerDn())
-            .encode(X509Time(current_time))
-            .encode(X509Time(expire_time))
-            .encodeIf (revoked.length > 0,
-                    DEREncoder()
-                    .startCons(ASN1Tag.SEQUENCE)
-                    .encodeList(revoked)
-                    .endCons()
-                    )
-            .startExplicit(0)
-            .startCons(ASN1Tag.SEQUENCE)
-            .encode(extensions)
-            .endCons()
-            .endExplicit()
-            .endCons()
-            .getContents());
+
+		auto contents = 
+			DEREncoder().startCons(ASN1Tag.SEQUENCE)
+				.encode(X509_CRL_VERSION-1)
+				.encode(m_ca_sig_algo)
+				.encode(m_cert.issuerDn())
+				.encode(X509Time(current_time))
+				.encode(X509Time(expire_time))
+				.encodeIf (revoked.length > 0,
+					DEREncoder()
+					.startCons(ASN1Tag.SEQUENCE)
+					.encodeList(revoked)
+					.endCons()
+					)
+				.startExplicit(0)
+				.startCons(ASN1Tag.SEQUENCE)
+				.encode(extensions)
+				.endCons()
+				.endExplicit()
+				.endCons()
+				.getContents();
+
+        Vector!ubyte crl = X509Object.makeSigned(*cast(PKSigner*)&m_signer, rng, m_ca_sig_algo, contents);
         
-        return X509CRL(crl.move);
+        return X509CRL(crl);
     }    
 
 
@@ -267,8 +275,8 @@ private:
 * Choose a signing format for the key
 */
 PKSigner chooseSigFormat(in PrivateKey key,
-                            in string hash_fn,
-                            AlgorithmIdentifier sig_algo)
+                         in string hash_fn,
+                         ref AlgorithmIdentifier sig_algo)
 {
     import std.array : Appender;
     Appender!string padding;
@@ -297,6 +305,6 @@ PKSigner chooseSigFormat(in PrivateKey key,
     
     sig_algo.oid = OIDS.lookup(algo_name ~ "/" ~ padding.data);
     sig_algo.parameters = key.algorithmIdentifier().parameters;
-    
+	logDebug("Sig algo: ", sig_algo.toString());
     return PKSigner(key, padding.data, format);
 }
