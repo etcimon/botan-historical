@@ -86,21 +86,25 @@ Vector!ubyte BER_encode(in PrivateKey key,
 	logDebug("PKCS8 PEM encode with password");
     const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
     
-    Unique!PBE pbe = getPbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
+    PBE pbe = getPbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
     
     AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.getOid(), pbe.encodeParams());
     
-    Pipe key_encrytor = Pipe(*pbe);
+    Pipe key_encrytor = Pipe(pbe);
 	auto ber = BER_encode(key);
 	logDebug("Encode finished");
     key_encrytor.processMsg(ber);
 	logError("BER_Encode done");
-    return DEREncoder()
-            .startCons(ASN1Tag.SEQUENCE)
-            .encode(pbe_algid)
-            .encode(key_encrytor.readAll(), ASN1Tag.OCTET_STRING)
-            .endCons()
-            .getContentsUnlocked();
+	auto enc = DEREncoder().startCons(ASN1Tag.SEQUENCE);
+	enc.encode(pbe_algid);
+	logDebug("Encoded algid: ", pbe_algid.toString());
+	enc.encode(key_encrytor.readAll(), ASN1Tag.OCTET_STRING);
+	logDebug("Finished encoding key_encrytor");
+	enc.endCons();
+	auto contents = enc.getContentsUnlocked();
+	logDebug("got contents");
+	logDebug(contents[]);
+	return contents.move();
 }
 
 /**
@@ -123,8 +127,9 @@ string PEM_encode(in PrivateKey key,
 {
     if (pass == "")
         return PEM_encode(key);
-
-    return PEM.encode(BER_encode(key, rng, pass, dur, pbe_algo), "ENCRYPTED PRIVATE KEY");
+	auto contents = BER_encode(key, rng, pass, dur, pbe_algo);
+	logDebug("PEM got contents");
+    return PEM.encode(contents, "ENCRYPTED PRIVATE KEY");
 }
 
 /**

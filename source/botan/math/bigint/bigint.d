@@ -30,7 +30,7 @@ import std.traits : isNumeric;
 /**
 * Arbitrary precision integer
 */
-struct BigInt
+align(64) struct BigInt
 {
 public:
     /*
@@ -40,7 +40,7 @@ public:
     {
         Vector!ubyte buffer = BigInt.encode(this, base);
 		Vector!ubyte ret;
-        size_t skip = 0;
+		size_t skip = 0;
         while(skip < buffer.length && buffer[skip] == '0')
             ++skip;
         ret[] = (buffer.ptr + skip)[0 .. buffer.length - skip];
@@ -52,7 +52,11 @@ public:
     */
 	string toString(Base base = Decimal) const
 	{
-		return toVector(base)[].idup;
+		Vector!ubyte vec = toVector(base);
+		logDebug("toString: ", vec[]);
+		char[] array = new char[](256); // breaks here
+
+		return vec[].idup;
 	}
     alias Base = int;
     /**
@@ -128,8 +132,8 @@ public:
             markers += 2;
             base = Hexadecimal;
         }
-        
-		this.swap( decode(cast(const(ubyte)*)(str.ptr) + markers, str.length - markers, base) );
+		auto contents = decode(cast(const(ubyte)*)(str.ptr) + markers, str.length - markers, base);
+		this.swap( contents );
 
         if (negative) setSign(Negative);
         else          setSign(Positive);
@@ -143,7 +147,8 @@ public:
     */
     this(const(ubyte)* input, size_t length, Base base = Binary)
     {
-		this.swap( decode(input, length, base) );
+		auto contents = decode(input, length, base);
+		this.swap( contents );
     }
 
     /**
@@ -495,7 +500,8 @@ public:
     void clear() 
     { 
 		import std.c.string : memset;
-		memset(m_reg.ptr, 0, word.sizeof*m_reg.length);
+		if (!m_reg.empty)
+			memset(m_reg.ptr, 0, word.sizeof*m_reg.length);
     }
 
     /**
@@ -1026,19 +1032,18 @@ public:
         else if (base == Hexadecimal)
         {
             SecureVector!ubyte binary;
-            
             if (length % 2)
             {
                 // Handle lack of leading 0
                 const char[2] buf0_with_leading_0 = [ '0', cast(char)(buf[0]) ];
                 
                 binary = hexDecodeLocked(buf0_with_leading_0.ptr, 2);
-                
+				binary.reserve(length);
                 binary ~= hexDecodeLocked(cast(const(char)*)&buf[1], length - 1, false);
             }
-            else
+            else {
                 binary = hexDecodeLocked(cast(const(char)*)buf, length, false);
-            
+			}
             r.binaryDecode(binary.ptr, binary.length);
         }
         else if (base == Decimal)
@@ -1062,7 +1067,7 @@ public:
         }
         else
             throw new InvalidArgument("Unknown BigInt decoding method");
-        return r;
+        return r.move;
     }
 
 
@@ -1331,6 +1336,7 @@ public:
         return BigInt(m_reg.dup(), m_signedness);
     }
 private:
+	ubyte[8] dummy;
     SecureVector!word m_reg;
     Sign m_signedness = Positive;
 }

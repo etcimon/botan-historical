@@ -117,11 +117,12 @@ public:
     */
     ref DEREncoder rawBytes(const(ubyte)* bytes, size_t length)
     {
+
         if (m_subsequences.length)
             m_subsequences[m_subsequences.length-1].addBytes(bytes, length);
         else
             m_contents ~= bytes[0 .. length];
-        
+		logDebug("Contents appended: ", m_contents.length);
         return this;
     }
     
@@ -203,8 +204,7 @@ public:
     */
     ref DEREncoder encode()(auto const ref BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
-		logDebug("Encode BigInt");
-		scope(exit) logDebug("Encoded BigInt");
+		logDebug("Encode BigInt: ", n.toString());
         if (n == 0)
             return addObject(m_type_tag, m_class_tag, 0);
         
@@ -324,7 +324,8 @@ public:
         buffer ~= encodeTag(m_type_tag, m_class_tag)[];
         buffer ~= encodeLength(length)[];
         buffer ~= rep[0 .. length];
-        
+		logDebug("Finish Add object");
+
         return rawBytes(buffer);
     }
 
@@ -450,6 +451,8 @@ SecureArray!ubyte encodeTag(ASN1Tag m_type_tag, ASN1Tag m_class_tag)
 */
 SecureArray!ubyte encodeLength(size_t length)
 {
+	logDebug("Encode length: ", length);
+	scope(exit) logDebug("Finish encode length");
 	SecureArray!ubyte encoded_length;
     if (length <= 127)
         encoded_length.pushBack(cast(ubyte)(length));

@@ -96,6 +96,7 @@ Vector!string splitter(in string str, char delim)
 Vector!string splitOnPred(in string str,
                          bool delegate(char) pred)
 {
+	logDebug("split");
     Vector!string elems;
     if (str == "") return elems.move();
     import std.array : Appender;
@@ -124,6 +125,7 @@ Vector!string splitOnPred(in string str,
 */
 string eraseChars(in string str, in char[] chars)
 {
+	logDebug("eraseChars");
     import std.algorithm : canFind;
     import std.array : Appender;
     Appender!string output;

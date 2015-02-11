@@ -278,6 +278,7 @@ PKSigner chooseSigFormat(in PrivateKey key,
                          in string hash_fn,
                          ref AlgorithmIdentifier sig_algo)
 {
+	logDebug("chooseSigFormat");
     import std.array : Appender;
     Appender!string padding;
     

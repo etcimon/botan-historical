@@ -96,6 +96,7 @@ public:
                                          to!string(type_tag) ~ "/" ~
                                          to!string(class_tag));
 		}
+		return;
     }
 
     /*

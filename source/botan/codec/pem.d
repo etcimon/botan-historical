@@ -12,6 +12,7 @@ import botan.filters.data_src;
 import botan.filters.b64_filt;
 import botan.utils.types;
 import std.array : Appender;
+import botan.constants;
 
 struct PEM
 {
@@ -57,6 +58,7 @@ struct PEM
     */
     static SecureVector!ubyte decode(DataSource source, ref string label)
     {
+		logDebug("PEM decode");
         Appender!string label_buf;
         __gshared immutable size_t RANDOM_CHAR_LIMIT = 8;
         

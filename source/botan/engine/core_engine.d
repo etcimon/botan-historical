@@ -586,7 +586,8 @@ public:
 				logDebug("Key: ", key2.algoName);
 				logDebug("Key: ", key2.getN().toString());
 				logDebug("Key: ", key2.pkcs8AlgorithmIdentifier().toString());
-
+				import core.memory : GC;
+				GC.disable();
 				auto ret = new RSAPrivateOperation(key2, rng);
 				logDebug("OK");
 				return ret;

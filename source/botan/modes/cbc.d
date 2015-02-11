@@ -141,6 +141,7 @@ public:
                 prev_block = buf + BS*i;
             }
             
+			assert(buffer.length >= BS*blocks);
             state()[] = buf[BS*(blocks-1) .. BS*blocks];
         }
 
@@ -290,11 +291,11 @@ public:
         while (blocks)
         {
             const size_t to_proc = std.algorithm.min(BS * blocks, m_tempbuf.length);
-            
             cipher().decryptN(buf, m_tempbuf.ptr, to_proc / BS);
             
+			assert(m_tempbuf.length >= BS);
             xorBuf(m_tempbuf.ptr, statePtr(), BS);
-            xorBuf(&m_tempbuf[BS], buf, to_proc - BS);
+            xorBuf(m_tempbuf.ptr + BS, buf, to_proc - BS);
 						
 			assert(state().length >= BS);
             copyMem(statePtr(), buf + (to_proc - BS), BS);
@@ -318,7 +319,7 @@ public:
             throw new DecodingError(name() ~ ": Ciphertext not a multiple of block size");
         
         update(buffer, offset);
-        
+		assert(buffer.length >= BS);
         const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
         buffer.resize(buffer.length - pad_bytes); // remove padding
     }

@@ -32,7 +32,7 @@ struct RSAOptions {
 		logDebug("checkKey");
 		if (!privkey.checkKeyImpl(rng, strong))
 			return false;
-		
+		logDebug("Done checking key");
 		if (!strong)
 			return true;
 		

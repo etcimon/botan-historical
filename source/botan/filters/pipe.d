@@ -272,6 +272,7 @@ public:
     */
     string toString(message_id msg = DEFAULT_MESSAGE)
     {
+		logDebug("pipe toString()");
         msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
         SecureVector!ubyte buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         Appender!string str;

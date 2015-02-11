@@ -127,15 +127,22 @@ public:
 		    in AlgorithmIdentifier aid, const ref SecureVector!ubyte key_bits)
     {
         BigInt n, e;
-        BERDecoder(key_bits)
-                .startCons(ASN1Tag.SEQUENCE)
-                .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
-                .decode(n)
-                .decode(e)
-                .decode(m_d)
-                .decode(m_p)
-                .decode(m_q)
-                .decode(m_d1)
+		logDebug("loading key bits");
+		auto ber = BERDecoder(key_bits).startCons(ASN1Tag.SEQUENCE);
+
+        ber.decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version");
+		ber.decode(n);
+		logDebug("n: ", n.toString());
+
+		ber.decode(e);
+		logDebug("e: ", e.toString());
+		ber.decode(m_d);
+		logDebug("m_d");
+		ber.decode(m_p);
+		logDebug("m_p");
+		ber.decode(m_q);
+		logDebug("m_q");
+		ber.decode(m_d1)
                 .decode(m_d2)
                 .decode(m_c)
                 .endCons();
@@ -228,19 +235,22 @@ public:
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {
-        return DEREncoder()
-                .startCons(ASN1Tag.SEQUENCE)
+		auto der = DEREncoder();
+
+        der.startCons(ASN1Tag.SEQUENCE)
                 .encode(cast(size_t)(0))
                 .encode(m_n)
-                .encode(m_e)
-                .encode(m_d)
-                .encode(m_p)
+				.encode(m_e);
+		logDebug("Encoding m_d");
+		der
+			.encode(m_d);
+        der.encode(m_p)
                 .encode(m_q)
                 .encode(m_d1)
                 .encode(m_d2)
                 .encode(m_c)
-                .endCons()
-                .getContents();
+				.endCons();
+        return der.getContents();
     }
 
 protected:

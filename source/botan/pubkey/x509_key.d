@@ -205,21 +205,22 @@ X509CertOptions reqOpts2()
 
 uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 {
-    Unique!PrivateKey copy_priv = pkcs8.copyKey(orig, rng);
-	Unique!PublicKey copy_pub = x509_key.copyKey(orig);
+
+    auto copy_priv = pkcs8.copyKey(orig, rng);
+	auto copy_pub = x509_key.copyKey(orig);
     
     const string passphrase = "I need work! -Mr. T";
 	logError("checkCopy 1");
 	auto pem = pkcs8.PEM_encode(orig, rng, passphrase);
-	logDebug(pem[]);
+	//logDebug(pem[]);
 	logError("checkCopy _1");
 	auto enc_source = cast(DataSource)DataSourceMemory(pem);
-	Unique!PrivateKey copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
+	auto copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
     ulong orig_id = keyId(orig);
 	logDebug("checkCopy 2");
-	ulong pub_id = keyId(*copy_pub);
-    ulong priv_id = keyId(*copy_priv);
-    ulong priv_enc_id = keyId(*copy_priv_enc);
+	ulong pub_id = keyId(copy_pub);
+    ulong priv_id = keyId(copy_priv);
+    ulong priv_enc_id = keyId(copy_priv_enc);
 	logDebug("checkCopy 3");
 
     if (orig_id != pub_id || orig_id != priv_id || orig_id != priv_enc_id)
@@ -232,6 +233,8 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 
 static if (!SKIP_X509_KEY_TEST) unittest
 {
+	import core.memory : GC;
+	GC.disable();
     auto rng = AutoSeededRNG();
     const string hash_fn = "SHA-256";
     
@@ -342,9 +345,8 @@ static if (!SKIP_X509_KEY_TEST) unittest
         ++fails;
     }
     
-    checkAgainstCopy(*ca_key, rng);
+	checkAgainstCopy(*ca_key, rng);
     checkAgainstCopy(*user1_key, rng);
     checkAgainstCopy(*user2_key, rng);
-
     testReport("X509_key", 5, fails);
 }

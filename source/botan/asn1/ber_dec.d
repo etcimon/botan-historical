@@ -22,7 +22,6 @@ public:
 struct BERDecoder
 {
 public:
-
     /*
     * Return the BER encoding of the next object
     */
@@ -41,13 +40,13 @@ public:
 			return next.move();
         
         size_t length = decodeLength(m_source);
+		logDebug("length: ", length);
+
         next.value.resize(length);
         if (m_source.read(next.value.ptr, length) != length)
             throw new BERDecodingError("Value truncated");
-        //logTrace("Value: ", cast(ubyte[])next.value[]);
         if (next.type_tag == ASN1Tag.EOC && next.class_tag == ASN1Tag.UNIVERSAL)
             return getNextObject();
-        
 		return next.move();
     }
 
@@ -261,11 +260,11 @@ public:
                           ASN1Tag type_tag, ASN1Tag class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         BERObject obj = getNextObject();
-		logDebug("obj: ", obj.type_tag);
         obj.assertIsA(type_tag, class_tag);
         
-        if (obj.value.empty)
-            output = BigInt(0);
+        if (obj.value.empty) {
+            output = BigInt("0");
+		}
         else
         {
             const bool negative = (obj.value[0] & 0x80) ? true : false;
@@ -278,12 +277,15 @@ public:
                 foreach (size_t i; 0 .. obj.value.length)
                     obj.value[i] = ~obj.value[i];
             }
-            output = BigInt(&obj.value[0], obj.value.length);
+			output = BigInt(obj.value.ptr, obj.value.length);
             if (negative)
                 output.flipSign();
         }
-        
-        //logTrace("decode BigInt: (32bit start:)", output.toString());
+		BigInt output_2 = BigInt("10");
+		logDebug("Printing output 2");
+		logDebug(output_2.toString());
+		// breaks here
+		logTrace("decode BigInt: ", output.toString());
         return this;
     }
     
@@ -626,8 +628,6 @@ public:
 	}
 
 	@disable this(this);
-	@disable void opAssign(BERDecoder);
-
 private:
 
     BERDecoder* m_parent;
