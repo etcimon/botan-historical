@@ -147,15 +147,11 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
             
             assert(bad_ctext != ctext, "Made them different");
             
-            try
-            {
-                auto bad_ptext = unlock(d.decrypt(bad_ctext));
-                logError(algo ~ " failed - decrypted bad data");
-                logTrace(hexEncode(bad_ctext) ~ " . " ~ hexEncode(bad_ptext));
-                logTrace(hexEncode(ctext) ~ " . " ~ hexEncode(decrypted));
-                ++fails;
-            }
-            catch (Throwable) {}
+            auto bad_ptext = unlock(d.decrypt(bad_ctext));
+            logError(algo ~ " failed - decrypted bad data");
+            logTrace(hexEncode(bad_ctext) ~ " . " ~ hexEncode(bad_ptext));
+            logTrace(hexEncode(ctext) ~ " . " ~ hexEncode(decrypted));
+            ++fails;
         }
     }
     

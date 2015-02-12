@@ -91,7 +91,7 @@ protected:
                                        to!string(feedback_bits) ~ " not supported");
     }
 
-    final BlockCipher cipher() const { return *m_cipher; }
+	final BlockCipher cipher() const { return cast()*m_cipher; }
 
     final size_t feedback() const { return m_feedback_bytes; }
 

@@ -84,9 +84,9 @@ protected:
             throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/CBC");
     }
 
-    final BlockCipher cipher() const { return *m_cipher; }
+	final BlockCipher cipher() const { return cast()*m_cipher; }
 
-    final BlockCipherModePaddingMethod padding() const
+    final const(BlockCipherModePaddingMethod) padding() const
     {
         assert(m_padding, "No padding defined");
         return *m_padding;
@@ -224,7 +224,7 @@ public:
             const size_t full_blocks = ((sz / BS) - 1) * BS;
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
-			assert(buffer.length > full_blocks+final_bytes);
+			assert(buffer.length >= full_blocks+final_bytes);
             SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
             buffer.resize(full_blocks + offset);
             update(buffer, offset);

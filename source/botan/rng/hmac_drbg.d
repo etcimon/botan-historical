@@ -93,8 +93,9 @@ public:
     this(MessageAuthenticationCode mac,
          RandomNumberGenerator prng)
     { 
+		// logDebug("Loading with mac: ", mac.name);
         import std.algorithm : fill;
-        m_mac = mac;
+        m_mac = mac.clone();
         m_prng = prng;
         m_V = SecureVector!ubyte(m_mac.outputLength);
         fill(m_V.ptr[0 .. m_V.length], cast(ubyte)0x01);

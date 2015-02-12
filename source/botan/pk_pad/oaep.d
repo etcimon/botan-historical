@@ -62,9 +62,9 @@ public:
         output[output.length - in_length - 1] = 0x01;
         bufferInsert(output, output.length - in_length, input, in_length);
         
-        mgf1Mask(*m_hash, output.ptr, m_Phash.length, &output[m_Phash.length], output.length - m_Phash.length);
+        mgf1Mask(cast() *m_hash, output.ptr, m_Phash.length, &output[m_Phash.length], output.length - m_Phash.length);
         
-        mgf1Mask(*m_hash, &output[m_Phash.length], output.length - m_Phash.length,
+		mgf1Mask(cast() *m_hash, &output[m_Phash.length], output.length - m_Phash.length,
         output.ptr, m_Phash.length);
         
         return output;
@@ -96,13 +96,8 @@ public:
         SecureVector!ubyte input = SecureVector!ubyte(key_length);
         bufferInsert(input, key_length - in_length, input_, in_length);
         
-        mgf1Mask(*m_hash,
-                  &input[m_Phash.length], input.length - m_Phash.length,
-        input.ptr, m_Phash.length);
-        
-        mgf1Mask(*m_hash,
-                  input.ptr, m_Phash.length,
-        &input[m_Phash.length], input.length - m_Phash.length);
+		mgf1Mask(cast() *m_hash, &input[m_Phash.length], input.length - m_Phash.length, input.ptr, m_Phash.length);        
+		mgf1Mask(cast() *m_hash, input.ptr, m_Phash.length, &input[m_Phash.length], input.length - m_Phash.length);
         
         bool waiting_for_delim = true;
         bool bad_input = false;

@@ -121,7 +121,6 @@ public:
     */
     string algoNameAndArgs() const
     {
-		logDebug("algoNameAndArgs");
         Appender!string output;
         
         output ~= algoName;
@@ -265,7 +264,6 @@ private:
 
 string makeArg(ref Vector!(Pair!(size_t, string)) names, size_t start)
 {
-	logDebug("makeArg");
     Appender!string output;
     output ~= names[start].second;
     size_t level = names[start].first;

@@ -37,8 +37,8 @@ public:
         const(ubyte)* S1 = secret;
         const(ubyte)* S2 = secret + (secret_len - S2_len);
         
-        P_hash(output, *m_hmac_md5,  S1, S1_len, seed, seed_len);
-        P_hash(output, *m_hmac_sha1, S2, S2_len, seed, seed_len);
+        P_hash(output, cast() *m_hmac_md5,  S1, S1_len, seed, seed_len);
+		P_hash(output, cast() *m_hmac_sha1, S2, S2_len, seed, seed_len);
         
         return output;
     }
@@ -72,7 +72,7 @@ public:
     {
         SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
-        P_hash(output, *m_hmac, secret, secret_len, seed, seed_len);
+		P_hash(output, cast() *m_hmac, secret, secret_len, seed, seed_len);
         
         return output;
     }

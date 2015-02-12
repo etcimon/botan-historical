@@ -32,7 +32,7 @@ public:
         auto range = file.byLine();
         
         foreach (line; range) {    
-            string[] parts = line.split(':');
+            string[] parts = cast(string[])line.split(':');
             
             if (parts.length != 4)
                 throw new DecodingError("Invalid line in SRP authenticator file");

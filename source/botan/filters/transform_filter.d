@@ -144,7 +144,7 @@ protected:
     */
     void bufferReset() { m_buffer_pos = 0; }
 
-    final Transformation getTransform() const { return *m_transform; }
+    final const(Transformation) getTransform() const { return *m_transform; }
 
     final Transformation getTransform() { return *m_transform; }
 

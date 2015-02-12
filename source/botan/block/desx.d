@@ -54,7 +54,7 @@ public:
     override void clear()
     {
         m_des.free();
-        m_des = Unique!DES(new DES);
+        m_des = new DES;
         zap(m_K1);
         zap(m_K2);
     }

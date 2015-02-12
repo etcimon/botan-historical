@@ -127,7 +127,7 @@ protected:
 
     final size_t L() const { return m_L; }
 
-    final BlockCipher cipher() const { return *m_cipher; }
+    final BlockCipher cipher() const { return cast()*m_cipher; }
 
     final void encodeLength(size_t len, ubyte* output)
     {

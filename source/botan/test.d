@@ -101,7 +101,6 @@ size_t runTestsBb(ref File src,
                   bool clear_between_cb,
                   size_t delegate(ref HashMap!(string, string)) cb)
 {
-    scope(failure) { logError("failure in file: ", src.name); }
     if(src.eof || src.error)
     {
         logError("Could not open input file for " ~ name_key);
@@ -144,6 +143,7 @@ size_t runTestsBb(ref File src,
             continue;
         }
 		import std.string : strip;
+		if (line.indexOf('=') == -1) continue;
         assert(line[line.indexOf('=') - 1] == ' ' && line[line.indexOf('=') + 1] == ' ', "= must be wrapped with spaces");
         const string key = line[0 .. line.indexOf('=') - 1].strip;
         const string val = line[line.indexOf('=') + 2 .. $].strip;
@@ -157,20 +157,21 @@ size_t runTestsBb(ref File src,
         {
             //logTrace(vars[name_key] " ~ " ~ algo_count);
             ++algo_count;
-            //try
-            //{
+            try
+            {
                 const size_t fails = cb(vars);
                 if(fails)
                 {
                     logTrace(vars[name_key] ~ " test ", algo_count, " : ", fails, " failure");
                     algo_fail += fails;
                 }
-            //}
-            //catch(Exception e)
-            //{
-            //    logTrace(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
-            //    ++algo_fail;
-            //}
+            }
+            catch(Exception e)
+            {
+                logTrace(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
+                ++algo_fail;
+				assert(false);
+            }
             
             if(clear_between_cb)
             {
