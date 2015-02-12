@@ -3,13 +3,13 @@ module botan.constants;
 const LogLevel = Trace;
 
 const SKIP_TRANSFORM_TEST = true;
-const SKIP_X509_TEST = false;
+const SKIP_X509_TEST = true;
 const SKIP_BLOCK_TEST = true;
 const SKIP_CVC_TEST = true;
 const SKIP_CRYPTOBOX_TEST = true;
 const SKIP_RFC3394_TEST = true;
 const SKIP_TSS_TEST = true;
-const SKIP_HASH_TEST = true;
+const SKIP_HASH_TEST = false;
 const SKIP_KDF_TEST = true;
 const SKIP_MAC_TEST = true;
 const SKIP_BIGINT_TEST = true;
