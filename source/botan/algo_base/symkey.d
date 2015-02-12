@@ -13,11 +13,12 @@ import botan.codec.hex;
 import std.algorithm;
 import memutils.vector;
 import botan.utils.types;
-
+import memutils.refcounted;
+alias OctetString = RefCounted!OctetStringImpl;
 /**
 * Octet String
 */
-struct OctetString
+struct OctetStringImpl
 {
 public:
     /**
@@ -128,10 +129,10 @@ public:
     * Create a new OctetString
     * @param input = a bytestring
     */
-	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
+	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
 	/// ditto
-	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) {  m_bits = SecureArray!ubyte(input.ptr[0 .. input.length]); }
+	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**
@@ -202,7 +203,7 @@ public:
     }
 
 private:
-    SecureArray!ubyte m_bits;
+    SecureVector!ubyte m_bits;
 }
 
 /**

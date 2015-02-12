@@ -171,7 +171,7 @@ HashMapRef!(string, bool)
 */
 HashMapRef!(string, string)
     algorithmKatDetailed(in SCANToken algo_name,
-                         in HashMapRef!(string, string) vars,
+                         const ref HashMapRef!(string, string) vars,
                          AlgorithmFactory af)
 {
     logTrace("Testing ", algo_name);
@@ -284,9 +284,9 @@ HashMapRef!(string, string)
 
 private:
 
-void verifyResults(in string algo, in HashMapRef!(string, string) results)
+void verifyResults(in string algo, const HashMapRef!(string, string) results)
 {
-    foreach (const ref string key, const ref string value; results)
+    foreach (const ref string key, const ref string value; *results)
     {
         if (value != "PASSED")
             throw new SelfTestFailure(algo ~ " self-test failed (" ~ value ~ ")" ~

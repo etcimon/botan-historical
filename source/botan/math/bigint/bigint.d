@@ -30,7 +30,7 @@ import std.traits : isNumeric;
 /**
 * Arbitrary precision integer
 */
-align(64) struct BigInt
+struct BigInt
 {
 public:
     /*
@@ -1336,7 +1336,6 @@ public:
         return BigInt(m_reg.dup(), m_signedness);
     }
 private:
-	ubyte[8] dummy;
     SecureVector!word m_reg;
     Sign m_signedness = Positive;
 }

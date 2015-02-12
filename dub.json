@@ -46,6 +46,7 @@
         }
     ],
     "dependencies": {
+			"backtrace-d": { "version": "~master" },
 			"memutils": { "version": "~master", "path": "../memutils" } 
 	}, 
     "libs": ["dl", "bz2", "lzma"]

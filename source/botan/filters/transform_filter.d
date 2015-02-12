@@ -39,7 +39,7 @@ public:
 
     override final void setIv(in InitializationVector iv)
     {
-        m_nonce.update(cast(InitializationVector)iv);
+        m_nonce.update(*cast(InitializationVector*)&iv);
     }
 
     override final void setKey(in SymmetricKey key)
@@ -211,7 +211,8 @@ private:
     */
     final void bufferedFinal(const(ubyte)* input, size_t input_length)
     {
-        SecureVector!ubyte buf = SecureVector!ubyte(input[0 .. input_length]);
+		SecureVector!ubyte buf;
+		buf[] = input[0 .. input_length];
         m_transform.finish(buf);
         send(buf);
     }
