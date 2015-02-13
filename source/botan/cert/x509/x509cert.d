@@ -543,7 +543,7 @@ protected:
             throw new DecodingError("Algorithm identifier mismatch");
         
         m_self_signed = (dn_subject == dn_issuer);
-		logDebug("Is self signed: ", m_self_signed);
+		//logTrace("Is self signed: ", m_self_signed);
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         

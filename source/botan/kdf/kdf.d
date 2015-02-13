@@ -182,7 +182,6 @@ static if (!SKIP_KDF_TEST) unittest
         return runTests(input, "KDF", "Output", true,
             (ref HashMap!(string, string) vec)
             {
-				logDebug(":: ", vec["KDF"]);
 				atomicOp!"+="(g_total_tests, 1);
 	            Unique!KDF kdf = getKdf(vec["KDF"]);
 	            
@@ -192,7 +191,6 @@ static if (!SKIP_KDF_TEST) unittest
 	            
 	            const auto key = kdf.deriveKey(outlen, secret, salt);
 				auto encoded = hexEncode(key);
-				logDebug("OK");
 	            return encoded;
 	        });
 	    };

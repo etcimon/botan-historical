@@ -164,7 +164,7 @@ protected:
     */
     override void forceDecode()
     {
-		logDebug("ForceDecode PKCS10Request");
+		//logTrace("ForceDecode PKCS10Request");
         BERDecoder cert_req_info = BERDecoder(m_tbs_bits);
         
         size_t _version;

@@ -1,11 +1,11 @@
 module botan.constants;
 
-const LogLevel = Debug;
+const LogLevel = Trace;
 
 const SKIP_TRANSFORM_TEST = true;
 const SKIP_X509_TEST = true;
 const SKIP_BLOCK_TEST = true;
-const SKIP_CVC_TEST = true;
+const SKIP_CVC_TEST = true; // TODO: EAC11 ECDSA Key decoding
 const SKIP_CRYPTOBOX_TEST = true;
 const SKIP_RFC3394_TEST = true;
 const SKIP_TSS_TEST = true;
@@ -23,18 +23,18 @@ const SKIP_PBKDF_TEST = true;
 const SKIP_HKDF_TEST = true;
 const SKIP_DH_TEST = true;
 const SKIP_DLIES_TEST = true;
-const SKIP_DSA_TEST = true;
-const SKIP_ECDH_TEST = true;
-const SKIP_ECDSA_TEST = true;
-const SKIP_ELGAMAL_TEST = true;
-const SKIP_GOST_TEST = true;
-const SKIP_NR_TEST = true;
-const SKIP_RFC6979_TEST = true;
-const SKIP_RSA_TEST = true;
-const SKIP_RW_TEST = true;
-const SKIP_X509_KEY_TEST = true;
+const SKIP_DSA_TEST = false;
+const SKIP_ECDH_TEST = false;
+const SKIP_ECDSA_TEST = false;
+const SKIP_ELGAMAL_TEST = false;
+const SKIP_GOST_TEST = false;
+const SKIP_NR_TEST = false;
+const SKIP_RFC6979_TEST = false;
+const SKIP_RSA_TEST = false;
+const SKIP_RW_TEST = false;
+const SKIP_X509_KEY_TEST = false;
 const SKIP_RNG_TEST = false;
-const SKIP_STREAM_CIPHER_TEST = true;
+const SKIP_STREAM_CIPHER_TEST = false;
 const SKIP_TLS_TEST = true;
 
 const BOTAN_VERSION_MAJOR = 2;

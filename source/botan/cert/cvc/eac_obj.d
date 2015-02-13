@@ -45,9 +45,9 @@ protected:
         {
             Derived.decodeInfo(input, m_tbs_bits, m_sig);
         }
-        catch(DecodingError)
+        catch(DecodingError e)
         {
-            throw new DecodingError(m_PEM_label_pref ~ " decoding failed");
+            throw new DecodingError("EAC11obj decoding failed (" ~ e.msg ~ ")");
         }
     }
 }

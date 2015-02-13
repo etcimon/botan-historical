@@ -53,9 +53,7 @@ public:
 	string toString(Base base = Decimal) const
 	{
 		Vector!ubyte vec = toVector(base);
-		logDebug("toString: ", vec[]);
-		char[] array = new char[](256); // breaks here
-
+		//logTrace("toString: ", vec[]);
 		return vec[].idup;
 	}
     alias Base = int;
@@ -500,8 +498,9 @@ public:
     void clear() 
     { 
 		import std.c.string : memset;
-		if (!m_reg.empty)
+		if (!m_reg.empty){
 			memset(m_reg.ptr, 0, word.sizeof*m_reg.length);
+		}
     }
 
     /**

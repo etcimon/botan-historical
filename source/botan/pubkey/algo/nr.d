@@ -294,7 +294,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 size_t nrSigKat(string p, string q, string g, string x, 
                   string hash, string msg, string nonce, string signature)
 {
-	logDebug("msg: ", msg);
+	//logTrace("msg: ", msg);
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     

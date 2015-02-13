@@ -58,7 +58,7 @@ struct PEM
     */
     static SecureVector!ubyte decode(DataSource source, ref string label)
     {
-		logDebug("PEM decode");
+		//logTrace("PEM decode");
         Appender!string label_buf;
         __gshared immutable size_t RANDOM_CHAR_LIMIT = 8;
         

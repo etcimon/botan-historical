@@ -152,6 +152,7 @@ static if (BOTAN_TEST):
 import botan.test;
 import botan.codec.hex;
 import core.atomic;
+import memutils.hashmap;
 
 shared size_t total_tests;
 
@@ -161,9 +162,9 @@ Transformation getTransform(string algo)
 }
 
 SecureVector!ubyte transformTest(string algo,
-                                 const ref SecureVector!ubyte nonce,
-                                 const ref SecureVector!ubyte /*key*/,
-                                 const ref SecureVector!ubyte input)
+                                 in SecureVector!ubyte nonce,
+                                 in SecureVector!ubyte /*key*/,
+                                 in SecureVector!ubyte input)
 {
     Unique!Transformation transform = getTransform(algo);
 
@@ -178,6 +179,8 @@ SecureVector!ubyte transformTest(string algo,
 
 static if (!SKIP_TRANSFORM_TEST) unittest
 {
+	import core.memory;
+	GC.disable();
     logDebug("Testing transform.d ...");
     File vec = File("../test_data/transform.vec", "r");
     

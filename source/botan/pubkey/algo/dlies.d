@@ -192,10 +192,10 @@ size_t dliesKat(string p,
     BigInt x1_bn = BigInt(x1);
     BigInt x2_bn = BigInt(x2);
 
-	logDebug("p_bn: ", p_bn.toString());
-	logDebug("g_bn: ", g_bn.toString());
-	logDebug("x1_bn: ", x1_bn.toString());
-	logDebug("x2_bn: ", x2_bn.toString());
+	//logTrace("p_bn: ", p_bn.toString());
+	//logTrace("g_bn: ", g_bn.toString());
+	//logTrace("x1_bn: ", x1_bn.toString());
+	//logTrace("x2_bn: ", x2_bn.toString());
 
     DLGroup domain = DLGroup(p_bn, g_bn);
     

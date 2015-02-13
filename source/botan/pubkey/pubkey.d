@@ -231,27 +231,23 @@ public:
         AlgorithmFactory af = globalState().algorithmFactory();
 
         RandomNumberGenerator rng = globalState().globalRng();
-        
-        m_op = null;
-        m_verify_op = null;
-
+		Signature sig;
+		Verification ver;
         foreach (Engine engine; af.engines[]) {
-					logDebug("engine: ", engine.providerName());
-			logDebug("signature op");
-            if (!m_op)
-                m_op = Unique!Signature(engine.getSignatureOp(key, rng));
-						logDebug("m_op: ", cast(bool)m_op);
-            if (!m_verify_op && prot == ENABLE_FAULT_PROTECTION)
-                m_verify_op = Unique!Verification(engine.getVerifyOp(key, rng));
-															logDebug("m_verify: ", cast(bool)m_verify_op);
-            if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
-                break;
+			if (!sig)
+				sig = engine.getSignatureOp(key, rng);
+			if (!ver && prot == ENABLE_FAULT_PROTECTION)
+				ver = engine.getVerifyOp(key, rng);
+			if (sig && (ver || prot == DISABLE_FAULT_PROTECTION))
+	            break;
         }
 		
         
-        if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
+        if (!sig || (!ver && prot == ENABLE_FAULT_PROTECTION))
             throw new LookupError("Signing with " ~ key.algoName ~ " not supported");
         
+		m_op = sig;
+		m_verify_op = ver;
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
 		assert(*m_op !is null && *m_verify_op !is null && *m_emsa !is null);
@@ -431,15 +427,16 @@ public:
     {
         AlgorithmFactory af = globalState().algorithmFactory();
         RandomNumberGenerator rng = globalState().globalRng();
-
+		Verification ver;
         foreach (Engine engine; af.engines[]) {
-            m_op = Unique!Verification(engine.getVerifyOp(key, rng));
-            if (m_op)
+            ver = engine.getVerifyOp(key, rng);
+            if (ver)
                 break;
         }
         
-        if (!m_op)
+        if (!ver)
             throw new LookupError("Verification with " ~ key.algoName ~ " not supported");
+		m_op = ver;
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
     }
@@ -547,7 +544,7 @@ public:
 
         foreach (Engine engine; af.engines[])
         {
-            m_op = Unique!KeyAgreement(engine.getKeyAgreementOp(key, rng));
+            m_op = engine.getKeyAgreementOp(key, rng);
             if (m_op)
                 break;
         }
@@ -591,7 +588,7 @@ public:
         RandomNumberGenerator rng = globalState().globalRng();
 
         foreach (Engine engine; af.engines[]) {
-            m_op = Unique!Encryption(engine.getEncryptionOp(key, rng));
+            m_op = engine.getEncryptionOp(key, rng);
             if (m_op)
                 break;
         }
@@ -646,7 +643,7 @@ public:
 
         foreach (Engine engine; af.engines[])
         {
-            m_op = Unique!Decryption(engine.getDecryptionOp(key, rng));
+            m_op = engine.getDecryptionOp(key, rng);
             if (m_op)
                 break;
         }

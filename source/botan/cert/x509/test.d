@@ -183,7 +183,7 @@ static if (!SKIP_X509_TEST) unittest
 		for(size_t i = 0; i != 74; i++)
         {
             const size_t test_no = i+1;
-			logError("NIST X.509 test #", test_no);
+			logDebug("NIST X.509 test #", test_no);
             
             const string test_dir = test_dirs[i];
             const string[] all_files = dirListing(test_dir);
@@ -215,7 +215,7 @@ static if (!SKIP_X509_TEST) unittest
             
             auto store = scoped!CertificateStoreInMemory();
             
-            logDebug(root_cert);
+			//logTrace(root_cert);
             store.addCertificate(X509Certificate(root_cert));
             
             X509Certificate end_user = X509Certificate(to_verify);

@@ -87,7 +87,6 @@ public:
             }
             m_id.pushBack(component);
         }
-		logDebug("After OID");
 		//import botan.asn1.oids : OIDS;
 		//assert(OIDS.lookup(OID(this)) !is null, "Invalid OID: " ~ m_id[].to!string);
     }
@@ -228,7 +227,7 @@ public:
         }
         catch (Throwable)
         {
-            logError("parseAsn1Oid failure");
+            logError("parseAsn1Oid failure with '" ~ oid_str ~ "'");
             throw new InvalidOID(oid_str);
         }
         

@@ -180,7 +180,7 @@ public:
     void BER_decode()(auto const ref Vector!ubyte data,
                       Format format)
     {
-		logDebug("BER_decode ", format);
+		//logTrace("BER_decode ", format);
         BigInt new_p, new_q, new_g;
         
         BERDecoder decoder = BERDecoder(data);
@@ -240,7 +240,6 @@ public:
     */
     this(in string name)
     {
-		logDebug("DLGroup Name");
         string pem = getPemForNamedGroup(name);
         
         if (!pem)

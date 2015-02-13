@@ -110,7 +110,6 @@ public:
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
         m_tbs_bits = other.m_tbs_bits.dup;
-        m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
         
         m_pk = cast(ECDSAPublicKey) other.m_pk; // no copy of this...
@@ -133,7 +132,6 @@ public:
         m_sig = other.m_sig;
         m_sig_algo = other.m_sig_algo;
         m_tbs_bits = other.m_tbs_bits.dup;
-        m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
         m_pk = other.m_pk;
         m_chr = other.m_chr;
@@ -164,12 +162,12 @@ protected:
         BERDecoder tbs_cert = BERDecoder(m_tbs_bits);
         tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
                 .decode(m_car)
-                .startCons((cast(ASN1Tag)73))
-                .rawBytes(enc_pk)
+				.startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION)
+				.rawBytes(enc_pk)
                 .endCons()
                 .decode(m_chr)
-                .startCons((cast(ASN1Tag)76))
-                .decode(m_chat_oid)
+				.startCons((cast(ASN1Tag)76), ASN1Tag.APPLICATION)
+				.decode(m_chat_oid)
                 .decode(enc_chat_val, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)19), ASN1Tag.APPLICATION)
                 .endCons()
                 .decode(m_ced)

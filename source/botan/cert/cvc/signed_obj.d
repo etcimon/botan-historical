@@ -138,12 +138,12 @@ protected:
         catch(DecodingError e)
         {
             const string what = e.msg;
-            throw new DecodingError(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
+            throw new DecodingError("EACSignedObject decoding failed (" ~ what ~ ")");
         }
         catch(InvalidArgument e)
         {
             const string what = e.msg;
-            throw new DecodingError(m_PEM_label_pref ~ " decoding failed (" ~ what ~ ")");
+			throw new DecodingError("EACSignedObject decoding failed (" ~ what ~ ")");
         }
     }
 
@@ -151,6 +151,5 @@ protected:
 
     AlgorithmIdentifier m_sig_algo;
     Vector!ubyte m_tbs_bits;
-    string m_PEM_label_pref;
     string[] m_PEM_labels_allowed;
 }

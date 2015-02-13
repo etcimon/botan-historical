@@ -261,7 +261,6 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             catch (Exception) {}
         }
     }
-    
     return fail;
 }
 
@@ -280,6 +279,6 @@ static if (!SKIP_AEAD_TEST) unittest
     };
     
     size_t fails = runTestsInDir("../test_data/aead", test);
-
+	logDebug("Test report");
     testReport("aead", total_tests, fails);
 }

@@ -152,7 +152,6 @@ public:
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
         m_tbs_bits = other.m_tbs_bits.dup;
-        m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
 
         m_car = ASN1Car(other.m_car);
@@ -168,7 +167,6 @@ public:
         m_sig = other.m_sig;
         m_sig_algo = other.m_sig_algo;
         m_tbs_bits = other.m_tbs_bits.dup;
-        m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
 
         m_car = other.m_car;
@@ -183,8 +181,8 @@ protected:
     {
         Vector!ubyte inner_cert;
         BERDecoder(m_tbs_bits)
-                    .startCons((cast(ASN1Tag)33))
-                    .rawBytes(inner_cert)
+					.startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+					.rawBytes(inner_cert)
                     .endCons()
                     .decode(m_car)
                     .verifyEnd();
@@ -218,9 +216,9 @@ package:
         ASN1Car car;
         
         BERDecoder(source)
-                .startCons((cast(ASN1Tag)7))
-                .startCons((cast(ASN1Tag)33))
-                .rawBytes(cert_inner_bits)
+			.startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
+				.startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+				.rawBytes(cert_inner_bits)
                 .endCons()
                 .decode(car)
                 .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)

@@ -36,6 +36,8 @@ static if (BOTAN_HAS_GCM_CLMUL) {
 abstract class GCMMode : AEADMode, Transformation
 {
 public:
+	~this() { destroy(m_ctr); destroy(m_ghash); } // TODO: for some reason CTR needs to be destroyed before ghash
+
     override SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len)
     {
         if (!validNonceLength(nonce_len))
@@ -92,6 +94,7 @@ public:
     {
         m_ctr.clear();
         m_ghash.clear();
+
     }
 
     override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
@@ -402,10 +405,9 @@ private:
 
 
 
-void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) pure
+void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) 
 {
 	__gshared immutable(__m128i) BSWAP_MASK = _mm_set1_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
-
 	version(D_InlineAsm_X86_64) {
 		__m128i* a = cast(__m128i*) x.ptr;
 		__m128i* b = cast(__m128i*) H.ptr;

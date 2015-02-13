@@ -68,7 +68,7 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
     
 	auto sig_algo = AlgorithmIdentifier();
     string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
-	logDebug(padding_and_hash);
+	//logTrace(padding_and_hash);
     sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
     sig_algo = AlgorithmIdentifier(cast(OID)sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
     
@@ -390,7 +390,7 @@ Vector!ubyte eac11Encoding(const ECPublicKey key, in OID sig_algo)
     if (key.domainFormat() == EC_DOMPAR_ENC_OID)
         throw new EncodingError("CVC encoder: cannot encode parameters by OID");
     
-    const ECGroup domain = key.domain().dup;
+    const ECGroup* domain = &key.domain();
     
     // This is why we can't have nice things
     

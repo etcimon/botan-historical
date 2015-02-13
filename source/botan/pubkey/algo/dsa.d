@@ -17,6 +17,7 @@ import botan.math.numbertheory.pow_mod;
 import botan.math.numbertheory.numthry;
 import botan.pubkey.algo.keypair;
 import std.concurrency;
+import core.thread;
 import memutils.helpers : Embed;
 
 struct DSAOptions {
@@ -149,6 +150,7 @@ public:
         
         BigInt i = BigInt(msg, msg_len);
         BigInt r = 0, s = 0;
+		Tid tid;
         while (r == 0 || s == 0)
         {
             BigInt k;
@@ -158,35 +160,37 @@ public:
 
 			BigInt res;
 
-			Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) g, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
+			tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) g, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
 				{ 
 					import botan.libstate.libstate : modexpInit;
 					modexpInit(); // enable quick path for powermod
 
+					logDebug("Quick init1");
 					BigInt* ret = cast(BigInt*) res2;
 					{
 						auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g, *cast(const BigInt*)p);
 						*ret = (cast(ModularReducer*)mod_q).reduce((*powermod_g_p)(*cast(BigInt*)k2));
-						send(cast(Tid) tid, true);
+						send(cast(Tid) tid, cast(shared)Thread.getThis());
 					}
 					bool done = receiveOnly!bool();
 					destroy(*ret);
-					send(cast(Tid)tid, true);
 				}, cast(shared(Tid))thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&k, cast(shared)&res
 				);
 
             s = inverseMod(k, *m_q);
-            bool done = receiveOnly!(bool)();
+            Thread thr = cast(Thread)receiveOnly!(shared(Thread))();
 			r = res.dup(); // ensure no remote pointers
 			auto s_arg = mulAdd(*m_x, r, i);
 			send(cast(Tid)tid, true);
 			s = m_mod_q.multiply(s, s_arg);
-			done = receiveOnly!bool(); // destroy res
+			thr.join();
+			tid = Tid.init;
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());
         r.binaryEncode(&output[output.length / 2 - r.bytes()]);
         s.binaryEncode(&output[output.length - s.bytes()]);
+
         return output;
     }
 private:
@@ -251,28 +255,36 @@ public:
 
 		Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*) mod_q, shared(const BigInt*)g2, shared(const BigInt*)p2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
 			{ 
-				import botan.libstate.libstate : modexpInit;
+				import botan.libstate.libstate : modexpInit, globalState;
 				modexpInit(); // enable quick path for powermod
+				logDebug("Quick init2");
+				globalState();
+				logDebug("OK");
 				BigInt* ret = cast(BigInt*) s_i2;
+				logDebug("OK2");
 				{
 					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g2, *cast(const BigInt*)p2);
+					logDebug("Loaded powermod");
 					auto mult = (*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2);
+					logDebug("mult finished");
 					*ret = (*powermod_g_p)(mult);
-					send(cast(Tid) tid, true); 
+					send(cast(Tid) tid, cast(shared)Thread.getThis()); 
 				}
 				auto done = receiveOnly!bool();
 				destroy(*ret);
-				send(cast(Tid) tid, true); 
+				logDebug("destroyed");
 			}
 			, cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
 		auto mult = m_mod_q.multiply(s, r);
         BigInt s_r = (*m_powermod_y_p)(mult.move);
-        bool done = receiveOnly!bool();
+        Thread thr = cast(Thread)receiveOnly!(shared(Thread))();
         s = m_mod_p.multiply(s_i, s_r);
 		send(cast(Tid)tid, true); // trigger destroy s_i
-		auto r2 = m_mod_q.reduce(s.dup);
+		auto r2 = m_mod_q.reduce(s.move);
+		logDebug("reduced");
+		thr.join();
 		auto ret = (r2 == r);
-		done = receiveOnly!bool();        
+		logDebug("joined");
         return ret;
     }
 
@@ -331,14 +343,14 @@ size_t dsaSigKat(string p,
     BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, q_bn, g_bn);
-    auto privkey = DSAPrivateKey(rng, group.move(), x_bn.move());
+    Unique!PrivateKey privkey = DSAPrivateKey(rng, group.move(), x_bn.move());
     
-    auto pubkey = DSAPublicKey(privkey);
+    Unique!PublicKey pubkey = DSAPublicKey(*privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
     
-    PKVerifier verify = PKVerifier(pubkey, padding);
-    PKSigner sign = PKSigner(privkey, padding);
+    PKVerifier verify = PKVerifier(*pubkey, padding);
+    PKSigner sign = PKSigner(*privkey, padding);
     
     return validateSignature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }

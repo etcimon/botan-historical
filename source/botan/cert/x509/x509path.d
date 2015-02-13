@@ -225,22 +225,18 @@ public:
 		   auto ref Vector!X509Certificate cert_chain)
     {
 		int i = 1;
-		logDebug("Open RBTree");
         m_overall = CertificateStatusCode.VERIFIED;
 		// take the "worst" error as overall
 		foreach (ref s; status[])
 		{
-			logDebug("Iterate 1");
 			if (!s.empty)
 			{
-				logDebug("!s.empty");
 				auto worst = s.back;
 				// Leave OCSP confirmations on cert-level status only
 				if (worst != CertificateStatusCode.OCSP_RESPONSE_GOOD)
 					m_overall = worst;
 			}
 		}
-		logDebug("AFter iterate");
         m_all_status = status.move();
         m_cert_path = cert_chain.move();
     }
@@ -281,7 +277,7 @@ PathValidationResult
     }
 
 	auto chain = checkChain(cert_path, restrictions, certstores);
-	logDebug("After chain");
+
     return PathValidationResult(chain, cert_path);
 }
 
@@ -336,10 +332,8 @@ X509Certificate findIssuingCert(in X509Certificate cert_,
 
     const Vector!ubyte auth_key_id = cert_.authorityKeyId();
     
-	logDebug("authorityKeyId done");
-
     if (X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id)) {
-		logDebug("Found certificate: ", cert.toString());
+		//logTrace("Found certificate: ", cert.toString());
         return cert;
 	} 
 
@@ -405,7 +399,7 @@ Vector!( RBTreeRef!CertificateStatusCode )
 		e.clear(); // touch
 	}
 
-	logDebug("Cert path size: ", cert_path.length);
+	//logTrace("Cert path size: ", cert_path.length);
 
     foreach (size_t i; 0 .. cert_path.length)
     {

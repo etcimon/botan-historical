@@ -62,22 +62,16 @@ public:
         X509Extensions extensions;
         
         extensions.add(new BasicConstraints(req.isCA(), req.pathLimit()), true);
-		logDebug("BasicConstraints");
         
         extensions.add(new KeyUsage(constraints), true);
-		logDebug("KeyUsage");
         
         extensions.add(new AuthorityKeyID(m_cert.subjectKeyId().dup));
-		logDebug("AuthorityKeyID");
         extensions.add(new SubjectKeyID(req.rawPublicKey().dup));
-		logDebug("SubjectKeyID");
         
         extensions.add(new SubjectAlternativeName(req.subjectAltName()));
-		logDebug("SubjectAlternativeName");
         
         extensions.add(new ExtendedKeyUsage(req.exConstraints()));
-		logDebug("ExtendedKeyUsage");
-		logDebug("Sig algo: ", m_ca_sig_algo.toString());
+
         return makeCert(m_signer, rng, m_ca_sig_algo,
                          req.rawPublicKey(),
                          not_before, not_after,
@@ -154,7 +148,6 @@ public:
         __gshared immutable size_t SERIAL_BITS = 128;
         
         BigInt serial_no = BigInt(rng, SERIAL_BITS);
-		logDebug("SigAlgo: ", sig_algo.toString());
 		auto contents =
 			DEREncoder().startCons(ASN1Tag.SEQUENCE)
 				.startExplicit(0)
@@ -278,7 +271,6 @@ PKSigner chooseSigFormat(in PrivateKey key,
                          in string hash_fn,
                          ref AlgorithmIdentifier sig_algo)
 {
-	logDebug("chooseSigFormat");
     import std.array : Appender;
     Appender!string padding;
     
@@ -306,6 +298,6 @@ PKSigner chooseSigFormat(in PrivateKey key,
     
     sig_algo.oid = OIDS.lookup(algo_name ~ "/" ~ padding.data);
     sig_algo.parameters = key.algorithmIdentifier().parameters;
-	logDebug("Sig algo: ", sig_algo.toString());
+	//logTrace("chooseSigFormat Sig algo: ", sig_algo.toString());
     return PKSigner(key, padding.data, format);
 }

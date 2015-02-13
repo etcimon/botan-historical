@@ -68,8 +68,8 @@ public:
     */
     this(BlockCipher c1, BlockCipher c2) 
     {
-        m_cipher1 = Unique!BlockCipher(c1); 
-        m_cipher2 = Unique!BlockCipher(c2);
+        m_cipher1 = c1; 
+        m_cipher2 = c2;
         m_block = block_size_for_cascade(m_cipher1.blockSize(), m_cipher2.blockSize());
         
         if (this.blockSize() % m_cipher1.blockSize() || this.blockSize() % m_cipher2.blockSize())

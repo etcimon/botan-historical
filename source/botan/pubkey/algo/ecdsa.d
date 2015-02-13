@@ -508,19 +508,14 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     File priv_key = File("../test_data/ecc/dompar_private.pkcs8.pem", "w+");
     priv_key.write( pkcs8.PEM_encode(key) );
     
-	logDebug("loadKey");
     Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("../test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
-	logDebug("After loadKey");
-    ECDSAPrivateKey loaded_ec_key = ECDSAPrivateKey(*loaded_key);
-	logDebug("Loaded Key");
-    mixin( CHECK_MESSAGE( `loaded_ec_key`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
-	logDebug("loadkey2");
-    Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("../test_data/ecc/rsa_private.pkcs8.pem", rng);
+	ECDSAPrivateKey loaded_ec_key = ECDSAPrivateKey(*loaded_key);
+	mixin( CHECK_MESSAGE( `loaded_ec_key`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
+	Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("../test_data/ecc/rsa_private.pkcs8.pem", rng);
     ECDSAPrivateKey loaded_rsa_key = ECDSAPrivateKey(*loaded_key_1);
     mixin( CHECK_MESSAGE( `!loaded_rsa_key`, "the loaded key is ECDSAPrivateKey -> shouldn't be, is a RSA-Key" ) );
     
     //calc a curve which is not in the registry
-	logDebug("curve not in registry");
     //     string p_secp = "2117607112719756483104013348936480976596328609518055062007450442679169492999007105354629105748524349829824407773719892437896937279095106809";
     string a_secp = "0a377dede6b523333d36c78e9b0eaa3bf48ce93041f6d4fc34014d08f6833807498deedd4290101c5866e8dfb589485d13357b9e78c2d7fbe9fe";
     string b_secp = "0a9acf8c8ba617777e248509bcb4717d4db346202bf9e352cd5633731dd92a51b72a4dc3b3d17c823fcc8fbda4da08f25dea89046087342595a7";
@@ -540,7 +535,6 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     BigInt bi_order_g = BigInt.decode( sv_order_g.ptr, sv_order_g.length );
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     PointGFp p_G = OS2ECP( sv_G_secp_comp, curve );
-	logDebug("params");
 	auto bi = BigInt(1);
     ECGroup dom_params = ECGroup(curve, p_G, bi_order_g, bi);
     if (!p_G.onTheCurve())
@@ -548,13 +542,12 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     
     auto key_odd_oid = ECDSAPrivateKey(rng, dom_params);
     string key_odd_oid_str = pkcs8.PEM_encode(key_odd_oid);
-	logDebug("datasource mem");
     auto key_data_src = DataSourceMemory(key_odd_oid_str);
     Unique!PKCS8PrivateKey loaded_key2 = pkcs8.loadKey(cast(DataSource)key_data_src, rng);
     
     if (!ECDSAPrivateKey(*loaded_key))
     {
-        logTrace("Failed to reload an ECDSA key with unusual parameter set");
+        logError("Failed to reload an ECDSA key with unusual parameter set");
         ++fails;
     }
     
@@ -613,13 +606,13 @@ size_t testCurveRegistry(RandomNumberGenerator rng)
             
             if (!verifier.verifyMessage(msg, sig))
             {
-                logTrace("Failed testing ECDSA sig for curve " ~ oid_str);
+                logError("Failed testing ECDSA sig for curve " ~ oid_str);
                 ++fails;
             }
         }
         catch(InvalidArgument e)
         {
-            logTrace("Error testing curve " ~ oid_str ~ " - " ~ e.msg);
+            logError("Error testing curve " ~ oid_str ~ " - " ~ e.msg);
             ++fails;
         }
     }
@@ -649,7 +642,7 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
     catch (Exception e)
     {
         ++fails;
-        logTrace("Exception in test_read_pkcs8 - " ~ e.msg);
+        logError("Exception in test_read_pkcs8 - " ~ e.msg);
     }
     
     try
@@ -671,14 +664,14 @@ size_t testReadPkcs8(RandomNumberGenerator rng)
         {
             Unique!PKCS8PrivateKey loaded_key_withdp = pkcs8.loadKey("../test_data/ecc/withdompar_private.pkcs8.pem", rng);
             
-            logTrace("Unexpected success: loaded key with unknown OID");
+            logError("Unexpected success: loaded key with unknown OID");
             ++fails;
         }
         catch (Exception) { /* OK */ }
     }
     catch (Exception e)
     {
-        logTrace("Exception in test_read_pkcs8 - " ~ e.msg);
+        logError("Exception in test_read_pkcs8 - " ~ e.msg);
         ++fails;
     }
     
@@ -696,13 +689,13 @@ size_t testEccKeyWithRfc5915Extensions(RandomNumberGenerator rng)
         
         if (!ECDSAPrivateKey(*pkcs8))
         {
-            logTrace("Loaded RFC 5915 key, but got something other than an ECDSA key");
+            logError("Loaded RFC 5915 key, but got something other than an ECDSA key");
             ++fails;
         }
     }
     catch(Exception e)
     {
-        logTrace("Exception in " ~ __PRETTY_FUNCTION__ ~ " - " ~ e.msg);
+        logError("Exception in " ~ __PRETTY_FUNCTION__ ~ " - " ~ e.msg);
         ++fails;
     }
     
@@ -760,26 +753,22 @@ static if (!SKIP_ECDSA_TEST) unittest
 		fails += testDecodeVerLinkSHA256();
 		fails += testDecodeVerLinkSHA1();
 	}
-	logDebug("curveRegistry");
+
 	fails += testCurveRegistry(rng);
     fails += testHashLargerThanN(rng);
     fails += testSignThenVer(rng);
     fails += testEcSign(rng);
 
     static if (BOTAN_HAS_RSA) {
-		logDebug("create pkcs8");
         fails += testCreatePkcs8(rng);
-		logDebug("create_verify");
         fails += testCreateAndVerify(rng);
     }
 
-	logDebug("read pkcs8");
     fails += testReadPkcs8(rng);
     fails += testEccKeyWithRfc5915Extensions(rng);
 
 	fails += testPkKeygen(rng);
 
-	logDebug("Load files");
     File ecdsa_sig = File("../test_data/pubkey/ecdsa.vec", "r");
 
     fails += runTestsBb(ecdsa_sig, "ECDSA Signature", "Signature", true,

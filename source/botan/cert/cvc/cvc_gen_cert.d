@@ -65,7 +65,6 @@ public:
     override void encode(Pipe output, X509Encoding encoding) const
     {
 		const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
-        // fixme: this should be EAC11obj!Derived.tbsData() but linker fails...
         auto tbsdata = tbsData();
 		Vector!ubyte der = DEREncoder()
                             .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
@@ -113,11 +112,10 @@ public:
     * @result the DER encoded signed generalized CVC object
     */
 	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-                                  			  auto const ref Vector!(ubyte, ALLOC) tbs_bits,
-                                  			  RandomNumberGenerator rng)
+                                  		  auto const ref Vector!(ubyte, ALLOC) tbs_bits,
+                                  		  RandomNumberGenerator rng)
     {
         const auto concat_sig = signer.signMessage(tbs_bits, rng);
-        
         return DEREncoder()
                 .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                 .rawBytes(tbs_bits)
@@ -130,10 +128,9 @@ public:
 										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
 										  RandomNumberGenerator rng)
 	{
-		return makeSigned(signer, **tbs_bits, rng);
+		return makeSigned(signer, *tbs_bits, rng);
 	}
 
-    ~this() { }
 protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;
@@ -146,9 +143,9 @@ package:
     {
         Vector!ubyte concat_sig;
         BERDecoder(source)
-                .startCons((cast(ASN1Tag)33))
-                .startCons((cast(ASN1Tag)78))
-                .rawBytes(res_tbs_bits)
+				.startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+				.startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
+				.rawBytes(res_tbs_bits)
                 .endCons()
                 .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons();
@@ -159,6 +156,6 @@ package:
 								  ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
 								  ECDSASignature res_sig)
 	{
-		return decodeInfo(source, **res_tbs_bits, res_sig);
+		return decodeInfo(source, *res_tbs_bits, res_sig);
 	}
 }

@@ -152,7 +152,7 @@ public:
 
         bool exists;
         void search_func(in ASN1String name) {
-			logDebug(name.value());
+			//logTrace(name.value());
             if (name.value() == str) { 
                 exists = true;
 			}
@@ -304,7 +304,7 @@ private:
 /*
 * DER encode a RelativeDistinguishedName
 */
-void doAva(DEREncoder encoder,
+void doAva(ref DEREncoder encoder,
            in DictionaryListRef!(OID, string) dn_info,
            ASN1Tag string_type, in string oid_str,
            bool must_exist = false)

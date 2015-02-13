@@ -81,7 +81,7 @@ public:
     this(StreamCipher stream_cipher)
     {
         m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
-        m_cipher = Unique!StreamCipher(stream_cipher);
+        m_cipher = stream_cipher;
     }
 
     /**
@@ -92,7 +92,7 @@ public:
     this(StreamCipher stream_cipher, in SymmetricKey key)
     {
         m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
-        m_cipher = Unique!StreamCipher(stream_cipher);
+        m_cipher = stream_cipher;
         m_cipher.setKey(key);
     }
 
@@ -105,7 +105,7 @@ public:
     {
         m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         AlgorithmFactory af = globalState().algorithmFactory();
-        m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
+        m_cipher = af.makeStreamCipher(sc_name);
     }
 
     /**
@@ -117,7 +117,7 @@ public:
     {
         m_buffer = SecureVector!ubyte(DEFAULT_BUFFERSIZE);
         AlgorithmFactory af = globalState().algorithmFactory();
-        m_cipher = Unique!StreamCipher(af.makeStreamCipher(sc_name));
+        m_cipher = af.makeStreamCipher(sc_name);
         m_cipher.setKey(key);
     }
 

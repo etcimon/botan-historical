@@ -24,7 +24,7 @@ public:
     */
     static this()
     {
-
+		logDebug("Loading CPUID");
         if (max_cpuid == 0)
             return;
 

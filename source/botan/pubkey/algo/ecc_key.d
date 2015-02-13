@@ -41,8 +41,6 @@ class ECPublicKey : PublicKey
 public:
     this(T)(in T options, const ref ECGroup dom_par, const ref PointGFp pub_point) 
     {
-		logDebug("PublicKey ctor ECGroup/PointGFp");
-		scope(exit) logDebug("End pubkey ctor");
 		decodeOptions(options);
 
         m_domain_params = dom_par.dup;
@@ -56,10 +54,8 @@ public:
 	this(T)(in T options, in AlgorithmIdentifier alg_id, 
 		const ref SecureVector!ubyte key_bits) 
 	{
-		logDebug("PublicKey super ctor");
 		decodeOptions(options);
 
-		logDebug("PublicKey super ecgroup algid parameters");
 		m_domain_params = ECGroup(alg_id.parameters);
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 		m_public_key = OS2ECP(key_bits, domain().getCurve());
@@ -68,7 +64,7 @@ public:
 	protected this(T)(in T options, in AlgorithmIdentifier alg_id) 
 	{
 		decodeOptions(options);
-		logDebug("ECGroup with alg_id.parameters");
+		//logTrace("ECGroup with alg_id.parameters");
 		m_domain_params = ECGroup(alg_id.parameters);
 		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
 	}
@@ -119,10 +115,8 @@ public:
 
     final override Vector!ubyte x509SubjectPublicKey() const
     {
-		logDebug("Encode x509SubjectPublicKey");
         if (m_subject_public_key)
             return m_subject_public_key(this);
-		logDebug("Pass through...");
         return unlock(EC2OSP(publicPoint(), PointGFp.COMPRESSED));
     }
 
@@ -225,7 +219,6 @@ public:
 
         SecureVector!ubyte public_key_bits;
         
-		logDebug("PrivateKey super decode public key");
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decodeAndCheck!size_t(1, "Unknown version code for ECC key")
@@ -233,7 +226,6 @@ public:
                 .decodeOptional(key_parameters, (cast(ASN1Tag) 0), ASN1Tag.PRIVATE, key_parameters)
                 .decodeOptionalString(public_key_bits, ASN1Tag.BIT_STRING, 1, ASN1Tag.PRIVATE)
                 .endCons();
-		logDebug("Privatekey super decode finished");
         if (!key_parameters.empty && key_parameters != alg_id.oid)
             throw new DecodingError("ECPrivateKey - inner and outer OIDs did not match");
 
@@ -247,7 +239,6 @@ public:
 			m_public_key = OS2ECP(public_key_bits, m_domain_params.getCurve());
 			// OS2ECP verifies that the point is on the curve
 		}
-	logDebug("ctor success");
     }
 
 	override bool checkKey(RandomNumberGenerator rng, bool b) const

@@ -28,7 +28,7 @@ struct GOST3410Options // applied to ECPublicKey
 
 	static AlgorithmIdentifier algorithmIdentifier(in ECPublicKey pkey)
 	{
-		logDebug("Encode algorithmIdentifier x509");
+		//logTrace("Encode algorithmIdentifier x509");
 		Vector!ubyte params = DEREncoder().startCons(ASN1Tag.SEQUENCE)
 				.encode(OID(pkey.domain().getOid()))
 				.endCons()
@@ -39,7 +39,7 @@ struct GOST3410Options // applied to ECPublicKey
 
 	static Vector!ubyte x509SubjectPublicKey(in ECPublicKey pkey)
 	{
-		logDebug("Encode x509SubjectPublicKey");
+		//logTrace("Encode x509SubjectPublicKey");
 		// Trust CryptoPro to come up with something obnoxious
 		const BigInt x = pkey.publicPoint().getAffineX();
 		const BigInt y = pkey.publicPoint().getAffineY();
@@ -85,15 +85,13 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-		logDebug("Decode public key");
+		//logTrace("Decode public key");
         OID ecc_param_id = OID();
         
         // Also includes hash and cipher OIDs... brilliant design guys
         BERDecoder(alg_id.parameters).startCons(ASN1Tag.SEQUENCE).decode(ecc_param_id);
         
-		logDebug("Start ECGroup");
         ECGroup domain_params = ECGroup(ecc_param_id);
-		logDebug("Decode bits");
         SecureVector!ubyte bits;
         BERDecoder(key_bits).decode(bits, ASN1Tag.OCTET_STRING);
         
@@ -110,9 +108,7 @@ public:
         BigInt y = BigInt(&bits[part_size], part_size);
         
 		PointGFp public_point = PointGFp(domain_params.getCurve(), x, y);
-		logDebug("New public key");
 		m_pub = new ECPublicKey(Options(), domain_params, public_point);
-		logDebug("End Gost ctor");
         assert(public_point.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
     }
 

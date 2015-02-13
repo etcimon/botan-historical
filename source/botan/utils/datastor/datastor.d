@@ -93,8 +93,7 @@ public:
     Vector!ubyte
         get1Memvec(in string key) const
     {
-		logDebug("get1Memvec: ", key);
-        Vector!string vals = get(key);
+		Vector!string vals = get(key);
         
         if (vals.empty)
             return Vector!ubyte();

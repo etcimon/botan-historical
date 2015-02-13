@@ -128,7 +128,7 @@ public:
 
     void BER_decode(const ref Vector!ubyte ber_data) {
         assert(ber_data.length > 0);
-		logDebug("EC_GROUP BER_DECODE");
+		//logTrace("ECGroup BER_decode");
         BERDecoder ber = BERDecoder(ber_data);
         BERObject obj = ber.getNextObject();
         if (obj.type_tag == ASN1Tag.OBJECT_ID)

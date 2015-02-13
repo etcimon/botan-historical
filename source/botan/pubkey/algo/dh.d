@@ -185,8 +185,11 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (dh; dh_list) {
         atomicOp!"+="(total_tests, 1);
+		logDebug("1) Load private key");
         DHPrivateKey key = DHPrivateKey(rng, DLGroup(dh));
+		logDebug("2) Check private key");
         key.checkKey(rng, true);
+		logDebug("3) Validate");
         fails += validateSaveAndLoad(key, rng);
     }
     
@@ -232,7 +235,6 @@ static if (!SKIP_DH_TEST) unittest
 		(ref HashMap!(string, string) m) {
             return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m.get("KDF"), m.get("OutLen"), m["K"]);
         });
-
 	fails += testPkKeygen(rng);
 
     testReport("DH", total_tests, fails);

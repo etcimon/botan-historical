@@ -304,7 +304,7 @@ public:
     
     void clientVerify(CertificateVerify client_verify)
     {
-        m_client_verify = Unique!CertificateVerify(client_verify);
+        m_client_verify = client_verify;
         noteMessage(*m_client_verify);
     }
     

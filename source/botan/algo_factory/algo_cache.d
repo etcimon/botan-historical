@@ -200,11 +200,11 @@ shared(int) threads;
 static this() {
 	import core.atomic;
 	atomicOp!"+="(threads, 1);
-	logDebug("Starting, Threads: ", atomicLoad(threads));
+	logTrace("Starting, Threads: ", atomicLoad(threads));
 }
 
 static ~this() {
 	import core.atomic;
 	atomicOp!"-="(threads, 1);
-	logDebug("Closing, Threads: ", atomicLoad(threads));
+	logTrace("Closing, Threads: ", atomicLoad(threads));
 }

@@ -75,7 +75,6 @@ public:
         m_sig = other.m_sig.dup;
         m_sig_algo = AlgorithmIdentifier(other.m_sig_algo);
         m_tbs_bits = other.m_tbs_bits.dup;
-        m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed.dup;
     
         m_pk = cast(ECDSAPublicKey)other.m_pk; // no copy of this...
@@ -88,7 +87,6 @@ public:
         m_sig = other.m_sig;
         m_sig_algo = other.m_sig_algo;
         m_tbs_bits = other.m_tbs_bits.dup; // move?
-        m_PEM_label_pref = other.m_PEM_label_pref;
         m_PEM_labels_allowed = other.m_PEM_labels_allowed;
         m_pk = other.m_pk;
         m_chr = other.m_chr;
@@ -107,7 +105,7 @@ protected:
         BERDecoder tbs_cert = BERDecoder(m_tbs_bits);
         size_t cpi;
         tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
-                .startCons((cast(ASN1Tag)73))
+				.startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION)
                 .rawBytes(enc_pk)
                 .endCons()
                 .decode(m_chr)

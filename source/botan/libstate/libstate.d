@@ -22,6 +22,8 @@ import core.sync.mutex;
 import botan.entropy.entropy_src;
 import memutils.hashmap;
 
+import core.thread;
+
 import botan.constants;
 static if (BOTAN_HAS_SELFTESTS)
     import botan.selftest.selftest;
@@ -66,9 +68,9 @@ void modexpInit() { g_modexp_init = true; }
 final class LibraryState
 {
 public:
-    this()
+    shared static this()
     {
-        m_entropy_src_mutex = new Mutex;
+        gs_entropy_src_mutex = new Mutex;
     }
 
     void initialize()
@@ -118,13 +120,13 @@ public:
         
         algorithmFactory().addEngine(new CoreEngine);
 
-        synchronized(m_entropy_src_mutex)
-            if (m_sources.length == 0)
-                m_sources = entropySources();
+        synchronized(gs_entropy_src_mutex) {
+            if (gs_sources.length == 0)
+                gs_sources = entropySources();
 
-        logTrace("new SerializedRNG()");
-
-        m_global_prng = new SerializedRNG();
+			if (!gs_global_prng)
+	            gs_global_prng = new SerializedRNG();
+		}
         logTrace("Done serialized RNG");
         static if (BOTAN_HAS_SELFTESTS) {        
             logTrace("Startup Self-Tests");
@@ -143,7 +145,7 @@ public:
     {
         if (!m_algorithm_factory)
             throw new InvalidState("Uninitialized in algorithmFactory");
-		// logDebug("Algorithm factory: ", cast(void*)*m_algorithm_factory);
+		// logTrace("Algorithm factory: ", cast(void*)*m_algorithm_factory);
         return *m_algorithm_factory;
     }
 
@@ -153,21 +155,21 @@ public:
     */
     RandomNumberGenerator globalRng()
     {
-        return cast(RandomNumberGenerator)m_global_prng;
+        return cast(RandomNumberGenerator)gs_global_prng;
     }
 
     void pollAvailableSources(ref EntropyAccumulator accum)
     {
-        synchronized(m_entropy_src_mutex){
-            if (m_sources.empty)
+        synchronized(gs_entropy_src_mutex){
+            if (gs_sources.empty)
                 throw new Exception("No entropy sources enabled at build time, poll failed");
             
             size_t poll_attempt = 0;
             
             while (!accum.pollingGoalAchieved() && poll_attempt < 16)
             {
-                const size_t src_idx = poll_attempt % m_sources.length;
-                m_sources[src_idx].poll(accum);
+                const size_t src_idx = poll_attempt % gs_sources.length;
+                gs_sources[src_idx].poll(accum);
                 ++poll_attempt;
             }
         }
@@ -217,10 +219,11 @@ private:
         return sources.move();
     }
 
-    __gshared SerializedRNG m_global_prng;
-    __gshared Mutex m_entropy_src_mutex;
-    __gshared Vector!( EntropySource ) m_sources;
 
     Unique!AlgorithmFactory m_algorithm_factory;
     bool m_initialized;
 }
+
+__gshared SerializedRNG gs_global_prng;
+__gshared Mutex gs_entropy_src_mutex;
+__gshared Vector!( EntropySource ) gs_sources;

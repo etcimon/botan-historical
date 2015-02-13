@@ -79,9 +79,8 @@ public:
     */
     override void write(const(ubyte)* input, size_t length)
     {
-		logDebug("write to pipe with: ", name());
+		//logTrace("write to pipe with: ", name());
         m_pipe.write(input, length);
-		logDebug("Flush pipe");
         flushPipe(true);
     }
 
@@ -90,7 +89,7 @@ public:
     */
     override void startMsg()
     {
-		logError("Append to: ", m_block_cipher.name);
+		//logTrace("Append to: ", m_block_cipher.name);
         m_pipe.append(getCipher(m_block_cipher.name ~ "/CBC/PKCS7", SymmetricKey(m_key), InitializationVector(m_iv), cast(CipherDir)m_direction));
         
         m_pipe.startMsg();
@@ -124,9 +123,9 @@ public:
                 .decode(enc_algo)
                 .verifyEnd()
                 .endCons();
-		logDebug("KDF: ", OIDS.lookup(kdf_algo.oid));
-		logDebug("ENC: ", OIDS.lookup(enc_algo.oid));
-		logDebug("pass: ", passphrase);
+		//logTrace("KDF: ", OIDS.lookup(kdf_algo.oid));
+		//logTrace("ENC: ", OIDS.lookup(enc_algo.oid));
+		//logTrace("pass: ", passphrase);
         auto prf_algo = AlgorithmIdentifier();
         
         if (kdf_algo.oid != OIDS.lookup("PKCS5.PBKDF2"))
@@ -152,26 +151,24 @@ public:
         if (cipher_spec[1] != "CBC")
             throw new DecodingError("PBE-PKCS5 v2.0: Don't know param format for " ~ cipher);
 
-		logDebug("m_iv len 1: ", m_iv.length);
+		//logTrace("m_iv len 1: ", m_iv.length);
         BERDecoder(enc_algo.parameters).decode(m_iv, ASN1Tag.OCTET_STRING).verifyEnd();
 
-		logDebug("m_iv len 2: ", m_iv.length);
+		//logTrace("m_iv len 2: ", m_iv.length);
         
         m_block_cipher = af.makeBlockCipher(cipher_spec[0]);
-		logDebug("block cipher");
-		logDebug("PRF: ", prf_algo.toString(), " => ", OIDS.lookup(prf_algo.oid));
+		//logTrace("PRF: ", prf_algo.toString(), " => ", OIDS.lookup(prf_algo.oid));
         m_prf = af.makeMac(OIDS.lookup(prf_algo.oid));
         
-		logDebug("mac");
         if (m_key_length == 0)
             m_key_length = m_block_cipher.maximumKeylength();
         
         if (m_salt.length < 8)
             throw new DecodingError("PBE-PKCS5 v2.0: Encoded salt is too small");
         
+		// TODO: study broader use of scoped
         Unique!PKCS5_PBKDF2 pbkdf = new PKCS5_PBKDF2(m_prf.clone());
         
-		logDebug("derive key");
         m_key = pbkdf.deriveKey(m_key_length, passphrase,
                                 m_salt.ptr, m_salt.length,
                                 m_iterations).bitsOf();

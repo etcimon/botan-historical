@@ -210,18 +210,14 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 	auto copy_pub = x509_key.copyKey(orig);
     
     const string passphrase = "I need work! -Mr. T";
-	logError("checkCopy 1");
 	auto pem = pkcs8.PEM_encode(orig, rng, passphrase);
 	//logDebug(pem[]);
-	logError("checkCopy _1");
 	auto enc_source = cast(DataSource)DataSourceMemory(pem);
 	auto copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
     ulong orig_id = keyId(orig);
-	logDebug("checkCopy 2");
 	ulong pub_id = keyId(copy_pub);
     ulong priv_id = keyId(copy_priv);
     ulong priv_enc_id = keyId(copy_priv_enc);
-	logDebug("checkCopy 3");
 
     if (orig_id != pub_id || orig_id != priv_id || orig_id != priv_enc_id)
     {
@@ -240,38 +236,28 @@ static if (!SKIP_X509_KEY_TEST) unittest
     
     /* Create the CA's key and self-signed cert */
     auto ca_key = RSAPrivateKey(rng, 2048);
-	logError("Create cert");
     X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), *ca_key, hash_fn, rng);
-	logError("After Create cert");
+
     /* Create user #1's key and cert request */
 	auto dl_group = DLGroup("dsa/botan/2048");
-	logError("DSA");
 	auto user1_key = DSAPrivateKey(rng, dl_group.move);
     
-	logError("After DSA");
 	auto opts1 = reqOpts1();
-	logDebug("Crated opts");
     PKCS10Request user1_req = x509self.createCertReq(opts1, *user1_key, "SHA-1", rng);
     
     /* Create user #2's key and cert request */
     static if (BOTAN_HAS_ECDSA) {
-		logError("before ec");
         ECGroup ecc_domain = ECGroup(OID("1.2.840.10045.3.1.7"));
-		logError("before ecdsa");
         auto user2_key = ECDSAPrivateKey(rng, ecc_domain);
-		logError("After ecdsa");
     } else static if (BOTAN_HAS_RSA) {
-		logDebug("Use RSA");
         auto user2_key = RSAPrivateKey(rng, 1536);
     } else static assert(false, "Must have ECSA or RSA for X509!");
     
-	logError("PKCS10 Request");
     PKCS10Request user2_req = x509self.createCertReq(reqOpts2(), *user2_key, hash_fn, rng);
     
     /* Create the CA object */
     X509CA ca = X509CA(ca_cert, *ca_key, hash_fn);
     
-	logError("Sign request");
     /* Sign the requests to create the certs */
     X509Certificate user1_cert = ca.signRequest(user1_req, rng, X509Time("2008-01-01"), X509Time("2100-01-01"));
     
@@ -301,7 +287,6 @@ static if (!SKIP_X509_KEY_TEST) unittest
     
     store.addCrl(crl1);
     
-	logError("Get revoked");
     Vector!CRLEntry revoked;
 	auto crl_entry1 = CRLEntry(user1_cert, CESSATION_OF_OPERATION);
 	auto crl_entry2 = CRLEntry(user2_cert);
@@ -333,7 +318,6 @@ static if (!SKIP_X509_KEY_TEST) unittest
     
     store.addCrl(crl3);
     
-	logError("Validate CRL 3");
     
 	result_u1 = x509PathValidate(user1_cert, restrictions, *store);
     

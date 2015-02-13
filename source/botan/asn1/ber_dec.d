@@ -40,7 +40,7 @@ public:
 			return next.move();
         
         size_t length = decodeLength(m_source);
-		logDebug("length: ", length);
+		//logTrace("length: ", length);
 
         next.value.resize(length);
         if (m_source.read(next.value.ptr, length) != length)
@@ -96,7 +96,7 @@ public:
         ubyte buf;
         while (m_source.readByte(buf))
             continue;
-		logDebug("Discarded");
+		//logTrace("Discarded");
         return this;
     }
 
@@ -107,6 +107,7 @@ public:
                          ASN1Tag class_tag = ASN1Tag.UNIVERSAL)
     {
         BERObject obj = getNextObject();
+		//logTrace("AssertIsA: ", (class_tag | ASN1Tag.CONSTRUCTED));
         obj.assertIsA(type_tag, class_tag | ASN1Tag.CONSTRUCTED);
         
         BERDecoder result = BERDecoder(obj.value.ptr, obj.value.length);
@@ -176,7 +177,7 @@ public:
 		else static if (__traits(compiles, { T t = T(); }())) {
             if (obj is T.init) obj = T();
         }
-        logTrace("Decode obj: ", T.stringof);
+		//logTrace("Decode obj: ", T.stringof);
         obj.decodeFrom(this);
         return this;
     }
@@ -281,9 +282,6 @@ public:
             if (negative)
                 output.flipSign();
         }
-		BigInt output_2 = BigInt("10");
-		logDebug("Printing output 2");
-		logDebug(output_2.toString());
 		// breaks here
 		logTrace("decode BigInt: ", output.toString());
         return this;
@@ -653,7 +651,7 @@ size_t decodeTag(DataSource ber, ref ASN1Tag type_tag, ref ASN1Tag class_tag)
     if ((b & 0x1F) != 0x1F)
     {
         type_tag = cast(ASN1Tag)(b & 0x1F);
-		logDebug("tag: ", type_tag);
+		//logTrace("tag: ", type_tag);
         class_tag = cast(ASN1Tag)(b & 0xE0);
         return 1;
     }

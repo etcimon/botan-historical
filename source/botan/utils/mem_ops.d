@@ -84,6 +84,7 @@ void copyMem(T)(T* output, in T* input, in size_t n)
 void setMem(T)(T* ptr, size_t n, ubyte val)
 {
     import std.c.string : memset;
+	//logDebug("memset ops: ", cast(void*)ptr, " L:", T.sizeof*n);
     memset(ptr, val, T.sizeof*n);
 }
 

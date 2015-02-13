@@ -469,18 +469,18 @@ protected:
         if (!m_sequence_numbers)
         {
             if (_version.isDatagramProtocol())
-                m_sequence_numbers = Unique!ConnectionSequenceNumbers(new DatagramSequenceNumbers);
+                m_sequence_numbers = new DatagramSequenceNumbers;
             else
-                m_sequence_numbers = Unique!ConnectionSequenceNumbers(new StreamSequenceNumbers);
+                m_sequence_numbers = new StreamSequenceNumbers;
         }
         
         Unique!HandshakeIO io;
         if (_version.isDatagramProtocol())
-            io = Unique!HandshakeIO(new DatagramHandshakeIO(*m_sequence_numbers, &sendRecordUnderEpoch));
+            io = new DatagramHandshakeIO(*m_sequence_numbers, &sendRecordUnderEpoch);
         else
-            io = Unique!HandshakeIO(new StreamHandshakeIO(&sendRecord));
+            io = new StreamHandshakeIO(&sendRecord);
 
-        m_pending_state = Unique!HandshakeState(newHandshakeState(*io));
+        m_pending_state = newHandshakeState(*io);
         
         if (auto active = activeState())
             m_pending_state.setVersion(active.Version());

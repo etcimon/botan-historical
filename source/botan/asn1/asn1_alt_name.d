@@ -231,7 +231,7 @@ bool isStringType(ASN1Tag tag)
 /*
 * DER encode an AlternativeName entry
 */
-void encodeEntries(DEREncoder encoder,
+void encodeEntries(ref DEREncoder encoder,
                    in DictionaryListRef!(string, string) attr,
                    string type, ASN1Tag tagging)
 {

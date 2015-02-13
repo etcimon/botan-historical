@@ -32,7 +32,7 @@ public:
     */
     override void encodeInto(ref DEREncoder codec) const
     {
-		logDebug("encoding OID: ", m_oid.toString());
+		//logTrace("encoding OID: ", m_oid.toString());
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)
                 .rawBytes(m_parameters)

@@ -52,10 +52,9 @@ public:
         
         if (obj.type_tag != this.m_tag)
             throw new BERDecodingError("Tag mismatch when decoding");
-        
         if (obj.value.length != 6)
         {
-            throw new DecodingError("EACTime decoding failed");
+            throw new DecodingError("EACTime decoding failed: decoded length was not 6");
         }
         
         try
@@ -67,9 +66,9 @@ public:
             month = tmp_mon;
             day = tmp_day;
         }
-        catch (InvalidArgument)
+        catch (InvalidArgument e)
         {
-            throw new DecodingError("EACTime decoding failed");
+            throw new DecodingError("EACTime decoding failed (" ~ e.msg ~ ")");
         }
         
     }
@@ -138,7 +137,7 @@ public:
     * @param str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
-    void setTo(in string time_str)
+    void setTo(in string time_str = "")
     {
         if (time_str == "")
         {
@@ -233,7 +232,7 @@ public:
     /*
     * Create an EACTime
     */
-    this(in string t_spec, ASN1Tag t = (cast(ASN1Tag) 0))
+    this(in string t_spec = "", ASN1Tag t = (cast(ASN1Tag) 0))
     {
         m_tag = t;
         setTo(t_spec);
@@ -270,7 +269,8 @@ private:
     */
     Vector!ubyte encodedEacTime() const
     {
-        Vector!ubyte result = Vector!ubyte(6);
+        Vector!ubyte result;
+		result.reserve(6);
         result ~= encTwoDigitArr(year).ptr[0..2];
         result ~= encTwoDigitArr(month).ptr[0..2];
         result ~= encTwoDigitArr(day).ptr[0..2];
@@ -500,7 +500,7 @@ public:
     * Create a CAR with the specified content.
     * @param str = the CAR value
     */
-    this(in string str)
+    this(in string str = "")
     {
         super(str, (cast(ASN1Tag)2));
 
@@ -522,7 +522,7 @@ public:
     * Create a CHR with the specified content.
     * @param str = the CHR value
     */
-    this(in string str)
+    this(in string str = "")
     {
         super(str, (cast(ASN1Tag)32));
     }

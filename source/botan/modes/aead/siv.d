@@ -42,7 +42,7 @@ public:
     override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
-		logDebug("Update: ", cast(ubyte[])buffer[]);
+		//logTrace("Update: ", cast(ubyte[])buffer[]);
         const size_t sz = buffer.length - offset;
         ubyte* buf = buffer.ptr + offset;
         m_msg_buf ~= buf[0 .. sz];

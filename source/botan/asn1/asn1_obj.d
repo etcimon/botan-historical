@@ -92,7 +92,7 @@ public:
         if (this.type_tag != type_tag || this.class_tag != class_tag) {
             throw new BERDecodingError("Tag mismatch when decoding got " ~
                                          to!string(this.type_tag) ~ "/" ~
-                                         to!string(this.class_tag) ~ " Value: " ~ value[] ~ " expected " ~
+                                         to!string(this.class_tag) ~ " expected " ~
                                          to!string(type_tag) ~ "/" ~
                                          to!string(class_tag));
 		}

@@ -149,7 +149,7 @@ public:
     */
     override void decodeFrom(ref BERDecoder from)
     {
-		logDebug("decodeFrom X509Object");
+		//logTrace("decodeFrom X509Object");
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .rawBytes(m_tbs_bits)
@@ -252,7 +252,7 @@ private:
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-        logDebug("Initialize PEM/BER X.509 Object");
+		//logTrace("Initialize PEM/BER X.509 Object");
         m_PEM_label_pref = m_PEM_labels_allowed[0];
         
         try {

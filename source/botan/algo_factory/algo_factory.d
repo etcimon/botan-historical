@@ -25,7 +25,9 @@ import std.algorithm;
 final class AlgorithmFactory
 {
 public:
-	~this() { clearCaches(); foreach(ref engine; m_engines[]) delete engine; logError("Destroying AlgorithmFactory"); }
+	~this() { 
+
+	}
     /**
     * @param engine = to add (AlgorithmFactory takes ownership)
     */
@@ -290,7 +292,7 @@ private:
         return m_engines[n];
     }
     
-    Vector!Engine m_engines;
+    Array!Engine m_engines;
     
     Unique!(AlgorithmCache!BlockCipher) m_block_cipher_cache;
     Unique!(AlgorithmCache!StreamCipher) m_stream_cipher_cache;

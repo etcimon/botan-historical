@@ -143,7 +143,7 @@ public:
     CertificateStatusCode statusFor(in X509Certificate issuer,
                                     in X509Certificate subject) const
     {
-		logDebug("Responses: ", m_responses.length);
+		//logTrace("Responses: ", m_responses.length);
         foreach (response; m_responses[])
         {
             if (response.certid().isIdFor(issuer, subject))

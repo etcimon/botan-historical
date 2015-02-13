@@ -207,13 +207,11 @@ public:
     */
     this(in string initial_opts = "", Duration expiration_time = 365.days)
     {
-		logDebug("ctor");
         is_CA = false;
         path_limit = 0;
         constraints = KeyConstraints.NO_CONSTRAINTS;
         
         auto now = Clock.currTime();
-		logDebug("Make time");
         start = X509Time(now);
         end = X509Time(now + expiration_time);
         
@@ -222,8 +220,6 @@ public:
         
 		Vector!string parsed = botan.utils.parsing.splitter(initial_opts, '/');
         
-		logDebug("parsed: ", parsed[]);
-
         if (parsed.length > 4)
             throw new InvalidArgument("X.509 cert options: Too many names: " ~ initial_opts);
         
@@ -291,7 +287,6 @@ PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
                               in string hash_fn,
                               RandomNumberGenerator rng)
 {
-	logDebug("CreatedCertReq");
     auto sig_algo = AlgorithmIdentifier();
 	X509DN subject_dn = X509DN();
 	AlternativeName subject_alt = AlternativeName();
@@ -300,27 +295,17 @@ PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
     
     Vector!ubyte pub_key = x509_key.BER_encode(key);
     PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
-	logDebug("Load info");
     loadInfo(opts, subject_dn, subject_alt);
     __gshared immutable size_t PKCS10_VERSION = 0;
-	logDebug("Extensions");
 	auto extensions = X509Extensions();
     
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
-	logDebug("BasicConstraints");
 
     extensions.add(new KeyUsage(opts.is_CA ? KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN : findConstraints(key, opts.constraints)));
     
-	logDebug("KeyUsage");
-	logDebug("ex_Constraints: ");
-	foreach (oid; opts.ex_constraints) {
-		logDebug(oid.toString());
-	}
 	extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
-	logDebug("ExtendedKeyUsage");
     extensions.add(new SubjectAlternativeName(subject_alt));
     
-	logDebug("SubjectAlternativeName");
     DEREncoder tbs_req;
     
     tbs_req.startCons(ASN1Tag.SEQUENCE)
@@ -344,9 +329,7 @@ PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
                       .getContentsUnlocked()
                       )
                    ).endExplicit().endCons();
-	logDebug("Make Signed");
     const Vector!ubyte req = X509Object.makeSigned(signer, rng, sig_algo, tbs_req.getContents());
-	logDebug("After sign");
     return PKCS10Request(&req);
 }
 

@@ -109,7 +109,7 @@ protected:
     final override void keySchedule(const(ubyte)* key, size_t length)
     {
         m_cipher.setKey(key, length);
-        m_L = Unique!LComputer(new LComputer(*m_cipher));
+        m_L = new LComputer(*m_cipher);
     }
 
     // fixme make these private

@@ -74,17 +74,14 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
     import core.atomic;
     shared(size_t) shared_fails;
     auto dirs = listDir(dir);
-    logTrace("Found ", dirs.length, " files");
     foreach (vec; dirs) {
         size_t local_fails = fn(vec);
         if (local_fails > 0) {
-            logError(vec, " fails: ", local_fails);
             assert(false);
         }
         atomicOp!"+="(shared_fails, local_fails);
     }
-    
-    return shared_fails;
+	return cast(size_t)atomicLoad(shared_fails);
 }
 
 void testReport(string name, size_t ran, size_t failed)
