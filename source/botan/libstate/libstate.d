@@ -219,7 +219,6 @@ private:
         return sources.move();
     }
 
-
     Unique!AlgorithmFactory m_algorithm_factory;
     bool m_initialized;
 }

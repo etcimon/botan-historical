@@ -231,23 +231,23 @@ public:
         AlgorithmFactory af = globalState().algorithmFactory();
 
         RandomNumberGenerator rng = globalState().globalRng();
-		Signature sig;
-		Verification ver;
+        
+        m_op = null;
+        m_verify_op = null;
+
         foreach (Engine engine; af.engines[]) {
-			if (!sig)
-				sig = engine.getSignatureOp(key, rng);
-			if (!ver && prot == ENABLE_FAULT_PROTECTION)
-				ver = engine.getVerifyOp(key, rng);
-			if (sig && (ver || prot == DISABLE_FAULT_PROTECTION))
-	            break;
+            if (!m_op)
+                m_op = engine.getSignatureOp(key, rng);
+            if (!m_verify_op && prot == ENABLE_FAULT_PROTECTION)
+                m_verify_op = engine.getVerifyOp(key, rng);
+            if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
+                break;
         }
 		
         
-        if (!sig || (!ver && prot == ENABLE_FAULT_PROTECTION))
+        if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
             throw new LookupError("Signing with " ~ key.algoName ~ " not supported");
         
-		m_op = sig;
-		m_verify_op = ver;
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
 		assert(*m_op !is null && *m_verify_op !is null && *m_emsa !is null);
@@ -427,16 +427,15 @@ public:
     {
         AlgorithmFactory af = globalState().algorithmFactory();
         RandomNumberGenerator rng = globalState().globalRng();
-		Verification ver;
+
         foreach (Engine engine; af.engines[]) {
-            ver = engine.getVerifyOp(key, rng);
-            if (ver)
+            m_op = engine.getVerifyOp(key, rng);
+            if (m_op)
                 break;
         }
         
-        if (!ver)
+        if (!m_op)
             throw new LookupError("Verification with " ~ key.algoName ~ " not supported");
-		m_op = ver;
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
     }

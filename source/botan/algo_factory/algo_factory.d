@@ -25,9 +25,14 @@ import std.algorithm;
 final class AlgorithmFactory
 {
 public:
-	~this() { 
+	~this() {
+		foreach(engine; m_engines) {
+			delete engine;
+		}
+		m_engines.clear();
 
 	}
+
     /**
     * @param engine = to add (AlgorithmFactory takes ownership)
     */
@@ -292,7 +297,7 @@ private:
         return m_engines[n];
     }
     
-    Array!Engine m_engines;
+    Vector!Engine m_engines;
     
     Unique!(AlgorithmCache!BlockCipher) m_block_cipher_cache;
     Unique!(AlgorithmCache!StreamCipher) m_stream_cipher_cache;

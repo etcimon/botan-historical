@@ -85,7 +85,6 @@ public:
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
-		logDebug(grp.toString());
 		bool x_arg_0;
         if (x_arg == 0) {
 			x_arg_0 = true;

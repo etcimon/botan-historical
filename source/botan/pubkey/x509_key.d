@@ -229,6 +229,7 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 
 static if (!SKIP_X509_KEY_TEST) unittest
 {
+	logDebug("Testing x509_key ...");
     auto rng = AutoSeededRNG();
     const string hash_fn = "SHA-256";
     

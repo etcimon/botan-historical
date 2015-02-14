@@ -393,7 +393,7 @@ private:
         {
             BigInt g = powerMod(BigInt(PRIMES[i]), e, p);
             if (g > 1)
-                return g;
+                return g.move;
         }
         
         throw new InternalError("DLGroup: Couldn't create a suitable generator");

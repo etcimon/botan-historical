@@ -175,9 +175,7 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
 {
     Vector!ubyte message = hexDecode(input);
     Vector!ubyte expected = hexDecode(exp);
-	logDebug("sign Message");
     Vector!ubyte sig = s.signMessage(message, signer_rng);
-	logDebug("signed Message");
     size_t fails = 0;
     
     if (sig != expected)
@@ -202,8 +200,6 @@ size_t validateSignature(ref PKVerifier v, ref PKSigner s, string algo,
         
         mixin( PKTEST(` !v.verifyMessage(message, bad_sig) `, "Incorrect signature is invalid") );
     }
-	logDebug("verifyMessage done");
-	scope(exit) logDebug("Returned");
     return fails;
 }
 

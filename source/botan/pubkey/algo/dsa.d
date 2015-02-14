@@ -66,7 +66,7 @@ public:
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-    alias m_pub this;
+	mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -144,7 +144,6 @@ public:
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-		logTrace("DSA Signature");
         import std.concurrency : spawn, receiveOnly, thisTid, send;
         rng.addEntropy(msg, msg_len);
         
@@ -165,7 +164,6 @@ public:
 					import botan.libstate.libstate : modexpInit;
 					modexpInit(); // enable quick path for powermod
 
-					logDebug("Quick init1");
 					BigInt* ret = cast(BigInt*) res2;
 					{
 						auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g, *cast(const BigInt*)p);
@@ -191,7 +189,7 @@ public:
         r.binaryEncode(&output[output.length / 2 - r.bytes()]);
         s.binaryEncode(&output[output.length - s.bytes()]);
 
-        return output;
+        return output.move;
     }
 private:
 	const BigInt* m_q;
@@ -236,7 +234,6 @@ public:
     override SecureVector!ubyte verifyMr(const(ubyte)*, size_t) { throw new InvalidState("Message recovery not supported"); }
     override bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len)
     {
-		logTrace("DSA Verification");
         import std.concurrency : spawn, receiveOnly, send, thisTid;
         const BigInt* q = &m_mod_q.getModulus();
         
@@ -257,22 +254,16 @@ public:
 			{ 
 				import botan.libstate.libstate : modexpInit, globalState;
 				modexpInit(); // enable quick path for powermod
-				logDebug("Quick init2");
 				globalState();
-				logDebug("OK");
 				BigInt* ret = cast(BigInt*) s_i2;
-				logDebug("OK2");
 				{
 					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g2, *cast(const BigInt*)p2);
-					logDebug("Loaded powermod");
 					auto mult = (*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2);
-					logDebug("mult finished");
 					*ret = (*powermod_g_p)(mult);
 					send(cast(Tid) tid, cast(shared)Thread.getThis()); 
 				}
 				auto done = receiveOnly!bool();
 				destroy(*ret);
-				logDebug("destroyed");
 			}
 			, cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
 		auto mult = m_mod_q.multiply(s, r);
@@ -281,11 +272,8 @@ public:
         s = m_mod_p.multiply(s_i, s_r);
 		send(cast(Tid)tid, true); // trigger destroy s_i
 		auto r2 = m_mod_q.reduce(s.move);
-		logDebug("reduced");
 		thr.join();
-		auto ret = (r2 == r);
-		logDebug("joined");
-        return ret;
+		return (r2 == r);
     }
 
 private:
@@ -343,15 +331,13 @@ size_t dsaSigKat(string p,
     BigInt x_bn = BigInt(x);
     
     DLGroup group = DLGroup(p_bn, q_bn, g_bn);
-    Unique!PrivateKey privkey = DSAPrivateKey(rng, group.move(), x_bn.move());
+    Unique!DLSchemePrivateKey privkey = *DSAPrivateKey(rng, group.move(), x_bn.move());
     
-    Unique!PublicKey pubkey = DSAPublicKey(*privkey);
+    Unique!DLSchemePublicKey pubkey = *DSAPublicKey(*privkey);
     
     const string padding = "EMSA1(" ~ hash ~ ")";
-    
     PKVerifier verify = PKVerifier(*pubkey, padding);
     PKSigner sign = PKSigner(*privkey, padding);
-    
     return validateSignature(verify, sign, "DSA/" ~ hash, msg, rng, nonce, signature);
 }
 
