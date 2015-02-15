@@ -7,6 +7,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.lzma;
+import botan.constants;
+
+static if (BOTAN_HAS_LZMA):
+
 import botan.filters.filter;
 
 import botan.utils.exceptn;

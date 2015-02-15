@@ -405,7 +405,8 @@ private:
 
 
 
-void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) 
+static if (BOTAN_HAS_GCM_CLMUL)
+	void gcmMultiplyClmul(ref ubyte[16] x, in ubyte[16] H) 
 {
 	__gshared immutable(__m128i) BSWAP_MASK = _mm_set1_epi8!([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])();
 	version(D_InlineAsm_X86_64) {

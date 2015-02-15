@@ -2,13 +2,13 @@ module botan.constants;
 
 const LogLevel = Debug;
 
-const SKIP_TRANSFORM_TEST = false;
-const SKIP_X509_TEST = false;
-const SKIP_BLOCK_TEST = false;
+const SKIP_TRANSFORM_TEST = true;
+const SKIP_X509_TEST = true;
+const SKIP_BLOCK_TEST = true;
 const SKIP_CVC_TEST = true; // TODO: EAC11 ECDSA Key decoding
-const SKIP_CRYPTOBOX_TEST = false;
-const SKIP_RFC3394_TEST = false;
-const SKIP_TSS_TEST = false;
+const SKIP_CRYPTOBOX_TEST = true;
+const SKIP_RFC3394_TEST = true;
+const SKIP_TSS_TEST = true;
 const SKIP_HASH_TEST = false;
 const SKIP_KDF_TEST = false;
 const SKIP_MAC_TEST = false;
@@ -99,16 +99,20 @@ version(SIMD_SSE2)       {    const BOTAN_HAS_SIMD_SSE2 = true;          static 
 else                          const BOTAN_HAS_SIMD_SSE2 = false;
 version(SIMD_Altivec)    {    static if (BOTAN_TARGET_CPU_IS_PPC_FAMILY) 
                                   const BOTAN_HAS_SIMD_ALTIVEC = true;
-                              else const BOTAN_HAS_SIMD_ALTIVEC = false;                                                  }
+                              else const BOTAN_HAS_SIMD_ALTIVEC = false;                                                   }
 else                              const BOTAN_HAS_SIMD_ALTIVEC = false;
-
 version(SIMD_Scalar)     {    const BOTAN_HAS_SIMD_SCALAR = true;                                                         }
 else                          const BOTAN_HAS_SIMD_SCALAR = false;
 
+static if (BOTAN_HAS_SIMD_SCALAR || BOTAN_HAS_SIMD_ALTIVEC || BOTAN_HAS_SIMD_SSE2)
+	const BOTAN_HAS_SIMD_OPS = true;
+else
+	const BOTAN_HAS_SIMD_OPS = false;
+
+static if (BOTAN_HAS_X86_ARCH && BOTAN_HAS_SIMD_SSE2) pragma(msg, "Error: SIMD_SSE2 cannot be enabled on x86 architecture.");
+
 version(No_SSE_Intrinsics){   const BOTAN_NO_SSE_INTRINSICS = true;      static assert(!BOTAN_HAS_SIMD_SSE2);             }
 else                          const BOTAN_NO_SSE_INTRINSICS = false;
-version(Locking_Allocator){   const BOTAN_HAS_LOCKING_ALLOCATOR = true;                                                   }
-else                          const BOTAN_HAS_LOCKING_ALLOCATOR = false;
 
 version(Bench)           {    const BOTAN_HAS_BENCHMARK = true;                                                           }
 else                          const BOTAN_HAS_BENCHMARK = false;
@@ -161,7 +165,7 @@ version(TLS_V10_PRF)     {    const BOTAN_HAS_TLS_V10_PRF = true;               
 else                          const BOTAN_HAS_TLS_V10_PRF = false;
 version(TLS_V12_PRF)     {    const BOTAN_HAS_TLS_V12_PRF = true;                                                         }
 else                          const BOTAN_HAS_TLS_V12_PRF = false;
-version(AES_NI)          {    const BOTAN_HAS_AES_NI = true;                                                              }
+version(AES_NI)          {    const BOTAN_HAS_AES_NI = true;            static assert(BOTAN_HAS_SIMD);				      }
 else                          const BOTAN_HAS_AES_NI = false;
 version(Serpent_x86_32)  {    const BOTAN_HAS_SERPENT_X86_32 = true;    static assert(BOTAN_HAS_X86_ARCH, ERR_ARCH);      }
 else                          const BOTAN_HAS_SERPENT_X86_32 = false;
@@ -324,19 +328,19 @@ version(ChaCha)          {    const BOTAN_HAS_CHACHA = true;                    
 else                          const BOTAN_HAS_CHACHA = false;
 version(Salsa20)         {    const BOTAN_HAS_SALSA20 = true;                                                             }
 else                          const BOTAN_HAS_SALSA20 = false;
-version(AES_SSSE3)       {    const BOTAN_HAS_AES_SSSE3 = true;           static assert(BOTAN_HAS_SIMD_SSE2);             }
+version(AES_SSSE3)       {    const BOTAN_HAS_AES_SSSE3 = true;           static assert(BOTAN_HAS_SIMD);                  }
 else                          const BOTAN_HAS_AES_SSSE3 = false;
-version(Serpent_SIMD)    {    const BOTAN_HAS_SERPENT_SIMD = true;        static assert(BOTAN_HAS_SIMD_SSE2);             }
+version(Serpent_SIMD)    {    const BOTAN_HAS_SERPENT_SIMD = true;        static assert(BOTAN_HAS_SIMD_OPS);              }
 else                          const BOTAN_HAS_SERPENT_SIMD = false;
 version(Threefish_512_AVX2){  const BOTAN_HAS_THREEFISH_512_AVX2 = true;  static assert(BOTAN_HAS_SIMD_ALTIVEC);          }
 else                          const BOTAN_HAS_THREEFISH_512_AVX2 = false;
-version(Noekeon_SIMD)    {    const BOTAN_HAS_NOEKEON_SIMD = true;                                                        }
+version(Noekeon_SIMD)    {    const BOTAN_HAS_NOEKEON_SIMD = true;        static assert(BOTAN_HAS_SIMD_OPS);              }
 else                          const BOTAN_HAS_NOEKEON_SIMD = false;
-version(XTEA_SIMD)       {    const BOTAN_HAS_XTEA_SIMD = true;                                                           }
+version(XTEA_SIMD)       {    const BOTAN_HAS_XTEA_SIMD = true;           static assert(BOTAN_HAS_SIMD_OPS);              }
 else                          const BOTAN_HAS_XTEA_SIMD = false;
-version(IDEA_SSE2 )      {    const BOTAN_HAS_IDEA_SSE2 = true;                                                           }
+version(IDEA_SSE2 )      {    const BOTAN_HAS_IDEA_SSE2 = true;           static assert(BOTAN_HAS_SIMD);                  }
 else                          const BOTAN_HAS_IDEA_SSE2 = false;
-version(SHA1_SSE2)       {    const BOTAN_HAS_SHA1_SSE2 = true;           static assert(BOTAN_HAS_SIMD_SSE2);             }
+version(SHA1_SSE2)       {    const BOTAN_HAS_SHA1_SSE2 = true;           static assert(BOTAN_HAS_SIMD);                  }
 else                          const BOTAN_HAS_SHA1_SSE2 = false;
 
 
@@ -344,7 +348,7 @@ version(Engine_ASM)      {    const BOTAN_HAS_ENGINE_ASSEMBLER = true;          
 else                          const BOTAN_HAS_ENGINE_ASSEMBLER = false;
 version(Engine_AES_ISA)  {    const BOTAN_HAS_ENGINE_AES_ISA = true;                                                      }
 else                          const BOTAN_HAS_ENGINE_AES_ISA = false;
-version(Engine_SIMD)     {    const BOTAN_HAS_ENGINE_SIMD = true;         static assert(BOTAN_HAS_SIMD_SSE2);             }
+version(Engine_SIMD)     {    const BOTAN_HAS_ENGINE_SIMD = true;         static assert(BOTAN_HAS_SIMD);                  }
 else                          const BOTAN_HAS_ENGINE_SIMD = false;
 version(Engine_GNU_MP)   {    const BOTAN_HAS_ENGINE_GNU_MP = true;                                                       }
 else                          const BOTAN_HAS_ENGINE_GNU_MP = false;
@@ -386,13 +390,20 @@ version(EME_PKCS1v15)    {    const BOTAN_HAS_EME_PKCS1_V15 = true;             
 else                          const BOTAN_HAS_EME_PKCS1_V15 = false;
 version(PBE_PKCSv20)     {    const BOTAN_HAS_PBE_PKCS_V20 = true;                                                        }
 else                          const BOTAN_HAS_PBE_PKCS_V20 = false;
-version(GCM_CLMUL)       {    const BOTAN_HAS_GCM_CLMUL = true;                                                           }
+version(GCM_CLMUL)       {    const BOTAN_HAS_GCM_CLMUL = true;            static assert(BOTAN_HAS_SIMD);                 }
 else                          const BOTAN_HAS_GCM_CLMUL = false;   
 
 version(X931_RNG)        {    const BOTAN_HAS_X931_RNG = true;                                                            }
 else                          const BOTAN_HAS_X931_RNG = false;
 version(HMAC_DRBG)       {    const BOTAN_HAS_HMAC_DRBG = true;                                                           }
 else                          const BOTAN_HAS_HMAC_DRBG = false;
+
+version(ZLib)            {    const BOTAN_HAS_ZLIB = true;                                                                }
+else                          const BOTAN_HAS_ZLIB = false;
+version(Bzip2)           {    const BOTAN_HAS_BZIP2 = true;                                                               }
+else                          const BOTAN_HAS_BZIP2 = false;
+version(LZMA)            {    const BOTAN_HAS_LZMA = true;                                                                }
+else                          const BOTAN_HAS_LZMA = false;
 
 version(OPENSSL_NO_SHA)  {    const BOTAN_HAS_OPENSSL_NO_SHA = true;                                                      }
 else                          const BOTAN_HAS_OPENSSL_NO_SHA = false;

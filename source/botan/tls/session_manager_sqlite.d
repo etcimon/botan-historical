@@ -7,7 +7,7 @@
 module botan.tls.session_manager_sqlite;
 
 import botan.constants;
-static if (BOTAN_HAS_TLS):
+static if (BOTAN_HAS_TLS && BOTAN_HAS_SQLITE):
 
 import botan.tls.session_manager;
 import botan.utils.sqlite3.sqlite3;

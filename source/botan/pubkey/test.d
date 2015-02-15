@@ -154,7 +154,6 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
             ++fails;
         }
     }
-	logDebug("Validated encryption");
     
     return fails;
 }

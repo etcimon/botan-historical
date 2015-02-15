@@ -93,7 +93,7 @@ public:
 
         if (sequence > m_window_highest)
         {
-            const size_t offset = sequence - m_window_highest;
+            const size_t offset = cast(size_t)(sequence - m_window_highest);
             m_window_highest += offset;
 
             if (offset >= window_size)

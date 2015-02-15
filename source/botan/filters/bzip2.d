@@ -6,6 +6,10 @@
 * Distributed under the terms of the botan license.
 */
 module botan.filters.bzip2;
+
+import botan.constants;
+static if (BOTAN_HAS_BZIP2):
+
 import botan.filters.filter;
 import botan.utils.exceptn;
 

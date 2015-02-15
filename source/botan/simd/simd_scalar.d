@@ -114,7 +114,6 @@ public:
     {
         for (size_t i = 0; i != size(); ++i)
             m_v[i] ^= other.m_v[i];
-        return this;
     }
 
     SIMDScalar!(T, N) opBinary(string op)(in SIMDScalar!(T, N) other)
@@ -147,7 +146,6 @@ public:
     }
 
     SIMDScalar!(T, N) lshift(size_t shift)()
-        if (op == "<<")
     {
         SIMDScalar!(T, N) ret;
         ret.m_v = m_v;
@@ -157,7 +155,6 @@ public:
     }
 
     SIMDScalar!(T, N) rshift(size_t shift)()
-        if (op == ">>")
     {
         SIMDScalar!(T, N) ret;
         ret.m_v = m_v;

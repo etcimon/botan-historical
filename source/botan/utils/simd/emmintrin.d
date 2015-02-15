@@ -9,6 +9,7 @@ module botan.utils.simd.emmintrin;
 
 import botan.constants;
 static if (BOTAN_HAS_SIMD_SSE2):
+
 import core.simd;
 import std.conv : to;
 

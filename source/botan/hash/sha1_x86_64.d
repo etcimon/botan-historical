@@ -38,6 +38,32 @@ protected:
 private:
 pure:
 
+enum DIGEST_ARR = "RDI";
+enum INPUT = "RSI";
+enum W = "RDX";
+enum LOOP_CTR = "EAX";
+
+enum A = "R8D";
+enum B = "R9D";
+enum C = "R10D";
+enum D = "R11D";
+enum E = "ECX";
+
+/*
+* Using negative values for SHA-1 constants > 2^31 to work around
+* a bug in binutils not accepting large lea displacements.
+*    -0x70E44324 == 0x8F1BBCDC
+*    -0x359D3E2A == 0xCA62C1D6
+*/
+enum MAGIC1 = 0x5A827999;
+enum MAGIC2 = 0x6ED9EBA1;
+enum MAGIC3 = -0x70E44324;
+enum MAGIC4 = -0x359D3E2A;
+
+enum T = "ESI";
+enum T2 = "EAX";
+
+extern(C)
 void botan_sha160_x86_64_compress(uint* arg1, const(ubyte)* arg2, uint* arg3)
 {
     /* defined later
@@ -47,11 +73,11 @@ void botan_sha160_x86_64_compress(uint* arg1, const(ubyte)* arg2, uint* arg3)
         enum D = "R11D";
         enum E = "ECX";
     */
-    mixin(START_ASM ~
+    enum ASM = 
+			START_ASM ~
             ZEROIZE(LOOP_CTR) ~
-
-            ALIGN ~ `;` ~
-            `LOOP_LOAD_INPUT:
+			ALIGN ~ `;
+LOOP_LOAD_INPUT:
             add EAX, 8;
 
             mov ` ~ R8 ~ `, ` ~ ARRAY8(INPUT, 0) ~ `;
@@ -80,12 +106,10 @@ void botan_sha160_x86_64_compress(uint* arg1, const(ubyte)* arg2, uint* arg3)
             cmp ` ~ LOOP_CTR ~ `, ` ~ IMM(16) ~ `;
             jne LOOP_LOAD_INPUT;` ~
 
-            
-            
-
             ALIGN ~ `;
             LOOP_EXPANSION:
-            add ` ~ LOOP_CTR ~ `, 4;`  ~
+            add ` ~ LOOP_CTR ~ `, 4;
+			`  ~
                 
             ZEROIZE(A) ~
             ASSIGN(B, ARRAY4(W, -1)) ~
@@ -225,35 +249,14 @@ void botan_sha160_x86_64_compress(uint* arg1, const(ubyte)* arg2, uint* arg3)
             ADD(ARRAY4(DIGEST_ARR, 2), A) ~
             ADD(ARRAY4(DIGEST_ARR, 3), B) ~
             ADD(ARRAY4(DIGEST_ARR, 4), C) ~
-      END_ASM);
+      END_ASM;
+
+
+	mixin(ASM);
 
 
 }
 
-enum DIGEST_ARR = "RDI";
-enum INPUT = "RSI";
-enum W = "RDX";
-enum LOOP_CTR = "EAX";
-
-enum A = "R8D";
-enum B = "R9D";
-enum C = "R10D";
-enum D = "R11D";
-enum E = "ECX";
-
-/*
-* Using negative values for SHA-1 constants > 2^31 to work around
-* a bug in binutils not accepting large lea displacements.
-*    -0x70E44324 == 0x8F1BBCDC
-*    -0x359D3E2A == 0xCA62C1D6
-*/
-enum MAGIC1 = 0x5A827999;
-enum MAGIC2 = 0x6ED9EBA1;
-enum MAGIC3 = -0x70E44324;
-enum MAGIC4 = -0x359D3E2A;
-
-enum T = "RSI";
-enum T2 = "EAX";
 
 string F1(string A, string B, string C, string D, string E, string F, ubyte N)
 {

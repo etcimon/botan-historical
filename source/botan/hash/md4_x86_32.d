@@ -42,10 +42,11 @@ private:
 * @param input = the input block
 * @param M = the message buffer
 */
+extern(C)
 void botan_md4_x86_32_compress(uint* digest, const(ubyte)* input, uint* M)
 {
     enum PUSHED = 4;
-    mixin(START_ASM ~ 
+    mixin(START_ASM ~ "naked;" ~
             SPILL_REGS() ~ 
             ASSIGN(EBP, ARG(PUSHED, 2)) ~/* input block */
             ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* expanded words */

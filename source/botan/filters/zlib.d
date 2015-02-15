@@ -7,6 +7,10 @@
 */
 module botan.filters.zlib;
 
+import botan.constants;
+
+static if (BOTAN_HAS_ZLIB):
+
 import botan.filters.filter;
 import botan.utils.exceptn;
 
@@ -22,10 +26,10 @@ import botan.utils.mem_ops;
 /**
 * Zlib Compression Filter
 */
-final class Zlib_Compression : Filter, Filterable
+final class ZlibCompression : Filter, Filterable
 {
 public:
-    override @property string name() const { return "Zlib_Compression"; }
+    override @property string name() const { return "ZlibCompression"; }
 
     /*
     * Compress Input with Zlib

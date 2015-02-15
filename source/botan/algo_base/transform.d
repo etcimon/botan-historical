@@ -179,8 +179,6 @@ SecureVector!ubyte transformTest(string algo,
 
 static if (!SKIP_TRANSFORM_TEST) unittest
 {
-	import core.memory;
-	GC.disable();
     logDebug("Testing transform.d ...");
     File vec = File("../test_data/transform.vec", "r");
     

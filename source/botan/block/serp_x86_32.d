@@ -75,6 +75,7 @@ protected:
 * @param output = the output block
 * @param ks = the key schedule
 */
+extern(C)
 void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* ks ) pure
 {
 
@@ -145,7 +146,7 @@ void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* k
 * @param output = the output block
 * @param ks = the key schedule
 */
-
+extern(C)
 void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* ks) pure
 {
 
@@ -216,7 +217,7 @@ void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* k
 * @param ks = holds the initial working key (padded), and is set to the
             final key schedule
 */
-
+extern(C)
 void botan_serpent_x86_32_key_schedule(uint* ks) pure
 {
     string LOAD_AND_SBOX(alias SBOX)(ubyte MSG) {
@@ -231,7 +232,8 @@ void botan_serpent_x86_32_key_schedule(uint* ks) pure
                 ASSIGN(ARRAY4(EDI, (4*MSG+11)), EDX);
     }
     enum PUSHED = 4;
-    mixin(START_ASM ~
+    enum ASM =
+		  START_ASM ~
           SPILL_REGS() ~
           ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
           ASSIGN(ESI, IMM(8)) ~
@@ -300,7 +302,9 @@ void botan_serpent_x86_32_key_schedule(uint* ks) pure
           LOAD_AND_SBOX!SBOX_E4(32 ) ~
 
           RESTORE_REGS() ~
-          END_ASM);
+          END_ASM;
+
+	mixin(ASM);
 }
 
 string E_ROUND(alias SBOX)(string A, string B, string C, string D, string T, ubyte N) 

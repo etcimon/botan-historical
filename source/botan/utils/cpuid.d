@@ -194,7 +194,7 @@ private:
         CPUID_SHA_BIT = 64+29,
     }
 
-    static bool x86_processor_flags_has(ulong bit)
+    static bool x86_processor_flags_has(int bit)
     {
         return ((m_x86_processor_flags[bit/64] >> (bit % 64)) & 1);
     }
