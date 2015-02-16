@@ -215,7 +215,7 @@ protected:
                 
                 if (!saveSession(session_info))
                 {
-					auto entry = &session_info.sessionId();
+                    auto entry = &session_info.sessionId();
                     sessionManager().removeEntry(*entry);
                     
                     if (state.serverHello().supportsSessionTicket()) // send an empty ticket
@@ -620,11 +620,11 @@ ushort chooseCiphersuite(in TLSPolicy policy,
     Vector!ushort pref_list = server_suites.dup;
        
     if (!our_choice)
-		pref_list[] = *client_suites;
+        pref_list[] = *client_suites;
     
     foreach (suite_id; pref_list[])
     {
-		if (!valueExists(*client_suites, suite_id))
+        if (!valueExists(*client_suites, suite_id))
             continue;
         
         TLSCiphersuite suite = TLSCiphersuite.byId(suite_id);

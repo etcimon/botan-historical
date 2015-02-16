@@ -45,12 +45,12 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
         
         if (!restored_pub)
         {
-			logError("Could not recover " ~ name ~ " public key");
+            logError("Could not recover " ~ name ~ " public key");
             ++fails;
         }
         else if (restored_pub.checkKey(rng, true) == false)
         {
-			logError("Restored pubkey failed self tests " ~ name);
+            logError("Restored pubkey failed self tests " ~ name);
             ++fails;
         }
     }
@@ -68,21 +68,21 @@ size_t validateSaveAndLoad(const PrivateKey priv_key, RandomNumberGenerator rng)
         
         if (!restored_priv)
         {
-			logError("Could not recover " ~ name ~ " private key");
+            logError("Could not recover " ~ name ~ " private key");
             ++fails;
         }
         else if (restored_priv.checkKey(rng, true) == false)
         {
-			logError("Restored privkey failed self tests " ~ name);
+            logError("Restored privkey failed self tests " ~ name);
             ++fails;
         }
-	}
-	catch(Exception e)
-	{
-		logError("Exception during load of " ~ name ~ " key: " ~ e.msg);
-		logTrace("PEM for pubkey was: " ~ priv_pem);
-		++fails;
-	}
+    }
+    catch(Exception e)
+    {
+        logError("Exception during load of " ~ name ~ " key: " ~ e.msg);
+        logTrace("PEM for pubkey was: " ~ priv_pem);
+        ++fails;
+    }
     return fails;
 }
 
@@ -121,7 +121,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     const Vector!ubyte ctext = e.encrypt(message, rng);
     if (ctext != expected)
     {
-		logError("FAILED (encrypt): " ~ algo);
+        logError("FAILED (encrypt): " ~ algo);
         dumpData(ctext, expected);
         ++fails;
     }
@@ -130,7 +130,7 @@ size_t validateEncryption(PKEncryptor e, PKDecryptor d,
     
     if (decrypted != message)
     {
-		logError("FAILED (decrypt): " ~ algo);
+        logError("FAILED (decrypt): " ~ algo);
         dumpData(decrypted, message);
         ++fails;
     }

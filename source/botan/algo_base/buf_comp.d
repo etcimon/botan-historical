@@ -36,10 +36,10 @@ public:
     * Add new input to process.
     * @param input = the input to process as a SecureVector
     */
-	final void update(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC)) input)
-	{
-		addData(input.ptr, input.length);
-	}
+    final void update(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC)) input)
+    {
+        addData(input.ptr, input.length);
+    }
 
     /**
     * Add new input to process.
@@ -142,7 +142,7 @@ public:
     * @param input = the input to process
     * @result the result of the call to finished()
     */
-	final SecureVector!ubyte process(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
+    final SecureVector!ubyte process(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
         addData(input.ptr, input.length);
         return finished();

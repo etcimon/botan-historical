@@ -33,10 +33,12 @@ protected:
 
 }
 
+extern(C)
 void botan_md5_x86_32_compress(uint* digest, const(ubyte)* input, uint* M) pure
 {
     enum PUSHED = 4;
     mixin(START_ASM ~ 
+        "naked;\n" ~
         SPILL_REGS() ~ 
         ASSIGN(EBP, ARG(PUSHED, 2)) ~ /* input block */
         ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* expanded words */
@@ -64,8 +66,6 @@ void botan_md5_x86_32_compress(uint* digest, const(ubyte)* input, uint* M) pure
         ASSIGN(EBX, ARRAY4(EBP, 1)) ~
         ASSIGN(ECX, ARRAY4(EBP, 2)) ~
         ASSIGN(EDX, ARRAY4(EBP, 3)) ~
-
-
 
         FF(EAX,EBX,ECX,EDX, 0, 7,0xD76AA478) ~
         FF(EDX,EAX,EBX,ECX, 1,12,0xE8C7B756) ~
@@ -142,6 +142,7 @@ void botan_md5_x86_32_compress(uint* digest, const(ubyte)* input, uint* M) pure
         ADD(ARRAY4(EBP, 3), EDX) ~
 
         RESTORE_REGS() ~ 
+        "ret;\n" ~
         END_ASM);
         
 }

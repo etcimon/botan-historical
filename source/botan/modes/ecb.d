@@ -71,7 +71,7 @@ protected:
             throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/ECB");
     }
 
-	final BlockCipher cipher() const { return cast()*m_cipher; }
+    final BlockCipher cipher() const { return cast()*m_cipher; }
 
     final const(BlockCipherModePaddingMethod) padding() const { return *m_padding; }
 

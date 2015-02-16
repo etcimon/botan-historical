@@ -23,15 +23,15 @@ public:
     * Begin processing a message.
     * @param nonce = the per message nonce
     */    
-	final SecureVector!ubyte startVec(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) nonce)
-	{
-		return start(nonce.ptr, nonce.length);
-	}
+    final SecureVector!ubyte startVec(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) nonce)
+    {
+        return start(nonce.ptr, nonce.length);
+    }
 
-	final SecureVector!ubyte startVec(Alloc)(auto const ref Vector!( ubyte, Alloc ) nonce)
-	{
-		return start(nonce.ptr, nonce.length);
-	}
+    final SecureVector!ubyte startVec(Alloc)(auto const ref Vector!( ubyte, Alloc ) nonce)
+    {
+        return start(nonce.ptr, nonce.length);
+    }
 
     /**
     * Begin processing a message.
@@ -115,15 +115,15 @@ public:
         return keySpec().validKeylength(length);
     }
 
-	final void setKey(Alloc)(in RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
-	{
-		setKey(key.ptr, key.length);
-	}
+    final void setKey(Alloc)(in RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
+    {
+        setKey(key.ptr, key.length);
+    }
 
-	final void setKey(Alloc)(const ref Vector!( ubyte, Alloc ) key)
-	{
-		setKey(key.ptr, key.length);
-	}
+    final void setKey(Alloc)(const ref Vector!( ubyte, Alloc ) key)
+    {
+        setKey(key.ptr, key.length);
+    }
 
     final void setKey(in SymmetricKey key)
     {
@@ -183,13 +183,13 @@ static if (!SKIP_TRANSFORM_TEST) unittest
     File vec = File("../test_data/transform.vec", "r");
     
     size_t fails = runTests(vec, "Transform", "Output", true,
-	     (ref HashMap!(string, string) m) {
-	        atomicOp!"+="(total_tests, 1);
-	        return hexEncode(transformTest(m["Transform"],
-	                            hexDecodeLocked(m["Nonce"]),
-	                            hexDecodeLocked(m["Key"]),
-	                            hexDecodeLocked(m["Input"])));
-	    });
+         (ref HashMap!(string, string) m) {
+            atomicOp!"+="(total_tests, 1);
+            return hexEncode(transformTest(m["Transform"],
+                                hexDecodeLocked(m["Nonce"]),
+                                hexDecodeLocked(m["Key"]),
+                                hexDecodeLocked(m["Input"])));
+        });
 
     testReport("transform", total_tests, fails);
 }

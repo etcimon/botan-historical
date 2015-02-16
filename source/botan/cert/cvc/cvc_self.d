@@ -66,15 +66,15 @@ EAC11CVC createSelfSignedCert(in PrivateKey key,
     
     ASN1Chr chr = ASN1Chr(opt.car.value());
     
-	auto sig_algo = AlgorithmIdentifier();
+    auto sig_algo = AlgorithmIdentifier();
     string padding_and_hash = "EMSA1_BSI(" ~ opt.hash_alg ~ ")";
-	//logTrace(padding_and_hash);
+    //logTrace(padding_and_hash);
     sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
     sig_algo = AlgorithmIdentifier(cast(OID)sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
     
     PKSigner signer = PKSigner(key, padding_and_hash);
     
-	Vector!ubyte enc_public_key = eac11Encoding(cast(ECPublicKey)key, sig_algo.oid);
+    Vector!ubyte enc_public_key = eac11Encoding(cast(ECPublicKey)key, sig_algo.oid);
     
     return makeCvcCert(signer,
                        enc_public_key,
@@ -108,21 +108,21 @@ EAC11Req createCvcReq(in PrivateKey key,
     auto sig_algo = AlgorithmIdentifier();
     string padding_and_hash = "EMSA1_BSI(" ~ hash_alg ~ ")";
     sig_algo.oid = OIDS.lookup(priv_key.algoName ~ "/" ~ padding_and_hash);
-	sig_algo = AlgorithmIdentifier(cast(OID)sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
+    sig_algo = AlgorithmIdentifier(cast(OID)sig_algo.oid, AlgorithmIdentifierImpl.USE_NULL_PARAM);
     
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
     
-	Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
-	Vector!ubyte tbs = DEREncoder()
+    Vector!ubyte tbs = DEREncoder()
             .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
             .rawBytes(enc_public_key)
             .encode(chr)
             .getContentsUnlocked();
     
-	Vector!ubyte signed_cert = 
+    Vector!ubyte signed_cert = 
         EAC11genCVC!EAC11ReqImpl.makeSigned(signer,
                                             EAC11genCVC!EAC11ReqImpl.buildCertBody(tbs),
                                             rng);
@@ -153,10 +153,10 @@ EAC11ADO createAdoReq(in PrivateKey key,
     
     string padding_and_hash = paddingAndHashFromOid(req.signatureAlgorithm().oid);
     PKSigner signer = PKSigner(priv_key, padding_and_hash);
-	Vector!ubyte tbs_bits = req.BER_encode();
+    Vector!ubyte tbs_bits = req.BER_encode();
     tbs_bits ~= DEREncoder().encode(car).getContentsUnlocked();
     
-	Vector!ubyte signed_cert = EAC11ADO.makeSigned(signer, tbs_bits, rng);
+    Vector!ubyte signed_cert = EAC11ADO.makeSigned(signer, tbs_bits, rng);
     
     auto source = DataSourceMemory(&signed_cert);
     return EAC11ADO(cast(DataSource)source);
@@ -242,7 +242,7 @@ EAC11CVC linkCvca(in EAC11CVC signer,
     ECDSAPublicKey subj_pk = cast(ECDSAPublicKey)(*pk);
     subj_pk.setParameterEncoding(EC_DOMPAR_ENC_EXPLICIT);
     
-	Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(pk_signer, enc_public_key,
                          signer.getCar(),
@@ -355,7 +355,7 @@ EAC11CVC signRequest(in EAC11CVC signer_cert,
         // (IS cannot sign certificates)
     }
     
-	Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
+    Vector!ubyte enc_public_key = eac11Encoding(priv_key, sig_algo.oid);
     
     return makeCvcCert(pk_signer, enc_public_key,
                        ASN1Car(signer_cert.getChr().iso8859()),

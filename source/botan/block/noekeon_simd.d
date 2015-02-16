@@ -31,9 +31,9 @@ public:
         const SecureVector!uint* EK = &this.getEK();
         
         SIMD32 K0 = SIMD32((*EK)[0]);
-		SIMD32 K1 = SIMD32((*EK)[1]);
-		SIMD32 K2 = SIMD32((*EK)[2]);
-		SIMD32 K3 = SIMD32((*EK)[3]);
+        SIMD32 K1 = SIMD32((*EK)[1]);
+        SIMD32 K2 = SIMD32((*EK)[2]);
+        SIMD32 K3 = SIMD32((*EK)[3]);
         
         while (blocks >= 4)
         {
@@ -88,9 +88,9 @@ public:
         const SecureVector!uint* DK = &this.getDK();
         
         SIMD32 K0 = SIMD32((*DK)[0]);
-		SIMD32 K1 = SIMD32((*DK)[1]);
-		SIMD32 K2 = SIMD32((*DK)[2]);
-		SIMD32 K3 = SIMD32((*DK)[3]);
+        SIMD32 K1 = SIMD32((*DK)[1]);
+        SIMD32 K2 = SIMD32((*DK)[2]);
+        SIMD32 K3 = SIMD32((*DK)[3]);
         
         while (blocks >= 4)
         {

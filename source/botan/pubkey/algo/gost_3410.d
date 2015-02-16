@@ -23,43 +23,43 @@ import memutils.helpers : Embed;
 
 struct GOST3410Options // applied to ECPublicKey
 {
-	enum algoName = "GOST-34.10";
-	enum msgParts = 2;
+    enum algoName = "GOST-34.10";
+    enum msgParts = 2;
 
-	static AlgorithmIdentifier algorithmIdentifier(in ECPublicKey pkey)
-	{
-		//logTrace("Encode algorithmIdentifier x509");
-		Vector!ubyte params = DEREncoder().startCons(ASN1Tag.SEQUENCE)
-				.encode(OID(pkey.domain().getOid()))
-				.endCons()
-				.getContentsUnlocked();
-		
-		return AlgorithmIdentifier(pkey.getOid(), params);
-	}
+    static AlgorithmIdentifier algorithmIdentifier(in ECPublicKey pkey)
+    {
+        //logTrace("Encode algorithmIdentifier x509");
+        Vector!ubyte params = DEREncoder().startCons(ASN1Tag.SEQUENCE)
+                .encode(OID(pkey.domain().getOid()))
+                .endCons()
+                .getContentsUnlocked();
+        
+        return AlgorithmIdentifier(pkey.getOid(), params);
+    }
 
-	static Vector!ubyte x509SubjectPublicKey(in ECPublicKey pkey)
-	{
-		//logTrace("Encode x509SubjectPublicKey");
-		// Trust CryptoPro to come up with something obnoxious
-		const BigInt x = pkey.publicPoint().getAffineX();
-		const BigInt y = pkey.publicPoint().getAffineY();
-		
-		size_t part_size = std.algorithm.max(x.bytes(), y.bytes());
-		
-		Vector!ubyte bits = Vector!ubyte(2*part_size);
-		
-		x.binaryEncode(&bits[part_size - x.bytes()]);
-		y.binaryEncode(&bits[2*part_size - y.bytes()]);
-		
-		// Keys are stored in little endian format (WTF)
-		foreach (size_t i; 0 .. (part_size / 2))
-		{
-			std.algorithm.swap(bits[i], bits[part_size-1-i]);
-			std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
-		}
-		
-		return DEREncoder().encode(bits, ASN1Tag.OCTET_STRING).getContentsUnlocked();
-	}
+    static Vector!ubyte x509SubjectPublicKey(in ECPublicKey pkey)
+    {
+        //logTrace("Encode x509SubjectPublicKey");
+        // Trust CryptoPro to come up with something obnoxious
+        const BigInt x = pkey.publicPoint().getAffineX();
+        const BigInt y = pkey.publicPoint().getAffineY();
+        
+        size_t part_size = std.algorithm.max(x.bytes(), y.bytes());
+        
+        Vector!ubyte bits = Vector!ubyte(2*part_size);
+        
+        x.binaryEncode(&bits[part_size - x.bytes()]);
+        y.binaryEncode(&bits[2*part_size - y.bytes()]);
+        
+        // Keys are stored in little endian format (WTF)
+        foreach (size_t i; 0 .. (part_size / 2))
+        {
+            std.algorithm.swap(bits[i], bits[part_size-1-i]);
+            std.algorithm.swap(bits[part_size+i], bits[2*part_size-1-i]);
+        }
+        
+        return DEREncoder().encode(bits, ASN1Tag.OCTET_STRING).getContentsUnlocked();
+    }
 }
 
 /**
@@ -68,8 +68,8 @@ struct GOST3410Options // applied to ECPublicKey
 struct GOST3410PublicKey
 {
 public:
-	alias Options = GOST3410Options;
-	__gshared immutable algoName = Options.algoName;
+    alias Options = GOST3410Options;
+    __gshared immutable algoName = Options.algoName;
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -85,7 +85,7 @@ public:
     */
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-		//logTrace("Decode public key");
+        //logTrace("Decode public key");
         OID ecc_param_id = OID();
         
         // Also includes hash and cipher OIDs... brilliant design guys
@@ -107,8 +107,8 @@ public:
         BigInt x = BigInt(bits.ptr, part_size);
         BigInt y = BigInt(&bits[part_size], part_size);
         
-		PointGFp public_point = PointGFp(domain_params.getCurve(), x, y);
-		m_pub = new ECPublicKey(Options(), domain_params, public_point);
+        PointGFp public_point = PointGFp(domain_params.getCurve(), x, y);
+        m_pub = new ECPublicKey(Options(), domain_params, public_point);
         assert(public_point.onTheCurve(), "Loaded GOST 34.10 public key is on the curve");
     }
 
@@ -116,7 +116,7 @@ public:
 
     this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     ECPublicKey m_pub;
 }
@@ -127,12 +127,12 @@ public:
 struct GOST3410PrivateKey
 {
 public:
-	alias Options = GOST3410Options;
-	__gshared immutable algoName = Options.algoName;
+    alias Options = GOST3410Options;
+    __gshared immutable algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-		m_priv = new ECPrivateKey(Options(), alg_id, key_bits);
+        m_priv = new ECPrivateKey(Options(), alg_id, key_bits);
     }
 
     /**
@@ -143,12 +143,12 @@ public:
     */
     this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = 0)
     {
-		m_priv = new ECPrivateKey(Options(), rng, domain, x);
+        m_priv = new ECPrivateKey(Options(), rng, domain, x);
     }
 
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     ECPrivateKey m_priv;
 }
@@ -180,7 +180,7 @@ public:
     override size_t maxInputBits() const { return m_order.bits(); }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len,
-                         			 RandomNumberGenerator rng)
+                                      RandomNumberGenerator rng)
     {
         BigInt k;
         do
@@ -246,7 +246,7 @@ public:
 
     override SecureVector!ubyte verifyMr(const(ubyte)*, size_t) { throw new InvalidState("Message recovery not supported"); }
     override bool verify(const(ubyte)* msg, size_t msg_len,
-                		 const(ubyte)* sig, size_t sig_len)
+                         const(ubyte)* sig, size_t sig_len)
     {
         if (sig_len != m_order.bytes()*2)
             return false;
@@ -318,7 +318,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
     
     foreach (gost; gost_list) {
         atomicOp!"+="(total_tests, 1);
-		auto ec = ECGroup(OIDS.lookup(gost));
+        auto ec = ECGroup(OIDS.lookup(gost));
         auto key = GOST3410PrivateKey(rng, ec);
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key, rng);
@@ -337,7 +337,7 @@ size_t gostVerify(string group_id,
     auto rng = AutoSeededRNG();
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-	auto x_dec = hexDecode(x);
+    auto x_dec = hexDecode(x);
     PointGFp public_point = OS2ECP(x_dec, group.getCurve());
     
     auto gost = GOST3410PublicKey(group, public_point);
@@ -364,9 +364,9 @@ static if (!SKIP_GOST_TEST) unittest
     File ecdsa_sig = File("../test_data/pubkey/gost_3410.vec", "r");
     
     fails += runTestsBb(ecdsa_sig, "GOST-34.10 Signature", "Signature", true,
-		(ref HashMap!(string, string) m) {
-			return gostVerify(m["Group"], m["Pubkey"], m["Hash"], m["Msg"], m["Signature"]);
-		});
+        (ref HashMap!(string, string) m) {
+            return gostVerify(m["Group"], m["Pubkey"], m["Hash"], m["Msg"], m["Signature"]);
+        });
     
     testReport("gost_3410", total_tests, fails);
 }

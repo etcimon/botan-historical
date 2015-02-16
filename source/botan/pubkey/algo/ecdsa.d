@@ -23,19 +23,19 @@ import botan.utils.types;
 import memutils.helpers : Embed;
 
 struct ECDSAOptions {
-	enum algoName = "ECDSA";
-	enum msgParts = 2;
+    enum algoName = "ECDSA";
+    enum msgParts = 2;
 
-	static bool checkKey(in ECPrivateKey privkey, RandomNumberGenerator rng, bool strong)
-	{
-		if (!privkey.publicPoint().onTheCurve())
-			return false;
-		
-		if (!strong)
-			return true;
-		
-		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
-	}
+    static bool checkKey(in ECPrivateKey privkey, RandomNumberGenerator rng, bool strong)
+    {
+        if (!privkey.publicPoint().onTheCurve())
+            return false;
+        
+        if (!strong)
+            return true;
+        
+        return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
+    }
 }
 
 /**
@@ -44,8 +44,8 @@ struct ECDSAOptions {
 struct ECDSAPublicKey
 {
 public:
-	alias Options = ECDSAOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = ECDSAOptions;
+    __gshared immutable string algoName = Options.algoName;
     /**
     * Construct a public key from a given public point.
     * @param dom_par = the domain parameters associated with this key
@@ -58,18 +58,18 @@ public:
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
-		m_pub = new ECPublicKey(Options(), alg_id, key_bits);
+        m_pub = new ECPublicKey(Options(), alg_id, key_bits);
     }
 
-	this(in PublicKey pkey) {
+    this(in PublicKey pkey) {
         m_pub = cast(ECPublicKey) pkey;
     }
 
-	this(in PrivateKey pkey) {
+    this(in PrivateKey pkey) {
         m_pub = cast(ECPublicKey) pkey;
     }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     ECPublicKey m_pub;
 }
@@ -80,8 +80,8 @@ public:
 struct ECDSAPrivateKey
 {
 public:
-	alias Options = ECDSAOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = ECDSAOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     /**
     * Load a private key
@@ -101,14 +101,14 @@ public:
     */
     this()(RandomNumberGenerator rng, auto const ref ECGroup domain, BigInt x = 0)
     {
-		m_priv = new ECPrivateKey(Options(), rng, domain, x);
+        m_priv = new ECPrivateKey(Options(), rng, domain, x);
     }
 
     this(in PrivateKey pkey) { 
         m_priv = cast(ECPrivateKey)pkey;
     }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     ECPrivateKey m_priv;
 }
@@ -138,7 +138,7 @@ public:
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
-		logTrace("ECDSA Sign operation");
+        logTrace("ECDSA Sign operation");
         rng.addEntropy(msg, msg_len);
         
         BigInt m = BigInt(msg, msg_len);
@@ -154,7 +154,7 @@ public:
             while (k >= *m_order)
                 k.randomize(rng, m_order.bits() - 1);
             PointGFp k_times_P = (*m_base_point) * k;
-			assert(k_times_P.onTheCurve());
+            assert(k_times_P.onTheCurve());
             r = m_mod_order.reduce(k_times_P.getAffineX());
             s = m_mod_order.multiply(inverseMod(k, *m_order), mulAdd(*m_x, r, m));
 
@@ -207,12 +207,12 @@ public:
 
     override SecureVector!ubyte verifyMr(const(ubyte)*, size_t) { throw new InvalidState("Message recovery not supported"); }
     override bool verify(const(ubyte)* msg, size_t msg_len,
-                		 const(ubyte)* sig, size_t sig_len)
+                         const(ubyte)* sig, size_t sig_len)
     {
-		logTrace("ECDSA Verification");
+        logTrace("ECDSA Verification");
         if (sig_len != m_order.bytes()*2) {
             return false;
-		}
+        }
         
         BigInt e = BigInt(msg, msg_len);
         
@@ -220,23 +220,23 @@ public:
         BigInt s = BigInt(sig + sig_len / 2, sig_len / 2);
 
         if (r <= 0 || r >= *m_order || s <= 0 || s >= *m_order) {
-			//logError("arg error");
-			return false;
-		}
+            //logError("arg error");
+            return false;
+        }
         
         BigInt w = inverseMod(s, *m_order);
-		auto r_1 = PointGFp.multiExponentiate(*m_base_point, e, *m_public_point, r);
-		assert(r_1.onTheCurve());
+        auto r_1 = PointGFp.multiExponentiate(*m_base_point, e, *m_public_point, r);
+        assert(r_1.onTheCurve());
         PointGFp R = r_1 * w;
-		assert(R.onTheCurve());
+        assert(R.onTheCurve());
         if (R.isZero()) 
             return false;
-		return (R.getAffineX() % (*m_order) == r);
+        return (R.getAffineX() % (*m_order) == r);
     }
 
 private:
-	const PointGFp* m_base_point;
-	const PointGFp* m_public_point;
+    const PointGFp* m_base_point;
+    const PointGFp* m_public_point;
     const BigInt* m_order;
 }
 
@@ -332,7 +332,7 @@ static if (BOTAN_HAS_X509_CERTIFICATES)
 size_t testDecodeEcdsaX509()
 {
     X509Certificate cert = X509Certificate("../test_data/ecc/CSCA.CSCA.csca-germany.1.crt");
-	//logDebug(cert.toString());
+    //logDebug(cert.toString());
     size_t fails = 0;
     
     mixin( CHECK_MESSAGE( `OIDS.lookup(cert.signatureAlgorithm().oid) == "ECDSA/EMSA1(SHA-224)"`, "error reading signature algorithm from x509 ecdsa certificate" ) );
@@ -344,7 +344,7 @@ size_t testDecodeEcdsaX509()
     Unique!X509PublicKey pubkey = cert.subjectPublicKey();
     bool ver_ec = cert.checkSignature(*pubkey);
     mixin( CHECK_MESSAGE( `ver_ec`, "could not positively verify correct selfsigned x509-ecdsa certificate" ) );
-	assert(!fails);
+    assert(!fails);
     return fails;
 }
 
@@ -509,9 +509,9 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     priv_key.write( pkcs8.PEM_encode(key) );
     
     Unique!PKCS8PrivateKey loaded_key = pkcs8.loadKey("../test_data/ecc/wo_dompar_private.pkcs8.pem", rng);
-	ECDSAPrivateKey loaded_ec_key = ECDSAPrivateKey(*loaded_key);
-	mixin( CHECK_MESSAGE( `loaded_ec_key`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
-	Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("../test_data/ecc/rsa_private.pkcs8.pem", rng);
+    ECDSAPrivateKey loaded_ec_key = ECDSAPrivateKey(*loaded_key);
+    mixin( CHECK_MESSAGE( `loaded_ec_key`, "the loaded key could not be converted into an ECDSAPrivateKey" ) );
+    Unique!PKCS8PrivateKey loaded_key_1 = pkcs8.loadKey("../test_data/ecc/rsa_private.pkcs8.pem", rng);
     ECDSAPrivateKey loaded_rsa_key = ECDSAPrivateKey(*loaded_key_1);
     mixin( CHECK_MESSAGE( `!loaded_rsa_key`, "the loaded key is ECDSAPrivateKey -> shouldn't be, is a RSA-Key" ) );
     
@@ -535,7 +535,7 @@ size_t testCreateAndVerify(RandomNumberGenerator rng)
     BigInt bi_order_g = BigInt.decode( sv_order_g.ptr, sv_order_g.length );
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     PointGFp p_G = OS2ECP( sv_G_secp_comp, curve );
-	auto bi = BigInt(1);
+    auto bi = BigInt(1);
     ECGroup dom_params = ECGroup(curve, p_G, bi_order_g, bi);
     if (!p_G.onTheCurve())
         throw new InternalError("Point not on the curve");
@@ -730,7 +730,7 @@ size_t ecdsaSigKat(string group_id,
     auto rng = AutoSeededRNG();
     
     ECGroup group = ECGroup(OIDS.lookup(group_id));
-	auto bx =  BigInt(x);
+    auto bx =  BigInt(x);
     auto ecdsa = ECDSAPrivateKey(*rng, group, bx.move());
     
     const string padding = "EMSA1(" ~ hash ~ ")";
@@ -748,13 +748,13 @@ static if (!SKIP_ECDSA_TEST) unittest
     
     auto rng = AutoSeededRNG();
     
-	static if (BOTAN_HAS_X509_CERTIFICATES) {
-		fails += testDecodeEcdsaX509();
-		fails += testDecodeVerLinkSHA256();
-		fails += testDecodeVerLinkSHA1();
-	}
+    static if (BOTAN_HAS_X509_CERTIFICATES) {
+        fails += testDecodeEcdsaX509();
+        fails += testDecodeVerLinkSHA256();
+        fails += testDecodeVerLinkSHA1();
+    }
 
-	fails += testCurveRegistry(rng);
+    fails += testCurveRegistry(rng);
     fails += testHashLargerThanN(rng);
     fails += testSignThenVer(rng);
     fails += testEcSign(rng);
@@ -767,14 +767,14 @@ static if (!SKIP_ECDSA_TEST) unittest
     fails += testReadPkcs8(rng);
     fails += testEccKeyWithRfc5915Extensions(rng);
 
-	fails += testPkKeygen(rng);
+    fails += testPkKeygen(rng);
 
     File ecdsa_sig = File("../test_data/pubkey/ecdsa.vec", "r");
 
     fails += runTestsBb(ecdsa_sig, "ECDSA Signature", "Signature", true,
-		(ref HashMap!(string, string) m) {
-			return ecdsaSigKat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-		});
+        (ref HashMap!(string, string) m) {
+            return ecdsaSigKat(m["Group"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+        });
 
 
     testReport("ECDSA", total_tests, fails);

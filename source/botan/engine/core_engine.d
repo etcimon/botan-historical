@@ -578,8 +578,8 @@ public:
     {
         static if (BOTAN_HAS_RSA) {
             if (RSAPrivateKey.algoName == key.algoName) {
-				return new RSAPrivateOperation(key, rng);
-			}
+                return new RSAPrivateOperation(key, rng);
+            }
         }
         
         static if (BOTAN_HAS_RW) {

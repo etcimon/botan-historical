@@ -57,15 +57,15 @@ immutable(__m128i) _mm_set1_epi8 (byte i)() {
 
 // _mm_set_epi8
 immutable(__m128i) _mm_set1_epi8(byte[] arr)() {
-	mixin(`byte16 arr_fix = [` ~ arr[15].to!string ~ `, ` ~ arr[14].to!string ~ `, 
-								` ~ arr[13].to!string ~ `, ` ~ arr[12].to!string ~ `, 
-								` ~ arr[11].to!string ~ `, ` ~ arr[10].to!string ~ `, 
-								` ~ arr[9].to!string ~ `, ` ~ arr[8].to!string ~ `, 
-								` ~ arr[7].to!string ~ `, ` ~ arr[6].to!string ~ `, 
-								` ~ arr[5].to!string ~ `, ` ~ arr[4].to!string ~ `, 
-								` ~ arr[3].to!string ~ `, ` ~ arr[2].to!string ~ `, 
-								` ~ arr[1].to!string ~ `, ` ~ arr[0].to!string ~ `];`);
-	return cast(immutable __m128i)arr_fix;
+    mixin(`byte16 arr_fix = [` ~ arr[15].to!string ~ `, ` ~ arr[14].to!string ~ `, 
+                                ` ~ arr[13].to!string ~ `, ` ~ arr[12].to!string ~ `, 
+                                ` ~ arr[11].to!string ~ `, ` ~ arr[10].to!string ~ `, 
+                                ` ~ arr[9].to!string ~ `, ` ~ arr[8].to!string ~ `, 
+                                ` ~ arr[7].to!string ~ `, ` ~ arr[6].to!string ~ `, 
+                                ` ~ arr[5].to!string ~ `, ` ~ arr[4].to!string ~ `, 
+                                ` ~ arr[3].to!string ~ `, ` ~ arr[2].to!string ~ `, 
+                                ` ~ arr[1].to!string ~ `, ` ~ arr[0].to!string ~ `];`);
+    return cast(immutable __m128i)arr_fix;
 }
 
 // _mm_set1_epi16
@@ -643,7 +643,7 @@ version(D_InlineAsm_X86_64) {
     }    
 
     // _mm_srli_epi32 ; PSRLD
-	__m128i _mm_srli_epi32(int imm)(auto const ref __m128i a) {
+    __m128i _mm_srli_epi32(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;
@@ -659,7 +659,7 @@ version(D_InlineAsm_X86_64) {
     }
 
     // _mm_slli_epi32 ; PSLLD
-	__m128i _mm_slli_epi32(int imm)(auto const ref __m128i a) {
+    __m128i _mm_slli_epi32(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;
@@ -674,7 +674,7 @@ version(D_InlineAsm_X86_64) {
     }
     
     // _mm_slli_epi16 ; PSLLW
-	__m128i _mm_slli_epi16(int imm)(auto const ref __m128i a) {
+    __m128i _mm_slli_epi16(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;
@@ -705,7 +705,7 @@ version(D_InlineAsm_X86_64) {
     }
     
     // _mm_shufflelo_epi16 ; PSHUFLW
-	__m128i _mm_shufflelo_epi16(int imm)(auto const ref __m128i a) {
+    __m128i _mm_shufflelo_epi16(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;
@@ -779,7 +779,7 @@ version(D_InlineAsm_X86_64) {
     }
 
     // _mm_shuffle_epi32 ;  PSHUFD
-	__m128i _mm_shuffle_epi32(int imm)(auto const ref __m128i a) {
+    __m128i _mm_shuffle_epi32(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;
@@ -1000,7 +1000,7 @@ version(D_InlineAsm_X86_64) {
     }
     
     // _mm_srli_si128 ; PSRLDQ
-	__m128i _mm_srli_si128(int imm)(auto const ref __m128i a) {
+    __m128i _mm_srli_si128(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;
@@ -1015,7 +1015,7 @@ version(D_InlineAsm_X86_64) {
     }
     
     // _mm_slli_si128 ; PSLLDQ
-	__m128i _mm_slli_si128(int imm)(auto const ref __m128i a) {
+    __m128i _mm_slli_si128(int imm)(auto const ref __m128i a) {
         const(__m128i)* _a = &a;
         __m128i b;
         __m128i* _b = &b;

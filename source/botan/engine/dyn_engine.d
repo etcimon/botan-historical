@@ -46,7 +46,7 @@ public:
         }
         catch (Throwable)
         {
-            delete m_lib;
+            destroy(m_lib);
             m_lib = null;
             throw new Exception("Error in dynamic library constructor");
         }
@@ -59,8 +59,8 @@ public:
 
     ~this()
     {
-        delete m_engine;
-        delete m_lib;
+        destroy(m_engine);
+        destroy(m_lib);
     }
 
     string providerName() const { return m_engine.providerName(); }

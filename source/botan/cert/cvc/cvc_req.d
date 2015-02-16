@@ -93,19 +93,19 @@ public:
         m_self_signed = other.m_self_signed;
     }
 
-	// Interface fall-through
-	override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
-	override void encode(Pipe pipe, X509Encoding encoding = PEM_) const { return super.encode(pipe, encoding); }
-	override const(Vector!ubyte) tbsData() const { return super.tbsData(); }
+    // Interface fall-through
+    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+    override void encode(Pipe pipe, X509Encoding encoding = PEM_) const { return super.encode(pipe, encoding); }
+    override const(Vector!ubyte) tbsData() const { return super.tbsData(); }
 
 protected:
-	override void forceDecode()
+    override void forceDecode()
     {
         Vector!ubyte enc_pk;
         BERDecoder tbs_cert = BERDecoder(m_tbs_bits);
         size_t cpi;
         tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
-				.startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION)
                 .rawBytes(enc_pk)
                 .endCons()
                 .decode(m_chr)

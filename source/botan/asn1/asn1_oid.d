@@ -87,8 +87,8 @@ public:
             }
             m_id.pushBack(component);
         }
-		//import botan.asn1.oids : OIDS;
-		//assert(OIDS.lookup(OID(this)) !is null, "Invalid OID: " ~ m_id[].to!string);
+        //import botan.asn1.oids : OIDS;
+        //assert(OIDS.lookup(OID(this)) !is null, "Invalid OID: " ~ m_id[].to!string);
     }
 
 
@@ -102,7 +102,7 @@ public:
     * Get this OID as list (vector) of its components.
     * @return vector representing this OID
     */
-	ref const(Vector!uint) getId() const { return m_id; }
+    ref const(Vector!uint) getId() const { return m_id; }
 
     /**
     * Get this OID as a string
@@ -110,11 +110,11 @@ public:
     */
     override string toString() const
     {
-		return toVector()[].idup;
+        return toVector()[].idup;
     }
 
-	Vector!ubyte toVector() const {
-		Vector!ubyte oid_str;
+    Vector!ubyte toVector() const {
+        Vector!ubyte oid_str;
         foreach (size_t i; 0 .. m_id.length)
         {
             oid_str ~= to!string(m_id[i]);
@@ -130,9 +130,9 @@ public:
     */
     bool opEquals(in OIDImpl oid) const
     {
-		if ((!oid || oid.m_id.length == 0) && m_id.length == 0) return true;
-		else if (!oid || oid.m_id.length == 0) return false;
-		else if (m_id.length == 0) return false;
+        if ((!oid || oid.m_id.length == 0) && m_id.length == 0) return true;
+        else if (!oid || oid.m_id.length == 0) return false;
+        else if (m_id.length == 0) return false;
         
         if (m_id.length != oid.m_id.length)
             return false;
@@ -220,7 +220,7 @@ public:
     {
         if (oid_str == "")
             return;
-		//logTrace("Loading ", oid_str);
+        //logTrace("Loading ", oid_str);
         try
         {
             m_id = parseAsn1Oid(oid_str);
@@ -246,14 +246,14 @@ public:
 
     this(const OIDImpl other)
     {
-		m_id = other.m_id.dup;
+        m_id = other.m_id.dup;
     }
 
     @property OID dup() const {
         OID oid = OID();
-		oid.m_id = m_id.dup;
+        oid.m_id = m_id.dup;
         return oid;
     }
 private:
-	Vector!uint m_id;
+    Vector!uint m_id;
 }

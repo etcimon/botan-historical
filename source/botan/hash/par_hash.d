@@ -84,7 +84,7 @@ public:
     ~this()
     {
         foreach (hash; m_hashes[])
-            delete hash;
+            destroy(hash);
     }
 protected:
     /*

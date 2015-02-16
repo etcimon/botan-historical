@@ -86,11 +86,11 @@ bool checkPasshash9(in string password, in string hash)
     
     Pipe pipe = Pipe(new Base64Decoder);
     pipe.startMsg();
-	// logTrace("Write: ", hash.toStringz[MAGIC_PREFIX.length .. MAGIC_PREFIX.length + hash.length + 1]);
+    // logTrace("Write: ", hash.toStringz[MAGIC_PREFIX.length .. MAGIC_PREFIX.length + hash.length + 1]);
     pipe.write(hash[MAGIC_PREFIX.length .. $]);
     pipe.endMsg();
     
-	SecureVector!ubyte bin = pipe.readAll();
+    SecureVector!ubyte bin = pipe.readAll();
     
     if (bin.length != BINARY_LENGTH)
         return false;
@@ -109,7 +109,7 @@ bool checkPasshash9(in string password, in string hash)
     
     MessageAuthenticationCode pbkdf_prf = getPbkdfPrf(alg_id);
     
-	logTrace("Using ", pbkdf_prf.name, " work_factor: ", work_factor);
+    logTrace("Using ", pbkdf_prf.name, " work_factor: ", work_factor);
     if (!pbkdf_prf)
         return false; // unknown algorithm, reject
     
@@ -159,8 +159,8 @@ import botan.rng.auto_rng;
 
 static if (!SKIP_PASSHASH9_TEST) unittest
 {
-	import botan.libstate.libstate;
-	globalState();
+    import botan.libstate.libstate;
+    globalState();
     logDebug("Testing passhash9.d ...");
     size_t fails = 0;
     

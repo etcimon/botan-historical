@@ -105,14 +105,14 @@ private shared size_t total_tests;
 
 SecureVector!ubyte hkdf()(string hkdf_algo,
                           auto const ref SecureVector!ubyte ikm,
-						  auto const ref SecureVector!ubyte salt,
-						  auto const ref SecureVector!ubyte info,
+                          auto const ref SecureVector!ubyte salt,
+                          auto const ref SecureVector!ubyte info,
                           size_t L)
 {
     AlgorithmFactory af = globalState().algorithmFactory();
     
     const string algo = hkdf_algo[5 .. hkdf_algo.length-1];
-	//logTrace("Testing: HMAC(", algo, ")");
+    //logTrace("Testing: HMAC(", algo, ")");
     const MessageAuthenticationCode mac_proto = af.prototypeMac("HMAC(" ~ algo ~ ")");
     
     if (!mac_proto)
@@ -156,8 +156,8 @@ static if (!SKIP_HKDF_TEST) unittest
     size_t fails = runTestsBb(vec, "HKDF", "OKM", true,
         (ref HashMap!(string, string) m)
         {
-	        return hkdfTest(m["HKDF"], m["IKM"], m.get("salt"), m.get("info"), m["OKM"], to!uint(m["L"]));
-	    });
+            return hkdfTest(m["HKDF"], m["IKM"], m.get("salt"), m.get("info"), m["OKM"], to!uint(m["L"]));
+        });
     
     testReport("hkdf", total_tests, fails);
 }

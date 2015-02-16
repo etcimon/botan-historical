@@ -30,8 +30,8 @@ public:
     * @return encoded plaintext
     */
     final SecureVector!ubyte encode(const(ubyte)* msg, size_t msg_len,
-                            		size_t key_bits,
-                            		RandomNumberGenerator rng) const
+                                    size_t key_bits,
+                                    RandomNumberGenerator rng) const
     {
         return pad(msg, msg_len, key_bits, rng);
     }
@@ -43,7 +43,7 @@ public:
     * @param rng = a random number generator
     * @return encoded plaintext
     */
-	final SecureVector!ubyte encode(const ref SecureVector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
+    final SecureVector!ubyte encode(const ref SecureVector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
     {
         return pad(msg.ptr, msg.length, key_bits, rng);
     }

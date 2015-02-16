@@ -29,7 +29,7 @@ import botan.pubkey.workfactor;
 struct DLGroup
 {
 public:
-	@disable this(this);
+    @disable this(this);
 
     /**
     * Get the prime m_p.
@@ -45,7 +45,7 @@ public:
     * Get the prime q.
     * @return prime q
     */
-	ref const(BigInt) getQ() const
+    ref const(BigInt) getQ() const
     {
         initCheck();
         if (m_q == 0)
@@ -180,7 +180,7 @@ public:
     void BER_decode()(auto const ref Vector!ubyte data,
                       Format format)
     {
-		//logTrace("BER_decode ", format);
+        //logTrace("BER_decode ", format);
         BigInt new_p, new_q, new_g;
         
         BERDecoder decoder = BERDecoder(data);
@@ -327,8 +327,8 @@ public:
     */
     this(ref BigInt p1, ref BigInt g1)
     {
-		auto bi = BigInt(0);
-		initialize(p1, bi, g1);
+        auto bi = BigInt(0);
+        initialize(p1, bi, g1);
     }
 
     /**
@@ -337,47 +337,47 @@ public:
     * @param q1 = the prime m_q
     * @param g1 = the base m_g
     */
-	this(ref BigInt p1, ref BigInt q1, ref  BigInt g1)
-	{
-		initialize(p1, q1, g1);
-	}
+    this(ref BigInt p1, ref BigInt q1, ref  BigInt g1)
+    {
+        initialize(p1, q1, g1);
+    }
 
-	/**
-	 * Duplicate this object
-	 */ 
-	@property DLGroup dup() const {
-		auto p2 = m_p.dup;
-		auto q2 = m_q.dup;
-		auto g2 = m_g.dup;
-		return DLGroup(m_initialized, p2, q2, g2);
-	}
+    /**
+     * Duplicate this object
+     */ 
+    @property DLGroup dup() const {
+        auto p2 = m_p.dup;
+        auto q2 = m_q.dup;
+        auto g2 = m_g.dup;
+        return DLGroup(m_initialized, p2, q2, g2);
+    }
 
-	@property DLGroup move() {
-		return DLGroup(m_initialized, m_p, m_q, m_g);
-	}
+    @property DLGroup move() {
+        return DLGroup(m_initialized, m_p, m_q, m_g);
+    }
 
-	void opAssign(DLGroup other) {
-		m_p = other.m_p.move;
-		m_q = other.m_q.move;
-		m_g = other.m_g.move;
-		m_initialized = other.m_initialized;
-	}
+    void opAssign(DLGroup other) {
+        m_p = other.m_p.move;
+        m_q = other.m_q.move;
+        m_g = other.m_g.move;
+        m_initialized = other.m_initialized;
+    }
 
 private:
 
-	this(bool initialized, ref BigInt p1, ref BigInt q1, ref BigInt g1)
-	{
-		if (initialized) {
-			m_p = p1.move;
-			m_q = q1.move;
-			m_g = g1.move;
-			m_initialized = true;
-		}
-		else {
-			initialize(p1, q1, g1);
-		}
-	
-	}
+    this(bool initialized, ref BigInt p1, ref BigInt q1, ref BigInt g1)
+    {
+        if (initialized) {
+            m_p = p1.move;
+            m_q = q1.move;
+            m_g = g1.move;
+            m_initialized = true;
+        }
+        else {
+            initialize(p1, q1, g1);
+        }
+    
+    }
 
     /*
     * Create generator of the q-sized subgroup (DSA style generator)
@@ -406,8 +406,8 @@ private:
     }
 
     void initialize(ref BigInt p1, 
-					ref BigInt q1,
-					ref BigInt g1)
+                    ref BigInt q1,
+                    ref BigInt g1)
     {
         if (p1 < 3)
             throw new InvalidArgument("DLGroup: Prime invalid");
@@ -426,23 +426,23 @@ private:
     bool m_initialized;
     BigInt m_p, m_q, m_g;
 
-	public string toString() const {
-		return toVector()[].idup;
-	}
+    public string toString() const {
+        return toVector()[].idup;
+    }
 
-	public Vector!ubyte toVector() const {
-		Vector!ubyte ret;
-		ret ~= "p: ";
-		ret ~= m_p.toVector()[];
-		ret ~= "\n";
-		ret ~= "q: ";
-		ret ~= m_q.toVector()[];
-		ret ~= "\n";
-		ret ~= "g: ";
-		ret ~= m_g.toVector()[];
-		ret ~= "\n";
-		return ret.move;
-	}
+    public Vector!ubyte toVector() const {
+        Vector!ubyte ret;
+        ret ~= "p: ";
+        ret ~= m_p.toVector()[];
+        ret ~= "\n";
+        ret ~= "q: ";
+        ret ~= m_q.toVector()[];
+        ret ~= "\n";
+        ret ~= "g: ";
+        ret ~= m_g.toVector()[];
+        ret ~= "\n";
+        return ret.move;
+    }
 
     /**
     * Return PEM representation of named DL group

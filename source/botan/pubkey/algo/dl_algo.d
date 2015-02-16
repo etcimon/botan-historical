@@ -40,21 +40,21 @@ public:
         return true;
     }
 
-	final void decodeOptions(T)(in T options) {
-		static if (__traits(hasMember, T, "checkKey"))
-			m_check_key = &options.checkKey;
-		static if (__traits(hasMember, T, "msgParts"))
-			m_msg_parts = options.msgParts;
+    final void decodeOptions(T)(in T options) {
+        static if (__traits(hasMember, T, "checkKey"))
+            m_check_key = &options.checkKey;
+        static if (__traits(hasMember, T, "msgParts"))
+            m_msg_parts = options.msgParts;
 
-		static if (__traits(hasMember, T, "format"))
-			m_format = options.format;
-		else static assert(false, "No format found in " ~ T.stringof);
-	
-		static if (__traits(hasMember, T, "algoName"))
-			m_algo_name = options.algoName;
-		else static assert(false, "No algoName found in " ~ T.stringof);
+        static if (__traits(hasMember, T, "format"))
+            m_format = options.format;
+        else static assert(false, "No format found in " ~ T.stringof);
+    
+        static if (__traits(hasMember, T, "algoName"))
+            m_algo_name = options.algoName;
+        else static assert(false, "No algoName found in " ~ T.stringof);
 
-	}
+    }
 
     /// Used for object casting to the right type in the factory.
     final override @property string algoName() const {
@@ -66,13 +66,13 @@ public:
     }
 
     final override size_t maxInputBits() const {
-		if (m_msg_parts == 1 && algoName != "DH" && algoName != "ElGamal") 
-			return 0;
+        if (m_msg_parts == 1 && algoName != "DH" && algoName != "ElGamal") 
+            return 0;
 
-		if (algoName == "NR" || algoName == "ElGamal")
-			return groupQ().bits() - 1;
+        if (algoName == "NR" || algoName == "ElGamal")
+            return groupQ().bits() - 1;
 
-		return groupQ().bits();
+        return groupQ().bits();
     }
 
     final size_t messagePartSize() const { 
@@ -137,18 +137,18 @@ public:
         return dlWorkFactor(m_group.getP().bits());
     }
 
-	this(T)(in T options,
-			in AlgorithmIdentifier alg_id, 
+    this(T)(in T options,
+            in AlgorithmIdentifier alg_id, 
             auto const ref SecureVector!ubyte key_bits)
     {
-		decodeOptions(options);
+        decodeOptions(options);
         m_group.BER_decode(alg_id.parameters, m_format);
         BERDecoder(key_bits).decode(m_y);
     }
 
     this(T)(in T options, DLGroup grp, BigInt y1)
     {
-		decodeOptions(options);
+        decodeOptions(options);
         m_group = grp.move;
         m_y = y1.move;
     }
@@ -164,7 +164,7 @@ protected:
     */
     DLGroup m_group;
 
-	/// options
+    /// options
     DLGroup.Format m_format;
     string m_algo_name;
     short m_msg_parts = 1;
@@ -182,32 +182,32 @@ public:
 
     override bool checkKey(RandomNumberGenerator rng, bool strong) const
     {
-		if (m_check_key)
-			return m_check_key(this, rng, strong);
+        if (m_check_key)
+            return m_check_key(this, rng, strong);
 
-		return checkKeyImpl(rng, strong);
+        return checkKeyImpl(rng, strong);
     }
 
-	final bool checkKeyImpl(RandomNumberGenerator rng, bool strong) const 
-	{
-		const BigInt* p = &groupP();
-		const BigInt* g = &groupG();
-		if (m_y < 2 || m_y >= *p || m_x < 2 || m_x >= *p) {
-			return false;
-		}
-		if (!m_group.verifyGroup(rng, strong)) {
-			return false;
-		}
-		
-		if (!strong)
-			return true;
-		
-		if (m_y != powerMod(*g, m_x, *p)) 
-		{		
-			return false;
-		}
-		return true;
-	}
+    final bool checkKeyImpl(RandomNumberGenerator rng, bool strong) const 
+    {
+        const BigInt* p = &groupP();
+        const BigInt* g = &groupG();
+        if (m_y < 2 || m_y >= *p || m_x < 2 || m_x >= *p) {
+            return false;
+        }
+        if (!m_group.verifyGroup(rng, strong)) {
+            return false;
+        }
+        
+        if (!strong)
+            return true;
+        
+        if (m_y != powerMod(*g, m_x, *p)) 
+        {        
+            return false;
+        }
+        return true;
+    }
 
     /**
     * Get the secret key m_x.
@@ -221,22 +221,22 @@ public:
     }
 
     this(T)(in T options, in AlgorithmIdentifier alg_id,
-         	const ref SecureVector!ubyte key_bits)
+             const ref SecureVector!ubyte key_bits)
     {
         BERDecoder(key_bits).decode(m_x);
         DLGroup grp;
         grp.BER_decode(alg_id.parameters, options.format);
         BigInt y = powerMod(grp.getG(), m_x, grp.getP());
-		super(options, grp.move, y.move);
+        super(options, grp.move, y.move);
     }
 
-	this(T)(in T options, 
-			DLGroup grp, 
-		    BigInt y1, BigInt x_arg)
+    this(T)(in T options, 
+            DLGroup grp, 
+            BigInt y1, BigInt x_arg)
     {
-		//logTrace("grp: ", grp.toString());
+        //logTrace("grp: ", grp.toString());
         m_x = x_arg.move;
-		//logTrace("x: ", m_x.toString());
+        //logTrace("x: ", m_x.toString());
         super(options, grp.move, y1.move);
     }
 

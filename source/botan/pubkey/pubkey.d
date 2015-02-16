@@ -133,7 +133,7 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-	Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
     {
         update(msg, length);
         return signature(rng);
@@ -145,10 +145,10 @@ public:
     * @param rng = the rng to use
     * @return signature
     */
-	Vector!ubyte signMessage(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
-	Vector!ubyte signMessage(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input, RandomNumberGenerator rng)
+    Vector!ubyte signMessage(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
 
     /**
@@ -171,8 +171,8 @@ public:
     * Add a message part.
     * @param input = the message part to add
     */
-	void update(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) { update(input.ptr, input.length); }
-	void update(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { update(input.ptr, input.length); }
+    void update(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) { update(input.ptr, input.length); }
+    void update(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { update(input.ptr, input.length); }
 
     /**
     * Get the signature of the so far processed message (provided by the
@@ -180,7 +180,7 @@ public:
     * @param rng = the rng to use
     * @return signature of the total message
     */
-	Vector!ubyte signature(RandomNumberGenerator rng)
+    Vector!ubyte signature(RandomNumberGenerator rng)
     {
         Vector!ubyte encoded = unlock(m_emsa.encodingOf(m_emsa.rawData(), m_op.maxInputBits(), rng));
         Vector!ubyte plain_sig = unlock(m_op.sign(encoded.ptr, encoded.length, rng));
@@ -196,7 +196,7 @@ public:
                 throw new EncodingError("PKSigner: strange signature size found");
             const size_t SIZE_OF_PART = plain_sig.length / m_op.messageParts();
 
-			Vector!(RefCounted!BigInt) sig_parts = Vector!(RefCounted!BigInt)(m_op.messageParts());
+            Vector!(RefCounted!BigInt) sig_parts = Vector!(RefCounted!BigInt)(m_op.messageParts());
             for (size_t j = 0; j != sig_parts.length; ++j)
                 sig_parts[j].binaryDecode(&plain_sig[SIZE_OF_PART*j], SIZE_OF_PART);
             
@@ -243,14 +243,14 @@ public:
             if (m_op && (m_verify_op || prot == DISABLE_FAULT_PROTECTION))
                 break;
         }
-		
+        
         
         if (!m_op || (!m_verify_op && prot == ENABLE_FAULT_PROTECTION))
             throw new LookupError("Signing with " ~ key.algoName ~ " not supported");
         
         m_emsa = getEmsa(emsa_name);
         m_sig_format = format;
-		assert(*m_op !is null && *m_verify_op !is null && *m_emsa !is null);
+        assert(*m_op !is null && *m_verify_op !is null && *m_emsa !is null);
     }
 private:
     /*
@@ -318,18 +318,18 @@ public:
     * @param sig = the signature
     * @return true if the signature is valid
     */
-	bool verifyMessage(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
-									  auto const ref Vector!( ubyte, Alloc2 ) sig)
-	{
-		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
-	}
+    bool verifyMessage(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
+                                      auto const ref Vector!( ubyte, Alloc2 ) sig)
+    {
+        return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
+    }
 
-	/// ditto
-	bool verifyMessage(Alloc, Alloc2)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) msg, 
-									  auto const ref RefCounted!(Vector!( ubyte, Alloc2 ), Alloc2) sig)
-	{
-		return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
-	}
+    /// ditto
+    bool verifyMessage(Alloc, Alloc2)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) msg, 
+                                      auto const ref RefCounted!(Vector!( ubyte, Alloc2 ), Alloc2) sig)
+    {
+        return verifyMessage(msg.ptr, msg.length, sig.ptr, sig.length);
+    }
 
     /**
     * Add a message part (single ubyte) of the message corresponding to the
@@ -499,7 +499,7 @@ public:
     * @param params_len = the length of params in bytes
     */
     SymmetricKey deriveKey()(size_t key_len, auto const ref Vector!ubyte input, 
-							 const(ubyte)* params, size_t params_len) const
+                             const(ubyte)* params, size_t params_len) const
     {
         return deriveKey(key_len, input.ptr, input.length, params, params_len);
     }

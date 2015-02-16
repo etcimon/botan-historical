@@ -74,7 +74,7 @@ public:
     }
 
 private:
-	alias SRP6Data = RefCounted!SRP6DataImpl;
+    alias SRP6Data = RefCounted!SRP6DataImpl;
     struct SRP6DataImpl
     {
 

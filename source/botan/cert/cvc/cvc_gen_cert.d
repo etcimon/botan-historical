@@ -28,7 +28,7 @@ import botan.utils.types;
 abstract class EAC11genCVC(Derived) : EAC11obj!Derived, SignedObject // CRTP continuation from EAC11obj
 {
 public:
-	override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Get this certificates public key.
     * @result this certificates public key
@@ -64,9 +64,9 @@ public:
     */
     override void encode(Pipe output, X509Encoding encoding) const
     {
-		const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
+        const(Vector!ubyte) concat_sig = EAC11obj!Derived.m_sig.getConcatenation();
         auto tbsdata = tbsData();
-		Vector!ubyte der = DEREncoder()
+        Vector!ubyte der = DEREncoder()
                             .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
                             .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
                             .rawBytes(tbsdata)
@@ -85,7 +85,7 @@ public:
     * Get the to-be-signed (TBS) data of this object.
     * @result the TBS data of this object
     */
-	override const(Vector!ubyte) tbsData() const
+    override const(Vector!ubyte) tbsData() const
     {
         return buildCertBody(m_tbs_bits);
     }
@@ -96,7 +96,7 @@ public:
     * @param tbs = the data to be signed
     * @result the correctly encoded body of the object
     */
-	static Vector!ubyte buildCertBody(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs)
+    static Vector!ubyte buildCertBody(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs)
     {
         return DEREncoder()
                 .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
@@ -111,9 +111,9 @@ public:
     * @param rng = a random number generator
     * @result the DER encoded signed generalized CVC object
     */
-	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-                                  		  auto const ref Vector!(ubyte, ALLOC) tbs_bits,
-                                  		  RandomNumberGenerator rng)
+    static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+                                            auto const ref Vector!(ubyte, ALLOC) tbs_bits,
+                                            RandomNumberGenerator rng)
     {
         const auto concat_sig = signer.signMessage(tbs_bits, rng);
         return DEREncoder()
@@ -124,38 +124,38 @@ public:
                 .getContentsUnlocked();
     }
 
-	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
-										  RandomNumberGenerator rng)
-	{
-		return makeSigned(signer, *tbs_bits, rng);
-	}
+    static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+                                          auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
+                                          RandomNumberGenerator rng)
+    {
+        return makeSigned(signer, *tbs_bits, rng);
+    }
 
 protected:
     ECDSAPublicKey m_pk;
     ASN1Chr m_chr;
     bool m_self_signed;
-	abstract void forceDecode();
+    abstract void forceDecode();
 package:
     static void decodeInfo(ALLOC)(DataSource source,
-			                          ref Vector!(ubyte, ALLOC) res_tbs_bits,
-			                          ECDSASignature res_sig)
+                                      ref Vector!(ubyte, ALLOC) res_tbs_bits,
+                                      ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         BERDecoder(source)
-				.startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
-				.startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
-				.rawBytes(res_tbs_bits)
+                .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)78), ASN1Tag.APPLICATION)
+                .rawBytes(res_tbs_bits)
                 .endCons()
                 .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)
                 .endCons();
         res_sig = decodeConcatenation(concat_sig);
     }
 
-	static void decodeInfo(ALLOC)(DataSource source,
-								  ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
-								  ECDSASignature res_sig)
-	{
-		return decodeInfo(source, *res_tbs_bits, res_sig);
-	}
+    static void decodeInfo(ALLOC)(DataSource source,
+                                  ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
+                                  ECDSASignature res_sig)
+    {
+        return decodeInfo(source, *res_tbs_bits, res_sig);
+    }
 }

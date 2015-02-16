@@ -133,12 +133,12 @@ static if (!SKIP_PBKDF_TEST) unittest {
     logDebug("Testing pbkdf.d ...");
     import botan.test;
     import botan.codec.hex;
-	import memutils.hashmap;
-	int total_tests;
+    import memutils.hashmap;
+    int total_tests;
     auto test = delegate(string input) {
         return runTests(input, "PBKDF", "Output", true,
              (ref HashMap!(string, string) vec) {
-				total_tests += 1;
+                total_tests += 1;
                 Unique!PBKDF pbkdf = getPbkdf(vec["PBKDF"]);
                 
                 const size_t iterations = to!size_t(vec["Iterations"]);

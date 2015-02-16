@@ -177,7 +177,7 @@ HashMapRef!(string, string)
     logTrace("Testing ", algo_name);
     const string algo = algo_name.algoNameAndArgs();
     
-	logTrace("algoNameAndArgs: ", algo);
+    logTrace("algoNameAndArgs: ", algo);
     Vector!string providers = af.providersOf(algo);
     logTrace("Providers: ", providers[]);
     HashMapRef!(string, string) all_results;
@@ -236,8 +236,8 @@ HashMapRef!(string, string)
             if (!enc || !dec)
             {
                 logTrace("Enc/dec failure");
-                delete enc;
-                delete dec;
+                destroy(enc);
+                destroy(dec);
                 continue;
             }
             

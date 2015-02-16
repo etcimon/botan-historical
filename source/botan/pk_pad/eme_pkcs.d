@@ -41,7 +41,7 @@ public:
         if (inlen > olen - 10)
             throw new EncodingError("PKCS1: Input is too large");
         
-		SecureVector!ubyte output = SecureVector!ubyte(olen);
+        SecureVector!ubyte output = SecureVector!ubyte(olen);
         
         output[0] = 0x02;
         foreach (size_t j; 1 .. (olen - inlen - 1))

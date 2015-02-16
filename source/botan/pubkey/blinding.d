@@ -27,9 +27,9 @@ public:
         if (!m_reducer.initialized()) 
             return i.dup;
 
-		m_e = m_reducer.square(m_e);
+        m_e = m_reducer.square(m_e);
         m_d = m_reducer.square(m_d);
-		return m_reducer.multiply(i, m_e);
+        return m_reducer.multiply(i, m_e);
     }
 
     /*
@@ -50,9 +50,9 @@ public:
     * @param d = the inverse of mask (depends on algo)
     * @param n = modulus of the group operations are performed in
     */
-	this()(auto const ref BigInt e, 
-		   auto const ref BigInt d, 
-		   auto const ref BigInt n)
+    this()(auto const ref BigInt e, 
+           auto const ref BigInt d, 
+           auto const ref BigInt n)
     {
         if (e < 1 || d < 1 || n < 1)
             throw new InvalidArgument("Blinder: Arguments too small");

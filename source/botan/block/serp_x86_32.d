@@ -80,7 +80,8 @@ void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* k
 {
 
     enum PUSHED = 4;
-    mixin(START_ASM ~
+    enum ASM = START_ASM ~
+          "naked;\n" ~
           SPILL_REGS() ~
           ASSIGN(EBP, ARG(PUSHED, 1)) /* input block */ ~
           ASSIGN(EAX, ARRAY4(EBP, 0)) ~
@@ -136,8 +137,9 @@ void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* k
           ASSIGN(ARRAY4(EBP, 2), ECX) ~
           ASSIGN(ARRAY4(EBP, 3), EDX) ~
           RESTORE_REGS() ~
-          END_ASM
-          );
+          "ret;\n" ~
+          END_ASM;
+    mixin(ASM);
 }
 
 /**
@@ -152,7 +154,8 @@ void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* k
 
     enum PUSHED = 4;
     
-    mixin(START_ASM ~
+    enum ASM = START_ASM ~
+          "naked;" ~
           SPILL_REGS() ~ 
           ASSIGN(EBP, ARG(PUSHED, 1)) ~ /* input block */
           ASSIGN(EAX, ARRAY4(EBP, 0)) ~
@@ -209,7 +212,9 @@ void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* k
           ASSIGN(ARRAY4(EBP, 2), ECX) ~
           ASSIGN(ARRAY4(EBP, 3), EDX) ~
           RESTORE_REGS() ~ 
-          END_ASM);
+          "ret;\n" ~
+          END_ASM;
+    mixin(ASM);
 }
 
 /**
@@ -233,7 +238,8 @@ void botan_serpent_x86_32_key_schedule(uint* ks) pure
     }
     enum PUSHED = 4;
     enum ASM =
-		  START_ASM ~
+          START_ASM ~
+          "naked;\n" ~
           SPILL_REGS() ~
           ASSIGN(EDI, ARG(PUSHED, 1)) ~ /* round keys */
           ASSIGN(ESI, IMM(8)) ~
@@ -302,9 +308,10 @@ void botan_serpent_x86_32_key_schedule(uint* ks) pure
           LOAD_AND_SBOX!SBOX_E4(32 ) ~
 
           RESTORE_REGS() ~
+          "ret;\n"~
           END_ASM;
 
-	mixin(ASM);
+    mixin(ASM);
 }
 
 string E_ROUND(alias SBOX)(string A, string B, string C, string D, string T, ubyte N) 

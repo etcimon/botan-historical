@@ -92,7 +92,7 @@ public:
                         if (record_version.isDatagramProtocol())
                             (*m_sequence_numbers).readAccept(record_sequence);
                     }
-					auto rec = unlock(record);
+                    auto rec = unlock(record);
                     m_pending_state.handshakeIo().addRecord(rec, record_type, record_sequence);
                     
                     while (true)
@@ -122,7 +122,7 @@ public:
                         if (!pendingState())
                         {
                             HeartbeatMessage response = HeartbeatMessage(HeartbeatMessage.RESPONSE, payload.ptr, payload.length);
-							auto rec = response.contents();
+                            auto rec = response.contents();
                             sendRecord(HEARTBEAT, rec);
                         }
                     }
@@ -156,9 +156,9 @@ public:
                 if (alert_msg.isFatal())
                 {
                     if (auto active = activeState()) {
-						auto entry = &active.serverHello().sessionId();
-						m_session_manager.removeEntry(*entry);
-					}
+                        auto entry = &active.serverHello().sessionId();
+                        m_session_manager.removeEntry(*entry);
+                    }
                 }
                         
                 if (alert_msg.type() == TLSAlert.CLOSE_NOTIFY)
@@ -248,7 +248,7 @@ public:
         {
             try
             {
-				auto rec = alert.serialize();
+                auto rec = alert.serialize();
                 sendRecord(ALERT, rec);
             }
             catch (Throwable) { /* swallow it */ }
@@ -259,10 +259,10 @@ public:
         
         if (alert.isFatal()) {
             if (auto active = activeState()) {
-				auto entry = &active.serverHello().sessionId();
-				m_session_manager.removeEntry(*entry);
-			}
-		}
+                auto entry = &active.serverHello().sessionId();
+                m_session_manager.removeEntry(*entry);
+            }
+        }
         if (alert.type() == TLSAlert.CLOSE_NOTIFY || alert.isFatal())
             resetState();
     }
@@ -354,7 +354,7 @@ public:
         if (heartbeatSendingAllowed())
         {
             HeartbeatMessage heartbeat = HeartbeatMessage(HeartbeatMessage.REQUEST, payload, payload_size);
-			auto rec = heartbeat.contents();
+            auto rec = heartbeat.contents();
             sendRecord(HEARTBEAT, rec);
         }
     }
@@ -427,8 +427,8 @@ public:
         m_rng = rng;
         m_session_manager = session_manager;
         /* epoch 0 is plaintext, thus null cipher state */
-        m_write_cipher_states[cast(ushort)0] = ConnectionCipherState.init;
-        m_read_cipher_states[cast(ushort)0] = ConnectionCipherState.init;
+        //m_write_cipher_states[cast(ushort)0] = ConnectionCipherState.init;
+        //m_read_cipher_states[cast(ushort)0] = ConnectionCipherState.init;
         
         m_writebuf.reserve(reserved_io_buffer_size);
         m_readbuf.reserve(reserved_io_buffer_size);

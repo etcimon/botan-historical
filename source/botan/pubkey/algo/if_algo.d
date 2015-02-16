@@ -27,7 +27,7 @@ class IFSchemePublicKey : PublicKey
 public:
     this(T)(in T options, in AlgorithmIdentifier, const ref SecureVector!ubyte key_bits)
     {
-		decodeOptions(options);
+        decodeOptions(options);
         BERDecoder(key_bits)
                 .startCons(ASN1Tag.SEQUENCE)
                 .decode(m_n)
@@ -38,18 +38,18 @@ public:
 
     this(T)(in T options, auto ref BigInt n, auto ref BigInt e)
     {
-		decodeOptions(options);
+        decodeOptions(options);
         m_n = n.move();
         m_e = e.move(); 
     }
 
-	final void decodeOptions(T)(in T options) {
-		static if (__traits(hasMember, T, "checkKey"))
-			m_check_key = &options.checkKey;
-		static if (__traits(hasMember, T, "algoName"))
-			m_algo_name = options.algoName;
-		else static assert(false, "No algoName found in " ~ T.stringof);
-	}
+    final void decodeOptions(T)(in T options) {
+        static if (__traits(hasMember, T, "checkKey"))
+            m_check_key = &options.checkKey;
+        static if (__traits(hasMember, T, "algoName"))
+            m_algo_name = options.algoName;
+        else static assert(false, "No algoName found in " ~ T.stringof);
+    }
 
 
     /// Used for object casting to the right type in the factory.
@@ -111,7 +111,7 @@ public:
 protected:
     BigInt m_n, m_e;
 
-	// options
+    // options
     string m_algo_name;
     bool function(in IFSchemePrivateKey, RandomNumberGenerator, bool) m_check_key;
 }
@@ -124,17 +124,17 @@ final class IFSchemePrivateKey : IFSchemePublicKey, PrivateKey
 {
 public:
     this(T)(in T options, RandomNumberGenerator rng, 
-		    in AlgorithmIdentifier aid, const ref SecureVector!ubyte key_bits)
+            in AlgorithmIdentifier aid, const ref SecureVector!ubyte key_bits)
     {
         BigInt n, e;
-		BERDecoder(key_bits).startCons(ASN1Tag.SEQUENCE)
-			.decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
-			.decode(n)
-			.decode(e)
-			.decode(m_d)
-			.decode(m_p)
-			.decode(m_q)
-			.decode(m_d1)
+        BERDecoder(key_bits).startCons(ASN1Tag.SEQUENCE)
+            .decodeAndCheck!size_t(0, "Unknown PKCS #1 key format version")
+            .decode(n)
+            .decode(e)
+            .decode(m_d)
+            .decode(m_p)
+            .decode(m_q)
+            .decode(m_d1)
             .decode(m_d2)
             .decode(m_c)
             .endCons();
@@ -145,7 +145,7 @@ public:
     }
 
     this(T)(in T options,
-		    RandomNumberGenerator rng,
+            RandomNumberGenerator rng,
             BigInt prime1,
             BigInt prime2,
             BigInt exp,
@@ -185,23 +185,23 @@ public:
     {
         if (m_check_key) 
             return m_check_key(this, rng, strong);
-		return checkKeyImpl(rng, strong);
+        return checkKeyImpl(rng, strong);
     }
 
-	final bool checkKeyImpl(RandomNumberGenerator rng, bool strong) const 
-	{		
-		if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
-			return false;
-		
-		if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
-			return false;
-		
-		const size_t prob = (strong) ? 56 : 12;
-		
-		if (!isPrime(m_p, rng, prob) || !isPrime(m_q, rng, prob))
-			return false;
-		return true;
-	}
+    final bool checkKeyImpl(RandomNumberGenerator rng, bool strong) const 
+    {        
+        if (m_n < 35 || m_n.isEven() || m_e < 2 || m_d < 2 || m_p < 3 || m_q < 3 || m_p*m_q != m_n)
+            return false;
+        
+        if (m_d1 != m_d % (m_p - 1) || m_d2 != m_d % (m_q - 1) || m_c != inverseMod(m_q, m_p))
+            return false;
+        
+        const size_t prob = (strong) ? 56 : 12;
+        
+        if (!isPrime(m_p, rng, prob) || !isPrime(m_q, rng, prob))
+            return false;
+        return true;
+    }
 
     /**
     * Get the first prime p.
@@ -227,19 +227,19 @@ public:
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {
-		return DEREncoder()
-				.startCons(ASN1Tag.SEQUENCE)
+        return DEREncoder()
+                .startCons(ASN1Tag.SEQUENCE)
                 .encode(cast(size_t)(0))
                 .encode(m_n)
-				.encode(m_e)
-				.encode(m_d)
-				.encode(m_p)
+                .encode(m_e)
+                .encode(m_d)
+                .encode(m_p)
                 .encode(m_q)
                 .encode(m_d1)
                 .encode(m_d2)
                 .encode(m_c)
-				.endCons()
-				.getContents();
+                .endCons()
+                .getContents();
     }
 
 protected:

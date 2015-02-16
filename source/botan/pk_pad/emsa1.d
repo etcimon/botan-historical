@@ -28,36 +28,36 @@ public:
         m_hash = hash;
     }
 
-	size_t hashOutputLength() const { return m_hash.outputLength; }
+    size_t hashOutputLength() const { return m_hash.outputLength; }
 
-	override void update(const(ubyte)* input, size_t length)
+    override void update(const(ubyte)* input, size_t length)
     {
         m_hash.update(input, length);
     }
 
-	override SecureVector!ubyte rawData()
+    override SecureVector!ubyte rawData()
     {
         return m_hash.finished();
     }
 
-	override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
+    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                            size_t output_bits,
                                            RandomNumberGenerator rng)
     {
-		//logDebug("EMSA1 Encode");
+        //logDebug("EMSA1 Encode");
         if (msg.length != hashOutputLength())
             throw new EncodingError("encodingOf: Invalid size for input");
         return emsa1Encoding(msg, output_bits);
     }
 
-	override bool verify(const ref SecureVector!ubyte coded,
-				         const ref SecureVector!ubyte raw, size_t key_bits)
+    override bool verify(const ref SecureVector!ubyte coded,
+                         const ref SecureVector!ubyte raw, size_t key_bits)
     {
         try {
             if (raw.length != m_hash.outputLength)
                 throw new EncodingError("encodingOf: Invalid size for input");
             
-			SecureVector!ubyte our_coding = emsa1Encoding(raw, key_bits);
+            SecureVector!ubyte our_coding = emsa1Encoding(raw, key_bits);
             if (our_coding == coded) return true;
             if (our_coding.empty || our_coding[0] != 0) return false;
             if (our_coding.length <= coded.length) return false;
@@ -87,15 +87,15 @@ private:
 
 SecureVector!ubyte emsa1Encoding(const ref SecureVector!ubyte msg_, size_t output_bits)
 {
-	SecureVector!ubyte msg = msg_.dup;
+    SecureVector!ubyte msg = msg_.dup;
 
     if (8*msg.length <= output_bits)
         return msg.move;
-	// logDebug("Generate digest");
+    // logDebug("Generate digest");
     size_t shift = 8*msg.length - output_bits;
     
     size_t byte_shift = shift / 8, bit_shift = shift % 8;
-	SecureVector!ubyte digest = SecureVector!ubyte(msg.length - byte_shift);
+    SecureVector!ubyte digest = SecureVector!ubyte(msg.length - byte_shift);
     
     for (size_t j = 0; j != msg.length - byte_shift; ++j)
         digest[j] = msg[j];

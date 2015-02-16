@@ -124,7 +124,7 @@ Vector!string splitOnPred(in string str,
 */
 string eraseChars(in string str, in char[] chars)
 {
-	//logTrace("eraseChars");
+    //logTrace("eraseChars");
     import std.algorithm : canFind;
     import std.array : Appender;
     Appender!string output;

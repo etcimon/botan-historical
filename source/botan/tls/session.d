@@ -285,10 +285,10 @@ public:
 
     TLSServerInformation serverInfo() const { return m_server_info; }
 
-	@property TLSSession move() {
-		return TLSSession(m_identifier.move(), m_master_secret.move(), m_version, m_ciphersuite, m_compression_method, m_connection_side, 
-						  m_fragment_size, m_peer_certs.move(), m_session_ticket.move(), m_server_info, m_srp_identifier);
-	}
+    @property TLSSession move() {
+        return TLSSession(m_identifier.move(), m_master_secret.move(), m_version, m_ciphersuite, m_compression_method, m_connection_side, 
+                          m_fragment_size, m_peer_certs.move(), m_session_ticket.move(), m_server_info, m_srp_identifier);
+    }
 
 private:
 

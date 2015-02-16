@@ -403,7 +403,7 @@ protected:
             
             if (state.serverHello().nextProtocolNotification())
             {
-				auto next_proto = state.serverHello().nextProtocols();
+                auto next_proto = state.serverHello().nextProtocols();
                 const string protocol = state.client_npn_cb(next_proto);
                 
                 state.nextProtocol(new NextProtocol(state.handshakeIo(), state.hash(), protocol));
@@ -445,7 +445,7 @@ protected:
                 
                 if (state.serverHello().nextProtocolNotification())
                 {
-					auto next_proto = state.serverHello().nextProtocols();
+                    auto next_proto = state.serverHello().nextProtocols();
                     const string protocol = state.client_npn_cb(next_proto);
                     
                     state.nextProtocol(new NextProtocol(state.handshakeIo(), state.hash(), protocol));
@@ -480,9 +480,9 @@ protected:
                 if (should_save)
                     sessionManager().save(session_info);
                 else {
-					auto entry = &session_info.sessionId();
-					sessionManager().removeEntry(*entry);
-				}
+                    auto entry = &session_info.sessionId();
+                    sessionManager().removeEntry(*entry);
+                }
             }
             
             activateSession();

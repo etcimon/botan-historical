@@ -242,10 +242,10 @@ size_t aeadTest(string algo, string input, string expected, string nonce_hex, st
             
             if (ad.length) {
                 bad_ad[0] ^= 1;
-			}
+            }
             else {
                 bad_ad.pushBack(0);
-			}
+            }
             
             aead_dec.setAssociatedDataVec(bad_ad);
             
@@ -274,11 +274,11 @@ static if (!SKIP_AEAD_TEST) unittest
         return runTestsBb(vec, "AEAD", "Out", true,
             (ref HashMap!(string, string) m)
             {
-	            return aeadTest(m["AEAD"], m["In"], m["Out"], m.get("Nonce"), m.get("AD"), m["Key"]);
-	        });
+                return aeadTest(m["AEAD"], m["In"], m["Out"], m.get("Nonce"), m.get("AD"), m["Key"]);
+            });
     };
     
     size_t fails = runTestsInDir("../test_data/aead", test);
-	logDebug("Test report");
+    logDebug("Test report");
     testReport("aead", total_tests, fails);
 }

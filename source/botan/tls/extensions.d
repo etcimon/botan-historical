@@ -750,7 +750,7 @@ public:
     {
         auto val = extensions.get(extn.type(), null);
         if (val)
-            delete val;
+            destroy(val);
         extensions[extn.type()] = extn;
     }
 

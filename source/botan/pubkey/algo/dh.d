@@ -21,8 +21,8 @@ import botan.rng.rng;
 import memutils.helpers : Embed;
 
 struct DHOptions {
-	enum algoName = "DH";
-	enum format = DLGroup.ANSI_X9_42;
+    enum algoName = "DH";
+    enum format = DLGroup.ANSI_X9_42;
 }
 
 /**
@@ -31,7 +31,7 @@ struct DHOptions {
 struct DHPublicKey
 {
 public:
-	alias Options = DHOptions;
+    alias Options = DHOptions;
     __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
@@ -46,13 +46,13 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
+        m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -63,8 +63,8 @@ public:
 struct DHPrivateKey
 {
 public:
-	alias Options = DHOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = DHOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     /**
     * Load a DH private key
@@ -77,7 +77,7 @@ public:
            RandomNumberGenerator rng) 
     {
 
-		m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
+        m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
         if (m_priv.getY() == 0)
             m_priv.setY(powerMod(m_priv.groupG(), m_priv.getX(), m_priv.groupP()));
         m_priv.loadCheck(rng);
@@ -92,27 +92,27 @@ public:
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
         
-		const BigInt* p = &grp.getP();
+        const BigInt* p = &grp.getP();
 
-		bool x_arg_0;
-		if (x_arg == 0) {
-			x_arg_0 = true;
-			x_arg.randomize(rng, 2 * dlWorkFactor(p.bits()));
-		}
-		BigInt y1 = powerMod(grp.getG(), x_arg, *p);
+        bool x_arg_0;
+        if (x_arg == 0) {
+            x_arg_0 = true;
+            x_arg.randomize(rng, 2 * dlWorkFactor(p.bits()));
+        }
+        BigInt y1 = powerMod(grp.getG(), x_arg, *p);
         
-		m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
+        m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
 
-		if (x_arg_0)
+        if (x_arg_0)
             m_priv.genCheck(rng);
         else
             m_priv.loadCheck(rng);
     }
 
-	this()(RandomNumberGenerator rng, auto const ref DLGroup grp) { auto bi = BigInt(0); this(rng, grp, bi.move()); }
+    this()(RandomNumberGenerator rng, auto const ref DLGroup grp) { auto bi = BigInt(0); this(rng, grp, bi.move()); }
     this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 
@@ -139,7 +139,7 @@ public:
         m_p = &dh.groupP();
         m_powermod_x_p = FixedExponentPowerMod(dh.getX(), *m_p);
         BigInt k = BigInt(rng, m_p.bits() - 1);
-		auto d = (*m_powermod_x_p)(inverseMod(k, *m_p));
+        auto d = (*m_powermod_x_p)(inverseMod(k, *m_p));
         m_blinder = Blinder(k, d, *m_p);
     }
 
@@ -185,11 +185,11 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 
     foreach (dh; dh_list) {
         atomicOp!"+="(total_tests, 1);
-		logDebug("1) Load private key");
+        logDebug("1) Load private key");
         DHPrivateKey key = DHPrivateKey(rng, DLGroup(dh));
-		logDebug("2) Check private key");
+        logDebug("2) Check private key");
         key.checkKey(rng, true);
-		logDebug("3) Validate");
+        logDebug("3) Validate");
         fails += validateSaveAndLoad(key, rng);
     }
     
@@ -205,8 +205,8 @@ size_t dhSigKat(string p, string g, string x, string y, string kdf, string outle
     BigInt g_bn = BigInt(g);
     BigInt x_bn = BigInt(x);
     BigInt y_bn = BigInt(y);
-	auto domain = DLGroup(p_bn, g_bn);
-	auto mykey = DHPrivateKey(rng, domain.dup, x_bn.move());
+    auto domain = DLGroup(p_bn, g_bn);
+    auto mykey = DHPrivateKey(rng, domain.dup, x_bn.move());
     auto otherkey = DHPublicKey(domain.move, y_bn.move());
     
     if (kdf == "")
@@ -232,10 +232,10 @@ static if (!SKIP_DH_TEST) unittest
     File dh_sig = File("../test_data/pubkey/dh.vec", "r");
     
     fails += runTestsBb(dh_sig, "DH Kex", "K", true,
-		(ref HashMap!(string, string) m) {
+        (ref HashMap!(string, string) m) {
             return dhSigKat(m["P"], m["G"], m["X"], m["Y"], m.get("KDF"), m.get("OutLen"), m["K"]);
         });
-	fails += testPkKeygen(rng);
+    fails += testPkKeygen(rng);
 
     testReport("DH", total_tests, fails);
 

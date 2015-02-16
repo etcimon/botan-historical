@@ -23,8 +23,8 @@ alias FixedBasePowerMod = RefCounted!FixedBasePowerModImpl;
 interface ModularExponentiator
 {
 public:
-	void setBase(const ref BigInt);
-	void setExponent(const ref BigInt);
+    void setBase(const ref BigInt);
+    void setExponent(const ref BigInt);
     BigInt execute() const;
     ModularExponentiator copy() const;
 }

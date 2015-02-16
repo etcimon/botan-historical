@@ -22,26 +22,26 @@ import memutils.helpers : Embed;
 import std.concurrency;
 
 struct RSAOptions {
-	enum algoName = "RSA";
+    enum algoName = "RSA";
 
-	/*
+    /*
     * Check Private RSA Parameters
     */
-	static bool checkKey(in IFSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
-	{
-		//logTrace("checkKey");
+    static bool checkKey(in IFSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+    {
+        //logTrace("checkKey");
 
-		if (!privkey.checkKeyImpl(rng, strong))
-			return false;
+        if (!privkey.checkKeyImpl(rng, strong))
+            return false;
 
-		if (!strong)
-			return true;
-		
-		if ((privkey.getE() * privkey.getD()) % lcm(privkey.getP() - 1, privkey.getQ() - 1) != 1)
-			return false;
-		
-		return signatureConsistencyCheck(rng, privkey, "EMSA4(SHA-1)");
-	}
+        if (!strong)
+            return true;
+        
+        if ((privkey.getE() * privkey.getD()) % lcm(privkey.getP() - 1, privkey.getQ() - 1) != 1)
+            return false;
+        
+        return signatureConsistencyCheck(rng, privkey, "EMSA4(SHA-1)");
+    }
 }
 
 /**
@@ -50,8 +50,8 @@ struct RSAOptions {
 struct RSAPublicKey
 {
 public:
-	alias Options = RSAOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = RSAOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
@@ -65,13 +65,13 @@ public:
     */
     this(BigInt n, BigInt e)
     {
-		m_pub = new IFSchemePublicKey(Options(), n.move(), e.move());
+        m_pub = new IFSchemePublicKey(Options(), n.move(), e.move());
     }
 
     this(PrivateKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
     this(PublicKey pkey) { m_pub = cast(IFSchemePublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     IFSchemePublicKey m_pub;
 }
@@ -82,12 +82,12 @@ public:
 struct RSAPrivateKey
 {
 public:
-	alias Options = RSAOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = RSAOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng) 
     {
-		m_priv = new IFSchemePrivateKey(Options(), rng, alg_id, key_bits);
+        m_priv = new IFSchemePrivateKey(Options(), rng, alg_id, key_bits);
     }
 
     /**
@@ -104,7 +104,7 @@ public:
     */
     this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = 0, BigInt n = 0)
     {
-		m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
+        m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
     }
 
     /**
@@ -131,13 +131,13 @@ public:
         
         d = inverseMod(e, lcm(p - 1, q - 1));
 
-		m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
+        m_priv = new IFSchemePrivateKey(Options(), rng, p.move(), q.move(), e.move(), d.move(), n.move());
         genCheck(rng);
     }
 
     this(PrivateKey pkey) { m_priv = cast(IFSchemePrivateKey) pkey; }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     IFSchemePrivateKey m_priv;
 }
@@ -162,14 +162,14 @@ public:
         m_n = &rsa.getN();
         m_q = &rsa.getQ();
         m_c = &rsa.getC();
-		m_d1 = &rsa.getD1();
-		m_p = &rsa.getP();
+        m_d1 = &rsa.getD1();
+        m_p = &rsa.getP();
         m_powermod_e_n = FixedExponentPowerMod(rsa.getE(), rsa.getN());
         m_powermod_d2_q = FixedExponentPowerMod(rsa.getD2(), rsa.getQ());
         m_mod_p = ModularReducer(rsa.getP());
         BigInt k = BigInt(rng, m_n.bits() - 1);
-		auto e = (*m_powermod_e_n)(k);
-		m_blinder = Blinder(e, inverseMod(k, *m_n), *m_n);
+        auto e = (*m_powermod_e_n)(k);
+        m_blinder = Blinder(e, inverseMod(k, *m_n), *m_n);
     }
     override size_t messageParts() const { return 1; }
     override size_t messagePartSize() const { return 0; }
@@ -185,8 +185,8 @@ public:
             algorithms.
         */
         BigInt m = BigInt(msg, msg_len);
-		m = m_blinder.blind(m.dup);
-		m = privateOp(m);
+        m = m_blinder.blind(m.dup);
+        m = privateOp(m);
         BigInt x = m_blinder.unblind(m);
         return BigInt.encode1363(x, m_n.bytes());
     }
@@ -209,37 +209,37 @@ private:
         if (m >= *m_n)
             throw new InvalidArgument("RSA private op - input is too large");
         BigInt j1;
-		auto tid = spawn((shared(Tid) tid, shared(const BigInt*) d1, shared(const BigInt*) p, shared(const BigInt*) m2, shared(BigInt*) j1_2)
-        	{ 
-				import botan.libstate.libstate : modexpInit;
-				modexpInit(); // enable quick path for powermod
-	            BigInt* ret = cast(BigInt*) j1_2;
-				{
-					auto powermod_d1_p = FixedExponentPowerMod(*cast(const BigInt*)d1, *cast(const BigInt*)p);
-					*ret = (*powermod_d1_p)(*cast(const BigInt*)m2);
-	            	send(cast(Tid) tid, true);
-				}
-				auto done = receiveOnly!bool;
-				destroy(*ret);
-				send(cast(Tid) tid, true);
+        auto tid = spawn((shared(Tid) tid, shared(const BigInt*) d1, shared(const BigInt*) p, shared(const BigInt*) m2, shared(BigInt*) j1_2)
+            { 
+                import botan.libstate.libstate : modexpInit;
+                modexpInit(); // enable quick path for powermod
+                BigInt* ret = cast(BigInt*) j1_2;
+                {
+                    auto powermod_d1_p = FixedExponentPowerMod(*cast(const BigInt*)d1, *cast(const BigInt*)p);
+                    *ret = (*powermod_d1_p)(*cast(const BigInt*)m2);
+                    send(cast(Tid) tid, true);
+                }
+                auto done = receiveOnly!bool;
+                destroy(*ret);
+                send(cast(Tid) tid, true);
              }, 
-			cast(shared) thisTid(), cast(shared)m_d1, cast(shared)m_p, cast(shared)&m, cast(shared)&j1);
+            cast(shared) thisTid(), cast(shared)m_d1, cast(shared)m_p, cast(shared)&m, cast(shared)&j1);
         
-		BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m);
+        BigInt j2 = (cast(FixedExponentPowerModImpl)*m_powermod_d2_q)(m);
         bool done = receiveOnly!bool();
 
-		BigInt j3 = m_mod_p.reduce(subMul(j1, j2, *m_c));
-		send(tid, true); // Destroy j1
-		BigInt ret = mulAdd(j3, *m_q, j2);
-		done = receiveOnly!bool(); // wait for destruction...
+        BigInt j3 = m_mod_p.reduce(subMul(j1, j2, *m_c));
+        send(tid, true); // Destroy j1
+        BigInt ret = mulAdd(j3, *m_q, j2);
+        done = receiveOnly!bool(); // wait for destruction...
         return ret;
     }
 
     const BigInt* m_n;
     const BigInt* m_q;
     const BigInt* m_c;
-	const BigInt* m_d1;
-	const BigInt* m_p;
+    const BigInt* m_d1;
+    const BigInt* m_p;
     FixedExponentPowerMod m_powermod_e_n, m_powermod_d2_q;
     ModularReducer m_mod_p;
     Blinder m_blinder;
@@ -414,25 +414,25 @@ static if (!SKIP_RSA_TEST) unittest
     File rsa_sig = File("../test_data/pubkey/rsa_sig.vec", "r");
     File rsa_verify = File("../test_data/pubkey/rsa_verify.vec", "r");
     
-	fails += testPkKeygen(rng);
+    fails += testPkKeygen(rng);
 
     fails += runTestsBb(rsa_enc, "RSA Encryption", "Ciphertext", true,
-		(ref HashMap!(string, string) m)
-		{
-	        return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"], m.get("Padding"), m.get("Nonce"), m["Ciphertext"]);
-	    });
+        (ref HashMap!(string, string) m)
+        {
+            return rsaesKat(m["E"], m["P"], m["Q"], m["Msg"], m.get("Padding"), m.get("Nonce"), m["Ciphertext"]);
+        });
     
     fails += runTestsBb(rsa_sig, "RSA Signature", "Signature", true,
-		(ref HashMap!(string, string) m)
-		{
-			return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"], m.get("Padding"), m.get("Nonce"), m["Signature"]);
-		});
+        (ref HashMap!(string, string) m)
+        {
+            return rsaSigKat(m["E"], m["P"], m["Q"], m["Msg"], m.get("Padding"), m.get("Nonce"), m["Signature"]);
+        });
     
     fails += runTestsBb(rsa_verify, "RSA Verify", "Signature", true,
-		(ref HashMap!(string, string) m)
-		{
-			return rsaSigVerify(m["E"], m["N"], m["Msg"], m.get("Padding"), m["Signature"]);
-		});
+        (ref HashMap!(string, string) m)
+        {
+            return rsaSigVerify(m["E"], m["N"], m["Msg"], m.get("Padding"), m["Signature"]);
+        });
     
     testReport("rsa", total_tests, fails);
 }

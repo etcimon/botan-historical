@@ -182,7 +182,7 @@ public:
         m_hash = af.makeHashFunction(algo_spec);
     }
 
-    ~this() { delete m_hash; }
+    ~this() { destroy(m_hash); }
 
     // Interface fallthrough
     override bool attachable() { return super.attachable(); }
@@ -287,7 +287,7 @@ public:
         m_mac.setKey(key);
     }
 
-    ~this() { delete m_mac; }
+    ~this() { destroy(m_mac); }
 
     // Interface fallthrough
     override bool attachable() { return super.attachable(); }

@@ -32,7 +32,7 @@ public:
     */
     override void encodeInto(ref DEREncoder codec) const
     {
-		//logTrace("encoding OID: ", m_oid.toString());
+        //logTrace("encoding OID: ", m_oid.toString());
         codec.startCons(ASN1Tag.SEQUENCE)
                 .encode(m_oid)
                 .rawBytes(m_parameters)
@@ -50,7 +50,7 @@ public:
                 .endCons();
     }
 
-	this() { m_oid = OID(); }
+    this() { m_oid = OID(); }
 
     /*
     * Create an AlgorithmIdentifier
@@ -82,7 +82,7 @@ public:
     this(OID alg_id, ref Vector!ubyte param)
     {
         m_oid = alg_id;
-		m_parameters = Vector!ubyte(param[]);
+        m_parameters = Vector!ubyte(param[]);
     }
 
     /*
@@ -90,7 +90,7 @@ public:
     */
     this(in string alg_id, ref Vector!ubyte param) {
         m_oid = OIDS.lookup(alg_id);
-		m_parameters = Vector!ubyte(param[]);
+        m_parameters = Vector!ubyte(param[]);
     }
 
     /*
@@ -98,7 +98,7 @@ public:
      */
     this(const ref AlgorithmIdentifier other) {
         m_oid = OID(other.m_oid);
-		m_parameters = Vector!ubyte(other.m_parameters[]);
+        m_parameters = Vector!ubyte(other.m_parameters[]);
     }
 
     /*
@@ -127,7 +127,7 @@ public:
     }
 
     @property Vector!ubyte parameters() const {
-		return m_parameters.dup;
+        return m_parameters.dup;
     }
 
     @property void oid(OID oid) {
@@ -135,14 +135,14 @@ public:
     }
 
     @property void parameters()(auto ref Vector!ubyte param) {
-		m_parameters = param.dup;
+        m_parameters = param.dup;
     }
 
-	override string toString() const {
-		return m_oid.toString() ~ " & param length: " ~ m_parameters.length.to!string;
-	}
+    override string toString() const {
+        return m_oid.toString() ~ " & param length: " ~ m_parameters.length.to!string;
+    }
 
 private:
     OID m_oid;
-	Vector!ubyte m_parameters;
+    Vector!ubyte m_parameters;
 }

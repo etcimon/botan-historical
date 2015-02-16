@@ -161,10 +161,10 @@ BigInt inverseMod()(auto const ref BigInt n, auto const ref BigInt mod)
         return inverseModOddModulus(n, mod);
     
     BigInt u = mod.dup, v = n.dup;
-	BigInt A = BigInt(1);
-	BigInt B = BigInt(0);
-	BigInt C = BigInt(0);
-	BigInt D = BigInt(1);
+    BigInt A = BigInt(1);
+    BigInt B = BigInt(0);
+    BigInt C = BigInt(0);
+    BigInt D = BigInt(1);
     
     while (u.isNonzero())
     {
@@ -294,9 +294,9 @@ BigInt ressol()(auto const ref BigInt a, auto const ref BigInt p)
         return a.dup;
     
     if (jacobi(a, p) != 1) { // not a quadratic residue
-		auto bi = -BigInt(1);
+        auto bi = -BigInt(1);
         return bi.move();
-	}
+    }
     
     if (p % 4 == 3)
         return powerMod(a, ((p+1) >> 2), p);
@@ -335,9 +335,9 @@ BigInt ressol()(auto const ref BigInt a, auto const ref BigInt p)
         }
         
         if (s <= i) {
-			auto bi = -BigInt(1);
-			return bi.move();
-		}
+            auto bi = -BigInt(1);
+            return bi.move();
+        }
         c = powerMod(c, BigInt.powerOf2(s-i-1), p);
         r = mod_p.multiply(r, c);
         c = mod_p.square(c);
@@ -448,12 +448,12 @@ bool isPrime()(auto const ref BigInt n, RandomNumberGenerator rng, size_t prob =
     const size_t test_iterations = mrTestIterations(n.bits(), prob, is_random);
     const BigInt n_minus_1 = n - 1;
     const size_t s = lowZeroBits(n_minus_1);
-	FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1 >> s, n);
+    FixedExponentPowerMod pow_mod = FixedExponentPowerMod(n_minus_1 >> s, n);
     ModularReducer reducer = ModularReducer(n);
     
     foreach (size_t i; 0 .. test_iterations)
     {
-		auto bi = BigInt(2);
+        auto bi = BigInt(2);
         const BigInt a = BigInt.randomInteger(rng, bi, n_minus_1);
         BigInt y = (*pow_mod)(a);
         if (mrWitness(y, reducer, n_minus_1, s))
@@ -550,10 +550,10 @@ BigInt randomPrime()(RandomNumberGenerator rng,
 
 /// ditto
 BigInt randomPrime()(RandomNumberGenerator rng,
-	size_t bits, const BigInt coprime = 1,
-	size_t equiv = 1, size_t modulo = 2)
+    size_t bits, const BigInt coprime = 1,
+    size_t equiv = 1, size_t modulo = 2)
 {
-	return randomPrime(rng, bits, coprime, equiv, modulo);
+    return randomPrime(rng, bits, coprime, equiv, modulo);
 }
 
 /**
@@ -710,10 +710,10 @@ bool fips1863ValidSize(size_t pbits, size_t qbits)
 */
 BigInt inverseModOddModulus(const ref BigInt n, const ref BigInt mod)
 {
-	BigInt u = mod.dup;
-	BigInt v = n.dup;
-	BigInt B = 0;
-	BigInt D = 1;
+    BigInt u = mod.dup;
+    BigInt v = n.dup;
+    BigInt B = 0;
+    BigInt D = 1;
     
     while (u.isNonzero())
     {

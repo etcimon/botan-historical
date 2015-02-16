@@ -137,9 +137,9 @@ static if (!SKIP_STREAM_CIPHER_TEST) unittest
         File vec = File(input, "r");
         
         return runTestsBb(vec, "StreamCipher", "Out", true,
-			(ref HashMap!(string, string) m) {
-				return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m.get("Nonce"));
-			});
+            (ref HashMap!(string, string) m) {
+                return streamTest(m["StreamCipher"], m["Key"], m["In"], m["Out"], m.get("Nonce"));
+            });
     };
     
     size_t fails = runTestsInDir("../test_data/stream", test);

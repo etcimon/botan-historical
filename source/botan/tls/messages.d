@@ -255,7 +255,7 @@ public:
          in string hostname,
          in string srp_identifier) 
     {
-		bool reneg_empty = reneg_info.empty;
+        bool reneg_empty = reneg_info.empty;
         m_version = _version;
         m_random = makeHelloRandom(rng);
         m_suites = policy.ciphersuiteList(m_version, (srp_identifier != ""));
@@ -291,7 +291,7 @@ public:
          const ref TLSSession session,
          bool next_protocol = false)
     { 
-		bool reneg_empty = reneg_info.empty;
+        bool reneg_empty = reneg_info.empty;
 
         m_version = session.Version();
         m_session_id = session.sessionId().dup;
@@ -719,7 +719,7 @@ public:
         {
             TLSDataReader reader = TLSDataReader("ClientKeyExchange", contents);
             
-			auto psk = SymmetricKey();
+            auto psk = SymmetricKey();
             
             if (kex_algo == "PSK" || kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
             {
@@ -844,7 +844,7 @@ public:
         {
             TLSDataReader reader = TLSDataReader("ClientKeyExchange", state.serverKex().params());
             
-			auto psk = SymmetricKey();
+            auto psk = SymmetricKey();
             
             if (kex_algo == "DHE_PSK" || kex_algo == "ECDHE_PSK")
             {
@@ -990,7 +990,7 @@ public:
             
             if (server_public_key.algoName == "RSA")
             {
-				auto rsa_pub = RSAPublicKey(cast(PublicKey)server_public_key);
+                auto rsa_pub = RSAPublicKey(cast(PublicKey)server_public_key);
                 const TLSProtocolVersion offered_version = state.clientHello().Version();
                 
                 m_pre_master = rng.randomVec(48);
@@ -1047,16 +1047,16 @@ public:
         hash.update(io.send(this));
     }
 
-	/**
+    /**
     * Create a new Certificate message
     */
-	this()(HandshakeIO io,
-		ref HandshakeHash hash,
-		auto ref Vector!X509Certificate cert_list)
-	{
-		m_certs = cert_list.dupr;
-		hash.update(io.send(this));
-	}
+    this()(HandshakeIO io,
+        ref HandshakeHash hash,
+        auto ref Vector!X509Certificate cert_list)
+    {
+        m_certs = cert_list.dupr;
+        hash.update(io.send(this));
+    }
 
     /**
     * Deserialize a Certificate message
@@ -1208,7 +1208,7 @@ public:
             Vector!ubyte name_bits = reader.getRangeVector!ubyte(2, 0, 65535);
             
             BERDecoder decoder = BERDecoder(name_bits.ptr, name_bits.length);
-			X509DN name = X509DN();
+            X509DN name = X509DN();
             decoder.decode(name);
             m_names.pushBack(name);
         }
@@ -1278,7 +1278,7 @@ public:
         PKVerifier verifier = PKVerifier(*key, format.first, format.second);
         if (state.Version() == TLSProtocolVersion.SSL_V3)
         {
-			SecureVector!ubyte md5_sha = state.hash().finalSSL3(state.sessionKeys().masterSecret());
+            SecureVector!ubyte md5_sha = state.hash().finalSSL3(state.sessionKeys().masterSecret());
 
             return verifier.verifyMessage(&md5_sha[16], md5_sha.length-16,
             m_signature.ptr, m_signature.length);
@@ -1304,7 +1304,7 @@ public:
         
         if (state.Version() == TLSProtocolVersion.SSL_V3)
         {
-			SecureVector!ubyte md5_sha = state.hash().finalSSL3(state.sessionKeys().masterSecret());
+            SecureVector!ubyte md5_sha = state.hash().finalSSL3(state.sessionKeys().masterSecret());
             
             if (priv_key.algoName == "DSA")
                 m_signature = signer.signMessage(&md5_sha[16], md5_sha.length-16, rng);
@@ -1958,7 +1958,7 @@ Vector!ubyte finishedComputeVerify(in HandshakeState state,
         if (side == CLIENT)
             input ~= cast(ubyte[])TLS_CLIENT_LABEL;
         else
-			input ~= cast(ubyte[])TLS_SERVER_LABEL;
+            input ~= cast(ubyte[])TLS_SERVER_LABEL;
         
         input ~= state.hash().flushInto(state.Version(), state.ciphersuite().prfAlgo())[];
         

@@ -10,15 +10,15 @@ import std.algorithm : min;
 
 
 Vector!T unlock(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
-	if (is(ALLOC == SecureMem))
+    if (is(ALLOC == SecureMem))
 {
-	return Vector!T(input.ptr[0 .. input.length]);
+    return Vector!T(input.ptr[0 .. input.length]);
 }
 
 RefCounted!(Vector!T) unlock(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
-	if (is(ALLOC == SecureMem))
+    if (is(ALLOC == SecureMem))
 {
-	return RefCounted!(Vector!T)(input[]);
+    return RefCounted!(Vector!T)(input[]);
 }
 
 /**
@@ -27,28 +27,28 @@ RefCounted!(Vector!T) unlock(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALL
 */
 void zap(T, Alloc)(ref Vector!(T, Alloc) vec)
 {
-	import std.traits : hasIndirections;
-	static if (!hasIndirections!T && !is(Alloc == SecureMem))
-		zeroise(vec);
-	vec.clear();
+    import std.traits : hasIndirections;
+    static if (!hasIndirections!T && !is(Alloc == SecureMem))
+        zeroise(vec);
+    vec.clear();
 }
 
 size_t bufferInsert(T, Alloc)(ref Vector!(T, Alloc) buf, size_t buf_offset, in T* input, size_t input_length)
 {
-	import std.algorithm : max;
-	const size_t to_copy = min(input_length, buf.length - buf_offset);
-	buf.resize(max(buf.length, buf_offset + to_copy));
-	copyMem(buf.ptr + buf_offset, input, to_copy);
-	return to_copy;
+    import std.algorithm : max;
+    const size_t to_copy = min(input_length, buf.length - buf_offset);
+    buf.resize(max(buf.length, buf_offset + to_copy));
+    copyMem(buf.ptr + buf_offset, input, to_copy);
+    return to_copy;
 }
 
 size_t bufferInsert(T, Alloc, Alloc2)(ref Vector!(T, Alloc) buf, size_t buf_offset, const ref Vector!(T, Alloc2) input)
 {
-	import std.algorithm : max;
-	const size_t to_copy = min(input.length, buf.length - buf_offset);
-	buf.resize(max(buf.length, buf_offset + to_copy));
-	copyMem(&buf[buf_offset], input.ptr, to_copy);
-	return to_copy;
+    import std.algorithm : max;
+    const size_t to_copy = min(input.length, buf.length - buf_offset);
+    buf.resize(max(buf.length, buf_offset + to_copy));
+    copyMem(&buf[buf_offset], input.ptr, to_copy);
+    return to_copy;
 }
 
 pure:
@@ -84,7 +84,7 @@ void copyMem(T)(T* output, in T* input, in size_t n)
 void setMem(T)(T* ptr, size_t n, ubyte val)
 {
     import std.c.string : memset;
-	//logDebug("memset ops: ", cast(void*)ptr, " L:", T.sizeof*n);
+    //logDebug("memset ops: ", cast(void*)ptr, " L:", T.sizeof*n);
     memset(ptr, val, T.sizeof*n);
 }
 
@@ -107,10 +107,10 @@ bool sameMem(T)(in T* p1, in T* p2, in size_t n)
 */
 void zeroise(T, Alloc)(ref Vector!(T, Alloc) vec)
 {
-	clearMem(vec.ptr, vec.length);
+    clearMem(vec.ptr, vec.length);
 }
 
 void zeroise(T)(T[] mem) {
-	clearMem(mem.ptr, mem.length);
+    clearMem(mem.ptr, mem.length);
 }
 

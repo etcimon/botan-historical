@@ -21,23 +21,23 @@ import core.thread;
 import memutils.helpers : Embed;
 
 struct DSAOptions {
-	enum algoName = "DSA";
-	enum format = DLGroup.ANSI_X9_57;
-	enum msgParts = 2;
+    enum algoName = "DSA";
+    enum format = DLGroup.ANSI_X9_57;
+    enum msgParts = 2;
 
-	/*
+    /*
     * Check Private DSA Parameters
     */
-	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
-	{
-		if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
-			return false;
+    static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+    {
+        if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
+            return false;
 
-		if (!strong)
-			return true;
+        if (!strong)
+            return true;
 
-		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
-	}
+        return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
+    }
 }
 
 /**
@@ -46,7 +46,7 @@ struct DSAOptions {
 struct DSAPublicKey
 {
 public:
-	alias Options = DSAOptions;
+    alias Options = DSAOptions;
     __gshared immutable string algoName = Options.algoName;
 
 
@@ -66,7 +66,7 @@ public:
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -77,20 +77,20 @@ public:
 struct DSAPrivateKey
 {
 public:
-	alias Options = DSAOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = DSAOptions;
+    __gshared immutable string algoName = Options.algoName;
     
-	/*
+    /*
     * Create a DSA private key
     */
     this(RandomNumberGenerator rng, DLGroup dl_group, BigInt x_arg = 0)
     {
-		bool x_arg_0;
+        bool x_arg_0;
         if (x_arg == 0) {
-			x_arg_0 = true;
-			auto bi = BigInt(2);
+            x_arg_0 = true;
+            auto bi = BigInt(2);
             x_arg = BigInt.randomInteger(rng, bi, dl_group.getQ() - 1);
-		}
+        }
         BigInt y1 = powerMod(dl_group.getG(), x_arg, dl_group.getP());
         
         m_priv = new DLSchemePrivateKey(Options(), dl_group.move, y1.move, x_arg.move);
@@ -109,7 +109,7 @@ public:
 
     this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 }
@@ -133,14 +133,14 @@ public:
         assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = &dsa.groupQ();
         m_x = &dsa.getX();
-		m_g = &dsa.groupG();
-		m_p = &dsa.groupP();
+        m_g = &dsa.groupG();
+        m_p = &dsa.groupP();
         m_mod_q = ModularReducer(dsa.groupQ());
     }
 
-	override size_t messageParts() const { return 2; }
-	override size_t messagePartSize() const { return m_q.bytes(); }
-	override size_t maxInputBits() const { return m_q.bits(); }
+    override size_t messageParts() const { return 2; }
+    override size_t messagePartSize() const { return m_q.bytes(); }
+    override size_t maxInputBits() const { return m_q.bits(); }
 
     override SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng)
     {
@@ -149,7 +149,7 @@ public:
         
         BigInt i = BigInt(msg, msg_len);
         BigInt r = 0, s = 0;
-		Tid tid;
+        Tid tid;
         while (r == 0 || s == 0)
         {
             BigInt k;
@@ -157,32 +157,32 @@ public:
                 k.randomize(rng, m_q.bits());
             while (k >= *m_q);
 
-			BigInt res;
+            BigInt res;
 
-			tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) g, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
-				{ 
-					import botan.libstate.libstate : modexpInit;
-					modexpInit(); // enable quick path for powermod
+            tid = spawn((shared(Tid) tid, shared(ModularReducer*)mod_q, shared(const BigInt*) g, shared(const BigInt*) p, shared(BigInt*) k2, shared(BigInt*) res2)
+                { 
+                    import botan.libstate.libstate : modexpInit;
+                    modexpInit(); // enable quick path for powermod
 
-					BigInt* ret = cast(BigInt*) res2;
-					{
-						auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g, *cast(const BigInt*)p);
-						*ret = (cast(ModularReducer*)mod_q).reduce((*powermod_g_p)(*cast(BigInt*)k2));
-						send(cast(Tid) tid, cast(shared)Thread.getThis());
-					}
-					bool done = receiveOnly!bool();
-					destroy(*ret);
-				}, cast(shared(Tid))thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&k, cast(shared)&res
-				);
+                    BigInt* ret = cast(BigInt*) res2;
+                    {
+                        auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g, *cast(const BigInt*)p);
+                        *ret = (cast(ModularReducer*)mod_q).reduce((*powermod_g_p)(*cast(BigInt*)k2));
+                        send(cast(Tid) tid, cast(shared)Thread.getThis());
+                    }
+                    bool done = receiveOnly!bool();
+                    destroy(*ret);
+                }, cast(shared(Tid))thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&k, cast(shared)&res
+                );
 
             s = inverseMod(k, *m_q);
             Thread thr = cast(Thread)receiveOnly!(shared(Thread))();
-			r = res.dup(); // ensure no remote pointers
-			auto s_arg = mulAdd(*m_x, r, i);
-			send(cast(Tid)tid, true);
-			s = m_mod_q.multiply(s, s_arg);
-			thr.join();
-			tid = Tid.init;
+            r = res.dup(); // ensure no remote pointers
+            auto s_arg = mulAdd(*m_x, r, i);
+            send(cast(Tid)tid, true);
+            s = m_mod_q.multiply(s, s_arg);
+            thr.join();
+            tid = Tid.init;
         }
         
         SecureVector!ubyte output = SecureVector!ubyte(2*m_q.bytes());
@@ -192,10 +192,10 @@ public:
         return output.move;
     }
 private:
-	const BigInt* m_q;
-	const BigInt* m_x;
-	const BigInt* m_g;
-	const BigInt* m_p;
+    const BigInt* m_q;
+    const BigInt* m_x;
+    const BigInt* m_g;
+    const BigInt* m_p;
     ModularReducer m_mod_q;
 }
 
@@ -218,8 +218,8 @@ public:
         assert(dsa.algoName == DSAPublicKey.algoName);
         m_q = &dsa.groupQ();
         m_y = &dsa.getY();
-		m_g = &dsa.groupG();
-		m_p = &dsa.groupP();
+        m_g = &dsa.groupG();
+        m_p = &dsa.groupP();
         m_powermod_y_p = FixedBasePowerMod(*m_y, *m_p);
         m_mod_p = ModularReducer(*m_p);
         m_mod_q = ModularReducer(*m_q);
@@ -248,39 +248,39 @@ public:
         
         s = inverseMod(s, *q);
 
-		BigInt s_i;
+        BigInt s_i;
 
-		Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*) mod_q, shared(const BigInt*)g2, shared(const BigInt*)p2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
-			{ 
-				import botan.libstate.libstate : modexpInit, globalState;
-				modexpInit(); // enable quick path for powermod
-				globalState();
-				BigInt* ret = cast(BigInt*) s_i2;
-				{
-					auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g2, *cast(const BigInt*)p2);
-					auto mult = (*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2);
-					*ret = (*powermod_g_p)(mult);
-					send(cast(Tid) tid, cast(shared)Thread.getThis()); 
-				}
-				auto done = receiveOnly!bool();
-				destroy(*ret);
-			}
-			, cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
-		auto mult = m_mod_q.multiply(s, r);
+        Tid tid = spawn((shared(Tid) tid, shared(ModularReducer*) mod_q, shared(const BigInt*)g2, shared(const BigInt*)p2, shared(BigInt*) s2, shared(BigInt*) i2, shared(BigInt*) s_i2) 
+            { 
+                import botan.libstate.libstate : modexpInit, globalState;
+                modexpInit(); // enable quick path for powermod
+                globalState();
+                BigInt* ret = cast(BigInt*) s_i2;
+                {
+                    auto powermod_g_p = FixedBasePowerMod(*cast(const BigInt*)g2, *cast(const BigInt*)p2);
+                    auto mult = (*cast(ModularReducer*)mod_q).multiply(*cast(BigInt*)s2, *cast(BigInt*)i2);
+                    *ret = (*powermod_g_p)(mult);
+                    send(cast(Tid) tid, cast(shared)Thread.getThis()); 
+                }
+                auto done = receiveOnly!bool();
+                destroy(*ret);
+            }
+            , cast(shared)thisTid(), cast(shared)&m_mod_q, cast(shared)m_g, cast(shared)m_p, cast(shared)&s, cast(shared)&i, cast(shared)&s_i);
+        auto mult = m_mod_q.multiply(s, r);
         BigInt s_r = (*m_powermod_y_p)(mult.move);
         Thread thr = cast(Thread)receiveOnly!(shared(Thread))();
         s = m_mod_p.multiply(s_i, s_r);
-		send(cast(Tid)tid, true); // trigger destroy s_i
-		auto r2 = m_mod_q.reduce(s.move);
-		thr.join();
-		return (r2 == r);
+        send(cast(Tid)tid, true); // trigger destroy s_i
+        auto r2 = m_mod_q.reduce(s.move);
+        thr.join();
+        return (r2 == r);
     }
 
 private:
     const BigInt* m_q;
-	const BigInt* m_y;
-	const BigInt* m_g;
-	const BigInt* m_p;
+    const BigInt* m_y;
+    const BigInt* m_g;
+    const BigInt* m_p;
 
     FixedBasePowerMod m_powermod_y_p;
     ModularReducer m_mod_p, m_mod_q;
@@ -304,7 +304,7 @@ size_t testPkKeygen(RandomNumberGenerator rng) {
     string[] dsa_list = ["dsa/jce/1024", "dsa/botan/2048", "dsa/botan/3072"];
     foreach (dsa; dsa_list) {
         atomicOp!"+="(total_tests, 1);
-		auto key = DSAPrivateKey(rng, DLGroup(dsa));
+        auto key = DSAPrivateKey(rng, DLGroup(dsa));
         key.checkKey(rng, true);
         fails += validateSaveAndLoad(key, rng);
     }
@@ -348,13 +348,13 @@ static if (!SKIP_DSA_TEST) unittest
     
     auto rng = AutoSeededRNG();
     
-	File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
-	
-	fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
-		(ref HashMap!(string, string) m)
-		{
-			return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-		});
+    File dsa_sig = File("../test_data/pubkey/dsa.vec", "r");
+    
+    fails += runTestsBb(dsa_sig, "DSA Signature", "Signature", true,
+        (ref HashMap!(string, string) m)
+        {
+            return dsaSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+        });
 
     fails += testPkKeygen(rng);
     

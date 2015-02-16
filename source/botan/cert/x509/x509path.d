@@ -222,21 +222,21 @@ public:
     }
 
     this()(auto ref Vector!(RBTreeRef!CertificateStatusCode ) status,
-		   auto ref Vector!X509Certificate cert_chain)
+           auto ref Vector!X509Certificate cert_chain)
     {
-		int i = 1;
+        int i = 1;
         m_overall = CertificateStatusCode.VERIFIED;
-		// take the "worst" error as overall
-		foreach (ref s; status[])
-		{
-			if (!s.empty)
-			{
-				auto worst = s.back;
-				// Leave OCSP confirmations on cert-level status only
-				if (worst != CertificateStatusCode.OCSP_RESPONSE_GOOD)
-					m_overall = worst;
-			}
-		}
+        // take the "worst" error as overall
+        foreach (ref s; status[])
+        {
+            if (!s.empty)
+            {
+                auto worst = s.back;
+                // Leave OCSP confirmations on cert-level status only
+                if (worst != CertificateStatusCode.OCSP_RESPONSE_GOOD)
+                    m_overall = worst;
+            }
+        }
         m_all_status = status.move();
         m_cert_path = cert_chain.move();
     }
@@ -272,11 +272,11 @@ PathValidationResult
         X509Certificate cert = findIssuingCert(cert_path.back(), cert_store, certstores);
         if (!cert) {
             return PathValidationResult(CertificateStatusCode.CERT_ISSUER_NOT_FOUND);
-		}
+        }
         cert_path.pushBack(cert);
     }
 
-	auto chain = checkChain(cert_path, restrictions, certstores);
+    auto chain = checkChain(cert_path, restrictions, certstores);
 
     return PathValidationResult(chain, cert_path);
 }
@@ -286,7 +286,7 @@ PathValidationResult
 * PKIX Path Validation
 */
 PathValidationResult x509PathValidate()(in X509Certificate end_cert,
-									    auto const ref PathValidationRestrictions restrictions,
+                                        auto const ref PathValidationRestrictions restrictions,
                                         const ref Vector!CertificateStore certstores)
 {
     Vector!X509Certificate certs;
@@ -298,7 +298,7 @@ PathValidationResult x509PathValidate()(in X509Certificate end_cert,
 * PKIX Path Validation
 */
 PathValidationResult x509PathValidate()(in X509Certificate end_cert,
-									    auto const ref PathValidationRestrictions restrictions,
+                                        auto const ref PathValidationRestrictions restrictions,
                                         in CertificateStore store)
 {
     Vector!X509Certificate certs;
@@ -333,9 +333,9 @@ X509Certificate findIssuingCert(in X509Certificate cert_,
     const Vector!ubyte auth_key_id = cert_.authorityKeyId();
     
     if (X509Certificate cert = end_certs.findCert(issuer_dn, auth_key_id)) {
-		//logTrace("Found certificate: ", cert.toString());
+        //logTrace("Found certificate: ", cert.toString());
         return cert;
-	} 
+    } 
 
     foreach (certstore; certstores[])
     {
@@ -395,11 +395,11 @@ Vector!( RBTreeRef!CertificateStatusCode )
     
     Vector!( RBTreeRef!CertificateStatusCode ) cert_status = Vector!( RBTreeRef!CertificateStatusCode )( cert_path.length );
     
-	foreach (ref e; cert_status) {
-		e.clear(); // touch
-	}
+    foreach (ref e; cert_status) {
+        e.clear(); // touch
+    }
 
-	//logTrace("Cert path size: ", cert_path.length);
+    //logTrace("Cert path size: ", cert_path.length);
 
     foreach (size_t i; 0 .. cert_path.length)
     {

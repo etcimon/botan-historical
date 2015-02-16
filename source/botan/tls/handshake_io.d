@@ -24,8 +24,8 @@ import std.typecons : Tuple;
 
 struct NextRecord
 {
-	HandshakeType type;
-	Vector!ubyte data;
+    HandshakeType type;
+    Vector!ubyte data;
 }
 
 /**
@@ -190,12 +190,12 @@ public:
             while (frag_offset != msg_bits.length)
             {
                 const size_t frag_len =    std.algorithm.min(msg_bits.length - frag_offset, parts_size);
-				auto frag = formatFragment(cast(const(ubyte)*)&msg_bits[frag_offset],
-										   frag_len,
-										   cast(ushort)frag_offset,
-										   cast(ushort)msg_bits.length,
-										   msg_type,
-										   m_out_message_seq);
+                auto frag = formatFragment(cast(const(ubyte)*)&msg_bits[frag_offset],
+                                           frag_len,
+                                           cast(ushort)frag_offset,
+                                           cast(ushort)msg_bits.length,
+                                           msg_type,
+                                           m_out_message_seq);
 
                 m_send_hs(epoch, HANDSHAKE, frag);
                 

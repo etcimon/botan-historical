@@ -39,7 +39,7 @@ public:
                 or not modified if not found
     * @return true if session was modified
     */
-	abstract bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session);
+    abstract bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session);
 
     /**
     * Try to load a saved session (using info about server)
@@ -82,13 +82,13 @@ public:
 final class TLSSessionManagerNoop : TLSSessionManager
 {
 public:
-	override bool loadFromSessionId(const ref Vector!ubyte, ref TLSSession)
+    override bool loadFromSessionId(const ref Vector!ubyte, ref TLSSession)
     { return false; }
 
     override bool loadFromServerInfo(in TLSServerInformation, ref TLSSession)
     { return false; }
 
-	override void removeEntry(const ref Vector!ubyte) {}
+    override void removeEntry(const ref Vector!ubyte) {}
 
     override void save(const ref TLSSession) {}
 
@@ -117,13 +117,13 @@ public:
         
     }
 
-	override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
+    override bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session)
     {
         
         return loadFromSessionStr(hexEncode(session_id), session);
     }
 
-	override bool loadFromServerInfo(in TLSServerInformation info, ref TLSSession session)
+    override bool loadFromServerInfo(in TLSServerInformation info, ref TLSSession session)
     {
         
         auto str = m_info_sessions.get(info);
@@ -143,7 +143,7 @@ public:
         return false;
     }
 
-	override void removeEntry(const ref Vector!ubyte session_id)
+    override void removeEntry(const ref Vector!ubyte session_id)
     {        
         auto key = hexEncode(session_id);
         auto val = m_sessions.get(key);
@@ -220,10 +220,10 @@ private:
         auto i = m_sessions_ordered[].countUntil(val);
         
         if (i != m_sessions_ordered.length) {
-			auto tmp = m_sessions_ordered.ptr[i+1 .. m_sessions_ordered.length];
-			m_sessions_ordered[] = Vector!string(m_sessions_ordered[0 .. i]);
-			m_sessions_ordered ~= tmp;
-		}
+            auto tmp = m_sessions_ordered.ptr[i+1 .. m_sessions_ordered.length];
+            m_sessions_ordered[] = Vector!string(m_sessions_ordered[0 .. i]);
+            m_sessions_ordered ~= tmp;
+        }
         else
             m_sessions_ordered.length = m_sessions_ordered.length - 1;
 

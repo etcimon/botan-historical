@@ -48,8 +48,9 @@ void botan_sha160_x86_32_compress(uint* arg1, const(ubyte)* arg2, uint* arg3) pu
 {
     enum PUSHED = 4;
     enum ASM =
-		  START_ASM ~ 
-		  SPILL_REGS() ~ 
+          START_ASM ~ 
+          "naked;" ~
+          SPILL_REGS() ~ 
           ASSIGN(EDI, ARG(PUSHED, 2)) ~
           ASSIGN(EBP, ARG(PUSHED, 3)) ~
           
@@ -223,8 +224,9 @@ void botan_sha160_x86_32_compress(uint* arg1, const(ubyte)* arg2, uint* arg3) pu
           ADD(ARRAY4(EBP, 4), ECX) ~
 
           RESTORE_REGS() ~
+          "ret;"~
           END_ASM;
-	mixin(ASM);
+    mixin(ASM);
 }
 
 enum MAGIC1 = 0x5A827999;

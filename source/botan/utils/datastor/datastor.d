@@ -53,7 +53,7 @@ public:
         foreach (const ref string k, const ref string v; m_contents) {
             if (looking_for == k)
                 output.pushBack(v);
-		}
+        }
         return output.move;
     }
 
@@ -93,7 +93,7 @@ public:
     Vector!ubyte
         get1Memvec(in string key) const
     {
-		Vector!string vals = get(key);
+        Vector!string vals = get(key);
         
         if (vals.empty)
             return Vector!ubyte();
@@ -131,7 +131,7 @@ public:
     */
     void add(in string key, in string val)
     {
-		m_contents.insert(key.idup, val.idup);
+        m_contents.insert(key.idup, val.idup);
     }
     
     /*
@@ -140,7 +140,7 @@ public:
     void add(T)(in string key, in T val)
         if (isNumeric!T)
     {
-		add(key.idup, to!string(cast(long)val));
+        add(key.idup, to!string(cast(long)val));
     }
     
     /*
@@ -148,12 +148,12 @@ public:
     */
     void add(ALLOC)(in string key, auto const ref Vector!(ubyte, ALLOC) val)
     {
-		add(key.idup, hexEncode(val.ptr, val.length));
+        add(key.idup, hexEncode(val.ptr, val.length));
     }
     
-	void add(ALLOC)(in string key, auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) val)
+    void add(ALLOC)(in string key, auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) val)
     {
-		add(key.idup, hexEncode(val.ptr, val.length));
+        add(key.idup, hexEncode(val.ptr, val.length));
     }
     
     /*

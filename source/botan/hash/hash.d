@@ -103,8 +103,8 @@ size_t hashTest(string algo, string in_hex, string out_hex)
 static if (!SKIP_HASH_TEST) unittest
 {
     logDebug("Testing hash.d ...");
-	import botan.libstate.libstate : globalState;
-	globalState();
+    import botan.libstate.libstate : globalState;
+    globalState();
     auto test = delegate(string input)
     {
         File vec = File(input, "r");

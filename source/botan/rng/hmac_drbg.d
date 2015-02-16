@@ -93,7 +93,7 @@ public:
     this(MessageAuthenticationCode mac,
          RandomNumberGenerator prng)
     { 
-		// logDebug("Loading with mac: ", mac.name);
+        // logDebug("Loading with mac: ", mac.name);
         import std.algorithm : fill;
         m_mac = mac.clone();
         m_prng = prng;

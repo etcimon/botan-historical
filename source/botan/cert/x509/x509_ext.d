@@ -101,7 +101,7 @@ public:
         CertificateExtension cext;
         foreach (Pair!(CertificateExtension, bool) extension; m_extensions[]) {
             cext = extension.first;
-            delete cext;
+            destroy(cext);
         }
         m_extensions.clear();
         
@@ -162,7 +162,7 @@ public:
         CertificateExtension cext;
         foreach (extension; m_extensions[]) {
             cext = extension.first;
-            delete cext;
+            destroy(cext);
         }
         m_extensions.clear();
         
@@ -183,17 +183,17 @@ public:
         CertificateExtension cext;
         foreach (extension; m_extensions[]) {
             cext = extension.first;
-            delete cext;
+            destroy(cext);
         }
     }
 
-	override string toString() const {
-		import std.array :Appender;
-		Appender!string ret;
-		foreach (ext; m_extensions[])
-			ret ~= ext.first.oidName() ~ "\n";
-		return ret.data;
-	}
+    override string toString() const {
+        import std.array :Appender;
+        Appender!string ret;
+        foreach (ext; m_extensions[])
+            ret ~= ext.first.oidName() ~ "\n";
+        return ret.data;
+    }
 
 private:
 
@@ -390,9 +390,9 @@ public:
     override SubjectKeyID copy() const { return new SubjectKeyID(m_key_id); }
 
     this() {}
-	this()(auto const ref Vector!ubyte pub_key)
+    this()(auto const ref Vector!ubyte pub_key)
     {
-		auto hash = scoped!SHA160();
+        auto hash = scoped!SHA160();
         m_key_id = unlock(hash.process(pub_key));
     }
 
@@ -439,7 +439,7 @@ public:
     override AuthorityKeyID copy() const { return new AuthorityKeyID(m_key_id); }
 
     this() {}
-	this()(auto const ref Vector!ubyte k) { m_key_id = k.dup(); }
+    this()(auto const ref Vector!ubyte k) { m_key_id = k.dup(); }
 
     ref const(Vector!ubyte) getKeyId() const { return m_key_id; }
 protected:
@@ -618,14 +618,14 @@ public:
 final class ExtendedKeyUsage : CertificateExtension
 {
 public:
-	override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids.dup); }
+    override ExtendedKeyUsage copy() const { return new ExtendedKeyUsage(m_oids.dup); }
 
     this() {}
 
-	this()(auto const ref Vector!OID o) 
-	{
-		m_oids = o.dup;
-	}
+    this()(auto const ref Vector!OID o) 
+    {
+        m_oids = o.dup;
+    }
 
     ref const(Vector!OID) getOids() const { return m_oids; }
 protected:
@@ -671,10 +671,10 @@ final class CertificatePolicies : CertificateExtension
 {
 public:
     override CertificatePolicies copy() const
-	{ return new CertificatePolicies(m_oids); }
+    { return new CertificatePolicies(m_oids); }
 
     this() {}
-	this()(auto const ref Vector!OID o) { m_oids = o.dup(); }
+    this()(auto const ref Vector!OID o) { m_oids = o.dup(); }
 
     ref const(Vector!OID) getOids() const { return m_oids; }
 protected:
@@ -704,7 +704,7 @@ protected:
     void decodeInner(const ref Vector!ubyte input)
     {
         Vector!( PolicyInformation ) policies;
-		//logTrace("Decode list of policies");
+        //logTrace("Decode list of policies");
         BERDecoder(input).decodeList(policies);
         
         m_oids.clear();
@@ -874,7 +874,7 @@ protected:
     override Vector!ubyte encodeInner() const
     {
         return DEREncoder()
-            	.encode(cast(size_t)(m_reason), ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL)
+                .encode(cast(size_t)(m_reason), ASN1Tag.ENUMERATED, ASN1Tag.UNIVERSAL)
                 .getContentsUnlocked();
     }
 
@@ -932,11 +932,11 @@ public:
     }
 
     override CRLDistributionPoints copy() const
-	{ return new CRLDistributionPoints(m_distribution_points); }
+    { return new CRLDistributionPoints(m_distribution_points); }
 
     this() {}
 
-	this()(auto const ref Vector!( DistributionPoint ) points) { m_distribution_points = points.dup; }
+    this()(auto const ref Vector!( DistributionPoint ) points) { m_distribution_points = points.dup; }
 
     ref const(Vector!( DistributionPoint )) distributionPoints() const
     { return m_distribution_points; }
@@ -995,7 +995,7 @@ public:
     
     override void decodeFrom(ref BERDecoder codec)
     {
-		oid = OID();
+        oid = OID();
         codec.startCons(ASN1Tag.SEQUENCE)
                 .decode(oid)
                 .discardRemaining()

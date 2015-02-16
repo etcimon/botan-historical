@@ -21,23 +21,23 @@ import std.concurrency;
 import memutils.helpers : Embed;
 
 struct NROptions {
-	enum algoName = "NR";
-	enum format = DLGroup.ANSI_X9_42;
-	enum msgParts = 2;
+    enum algoName = "NR";
+    enum format = DLGroup.ANSI_X9_42;
+    enum msgParts = 2;
 
-	/*
+    /*
     * Check Private Nyberg-Rueppel Parameters
     */
-	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
-	{
-		if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
-			return false;
-		
-		if (!strong)
-			return true;
-		
-		return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
-	}
+    static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+    {
+        if (!privkey.checkKeyImpl(rng, strong) || privkey.m_x >= privkey.groupQ())
+            return false;
+        
+        if (!strong)
+            return true;
+        
+        return signatureConsistencyCheck(rng, privkey, "EMSA1(SHA-1)");
+    }
 
 }
 
@@ -47,12 +47,12 @@ struct NROptions {
 struct NRPublicKey
 {
 public:
-	alias Options = NROptions;
+    alias Options = NROptions;
     __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
-		m_pub = new DLSchemePublicKey(Options(), alg_id, key_bits);
+        m_pub = new DLSchemePublicKey(Options(), alg_id, key_bits);
     }
 
     /*
@@ -66,7 +66,7 @@ public:
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -77,23 +77,23 @@ public:
 struct NRPrivateKey
 {
 public:
-	alias Options = NROptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = NROptions;
+    __gshared immutable string algoName = Options.algoName;
 
     /*
     * Create a NR private key
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {
-		bool x_arg_0;
+        bool x_arg_0;
         if (x_arg == 0) {
-			x_arg_0 = true;
-			auto bi = BigInt(2);
+            x_arg_0 = true;
+            auto bi = BigInt(2);
             x_arg = BigInt.randomInteger(rng, bi, grp.getQ() - 1);
-		}
+        }
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
 
-		m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
+        m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
 
         if (x_arg_0)
             m_priv.genCheck(rng);
@@ -103,14 +103,14 @@ public:
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits, RandomNumberGenerator rng)
     { 
-		m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
+        m_priv = new DLSchemePrivateKey(Options(), alg_id, key_bits);
        
         m_priv.setY(powerMod(m_priv.groupG(), m_priv.m_x, m_priv.groupP()));
         
         m_priv.loadCheck(rng);
     }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 
@@ -196,7 +196,7 @@ public:
         assert(nr.algoName == NRPublicKey.algoName);
         m_q = &nr.groupQ();
         m_y = &nr.getY();
-		m_p = &nr.groupP();
+        m_p = &nr.groupP();
         m_powermod_g_p = FixedBasePowerMod(nr.groupG(), nr.groupP());
         m_mod_p = ModularReducer(nr.groupP());
         m_mod_q = ModularReducer(nr.groupQ());
@@ -230,33 +230,33 @@ public:
         auto tid = spawn(
             (shared(Tid) tid, shared(const BigInt*) y, shared(const BigInt*) p, shared(BigInt*) c2, shared(BigInt*) res2) 
             { 
-				import botan.libstate.libstate : modexpInit;
-				modexpInit(); // enable quick path for powermod
+                import botan.libstate.libstate : modexpInit;
+                modexpInit(); // enable quick path for powermod
                 BigInt* ret = cast(BigInt*) res2;
-				{
-					auto powermod_y_p = FixedBasePowerMod(*cast(const BigInt*)y, *cast(const BigInt*)p);
-					*ret = (*powermod_y_p)(*cast(BigInt*)c2);
-					send(cast(Tid) tid, true);
-				}
-				auto done = receiveOnly!bool;
-				destroy(*ret);
+                {
+                    auto powermod_y_p = FixedBasePowerMod(*cast(const BigInt*)y, *cast(const BigInt*)p);
+                    *ret = (*powermod_y_p)(*cast(BigInt*)c2);
+                    send(cast(Tid) tid, true);
+                }
+                auto done = receiveOnly!bool;
+                destroy(*ret);
                 send(cast(Tid)tid, true); 
             }, 
-        	cast(shared)thisTid, cast(shared)m_y, cast(shared)m_p, cast(shared)&c, cast(shared)&res 
-			);
+            cast(shared)thisTid, cast(shared)m_y, cast(shared)m_p, cast(shared)&c, cast(shared)&res 
+            );
         BigInt g_d = (*m_powermod_g_p)(d);
         bool done = receiveOnly!bool();
         BigInt i = m_mod_p.multiply(g_d, res);
 
-		send(cast(Tid)tid, true);
-		auto ret = BigInt.encodeLocked(m_mod_q.reduce(c - i));
-		done = receiveOnly!bool;
+        send(cast(Tid)tid, true);
+        auto ret = BigInt.encodeLocked(m_mod_q.reduce(c - i));
+        done = receiveOnly!bool;
         return ret;
     }
 private:
     const BigInt* m_q;
     const BigInt* m_y;
-	const BigInt* m_p;
+    const BigInt* m_p;
 
     FixedBasePowerMod m_powermod_g_p;
     ModularReducer m_mod_p, m_mod_q;
@@ -293,7 +293,7 @@ size_t testPkKeygen(RandomNumberGenerator rng)
 size_t nrSigKat(string p, string q, string g, string x, 
                   string hash, string msg, string nonce, string signature)
 {
-	//logTrace("msg: ", msg);
+    //logTrace("msg: ", msg);
     atomicOp!"+="(total_tests, 1);
     auto rng = AutoSeededRNG();
     
@@ -322,12 +322,12 @@ static if (!SKIP_NR_TEST) unittest
     
     auto rng = AutoSeededRNG();
     
-	File nr_sig = File("../test_data/pubkey/nr.vec", "r");
-	
-	fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
-		(ref HashMap!(string, string) m) {
-			return nrSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
-		});
+    File nr_sig = File("../test_data/pubkey/nr.vec", "r");
+    
+    fails += runTestsBb(nr_sig, "NR Signature", "Signature", true,
+        (ref HashMap!(string, string) m) {
+            return nrSigKat(m["P"], m["Q"], m["G"], m["X"], m["Hash"], m["Msg"], m["Nonce"], m["Signature"]);
+        });
 
     fails += testPkKeygen(rng);
     

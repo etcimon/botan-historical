@@ -27,10 +27,10 @@ public:
     {
         if (m_mod_words == 0)
             throw new InvalidState("ModularReducer: Never initalized");
-		if (x.cmp(m_modulus, false) < 0)
+        if (x.cmp(m_modulus, false) < 0)
         {
             if (x.isNegative())
-				return x + m_modulus; // make positive
+                return x + m_modulus; // make positive
             return x.move;
         }
         else if (x.cmp(m_modulus_2, false) < 0)
@@ -41,7 +41,7 @@ public:
             t1 *= m_mu;
             
             t1 >>= (MP_WORD_BITS * (m_mod_words + 1));
-			t1 *= m_modulus;
+            t1 *= m_modulus;
             
             t1.maskBits(MP_WORD_BITS * (m_mod_words + 1));
             
@@ -55,18 +55,18 @@ public:
             {
                 t2 += BigInt.powerOf2(MP_WORD_BITS * (m_mod_words + 1));
             }
-			while (t2 >= m_modulus)
-				t2 -= m_modulus;            
+            while (t2 >= m_modulus)
+                t2 -= m_modulus;            
 
             if (x.isPositive())
                 return t2.move();
             else
-				return m_modulus - t2;
+                return m_modulus - t2;
         }
         else
         {
             // too big, fall back to normal division
-			return (x % m_modulus);
+            return (x % m_modulus);
         }
     }
 
@@ -78,8 +78,8 @@ public:
     */
     BigInt multiply()(auto const ref BigInt x, auto const ref BigInt y) const
     { 
-		return reduce(x * y);
-	}
+        return reduce(x * y);
+    }
 
     /**
     * Square mod p
@@ -88,8 +88,8 @@ public:
     */
     BigInt square()(auto const ref BigInt x) const
     {
-		return reduce(x.square());
-	}
+        return reduce(x.square());
+    }
 
     /**
     * Cube mod p
@@ -110,11 +110,11 @@ public:
         m_modulus = mod.dup;
         m_mod_words = m_modulus.sigWords();
         m_modulus_2 = .square(m_modulus);
-		m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
+        m_mu = BigInt.powerOf2(2 * MP_WORD_BITS * m_mod_words) / m_modulus;
     }
 
     @property ModularReducer dup() const {
-		return ModularReducer(m_modulus);
+        return ModularReducer(m_modulus);
     }
 
 private:

@@ -129,10 +129,10 @@ public:
     * Create a new OctetString
     * @param input = a bytestring
     */
-	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
+    this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
-	/// ditto
-	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
+    /// ditto
+    this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
 
     /**

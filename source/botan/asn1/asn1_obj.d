@@ -95,8 +95,8 @@ public:
                                          to!string(this.class_tag) ~ " expected " ~
                                          to!string(type_tag) ~ "/" ~
                                          to!string(class_tag));
-		}
-		return;
+        }
+        return;
     }
 
     /*
@@ -107,20 +107,20 @@ public:
         return cast(string) value[].idup;
     }
 
-	void swap(ref BERObject other) {
-		import std.algorithm : swap;
-		swap(type_tag, other.type_tag);
-		swap(class_tag, other.class_tag);
-		value.swap(other.value);
-	}
+    void swap(ref BERObject other) {
+        import std.algorithm : swap;
+        swap(type_tag, other.type_tag);
+        swap(class_tag, other.class_tag);
+        value.swap(other.value);
+    }
 
-	BERObject move() {
-		return BERObject(type_tag, class_tag, value.move());
-	}
+    BERObject move() {
+        return BERObject(type_tag, class_tag, value.move());
+    }
 
-	BERObject dup() {
-		return BERObject(type_tag, class_tag, value.dup());
-	}
+    BERObject dup() {
+        return BERObject(type_tag, class_tag, value.dup());
+    }
 
     ASN1Tag type_tag, class_tag;
     SecureVector!ubyte value;
@@ -172,11 +172,11 @@ Vector!ubyte putInSequence(ALLOC)(auto const ref Vector!(ubyte, ALLOC) contents)
 /// ditto
 Vector!ubyte putInSequence(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) contents)
 {
-	return DEREncoder()
-			.startCons(ASN1Tag.SEQUENCE)
-			.rawBytes(contents)
-			.endCons()
-			.getContentsUnlocked();
+    return DEREncoder()
+            .startCons(ASN1Tag.SEQUENCE)
+            .rawBytes(contents)
+            .endCons()
+            .getContentsUnlocked();
 }
 
 /**

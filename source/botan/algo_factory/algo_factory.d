@@ -25,13 +25,13 @@ import std.algorithm;
 final class AlgorithmFactory
 {
 public:
-	~this() {
-		foreach(engine; m_engines) {
-			delete engine;
-		}
-		m_engines.clear();
+    ~this() {
+        foreach(engine; m_engines) {
+            destroy(engine);
+        }
+        m_engines.clear();
 
-	}
+    }
 
     /**
     * @param engine = to add (AlgorithmFactory takes ownership)

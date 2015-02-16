@@ -218,7 +218,7 @@ public:
         if (initial_opts == "")
             return;
         
-		Vector!string parsed = botan.utils.parsing.splitter(initial_opts, '/');
+        Vector!string parsed = botan.utils.parsing.splitter(initial_opts, '/');
         
         if (parsed.length > 4)
             throw new InvalidArgument("X.509 cert options: Too many names: " ~ initial_opts);
@@ -245,7 +245,7 @@ X509Certificate createSelfSignedCert()(auto const ref X509CertOptions opts,
                                        RandomNumberGenerator rng)
 {
     auto sig_algo = AlgorithmIdentifier();
-	X509DN subject_dn = X509DN();
+    X509DN subject_dn = X509DN();
     AlternativeName subject_alt = AlternativeName();
     
     opts.sanityCheck();
@@ -288,8 +288,8 @@ PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
                               RandomNumberGenerator rng)
 {
     auto sig_algo = AlgorithmIdentifier();
-	X509DN subject_dn = X509DN();
-	AlternativeName subject_alt = AlternativeName();
+    X509DN subject_dn = X509DN();
+    AlternativeName subject_alt = AlternativeName();
     
     opts.sanityCheck();
     
@@ -297,13 +297,13 @@ PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
     PKSigner signer = chooseSigFormat(key, hash_fn, sig_algo);
     loadInfo(opts, subject_dn, subject_alt);
     __gshared immutable size_t PKCS10_VERSION = 0;
-	auto extensions = X509Extensions();
+    auto extensions = X509Extensions();
     
     extensions.add(new BasicConstraints(opts.is_CA, opts.path_limit));
 
     extensions.add(new KeyUsage(opts.is_CA ? KeyConstraints.KEY_CERT_SIGN | KeyConstraints.CRL_SIGN : findConstraints(key, opts.constraints)));
     
-	extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
+    extensions.add(new ExtendedKeyUsage(opts.ex_constraints));
     extensions.add(new SubjectAlternativeName(subject_alt));
     
     DEREncoder tbs_req;

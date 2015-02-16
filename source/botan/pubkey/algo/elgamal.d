@@ -23,22 +23,22 @@ import botan.utils.types;
 import memutils.helpers : Embed;
 
 struct ElGamalOptions {
-	enum algoName = "ElGamal";
-	enum format = DLGroup.ANSI_X9_42;
+    enum algoName = "ElGamal";
+    enum format = DLGroup.ANSI_X9_42;
 
-	/*
+    /*
     * Check Private ElGamal Parameters
     */
-	static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
-	{
-		if (!privkey.checkKeyImpl(rng, strong))
-			return false;
-		
-		if (!strong)
-			return true;
-		
-		return encryptionConsistencyCheck(rng, privkey, "EME1(SHA-1)");
-	}
+    static bool checkKey(in DLSchemePrivateKey privkey, RandomNumberGenerator rng, bool strong)
+    {
+        if (!privkey.checkKeyImpl(rng, strong))
+            return false;
+        
+        if (!strong)
+            return true;
+        
+        return encryptionConsistencyCheck(rng, privkey, "EME1(SHA-1)");
+    }
 
 }
 
@@ -48,7 +48,7 @@ struct ElGamalOptions {
 struct ElGamalPublicKey
 {
 public:
-	alias Options = ElGamalOptions;
+    alias Options = ElGamalOptions;
     __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
@@ -60,13 +60,13 @@ public:
     */
     this(DLGroup grp, BigInt y1)
     {
-		m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
+        m_pub = new DLSchemePublicKey(Options(), grp.move, y1.move);
     }
 
     this(PublicKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
     this(PrivateKey pkey) { m_pub = cast(DLSchemePublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     DLSchemePublicKey m_pub;
 }
@@ -77,19 +77,19 @@ public:
 struct ElGamalPrivateKey
 {
 public:
-	alias Options = ElGamalOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = ElGamalOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     /*
     * ElGamalPrivateKey Constructor
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {    
-		bool x_arg_0;
+        bool x_arg_0;
         if (x_arg == 0) {
-			x_arg_0 = true;
+            x_arg_0 = true;
             x_arg.randomize(rng, 2 * dlWorkFactor(grp.getP().bits()));
-		}
+        }
         BigInt y1 = powerMod(grp.getG(), x_arg, grp.getP());
         
         m_priv = new DLSchemePrivateKey(Options(), grp.move, y1.move, x_arg.move);
@@ -113,7 +113,7 @@ public:
 
     this(PrivateKey pkey) { m_priv = cast(DLSchemePrivateKey) pkey; }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     DLSchemePrivateKey m_priv;
 }
@@ -195,7 +195,7 @@ public:
         m_mod_p = ModularReducer(*p);
         
         BigInt k = BigInt(rng, p.bits() - 1);
-		auto d = (*m_powermod_x_p)(k);
+        auto d = (*m_powermod_x_p)(k);
         m_blinder = Blinder(k, d, *p);
     }
 
@@ -295,10 +295,10 @@ static if (!SKIP_ELGAMAL_TEST) unittest
     File elgamal_enc = File("../test_data/pubkey/elgamal.vec", "r");
     
     fails += runTestsBb(elgamal_enc, "ElGamal Encryption", "Ciphertext", true,
-		(ref HashMap!(string, string) m) {
-	        return elgamalKat(m["P"], m["G"], m["X"], m["Msg"],
-	        m["Padding"], m["Nonce"], m["Ciphertext"]);
-	    });
+        (ref HashMap!(string, string) m) {
+            return elgamalKat(m["P"], m["G"], m["X"], m["Msg"],
+            m["Padding"], m["Nonce"], m["Ciphertext"]);
+        });
     
     testReport("elg", total_tests, fails);
 }

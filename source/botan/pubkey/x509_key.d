@@ -60,7 +60,7 @@ string PEM_encode(in PublicKey key)
 PublicKey loadKey(DataSource source)
 {
     try {
-		auto alg_id = AlgorithmIdentifier();
+        auto alg_id = AlgorithmIdentifier();
         SecureVector!ubyte key_bits;
         
         if (maybeBER(source) && !PEM.matches(source))
@@ -153,7 +153,7 @@ ulong keyId(in PublicKey key)
     pipe.write(key.x509SubjectPublicKey());
     pipe.endMsg();
     
-	SecureVector!ubyte output = pipe.readAll();
+    SecureVector!ubyte output = pipe.readAll();
     
     if (output.length != 8)
         throw new InternalError("PublicKey::key_id: Incorrect output size");
@@ -207,15 +207,15 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 {
 
     auto copy_priv = pkcs8.copyKey(orig, rng);
-	auto copy_pub = x509_key.copyKey(orig);
+    auto copy_pub = x509_key.copyKey(orig);
     
     const string passphrase = "I need work! -Mr. T";
-	auto pem = pkcs8.PEM_encode(orig, rng, passphrase);
-	//logDebug(pem[]);
-	auto enc_source = cast(DataSource)DataSourceMemory(pem);
-	auto copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
+    auto pem = pkcs8.PEM_encode(orig, rng, passphrase);
+    //logDebug(pem[]);
+    auto enc_source = cast(DataSource)DataSourceMemory(pem);
+    auto copy_priv_enc = pkcs8.loadKey(enc_source, rng, passphrase);
     ulong orig_id = keyId(orig);
-	ulong pub_id = keyId(copy_pub);
+    ulong pub_id = keyId(copy_pub);
     ulong priv_id = keyId(copy_priv);
     ulong priv_enc_id = keyId(copy_priv_enc);
 
@@ -229,7 +229,7 @@ uint checkAgainstCopy(const PrivateKey orig, RandomNumberGenerator rng)
 
 static if (!SKIP_X509_KEY_TEST) unittest
 {
-	logDebug("Testing x509_key ...");
+    logDebug("Testing x509_key ...");
     auto rng = AutoSeededRNG();
     const string hash_fn = "SHA-256";
     
@@ -240,10 +240,10 @@ static if (!SKIP_X509_KEY_TEST) unittest
     X509Certificate ca_cert = x509self.createSelfSignedCert(caOpts(), *ca_key, hash_fn, rng);
 
     /* Create user #1's key and cert request */
-	auto dl_group = DLGroup("dsa/botan/2048");
-	auto user1_key = DSAPrivateKey(rng, dl_group.move);
+    auto dl_group = DLGroup("dsa/botan/2048");
+    auto user1_key = DSAPrivateKey(rng, dl_group.move);
     
-	auto opts1 = reqOpts1();
+    auto opts1 = reqOpts1();
     PKCS10Request user1_req = x509self.createCertReq(opts1, *user1_key, "SHA-1", rng);
     
     /* Create user #2's key and cert request */
@@ -266,7 +266,7 @@ static if (!SKIP_X509_KEY_TEST) unittest
     X509CRL crl1 = ca.newCRL(rng);
     
     /* Verify the certs */
-	Unique!CertificateStoreInMemory store = new CertificateStoreInMemory();
+    Unique!CertificateStoreInMemory store = new CertificateStoreInMemory();
     
     store.addCertificate(ca_cert);
     
@@ -289,10 +289,10 @@ static if (!SKIP_X509_KEY_TEST) unittest
     store.addCrl(crl1);
     
     Vector!CRLEntry revoked;
-	auto crl_entry1 = CRLEntry(user1_cert, CESSATION_OF_OPERATION);
-	auto crl_entry2 = CRLEntry(user2_cert);
-	revoked.pushBack(crl_entry1);
-	revoked.pushBack(crl_entry2);
+    auto crl_entry1 = CRLEntry(user1_cert, CESSATION_OF_OPERATION);
+    auto crl_entry2 = CRLEntry(user2_cert);
+    revoked.pushBack(crl_entry1);
+    revoked.pushBack(crl_entry2);
     
     X509CRL crl2 = ca.updateCRL(crl1, revoked, rng);
     
@@ -312,23 +312,23 @@ static if (!SKIP_X509_KEY_TEST) unittest
         ++fails;
     }
 
-	auto crl_entry = CRLEntry(user1_cert, REMOVE_FROM_CRL);
+    auto crl_entry = CRLEntry(user1_cert, REMOVE_FROM_CRL);
     revoked.clear();
-	revoked.pushBack(crl_entry);
+    revoked.pushBack(crl_entry);
     X509CRL crl3 = ca.updateCRL(crl2, revoked, rng);
     
     store.addCrl(crl3);
     
     
-	result_u1 = x509PathValidate(user1_cert, restrictions, *store);
+    result_u1 = x509PathValidate(user1_cert, restrictions, *store);
     
-	if (!result_u1.successfulValidation())
+    if (!result_u1.successfulValidation())
     {
         logError("FAILED: User cert #1 was not un-revoked - " ~ result_u1.resultString());
         ++fails;
     }
     
-	checkAgainstCopy(*ca_key, rng);
+    checkAgainstCopy(*ca_key, rng);
     checkAgainstCopy(*user1_key, rng);
     checkAgainstCopy(*user2_key, rng);
     testReport("X509_key", 5, fails);

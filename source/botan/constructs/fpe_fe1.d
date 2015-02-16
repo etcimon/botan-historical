@@ -72,7 +72,7 @@ struct FPE {
         auto F = scoped!FPEEncryptor(key, n0, tweak);
         
         BigInt a, b;
-		factor(n0.dup, a, b);
+        factor(n0.dup, a, b);
         
         const size_t r = rounds(a, b);
         

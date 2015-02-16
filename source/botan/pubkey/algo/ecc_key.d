@@ -41,7 +41,7 @@ class ECPublicKey : PublicKey
 public:
     this(T)(in T options, const ref ECGroup dom_par, const ref PointGFp pub_point) 
     {
-		decodeOptions(options);
+        decodeOptions(options);
 
         m_domain_params = dom_par.dup;
         m_public_key = pub_point.dup;
@@ -51,37 +51,37 @@ public:
             throw new InvalidArgument("ECPublicKey: curve mismatch in constructor");
     }
 
-	this(T)(in T options, in AlgorithmIdentifier alg_id, 
-		const ref SecureVector!ubyte key_bits) 
-	{
-		decodeOptions(options);
+    this(T)(in T options, in AlgorithmIdentifier alg_id, 
+        const ref SecureVector!ubyte key_bits) 
+    {
+        decodeOptions(options);
 
-		m_domain_params = ECGroup(alg_id.parameters);
-		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-		m_public_key = OS2ECP(key_bits, domain().getCurve());
-	}
+        m_domain_params = ECGroup(alg_id.parameters);
+        m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+        m_public_key = OS2ECP(key_bits, domain().getCurve());
+    }
 
-	protected this(T)(in T options, in AlgorithmIdentifier alg_id) 
-	{
-		decodeOptions(options);
-		//logTrace("ECGroup with alg_id.parameters");
-		m_domain_params = ECGroup(alg_id.parameters);
-		m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
-	}
+    protected this(T)(in T options, in AlgorithmIdentifier alg_id) 
+    {
+        decodeOptions(options);
+        //logTrace("ECGroup with alg_id.parameters");
+        m_domain_params = ECGroup(alg_id.parameters);
+        m_domain_encoding = EC_DOMPAR_ENC_EXPLICIT;
+    }
 
-	final void decodeOptions(T)(in T options) {
-		static if (__traits(hasMember, T, "checkKey"))
-			m_check_key = &options.checkKey;
-		static if (__traits(hasMember, T, "algorithmIdentifier"))
-			m_algorithm_identifier = &options.algorithmIdentifier;
-		static if (__traits(hasMember, T, "x509SubjectPublicKey"))
-			m_subject_public_key = &options.x509SubjectPublicKey;
-		static if (__traits(hasMember, T, "msgParts"))
-			m_msg_parts = options.msgParts;
-		static if (__traits(hasMember, T, "algoName"))
-			m_algo_name = options.algoName;
-		else static assert(false, "No algoName found in " ~ T.stringof);
-	}
+    final void decodeOptions(T)(in T options) {
+        static if (__traits(hasMember, T, "checkKey"))
+            m_check_key = &options.checkKey;
+        static if (__traits(hasMember, T, "algorithmIdentifier"))
+            m_algorithm_identifier = &options.algorithmIdentifier;
+        static if (__traits(hasMember, T, "x509SubjectPublicKey"))
+            m_subject_public_key = &options.x509SubjectPublicKey;
+        static if (__traits(hasMember, T, "msgParts"))
+            m_msg_parts = options.msgParts;
+        static if (__traits(hasMember, T, "algoName"))
+            m_algo_name = options.algoName;
+        else static assert(false, "No algoName found in " ~ T.stringof);
+    }
 
     /// Used for object casting to the right type in the factory.
     final override @property string algoName() const {
@@ -99,10 +99,10 @@ public:
     final override size_t maxInputBits() const { return domain().getOrder().bits(); }
 
     final override size_t messagePartSize() const { 
-		if (m_msg_parts == 1) return 0;
+        if (m_msg_parts == 1) return 0;
 
-		return domain().getOrder().bytes(); 
-	}
+        return domain().getOrder().bytes(); 
+    }
 
     final override size_t messageParts() const { return m_msg_parts; }
 
@@ -181,8 +181,8 @@ protected:
     string m_algo_name;
     short m_msg_parts = 1;
     bool function(in ECPrivateKey, RandomNumberGenerator, bool) m_check_key;
-	Vector!ubyte function(in ECPublicKey) m_subject_public_key;
-	AlgorithmIdentifier function(in ECPublicKey) m_algorithm_identifier;
+    Vector!ubyte function(in ECPublicKey) m_subject_public_key;
+    AlgorithmIdentifier function(in ECPublicKey) m_algorithm_identifier;
 }
 
 /**
@@ -194,12 +194,12 @@ public:
     /**
     * ECPrivateKey constructor
     */
-	this(T)(in T options, RandomNumberGenerator rng, const ref ECGroup ec_group, const ref BigInt private_key) 
+    this(T)(in T options, RandomNumberGenerator rng, const ref ECGroup ec_group, const ref BigInt private_key) 
     {
-		if (private_key == 0) {
-			auto bi = BigInt(1);
-			m_private_key = BigInt.randomInteger(rng, bi, ec_group.getOrder());
-		}
+        if (private_key == 0) {
+            auto bi = BigInt(1);
+            m_private_key = BigInt.randomInteger(rng, bi, ec_group.getOrder());
+        }
         else
             m_private_key = private_key.dup;
 
@@ -207,13 +207,13 @@ public:
         
         assert(public_key.onTheCurve(), "Generated public key point was on the curve");
 
-		// logTrace("private key: ", m_private_key.toString());
+        // logTrace("private key: ", m_private_key.toString());
         super(options, ec_group, public_key);
     }
 
     this(T)(in T options, const ref AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
-		super(options, alg_id);
+        super(options, alg_id);
         PointGFp public_key;
         OID key_parameters = OID();
 
@@ -231,23 +231,23 @@ public:
 
         if (public_key_bits.empty)
         {
-			m_public_key = domain().getBasePoint() * m_private_key;
+            m_public_key = domain().getBasePoint() * m_private_key;
             assert(m_public_key.onTheCurve(), "Public point derived from loaded key was on the curve");
         }
-		else
-		{
-			m_public_key = OS2ECP(public_key_bits, m_domain_params.getCurve());
-			// OS2ECP verifies that the point is on the curve
-		}
+        else
+        {
+            m_public_key = OS2ECP(public_key_bits, m_domain_params.getCurve());
+            // OS2ECP verifies that the point is on the curve
+        }
     }
 
-	override bool checkKey(RandomNumberGenerator rng, bool b) const
-	{
-		if (m_check_key)
-			return m_check_key(this, rng, b);
-		
-		return super.checkKey(rng, b);
-	}
+    override bool checkKey(RandomNumberGenerator rng, bool b) const
+    {
+        if (m_check_key)
+            return m_check_key(this, rng, b);
+        
+        return super.checkKey(rng, b);
+    }
 
     SecureVector!ubyte pkcs8PrivateKey() const
     {
@@ -260,11 +260,11 @@ public:
                 .getContents();
     }
 
-	override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { 
-		if (algoName() == "GOST-34.10")
-			return AlgorithmIdentifier(getOid(), DER_domain());
-		return super.algorithmIdentifier();
-	}
+    override AlgorithmIdentifier pkcs8AlgorithmIdentifier() const { 
+        if (algoName() == "GOST-34.10")
+            return AlgorithmIdentifier(getOid(), DER_domain());
+        return super.algorithmIdentifier();
+    }
 
     /**
     * Get the private key value of this key object.

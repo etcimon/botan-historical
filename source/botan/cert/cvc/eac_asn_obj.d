@@ -270,7 +270,7 @@ private:
     Vector!ubyte encodedEacTime() const
     {
         Vector!ubyte result;
-		result.reserve(6);
+        result.reserve(6);
         result ~= encTwoDigitArr(year).ptr[0..2];
         result ~= encTwoDigitArr(month).ptr[0..2];
         result ~= encTwoDigitArr(day).ptr[0..2];

@@ -148,6 +148,7 @@ private:
         */
         static int openSocket(in string path)
         {
+            logDebug("OpenSocket: ", path);
             int fd = socket(PF_LOCAL, SOCK_STREAM, 0);
             
             if (fd >= 0)

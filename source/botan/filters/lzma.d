@@ -142,7 +142,7 @@ private:
         if (m_lzma)
         {
             lzma_end(m_lzma.m_stream);
-            delete m_lzma;
+            destroy(m_lzma);
             m_lzma = null;
         }
     }
@@ -274,7 +274,7 @@ private:
         if (m_lzma)
         {
             lzma_end(m_lzma.m_stream);
-            delete m_lzma;
+            destroy(m_lzma);
             m_lzma = null;
         }
     }
@@ -323,8 +323,8 @@ public:
     ~this()
     {
         Lzma_Alloc_Info* info = cast(Lzma_Alloc_Info*)(m_stream.allocator.opaque);
-        delete info;
-        delete m_stream.allocator;
+        destroy(info);
+        destroy(m_stream.allocator);
         memset(m_stream, 0, (lzma_stream).sizeof);
     }
 }

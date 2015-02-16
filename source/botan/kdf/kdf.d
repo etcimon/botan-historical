@@ -38,8 +38,8 @@ public:
     * @param salt = a diversifier
     */
     SecureVector!ubyte deriveKey()(size_t key_len,
-			                       auto const ref SecureVector!ubyte secret,
-			                       in string salt = "") const
+                                   auto const ref SecureVector!ubyte secret,
+                                   in string salt = "") const
     {
         return deriveKey(key_len, secret.ptr, secret.length,
                          cast(const(ubyte)*)(salt.ptr),
@@ -68,9 +68,9 @@ public:
     * @param salt_len = size of salt in bytes
     */
     SecureVector!ubyte deriveKey()(size_t key_len,
-			                       auto const ref SecureVector!ubyte secret,
-			                       const(ubyte)* salt,
-			                       size_t salt_len) const
+                                   auto const ref SecureVector!ubyte secret,
+                                   const(ubyte)* salt,
+                                   size_t salt_len) const
     {
         return deriveKey(key_len,
                          secret.ptr, secret.length,
@@ -182,19 +182,19 @@ static if (!SKIP_KDF_TEST) unittest
         return runTests(input, "KDF", "Output", true,
             (ref HashMap!(string, string) vec)
             {
-				atomicOp!"+="(g_total_tests, 1);
-	            Unique!KDF kdf = getKdf(vec["KDF"]);
-	            
-	            const size_t outlen = to!uint(vec["OutputLen"]);
-	            const auto salt = hexDecode(vec["Salt"]);
-	            const auto secret = hexDecodeLocked(vec["Secret"]);
-	            
-	            const auto key = kdf.deriveKey(outlen, secret, salt);
-				auto encoded = hexEncode(key);
-	            return encoded;
-	        });
-	    };
-	    
+                atomicOp!"+="(g_total_tests, 1);
+                Unique!KDF kdf = getKdf(vec["KDF"]);
+                
+                const size_t outlen = to!uint(vec["OutputLen"]);
+                const auto salt = hexDecode(vec["Salt"]);
+                const auto secret = hexDecodeLocked(vec["Secret"]);
+                
+                const auto key = kdf.deriveKey(outlen, secret, salt);
+                auto encoded = hexEncode(key);
+                return encoded;
+            });
+        };
+        
     size_t fails = runTestsInDir("../test_data/kdf", test);
     
     testReport("kdf", g_total_tests, fails);

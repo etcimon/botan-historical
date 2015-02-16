@@ -487,7 +487,7 @@ public:
     */
     override void encryptN(const(ubyte)* input, ubyte* output, size_t blocks)
     {
-		assert(m_EK.length >= 60);
+        assert(m_EK.length >= 60);
         __m128i* in_mm = cast(__m128i*)(input);
         __m128i* out_mm = cast(__m128i*)(output);
         

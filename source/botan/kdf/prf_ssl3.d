@@ -37,7 +37,7 @@ public:
         Unique!MD5 md5 = new MD5();
         Unique!SHA160 sha1 = new SHA160();
         
-		OctetString output = OctetString("");
+        OctetString output = OctetString("");
         
         int counter = 0;
         while (key_len)

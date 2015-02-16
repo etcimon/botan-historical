@@ -315,7 +315,7 @@ struct OIDMap
 public:
     void addOid(in OID oid, in string str)
     {
-		//logTrace("addOid: ", str);
+        //logTrace("addOid: ", str);
         addStr2oid(oid, str);
         addOid2str(oid, str);
     }

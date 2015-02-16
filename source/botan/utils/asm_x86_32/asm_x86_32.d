@@ -87,8 +87,8 @@ static if (BOTAN_HAS_DMD_X86_INLINE_ASM) {
     string ADD_IMM(string TO, int NUM) { return ADD(TO, IMM(NUM)); }
     string ADD_W_CARRY(string TO1, string TO2, string FROM) { return "add " ~ TO1 ~ ", " ~ FROM ~ "; adc " ~ TO2 ~ ", " ~ IMM(0) ~ ";\n"; }
     string SUB_IMM(string TO, int NUM) { return "sub " ~ TO ~ ", " ~ IMM(NUM) ~ ";\n"; }
-	string ADD2_IMM(string TO, string FROM, int NUM) { return "lea "  ~ TO ~ ", [" ~ FROM ~ " + " ~ NUM.to!string ~ "];\n"; }
-	string ADD3_IMM(string TO, string FROM, int NUM) { return "lea " ~ TO ~ ", " ~ NUM.to!string ~ "[" ~ TO ~ "+" ~ FROM ~ "];\n"; }
+    string ADD2_IMM(string TO, string FROM, int NUM) { return "lea "  ~ TO ~ ", " ~ NUM.to!string ~ "[" ~ FROM ~ "];\n"; }
+    string ADD3_IMM(string TO, string FROM, int NUM) { return "lea " ~ TO ~ ", " ~ NUM.to!string ~ "[" ~ TO ~ "+" ~ FROM ~ "];\n"; }
     string MUL(string REG) { return "mul " ~ REG ~ ";\n"; }
 
     string SHL_IMM(string REG, int SHIFT) { return "shl " ~ REG ~ ", " ~ IMM(SHIFT) ~ ";\n"; }

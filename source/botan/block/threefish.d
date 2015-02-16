@@ -104,7 +104,7 @@ public:
     {
         if (m_T.length == 0) m_T = SecureVector!ulong(3);
         else zeroise(m_T);
-		if (m_K.length == 0) m_K = SecureVector!ulong(9);
+        if (m_K.length == 0) m_K = SecureVector!ulong(9);
         else zeroise(m_K);
     }
 

@@ -42,7 +42,7 @@ public:
     override void update(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
         assert(buffer.length >= offset, "Offset is sane");
-		//logTrace("Update: ", cast(ubyte[])buffer[]);
+        //logTrace("Update: ", cast(ubyte[])buffer[]);
         const size_t sz = buffer.length - offset;
         ubyte* buf = buffer.ptr + offset;
         m_msg_buf ~= buf[0 .. sz];
@@ -189,22 +189,22 @@ public:
 
     override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
     {
-		import std.algorithm : max;
+        import std.algorithm : max;
         assert(buffer.length >= offset, "Offset is sane");
         
-		if (msgBuf().length > 0)
-		{
-			auto buffer2 = msgBuf().dup;
-			buffer2 ~= buffer;
-			buffer = buffer2.move;
-		}
+        if (msgBuf().length > 0)
+        {
+            auto buffer2 = msgBuf().dup;
+            buffer2 ~= buffer;
+            buffer = buffer2.move;
+        }
 
         SecureVector!ubyte V = S2V(buffer.ptr + offset, buffer.length - offset);
-		if (V.length > 0) {
-			auto buffer2 = V.dup;
-			buffer2 ~= buffer;
-			buffer = buffer2.move;
-		}
+        if (V.length > 0) {
+            auto buffer2 = V.dup;
+            buffer2 ~= buffer;
+            buffer = buffer2.move;
+        }
         setCtrIv(V.dup);
         ctr().cipher1(buffer.ptr + offset + V.length, buffer.length - offset - V.length);
     }
@@ -241,14 +241,14 @@ public:
 
     override void finish(ref SecureVector!ubyte buffer, size_t offset)
     {
-		import std.algorithm : max;
+        import std.algorithm : max;
         assert(buffer.length >= offset, "Offset is sane");
 
-		if (msgBuf().length > 0) {
-			auto buffer2 = msgBuf().dup;
-			buffer2 ~= buffer;
-			buffer = buffer2.move;
-		}
+        if (msgBuf().length > 0) {
+            auto buffer2 = msgBuf().dup;
+            buffer2 ~= buffer;
+            buffer = buffer2.move;
+        }
 
         const size_t sz = buffer.length - offset;
         

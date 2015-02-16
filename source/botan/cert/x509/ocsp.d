@@ -128,7 +128,7 @@ public:
             
             if (certs.empty)
             {
-				if (auto cert = trusted_roots.findCert(name, Vector!ubyte()))
+                if (auto cert = trusted_roots.findCert(name, Vector!ubyte()))
                     certs.pushBack(cert);
                 else
                     throw new Exception("Could not find certificate that signed OCSP response");
@@ -143,7 +143,7 @@ public:
     CertificateStatusCode statusFor(in X509Certificate issuer,
                                     in X509Certificate subject) const
     {
-		//logTrace("Responses: ", m_responses.length);
+        //logTrace("Responses: ", m_responses.length);
         foreach (response; m_responses[])
         {
             if (response.certid().isIdFor(issuer, subject))
@@ -169,9 +169,9 @@ public:
         return CertificateStatusCode.OCSP_CERT_NOT_LISTED;
     }
 
-	@property bool empty() {
-		return m_responses.length == 0;
-	}
+    @property bool empty() {
+        return m_responses.length == 0;
+    }
 private:
     Array!( SingleResponse ) m_responses;
 }
@@ -202,9 +202,9 @@ void decodeOptionalList(ref BERDecoder ber,
 /// Does not use trusted roots
 /// Throws if not trusted
 void checkSignature(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
-			                   const AlgorithmIdentifier sig_algo,
-			                   const ref Vector!ubyte signature,
-			                   const X509Certificate cert)
+                               const AlgorithmIdentifier sig_algo,
+                               const ref Vector!ubyte signature,
+                               const X509Certificate cert)
 {
     const PublicKey pub_key = cert.subjectPublicKey();
     
@@ -224,10 +224,10 @@ void checkSignature(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
 /// Iterates over trusted roots certificate store
 /// throws if not trusted
 void checkSignature(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
-                  			   const AlgorithmIdentifier sig_algo,
-                  			   const ref Vector!ubyte signature,
-                  			   const CertificateStore trusted_roots,
-                  			   const ref Vector!X509Certificate certs)
+                                 const AlgorithmIdentifier sig_algo,
+                                 const ref Vector!ubyte signature,
+                                 const CertificateStore trusted_roots,
+                                 const ref Vector!X509Certificate certs)
 {
     if (certs.length < 1)
         throw new InvalidArgument("Short cert chain for checkSignature");
@@ -248,7 +248,7 @@ void checkSignature(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs_response,
     if (!trusted_roots.certificateKnown(result.trustRoot())) // not needed anymore?
         throw new Exception("Certificate chain roots in unknown/untrusted CA");
         
-	checkSignature(tbs_response, sig_algo, signature, result.certPath()[0]);
+    checkSignature(tbs_response, sig_algo, signature, result.certPath()[0]);
 }
 
 version(Have_vibe_d) import vibe.core.concurrency : Tid, send;
@@ -261,9 +261,9 @@ void onlineCheck(shared(Tid) sender,
                  shared(const(X509Certificate)*) subject,
                  shared(const(CertificateStore)*) trusted_roots)
 {
-	/// TODO: Test OCSP with correct BER Decoding
+    /// TODO: Test OCSP with correct BER Decoding
     logTrace("Checking OCSP online");
-	const string responder_url = (*cast(X509Certificate*)issuer).ocspResponder();
+    const string responder_url = (*cast(X509Certificate*)issuer).ocspResponder();
     logTrace("Responder url: ", responder_url.length);
 
     if (responder_url.length == 0) {

@@ -180,10 +180,10 @@ static if (!SKIP_X509_TEST) unittest
         
         const string[] test_dirs = dirListing(root_test_dir);
         
-		for(size_t i = 0; i != 74; i++)
+        for(size_t i = 0; i != 74; i++)
         {
             const size_t test_no = i+1;
-			logDebug("NIST X.509 test #", test_no);
+            logDebug("NIST X.509 test #", test_no);
             
             const string test_dir = test_dirs[i];
             const string[] all_files = dirListing(test_dir);
@@ -215,7 +215,7 @@ static if (!SKIP_X509_TEST) unittest
             
             auto store = scoped!CertificateStoreInMemory();
             
-			//logTrace(root_cert);
+            //logTrace(root_cert);
             store.addCertificate(X509Certificate(root_cert));
             
             X509Certificate end_user = X509Certificate(to_verify);
@@ -235,23 +235,23 @@ static if (!SKIP_X509_TEST) unittest
             auto expected = expected_results[test_no];
             CertificateStatusCode result = validation_result.result();
             if (result != expected) {
-				logError("NIST X.509 test #", test_no, " : ");
-	            const string result_str = PathValidationResult.statusString(result);
-	            const string exp_str = PathValidationResult.statusString(expected);
-	            if (expected == CertificateStatusCode.VERIFIED) {
-					logError("unexpected failure: " ~ result_str);
-	                unexp_failure++;
-	            }
-	            else if (result == CertificateStatusCode.VERIFIED) {
-					logError("unexpected success, expected " ~ exp_str);
-	                unexp_success++;
-	            } 
-	            else {
-	                logError("wrong error, got '" ~ result_str ~ "' expected '" ~ exp_str ~ "'");
-	                wrong_error++;
-					assert(false);
-	            }
-			}
+                logError("NIST X.509 test #", test_no, " : ");
+                const string result_str = PathValidationResult.statusString(result);
+                const string exp_str = PathValidationResult.statusString(expected);
+                if (expected == CertificateStatusCode.VERIFIED) {
+                    logError("unexpected failure: " ~ result_str);
+                    unexp_failure++;
+                }
+                else if (result == CertificateStatusCode.VERIFIED) {
+                    logError("unexpected success, expected " ~ exp_str);
+                    unexp_success++;
+                } 
+                else {
+                    logError("wrong error, got '" ~ result_str ~ "' expected '" ~ exp_str ~ "'");
+                    wrong_error++;
+                    assert(false);
+                }
+            }
         }
     }
     catch(Throwable e)

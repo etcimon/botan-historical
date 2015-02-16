@@ -79,19 +79,19 @@ public:
         if (m_initialized)
             return;
 
-		if (!g_modexp_init) {
-	        SCANToken.setDefaultAliases();
-	        static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO) 
-	            OIDS.setDefaults();
-		}
+        if (!g_modexp_init) {
+            SCANToken.setDefaultAliases();
+            static if (BOTAN_HAS_PUBLIC_KEY_CRYPTO) 
+                OIDS.setDefaults();
+        }
 
         m_algorithm_factory = new AlgorithmFactory;
         
-		if (g_modexp_init) {
-			algorithmFactory().addEngine(new CoreEngine);
-			m_initialized = true;
-			return;
-		}
+        if (g_modexp_init) {
+            algorithmFactory().addEngine(new CoreEngine);
+            m_initialized = true;
+            return;
+        }
         static if (BOTAN_HAS_ENGINE_GNU_MP) {
             logTrace("Loading GNU MP Engine");
             algorithmFactory().addEngine(new GMPEngine);
@@ -124,9 +124,9 @@ public:
             if (gs_sources.length == 0)
                 gs_sources = entropySources();
 
-			if (!gs_global_prng)
-	            gs_global_prng = new SerializedRNG();
-		}
+            if (!gs_global_prng)
+                gs_global_prng = new SerializedRNG();
+        }
         logTrace("Done serialized RNG");
         static if (BOTAN_HAS_SELFTESTS) {        
             logTrace("Startup Self-Tests");
@@ -145,7 +145,7 @@ public:
     {
         if (!m_algorithm_factory)
             throw new InvalidState("Uninitialized in algorithmFactory");
-		// logTrace("Algorithm factory: ", cast(void*)*m_algorithm_factory);
+        // logTrace("Algorithm factory: ", cast(void*)*m_algorithm_factory);
         return *m_algorithm_factory;
     }
 
@@ -182,13 +182,10 @@ private:
         
         static if (BOTAN_HAS_ENTROPY_SRC_HIGH_RESOLUTION_TIMER)
             sources.pushBack(new HighResolutionTimestamp);
-                
+
         static if (BOTAN_HAS_ENTROPY_SRC_RDRAND)
             sources.pushBack(new IntelRdrand);
-                
-        static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER) version(Posix)
-            sources.pushBack(new UnixProcessInfoEntropySource);
-                
+
         static if (BOTAN_HAS_ENTROPY_SRC_DEV_RANDOM) version(Posix)
             sources.pushBack(new DeviceEntropySource(
                 Vector!string([ "/dev/random", "/dev/srandom", "/dev/urandom" ])
@@ -196,9 +193,7 @@ private:
                 
         static if (BOTAN_HAS_ENTROPY_SRC_CAPI) version(Windows)
             sources.pushBack(EntropySource(new Win32CAPIEntropySource));
-                
-        static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
-            sources.pushBack(new ProcWalkingEntropySource("/proc"));
+
                 
         static if (BOTAN_HAS_ENTROPY_SRC_WIN32) version(Windows)
             sources.pushBack(new Win32EntropySource);
@@ -206,6 +201,12 @@ private:
         static if (BOTAN_HAS_ENTROPY_SRC_BEOS)
             sources.pushBack(new BeOSEntropySource);
 
+        static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER) version(Posix)
+            sources.pushBack(new UnixProcessInfoEntropySource);
+            
+        static if (BOTAN_HAS_ENTROPY_SRC_PROC_WALKER)
+            sources.pushBack(new ProcWalkingEntropySource("/proc"));
+            
         static if (BOTAN_HAS_ENTROPY_SRC_UNIX_PROCESS_RUNNER)
             sources.pushBack(
                 new UnixEntropySource(   Vector!string( [ "/bin", "/sbin", "/usr/bin", "/usr/sbin" ] ) )
@@ -214,8 +215,8 @@ private:
         static if (BOTAN_HAS_ENTROPY_SRC_EGD)
             sources.pushBack(
                 new EGDEntropySource( Vector!string( [ "/var/run/egd-pool", "/dev/egd-pool" ] ) )
-                );
-                
+            );
+
         return sources.move();
     }
 

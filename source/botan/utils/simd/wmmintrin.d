@@ -173,23 +173,23 @@ version(D_InlineAsm_X86_64) {
         return a;
     }
 
-	__m128i _mm_clmulepi64_si128(string imm)(auto ref __m128i a, auto ref __m128i b) {
-		/// todo: Enable this after adding PCLMULQDQ in dmd
-		__m128i* _a = &a;
-		__m128i* _b = &b;
-		__m128i c;
-		__m128i* _c = &c;
-		
-		mixin(`asm pure nothrow {
+    __m128i _mm_clmulepi64_si128(string imm)(auto ref __m128i a, auto ref __m128i b) {
+        /// todo: Enable this after adding PCLMULQDQ in dmd
+        __m128i* _a = &a;
+        __m128i* _b = &b;
+        __m128i c;
+        __m128i* _c = &c;
+        
+        mixin(`asm pure nothrow {
             mov RAX, _a;
             mov RBX, _b;
-			mov RCX, _c;
+            mov RCX, _c;
             movdqu XMM1, [RAX];
             movdqu XMM2, [RBX];
             db 0x66, 0x0F, 0x3A, 0x44, 0xCA, ` ~ imm ~ `; // PCLMULQDQ
             movdqu [RCX], XMM1;
         }`);
-		
-		return c;
-	}
+        
+        return c;
+    }
 }

@@ -56,7 +56,7 @@ public:
             if (m_head.length == 0)
             {
                 SecureQueueNode holder = m_head.m_next;
-                delete m_head;
+                .destroy(m_head);
                 m_head = holder;
             }
         }
@@ -186,7 +186,7 @@ private:
         while (temp)
         {
             SecureQueueNode holder = temp.m_next;
-            delete temp;
+            .destroy(temp);
             temp = holder;
         }
         m_head = m_tail = null;

@@ -445,8 +445,8 @@ public:
     ref const(SecureVector!ubyte) opIndex(size_t i) { return get(i); }
     
     ref const(SecureVector!ubyte) computeOffsets(ref SecureVector!ubyte offset,
-                                     			 size_t block_index,
-                                     			 size_t blocks)
+                                                  size_t block_index,
+                                                  size_t blocks)
     {
         m_offset_buf.resize(blocks*BS);
         
@@ -643,8 +643,8 @@ size_t testOcbLong(size_t taglen, in string expected)
 
 static if (!SKIP_OCB_TEST) unittest
 {
-	import botan.libstate.libstate;
-	globalState();
+    import botan.libstate.libstate;
+    globalState();
     logDebug("Testing ocb.d ...");
     size_t fails = 0;
     

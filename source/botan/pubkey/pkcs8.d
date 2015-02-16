@@ -49,10 +49,10 @@ SecureArray!ubyte BER_encode(in PrivateKey key)
             .startCons(ASN1Tag.SEQUENCE)
             .encode(PKCS8_VERSION)
             .encode(key.pkcs8AlgorithmIdentifier())
-			.encode(key.pkcs8PrivateKey(), ASN1Tag.OCTET_STRING)
+            .encode(key.pkcs8PrivateKey(), ASN1Tag.OCTET_STRING)
             .endCons()
             .getContentsRef();
-	return vec;
+    return vec;
 }
 
 /**
@@ -62,7 +62,7 @@ SecureArray!ubyte BER_encode(in PrivateKey key)
 */
 string PEM_encode(in PrivateKey key)
 {
-	auto ret = BER_encode(key);
+    auto ret = BER_encode(key);
     return PEM.encode(ret, "PRIVATE KEY");
 }
 
@@ -83,7 +83,7 @@ Vector!ubyte BER_encode(in PrivateKey key,
                         Duration dur = 300.msecs,
                         in string pbe_algo = "")
 {
-	//logTrace("PKCS8 PEM encode with password");
+    //logTrace("PKCS8 PEM encode with password");
     const string DEFAULT_PBE = "PBE-PKCS5v20(SHA-1,AES-256/CBC)";
     
     PBE pbe = getPbe(((pbe_algo != "") ? pbe_algo : DEFAULT_PBE), pass, dur, rng);
@@ -91,16 +91,16 @@ Vector!ubyte BER_encode(in PrivateKey key,
     AlgorithmIdentifier pbe_algid = AlgorithmIdentifier(pbe.getOid(), pbe.encodeParams());
     
     Pipe key_encrytor = Pipe(pbe);
-	auto ber = BER_encode(key);
+    auto ber = BER_encode(key);
     key_encrytor.processMsg(ber);
-	auto enc = DEREncoder().startCons(ASN1Tag.SEQUENCE);
-	enc.encode(pbe_algid);
-	//logTrace("Encoded algid: ", pbe_algid.toString());
-	enc.encode(key_encrytor.readAll(), ASN1Tag.OCTET_STRING)
-		.endCons();
-	auto contents = enc.getContentsUnlocked();
-	//logTrace("Contents: ", contents[]);
-	return contents.move();
+    auto enc = DEREncoder().startCons(ASN1Tag.SEQUENCE);
+    enc.encode(pbe_algid);
+    //logTrace("Encoded algid: ", pbe_algid.toString());
+    enc.encode(key_encrytor.readAll(), ASN1Tag.OCTET_STRING)
+        .endCons();
+    auto contents = enc.getContentsUnlocked();
+    //logTrace("Contents: ", contents[]);
+    return contents.move();
 }
 
 /**
@@ -123,8 +123,8 @@ string PEM_encode(in PrivateKey key,
 {
     if (pass == "")
         return PEM_encode(key);
-	auto contents = BER_encode(key, rng, pass, dur, pbe_algo);
-	//logTrace("PEM got contents");
+    auto contents = BER_encode(key, rng, pass, dur, pbe_algo);
+    //logTrace("PEM got contents");
     return PEM.encode(contents, "ENCRYPTED PRIVATE KEY");
 }
 
@@ -139,12 +139,12 @@ PrivateKey loadKey(DataSource source,
                    RandomNumberGenerator rng,
                    SingleShotPassphrase get_pass)
 {
- 	auto alg_id = AlgorithmIdentifier();
+     auto alg_id = AlgorithmIdentifier();
     SecureVector!ubyte pkcs8_key = PKCS8_decode(source, get_pass, alg_id);
     const string alg_name = OIDS.lookup(alg_id.oid);
     if (alg_name == "" || alg_name == alg_id.oid.toString())
         throw new PKCS8Exception("Unknown algorithm OID: " ~ alg_id.oid.toString());
-	//logTrace("loadKey alg id: ", OIDS.lookup(alg_id.oid));
+    //logTrace("loadKey alg id: ", OIDS.lookup(alg_id.oid));
     return makePrivateKey(alg_id, pkcs8_key, rng);
 }
 
@@ -219,7 +219,7 @@ SecureVector!ubyte PKCS8_extract(DataSource source,
             .decode(key_data, ASN1Tag.OCTET_STRING)
             .verifyEnd();
     
-	//logTrace("PKCS8 extract key data finished", pbe_alg_id.toString());
+    //logTrace("PKCS8 extract key data finished", pbe_alg_id.toString());
     return key_data.move;
 }
 
@@ -228,7 +228,7 @@ SecureVector!ubyte PKCS8_extract(DataSource source,
 */
 SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassphrase, ref AlgorithmIdentifier pk_alg_id)
 {
-	auto pbe_alg_id = AlgorithmIdentifier();
+    auto pbe_alg_id = AlgorithmIdentifier();
     SecureVector!ubyte key_data, key;
     bool is_encrypted = true;
     
@@ -240,9 +240,9 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
             string label;
             key_data = PEM.decode(source, label);
             if (label == "PRIVATE KEY") {
-				//logTrace("Detected private key");
+                //logTrace("Detected private key");
                 is_encrypted = false;
-			}
+            }
             else if (label == "ENCRYPTED PRIVATE KEY")
             {
                 auto key_source = DataSourceMemory(key_data);
@@ -279,7 +279,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
                 if (pass.first == false)
                     break;
                 
-				//logTrace("PKCS8 get pkcs8 alg id");
+                //logTrace("PKCS8 get pkcs8 alg id");
                 Pipe decryptor = Pipe(getPbe(pbe_alg_id.oid, pbe_alg_id.parameters, pass.second));
                 
                 decryptor.processMsg(key_data);

@@ -33,27 +33,27 @@ public:
         return unlock(getContents()); 
     }
 
-	/*
+    /*
     * Return the encoded m_contents
     */
-	SecureVector!ubyte getContents()
-	{
-		if (m_subsequences.length != 0)
-			throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
-		
-		return m_contents.dup;
-	}  
+    SecureVector!ubyte getContents()
+    {
+        if (m_subsequences.length != 0)
+            throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
+        
+        return m_contents.dup;
+    }  
 
-	/*
+    /*
     * Return the encoded m_contents
     */
-	SecureArray!ubyte getContentsRef()
-	{
-		if (m_subsequences.length != 0)
-			throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
-		
-		return m_contents.dupr;
-	}
+    SecureArray!ubyte getContentsRef()
+    {
+        if (m_subsequences.length != 0)
+            throw new InvalidState("DEREncoder: Sequence hasn't been marked done");
+        
+        return m_contents.dupr;
+    }
     
     /*
     * Start a new ASN.1 ASN1Tag.SEQUENCE/SET/EXPLICIT
@@ -102,15 +102,15 @@ public:
     /*
     * Write raw bytes into the stream
     */
-	ref DEREncoder rawBytes(ALLOC)(auto const ref Vector!(ubyte, ALLOC) val)
-	{
-		return rawBytes(val.ptr, val.length);
-	}
+    ref DEREncoder rawBytes(ALLOC)(auto const ref Vector!(ubyte, ALLOC) val)
+    {
+        return rawBytes(val.ptr, val.length);
+    }
 
-	ref DEREncoder rawBytes(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) val)
-	{
-		return rawBytes(val.ptr, val.length);
-	}
+    ref DEREncoder rawBytes(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) val)
+    {
+        return rawBytes(val.ptr, val.length);
+    }
        
     /*
     * Write raw bytes into the stream
@@ -122,7 +122,7 @@ public:
             m_subsequences[m_subsequences.length-1].addBytes(bytes, length);
         else
             m_contents ~= bytes[0 .. length];
-		//logTrace("Contents appended: ", m_contents.length);
+        //logTrace("Contents appended: ", m_contents.length);
         return this;
     }
     
@@ -161,7 +161,7 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-	ref DEREncoder encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) bytes, ASN1Tag real_type)
+    ref DEREncoder encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) bytes, ASN1Tag real_type)
     {
         return encode(bytes.ptr, bytes.length, real_type, real_type, ASN1Tag.UNIVERSAL);
     }
@@ -204,7 +204,7 @@ public:
     */
     ref DEREncoder encode()(auto const ref BigInt n, ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
-		//logTrace("Encode BigInt: ", n.toString());
+        //logTrace("Encode BigInt: ", n.toString());
         if (n == 0)
             return addObject(m_type_tag, m_class_tag, 0);
         
@@ -226,9 +226,9 @@ public:
     /*
     * DER encode an OCTET STRING or BIT STRING
     */
-	ref DEREncoder encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) bytes,
-                          			 ASN1Tag real_type,
-                         			 ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+    ref DEREncoder encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) bytes,
+                                       ASN1Tag real_type,
+                                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
     }
@@ -237,8 +237,8 @@ public:
     * DER encode an OCTET STRING or BIT STRING
     */
     ref DEREncoder encode(ALLOC)(auto const ref Vector!(ubyte, ALLOC) bytes,
-                         			 ASN1Tag real_type,
-                         			 ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
+                                      ASN1Tag real_type,
+                                      ASN1Tag m_type_tag, ASN1Tag m_class_tag = ASN1Tag.CONTEXT_SPECIFIC)
     {
         return encode(bytes.ptr, bytes.length, real_type, m_type_tag, m_class_tag);
     }
@@ -319,12 +319,12 @@ public:
     */
     ref DEREncoder addObject(ASN1Tag m_type_tag, ASN1Tag m_class_tag, const(ubyte)* rep, size_t length)
     {
-		//logTrace("AddObject: ", m_type_tag);
+        //logTrace("AddObject: ", m_type_tag);
         SecureVector!ubyte buffer;
         buffer ~= encodeTag(m_type_tag, m_class_tag)[];
         buffer ~= encodeLength(length)[];
         buffer ~= rep[0 .. length];
-		//logTrace("Finish Add object");
+        //logTrace("Finish Add object");
 
         return rawBytes(buffer);
     }
@@ -339,13 +339,13 @@ public:
 
 
     ref DEREncoder addObject(ALLOC)(ASN1Tag m_type_tag, ASN1Tag m_class_tag, 
-									auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) rep)
+                                    auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) rep)
     {
         return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
 
     ref DEREncoder addObject(ALLOC)(ASN1Tag m_type_tag, ASN1Tag m_class_tag, 
-										auto const ref Vector!(ubyte, ALLOC) rep)
+                                        auto const ref Vector!(ubyte, ALLOC) rep)
     {
         return addObject(m_type_tag, m_class_tag, rep.ptr, rep.length);
     }
@@ -365,31 +365,31 @@ private:
         /*
         * Return the encoded ASN1Tag.SEQUENCE/SET
         */
-		SecureVector!ubyte getContents()
-		{
-			//logTrace("Get Contents real class tag: ", m_class_tag);
-			const ASN1Tag real_class_tag = m_class_tag | ASN1Tag.CONSTRUCTED;
-			
-			if (m_type_tag == ASN1Tag.SET)
-			{    // TODO: check if sort works
-				auto set_contents = m_set_contents[];
-				//logTrace("set contents before: ", set_contents[]);
-				sort!("a < b", SwapStrategy.stable)(set_contents);
-				//logTrace("set contents after: ", set_contents[]);
-				foreach (SecureArray!ubyte data; set_contents)
-					m_contents ~= data[];
+        SecureVector!ubyte getContents()
+        {
+            //logTrace("Get Contents real class tag: ", m_class_tag);
+            const ASN1Tag real_class_tag = m_class_tag | ASN1Tag.CONSTRUCTED;
+            
+            if (m_type_tag == ASN1Tag.SET)
+            {    // TODO: check if sort works
+                auto set_contents = m_set_contents[];
+                //logTrace("set contents before: ", set_contents[]);
+                sort!("a < b", SwapStrategy.stable)(set_contents);
+                //logTrace("set contents after: ", set_contents[]);
+                foreach (SecureArray!ubyte data; set_contents)
+                    m_contents ~= data[];
 
-				m_set_contents.clear();
-			}
-			
-			SecureVector!ubyte result;
-			result ~= encodeTag(m_type_tag, real_class_tag)[];
-			result ~= encodeLength(m_contents.length)[];
-			result ~= m_contents[];
-			m_contents.clear();
-			
-			return result.move();
-		}
+                m_set_contents.clear();
+            }
+            
+            SecureVector!ubyte result;
+            result ~= encodeTag(m_type_tag, real_class_tag)[];
+            result ~= encodeLength(m_contents.length)[];
+            result ~= m_contents[];
+            m_contents.clear();
+            
+            return result.move();
+        }
 
         /*
         * Add an encoded value to the ASN1Tag.SEQUENCE/SET
@@ -428,29 +428,29 @@ private:
 */
 SecureArray!ubyte encodeTag(ASN1Tag m_type_tag, ASN1Tag m_class_tag)
 {
-	//logTrace("Encode type: ", m_type_tag);
-	//logTrace("Encode class: ", m_class_tag);
-	//assert(m_type_tag != 33 || m_class_tag != cast(ASN1Tag)96);
+    //logTrace("Encode type: ", m_type_tag);
+    //logTrace("Encode class: ", m_class_tag);
+    //assert(m_type_tag != 33 || m_class_tag != cast(ASN1Tag)96);
     if ((m_class_tag | 0xE0) != 0xE0)
         throw new EncodingError("DEREncoder: Invalid class tag " ~ to!string(m_class_tag));
 
-	SecureArray!ubyte encoded_tag;
+    SecureArray!ubyte encoded_tag;
     if (m_type_tag <= 30)
         encoded_tag.pushBack(cast(ubyte) (m_type_tag | m_class_tag));
     else
     {
         size_t blocks = highBit(m_type_tag) + 6;
         blocks = (blocks - (blocks % 7)) / 7;
-		auto blocks_tag = cast(ubyte) (m_class_tag | 0x1F);
-		encoded_tag.pushBack(blocks_tag);
+        auto blocks_tag = cast(ubyte) (m_class_tag | 0x1F);
+        encoded_tag.pushBack(blocks_tag);
         foreach (size_t i; 0 .. (blocks - 1)) {
-			auto blocks_i_tag = cast(ubyte) (0x80 | ((m_type_tag >> 7*(blocks-i-1)) & 0x7F));
-			encoded_tag.pushBack(blocks_i_tag);
-		}
-		auto blocks_end_tag = cast(ubyte) (m_type_tag & 0x7F);
+            auto blocks_i_tag = cast(ubyte) (0x80 | ((m_type_tag >> 7*(blocks-i-1)) & 0x7F));
+            encoded_tag.pushBack(blocks_i_tag);
+        }
+        auto blocks_end_tag = cast(ubyte) (m_type_tag & 0x7F);
         encoded_tag.pushBack(blocks_end_tag);
     }
-	//logTrace("Encoded tag: ", cast(ubyte[]) encoded_tag[]);
+    //logTrace("Encoded tag: ", cast(ubyte[]) encoded_tag[]);
     return encoded_tag;
 }
 
@@ -459,8 +459,8 @@ SecureArray!ubyte encodeTag(ASN1Tag m_type_tag, ASN1Tag m_class_tag)
 */
 SecureArray!ubyte encodeLength(size_t length)
 {
-	//logTrace("Encode length: ", length);
-	SecureArray!ubyte encoded_length;
+    //logTrace("Encode length: ", length);
+    SecureArray!ubyte encoded_length;
     if (length <= 127)
         encoded_length.pushBack(cast(ubyte)(length));
     else

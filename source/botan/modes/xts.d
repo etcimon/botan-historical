@@ -87,7 +87,7 @@ protected:
 
     final ubyte* tweak() const { return m_tweak.ptr; }
 
-	final BlockCipher cipher() const { return cast()*m_cipher; }
+    final BlockCipher cipher() const { return cast()*m_cipher; }
 
     final void updateTweak(size_t which)
     {

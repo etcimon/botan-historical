@@ -107,18 +107,18 @@ public:
     Vector!string getAttribute(in string attr) const
     {
         const OID oid = OIDS.lookup(derefInfoField(attr));
-		return getAttribute(oid);
+        return getAttribute(oid);
     }
 
-	private Vector!string getAttribute(in OID oid) const 
-	{
-		auto range = m_dn_info.getValuesAt(oid);
-		
-		Vector!string values;
-		foreach (const ref ASN1String asn1_string; range[])
-			values.pushBack(asn1_string.value());
-		return values.move;
-	}
+    private Vector!string getAttribute(in OID oid) const 
+    {
+        auto range = m_dn_info.getValuesAt(oid);
+        
+        Vector!string values;
+        foreach (const ref ASN1String asn1_string; range[])
+            values.pushBack(asn1_string.value());
+        return values.move;
+    }
 
     /*
     * Get the contents of this X.500 Name
@@ -152,10 +152,10 @@ public:
 
         bool exists;
         void search_func(in ASN1String name) {
-			//logTrace(name.value());
+            //logTrace(name.value());
             if (name.value() == str) { 
                 exists = true;
-			}
+            }
         }
         m_dn_info.getValuesAt(oid, &search_func);
         if (!exists) {
@@ -219,26 +219,26 @@ public:
     */
     bool opEquals(in X509DN dn2) const
     {
-		auto attr1 = getAttributes();
-		auto attr2 = dn2.getAttributes();
-		size_t i;
-		foreach (oid, str; *attr1) {
-			i++;
-			bool found;
-			size_t j;
-			foreach (oid2, val; *attr2) {
-				j++;
-				if (j != i) continue;
-				if (x500NameCmp(val, str)) 
-					found = true;
+        auto attr1 = getAttributes();
+        auto attr2 = dn2.getAttributes();
+        size_t i;
+        foreach (oid, str; *attr1) {
+            i++;
+            bool found;
+            size_t j;
+            foreach (oid2, val; *attr2) {
+                j++;
+                if (j != i) continue;
+                if (x500NameCmp(val, str)) 
+                    found = true;
 
-				break;
-			}
-			if (!found) return false;
-		}
-		return true;
+                break;
+            }
+            if (!found) return false;
+        }
+        return true;
 
-	}
+    }
 
     /*
     * Compare two X509DNs for inequality
@@ -278,23 +278,23 @@ public:
         return toVector()[].idup;
     }
 
-	Vector!ubyte toVector() const
-	{
-		Vector!ubyte output;
-		DictionaryListRef!(string, string) contents = contents();
-		
-		foreach(const ref string key, const ref string val; contents)
-		{
-			output ~= toShortForm(key);
-			output ~= "=";
-			output ~= val;
-			output ~= ' ';
-		}
-		return output.move();
-	}
-	@property X509DN dup() const {
-		return X509DN(getAttributes());
-	}
+    Vector!ubyte toVector() const
+    {
+        Vector!ubyte output;
+        DictionaryListRef!(string, string) contents = contents();
+        
+        foreach(const ref string key, const ref string val; contents)
+        {
+            output ~= toShortForm(key);
+            output ~= "=";
+            output ~= val;
+            output ~= ' ';
+        }
+        return output.move();
+    }
+    @property X509DN dup() const {
+        return X509DN(getAttributes());
+    }
 
 private:
     DictionaryListRef!(OID, ASN1String) m_dn_info;

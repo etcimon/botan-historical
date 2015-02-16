@@ -47,7 +47,7 @@ public:
     * @param cofactor = the cofactor
     */
     this()(auto const ref CurveGFp curve, auto const ref PointGFp base_point, 
-		   auto const ref BigInt order, auto const ref BigInt cofactor, in string oid = "") 
+           auto const ref BigInt order, auto const ref BigInt cofactor, in string oid = "") 
     {
         m_curve = curve.dup;
         m_base_point = base_point.dup;
@@ -128,7 +128,7 @@ public:
 
     void BER_decode(const ref Vector!ubyte ber_data) {
         assert(ber_data.length > 0);
-		//logTrace("ECGroup BER_decode");
+        //logTrace("ECGroup BER_decode");
         BERDecoder ber = BERDecoder(ber_data);
         BERObject obj = ber.getNextObject();
         if (obj.type_tag == ASN1Tag.OBJECT_ID)
@@ -271,29 +271,29 @@ public:
                (getCofactor() == other.getCofactor()));
     }
 
-	public Vector!ubyte toVector() const {
-		Vector!ubyte ret;
-		ret ~= "m_curve: ";
-		ret ~= m_curve.toVector()[];
-		ret ~= "\nm_base_point: ";
-		ret ~= m_base_point.toVector()[];
-		ret ~= "\nm_order: ";
-		ret ~= m_order.toVector()[];
-		ret ~= "\nm_cofactor: ";
-		ret ~= m_cofactor.toVector()[];
-		ret ~= "\nm_oid: ";
-		ret ~= m_oid;
-		return ret.move;
-	}
-	
-	public string toString() const {
-		return toVector()[].idup;
-	}
+    public Vector!ubyte toVector() const {
+        Vector!ubyte ret;
+        ret ~= "m_curve: ";
+        ret ~= m_curve.toVector()[];
+        ret ~= "\nm_base_point: ";
+        ret ~= m_base_point.toVector()[];
+        ret ~= "\nm_order: ";
+        ret ~= m_order.toVector()[];
+        ret ~= "\nm_cofactor: ";
+        ret ~= m_cofactor.toVector()[];
+        ret ~= "\nm_oid: ";
+        ret ~= m_oid;
+        return ret.move;
+    }
+    
+    public string toString() const {
+        return toVector()[].idup;
+    }
 
     @property ECGroup dup() const {
-		return ECGroup(m_curve, m_base_point, m_order, m_cofactor, m_oid);
-	}
-	
+        return ECGroup(m_curve, m_base_point, m_order, m_cofactor, m_oid);
+    }
+    
 private:
     CurveGFp m_curve;
     PointGFp m_base_point;

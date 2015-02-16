@@ -144,17 +144,17 @@ public:
         m_chat_oid = other.m_chat_oid;
     }
 
-	// Interface fall-through
-	override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
-	override void encode(Pipe pipe, X509Encoding encoding = PEM_) const { return super.encode(pipe, encoding); }
-	override const(Vector!ubyte) tbsData() const { return super.tbsData(); }
+    // Interface fall-through
+    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+    override void encode(Pipe pipe, X509Encoding encoding = PEM_) const { return super.encode(pipe, encoding); }
+    override const(Vector!ubyte) tbsData() const { return super.tbsData(); }
 
     ~this() {}
 protected:
-	/*
+    /*
     * Decode the TBSCertificate data
     */
-	override void forceDecode()
+    override void forceDecode()
     {
         Vector!ubyte enc_pk;
         Vector!ubyte enc_chat_val;
@@ -162,12 +162,12 @@ protected:
         BERDecoder tbs_cert = BERDecoder(m_tbs_bits);
         tbs_cert.decode(cpi, (cast(ASN1Tag)41), ASN1Tag.APPLICATION)
                 .decode(m_car)
-				.startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION)
-				.rawBytes(enc_pk)
+                .startCons((cast(ASN1Tag)73), ASN1Tag.APPLICATION)
+                .rawBytes(enc_pk)
                 .endCons()
                 .decode(m_chr)
-				.startCons((cast(ASN1Tag)76), ASN1Tag.APPLICATION)
-				.decode(m_chat_oid)
+                .startCons((cast(ASN1Tag)76), ASN1Tag.APPLICATION)
+                .decode(m_chat_oid)
                 .decode(enc_chat_val, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)19), ASN1Tag.APPLICATION)
                 .endCons()
                 .decode(m_ced)
@@ -211,13 +211,13 @@ protected:
 * @param rng = a random number generator
 */
 EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
-			                    const ref Vector!(ubyte, ALLOC) public_key,
-			                    in ASN1Car car,
-			                    in ASN1Chr chr,
-			                    in ubyte holder_auth_templ,
-			                    in ASN1Ced ced,
-			                    in ASN1Cex cex,
-			                    RandomNumberGenerator rng)
+                                const ref Vector!(ubyte, ALLOC) public_key,
+                                in ASN1Car car,
+                                in ASN1Chr chr,
+                                in ubyte holder_auth_templ,
+                                in ASN1Ced ced,
+                                in ASN1Cex cex,
+                                RandomNumberGenerator rng)
 {
     OID chat_oid = OIDS.lookup("CertificateHolderAuthorizationTemplate");
     Vector!ubyte enc_chat_val;
@@ -225,7 +225,7 @@ EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
     
     Vector!ubyte enc_cpi;
     enc_cpi.pushBack(0x00);
-	Vector!ubyte tbs = DEREncoder()
+    Vector!ubyte tbs = DEREncoder()
                         .encode(enc_cpi, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)41), ASN1Tag.APPLICATION) // cpi
                         .encode(car)
                         .rawBytes(public_key)
@@ -238,22 +238,22 @@ EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
                         .encode(cex)
                         .getContentsUnlocked();
     
-	Vector!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
+    Vector!ubyte signed_cert = EAC11CVC.makeSigned(signer, EAC11CVC.buildCertBody(tbs), rng);
     
     auto source = DataSourceMemory(&signed_cert);
     return EAC11CVC(cast(DataSource)source);
 }
 
 EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
-							auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) public_key,
-							in ASN1Car car,
-							in ASN1Chr chr,
-							in ubyte holder_auth_templ,
-							in ASN1Ced ced,
-							in ASN1Cex cex,
-							RandomNumberGenerator rng)
+                            auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) public_key,
+                            in ASN1Car car,
+                            in ASN1Chr chr,
+                            in ubyte holder_auth_templ,
+                            in ASN1Ced ced,
+                            in ASN1Cex cex,
+                            RandomNumberGenerator rng)
 {
-	return makeCvcCert(signer, **public_key, car, chr, holder_auth_templ, ced, cex, rng);
+    return makeCvcCert(signer, **public_key, car, chr, holder_auth_templ, ced, cex, rng);
 }
 /**
 * Decode an EAC encoding ECDSA key

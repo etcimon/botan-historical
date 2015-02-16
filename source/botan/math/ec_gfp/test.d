@@ -68,7 +68,7 @@ size_t testPointTurnOnSpRedMul()
     Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
     BigInt bi_p_secp = BigInt.decode(sv_p_secp.ptr, sv_p_secp.length);
     BigInt bi_a_secp = BigInt.decode(sv_a_secp.ptr, sv_a_secp.length);
-	BigInt bi_b_secp = BigInt.decode(sv_b_secp.ptr, sv_b_secp.length);
+    BigInt bi_b_secp = BigInt.decode(sv_b_secp.ptr, sv_b_secp.length);
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     PointGFp p_G = OS2ECP(sv_G_secp_comp, secp160r1);
     
@@ -184,8 +184,8 @@ size_t testPointMult ()
         
     string G_secp_comp = "024a96b5688ef573284664698968c38bb913cbfc82";
     Vector!ubyte sv_G_secp_comp = hexDecode(G_secp_comp);
-	PointGFp p_G = OS2ECP(sv_G_secp_comp, secp160r1.getCurve());
-	
+    PointGFp p_G = OS2ECP(sv_G_secp_comp, secp160r1.getCurve());
+    
     BigInt d_U = BigInt("0xaa374ffc3ce144e6b073307972cb6d57b2a4e982");
     PointGFp Q_U = p_G * d_U;
     
@@ -235,8 +235,8 @@ size_t testZeropoint()
     BigInt bi_a_secp = BigInt("0xffffffffffffffffffffffffffffffff7ffffffc");
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp secp160r1 = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
-	auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
-	auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
+    auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
+    auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
     PointGFp p1 = PointGFp(secp160r1, bi1, bi2);
     
     if (!p1.onTheCurve())
@@ -285,8 +285,8 @@ size_t testCalcWithZeropoint()
     BigInt bi_b_secp = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p_secp, bi_a_secp, bi_b_secp);
     
-	auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
-	auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
+    auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
+    auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
     PointGFp p = PointGFp(curve, bi1, bi2);
     
     if (!p.onTheCurve())
@@ -331,8 +331,8 @@ size_t testAddPoint()
     PointGFp p1 = p_G.dup;
     
     p1 += p0;
-	auto bi1 = BigInt("704859595002530890444080436569091156047721708633");
-	auto bi2 = BigInt("1147993098458695153857594941635310323215433166682");
+    auto bi1 = BigInt("704859595002530890444080436569091156047721708633");
+    auto bi2 = BigInt("1147993098458695153857594941635310323215433166682");
     PointGFp expected = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` p1 == expected `) );
@@ -368,8 +368,8 @@ size_t testSubPoint()
     PointGFp p1 = p_G.dup;
     
     p1 -= p0;
-	auto bi1 = BigInt("425826231723888350446541592701409065913635568770");
-	auto bi2 = BigInt("203520114162904107873991457957346892027982641970");
+    auto bi1 = BigInt("425826231723888350446541592701409065913635568770");
+    auto bi2 = BigInt("203520114162904107873991457957346892027982641970");
     PointGFp expected = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` p1 == expected `) );
@@ -433,9 +433,9 @@ size_t testBasicOperations()
     
     PointGFp p0 = p_G.dup;
     
-	BigInt bi1 = BigInt("425826231723888350446541592701409065913635568770");
-	BigInt bi2 = BigInt("203520114162904107873991457957346892027982641970");
-	PointGFp expected = PointGFp(secp160r1, bi1, bi2);
+    BigInt bi1 = BigInt("425826231723888350446541592701409065913635568770");
+    BigInt bi2 = BigInt("203520114162904107873991457957346892027982641970");
+    PointGFp expected = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` p0 == expected `) );
     p_G *= BigInt(2);
@@ -446,16 +446,16 @@ size_t testBasicOperations()
     
     PointGFp simplePlus = p1 + p0;
 
-	bi1 = BigInt("704859595002530890444080436569091156047721708633");
-	bi2 = BigInt("1147993098458695153857594941635310323215433166682");
-	PointGFp exp_simplePlus = PointGFp(secp160r1, bi1, bi2);
+    bi1 = BigInt("704859595002530890444080436569091156047721708633");
+    bi2 = BigInt("1147993098458695153857594941635310323215433166682");
+    PointGFp exp_simplePlus = PointGFp(secp160r1, bi1, bi2);
     if (simplePlus != exp_simplePlus)
         logTrace(simplePlus.toString() ~ " != " ~ exp_simplePlus.toString());
     
     PointGFp simpleMinus= p1 - p0;
-	bi1 = BigInt("425826231723888350446541592701409065913635568770");
-	bi2 = BigInt("203520114162904107873991457957346892027982641970");
-	PointGFp exp_simpleMinus = PointGFp(secp160r1, bi1, bi2);
+    bi1 = BigInt("425826231723888350446541592701409065913635568770");
+    bi2 = BigInt("203520114162904107873991457957346892027982641970");
+    PointGFp exp_simpleMinus = PointGFp(secp160r1, bi1, bi2);
     
     mixin( CHECK(` simpleMinus == exp_simpleMinus `) );
     
@@ -619,9 +619,9 @@ size_t testEncDecUncompressed521PrimeTooLarge()
     bool exc = false;
     try
     {
-		auto os2ecp = OS2ECP(sv_G_secp_uncomp, secp521r1);
-		p_G = os2ecp.move();
-		if (!p_G.onTheCurve())
+        auto os2ecp = OS2ECP(sv_G_secp_uncomp, secp521r1);
+        p_G = os2ecp.move();
+        if (!p_G.onTheCurve())
             throw new InternalError("Point not on the curve");
     }
     catch (Exception e)
@@ -694,9 +694,9 @@ size_t testMoreZeropoint()
     BigInt bi_b = BigInt("0x1c97befc54bd7a8b65acf89f81d4d4adc565fa45");
     CurveGFp curve = CurveGFp(bi_p, bi_a, bi_b);
     
-	auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
-	auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
-	PointGFp p1 = PointGFp(curve, bi1, bi2);
+    auto bi1 = BigInt("16984103820118642236896513183038186009872590470");
+    auto bi2 = BigInt("1373093393927139016463695321221277758035357890939");
+    PointGFp p1 = PointGFp(curve, bi1, bi2);
     
     if (!p1.onTheCurve())
         throw new InternalError("Point not on the curve");
@@ -800,59 +800,59 @@ size_t testCurveCpCtor()
 
 static if (!SKIP_EC_GFP_TEST) unittest
 {
-	import botan.libstate.global_state;
-	auto state = globalState(); // ensure initialized
+    import botan.libstate.global_state;
+    auto state = globalState(); // ensure initialized
 
     logDebug("Testing ec_gfp/test.d ...");
     size_t fails = 0;
     
-	logTrace("testPointTurnOnSpRedMul");
+    logTrace("testPointTurnOnSpRedMul");
     fails += testPointTurnOnSpRedMul();
-	logTrace("testCoordinates");
+    logTrace("testCoordinates");
     fails += testCoordinates();
-	logTrace("testPointTransformation");
+    logTrace("testPointTransformation");
     fails += testPointTransformation ();
-	logTrace("testPointMult");
+    logTrace("testPointMult");
     fails += testPointMult ();
-	logTrace("testPointNegative");
+    logTrace("testPointNegative");
     fails += testPointNegative();
-	logTrace("testZeropoint");
+    logTrace("testZeropoint");
     fails += testZeropoint();
-	logTrace("testZeropointEncDec");
+    logTrace("testZeropointEncDec");
     fails += testZeropointEncDec();
-	logTrace("testCalcWithZeropoint");
+    logTrace("testCalcWithZeropoint");
     fails += testCalcWithZeropoint();
-	logTrace("testAddPoint");
+    logTrace("testAddPoint");
     fails += testAddPoint();
-	logTrace("testSubPoint");
+    logTrace("testSubPoint");
     fails += testSubPoint();
-	logTrace("testMultPoint");
+    logTrace("testMultPoint");
     fails += testMultPoint();
-	logTrace("testBasicOperations");
+    logTrace("testBasicOperations");
     fails += testBasicOperations();
-	logTrace("testEncDecCompressed160");
+    logTrace("testEncDecCompressed160");
     fails += testEncDecCompressed160();
-	logTrace("testEncDecCompressed256");
+    logTrace("testEncDecCompressed256");
     fails += testEncDecCompressed256();
-	logTrace("testEncDecUncompressed112");
+    logTrace("testEncDecUncompressed112");
     fails += testEncDecUncompressed112();
-	logTrace("testEncDecUncompressed521");
+    logTrace("testEncDecUncompressed521");
     fails += testEncDecUncompressed521();
-	logTrace("testEncDecUncompressed521PrimeTooLarge");
+    logTrace("testEncDecUncompressed521PrimeTooLarge");
     fails += testEncDecUncompressed521PrimeTooLarge();
-	logTrace("testGfpStoreRestore");
+    logTrace("testGfpStoreRestore");
     fails += testGfpStoreRestore();
-	logTrace("testCdcCurve33");
+    logTrace("testCdcCurve33");
     fails += testCdcCurve33();
-	logTrace("testMoreZeropoint");
+    logTrace("testMoreZeropoint");
     fails += testMoreZeropoint();
-	logTrace("testMultByOrder");
+    logTrace("testMultByOrder");
     fails += testMultByOrder();
-	logTrace("testPointSwap");
+    logTrace("testPointSwap");
     fails += testPointSwap();
-	logTrace("testMultSecMass");
+    logTrace("testMultSecMass");
     fails += testMultSecMass();
-	logTrace("testCurveCpCtor");
+    logTrace("testCurveCpCtor");
     fails += testCurveCpCtor();
     
     testReport("ECC", total_tests, fails);

@@ -34,7 +34,7 @@ public:
     void poll(ref EntropyAccumulator accum)
     {
         // Don't count any timestamps as contributing any entropy
-        const double ESTIMATED_ENTROPY_PER_BYTE = 0.0;
+        const double ESTIMATED_ENTROPY_PER_BYTE = 1.0;
 
         {
             auto timestamp = Clock.currStdTime();

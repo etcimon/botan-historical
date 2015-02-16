@@ -20,7 +20,7 @@ import botan.constants;
 */
 struct CurveGFp
 {
-	/**
+    /**
     * Construct the elliptic curve E: y^2 = x^3 + ax + b over GF(p)
     * @param p = prime number of the field
     * @param a = first coefficient
@@ -39,7 +39,7 @@ struct CurveGFp
         m_b_r = (m_b * r) % m_p;
     }
 
-	/**
+    /**
     * @return curve coefficient a
     */
     ref const(BigInt) getA() const { return m_a; }
@@ -121,49 +121,49 @@ struct CurveGFp
     }
 
     @property CurveGFp dup() const {
-		return CurveGFp(m_p, m_a, m_b);
+        return CurveGFp(m_p, m_a, m_b);
     }
 
 
 
-	@disable this(this);
+    @disable this(this);
 
-	string toString() const {
-		return toVector()[].idup;
-	}
+    string toString() const {
+        return toVector()[].idup;
+    }
 
-	Vector!ubyte toVector() const {
-		Vector!ubyte ret;
-		ret ~= "m_p: ";
-		ret ~= m_p.toString();
-		ret ~= "\nm_a: ";
-		ret ~= m_a.toString();
-		ret ~= "\nm_b: ";
-		ret ~= m_b.toString();
-		ret ~= "\nm_r2: ";
-		ret ~= m_r2.toString();
-		ret ~= "\nm_a_r: ";
-		ret ~= m_a_r.toString();
-		ret ~= "\nm_b_r: ";
-		ret ~= m_b_r.toString();
-		ret ~= "\nm_p_dash: ";
-		ret ~= m_p_dash.to!string;
-		ret ~= "\nm_p_words: ";
-		ret ~= m_p_words.to!string;
-		ret ~= "\n";
-		return ret.move();
-	}
+    Vector!ubyte toVector() const {
+        Vector!ubyte ret;
+        ret ~= "m_p: ";
+        ret ~= m_p.toString();
+        ret ~= "\nm_a: ";
+        ret ~= m_a.toString();
+        ret ~= "\nm_b: ";
+        ret ~= m_b.toString();
+        ret ~= "\nm_r2: ";
+        ret ~= m_r2.toString();
+        ret ~= "\nm_a_r: ";
+        ret ~= m_a_r.toString();
+        ret ~= "\nm_b_r: ";
+        ret ~= m_b_r.toString();
+        ret ~= "\nm_p_dash: ";
+        ret ~= m_p_dash.to!string;
+        ret ~= "\nm_p_words: ";
+        ret ~= m_p_words.to!string;
+        ret ~= "\n";
+        return ret.move();
+    }
 
-	~this() {
-	}
+    ~this() {
+    }
 
-	// Curve parameters
-	BigInt m_p, m_a, m_b;
-	
-	size_t m_p_words; // cache of m_p.sigWords()
-	
-	// Montgomery parameters
-	BigInt m_r2, m_a_r, m_b_r;
-	word m_p_dash;
+    // Curve parameters
+    BigInt m_p, m_a, m_b;
+    
+    size_t m_p_words; // cache of m_p.sigWords()
+    
+    // Montgomery parameters
+    BigInt m_r2, m_a_r, m_b_r;
+    word m_p_dash;
 
 }

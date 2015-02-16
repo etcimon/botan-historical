@@ -28,7 +28,7 @@ interface SignedObject {
     * Get the TBS (to-be-signed) data in this object.
     * @return DER encoded TBS data of this object
     */
-	const(Vector!ubyte) tbsData() const;
+    const(Vector!ubyte) tbsData() const;
     
     /**
     * Get the signature of this object as a concatenation, i.e. if the
@@ -36,7 +36,7 @@ interface SignedObject {
     * these will be concatenated.
     * @return signature as a concatenation of its parts
     */
-	const(Vector!ubyte) getConcatSig() const;
+    const(Vector!ubyte) getConcatSig() const;
     /**
     * Write this object DER encoded into a specified pipe.
     * @param pipe = the pipe to write the encoded object to
@@ -44,7 +44,7 @@ interface SignedObject {
     */
     void encode(Pipe pipe, X509Encoding encoding = PEM_) const;
 protected:
-	abstract void forceDecode();
+    abstract void forceDecode();
 }
 
 /**
@@ -71,7 +71,7 @@ public:
     * @return true if the signature was created by the private key
     * associated with this public key
     */
-	bool checkSignature(ALLOC)(PublicKey pub_key, auto ref Vector!(ubyte, ALLOC) sig) const
+    bool checkSignature(ALLOC)(PublicKey pub_key, auto ref Vector!(ubyte, ALLOC) sig) const
     {
         try
         {
@@ -85,7 +85,7 @@ public:
             string padding = sig_info[1];
             SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             
-			const(Vector!ubyte) to_sign = tbsData();
+            const(Vector!ubyte) to_sign = tbsData();
             
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
             return verifier.verifyMessage(to_sign, sig);
@@ -143,7 +143,7 @@ protected:
         catch(InvalidArgument e)
         {
             const string what = e.msg;
-			throw new DecodingError("EACSignedObject decoding failed (" ~ what ~ ")");
+            throw new DecodingError("EACSignedObject decoding failed (" ~ what ~ ")");
         }
     }
 

@@ -32,7 +32,7 @@ alias EAC11ADO = RefCounted!EAC11ADOImpl;
 final class EAC11ADOImpl : EAC11obj!EAC11ADOImpl, SignedObject
 {
 public:
-	override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
+    override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Construct a CVC ADO request from a DER encoded CVC ADO request file.
     * @param str = the path to the DER encoded file
@@ -60,11 +60,11 @@ public:
     * @param tbs_bits = the TBS data to sign
     * @param rng = a random number generator
     */
-	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-                                  			  auto const ref Vector!(ubyte, ALLOC) tbs_bits,
-                                  			  RandomNumberGenerator rng)
+    static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+                                                auto const ref Vector!(ubyte, ALLOC) tbs_bits,
+                                                RandomNumberGenerator rng)
     {
-		const Vector!ubyte concat_sig = signer.signMessage(tbs_bits, rng);
+        const Vector!ubyte concat_sig = signer.signMessage(tbs_bits, rng);
         
         return DEREncoder()
                 .startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
@@ -74,12 +74,12 @@ public:
                 .getContentsUnlocked();
     }
 
-	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
-										  RandomNumberGenerator rng)
-	{
-		return makeSigned(signer, **tbs_bits, rng);
-	}
+    static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+                                          auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits,
+                                          RandomNumberGenerator rng)
+    {
+        return makeSigned(signer, **tbs_bits, rng);
+    }
 
     /**
     * Get the CAR of this CVC ADO request
@@ -130,7 +130,7 @@ public:
     * Get the TBS data of this CVC ADO request.
     * @result the TBS data
     */
-	override const(Vector!ubyte) tbsData() const
+    override const(Vector!ubyte) tbsData() const
     {
         return m_tbs_bits.dup;
     }
@@ -181,8 +181,8 @@ protected:
     {
         Vector!ubyte inner_cert;
         BERDecoder(m_tbs_bits)
-					.startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
-					.rawBytes(inner_cert)
+                    .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+                    .rawBytes(inner_cert)
                     .endCons()
                     .decode(m_car)
                     .verifyEnd();
@@ -200,25 +200,25 @@ protected:
 
 
 package:
-	static void decodeInfo(ALLOC)(DataSource source,
-								  auto ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
-								  ref ECDSASignature res_sig)
-	{
-		return decodeInfo(source, **res_tbs_bits, res_sig);
-	}
+    static void decodeInfo(ALLOC)(DataSource source,
+                                  auto ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) res_tbs_bits,
+                                  ref ECDSASignature res_sig)
+    {
+        return decodeInfo(source, **res_tbs_bits, res_sig);
+    }
 
     static void decodeInfo(ALLOC)(DataSource source,
-                           		  auto ref Vector!(ubyte, ALLOC) res_tbs_bits,
-                           		  ref ECDSASignature res_sig)
+                                     auto ref Vector!(ubyte, ALLOC) res_tbs_bits,
+                                     ref ECDSASignature res_sig)
     {
         Vector!ubyte concat_sig;
         Vector!ubyte cert_inner_bits;
         ASN1Car car;
         
         BERDecoder(source)
-			.startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
-				.startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
-				.rawBytes(cert_inner_bits)
+            .startCons((cast(ASN1Tag)7), ASN1Tag.APPLICATION)
+                .startCons((cast(ASN1Tag)33), ASN1Tag.APPLICATION)
+                .rawBytes(cert_inner_bits)
                 .endCons()
                 .decode(car)
                 .decode(concat_sig, ASN1Tag.OCTET_STRING, (cast(ASN1Tag)55), ASN1Tag.APPLICATION)

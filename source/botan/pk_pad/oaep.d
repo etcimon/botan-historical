@@ -48,7 +48,7 @@ public:
     * OAEP Pad Operation
     */
     override SecureVector!ubyte pad(const(ubyte)* input, size_t in_length, size_t key_length,
-                             	   RandomNumberGenerator rng) const
+                                    RandomNumberGenerator rng) const
     {
         key_length /= 8;
         
@@ -64,7 +64,7 @@ public:
         
         mgf1Mask(cast() *m_hash, output.ptr, m_Phash.length, &output[m_Phash.length], output.length - m_Phash.length);
         
-		mgf1Mask(cast() *m_hash, &output[m_Phash.length], output.length - m_Phash.length,
+        mgf1Mask(cast() *m_hash, &output[m_Phash.length], output.length - m_Phash.length,
         output.ptr, m_Phash.length);
         
         return output;
@@ -96,8 +96,8 @@ public:
         SecureVector!ubyte input = SecureVector!ubyte(key_length);
         bufferInsert(input, key_length - in_length, input_, in_length);
         
-		mgf1Mask(cast() *m_hash, &input[m_Phash.length], input.length - m_Phash.length, input.ptr, m_Phash.length);        
-		mgf1Mask(cast() *m_hash, input.ptr, m_Phash.length, &input[m_Phash.length], input.length - m_Phash.length);
+        mgf1Mask(cast() *m_hash, &input[m_Phash.length], input.length - m_Phash.length, input.ptr, m_Phash.length);        
+        mgf1Mask(cast() *m_hash, input.ptr, m_Phash.length, &input[m_Phash.length], input.length - m_Phash.length);
         
         bool waiting_for_delim = true;
         bool bad_input = false;

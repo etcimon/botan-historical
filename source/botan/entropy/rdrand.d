@@ -11,7 +11,8 @@ static if (BOTAN_HAS_ENTROPY_SRC_RDRAND):
 
 import botan.entropy.entropy_src;
 import botan.utils.cpuid;
-import botan.utils.simd.immintrin;
+
+//import botan.utils.simd.immintrin;
 
 /**
 * Entropy source using the rdrand instruction first introduced on
@@ -48,7 +49,6 @@ public:
         {
             uint r = 0;
             int cf = _rdrand32_step(&r);
-
 
             if (cf == 1)
                 accum.add(r, ENTROPY_PER_POLL);
@@ -94,7 +94,7 @@ version(LDC) {
 }
 
 version(D_InlineAsm_X86_64) {
-
+    
     // todo: move this to another module
     int _rdrand32_step(uint* r) {
         int ret;
@@ -111,5 +111,5 @@ version(D_InlineAsm_X86_64) {
             return 0;
         return 1;
     }
-
+    
 }

@@ -18,13 +18,13 @@ import botan.math.numbertheory.numthry;
 import botan.utils.types;
 
 struct SRP6KeyPair {
-	BigInt privkey;
-	SymmetricKey pubkey;
+    BigInt privkey;
+    SymmetricKey pubkey;
 
-	this()(auto ref BigInt priv, SymmetricKey pub) {
-		privkey = priv.move();
-		pubkey = pub;
-	}
+    this()(auto ref BigInt priv, SymmetricKey pub) {
+        privkey = priv.move();
+        pubkey = pub;
+    }
 }
 
 /**
@@ -61,13 +61,13 @@ SRP6KeyPair
     
     BigInt a = BigInt(rng, 256);
     
-	BigInt A = powerMod(*g, a, *p);
+    BigInt A = powerMod(*g, a, *p);
     
     BigInt u = hashSeq(hash_id, p_bytes, A, B);
     
     BigInt x = computeX(hash_id, identifier, password, salt);
     
-	BigInt S = powerMod((B - (k * powerMod(*g, x, *p))) % (*p), (a + (u * x)), *p);
+    BigInt S = powerMod((B - (k * powerMod(*g, x, *p))) % (*p), (a + (u * x)), *p);
     
     SymmetricKey Sk = SymmetricKey(BigInt.encode1363(S, p_bytes));
     
@@ -92,7 +92,7 @@ BigInt generateSrp6Verifier(in string identifier,
     BigInt x = computeX(hash_id, identifier, password, salt);
     
     DLGroup group = DLGroup(group_id);
-	return powerMod(group.getG(), x, group.getP());
+    return powerMod(group.getG(), x, group.getP());
 }
 
 
@@ -141,9 +141,9 @@ public:
     * @return SRP-6 B value
     */
     ref const(BigInt) step1(const ref BigInt v,
-			                in string group_id,
-			                in string hash_id,
-			                RandomNumberGenerator rng)
+                            in string group_id,
+                            in string hash_id,
+                            RandomNumberGenerator rng)
     {
         DLGroup group = DLGroup(group_id);
         const BigInt* g = &group.getG();
@@ -155,7 +155,7 @@ public:
         
         BigInt b = BigInt(rng, 256);
         
-		m_B = (v*k + powerMod(*g, b, *p)) % (*p);
+        m_B = (v*k + powerMod(*g, b, *p)) % (*p);
         
         m_v = v.dup;
         m_b = b.move();

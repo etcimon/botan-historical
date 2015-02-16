@@ -362,12 +362,12 @@ private:
 struct CiphersuitePreferenceOrdering
 {
 public:
-	this(Vector!string ciphers, Vector!string macs, Vector!string kex, Vector!string sigs)
+    this(Vector!string ciphers, Vector!string macs, Vector!string kex, Vector!string sigs)
     {
         m_ciphers = ciphers.move();
-		m_macs = macs.move();
-		m_kex = kex.move(); 
-		m_sigs = sigs.move();
+        m_macs = macs.move();
+        m_kex = kex.move(); 
+        m_sigs = sigs.move();
     }
     
     bool compare(U : TLSCiphersuite)(in TLSCiphersuite a, auto ref U b) const

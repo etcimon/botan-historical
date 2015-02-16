@@ -172,7 +172,7 @@ private:
     {
         for (size_t i = 0, j = 0; i < 18; ++i, j += 4) {
             m_P[i] ^= make_uint(key[(j  ) % length], key[(j+1) % length], key[(j+2) % length], key[(j+3) % length]);
-		}
+        }
         
         uint L = 0, R = 0;
         generate_sbox(m_P, L, R, salt, 0);
@@ -199,7 +199,7 @@ private:
             L ^= loadBigEndian!uint(salt.ptr, (i + salt_off) % 4);
             R ^= loadBigEndian!uint(salt.ptr, (i + salt_off + 1) % 4);
             
-			for (size_t j = 0; j < 16; j += 2)
+            for (size_t j = 0; j < 16; j += 2)
             {
                 L ^= m_P[j];
                 R ^= ((S1[get_byte(0, L)]  + S2[get_byte(1, L)]) ^

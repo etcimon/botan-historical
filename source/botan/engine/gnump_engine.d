@@ -550,8 +550,8 @@ void* gmp_malloc(size_t n)
 */
 void gmp_free(void* ptr, size_t n)
 {
-	import memutils.utils : SecureMem;
-	SecureMem!(ubyte[]).free(cast(ubyte[])ptr[0 .. n]);
+    import memutils.utils : SecureMem;
+    SecureMem!(ubyte[]).free(cast(ubyte[])ptr[0 .. n]);
 }
 
 /*

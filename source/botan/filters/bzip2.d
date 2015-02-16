@@ -113,7 +113,7 @@ private:
         if (m_bz)
         {
             BZ2_bzCompressEnd(m_bz.m_stream);
-            delete m_bz;
+            destroy(m_bz);
             m_bz = null;
         }
     }
@@ -242,7 +242,7 @@ private:
         if (m_bz)
         {
             BZ2_bzDecompressEnd(m_bz.m_stream);
-            delete m_bz;
+            destroy(m_bz);
             m_bz = null;
         }
     }
@@ -291,7 +291,7 @@ public:
     ~this()
     {
         Bzip_Alloc_Info info = cast(Bzip_Alloc_Info)(m_stream.opaque);
-        delete info;
+        destroy(info);
         memset(m_stream, 0, (bz_stream).sizeof);
     }
 }

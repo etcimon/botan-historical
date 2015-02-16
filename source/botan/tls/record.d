@@ -40,8 +40,8 @@ public:
     * Initialize a new cipher state
     */
     this()(TLSProtocolVersion _version, 
-		   ConnectionSide side, bool our_side, 
-		   in TLSCiphersuite suite, auto const ref TLSSessionKeys keys) 
+           ConnectionSide side, bool our_side, 
+           in TLSCiphersuite suite, auto const ref TLSSessionKeys keys) 
     {
         m_start_time = Clock.currTime();
         m_is_ssl3 = _version == TLSProtocolVersion.SSL_V3;

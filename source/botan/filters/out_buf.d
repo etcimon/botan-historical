@@ -83,7 +83,7 @@ public:
         foreach (size_t i; 0 .. m_buffers.length)
             if (m_buffers[i] && m_buffers[i].length == 0)
         {
-            delete m_buffers[i];
+            destroy(m_buffers[i]);
             m_buffers[i] = null;
         }
         
@@ -105,7 +105,7 @@ public:
     ~this()
     {
         for (size_t j = 0; j != m_buffers.length; ++j)
-            delete m_buffers[j];
+            destroy(m_buffers[j]);
     }
 private:
     /*

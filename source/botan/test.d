@@ -81,7 +81,7 @@ size_t runTestsInDir(string dir, size_t delegate(string) fn)
         }
         atomicOp!"+="(shared_fails, local_fails);
     }
-	return cast(size_t)atomicLoad(shared_fails);
+    return cast(size_t)atomicLoad(shared_fails);
 }
 
 void testReport(string name, size_t ran, size_t failed)
@@ -105,7 +105,7 @@ size_t runTestsBb(ref File src,
     }
     
     HashMap!(string, string) vars;
-	vars[name_key] = name_key;
+    vars[name_key] = name_key;
     size_t test_fails = 0, algo_fail = 0;
     size_t test_count = 0, algo_count = 0;
     
@@ -139,8 +139,8 @@ size_t runTestsBb(ref File src,
             vars[name_key] = fixed_name;
             continue;
         }
-		import std.string : strip;
-		if (line.indexOf('=') == -1) continue;
+        import std.string : strip;
+        if (line.indexOf('=') == -1) continue;
         assert(line[line.indexOf('=') - 1] == ' ' && line[line.indexOf('=') + 1] == ' ', "= must be wrapped with spaces");
         const string key = line[0 .. line.indexOf('=') - 1].strip;
         const string val = line[line.indexOf('=') + 2 .. $].strip;
@@ -167,12 +167,12 @@ size_t runTestsBb(ref File src,
             {
                 logTrace(vars[name_key] ~ " test ", algo_count, " failed: " ~ e.msg);
                 ++algo_fail;
-				assert(false);
+                assert(false);
             }
             
             if(clear_between_cb)
             {
-				vars.clear();
+                vars.clear();
                 vars[name_key] = fixed_name;
             }
         }
@@ -193,7 +193,7 @@ size_t runTests(string filename,
                  string name_key,
                  string output_key,
                  bool clear_between_cb,
-			     string delegate(ref HashMap!(string, string)) cb)
+                 string delegate(ref HashMap!(string, string)) cb)
 {
     File vec = File(filename, "r");
     
@@ -210,7 +210,7 @@ size_t runTests(ref File src,
                  string name_key,
                  string output_key,
                  bool clear_between_cb,
-				 string delegate(ref HashMap!(string, string)) cb)
+                 string delegate(ref HashMap!(string, string)) cb)
 {
     return runTestsBb(src, name_key, output_key, clear_between_cb, 
         (ref HashMap!(string, string) vars)

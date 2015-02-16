@@ -41,7 +41,7 @@ public:
         m_rng = rng_ref;
     }
 
-    ~this() { delete m_cipher; }
+    ~this() { destroy(m_cipher); }
 
     // Interface fallthrough
     override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }
@@ -75,7 +75,7 @@ public:
     }
 
     this(PKDecryptor c) {  m_cipher = c; }
-    ~this() { delete m_cipher; }
+    ~this() { destroy(m_cipher); }
 
     // Interface fallthrough
     override void setNext(Filter* filters, size_t sz) { super.setNext(filters, sz); }

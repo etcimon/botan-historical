@@ -141,7 +141,7 @@ private:
         if (m_zlib)
         {
             deflateEnd(m_zlib.m_stream);
-            delete m_zlib;
+            destroy(m_zlib);
             m_zlib = null;
         }
     }
@@ -281,7 +281,7 @@ private:
         if (m_zlib)
         {
             inflateEnd(m_zlib.m_stream);
-            delete m_zlib;
+            destroy(m_zlib);
             m_zlib = null;
         }
     }
@@ -360,8 +360,8 @@ public:
     ~this()
     {
         Zlib_Alloc_Info info = cast(Zlib_Alloc_Info)(m_stream.opaque);
-        delete info;
+        destroy(info);
         memset(m_stream, 0, (z_stream).sizeof);
-        delete m_stream;
+        destroy(m_stream);
     }
 }

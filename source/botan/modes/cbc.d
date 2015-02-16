@@ -84,7 +84,7 @@ protected:
             throw new InvalidArgument("Padding " ~ m_padding.name ~ " cannot be used with " ~ m_cipher.name ~ "/CBC");
     }
 
-	final BlockCipher cipher() const { return cast()*m_cipher; }
+    final BlockCipher cipher() const { return cast()*m_cipher; }
 
     final const(BlockCipherModePaddingMethod) padding() const
     {
@@ -135,13 +135,13 @@ public:
         {
             foreach (size_t i; 0 .. blocks)
             {
-				assert(buffer.length >= BS*i);
+                assert(buffer.length >= BS*i);
                 xorBuf(buf + BS*i, prev_block, BS);
                 cipher().encrypt(buf + BS*i);
                 prev_block = buf + BS*i;
             }
             
-			assert(buffer.length >= BS*blocks);
+            assert(buffer.length >= BS*blocks);
             state()[] = buf[BS*(blocks-1) .. BS*blocks];
         }
 
@@ -224,7 +224,7 @@ public:
             const size_t full_blocks = ((sz / BS) - 1) * BS;
             const size_t final_bytes = sz - full_blocks;
             assert(final_bytes > BS && final_bytes < 2*BS, "Left over size in expected range");
-			assert(buffer.length >= full_blocks+final_bytes);
+            assert(buffer.length >= full_blocks+final_bytes);
             SecureVector!ubyte last = SecureVector!ubyte(buf[full_blocks .. full_blocks + final_bytes]);
             buffer.resize(full_blocks + offset);
             update(buffer, offset);
@@ -293,14 +293,14 @@ public:
             const size_t to_proc = std.algorithm.min(BS * blocks, m_tempbuf.length);
             cipher().decryptN(buf, m_tempbuf.ptr, to_proc / BS);
             
-			assert(m_tempbuf.length >= BS);
+            assert(m_tempbuf.length >= BS);
             xorBuf(m_tempbuf.ptr, statePtr(), BS);
             xorBuf(m_tempbuf.ptr + BS, buf, to_proc - BS);
-						
-			assert(state().length >= BS);
+                        
+            assert(state().length >= BS);
             copyMem(statePtr(), buf + (to_proc - BS), BS);
             
-			assert(buffer.length >= to_proc);
+            assert(buffer.length >= to_proc);
             copyMem(buf, m_tempbuf.ptr, to_proc);
             
             buf += to_proc;
@@ -319,7 +319,7 @@ public:
             throw new DecodingError(name() ~ ": Ciphertext not a multiple of block size");
         
         update(buffer, offset);
-		assert(buffer.length >= BS);
+        assert(buffer.length >= BS);
         const size_t pad_bytes = BS - padding().unpad(&buffer[buffer.length-BS], BS);
         buffer.resize(buffer.length - pad_bytes); // remove padding
     }

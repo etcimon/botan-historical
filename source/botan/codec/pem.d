@@ -34,7 +34,7 @@ struct PEM
     * Encode some binary data in PEM format
     */
     static string encode(ALLOC)(auto const ref Vector!(ubyte, ALLOC) data, 
-									in string label, size_t line_width = 64)
+                                    in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);
     }
@@ -42,8 +42,8 @@ struct PEM
     /**
     * Encode some binary data in PEM format
     */
-	static string encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) data, 
-									in string label, size_t line_width = 64)
+    static string encode(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) data, 
+                                    in string label, size_t line_width = 64)
     {
         return encode(data.ptr, data.length, label, line_width);
     }
@@ -58,7 +58,7 @@ struct PEM
     */
     static SecureVector!ubyte decode(DataSource source, ref string label)
     {
-		//logTrace("PEM decode");
+        //logTrace("PEM decode");
         Appender!string label_buf;
         __gshared immutable size_t RANDOM_CHAR_LIMIT = 8;
         

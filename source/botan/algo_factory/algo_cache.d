@@ -49,7 +49,7 @@ public:
     {
         HashMapRef!(string, T) algo = findAlgorithm(algo_spec);
 
-		// logTrace("Searching ", algo_spec, " in algo length: ", m_algorithms.length);
+        // logTrace("Searching ", algo_spec, " in algo length: ", m_algorithms.length);
         if (algo.length == 0) // algo not found at all (no providers)
             return null;
         
@@ -94,11 +94,11 @@ public:
              in string requested_name,
              in string provider)
     {
-		//logTrace("Start adding ", requested_name, " provider ", provider);
+        //logTrace("Start adding ", requested_name, " provider ", provider);
         if (!algo) {
-			logError("Tried adding null algorithm");
+            logError("Tried adding null algorithm");
             return;
-		}
+        }
                 
         if (algo.name != requested_name && m_aliases.get(requested_name) == null)
         {
@@ -106,11 +106,11 @@ public:
         }
         if (!m_algorithms.get(algo.name)) {
             m_algorithms[algo.name] = HashMapRef!(string, T)();
-		}
+        }
 
         if (m_algorithms[algo.name].get(provider) is null) {
             m_algorithms[algo.name][provider] = algo;
-		}
+        }
 
     }
 
@@ -136,11 +136,11 @@ public:
     {
         Vector!string providers;
         string algo = m_aliases.get(algo_name);
-		if (m_algorithms.get(algo).length == 0)
+        if (m_algorithms.get(algo).length == 0)
             algo = algo_name;
         if (m_algorithms.get(algo).length == 0) {
             return Vector!string();
-		}
+        }
         foreach(const ref string provider, const ref T instance; *(m_algorithms[algo])) {
             providers.pushBack(provider);
         }
@@ -152,10 +152,10 @@ public:
     */
     void clearCache()
     {
-		foreach (const ref string provider, ref HashMapRef!(string, T) algorithms; m_algorithms)
+        foreach (const ref string provider, ref HashMapRef!(string, T) algorithms; m_algorithms)
         {
             foreach (const ref string name, ref T instance; algorithms) {
-                if (instance) delete instance;
+                if (instance) destroy(instance);
             }
         }
 
@@ -163,7 +163,7 @@ public:
         m_algorithms.clear();
     }
 
-	~this() { clearCache(); }
+    ~this() { clearCache(); }
 private:
 
     /*
@@ -198,13 +198,13 @@ private:
 
 shared(int) threads;
 static this() {
-	import core.atomic;
-	atomicOp!"+="(threads, 1);
-	logTrace("Starting, Threads: ", atomicLoad(threads));
+    import core.atomic;
+    atomicOp!"+="(threads, 1);
+    logTrace("Starting, Threads: ", atomicLoad(threads));
 }
 
 static ~this() {
-	import core.atomic;
-	atomicOp!"-="(threads, 1);
-	logTrace("Closing, Threads: ", atomicLoad(threads));
+    import core.atomic;
+    atomicOp!"-="(threads, 1);
+    logTrace("Closing, Threads: ", atomicLoad(threads));
 }

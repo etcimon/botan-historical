@@ -46,7 +46,8 @@ extern(C)
 void botan_md4_x86_32_compress(uint* digest, const(ubyte)* input, uint* M)
 {
     enum PUSHED = 4;
-    mixin(START_ASM ~ "naked;" ~
+    enum ASM = START_ASM ~ 
+            "naked;" ~
             SPILL_REGS() ~ 
             ASSIGN(EBP, ARG(PUSHED, 2)) ~/* input block */
             ASSIGN(EDI, ARG(PUSHED, 3)) ~ /* expanded words */
@@ -132,7 +133,9 @@ void botan_md4_x86_32_compress(uint* digest, const(ubyte)* input, uint* M)
             ADD(ARRAY4(EBP, 2), ECX) ~
             ADD(ARRAY4(EBP, 3), EDX) ~
             RESTORE_REGS() ~
-            END_ASM);
+            "ret;" ~
+            END_ASM;
+    mixin(ASM);
 }
 
 

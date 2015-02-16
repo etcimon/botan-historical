@@ -96,8 +96,8 @@ public:
     * @param block = the input/output buffer (multiple of blockSize())
     */
     final void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
-	in { assert(block.length >= this.blockSize()); }
-	body {
+    in { assert(block.length >= this.blockSize()); }
+    body {
         return encryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
 
@@ -106,8 +106,8 @@ public:
     * @param block = the input/output buffer (multiple of blockSize())
     */
     final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
-	in { assert(block.length >= this.blockSize()); }
-	body {
+    in { assert(block.length >= this.blockSize()); }
+    body {
         return decryptN(block.ptr, block.ptr, block.length / this.blockSize());
     }
 
@@ -118,8 +118,8 @@ public:
     */
     final void encrypt(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
-	in { assert(input.length >= this.blockSize()); }
-	body {
+    in { assert(input.length >= this.blockSize()); }
+    body {
         return encryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
     
@@ -130,7 +130,7 @@ public:
     */
     final void decrypt(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
-	in { assert(input.length >= this.blockSize()); }
+    in { assert(input.length >= this.blockSize()); }
     body {
         return decryptN(input.ptr, output.ptr, input.length / this.blockSize());
     }
@@ -193,7 +193,7 @@ public:
     }
 
     abstract void clear();
-	this() { clear(); } // TODO: Write some real constructors for each object.
+    this() { clear(); } // TODO: Write some real constructors for each object.
 }
 
 static if (BOTAN_TEST):
@@ -242,8 +242,8 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         atomicOp!"+="(total_tests, 1);
         if (buf != ct)
         {
-			logTrace(buf[], " Real");
-			logTrace(ct[], " Expected");
+            logTrace(buf[], " Real");
+            logTrace(ct[], " Expected");
             ++fails;
             buf = ct.dup;
         }
@@ -253,8 +253,8 @@ size_t blockTest(string algo, string key_hex, string in_hex, string out_hex)
         atomicOp!"+="(total_tests, 1);
         if (buf != pt)
         {
-			logTrace(buf[], " Real");
-			logTrace(pt[], " Expected");
+            logTrace(buf[], " Real");
+            logTrace(pt[], " Expected");
             ++fails;
         }
     }

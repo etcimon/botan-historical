@@ -32,11 +32,11 @@ public:
     /*
     * EMSA1 BSI Encode Operation
     */
-	override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
-                                 		   size_t output_bits,
-                               	 		   RandomNumberGenerator rng)
+    override SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
+                                            size_t output_bits,
+                                               RandomNumberGenerator rng)
     {
-		//logDebug("EMSA1BSI Encode");
+        //logDebug("EMSA1BSI Encode");
         if (msg.length != hashOutputLength())
             throw new EncodingError("EMSA1_BSI::encodingOf: Invalid size for input");
         
@@ -47,9 +47,9 @@ public:
     }
 
     // Interface fallthrough
-	override SecureVector!ubyte rawData() { return super.rawData(); }
-	override bool verify(const ref SecureVector!ubyte coded,
-						 const ref SecureVector!ubyte raw, size_t key_bits)
+    override SecureVector!ubyte rawData() { return super.rawData(); }
+    override bool verify(const ref SecureVector!ubyte coded,
+                         const ref SecureVector!ubyte raw, size_t key_bits)
     {
         return super.verify(coded, raw, key_bits);
     }

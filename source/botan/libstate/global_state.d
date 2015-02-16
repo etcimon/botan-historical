@@ -41,7 +41,7 @@ LibraryState globalState()
 */
 void setGlobalState(LibraryState new_state)
 {
-	if (g_lib_state) destroy(g_lib_state);
+    if (g_lib_state) destroy(g_lib_state);
     g_lib_state = new_state;
 }
 
@@ -76,6 +76,6 @@ bool globalStateExists()
 }
 
 static ~this() {
-	import core.thread : thread_isMainThread;
-	if (g_lib_state && !thread_isMainThread) destroy(g_lib_state); 
+    import core.thread : thread_isMainThread;
+    if (g_lib_state) destroy(g_lib_state); 
 }

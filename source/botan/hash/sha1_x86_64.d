@@ -74,9 +74,9 @@ void botan_sha160_x86_64_compress(uint* arg1, const(ubyte)* arg2, uint* arg3)
         enum E = "ECX";
     */
     enum ASM = 
-			START_ASM ~
+            START_ASM ~
             ZEROIZE(LOOP_CTR) ~
-			ALIGN ~ `;
+            ALIGN ~ `;
 LOOP_LOAD_INPUT:
             add EAX, 8;
 
@@ -109,7 +109,7 @@ LOOP_LOAD_INPUT:
             ALIGN ~ `;
             LOOP_EXPANSION:
             add ` ~ LOOP_CTR ~ `, 4;
-			`  ~
+            `  ~
                 
             ZEROIZE(A) ~
             ASSIGN(B, ARRAY4(W, -1)) ~
@@ -252,7 +252,7 @@ LOOP_LOAD_INPUT:
       END_ASM;
 
 
-	mixin(ASM);
+    mixin(ASM);
 
 
 }

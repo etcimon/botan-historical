@@ -68,7 +68,7 @@ string utf8ToLatin1(in string utf8)
         const ubyte c1 = cast(ubyte)(utf8[position++]);
         
         if (c1 <= 0x7F)
-			iso8859[position] = cast(char)(c1);
+            iso8859[position] = cast(char)(c1);
         else if (c1 >= 0xC0 && c1 <= 0xC7)
         {
             if (position == utf8.length)
@@ -80,7 +80,7 @@ string utf8ToLatin1(in string utf8)
             if (iso_char <= 0x7F)
                 throw new DecodingError("UTF-8: sequence longer than needed");
             
-			iso8859[position] = cast(char)(iso_char);
+            iso8859[position] = cast(char)(iso_char);
         }
         else
             throw new DecodingError("UTF-8: Unicode chars not in Latin1 used");

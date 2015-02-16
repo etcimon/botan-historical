@@ -19,16 +19,16 @@ import botan.utils.mul128;
 * Montgomery Multiplication
 */
 void bigint_monty_mul(word* z, size_t z_size,
-	in word* x, size_t x_size, size_t x_sw,
-	in word* y, size_t y_size, size_t y_sw,
-	in word* p, size_t p_size, word p_dash,
-	word* ws)
+    in word* x, size_t x_size, size_t x_sw,
+    in word* y, size_t y_size, size_t y_sw,
+    in word* p, size_t p_size, word p_dash,
+    word* ws)
 {
-	bigint_mul( z, z_size, ws,
-		x, x_size, x_sw,
-		y, y_size, y_sw);
+    bigint_mul( z, z_size, ws,
+        x, x_size, x_sw,
+        y, y_size, y_sw);
 
-	bigint_monty_redc(z, p, p_size, p_dash, ws);
+    bigint_monty_redc(z, p, p_size, p_dash, ws);
 }
 
 
@@ -36,12 +36,12 @@ void bigint_monty_mul(word* z, size_t z_size,
 * Montgomery Squaring
 */
 void bigint_monty_sqr(word* z, size_t z_size,
-	in word* x, size_t x_size, size_t x_sw,
-	in word* p, size_t p_size, word p_dash,
-	word* ws)
+    in word* x, size_t x_size, size_t x_sw,
+    in word* p, size_t p_size, word p_dash,
+    word* ws)
 {
-	bigint_sqr(z, z_size, ws, x, x_size, x_sw);
-	bigint_monty_redc(z, p, p_size, p_dash, ws);
+    bigint_sqr(z, z_size, ws, x, x_size, x_sw);
+    bigint_monty_redc(z, p, p_size, p_dash, ws);
 }
 
 // todo: Bring back ASM for x86_32, x86_64, from Botan C++.

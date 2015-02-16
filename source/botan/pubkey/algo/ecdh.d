@@ -18,8 +18,8 @@ import botan.math.bigint.bigint;
 import memutils.helpers : Embed;
 
 struct ECDHOptions {
-	enum algoName = "ECDH";
-	enum msgParts = 1;
+    enum algoName = "ECDH";
+    enum msgParts = 1;
 }
 
 /**
@@ -28,7 +28,7 @@ struct ECDHOptions {
 struct ECDHPublicKey
 {
 public:
-	alias Options = ECDHOptions;
+    alias Options = ECDHOptions;
     __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
@@ -49,7 +49,7 @@ public:
     this(PrivateKey pkey) { m_pub = cast(ECPublicKey) pkey; }
     this(PublicKey pkey) { m_pub = cast(ECPublicKey) pkey; }
 
-	mixin Embed!m_pub;
+    mixin Embed!m_pub;
 
     ECPublicKey m_pub;
 }
@@ -60,8 +60,8 @@ public:
 struct ECDHPrivateKey
 {
 public:
-	alias Options = ECDHOptions;
-	__gshared immutable string algoName = Options.algoName;
+    alias Options = ECDHOptions;
+    __gshared immutable string algoName = Options.algoName;
 
     this(in AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits) 
     {
@@ -74,16 +74,16 @@ public:
     * @param domain = parameters to used for this key
     * @param x = the private key; if zero, a new random key is generated
     */
-	this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = BigInt(0)) 
+    this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = BigInt(0)) 
     {
         m_priv = new ECPrivateKey(Options(), rng, domain, x);
     }
 
-	this(RandomNumberGenerator rng, const ref ECGroup domain) { auto bi = BigInt(0); this(rng, domain, bi.move()); }
+    this(RandomNumberGenerator rng, const ref ECGroup domain) { auto bi = BigInt(0); this(rng, domain, bi.move()); }
 
     this(PrivateKey pkey) { m_priv = cast(ECPrivateKey) pkey; }
 
-	mixin Embed!m_priv;
+    mixin Embed!m_priv;
 
     ECPrivateKey m_priv;
 
@@ -148,11 +148,11 @@ size_t testEcdhNormalDerivation(RandomNumberGenerator rng)
     ECDHPrivateKey private_b = ECDHPrivateKey(rng, dom_pars); //public_a.getCurve()
     
     auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
-	auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
+    auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
     
     SymmetricKey alice_key = ka.deriveKey(32, private_b.publicValue());
     SymmetricKey bob_key = kb.deriveKey(32, private_a.publicValue());
-	// 1 test
+    // 1 test
     if (alice_key != bob_key)
     {
         logError("The two keys didn't match!");
@@ -182,8 +182,8 @@ size_t testEcdhSomeDp(RandomNumberGenerator rng)
         ECDHPrivateKey private_a = ECDHPrivateKey(rng, dom_pars);
         ECDHPrivateKey private_b = ECDHPrivateKey(rng, dom_pars);
         
-		auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
-		auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
+        auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
+        auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
         
         SymmetricKey alice_key = ka.deriveKey(32, private_b.publicValue());
         SymmetricKey bob_key = kb.deriveKey(32, private_a.publicValue());
@@ -214,8 +214,8 @@ size_t testEcdhDerDerivation(RandomNumberGenerator rng)
         Vector!ubyte key_a = private_a.publicValue();
         Vector!ubyte key_b = private_b.publicValue();
         
-		auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
-		auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
+        auto ka = scoped!PKKeyAgreement(private_a, "KDF2(SHA-1)");
+        auto kb = scoped!PKKeyAgreement(private_b, "KDF2(SHA-1)");
         
         SymmetricKey alice_key = ka.deriveKey(32, key_b);
         SymmetricKey bob_key = kb.deriveKey(32, key_a);

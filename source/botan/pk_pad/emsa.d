@@ -24,7 +24,7 @@ public:
     /**
     * @return raw hash
     */
-	abstract SecureVector!ubyte rawData();
+    abstract SecureVector!ubyte rawData();
 
     /**
     * Return the encoding of a message
@@ -33,17 +33,17 @@ public:
     * @param rng = a random number generator
     * @return encoded signature
     */
-	abstract SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
+    abstract SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                            size_t output_bits,
                                            RandomNumberGenerator rng);
 
-	/// ditto
-	final SecureVector!ubyte encodingOf(const SecureVector!ubyte msg,
-										  size_t output_bits,
-										  RandomNumberGenerator rng)
-	{
-		return encodingOf(msg, output_bits, rng);
-	}
+    /// ditto
+    final SecureVector!ubyte encodingOf(const SecureVector!ubyte msg,
+                                          size_t output_bits,
+                                          RandomNumberGenerator rng)
+    {
+        return encodingOf(msg, output_bits, rng);
+    }
 
     /**
     * Verify the encoding
@@ -52,7 +52,7 @@ public:
     * @param key_bits = the size of the key in bits
     * @return true if coded is a valid encoding of raw, otherwise false
     */
-	abstract bool verify(const ref SecureVector!ubyte coded,
-						 const ref SecureVector!ubyte raw,
+    abstract bool verify(const ref SecureVector!ubyte coded,
+                         const ref SecureVector!ubyte raw,
                          size_t key_bits);
 }

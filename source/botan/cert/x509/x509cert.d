@@ -74,7 +74,7 @@ public:
     * Get the subject certificate DN.
     * @return subject DN of this certificate
     */
-	const(X509DN) subjectDn() const
+    const(X509DN) subjectDn() const
     {
         return createDn(m_subject);
     }
@@ -102,7 +102,7 @@ public:
     * "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
     * @return value(s) of the specified parameter
     */
-	const(Vector!string) issuerInfo(in string what) const
+    const(Vector!string) issuerInfo(in string what) const
     {
         return m_issuer.get(X509DNImpl.derefInfoField(what));
     }
@@ -110,7 +110,7 @@ public:
     /**
     * Raw subject DN
     */
-	const(Vector!ubyte) rawIssuerDn() const
+    const(Vector!ubyte) rawIssuerDn() const
     {
         return m_issuer.get1Memvec("X509.Certificate.dn_bits");
     }
@@ -119,7 +119,7 @@ public:
     /**
     * Raw issuer DN
     */
-	const(Vector!ubyte) rawSubjectDn() const
+    const(Vector!ubyte) rawSubjectDn() const
     {
         return m_subject.get1Memvec("X509.Certificate.dn_bits");
     }
@@ -155,7 +155,7 @@ public:
     * Get the serial number of this certificate.
     * @return certificates serial number
     */
-	const(Vector!ubyte) serialNumber() const
+    const(Vector!ubyte) serialNumber() const
     {
         return m_subject.get1Memvec("X509.Certificate.serial");
     }
@@ -164,7 +164,7 @@ public:
     * Get the DER encoded AuthorityKeyIdentifier of this certificate.
     * @return DER encoded AuthorityKeyIdentifier
     */
-	const(Vector!ubyte) authorityKeyId() const
+    const(Vector!ubyte) authorityKeyId() const
     {
         return m_issuer.get1Memvec("X509v3.AuthorityKeyIdentifier");
     }
@@ -326,10 +326,10 @@ public:
         
         output ~= "\nVersion: " ~ x509Version().to!string;
         
-		output ~= "\nNot valid before: " ~ startTime();
-		output ~= "\nNot valid after: " ~ endTime();
+        output ~= "\nNot valid before: " ~ startTime();
+        output ~= "\nNot valid after: " ~ endTime();
         
-		output ~= "\nConstraints:";
+        output ~= "\nConstraints:";
         KeyConstraints constraints = constraints();
         if (constraints == KeyConstraints.NO_CONSTRAINTS)
             output ~= " None";
@@ -338,23 +338,23 @@ public:
             if (constraints & KeyConstraints.DIGITAL_SIGNATURE)
                 output ~= "\n    Digital Signature";
             if (constraints & KeyConstraints.NON_REPUDIATION)
-				output ~= "\n    Non-Repuidation";
+                output ~= "\n    Non-Repuidation";
             if (constraints & KeyConstraints.KEY_ENCIPHERMENT)
-				output ~= "\n    Key Encipherment";
+                output ~= "\n    Key Encipherment";
             if (constraints & KeyConstraints.DATA_ENCIPHERMENT)
-				output ~= "\n    Data Encipherment";
+                output ~= "\n    Data Encipherment";
             if (constraints & KeyConstraints.KEY_AGREEMENT)
-				output ~= "\n    Key Agreement";
+                output ~= "\n    Key Agreement";
             if (constraints & KeyConstraints.KEY_CERT_SIGN)
-				output ~= "\n    Cert Sign";
+                output ~= "\n    Cert Sign";
             if (constraints & KeyConstraints.CRL_SIGN)
-				output ~= "\n    CRL Sign";
+                output ~= "\n    CRL Sign";
         }
         
         const Vector!string policies = policies();
         if (!policies.empty)
         {
-			output ~= "\nPolicies: ";
+            output ~= "\nPolicies: ";
             foreach (const policy; policies[])
                 output ~= "    " ~ policy;
         }
@@ -362,28 +362,28 @@ public:
         const Vector!string ex_constraints = exConstraints();
         if (!ex_constraints.empty)
         {
-			output ~= "\nExtended Constraints:";
+            output ~= "\nExtended Constraints:";
             foreach (const ex_constraint; ex_constraints[])
                 output ~= "    " ~ ex_constraint;
         }
         
         if (ocspResponder() != "")
-			output ~= "\nOCSP responder " ~ ocspResponder();
+            output ~= "\nOCSP responder " ~ ocspResponder();
         if (crlDistributionPoint() != "")
-			output ~= "\nCRL " ~ crlDistributionPoint();
+            output ~= "\nCRL " ~ crlDistributionPoint();
         
-		output ~= "\nSignature algorithm: " ~ OIDS.lookup(signatureAlgorithm().oid);
+        output ~= "\nSignature algorithm: " ~ OIDS.lookup(signatureAlgorithm().oid);
         
-		output ~= "\nSerial number: " ~ hexEncode(serialNumber());
+        output ~= "\nSerial number: " ~ hexEncode(serialNumber());
         
         if (authorityKeyId().length)
-			output ~= "\nAuthority keyid: " ~ hexEncode(authorityKeyId());
+            output ~= "\nAuthority keyid: " ~ hexEncode(authorityKeyId());
         
         if (subjectKeyId().length)
-			output ~= "\nSubject keyid: " ~ hexEncode(subjectKeyId());
+            output ~= "\nSubject keyid: " ~ hexEncode(subjectKeyId());
         
         const X509PublicKey pubkey = subjectPublicKey();
-		output ~= "\nPublic Key:\n\n" ~ x509_key.PEM_encode(pubkey) ~ "\n";
+        output ~= "\nPublic Key:\n\n" ~ x509_key.PEM_encode(pubkey) ~ "\n";
         
         return output.data;
     }
@@ -498,19 +498,19 @@ public:
         doDecode();
     }
 
-	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
-	{
-		super(input, "CERTIFICATE/X509 CERTIFICATE");
-		m_self_signed = false;
-		doDecode();
-	}
+    this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
+    {
+        super(input, "CERTIFICATE/X509 CERTIFICATE");
+        m_self_signed = false;
+        doDecode();
+    }
 
-	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
-	{
-		super(input, "CERTIFICATE/X509 CERTIFICATE");
-		m_self_signed = false;
-		doDecode();
-	}
+    this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
+    {
+        super(input, "CERTIFICATE/X509 CERTIFICATE");
+        m_self_signed = false;
+        doDecode();
+    }
 
 protected:
     /*
@@ -543,7 +543,7 @@ protected:
             throw new DecodingError("Algorithm identifier mismatch");
         
         m_self_signed = (dn_subject == dn_issuer);
-		//logTrace("Is self signed: ", m_self_signed);
+        //logTrace("Is self signed: ", m_self_signed);
         m_subject.add(dn_subject.contents());
         m_issuer.add(dn_issuer.contents());
         
@@ -666,7 +666,7 @@ Vector!string lookupOids(ALLOC)(auto const ref Vector!(string, ALLOC) input)
 
 
 bool certSubjectDnsMatch(ALLOC)(in string name,
-                         			auto const ref Vector!(string, ALLOC) cert_names)
+                                     auto const ref Vector!(string, ALLOC) cert_names)
 {
     foreach (const cn; cert_names[])
     {

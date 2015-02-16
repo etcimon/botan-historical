@@ -192,10 +192,10 @@ size_t dliesKat(string p,
     BigInt x1_bn = BigInt(x1);
     BigInt x2_bn = BigInt(x2);
 
-	//logTrace("p_bn: ", p_bn.toString());
-	//logTrace("g_bn: ", g_bn.toString());
-	//logTrace("x1_bn: ", x1_bn.toString());
-	//logTrace("x2_bn: ", x2_bn.toString());
+    //logTrace("p_bn: ", p_bn.toString());
+    //logTrace("g_bn: ", g_bn.toString());
+    //logTrace("x1_bn: ", x1_bn.toString());
+    //logTrace("x2_bn: ", x2_bn.toString());
 
     DLGroup domain = DLGroup(p_bn, g_bn);
     
@@ -228,9 +228,9 @@ static if (!SKIP_DLIES_TEST) unittest
     File dlies = File("../test_data/pubkey/dlies.vec", "r");
     
     fails += runTestsBb(dlies, "DLIES Encryption", "Ciphertext", true,
-		(ref HashMap!(string, string) m) {
-			return dliesKat(m["P"], m["G"], m["X1"], m["X2"], m["Msg"], m["Ciphertext"]);
-		});
+        (ref HashMap!(string, string) m) {
+            return dliesKat(m["P"], m["G"], m["X1"], m["X2"], m["Msg"], m["Ciphertext"]);
+        });
     
     testReport("dlies", total_tests, fails);
 }

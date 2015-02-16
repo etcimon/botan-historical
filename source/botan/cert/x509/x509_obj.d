@@ -34,7 +34,7 @@ public:
     * The underlying data that is to be or was signed
     * @return data that is or was signed
     */
-	final const(Vector!ubyte) tbsData() const
+    final const(Vector!ubyte) tbsData() const
     {
         return putInSequence(m_tbs_bits);
     }
@@ -83,9 +83,9 @@ public:
     * @return signed X509 object
     */
     static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-                                  			 RandomNumberGenerator rng,
-                                 			 in AlgorithmIdentifier algo,
-                                 			 auto const ref Vector!(ubyte, ALLOC) tbs_bits)
+                                               RandomNumberGenerator rng,
+                                              in AlgorithmIdentifier algo,
+                                              auto const ref Vector!(ubyte, ALLOC) tbs_bits)
     {
         return DEREncoder()
                 .startCons(ASN1Tag.SEQUENCE)
@@ -96,14 +96,14 @@ public:
                 .getContentsUnlocked();
     }
 
-	/// ditto
-	static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-										  RandomNumberGenerator rng,
-										  in AlgorithmIdentifier algo,
-										  auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits)
-	{
-		return makeSigned(signer, rng, algo, *tbs_bits);
-	}
+    /// ditto
+    static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
+                                          RandomNumberGenerator rng,
+                                          in AlgorithmIdentifier algo,
+                                          auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) tbs_bits)
+    {
+        return makeSigned(signer, rng, algo, *tbs_bits);
+    }
 
 
     /**
@@ -115,7 +115,7 @@ public:
     {
         assert(pub_key);
         try {
-			Vector!string sig_info = botan.utils.parsing.splitter(OIDS.lookup(m_sig_algo.oid), '/');
+            Vector!string sig_info = botan.utils.parsing.splitter(OIDS.lookup(m_sig_algo.oid), '/');
             
             if (sig_info.length != 2 || sig_info[0] != pub_key.algoName)
                 return false;
@@ -123,8 +123,8 @@ public:
             string padding = sig_info[1];
             SignatureFormat format = (pub_key.messageParts() >= 2) ? DER_SEQUENCE : IEEE_1363;
             PKVerifier verifier = PKVerifier(pub_key, padding, format);
-			auto tbs = tbsData();
-			auto sig = signature().dup;
+            auto tbs = tbsData();
+            auto sig = signature().dup;
             return verifier.verifyMessage(tbs, sig);
         }
         catch(Exception e)
@@ -149,7 +149,7 @@ public:
     */
     override void decodeFrom(ref BERDecoder from)
     {
-		//logTrace("decodeFrom X509Object");
+        //logTrace("decodeFrom X509Object");
         from.startCons(ASN1Tag.SEQUENCE)
                 .startCons(ASN1Tag.SEQUENCE)
                 .rawBytes(m_tbs_bits)
@@ -199,23 +199,23 @@ protected:
         init(stream, labels);
     }
 
-	/*
+    /*
     * Create a generic X.509 object
     */
-	this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) vec, in string labels)
-	{
-		auto stream = DataSourceMemory(vec.ptr, vec.length);
-		init(cast(DataSource)stream, labels);
-	}
+    this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) vec, in string labels)
+    {
+        auto stream = DataSourceMemory(vec.ptr, vec.length);
+        init(cast(DataSource)stream, labels);
+    }
 
-	/*
+    /*
     * Create a generic X.509 object
     */
-	this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) vec, in string labels)
-	{
-		auto stream = DataSourceMemory(vec.ptr, vec.length);
-		init(cast(DataSource)stream, labels);
-	}
+    this(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) vec, in string labels)
+    {
+        auto stream = DataSourceMemory(vec.ptr, vec.length);
+        init(cast(DataSource)stream, labels);
+    }
 
     /*
     * Try to decode the actual information
@@ -235,7 +235,7 @@ protected:
         }
     }
     this() { }
-	AlgorithmIdentifier m_sig_algo;
+    AlgorithmIdentifier m_sig_algo;
     Vector!ubyte m_tbs_bits, m_sig;
 
 protected:
@@ -247,12 +247,12 @@ private:
     */
     final void init(DataSource input, in string labels)
     {
-		m_sig_algo = AlgorithmIdentifier();
-		m_PEM_labels_allowed = botan.utils.parsing.splitter(labels, '/');
+        m_sig_algo = AlgorithmIdentifier();
+        m_PEM_labels_allowed = botan.utils.parsing.splitter(labels, '/');
         if (m_PEM_labels_allowed.length < 1)
             throw new InvalidArgument("Bad labels argument to X509Object");
         
-		//logTrace("Initialize PEM/BER X.509 Object");
+        //logTrace("Initialize PEM/BER X.509 Object");
         m_PEM_label_pref = m_PEM_labels_allowed[0];
         
         try {

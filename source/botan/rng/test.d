@@ -30,14 +30,14 @@ public:
     
     override void randomize(ubyte* output, size_t len)
     {
-		if (len <= m_buf.length) {
-			output[0 .. len] = m_buf.ptr[0 .. len];
-			auto new_buf = Vector!ubyte(m_buf.ptr[len .. m_buf.length]);
-			m_buf = new_buf.move();
-		} else {
-	        for(size_t j = 0; j != len; j++)
-	            output[j] = random();
-		}
+        if (len <= m_buf.length) {
+            output[0 .. len] = m_buf.ptr[0 .. len];
+            auto new_buf = Vector!ubyte(m_buf.ptr[len .. m_buf.length]);
+            m_buf = new_buf.move();
+        } else {
+            for(size_t j = 0; j != len; j++)
+                output[j] = random();
+        }
     }
     
     override void addEntropy(const(ubyte)* b, size_t s)
@@ -52,8 +52,8 @@ public:
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
     
     this(const ref Vector!ubyte input)
-    {	
-		m_buf.insert(input.ptr[0 .. input.length]);
+    {    
+        m_buf.insert(input.ptr[0 .. input.length]);
     }
     
     this(string in_str)
@@ -71,7 +71,7 @@ private:
 
 RandomNumberGenerator getRng(string algo_str, string ikm_hex)
 {
-	//logDebug("getRng: ", algo_str);
+    //logDebug("getRng: ", algo_str);
     class AllOnceRNG : FixedOutputRNG
     {
     public:
@@ -98,10 +98,10 @@ RandomNumberGenerator getRng(string algo_str, string ikm_hex)
     static if (BOTAN_HAS_HMAC_DRBG) {
         import botan.rng.hmac_drbg;
         if (rng_name == "HMAC_DRBG") {
-			auto mac = af.makeMac("HMAC(" ~ algo_name[1] ~ ")");
-			if (!mac) logDebug("No Mac found");
+            auto mac = af.makeMac("HMAC(" ~ algo_name[1] ~ ")");
+            if (!mac) logDebug("No Mac found");
             return new HMAC_DRBG(mac, new AllOnceRNG(ikm));
-		}
+        }
     }
     
     static if (BOTAN_HAS_X931_RNG) {
@@ -188,9 +188,9 @@ static if (!SKIP_RNG_TEST) unittest
     
     static if (BOTAN_HAS_X931_RNG)
     fails += runTestsBb(x931_vec, "RNG", "Out", true,
-		(ref HashMap!(string, string) m) {
-			return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));
-		});
+        (ref HashMap!(string, string) m) {
+            return x931Test(m["RNG"], m["IKM"], m["Out"], to!uint(m["L"]));
+        });
 
 
     testReport("rng", total_tests, fails);

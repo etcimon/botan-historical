@@ -159,7 +159,7 @@ protected:
         const ubyte b_flags = cast(ubyte) ((m_ad_buf.length ? 64 : 0) + (((tagSize()/2)-1) << 3) + (L()-1));
         
         B0[0] = b_flags;
-		assert(B0.length >= m_nonce.length);
+        assert(B0.length >= m_nonce.length);
         copyMem(&B0[1], m_nonce.ptr, m_nonce.length);
         encodeLength(sz, &B0[m_nonce.length+1]);
         
@@ -173,7 +173,7 @@ protected:
         const ubyte a_flags = cast(ubyte)(L()-1);
         
         C[0] = a_flags;
-		assert(C.length >= m_nonce.length + 1);
+        assert(C.length >= m_nonce.length + 1);
         copyMem(&C[1], m_nonce.ptr, m_nonce.length);
         
         return C.move;
@@ -210,57 +210,57 @@ public:
         super(cipher, tag_size, L);
     }
 
-	override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
-	{
-		import std.algorithm : max;
-		assert(buffer.length >= offset, "Offset is sane");
-		buffer.resize(max(buffer.length, offset + msgBuf().length));
-		buffer.ptr[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
-		
-		const size_t sz = buffer.length - offset;
-		ubyte* buf = buffer.ptr + offset;
-		
-		const SecureVector!ubyte* ad = &adBuf();
-		assert(ad.length % BS == 0, "AD is block size multiple");
-		
-		BlockCipher E = cipher();
-		
-		SecureVector!ubyte T = SecureVector!ubyte(BS);
-		E.encrypt(formatB0(sz), T);
-		
-		for (size_t i = 0; i != ad.length; i += BS)
-		{
-			xorBuf(T.ptr, &(*ad)[i], BS);
-			E.encrypt(T);
-		}
-		
-		SecureVector!ubyte C = formatC0();
-		SecureVector!ubyte S0 = SecureVector!ubyte(BS);
-		E.encrypt(C, S0);
-		inc(C);
-		
-		SecureVector!ubyte X = SecureVector!ubyte(BS);
-		
-		const(ubyte)* buf_end = &buf[sz];
-		
-		while (buf != buf_end)
-		{
-			const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
-			
-			xorBuf(T.ptr, buf, to_proc);
-			E.encrypt(T);
-			
-			E.encrypt(C, X);
-			xorBuf(buf, X.ptr, to_proc);
-			inc(C);
-			
-			buf += to_proc;
-		}
-		
-		T ^= S0;
-		
-		buffer ~= T.ptr[0 .. tagSize()];
-	}
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
+    {
+        import std.algorithm : max;
+        assert(buffer.length >= offset, "Offset is sane");
+        buffer.resize(max(buffer.length, offset + msgBuf().length));
+        buffer.ptr[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
+        
+        const size_t sz = buffer.length - offset;
+        ubyte* buf = buffer.ptr + offset;
+        
+        const SecureVector!ubyte* ad = &adBuf();
+        assert(ad.length % BS == 0, "AD is block size multiple");
+        
+        BlockCipher E = cipher();
+        
+        SecureVector!ubyte T = SecureVector!ubyte(BS);
+        E.encrypt(formatB0(sz), T);
+        
+        for (size_t i = 0; i != ad.length; i += BS)
+        {
+            xorBuf(T.ptr, &(*ad)[i], BS);
+            E.encrypt(T);
+        }
+        
+        SecureVector!ubyte C = formatC0();
+        SecureVector!ubyte S0 = SecureVector!ubyte(BS);
+        E.encrypt(C, S0);
+        inc(C);
+        
+        SecureVector!ubyte X = SecureVector!ubyte(BS);
+        
+        const(ubyte)* buf_end = &buf[sz];
+        
+        while (buf != buf_end)
+        {
+            const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
+            
+            xorBuf(T.ptr, buf, to_proc);
+            E.encrypt(T);
+            
+            E.encrypt(C, X);
+            xorBuf(buf, X.ptr, to_proc);
+            inc(C);
+            
+            buf += to_proc;
+        }
+        
+        T ^= S0;
+        
+        buffer ~= T.ptr[0 .. tagSize()];
+    }
 
     override size_t outputLength(size_t input_length) const
     { return input_length + tagSize(); }
@@ -297,63 +297,63 @@ public:
         super(cipher, tag_size, L);
     }
 
-	override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
-	{
-		import std.algorithm : max;
-		assert(buffer.length >= offset, "Offset is sane");
-		buffer.resize(max(buffer.length, offset + msgBuf().length));
-		buffer.ptr[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
-		
-		const size_t sz = buffer.length - offset;
-		ubyte* buf = buffer.ptr + offset;
-		
-		assert(sz >= tagSize(), "We have the tag");
-		
-		const SecureVector!ubyte* ad = &adBuf();
-		assert(ad.length % BS == 0, "AD is block size multiple");
-		
-		BlockCipher E = cipher();
-		
-		SecureVector!ubyte T = SecureVector!ubyte(BS);
-		E.encrypt(formatB0(sz - tagSize()), T);
-		
-		for (size_t i = 0; i != ad.length; i += BS)
-		{
-			xorBuf(T.ptr, &(*ad)[i], BS);
-			E.encrypt(T);
-		}
-		
-		SecureVector!ubyte C = formatC0();
-		
-		SecureVector!ubyte S0 = SecureVector!ubyte(BS);
-		E.encrypt(C, S0);
-		inc(C);
-		
-		SecureVector!ubyte X = SecureVector!ubyte(BS);
-		
-		const(ubyte)* buf_end = &buf[sz - tagSize()];
-		
-		while (buf < buf_end)
-		{
-			const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
-			
-			E.encrypt(C, X);
-			xorBuf(buf, X.ptr, to_proc);
-			inc(C);
-			
-			xorBuf(T.ptr, buf, to_proc);
-			E.encrypt(T);
-			
-			buf += to_proc;
-		}
-		
-		T ^= S0;
-		
-		if (!sameMem(T.ptr, buf_end, tagSize()))
-			throw new IntegrityFailure("CCM tag check failed");
-		
-		buffer.resize(buffer.length - tagSize());
-	}
+    override void finish(ref SecureVector!ubyte buffer, size_t offset = 0)
+    {
+        import std.algorithm : max;
+        assert(buffer.length >= offset, "Offset is sane");
+        buffer.resize(max(buffer.length, offset + msgBuf().length));
+        buffer.ptr[offset .. offset + msgBuf().length] = msgBuf().ptr[0 .. msgBuf().length];
+        
+        const size_t sz = buffer.length - offset;
+        ubyte* buf = buffer.ptr + offset;
+        
+        assert(sz >= tagSize(), "We have the tag");
+        
+        const SecureVector!ubyte* ad = &adBuf();
+        assert(ad.length % BS == 0, "AD is block size multiple");
+        
+        BlockCipher E = cipher();
+        
+        SecureVector!ubyte T = SecureVector!ubyte(BS);
+        E.encrypt(formatB0(sz - tagSize()), T);
+        
+        for (size_t i = 0; i != ad.length; i += BS)
+        {
+            xorBuf(T.ptr, &(*ad)[i], BS);
+            E.encrypt(T);
+        }
+        
+        SecureVector!ubyte C = formatC0();
+        
+        SecureVector!ubyte S0 = SecureVector!ubyte(BS);
+        E.encrypt(C, S0);
+        inc(C);
+        
+        SecureVector!ubyte X = SecureVector!ubyte(BS);
+        
+        const(ubyte)* buf_end = &buf[sz - tagSize()];
+        
+        while (buf < buf_end)
+        {
+            const size_t to_proc = std.algorithm.min(BS, buf_end - buf);
+            
+            E.encrypt(C, X);
+            xorBuf(buf, X.ptr, to_proc);
+            inc(C);
+            
+            xorBuf(T.ptr, buf, to_proc);
+            E.encrypt(T);
+            
+            buf += to_proc;
+        }
+        
+        T ^= S0;
+        
+        if (!sameMem(T.ptr, buf_end, tagSize()))
+            throw new IntegrityFailure("CCM tag check failed");
+        
+        buffer.resize(buffer.length - tagSize());
+    }
 
     override size_t outputLength(size_t input_length) const
     {

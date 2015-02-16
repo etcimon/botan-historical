@@ -26,7 +26,7 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
                                 in PrivateKey key,
                                 in string padding)
 {
-	//logTrace("Encryption consistency check");
+    //logTrace("Encryption consistency check");
     auto encryptor = scoped!PKEncryptorEME(key, padding);
     auto decryptor = scoped!PKDecryptorEME(key, padding);
     
@@ -59,11 +59,11 @@ bool signatureConsistencyCheck(RandomNumberGenerator rng,
                                in PrivateKey key,
                                in string padding)
 {
-	//logTrace("Signature consistency check");
-	//logTrace("key: ", key.algoName);
-	//logTrace("Pad: ", padding);
+    //logTrace("Signature consistency check");
+    //logTrace("key: ", key.algoName);
+    //logTrace("Pad: ", padding);
     PKSigner signer = PKSigner(key, padding);
-	PKVerifier verifier = PKVerifier(key, padding);
+    PKVerifier verifier = PKVerifier(key, padding);
     Vector!ubyte message = unlock(rng.randomVec(16));
     
     Vector!ubyte signature;

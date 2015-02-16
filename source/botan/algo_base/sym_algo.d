@@ -47,15 +47,15 @@ public:
         setKey(key.ptr, key.length);
     }
     
-	final void setKey(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
-	{
-		setKey(key.ptr, key.length);
-	}
+    final void setKey(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
+    {
+        setKey(key.ptr, key.length);
+    }
 
-	final void setKey(Alloc)(auto const ref Vector!( ubyte, Alloc ) key)
-	{
-		setKey(key.ptr, key.length);
-	}
+    final void setKey(Alloc)(auto const ref Vector!( ubyte, Alloc ) key)
+    {
+        setKey(key.ptr, key.length);
+    }
     
     /**
     * Set the symmetric key of this object.

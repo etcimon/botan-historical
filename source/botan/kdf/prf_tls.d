@@ -27,8 +27,8 @@ public:
     * TLS PRF
     */
     override SecureVector!ubyte derive(size_t key_len,
-			                           const(ubyte)* secret, size_t secret_len,
-			                           const(ubyte)* seed, size_t seed_len) const
+                                       const(ubyte)* secret, size_t secret_len,
+                                       const(ubyte)* seed, size_t seed_len) const
     {
         SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
@@ -38,7 +38,7 @@ public:
         const(ubyte)* S2 = secret + (secret_len - S2_len);
         
         P_hash(output, cast() *m_hmac_md5,  S1, S1_len, seed, seed_len);
-		P_hash(output, cast() *m_hmac_sha1, S2, S2_len, seed, seed_len);
+        P_hash(output, cast() *m_hmac_sha1, S2, S2_len, seed, seed_len);
         
         return output;
     }
@@ -72,7 +72,7 @@ public:
     {
         SecureVector!ubyte output = SecureVector!ubyte(key_len);
         
-		P_hash(output, cast() *m_hmac, secret, secret_len, seed, seed_len);
+        P_hash(output, cast() *m_hmac, secret, secret_len, seed, seed_len);
         
         return output;
     }

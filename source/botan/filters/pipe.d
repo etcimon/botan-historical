@@ -79,7 +79,7 @@ public:
     * Write input to the pipe, i.e. to its first filter.
     * @param input = the SecureVector containing the data to write
     */
-	void write(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
+    void write(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
     { write(input.ptr, input.length); }
 
     /**
@@ -155,7 +155,7 @@ public:
     * Perform startMsg(), write() and endMsg() sequentially.
     * @param input = the SecureVector containing the data to write
     */
-	void processMsg(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
+    void processMsg(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
         processMsg(input.ptr, input.length);
     }
@@ -251,7 +251,7 @@ public:
     * @param msg = the number identifying the message to read from
     * @return SecureVector holding the contents of the pipe
     */
-	SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
+    SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
     {
         msg = ((msg != DEFAULT_MESSAGE) ? msg : defaultMsg());
         SecureArray!ubyte buffer = SecureVector!ubyte(remaining(msg));
@@ -439,7 +439,7 @@ public:
         clearEndpoints(m_pipe_to);
         if (cast(NullFilter)(m_pipe_to))
         {
-            delete m_pipe_to;
+            destroy(m_pipe_to);
             m_pipe_to = null;
         }
         m_inside_msg = false;
@@ -507,13 +507,13 @@ public:
         Filter f = m_pipe_to;
         size_t owns = f.owns();
         m_pipe_to = m_pipe_to.m_next[0];
-        delete f;
+        destroy(f);
         
         while (owns--)
         {
             f = m_pipe_to;
             m_pipe_to = m_pipe_to.m_next[0];
-            delete f;
+            destroy(f);
         }
     }
 
@@ -579,7 +579,7 @@ private:
             return;
         for (size_t j = 0; j != to_kill.totalPorts(); ++j)
             if (to_kill.m_next[j]) destruct(to_kill.m_next[j]);
-        delete to_kill;
+        destroy(to_kill);
     }
 
     /*

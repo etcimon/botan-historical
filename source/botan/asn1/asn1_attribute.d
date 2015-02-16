@@ -25,7 +25,7 @@ alias Attribute = RefCounted!AttributeImpl;
 final class AttributeImpl : ASN1Object
 {
 public:
-	this() { }
+    this() { }
 
     /*
     * Create an Attribute
@@ -64,7 +64,7 @@ public:
     override void decodeFrom(ref BERDecoder codec)
     {
         codec.startCons(ASN1Tag.SEQUENCE)
-            	.decode(oid)
+                .decode(oid)
                 .startCons(ASN1Tag.SET)
                 .rawBytes(parameters)
                 .endCons()

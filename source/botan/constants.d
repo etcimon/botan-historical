@@ -9,33 +9,33 @@ const SKIP_CVC_TEST = true; // TODO: EAC11 ECDSA Key decoding
 const SKIP_CRYPTOBOX_TEST = true;
 const SKIP_RFC3394_TEST = true;
 const SKIP_TSS_TEST = true;
-const SKIP_HASH_TEST = false;
-const SKIP_KDF_TEST = false;
-const SKIP_MAC_TEST = false;
-const SKIP_BIGINT_TEST = false;
-const SKIP_EC_GFP_TEST = false;
-const SKIP_AEAD_TEST = false;
-const SKIP_OCB_TEST = false;
-const SKIP_CIPHER_MODE_TEST = false;
-const SKIP_BCRYPT_TEST = false;
-const SKIP_PASSHASH9_TEST = false;
-const SKIP_PBKDF_TEST = false;
-const SKIP_HKDF_TEST = false;
-const SKIP_DH_TEST = false;
-const SKIP_DLIES_TEST = false;
-const SKIP_DSA_TEST = false;
-const SKIP_ECDH_TEST = false;
-const SKIP_ECDSA_TEST = false;
-const SKIP_ELGAMAL_TEST = false;
-const SKIP_GOST_TEST = false;
-const SKIP_NR_TEST = false;
-const SKIP_RFC6979_TEST = false;
-const SKIP_RSA_TEST = false;
-const SKIP_RW_TEST = false;
-const SKIP_X509_KEY_TEST = false;
-const SKIP_RNG_TEST = false;
-const SKIP_STREAM_CIPHER_TEST = false;
-const SKIP_TLS_TEST = true;
+const SKIP_HASH_TEST = true;
+const SKIP_KDF_TEST = true;
+const SKIP_MAC_TEST = true;
+const SKIP_BIGINT_TEST = true;
+const SKIP_EC_GFP_TEST = true;
+const SKIP_AEAD_TEST = true;
+const SKIP_OCB_TEST = true;
+const SKIP_CIPHER_MODE_TEST = true;
+const SKIP_BCRYPT_TEST = true;
+const SKIP_PASSHASH9_TEST = true;
+const SKIP_PBKDF_TEST = true;
+const SKIP_HKDF_TEST = true;
+const SKIP_DH_TEST = true;
+const SKIP_DLIES_TEST = true;
+const SKIP_DSA_TEST = true;
+const SKIP_ECDH_TEST = true;
+const SKIP_ECDSA_TEST = true;
+const SKIP_ELGAMAL_TEST = true;
+const SKIP_GOST_TEST = true;
+const SKIP_NR_TEST = true;
+const SKIP_RFC6979_TEST = true;
+const SKIP_RSA_TEST = true;
+const SKIP_RW_TEST = true;
+const SKIP_X509_KEY_TEST = true;
+const SKIP_RNG_TEST = true;
+const SKIP_STREAM_CIPHER_TEST = true;
+const SKIP_TLS_TEST = false;
 
 const BOTAN_VERSION_MAJOR = 2;
 const BOTAN_VERSION_MINOR = 0;
@@ -99,15 +99,15 @@ version(SIMD_SSE2)       {    const BOTAN_HAS_SIMD_SSE2 = true;          static 
 else                          const BOTAN_HAS_SIMD_SSE2 = false;
 version(SIMD_Altivec)    {    static if (BOTAN_TARGET_CPU_IS_PPC_FAMILY) 
                                   const BOTAN_HAS_SIMD_ALTIVEC = true;
-                              else const BOTAN_HAS_SIMD_ALTIVEC = false;                                                   }
+                              else const BOTAN_HAS_SIMD_ALTIVEC = false;                                                  }
 else                              const BOTAN_HAS_SIMD_ALTIVEC = false;
 version(SIMD_Scalar)     {    const BOTAN_HAS_SIMD_SCALAR = true;                                                         }
 else                          const BOTAN_HAS_SIMD_SCALAR = false;
 
 static if (BOTAN_HAS_SIMD_SCALAR || BOTAN_HAS_SIMD_ALTIVEC || BOTAN_HAS_SIMD_SSE2)
-	const BOTAN_HAS_SIMD_OPS = true;
+    const BOTAN_HAS_SIMD_OPS = true;
 else
-	const BOTAN_HAS_SIMD_OPS = false;
+    const BOTAN_HAS_SIMD_OPS = false;
 
 static if (BOTAN_HAS_X86_ARCH && BOTAN_HAS_SIMD_SSE2) pragma(msg, "Error: SIMD_SSE2 cannot be enabled on x86 architecture.");
 
@@ -165,7 +165,7 @@ version(TLS_V10_PRF)     {    const BOTAN_HAS_TLS_V10_PRF = true;               
 else                          const BOTAN_HAS_TLS_V10_PRF = false;
 version(TLS_V12_PRF)     {    const BOTAN_HAS_TLS_V12_PRF = true;                                                         }
 else                          const BOTAN_HAS_TLS_V12_PRF = false;
-version(AES_NI)          {    const BOTAN_HAS_AES_NI = true;            static assert(BOTAN_HAS_SIMD);				      }
+version(AES_NI)          {    const BOTAN_HAS_AES_NI = true;            static assert(BOTAN_HAS_SIMD);                    }
 else                          const BOTAN_HAS_AES_NI = false;
 version(Serpent_x86_32)  {    const BOTAN_HAS_SERPENT_X86_32 = true;    static assert(BOTAN_HAS_X86_ARCH, ERR_ARCH);      }
 else                          const BOTAN_HAS_SERPENT_X86_32 = false;
@@ -449,30 +449,30 @@ enum { // LogLevel
 }
 
 void logTrace(ARGS...)(ARGS args) {
-	static if (LogLevel <= Trace) {
-		import std.stdio: writeln;
-		writeln("T: ", args);
-	}
+    static if (LogLevel <= Trace) {
+        import std.stdio: writeln;
+        writeln("T: ", args);
+    }
 }
 
 void logInfo(ARGS...)(ARGS args) {
-	static if (LogLevel <= Info) {
-		import std.stdio: writeln;
-		writeln("I: ", args);
-	}
+    static if (LogLevel <= Info) {
+        import std.stdio: writeln;
+        writeln("I: ", args);
+    }
 }
 
 void logDebug(ARGS...)(ARGS args) {
-	
-	static if (LogLevel <= Debug) {
-		import std.stdio: writeln;
-		writeln("D: ", args);
-	}
+    
+    static if (LogLevel <= Debug) {
+        import std.stdio: writeln;
+        writeln("D: ", args);
+    }
 }
 
 void logError(ARGS...)(ARGS args) {
-	static if (LogLevel <= Error) {
-		import std.stdio: writeln, stderr;
-		stderr.writeln("E: ", args);
-	}
+    static if (LogLevel <= Error) {
+        import std.stdio: writeln, stderr;
+        stderr.writeln("E: ", args);
+    }
 }

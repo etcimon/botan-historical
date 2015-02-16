@@ -23,11 +23,11 @@ public:
     /**
     * Subject DN and (optionally) key identifier
     */
-	X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const;
+    X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const;
 
-	final X509Certificate findCert()(in X509DN subject_dn, auto const ref Vector!ubyte key_id) const {
-		return findCertRef(subject_dn, key_id);
-	}
+    final X509Certificate findCert()(in X509DN subject_dn, auto const ref Vector!ubyte key_id) const {
+        return findCertRef(subject_dn, key_id);
+    }
 
     X509CRL findCrlFor(in X509Certificate subject) const;
 
@@ -82,7 +82,7 @@ public:
         return subjects;
     }
 
-	override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
+    override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -139,9 +139,9 @@ final class CertificateStoreOverlay : CertificateStore
 public:
     this(const ref Vector!X509Certificate certs)
     {
-		foreach (ref cert; certs[]) {
-			m_certs ~= cert;
-		}
+        foreach (ref cert; certs[]) {
+            m_certs ~= cert;
+        }
     }
 
     override X509CRL findCrlFor(in X509Certificate subject) const { return X509CRL.init; }
@@ -154,7 +154,7 @@ public:
         return subjects.move;
     }
 
-	override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
+    override X509Certificate findCertRef(in X509DN subject_dn, const ref Vector!ubyte key_id) const
     {
         return certSearch(subject_dn, key_id, m_certs);
     }
@@ -179,7 +179,7 @@ X509Certificate certSearch(in X509DN subject_dn,
         
         if (cert.subjectDn() == subject_dn) {
             return cert;
-		}
+        }
     }
     
     return X509Certificate.init;
