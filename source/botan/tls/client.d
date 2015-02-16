@@ -79,7 +79,6 @@ public:
         m_creds = creds;
         m_info = server_info;
         const string srp_identifier = m_creds.srpIdentifier("tls-client", m_info.hostname());
-        
         HandshakeState state = createHandshakeState(offer_version);
         sendClientHello(state, false, offer_version, srp_identifier, next_protocol);
     }
@@ -110,13 +109,12 @@ protected:
                            string delegate(const ref Vector!string) next_protocol = null)
     {
         ClientHandshakeState state = cast(ClientHandshakeState)(state_base);
-        
+
         if (state.Version().isDatagramProtocol())
             state.setExpectedNext(HELLO_VERIFY_REQUEST); // optional
         state.setExpectedNext(SERVER_HELLO);
-        
         state.client_npn_cb = next_protocol;
-        
+
         const bool send_npn_request = cast(bool)(next_protocol);
         
         if (!force_full_renegotiation && !m_info.empty)
@@ -139,7 +137,7 @@ protected:
                 }
             }
         }
-        
+
         if (!state.clientHello()) // not resuming
         {
             state.clientHello(new ClientHello(state.handshakeIo(),
@@ -152,7 +150,7 @@ protected:
                                               m_info.hostname(),
                                               srp_identifier));
         }
-        
+
         secureRenegotiationCheck(state.clientHello());
     }
 
@@ -460,7 +458,7 @@ protected:
             
             if (session_id.empty && !session_ticket.empty)
                 session_id = makeHelloRandom(rng());
-            
+
             TLSSession session_info = TLSSession(session_id.dup,
                                                  state.sessionKeys().masterSecret().dup,
                                                  state.serverHello().Version(),

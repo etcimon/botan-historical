@@ -281,7 +281,7 @@ static if (!SKIP_TLS_TEST) unittest
     logDebug("Testing tls/test.d ...");
     size_t errors = 0;
     
-    TestPolicy default_policy;
+    TestPolicy default_policy = new TestPolicy;
     auto rng = AutoSeededRNG();
     TLSCredentialsManager basic_creds = createCreds(rng);
     

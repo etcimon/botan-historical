@@ -92,7 +92,7 @@ public:
         
         storeBigEndian24(send_buf.ptr[1 .. 4], buf_size);
         
-        copyMem(&send_buf[4], msg.ptr, msg.length);
+        copyMem(send_buf.ptr+4, msg.ptr, msg.length);
         
         return send_buf;
     }
@@ -121,7 +121,6 @@ public:
         if (m_queue.length >= 4)
         {
             const size_t length = make_uint(0, m_queue[1], m_queue[2], m_queue[3]);
-            
             if (m_queue.length >= length + 4)
             {
                 HandshakeType type = cast(HandshakeType)(m_queue[0]);

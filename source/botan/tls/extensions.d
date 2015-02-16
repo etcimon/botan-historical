@@ -748,6 +748,8 @@ public:
 
     void add(Extension extn)
     {
+        assert(extn);
+
         auto val = extensions.get(extn.type(), null);
         if (val)
             destroy(val);

@@ -265,14 +265,14 @@ public:
         m_extensions.add(new ServerNameIndicator(hostname));
         m_extensions.add(new SessionTicket());
         m_extensions.add(new SupportedEllipticCurves(policy.allowedEccCurves()));
-        
+
         if (policy.negotiateHeartbeatSupport())
             m_extensions.add(new HeartbeatSupportIndicator(true));
         
         if (m_version.supportsNegotiableSignatureAlgorithms())
             m_extensions.add(new SignatureAlgorithms(policy.allowedSignatureHashes(),
                                                      policy.allowedSignatureMethods()));
-        
+
         if (reneg_empty && next_protocol)
             m_extensions.add(new NextProtocolNotification());
         

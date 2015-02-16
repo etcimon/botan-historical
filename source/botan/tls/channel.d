@@ -480,7 +480,7 @@ protected:
         else
             io = new StreamHandshakeIO(&sendRecord);
 
-        m_pending_state = newHandshakeState(*io);
+        m_pending_state = newHandshakeState(io.release());
         
         if (auto active = activeState())
             m_pending_state.setVersion(active.Version());
@@ -717,8 +717,7 @@ private:
     void writeRecord(ConnectionCipherState cipher_state,
                       ubyte record_type, const(ubyte)* input, size_t length)
     {
-        assert(m_pending_state || m_active_state,
-               "Some connection state exists");
+        assert(m_pending_state || m_active_state, "Some connection state exists");
         
         TLSProtocolVersion record_version =
             (m_pending_state) ? (m_pending_state.Version()) : (m_active_state.Version());
@@ -745,7 +744,7 @@ private:
     {
         auto state = m_read_cipher_states.get(epoch, ConnectionCipherState.init);
         
-        assert(state !is ConnectionCipherState.init, "Have a cipher state for the specified epoch");
+        assert(state !is ConnectionCipherState.init || epoch == 0, "Have a cipher state for the specified epoch");
         
         return state;
     }
@@ -754,7 +753,7 @@ private:
     {
         auto state = m_write_cipher_states.get(epoch, ConnectionCipherState.init);
         
-        assert(state !is ConnectionCipherState.init, "Have a cipher state for the specified epoch");
+        assert(state !is ConnectionCipherState.init || epoch == 0, "Have a cipher state for the specified epoch");
         
         return state;
     }

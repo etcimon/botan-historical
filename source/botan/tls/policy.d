@@ -261,14 +261,14 @@ public:
     */
     Vector!ushort ciphersuiteList(TLSProtocolVersion _version, bool have_srp) const
     {
-        const Vector!string ciphers = allowedCiphers();
-        const Vector!string macs = allowedMacs();
-        const Vector!string kex = allowedKeyExchangeMethods();
-        const Vector!string sigs = allowedSignatureMethods();
+        Vector!string ciphers = allowedCiphers();
+        Vector!string macs = allowedMacs();
+        Vector!string kex = allowedKeyExchangeMethods();
+        Vector!string sigs = allowedSignatureMethods();
         
-        CiphersuitePreferenceOrdering order = CiphersuitePreferenceOrdering(ciphers.dup(), macs.dup(), kex.dup(), sigs.dup());
+        CiphersuitePreferenceOrdering order = CiphersuitePreferenceOrdering(ciphers, macs, kex, sigs);
         
-        Appender!(TLSCiphersuite[]) ciphersuites;
+        Vector!(TLSCiphersuite) ciphersuites;
         
         foreach (const ref TLSCiphersuite suite; TLSCiphersuite.allKnownCiphersuites()[])
         {
@@ -304,10 +304,10 @@ public:
             ciphersuites ~= suite;
         }
         
-        if (ciphersuites.data.length == 0)
+        if (ciphersuites.length == 0)
             throw new LogicError("TLSPolicy does not allow any available cipher suite");
         Vector!ushort ciphersuite_codes;
-        foreach (TLSCiphersuite i; ciphersuites.data.uniq.array.sort!((a,b){ return order.compare(a, b); }).array.to!(TLSCiphersuite[]))
+        foreach (TLSCiphersuite i; ciphersuites[].uniq.array.sort!((a,b){ return order.compare(a, b); }).array.to!(TLSCiphersuite[]))
             ciphersuite_codes.pushBack(i.ciphersuiteCode());
         return ciphersuite_codes;
     }
@@ -362,12 +362,12 @@ private:
 struct CiphersuitePreferenceOrdering
 {
 public:
-    this(Vector!string ciphers, Vector!string macs, Vector!string kex, Vector!string sigs)
+    this(ref Vector!string ciphers, ref Vector!string macs, ref Vector!string kex, ref Vector!string sigs)
     {
-        m_ciphers = ciphers.move();
-        m_macs = macs.move();
-        m_kex = kex.move(); 
-        m_sigs = sigs.move();
+        m_ciphers = ciphers.dup();
+        m_macs = macs.dup();
+        m_kex = kex.dup(); 
+        m_sigs = sigs.dup();
     }
     
     bool compare(U : TLSCiphersuite)(in TLSCiphersuite a, auto ref U b) const
