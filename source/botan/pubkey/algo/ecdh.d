@@ -3,8 +3,9 @@
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
 *             Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.ecdh;
 
@@ -38,7 +39,9 @@ public:
 
     /**
     * Construct a public key from a given public point.
-    * @param dom_par = the domain parameters associated with this key
+    *
+    * Params:
+    *  dom_par = the domain parameters associated with this key
     * @param public_point = the public point defining this key
     */
     this()(auto const ref ECGroup dom_par, auto const ref PointGFp public_point) 

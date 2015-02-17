@@ -1,8 +1,9 @@
 /*
 * Public Key Interface
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pubkey;
 
@@ -56,10 +57,12 @@ public:
 
     /**
     * Encrypt a message.
-    * @param input = the message as a ubyte array
+    *
+    * Params:
+    *  input = the message as a ubyte array
     * @param length = the length of the above ubyte array
     * @param rng = the random number source to use
-    * @return encrypted message
+    * Returns: encrypted message
     */
     final Vector!ubyte encrypt(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
     {
@@ -68,9 +71,11 @@ public:
 
     /**
     * Encrypt a message.
-    * @param input = the message
+    *
+    * Params:
+    *  input = the message
     * @param rng = the random number source to use
-    * @return encrypted message
+    * Returns: encrypted message
     */
     final Vector!ubyte encrypt(Alloc)(const ref Vector!( ubyte, Alloc ) input, RandomNumberGenerator rng) const
     {
@@ -79,7 +84,7 @@ public:
 
     /**
     * Return the maximum allowed message size in bytes.
-    * @return maximum message size in bytes
+    * Returns: maximum message size in bytes
     */
     abstract size_t maximumInputSize() const;
 
@@ -95,9 +100,11 @@ interface PKDecryptor
 public:
     /**
     * Decrypt a ciphertext.
-    * @param input = the ciphertext as a ubyte array
+    *
+    * Params:
+    *  input = the ciphertext as a ubyte array
     * @param length = the length of the above ubyte array
-    * @return decrypted message
+    * Returns: decrypted message
     */
     final SecureVector!ubyte decrypt(const(ubyte)* input, size_t length) const
     {
@@ -106,8 +113,10 @@ public:
 
     /**
     * Decrypt a ciphertext.
-    * @param input = the ciphertext
-    * @return decrypted message
+    *
+    * Params:
+    *  input = the ciphertext
+    * Returns: decrypted message
     */
     final SecureVector!ubyte decrypt(Alloc)(auto const ref Vector!( ubyte, Alloc ) input) const
     {
@@ -128,10 +137,12 @@ struct PKSigner
 public:
     /**
     * Sign a message.
-    * @param msg = the message to sign as a ubyte array
+    *
+    * Params:
+    *  msg = the message to sign as a ubyte array
     * @param length = the length of the above ubyte array
     * @param rng = the rng to use
-    * @return signature
+    * Returns: signature
     */
     Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
     {
@@ -141,9 +152,11 @@ public:
 
     /**
     * Sign a message.
-    * @param input = the message to sign
+    *
+    * Params:
+    *  input = the message to sign
     * @param rng = the rng to use
-    * @return signature
+    * Returns: signature
     */
     Vector!ubyte signMessage(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, RandomNumberGenerator rng)
     { return signMessage(input.ptr, input.length, rng); }
@@ -153,13 +166,17 @@ public:
 
     /**
     * Add a message part (single ubyte).
-    * @param input = the ubyte to add
+    *
+    * Params:
+    *  input = the ubyte to add
     */
     void update(ubyte input) { update(&input, 1); }
 
     /**
     * Add a message part.
-    * @param input = the message part to add as a ubyte array
+    *
+    * Params:
+    *  input = the message part to add as a ubyte array
     * @param length = the length of the above ubyte array
     */
     void update(const(ubyte)* input, size_t length)
@@ -169,7 +186,9 @@ public:
 
     /**
     * Add a message part.
-    * @param input = the message part to add
+    *
+    * Params:
+    *  input = the message part to add
     */
     void update(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) { update(input.ptr, input.length); }
     void update(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { update(input.ptr, input.length); }
@@ -177,8 +196,10 @@ public:
     /**
     * Get the signature of the so far processed message (provided by the
     * calls to update()).
-    * @param rng = the rng to use
-    * @return signature of the total message
+    *
+    * Params:
+    *  rng = the rng to use
+    * Returns: signature of the total message
     */
     Vector!ubyte signature(RandomNumberGenerator rng)
     {
@@ -212,16 +233,22 @@ public:
 
     /**
     * Set the output format of the signature.
-    * @param format = the signature format to use
+    *
+    * Params:
+    *  format = the signature format to use
     */
     void setOutputFormat(SignatureFormat format) { m_sig_format = format; }
 
     /**
     * Construct a PK Signer.
-    * @param key = the key to use inside this signer
+    *
+    * Params:
+    *  key = the key to use inside this signer
     * @param emsa = the EMSA to use
     * An example would be "EMSA1(SHA-224)".
-    * @param format = the signature format to use
+    *
+    * Params:
+    *  format = the signature format to use
     * @param prot = says if fault protection should be enabled
     */
     this(in PrivateKey key, in string emsa_name,
@@ -298,11 +325,13 @@ struct PKVerifier
 public:
     /**
     * Verify a signature.
-    * @param msg = the message that the signature belongs to, as a ubyte array
+    *
+    * Params:
+    *  msg = the message that the signature belongs to, as a ubyte array
     * @param msg_length = the length of the above ubyte array msg
     * @param sig = the signature as a ubyte array
     * @param sig_length = the length of the above ubyte array sig
-    * @return true if the signature is valid
+    * Returns: true if the signature is valid
     */
     bool verifyMessage(const(ubyte)* msg, size_t msg_length,
                        const(ubyte)* sig, size_t sig_length)
@@ -314,9 +343,11 @@ public:
 
     /**
     * Verify a signature.
-    * @param msg = the message that the signature belongs to
+    *
+    * Params:
+    *  msg = the message that the signature belongs to
     * @param sig = the signature
-    * @return true if the signature is valid
+    * Returns: true if the signature is valid
     */
     bool verifyMessage(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
                                       auto const ref Vector!( ubyte, Alloc2 ) sig)
@@ -334,14 +365,18 @@ public:
     /**
     * Add a message part (single ubyte) of the message corresponding to the
     * signature to be verified.
-    * @param input = the ubyte to add
+    *
+    * Params:
+    *  input = the ubyte to add
     */
     void update(ubyte input) { update(&input, 1); }
 
     /**
     * Add a message part of the message corresponding to the
     * signature to be verified.
-    * @param msg_part = the new message part as a ubyte array
+    *
+    * Params:
+    *  msg_part = the new message part as a ubyte array
     * @param length = the length of the above ubyte array
     */
     void update(const(ubyte)* input, size_t length)
@@ -352,7 +387,9 @@ public:
     /**
     * Add a message part of the message corresponding to the
     * signature to be verified.
-    * @param input = the new message part
+    *
+    * Params:
+    *  input = the new message part
     */
     void update(const ref Vector!ubyte input)
     { update(input.ptr, input.length); }
@@ -360,9 +397,11 @@ public:
     /**
     * Check the signature of the buffered message, i.e. the one build
     * by successive calls to update.
-    * @param sig = the signature to be verified as a ubyte array
+    *
+    * Params:
+    *  sig = the signature to be verified as a ubyte array
     * @param length = the length of the above ubyte array
-    * @return true if the signature is valid, false otherwise
+    * Returns: true if the signature is valid, false otherwise
     */
     bool checkSignature(const(ubyte)* sig, size_t length)
     {
@@ -398,8 +437,10 @@ public:
     /**
     * Check the signature of the buffered message, i.e. the one build
     * by successive calls to update.
-    * @param sig = the signature to be verified
-    * @return true if the signature is valid, false otherwise
+    *
+    * Params:
+    *  sig = the signature to be verified
+    * Returns: true if the signature is valid, false otherwise
     */
     bool checkSignature(Alloc)(auto const ref Vector!( ubyte, Alloc ) sig)
     {
@@ -408,7 +449,9 @@ public:
 
     /**
     * Set the format of the signatures fed to this verifier.
-    * @param format = the signature format to use
+    *
+    * Params:
+    *  format = the signature format to use
     */
     void setInputFormat(SignatureFormat format)
     {
@@ -419,7 +462,9 @@ public:
 
     /**
     * Construct a PK Verifier.
-    * @param pub_key = the public key to verify against
+    *
+    * Params:
+    *  pub_key = the public key to verify against
     * @param emsa = the EMSA to use (eg "EMSA3(SHA-1)")
     * @param format = the signature format to use
     */
@@ -533,7 +578,9 @@ public:
 
     /**
     * Construct a PK Key Agreement.
-    * @param key = the key to use
+    *
+    * Params:
+    *  key = the key to use
     * @param kdf_name = name of the KDF to use (or 'Raw' for no KDF)
     */
     this(in PKKeyAgreementKey key, in string kdf_name)
@@ -577,7 +624,9 @@ public:
 
     /**
     * Construct an instance.
-    * @param key = the key to use inside the decryptor
+    *
+    * Params:
+    *  key = the key to use inside the decryptor
     * @param eme = the EME to use
     */
     this(in PublicKey key, in string eme_name)
@@ -632,7 +681,9 @@ class PKDecryptorEME : PKDecryptor
 public:
   /**
     * Construct an instance.
-    * @param key = the key to use inside the encryptor
+    *
+    * Params:
+    *  key = the key to use inside the encryptor
     * @param eme = the EME to use
     */
     this(in PrivateKey key, in string eme_name)

@@ -1,8 +1,9 @@
 /*
 * Transformations of data
 * (C) 2013 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.algo_base.transform;
 
@@ -21,7 +22,9 @@ interface Transformation
 public:
     /**
     * Begin processing a message.
-    * @param nonce = the per message nonce
+    * 
+    * Params:
+    *  nonce = the per message nonce
     */    
     final SecureVector!ubyte startVec(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) nonce)
     {
@@ -35,59 +38,65 @@ public:
 
     /**
     * Begin processing a message.
-    * @param nonce = the per message nonce
-    * @param nonce_len = length of nonce
+    * 
+    * Params:
+    *  nonce = the per message nonce
+    *  nonce_len = length of nonce
     */
     SecureVector!ubyte start(const(ubyte)* nonce, size_t nonce_len);
 
     /**
-    * Process some data. Input must be in size updateGranularity() ubyte blocks.
-    * @param blocks = in/out paramter which will possibly be resized
-    * @param offset = an offset into blocks to begin processing
+    * Process some data. Input must be in size $(D updateGranularity()) ubyte blocks.
+    * 
+    * Params:
+    *  blocks = in/out paramter which will possibly be resized
+    *  offset = an offset into blocks to begin processing
     */
     void update(ref SecureVector!ubyte blocks, size_t offset = 0);
 
     /**
     * Complete processing of a message.
     *
-    * @param final_block = in/out parameter which must be at least
-    *          minimumFinalSize() bytes, and will be set to any final output
-    * @param offset = an offset into final_block to begin processing
+    * Params:
+    *  final_block = in/out parameter which must be at least
+    *          $(D minimumFinalSize()) bytes, and will be set to any final output
+    *  offset = an offset into final_block to begin processing
     */
     void finish(ref SecureVector!ubyte final_block, size_t offset = 0);
 
     /**
-    * Returns the size of the output if this transform is used to process a
-    * message with input_length bytes. Will throw new if unable to give a precise
+    * Returns: The size of the output if this transform is used to process a
+    * message with input_length bytes. Will throw if unable to give a precise
     * answer.
     */
     size_t outputLength(size_t input_length) const;
 
     /**
-    * @return size of required blocks to update
+    * Returns: size of required blocks to update
     */
     size_t updateGranularity() const;
 
     /**
-    * @return required minimium size to finalize() - may be any
+    * Returns: required minimium size to $(D finalize() - may be any
     *            length larger than this.
     */
     size_t minimumFinalSize() const;
 
     /**
-    * Return the default size for a nonce
+    * Returns: the default size for a nonce
     */
     size_t defaultNonceLength() const;
 
     /**
-    * Return true iff nonce_len is a valid length for the nonce
+    * Returns: true iff nonce_len is a valid length for the nonce
     */
     bool validNonceLength(size_t nonce_len) const;
 
     /**
-    * Return some short name describing the provider of this tranformation.
+    * Short name describing the provider of this tranformation.
+    * 
     * Useful in cases where multiple implementations are available (eg,
-    * different implementations of AES). Default "core" is used for the
+    * different implementations of AES). Default "core" is used for the 
     * 'standard' implementation included in the library.
     */
     string provider() const;
@@ -101,39 +110,31 @@ class KeyedTransform : Transformation
 {
 public:
     /**
-    * @return object describing limits on key size
+    * Returns: object describing limits on key size
     */
     abstract KeyLengthSpecification keySpec() const;
 
     /**
     * Check whether a given key length is valid for this algorithm.
-    * @param length = the key length to be checked.
-    * @return true if the key length is valid.
+    * 
+    * Params:
+    *  length = the key length to be checked.
+    * 
+    * Returns: true if the key length is valid.
     */
     final bool validKeylength(size_t length) const
     {
         return keySpec().validKeylength(length);
     }
 
-    final void setKey(Alloc)(in RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
-    {
-        setKey(key.ptr, key.length);
-    }
 
-    final void setKey(Alloc)(const ref Vector!( ubyte, Alloc ) key)
-    {
-        setKey(key.ptr, key.length);
-    }
-
-    final void setKey(in SymmetricKey key)
-    {
-        setKey(key.ptr, key.length);
-    }
 
     /**
     * Set the symmetric key of this transform
-    * @param key = contains the key material
-    * @param length = in bytes of key param
+    * 
+    * Params:
+    *  key = contains the key material
+    *  length = size in bytes of key param
     */
     final void setKey(const(ubyte)* key, size_t length)
     {
@@ -141,6 +142,25 @@ public:
             throw new InvalidKeyLength(name, length);
         keySchedule(key, length);
     }
+
+	/// ditto
+	final void setKey(Alloc)(in RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
+	{
+		setKey(key.ptr, key.length);
+	}
+
+	/// ditto	
+	final void setKey(Alloc)(const ref Vector!( ubyte, Alloc ) key)
+	{
+		setKey(key.ptr, key.length);
+	}
+
+	/// ditto
+	final void setKey(in SymmetricKey key)
+	{
+		setKey(key.ptr, key.length);
+	}
+
 
 protected:
 

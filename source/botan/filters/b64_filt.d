@@ -1,8 +1,9 @@
 /*
 * Base64 Encoder/Decoder
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.b64_filt;
 
@@ -24,7 +25,9 @@ public:
 
     /**
     * Input a part of a message to the encoder.
-    * @param input = the message to input as a ubyte array
+    *
+    * Params:
+    *  input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
     override void write(const(ubyte)* input, size_t length)
@@ -63,7 +66,9 @@ public:
 
     /**
     * Create a base64 encoder.
-    * @param breaks = whether to use line breaks in the output
+    *
+    * Params:
+    *  breaks = whether to use line breaks in the output
     * @param length = the length of the lines of the output
     * @param t_n = whether to use a trailing newline
     */
@@ -148,7 +153,9 @@ public:
 
     /**
     * Input a part of a message to the decoder.
-    * @param input = the message to input as a ubyte array
+    *
+    * Params:
+    *  input = the message to input as a ubyte array
     * @param length = the length of the ubyte array input
     */
     override void write(const(ubyte)* input, size_t length)
@@ -207,7 +214,9 @@ public:
 
     /**
     * Create a base64 decoder.
-    * @param checking = the type of checking that shall be performed by
+    *
+    * Params:
+    *  checking = the type of checking that shall be performed by
     * the decoder
     */
     this(DecoderChecking c = NONE)

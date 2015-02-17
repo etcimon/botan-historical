@@ -1,3 +1,10 @@
+/*
+* TLS Unit tests
+* (C) 2014-2015 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
+*
+* Botan is released under the Simplified BSD License (see LICENSE.md)
+*/
 module botan.tls.test;
 import botan.constants;
 static if (BOTAN_TEST && BOTAN_HAS_TLS):

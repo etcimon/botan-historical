@@ -1,8 +1,9 @@
 /*
 * Hex Encoding and Decoding
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.codec.hex;
 
@@ -49,7 +50,7 @@ void hexEncode(char* output,
 * @param input = some input
 * @param input_length = length of input in bytes
 * @param uppercase = should output be upper or lower case?
-* @return hexadecimal representation of input
+* Returns: hexadecimal representation of input
 */
 string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true)
 {
@@ -66,7 +67,7 @@ string hexEncode(const(ubyte)* input, size_t input_length, bool uppercase = true
 * Perform hex encoding
 * @param input = some input
 * @param uppercase = should output be upper or lower case?
-* @return hexadecimal representation of input
+* Returns: hexadecimal representation of input
 */
 string hexEncode(Alloc)(auto const ref Vector!( ubyte, Alloc ) input, bool uppercase = true)
 {
@@ -90,7 +91,7 @@ string hexEncode(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Allo
 *          should be passed in later along with more input.
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t hexDecode(ubyte* output,
                  const(char)* input,
@@ -189,7 +190,7 @@ size_t hexDecode(ubyte* output,
 * @param input_length = length of input in bytes
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t hexDecode(ubyte* output,
                  const(char)* input,
@@ -211,7 +212,7 @@ size_t hexDecode(ubyte* output,
 * @param input = some hex input
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t hexDecode(ubyte* output, in string input, bool ignore_ws = true)
 {
@@ -224,7 +225,7 @@ size_t hexDecode(ubyte* output, in string input, bool ignore_ws = true)
 * @param input_length = the length of input in bytes
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return decoded hex output
+* Returns: decoded hex output
 */
 Vector!ubyte hexDecode(string input, bool ignore_ws = true)
 {
@@ -241,7 +242,7 @@ Vector!ubyte hexDecode(string input, bool ignore_ws = true)
 * @param input = some hex input
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return decoded hex output
+* Returns: decoded hex output
 */
 Vector!ubyte hexDecode(const ref Vector!ubyte input, bool ignore_ws = true)
 {
@@ -254,7 +255,7 @@ Vector!ubyte hexDecode(const ref Vector!ubyte input, bool ignore_ws = true)
 * @param input_length = the length of input in bytes
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return decoded hex output
+* Returns: decoded hex output
 */
 SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool ignore_ws = true)
 {
@@ -269,7 +270,7 @@ SecureVector!ubyte hexDecodeLocked(const(char)* input, size_t input_length, bool
 * @param input = some hex input
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return decoded hex output
+* Returns: decoded hex output
 */
 SecureVector!ubyte hexDecodeLocked(in string input, bool ignore_ws = true)
 {

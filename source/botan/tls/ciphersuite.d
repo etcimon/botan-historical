@@ -1,8 +1,9 @@
 /*
 * TLS Cipher Suites
 * (C) 2004-2011,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.ciphersuite;
 
@@ -24,7 +25,7 @@ public:
     /**
     * Convert an SSL/TLS ciphersuite to algorithm fields
     * @param suite = the ciphersuite code number
-    * @return ciphersuite object
+    * Returns: ciphersuite object
     */
     static TLSCiphersuite byId(ushort suite)
     {
@@ -484,7 +485,7 @@ public:
     /**
     * Lookup a ciphersuite by name
     * @param name = the name (eg TLS_RSA_WITH_RC4_128_SHA)
-    * @return ciphersuite object
+    * Returns: ciphersuite object
     */
     static TLSCiphersuite byName(in string name)
     {
@@ -500,7 +501,7 @@ public:
     /**
     * Generate a static list of all known ciphersuites and return it.
     *
-    * @return list of all known ciphersuites
+    * Returns: list of all known ciphersuites
     */
     static Vector!TLSCiphersuite allKnownCiphersuites()
     {
@@ -515,7 +516,7 @@ public:
 
     /**
     * Formats the ciphersuite back to an RFC-style ciphersuite string
-    * @return RFC ciphersuite string identifier
+    * Returns: RFC ciphersuite string identifier
     */
     string toString() const
     {
@@ -574,12 +575,12 @@ public:
     }
 
     /**
-    * @return ciphersuite number
+    * Returns: ciphersuite number
     */
     ushort ciphersuiteCode() const { return m_ciphersuite_code; }
 
     /**
-    * @return true if this is a PSK ciphersuite
+    * Returns: true if this is a PSK ciphersuite
     */
     bool pskCiphersuite() const
     {
@@ -589,7 +590,7 @@ public:
     }
 
     /**
-    * @return true if this is an ECC ciphersuite
+    * Returns: true if this is an ECC ciphersuite
     */
     bool eccCiphersuite() const
     {
@@ -597,22 +598,22 @@ public:
     }
 
     /**
-    * @return key exchange algorithm used by this ciphersuite
+    * Returns: key exchange algorithm used by this ciphersuite
     */
     string kexAlgo() const { return m_kex_algo; }
 
     /**
-    * @return signature algorithm used by this ciphersuite
+    * Returns: signature algorithm used by this ciphersuite
     */
     string sigAlgo() const { return m_sig_algo; }
 
     /**
-    * @return symmetric cipher algorithm used by this ciphersuite
+    * Returns: symmetric cipher algorithm used by this ciphersuite
     */
     string cipherAlgo() const { return m_cipher_algo; }
 
     /**
-    * @return message authentication algorithm used by this ciphersuite
+    * Returns: message authentication algorithm used by this ciphersuite
     */
     string macAlgo() const { return m_mac_algo; }
 
@@ -622,7 +623,7 @@ public:
     }
 
     /**
-    * @return cipher key length used by this ciphersuite
+    * Returns: cipher key length used by this ciphersuite
     */
     size_t cipherKeylen() const { return m_cipher_keylen; }
 
@@ -631,7 +632,7 @@ public:
     size_t macKeylen() const { return m_mac_keylen; }
 
     /**
-    * @return true if this is a valid/known ciphersuite
+    * Returns: true if this is a valid/known ciphersuite
     */    
     bool valid() const
     {

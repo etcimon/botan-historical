@@ -3,8 +3,9 @@
 *
 * (C) 2007 Martin Doering, Christoph Ludwig, Falko Strenzke
 *      2010-2011,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.ec_gfp.curve_gfp;
 
@@ -40,43 +41,43 @@ struct CurveGFp
     }
 
     /**
-    * @return curve coefficient a
+    * Returns: curve coefficient a
     */
     ref const(BigInt) getA() const { return m_a; }
 
     /**
-    * @return curve coefficient b
+    * Returns: curve coefficient b
     */
     ref const(BigInt) getB() const { return m_b; }
 
     /**
     * Get prime modulus of the field of the curve
-    * @return prime modulus of the field of the curve
+    * Returns: prime modulus of the field of the curve
     */
     ref const(BigInt) getP() const { return m_p; }
 
     /**
-    * @return Montgomery parameter r^2 % p
+    * Returns: Montgomery parameter r^2 % p
     */
     ref const(BigInt) getR2() const { return m_r2; }
 
     /**
-    * @return a * r mod p
+    * Returns: a * r mod p
     */
     ref const(BigInt) getAR() const { return m_a_r; }
 
     /**
-    * @return b * r mod p
+    * Returns: b * r mod p
     */
     ref const(BigInt) getBR() const { return m_b_r; }
 
     /**
-    * @return Montgomery parameter p-dash
+    * Returns: Montgomery parameter p-dash
     */
     word getPDash() const { return m_p_dash; }
 
     /**
-    * @return p.sigWords()
+    * Returns: p.sigWords()
     */
     size_t getPWords() const { return m_p_words; }
 
@@ -99,7 +100,7 @@ struct CurveGFp
     /**
     * Equality operator
     * @param other = curve to compare with
-    * @return true iff this is the same curve as other
+    * Returns: true iff this is the same curve as other
     */
     bool opEquals(const ref CurveGFp other) const
     {
@@ -112,7 +113,7 @@ struct CurveGFp
     * Equality operator
     * @param lhs = a curve
     * @param rhs = a curve
-    * @return true iff lhs is not the same as rhs
+    * Returns: true iff lhs is not the same as rhs
     */
     int opCmp(ref CurveGFp rhs) const
     {

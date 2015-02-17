@@ -1,8 +1,9 @@
 /*
 * TLS Channel
 * (C) 2011,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.channel;
 
@@ -39,7 +40,7 @@ class TLSChannel
 public:
     /**
     * Inject TLS traffic received from counterparty
-    * @return a hint as the how many more bytes we need to process the
+    * Returns: a hint as the how many more bytes we need to process the
     *            current record (this may be 0 if on a record boundary)
     */
     size_t receivedData(const(ubyte)* input, size_t input_size)
@@ -200,7 +201,7 @@ public:
 
     /**
     * Inject TLS traffic received from counterparty
-    * @return a hint as the how many more bytes we need to process the
+    * Returns: a hint as the how many more bytes we need to process the
     *            current record (this may be 0 if on a record boundary)
     */
     size_t receivedData(const ref Vector!ubyte buf)
@@ -240,7 +241,9 @@ public:
     /**
     * Send a TLS alert message. If the alert is fatal, the internal
     * state (keys, etc) will be reset.
-    * @param alert = the TLSAlert to send
+    *
+    * Params:
+    *  alert = the TLSAlert to send
     */
     void sendAlert(in TLSAlert alert)
     {
@@ -283,7 +286,7 @@ public:
     void close() { sendWarningAlert(TLSAlert.CLOSE_NOTIFY); }
 
     /**
-    * @return true iff the connection is active for sending application data
+    * Returns: true iff the connection is active for sending application data
     */
     bool isActive() const
     {
@@ -291,7 +294,7 @@ public:
     }
 
     /**
-    * @return true iff the connection has been definitely closed
+    * Returns: true iff the connection has been definitely closed
     */
     bool isClosed() const
     {
@@ -325,7 +328,7 @@ public:
     }
 
     /**
-    * @return true iff the peer supports heartbeat messages
+    * Returns: true iff the peer supports heartbeat messages
     */
     bool peerSupportsHeartbeats() const
     {
@@ -335,7 +338,7 @@ public:
     }
 
     /**
-    * @return true iff we are allowed to send heartbeat messages
+    * Returns: true iff we are allowed to send heartbeat messages
     */
     bool heartbeatSendingAllowed() const
     {
@@ -365,7 +368,7 @@ public:
     void heartbeat() { heartbeat(null, 0); }
 
     /**
-    * @return certificate chain of the peer (may be empty)
+    * Returns: certificate chain of the peer (may be empty)
     */
     Vector!X509Certificate peerCertChain() const
     {
@@ -379,7 +382,7 @@ public:
     * @param label = a disambiguating label string
     * @param context = a per-association context value
     * @param length = the length of the desired key in bytes
-    * @return key of length bytes
+    * Returns: key of length bytes
     */
     const(SymmetricKey) keyMaterialExport(in string label,
                                    in string context,
@@ -626,7 +629,7 @@ protected:
     }
 
     /**
-    * @return true iff the counterparty supports the secure
+    * Returns: true iff the counterparty supports the secure
     * renegotiation extensions.
     */
     bool secureRenegotiationSupported() const

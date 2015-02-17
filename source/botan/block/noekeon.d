@@ -1,8 +1,9 @@
 /*
 * Noekeon
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.noekeon;
 
@@ -123,12 +124,12 @@ protected:
         0xD4 ];
 
     /**
-    * @return const reference to encryption subkeys
+    * Returns: const reference to encryption subkeys
     */
     ref const(SecureVector!uint) getEK() const { return m_EK; }
 
     /**
-    * @return const reference to decryption subkeys
+    * Returns: const reference to decryption subkeys
     */
     ref const(SecureVector!uint) getDK() const { return m_DK; }
 

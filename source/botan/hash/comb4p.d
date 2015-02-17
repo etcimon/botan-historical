@@ -1,8 +1,9 @@
 /*
 * Comb4P hash combiner
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.comb4p;
 
@@ -48,9 +49,9 @@ public:
             return m_hash1.hashBlockSize;
         
         /*
-    * Return LCM of the block sizes? This would probably be OK for
-    * HMAC, which is the main thing relying on knowing the block size.
-    */
+        * Return LCM of the block sizes? This would probably be OK for
+        * HMAC, which is the main thing relying on knowing the block size.
+        */
         return 0;
     }
 

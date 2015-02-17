@@ -1,8 +1,9 @@
 /*
 * TLS Protocol Version Management
 * (C) 2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.version_;
 
@@ -61,12 +62,12 @@ public:
     }
 
     /**
-    * @return true if this is a valid protocol version
+    * Returns: true if this is a valid protocol version
     */
     bool valid() const { return (m_version != 0); }
 
     /**
-    * @return true if this is a protocol version we know about
+    * Returns: true if this is a protocol version we know about
     */
     bool knownVersion() const
     {
@@ -79,17 +80,17 @@ public:
     }
 
     /**
-    * @return major version of the protocol version
+    * Returns: major version of the protocol version
     */
     ubyte majorVersion() const { return get_byte(0, m_version); }
 
     /**
-    * @return minor version of the protocol version
+    * Returns: minor version of the protocol version
     */
     ubyte minorVersion() const { return get_byte(1, m_version); }
 
     /**
-    * @return human-readable description of this version
+    * Returns: human-readable description of this version
     */
     string toString() const
     {
@@ -112,7 +113,7 @@ public:
     /**
     * If this version is known, return that. Otherwise return the
     * best (most recent) version we know of.
-    * @return best matching protocol version
+    * Returns: best matching protocol version
     */
     TLSProtocolVersion bestKnownMatch() const
     {
@@ -126,7 +127,7 @@ public:
     }
 
     /**
-    * @return true iff this is a DTLS version
+    * Returns: true iff this is a DTLS version
     */
     bool isDatagramProtocol() const
     {
@@ -134,7 +135,7 @@ public:
     }
 
     /**
-    * @return true if this version supports negotiable signature algorithms
+    * Returns: true if this version supports negotiable signature algorithms
     */
     bool supportsNegotiableSignatureAlgorithms() const
     {
@@ -143,7 +144,7 @@ public:
     }
 
     /**
-    * @return true if this version uses explicit IVs for block ciphers
+    * Returns: true if this version uses explicit IVs for block ciphers
     */
     bool supportsExplicitCbcIvs() const
     {
@@ -154,7 +155,7 @@ public:
     }
 
     /**
-    * @return true if this version uses a ciphersuite specific PRF
+    * Returns: true if this version uses a ciphersuite specific PRF
     */
     bool supportsCiphersuiteSpecificPrf() const
     {
@@ -169,7 +170,7 @@ public:
     }
 
     /**
-    * @return if this version is equal to other
+    * Returns: if this version is equal to other
     */
     bool opEquals(in TLSProtocolVersion other) const
     {
@@ -177,7 +178,7 @@ public:
     }
     
     /**
-    * @return if this version is not equal to other
+    * Returns: if this version is not equal to other
     */
     int opCmp(in TLSProtocolVersion other) const
     {
@@ -187,7 +188,7 @@ public:
     }
 
     /**
-    * @return if this version is equal to other
+    * Returns: if this version is equal to other
     */
     bool opEquals(in ushort other) const
     {
@@ -195,7 +196,7 @@ public:
     }
     
     /**
-    * @return if this version is not equal to other
+    * Returns: if this version is not equal to other
     */
     int opCmp(in ushort other) const
     {
@@ -205,7 +206,7 @@ public:
     }
 
     /**
-    * @return if this version is later than other
+    * Returns: if this version is later than other
     */
     bool isGreaterThan(in TLSProtocolVersion other) const
     {

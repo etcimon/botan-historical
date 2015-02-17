@@ -1,6 +1,7 @@
 /*
 * EMSA/EME Retrieval
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
 * Distributed under the terms of the Botan license
 */
@@ -26,7 +27,7 @@ static if (BOTAN_HAS_EME_PKCS1_V15)  import botan.pk_pad.eme_pkcs;
 * Factory method for EMSA (message-encoding methods for signatures
 * with appendix) objects
 * @param algo_spec = the name of the EME to create
-* @return pointer to newly allocated object of that type
+* Returns: pointer to newly allocated object of that type
 */
 EMSA getEmsa(in string algo_spec)
 {
@@ -91,7 +92,7 @@ EMSA getEmsa(in string algo_spec)
 /**
 * Factory method for EME (message-encoding methods for encryption) objects
 * @param algo_spec = the name of the EME to create
-* @return pointer to newly allocated object of that type
+* Returns: pointer to newly allocated object of that type
 */
 EME getEme(in string algo_spec)
 {

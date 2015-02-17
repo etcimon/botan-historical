@@ -1,6 +1,7 @@
 /*
 * Algorithm Factory
 * (C) 2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
 * Distributed under the terms of the Botan license
 */
@@ -34,7 +35,8 @@ public:
     }
 
     /**
-    * @param engine = to add (AlgorithmFactory takes ownership)
+    * Params:
+    *  engine = the engine to add to $(D AlgorithmFactory) and gives ownership of it.
     */
     void addEngine(Engine engine)
     {
@@ -55,10 +57,13 @@ public:
     }
     
     /**
-    * Return the possible providers of a request
-    * Note: assumes you don't have different types by the same name
-    * @param algo_spec = the algorithm we are querying
-    * @returns list of providers of this algorithm
+    * Possible providers of a request assuming you don't have 
+    * different types by the same name
+    * 
+    * Params:
+    *  m algo_spec = the algorithm we are querying
+    * 
+    * Returns: list of providers of this algorithm
     */
     Vector!string providersOf(in string algo_spec)
     {
@@ -84,8 +89,10 @@ public:
     
     /**
     * Set the preferred provider for an algorithm
-    * @param algo_spec = the algorithm we are setting a provider for
-    * @param provider = the provider we would like to use
+    * 
+    * Params:
+    *  algo_spec = the algorithm we are setting a provider for
+    *  provider = the provider we would like to use
     */
     void setPreferredProvider(in string algo_spec, in string provider = "")
     {
@@ -102,10 +109,13 @@ public:
     }
     
     /**
-    * Return the prototypical block cipher corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to const prototype object, ready to clone(), or NULL
+    * Prototypical block cipher retrieval by name, it must be cloned to be used
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to const prototype object, ready to $(D clone()), or NULL
     */
     const(BlockCipher) prototypeBlockCipher(in string algo_spec, in string provider = "")
     {
@@ -113,10 +123,12 @@ public:
     }
     
     /**
-    * Return a new block cipher corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to freshly created instance of the request algorithm
+    * Makes a ready-to-use block cipher according to its name
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to freshly created instance of the request algorithm
     */
     BlockCipher makeBlockCipher(in string algo_spec, in string provider = "")
     {
@@ -137,9 +149,12 @@ public:
     
     /**
     * Return the prototypical stream cipher corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to const prototype object, ready to clone(), or NULL
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: Pointer to const prototype object, ready to $(D clone()), or NULL
     */
     const(StreamCipher) prototypeStreamCipher(in string algo_spec, in string provider = "")
     {
@@ -149,9 +164,12 @@ public:
     
     /**
     * Return a new stream cipher corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to freshly created instance of the request algorithm
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: Pointer to freshly created instance of the request algorithm
     */
     StreamCipher makeStreamCipher(in string algo_spec, in string provider = "")
     {
@@ -163,8 +181,10 @@ public:
     
     /**
     * Add a new stream cipher
-    * @param algo = the algorithm to add
-    * @param provider = the provider of this algorithm
+    * 
+    * Params:
+    *  stream_cipher = the algorithm to add
+    *  provider = the provider of this algorithm
     */
     void addStreamCipher(StreamCipher stream_cipher, in string provider = "")
     {
@@ -173,9 +193,12 @@ public:
     
     /**
     * Return the prototypical object corresponding to this request (if found)
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to const prototype object, ready to clone(), or NULL
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to const prototype object, ready to $(D clone()), or NULL
     */
     const(HashFunction) prototypeHashFunction(in string algo_spec, in string provider = "")
     {
@@ -185,9 +208,11 @@ public:
     
     /**
     * Return a new object corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to freshly created instance of the request algorithm
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * Returns: pointer to freshly created instance of the request algorithm
     */
     HashFunction makeHashFunction(in string algo_spec, in string provider = "")
     {
@@ -198,8 +223,10 @@ public:
         
     /**
     * Add a new hash
-    * @param algo = the algorithm to add
-    * @param provider = the provider of this algorithm
+    * 
+    * Params:
+    *  hash = the algorithm to add
+    *  provider = the provider of this algorithm
     */
     void addHashFunction(HashFunction hash, in string provider = "")
     {
@@ -208,9 +235,12 @@ public:
     
     /**
     * Return the prototypical object corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to const prototype object, ready to clone(), or NULL
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to const prototype object, ready to $(D clone()), or NULL
     */
     const(MessageAuthenticationCode) prototypeMac(in string algo_spec, in string provider = "")
     {
@@ -219,9 +249,12 @@ public:
     
     /**
     * Return a new object corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to freshly created instance of the request algorithm
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to freshly created instance of the request algorithm
     */
     MessageAuthenticationCode makeMac(in string algo_spec, in string provider = "")
     {
@@ -232,8 +265,9 @@ public:
 
     
     /**
-    * @param algo = the algorithm to add
-    * @param provider = the provider of this algorithm
+    * Params:
+    *  mac = the algorithm to add
+    *  provider = the provider of this algorithm
     */
     void addMac(MessageAuthenticationCode mac, in string provider = "")
     {
@@ -243,9 +277,12 @@ public:
     
     /**
     * Return the prototypical object corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to const prototype object, ready to clone(), or NULL
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to const prototype object, ready to $(D clone()), or NULL
     */
     const(PBKDF) prototypePbkdf(in string algo_spec, in string provider = "")
     {
@@ -254,11 +291,13 @@ public:
 
     
     /**
-    * Add a new PBKDF
-    * Returns a new object corresponding to this request
-    * @param algo_spec = the algorithm we want
-    * @param provider = the provider we would like to use
-    * @returns pointer to freshly created instance of the request algorithm
+    * Returns a new Pbkdf object corresponding to this request
+    * 
+    * Params:
+    *  algo_spec = the algorithm we want
+    *  provider = the provider we would like to use
+    * 
+    * Returns: pointer to freshly created instance of the request algorithm
     */
     PBKDF makePbkdf(in string algo_spec, in string provider = "")
     {
@@ -268,14 +307,18 @@ public:
     }
     
     /**
-    * @param algo = the algorithm to add
-    * @param provider = the provider of this algorithm
+    * Add a new Pbkdf
+    *
+	* Params:
+    *  pbkdf = the algorithm to add
+    *  provider = the provider of this algorithm
     */
     void addPbkdf(PBKDF pbkdf, in string provider = "")
     {
         m_pbkdf_cache.add(pbkdf, pbkdf.name, provider);
     }
 
+    /// List of engines available
     @property ref Vector!Engine engines() {
         return m_engines;
     }

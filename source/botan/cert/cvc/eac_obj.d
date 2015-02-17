@@ -1,8 +1,9 @@
 /*
 * EAC11 objects
 * (C) 2008 Falko Strenzke
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.eac_obj;
 

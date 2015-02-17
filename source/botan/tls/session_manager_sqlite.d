@@ -1,8 +1,9 @@
 /*
-* SQLite3 TLS TLSSession Manager
+* SQLite3 TLS Session Manager
 * (C) 2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.session_manager_sqlite;
 

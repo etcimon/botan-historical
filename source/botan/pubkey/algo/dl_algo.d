@@ -1,8 +1,9 @@
 /*
 * DL Scheme
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.dl_algo;
 
@@ -100,7 +101,7 @@ public:
 
     /**
     * Get the DL domain parameters of this key.
-    * @return DL domain parameters of this key
+    * Returns: DL domain parameters of this key
     */
     final ref const(DLGroup) getDomain() const { return m_group; }
 
@@ -116,19 +117,19 @@ public:
 
     /**
     * Get the prime p of the underlying DL m_group.
-    * @return prime p
+    * Returns: prime p
     */
     final ref const(BigInt) groupP() const { return m_group.getP(); }
 
     /**
     * Get the prime q of the underlying DL m_group.
-    * @return prime q
+    * Returns: prime q
     */
     final ref const(BigInt) groupQ() const { return m_group.getQ(); }
 
     /**
     * Get the generator g of the underlying DL m_group.
-    * @return generator g
+    * Returns: generator g
     */
     final ref const(BigInt) groupG() const { return m_group.getG(); }
 
@@ -211,7 +212,7 @@ public:
 
     /**
     * Get the secret key m_x.
-    * @return secret key
+    * Returns: secret key
     */
     ref const(BigInt) getX() const { return m_x; }
 

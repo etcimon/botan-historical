@@ -1,8 +1,9 @@
 /*
 * TLS Record Handling
 * (C) 2004-2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.record;
 
@@ -193,7 +194,7 @@ private:
 * @param msg_sequence = is the sequence number
 * @param cipherstate = is the writing cipher state
 * @param rng = is a random number generator
-* @return number of bytes written to write_buffer
+* Returns: number of bytes written to write_buffer
 */
 void writeRecord(ref SecureVector!ubyte output,
                   ubyte msg_type, const(ubyte)* msg, size_t msg_length,
@@ -224,7 +225,7 @@ void writeRecord(ref SecureVector!ubyte output,
         return;
     }
     
-    if (Unique!AEADMode aead = cipherstate.aead())
+    if (AEADMode aead = cipherstate.aead())
     {
         const size_t ctext_size = aead.outputLength(msg_length);
         
@@ -333,7 +334,7 @@ void writeRecord(ref SecureVector!ubyte output,
 
 /**
 * Decode a TLS record
-* @return zero if full message, else number of bytes still needed
+* Returns: zero if full message, else number of bytes still needed
 */
 size_t readRecord(ref SecureVector!ubyte readbuf,
                   const(ubyte)* input, size_t input_sz,

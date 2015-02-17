@@ -1,8 +1,9 @@
 /*
 * Filters
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.filters;
 
@@ -58,7 +59,9 @@ public:
 
     /**
     * Set the initialization vector for this filter.
-    * @param iv = the initialization vector to set
+    *
+    * Params:
+    *  iv = the initialization vector to set
     */
     override void setIv(in InitializationVector iv)
     {
@@ -68,7 +71,9 @@ public:
 
     /**
     * Set the key of this filter.
-    * @param key = the key to set
+    *
+    * Params:
+    *  key = the key to set
     */
     override void setKey(in SymmetricKey key) { m_cipher.setKey(key); }
 
@@ -76,7 +81,9 @@ public:
 
     /**
     * Construct a stream cipher filter.
-    * @param cipher_obj = a cipher object to use
+    *
+    * Params:
+    *  cipher_obj = a cipher object to use
     */
     this(StreamCipher stream_cipher)
     {
@@ -86,7 +93,9 @@ public:
 
     /**
     * Construct a stream cipher filter.
-    * @param cipher_obj = a cipher object to use
+    *
+    * Params:
+    *  cipher_obj = a cipher object to use
     * @param key = the key to use inside this filter
     */
     this(StreamCipher stream_cipher, in SymmetricKey key)
@@ -98,7 +107,9 @@ public:
 
     /**
     * Construct a stream cipher filter.
-    * @param cipher = the name of the desired cipher
+    *
+    * Params:
+    *  cipher = the name of the desired cipher
     */
     this(in string sc_name)
         
@@ -110,7 +121,9 @@ public:
 
     /**
     * Construct a stream cipher filter.
-    * @param cipher = the name of the desired cipher
+    *
+    * Params:
+    *  cipher = the name of the desired cipher
     * @param key = the key to use inside this filter
     */
     this(in string sc_name, in SymmetricKey key)
@@ -155,7 +168,9 @@ public:
 
     /**
     * Construct a hash filter.
-    * @param hash_fun = the hash function to use
+    *
+    * Params:
+    *  hash_fun = the hash function to use
     * @param len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the hashfunction
     * hash. Otherwise, specify a smaller value here so that the
@@ -169,7 +184,9 @@ public:
 
     /**
     * Construct a hash filter.
-    * @param request = the name of the hash algorithm to use
+    *
+    * Params:
+    *  request = the name of the hash algorithm to use
     * @param len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the hashfunction
     * hash. Otherwise, specify a smaller value here so that the
@@ -217,7 +234,9 @@ public:
 
     /**
     * Set the key of this filter.
-    * @param key = the key to set
+    *
+    * Params:
+    *  key = the key to set
     */
     override void setKey(in SymmetricKey key) { m_mac.setKey(key); }
 
@@ -227,7 +246,9 @@ public:
 
     /**
     * Construct a MAC filter. The MAC key will be left empty.
-    * @param mac_obj = the MAC to use
+    *
+    * Params:
+    *  mac_obj = the MAC to use
     * @param out_len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
     * MAC. Otherwise, specify a smaller value here so that the
@@ -241,7 +262,9 @@ public:
 
     /**
     * Construct a MAC filter.
-    * @param mac_obj = the MAC to use
+    *
+    * Params:
+    *  mac_obj = the MAC to use
     * @param key = the MAC key to use
     * @param out_len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
@@ -257,7 +280,9 @@ public:
 
     /**
     * Construct a MAC filter. The MAC key will be left empty.
-    * @param mac = the name of the MAC to use
+    *
+    * Params:
+    *  mac = the name of the MAC to use
     * @param len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
     * MAC. Otherwise, specify a smaller value here so that the
@@ -272,7 +297,9 @@ public:
 
     /**
     * Construct a MAC filter.
-    * @param mac = the name of the MAC to use
+    *
+    * Params:
+    *  mac = the name of the MAC to use
     * @param key = the MAC key to use
     * @param len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the

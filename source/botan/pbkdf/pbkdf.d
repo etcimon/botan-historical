@@ -1,8 +1,9 @@
 /*
 * PBKDF
 * (C) 1999-2007,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbkdf.pbkdf;
 
@@ -21,7 +22,7 @@ interface PBKDF
 {
 public:
     /**
-    * @return new instance of this same algorithm
+    * Returns: new instance of this same algorithm
     */
     abstract PBKDF clone() const;
 
@@ -119,7 +120,7 @@ public:
     * @param iterations = the number of iterations to use (use 10K or more)
     * @param loop_for = if iterations is zero, then instead the PBKDF is
     *          run until duration has passed.
-    * @return the number of iterations performed and the derived key
+    * Returns: the number of iterations performed and the derived key
     */
     abstract Pair!(size_t, OctetString)
         keyDerivation(size_t output_len,

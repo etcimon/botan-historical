@@ -1,6 +1,7 @@
 /*
 * OctetString
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
 * Distributed under the terms of the Botan license
 */
@@ -15,6 +16,7 @@ import memutils.vector;
 import botan.utils.types;
 import memutils.refcounted;
 alias OctetString = RefCounted!OctetStringImpl;
+
 /**
 * Octet String
 */
@@ -22,27 +24,27 @@ struct OctetStringImpl
 {
 public:
     /**
-    * @return size of this octet string in bytes
+    * Returns: size of this octet string in bytes
     */
     @property size_t length() const { return m_bits.length; }
     
     /**
-    * @return this object as a SecureVector!ubyte
+    * Returns: this object as a $(D SecureVector!ubyte)
     */
     SecureVector!ubyte bitsOf() const { return m_bits.dup; }
     
     /**
-    * @return start of this string
+    * Returns: Pointer to the first ubyte of this string
     */
     @property ubyte* ptr() const { return m_bits.ptr; }
     
     /**
-    * @return end of this string
+    * Returns: Pointer to one past the end of this string
     */
     ubyte* end() const{ return ptr + m_bits.length; }
     
     /**
-    * @return this encoded as hex
+    * Returns: this encoded as hex
     */
     string toString() const
     {
@@ -51,20 +53,23 @@ public:
         
     /**
     * XOR the contents of another octet string into this one
-    * @param other = octet string
-    * @return reference to this
+    * 
+    * Params:
+    *  other = octet string
+    * 
+    * Returns: reference to this
     */
-    OctetString opOpAssign(string op)(in OctetString k)
+    OctetString opOpAssign(string op)(in OctetString other)
         if (op == "^")
     {
-        if (k.ptr is this.ptr) { zeroise(m_bits); return; }
-        xorBuf(m_bits.ptr, k.ptr, min(length(), k.length));
+        if (other.ptr is this.ptr) { zeroise(m_bits); return; }
+        xorBuf(m_bits.ptr, other.ptr, min(length(), other.length));
         return this;
     }
     
     /**
-        * Force to have odd parity
-        */
+    * Force to have odd parity
+    */
     void setOddParity()
     {
         __gshared immutable ubyte[256] ODD_PARITY = [
@@ -97,7 +102,9 @@ public:
     
     /**
     * Create a new OctetString
-    * @param str = is a hex encoded string
+    * 
+    * Params:
+    *  hex_string = A hex encoded string
     */
     this(in string hex_string = "")
     {
@@ -107,18 +114,22 @@ public:
 
     /**
     * Create a new random OctetString
-    * @param rng = is a random number generator
-    * @param len = is the desired length in bytes
+    * 
+    * Params:
+    *  rng = is a random number generator
+    *  len = is the desired length in bytes
     */
-    this(RandomNumberGenerator rng, size_t length)
+    this(RandomNumberGenerator rng, size_t len)
     {
-        m_bits = rng.randomVec(length);
+        m_bits = rng.randomVec(len);
     }
     
     /**
     * Create a new OctetString
-    * @param input = is an array
-    * @param len = is the length of in in bytes
+    * 
+    * Params:
+    *  input = is an array
+    *  len = is the length of in in bytes
     */
     this(const(ubyte)* input, size_t len)
     {
@@ -127,7 +138,9 @@ public:
     
     /**
     * Create a new OctetString
-    * @param input = a bytestring
+    * 
+    * Params:
+    *  input = a bytestring
     */
     this(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) {  m_bits = SecureVector!ubyte(input.ptr[0 .. input.length]); }
 
@@ -137,9 +150,11 @@ public:
 
     /**
     * Compare two strings
-    * @param x = an octet string
-    * @param y = an octet string
-    * @return if x is equal to y
+    * 
+    * Params:
+    *  other = an octet string
+    * 
+    * Returns: true if x is equal to y
     */
     bool opEquals(const ref OctetString other) const
     {
@@ -148,9 +163,10 @@ public:
 
     /**
     * Compare two strings
-    * @param x = an octet string
-    * @param y = an octet string
-    * @return if x is not equal to y
+    * Params:
+    *  other = an octet string
+    * 
+    * Returns: 1 if this is bigger, -1 if smaller, 0 if equal to other
     */
     int opCmp(const ref OctetString other) const
     {
@@ -160,6 +176,7 @@ public:
         else return 1;
     }
 
+	/// Append another $(D OctetString) to this
     void opOpAssign(string op)(auto const ref OctetString other)
         if (op == "~")
     {
@@ -168,9 +185,11 @@ public:
 
     /**
     * Concatenate two strings
-    * @param x = an octet string
-    * @param y = an octet string
-    * @return x concatenated with y
+    * 
+    * Params:
+    *  other = an octet string
+    *
+    * Returns: this concatenated with other
     */
     OctetString opBinary(string op)(auto const ref OctetString other)
         if (op == "~") 
@@ -183,9 +202,11 @@ public:
     
     /**
     * XOR two strings
-    * @param x = an octet string
-    * @param y = an octet string
-    * @return x XORed with y
+    * 
+    * Params:
+    *  other = an octet string
+    * 
+    * Returns: this XORed with other
     */
     OctetString opBinary(string op)(auto const ref OctetString other)
         if (op == "^") 
@@ -197,6 +218,7 @@ public:
         return OctetString(ret);
     }
 
+	/// Returns: A copy of the underlying bits in a new octet string
     @property OctetString dup() const
     {
         return OctetString(m_bits.dup);

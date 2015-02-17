@@ -1,3 +1,10 @@
+/*
+* Unit test helper
+* (C) 2014-2015 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
+*
+* Botan is released under the Simplified BSD License (see LICENSE.md)
+*/
 module botan.test;
 
 import botan.constants;

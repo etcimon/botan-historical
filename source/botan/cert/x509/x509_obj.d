@@ -1,8 +1,9 @@
 /*
 * X.509 SIGNED Object
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509_obj;
 
@@ -32,7 +33,7 @@ class X509Object : ASN1Object
 public:
     /**
     * The underlying data that is to be or was signed
-    * @return data that is or was signed
+    * Returns: data that is or was signed
     */
     final const(Vector!ubyte) tbsData() const
     {
@@ -40,7 +41,7 @@ public:
     }
 
     /**
-    * @return signature on tbsData()
+    * Returns: signature on tbsData()
     */
     final ref const(Vector!ubyte) signature() const
     {
@@ -48,7 +49,7 @@ public:
     }
 
     /**
-    * @return signature algorithm that was used to generate signature
+    * Returns: signature algorithm that was used to generate signature
     */
     final const(AlgorithmIdentifier) signatureAlgorithm() const
     {
@@ -56,7 +57,7 @@ public:
     }
 
     /**
-    * @return hash algorithm that was used to generate signature
+    * Returns: hash algorithm that was used to generate signature
     */
     final string hashUsedForSignature() const
     {
@@ -76,11 +77,13 @@ public:
 
     /**
     * Create a signed X509 object.
-    * @param signer = the signer used to sign the object
+    *
+    * Params:
+    *  signer = the signer used to sign the object
     * @param rng = the random number generator to use
     * @param alg_id = the algorithm identifier of the signature scheme
     * @param tbs = the tbs bits to be signed
-    * @return signed X509 object
+    * Returns: signed X509 object
     */
     static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
                                                RandomNumberGenerator rng,
@@ -109,7 +112,7 @@ public:
     /**
     * Check the signature on this data
     * @param key = the public key purportedly used to sign this data
-    * @return true if the signature is valid, otherwise false
+    * Returns: true if the signature is valid, otherwise false
     */
     final bool checkSignature(in PublicKey pub_key) const
     {
@@ -162,7 +165,7 @@ public:
 
 
     /**
-    * @return BER encoding of this
+    * Returns: BER encoding of this
     */
     final Vector!ubyte BER_encode() const
     {
@@ -173,7 +176,7 @@ public:
 
 
     /**
-    * @return PEM encoding of this
+    * Returns: PEM encoding of this
     */
     final string PEM_encode() const
     {

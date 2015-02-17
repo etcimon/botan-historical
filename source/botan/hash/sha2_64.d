@@ -1,8 +1,9 @@
 /*
 * SHA-{384,512}
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.sha2_64;
 
@@ -45,7 +46,7 @@ public:
     this()
     {  
         super(128, true, true, 16);
-        m_digest = 8;
+        m_digest.length = 8;
         clear();
     }
 
@@ -101,7 +102,7 @@ public:
     this() 
     { 
         super(128, true, true, 16);
-        m_digest = 8;
+        m_digest.length = 8;
         clear(); 
     }
 

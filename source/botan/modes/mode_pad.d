@@ -1,8 +1,9 @@
 /*
 * ECB/CBC Padding Methods
 * (C) 1999-2008,2013 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.modes.mode_pad;
 
@@ -33,12 +34,12 @@ public:
 
     /**
     * @param block_size = of the cipher
-    * @return valid block size for this padding mode
+    * Returns: valid block size for this padding mode
     */
     abstract bool validBlocksize(size_t block_size) const;
 
     /**
-    * @return name of the mode
+    * Returns: name of the mode
     */
     abstract @property string name() const;
 

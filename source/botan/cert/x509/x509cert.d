@@ -1,8 +1,9 @@
 /*
 * X.509 Certificates
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509cert;
 
@@ -44,7 +45,7 @@ final class X509CertificateImpl : X509Object
 public:
     /**
     * Get the public key associated with this certificate.
-    * @return subject public key of this certificate
+    * Returns: subject public key of this certificate
     */
     PublicKey subjectPublicKey() const
     {
@@ -54,7 +55,7 @@ public:
 
     /**
     * Get the public key associated with this certificate.
-    * @return subject public key of this certificate
+    * Returns: subject public key of this certificate
     */
     const(Vector!ubyte) subjectPublicKeyBits() const
     {
@@ -63,7 +64,7 @@ public:
 
     /**
     * Get the issuer certificate DN.
-    * @return issuer DN of this certificate
+    * Returns: issuer DN of this certificate
     */
     const(X509DN) issuerDn() const
     {
@@ -72,7 +73,7 @@ public:
 
     /**
     * Get the subject certificate DN.
-    * @return subject DN of this certificate
+    * Returns: subject DN of this certificate
     */
     const(X509DN) subjectDn() const
     {
@@ -81,7 +82,9 @@ public:
 
     /**
     * Get a value for a specific subject_info parameter name.
-    * @param name = the name of the paramter to look up. Possible names are
+    *
+    * Params:
+    *  name = the name of the paramter to look up. Possible names are
     * "X509.Certificate.version", "X509.Certificate.serial",
     * "X509.Certificate.start", "X509.Certificate.end",
     * "X509.Certificate.v2.key_id", "X509.Certificate.public_key",
@@ -89,7 +92,7 @@ public:
     * "X509v3.BasicConstraints.is_ca", "X509v3.ExtendedKeyUsage",
     * "X509v3.CertificatePolicies", "X509v3.SubjectKeyIdentifier" or
     * "X509.Certificate.serial".
-    * @return value(s) of the specified parameter
+    * Returns: value(s) of the specified parameter
     */
     const(Vector!string) subjectInfo(in string what) const
     {
@@ -98,9 +101,11 @@ public:
 
     /**
     * Get a value for a specific subject_info parameter name.
-    * @param name = the name of the paramter to look up. Possible names are
+    *
+    * Params:
+    *  name = the name of the paramter to look up. Possible names are
     * "X509.Certificate.v2.key_id" or "X509v3.AuthorityKeyIdentifier".
-    * @return value(s) of the specified parameter
+    * Returns: value(s) of the specified parameter
     */
     const(Vector!string) issuerInfo(in string what) const
     {
@@ -126,7 +131,7 @@ public:
 
     /**
     * Get the notBefore of the certificate.
-    * @return notBefore of the certificate
+    * Returns: notBefore of the certificate
     */
     string startTime() const
     {
@@ -135,7 +140,7 @@ public:
 
     /**
     * Get the notAfter of the certificate.
-    * @return notAfter of the certificate
+    * Returns: notAfter of the certificate
     */
     string endTime() const
     {
@@ -144,7 +149,7 @@ public:
 
     /**
     * Get the X509 version of this certificate object.
-    * @return X509 version
+    * Returns: X509 version
     */
     uint x509Version() const
     {
@@ -153,7 +158,7 @@ public:
 
     /**
     * Get the serial number of this certificate.
-    * @return certificates serial number
+    * Returns: certificates serial number
     */
     const(Vector!ubyte) serialNumber() const
     {
@@ -162,7 +167,7 @@ public:
 
     /**
     * Get the DER encoded AuthorityKeyIdentifier of this certificate.
-    * @return DER encoded AuthorityKeyIdentifier
+    * Returns: DER encoded AuthorityKeyIdentifier
     */
     const(Vector!ubyte) authorityKeyId() const
     {
@@ -171,7 +176,7 @@ public:
 
     /**
     * Get the DER encoded SubjectKeyIdentifier of this certificate.
-    * @return DER encoded SubjectKeyIdentifier
+    * Returns: DER encoded SubjectKeyIdentifier
     */
     const(Vector!ubyte) subjectKeyId() const
     {
@@ -180,13 +185,13 @@ public:
 
     /**
     * Check whether this certificate is self signed.
-    * @return true if this certificate is self signed
+    * Returns: true if this certificate is self signed
     */
     bool isSelfSigned() const { return m_self_signed; }
 
     /**
     * Check whether this certificate is a CA certificate.
-    * @return true if this certificate is a CA certificate
+    * Returns: true if this certificate is a CA certificate
     */
     bool isCACert() const
     {
@@ -222,7 +227,7 @@ public:
     /**
     * Get the path limit as defined in the BasicConstraints extension of
     * this certificate.
-    * @return path limit
+    * Returns: path limit
     */
     uint pathLimit() const
     {
@@ -232,7 +237,7 @@ public:
     /**
     * Get the key constraints as defined in the KeyUsage extension of this
     * certificate.
-    * @return key constraints
+    * Returns: key constraints
     */
     const(KeyConstraints) constraints() const
     {
@@ -243,7 +248,7 @@ public:
     * Get the key constraints as defined in the ExtendedKeyUsage
     * extension of this
     * certificate.
-    * @return key constraints
+    * Returns: key constraints
     */
     const(Vector!string) exConstraints() const
     {
@@ -253,7 +258,7 @@ public:
     /**
     * Get the policies as defined in the CertificatePolicies extension
     * of this certificate.
-    * @return certificate policies
+    * Returns: certificate policies
     */
     const(Vector!string) policies() const
     {
@@ -278,7 +283,7 @@ public:
     }
 
     /**
-    * @return a string describing the certificate
+    * Returns: a string describing the certificate
     */
 
     override string toString() const
@@ -432,7 +437,7 @@ public:
 
     /**
     * Check to certificates for equality.
-    * @return true both certificates are (binary) equal
+    * Returns: true both certificates are (binary) equal
     */
     bool opEquals(in X509Certificate other) const
     {
@@ -445,7 +450,7 @@ public:
 
     /**
     * Impose an arbitrary (but consistent) ordering
-    * @return true if this is less than other by some unspecified criteria
+    * Returns: true if this is less than other by some unspecified criteria
     */
     bool opBinary(string op)(in X509Certificate other) const
         if (op == "<")
@@ -464,7 +469,7 @@ public:
 
     /**
     * Check two certificates for ineah jsais sadfadfasfaquality
-    * @return true if the arguments represent different certificates,
+    * Returns: true if the arguments represent different certificates,
     * false if they are binary identical
     */
     int opCmp(in X509Certificate cert2)
@@ -477,7 +482,9 @@ public:
     /**
     * Create a certificate from a data source providing the DER or
     * PEM encoded certificate.
-    * @param source = the data source
+    *
+    * Params:
+    *  source = the data source
     */
     this(DataSource input)
     {
@@ -489,7 +496,9 @@ public:
     /**
     * Create a certificate from a file containing the DER or PEM
     * encoded certificate.
-    * @param filename = the name of the certificate file
+    *
+    * Params:
+    *  filename = the name of the certificate file
     */
     this(in string filename)
     {

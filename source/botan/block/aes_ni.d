@@ -1,13 +1,14 @@
 /*
 * AES using AES-NI instructions
 * (C) 2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.aes_ni;
 
 import botan.constants;
-static if (BOTAN_HAS_AES && BOTAN_HAS_AES_NI && BOTAN_HAS_SIMD_SSE2):
+static if (BOTAN_HAS_AES_NI):
 import botan.block.block_cipher;
 import botan.utils.loadstor;
 import botan.utils.simd.wmmintrin;

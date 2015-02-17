@@ -1,8 +1,9 @@
 /*
 * Credentials Manager
 * (C) 2011,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.credentials_manager;
 
@@ -135,7 +136,7 @@ public:
     }
 
     /**
-    * @return private key associated with this certificate if we should
+    * Returns: private key associated with this certificate if we should
     *            use it with this context. cert was returned by cert_chain
     * @note this object should retain ownership of the returned key;
     *         it should not be deleted by the caller.
@@ -148,7 +149,7 @@ public:
     /**
     * @param type = specifies the type of operation occuring
     * @param context = specifies a context relative to type.
-    * @return true if we should attempt SRP authentication
+    * Returns: true if we should attempt SRP authentication
     */
     abstract bool attemptSrp(in string type, in string context)
     {
@@ -158,7 +159,7 @@ public:
     /**
     * @param type = specifies the type of operation occuring
     * @param context = specifies a context relative to type.
-    * @return identifier for client-side SRP auth, if available
+    * Returns: identifier for client-side SRP auth, if available
                  for this type/context. Should return empty string
                  if password auth not desired/available.
     */
@@ -170,10 +171,12 @@ public:
     /**
     * @param type = specifies the type of operation occuring
     * @param context = specifies a context relative to type.
-    * @param identifier = specifies what identifier we want the
+    *
+    * Params:
+    *  identifier = specifies what identifier we want the
     *          password for. This will be a value previously returned
     *          by srp_identifier.
-    * @return password for client-side SRP auth, if available
+    * Returns: password for client-side SRP auth, if available
                  for this identifier/type/context.
     */
     abstract string srpPassword(in string type,
@@ -200,7 +203,7 @@ public:
     /**
     * @param type = specifies the type of operation occuring
     * @param context = specifies a context relative to type.
-    * @return the PSK identity hint for this type/context
+    * Returns: the PSK identity hint for this type/context
     */
     abstract string pskIdentityHint(in string type, in string context)
     {
@@ -210,8 +213,10 @@ public:
     /**
     * @param type = specifies the type of operation occuring
     * @param context = specifies a context relative to type.
-    * @param identity_hint = was passed by the server (but may be empty)
-    * @return the PSK identity we want to use
+    *
+    * Params:
+    *  identity_hint = was passed by the server (but may be empty)
+    * Returns: the PSK identity we want to use
     */
     abstract string pskIdentity(in string type, in string context, in string identity_hint)
     {
@@ -221,9 +226,11 @@ public:
     /**
     * @param type = specifies the type of operation occuring
     * @param context = specifies a context relative to type.
-    * @param identity = is a PSK identity previously returned by
+    *
+    * Params:
+    *  identity = is a PSK identity previously returned by
                 psk_identity for the same type and context.
-    * @return the PSK used for identity, or throw new an exception if no
+    * Returns: the PSK used for identity, or throw new an exception if no
     * key exists
     */
     abstract SymmetricKey psk(in string type, in string context, in string identity)

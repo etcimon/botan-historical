@@ -1,8 +1,9 @@
 /*
 * ASN.1 OID
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.asn1.asn1_oid;
 
@@ -151,8 +152,10 @@ public:
 
     /**
     * Append another component onto the OID.
-    * @param oid = the OID to add the new component to
-    * @param new_comp = the new component to add
+    * 
+    * Params:
+    *  oid = the OID to add the new component to
+    *  component = the new component to add
     */
     OID opBinary(string op)(in OID oid, uint component)
         if (op == "+")
@@ -164,9 +167,11 @@ public:
     
     /**
     * Compare two OIDs.
-    * @param a = the first OID
-    * @param b = the second OID
-    * @return true if a is not equal to b
+    * 
+    * Params:
+    *  b = the second OID
+    * 
+    * Returns: true if a is not equal to b
     */
     int opCmp(in OID b) const
     {
@@ -176,9 +181,11 @@ public:
     
     /**
     * Compare two OIDs.
-    * @param a = the first OID
-    * @param b = the second OID
-    * @return true if a is lexicographically smaller than b
+    * 
+    * Params:
+    *  b = the second OID
+    * 
+    * Returns: true if a is lexicographically smaller than b
     */
     bool opBinary(string op)(in OID b)
         if (op == "<")
@@ -203,8 +210,11 @@ public:
 
     /**
     * Add a component to this OID.
-    * @param new_comp = the new component to add to the end of this OID
-    * @return reference to this
+    * 
+    * Params:
+    *  new_comp = the new component to add to the end of this OID
+    * 
+    * Returns: reference to this
     */
     void opOpAssign(string op)(uint new_comp)
         if (op == "~") 
@@ -214,7 +224,9 @@ public:
 
     /**
     * Construct an OID from a string.
-    * @param oid_str = a string in the form "a.b.c" etc., where a,b,c are numbers
+    * 
+    * Params:
+    *  oid_str = a string in the form "a.b.c" etc., where a,b,c are numbers
     */
     this(in string oid_str = "")
     {

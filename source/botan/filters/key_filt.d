@@ -1,8 +1,9 @@
 /*
 * KeyedFilter
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.key_filt;
 public import botan.filters.filter;
@@ -34,7 +35,7 @@ public:
     /**
     * Check whether a key length is valid for this filter
     * @param length = the key length to be checked for validity
-    * @return true if the key length is valid, false otherwise
+    * Returns: true if the key length is valid, false otherwise
     */
     bool validKeylength(size_t length) const
     {
@@ -42,14 +43,14 @@ public:
     }
 
     /**
-    * @return object describing limits on key size
+    * Returns: object describing limits on key size
     */
     abstract KeyLengthSpecification keySpec() const;
 
     /**
     * Check whether an IV length is valid for this filter
     * @param length = the IV length to be checked for validity
-    * @return true if the IV length is valid, false otherwise
+    * Returns: true if the IV length is valid, false otherwise
     */
     abstract bool validIvLength(size_t length) const;
 }

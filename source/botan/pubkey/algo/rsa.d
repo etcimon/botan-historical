@@ -1,8 +1,9 @@
 /*
 * RSA
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.rsa;
 
@@ -92,14 +93,18 @@ public:
 
     /**
     * Construct a private key from the specified parameters.
-    * @param rng = a random number generator
+    *
+    * Params:
+    *  rng = a random number generator
     * @param p = the first prime
     * @param q = the second prime
     * @param e = the exponent
     * @param d = if specified, this has to be d with
     * exp * d = 1 mod (p - 1, q - 1). Leave it as 0 if you wish to
     * the constructor to calculate it.
-    * @param n = if specified, this must be n = p * q. Leave it as 0
+    *
+    * Params:
+    *  n = if specified, this must be n = p * q. Leave it as 0
     * if you wish to the constructor to calculate it.
     */
     this(RandomNumberGenerator rng, BigInt p, BigInt q, BigInt e, BigInt d = 0, BigInt n = 0)

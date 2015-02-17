@@ -1,11 +1,11 @@
+/*
+* immintrin.h style functions
+* (C) 2014-2015 Etienne Cimon
+*
+* Released under the MIT license
+*/
 module botan.utils.simd.immintrin;
 
-/*
-* LDC, GDC, DMD Intrinsics for Intel AVX 2
-* (C) 2014-. Etienne Cimon
-*
-* Distributed under the terms of the MIT License.
-*/
 
 import botan.constants;
 

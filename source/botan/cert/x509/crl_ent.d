@@ -1,8 +1,9 @@
 /*
 * CRL Entry
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.crl_ent;
 
@@ -95,19 +96,19 @@ public:
 
     /**
     * Get the serial number of the certificate associated with this entry.
-    * @return certificate's serial number
+    * Returns: certificate's serial number
     */
     ref const(Vector!ubyte) serialNumber() const { return m_serial; }
 
     /**
     * Get the revocation date of the certificate associated with this entry
-    * @return certificate's revocation date
+    * Returns: certificate's revocation date
     */
     const(X509Time) expireTime() const { return m_time; }
 
     /**
     * Get the entries reason code
-    * @return reason code
+    * Returns: reason code
     */
     CRLCode reasonCode() const { return m_reason; }
 
@@ -122,7 +123,9 @@ public:
 
     /**
     * Construct an CRL entry.
-    * @param cert = the certificate to revoke
+    *
+    * Params:
+    *  cert = the certificate to revoke
     * @param reason = the reason code to set in the entry
     */
     this(in X509CertificateImpl cert, CRLCode why = UNSPECIFIED)

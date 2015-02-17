@@ -1,8 +1,9 @@
 /*
 * Base64 Encoding and Decoding
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.codec.base64;
 import memutils.vector;
@@ -24,7 +25,7 @@ import std.exception;
 *          should be passed in later along with more input.
 * @param final_inputs = true iff this is the last input, in which case
             padding chars will be applied if needed
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t base64Encode(char* output,
                      const(ubyte)* input,
@@ -73,7 +74,7 @@ size_t base64Encode(char* output,
 * Perform base64 encoding
 * @param input = some input
 * @param input_length = length of input in bytes
-* @return base64adecimal representation of input
+* Returns: base64adecimal representation of input
 */
 
 string base64Encode(const(ubyte)* input,
@@ -97,7 +98,7 @@ string base64Encode(const(ubyte)* input,
 /**
 * Perform base64 encoding
 * @param input = some input
-* @return base64adecimal representation of input
+* Returns: base64adecimal representation of input
 */
 string base64Encode(Alloc)(auto const ref Vector!( ubyte, Alloc ) input)
 {
@@ -117,7 +118,7 @@ string base64Encode(Alloc)(auto const ref Vector!( ubyte, Alloc ) input)
             padding is allowed
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t base64Decode(ubyte* output,
                      const(char)* input, size_t input_length,
@@ -232,7 +233,7 @@ size_t base64Decode(ubyte* output,
 * @param input_length = length of input in bytes
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t base64Decode(ubyte* output, const(char)* input, size_t input_length, bool ignore_ws = true)
 {
@@ -251,7 +252,7 @@ size_t base64Decode(ubyte* output, const(char)* input, size_t input_length, bool
 * @param input = some base64 input
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return number of bytes written to output
+* Returns: number of bytes written to output
 */
 size_t base64Decode(ubyte* output, in string input, bool ignore_ws = true)
 {
@@ -265,7 +266,7 @@ size_t base64Decode(ubyte* output, in string input, bool ignore_ws = true)
 * @param input_length = the length of input in bytes
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return decoded base64 output
+* Returns: decoded base64 output
 */
 SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
 {
@@ -283,7 +284,7 @@ SecureVector!ubyte base64Decode(in string input, bool ignore_ws = true)
 * @param input = some base64 input
 * @param ignore_ws = ignore whitespace on input; if false, throw new an
                          exception if whitespace is encountered
-* @return decoded base64 output
+* Returns: decoded base64 output
 */
 SecureVector!ubyte base64Decode(const ref Vector!ubyte input, bool ignore_ws = true)
 {

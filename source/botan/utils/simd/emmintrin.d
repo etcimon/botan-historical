@@ -1,11 +1,10 @@
-module botan.utils.simd.emmintrin;
-
 /*
-* LDC, GDC, DMD Intrinsics for SSE 2
-* (C) 2014-. Etienne Cimon
+* emmintrin.h style functions
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the MIT License.
+* Released under the MIT license
 */
+module botan.utils.simd.emmintrin;
 
 import botan.constants;
 static if (BOTAN_HAS_SIMD_SSE2):

@@ -3,8 +3,9 @@
 *
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
 *      2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.ec_group;
 
@@ -179,7 +180,7 @@ public:
     /**
     * Create the DER encoding of this domain
     * @param form = of encoding to use
-    * @returns bytes encododed as DER
+    * Returns:s bytes encododed as DER
     */
     Vector!ubyte DER_encode(ECGroupEncoding form) const
     {
@@ -217,7 +218,7 @@ public:
 
     /**
     * Return the PEM encoding (always in explicit form)
-    * @return string containing PEM data
+    * Returns: string containing PEM data
     */
     string PEM_encode() const
     {

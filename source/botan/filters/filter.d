@@ -1,9 +1,10 @@
 /*
 * Filter
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 * (C) 2013 Joel Low
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.filter;
 
@@ -15,13 +16,15 @@ import botan.utils.exceptn;
 interface Filterable {
 public:
     /**
-    * @return descriptive name for this filter
+    * Returns: descriptive name for this filter
     */
     @property string name() const;
     
     /**
     * Write a portion of a message to this filter.
-    * @param input = the input as a ubyte array
+    *
+    * Params:
+    *  input = the input as a ubyte array
     * @param length = the length of the ubyte array input
     */
     void write(const(ubyte)* input, size_t length);
@@ -40,7 +43,7 @@ public:
     
     /**
     * Check whether this filter is an attachable filter.
-    * @return true if this filter is attachable, false otherwise
+    * Returns: true if this filter is attachable, false otherwise
     */
     bool attachable();
 
@@ -60,7 +63,9 @@ abstract class Filter : Filterable
 public:
     /**
     * Write a portion of a message to this filter.
-    * @param input = the input as a ubyte array
+    *
+    * Params:
+    *  input = the input as a ubyte array
     */
     final void write(const(ubyte)[] input) { write(input.ptr, input.length); }
 

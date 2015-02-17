@@ -1,8 +1,9 @@
 /*
 * Hooks for application level policies on TLS connections
 * (C) 2004-2006,2013 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.policy;
 
@@ -231,7 +232,7 @@ public:
     }
 
     /**
-    * @return true if and only if we are willing to accept this version
+    * Returns: true if and only if we are willing to accept this version
     * Default accepts only TLS, so if you want to enable DTLS override
     * in your application.
     */
@@ -250,7 +251,7 @@ public:
     }
 
     /**
-    * @return true if servers should choose the ciphersuite matching
+    * Returns: true if servers should choose the ciphersuite matching
     *            their highest preference, rather than the clients.
     *            Has no effect on client side.
     */

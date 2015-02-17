@@ -1,8 +1,9 @@
 /*
 * RandomNumberGenerator
 * (C) 1999-2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.rng.rng;
 
@@ -42,15 +43,19 @@ public:
     }
     /**
     * Randomize a ubyte array.
-    * @param output = the ubyte array to hold the random output.
-    * @param length = the length of the ubyte array output.
+    *
+    * Params:
+    *  output = the ubyte array to hold the random output.
+    *
+    * Params:
+    *  length = the length of the ubyte array output.
     */
     abstract void randomize(ubyte* output, size_t length);
 
     /**
     * Return a random vector
     * @param bytes = number of bytes in the result
-    * @return randomized vector of length bytes
+    * Returns: randomized vector of length bytes
     */
     abstract SecureVector!ubyte randomVec(size_t bytes)
     {
@@ -61,7 +66,7 @@ public:
 
     /**
     * Return a random ubyte
-    * @return random ubyte
+    * Returns: random ubyte
     */
     final ubyte nextByte()
     {
@@ -72,7 +77,7 @@ public:
 
     /**
     * Check whether this RNG is seeded.
-    * @return true if this RNG was already seeded, false otherwise.
+    * Returns: true if this RNG was already seeded, false otherwise.
     */
     abstract bool isSeeded() const;
 
@@ -88,14 +93,18 @@ public:
 
     /**
     * Seed this RNG using the entropy sources it contains.
-    * @param bits_to_collect = is the number of bits of entropy to
+    *
+    * Params:
+    *  bits_to_collect = is the number of bits of entropy to
                 attempt to gather from the entropy sources
     */
     abstract void reseed(size_t bits_to_collect);
 
     /**
     * Add entropy to this RNG.
-    * @param input = a ubyte array containg the entropy to be added
+    *
+    * Params:
+    *  input = a ubyte array containg the entropy to be added
     * @param length = the length of the ubyte array in
     */
     abstract void addEntropy(const(ubyte)* input, size_t length);

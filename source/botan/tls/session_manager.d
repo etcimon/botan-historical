@@ -1,8 +1,9 @@
 /*
-* TLS TLSSession Manager
+* TLS Session Manager
 * (C) 2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.session_manager;
 
@@ -37,7 +38,7 @@ public:
     * @param session_id = the session identifier we are trying to resume
     * @param session = will be set to the saved session data (if found),
                 or not modified if not found
-    * @return true if session was modified
+    * Returns: true if session was modified
     */
     abstract bool loadFromSessionId(const ref Vector!ubyte session_id, ref TLSSession session);
 
@@ -46,7 +47,7 @@ public:
     * @param info = the information about the server
     * @param session = will be set to the saved session data (if found),
                 or not modified if not found
-    * @return true if session was modified
+    * Returns: true if session was modified
     */
     abstract bool loadFromServerInfo(in TLSServerInformation info, ref TLSSession session);
 

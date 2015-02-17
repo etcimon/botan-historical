@@ -1,9 +1,10 @@
 /*
 * EAC11 CVC Request
 * (C) 2008 Falko Strenzke
-*      2010 Jack Lloyd
+*     2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_req;
 
@@ -48,7 +49,9 @@ public:
     }
     /**
     * Construct a CVC request from a data source.
-    * @param source = the data source
+    *
+    * Params:
+    *  source = the data source
     */
     this(DataSource source)
     {
@@ -59,7 +62,9 @@ public:
 
     /**
     * Construct a CVC request from a DER encoded CVC request file.
-    * @param str = the path to the DER encoded file
+    *
+    * Params:
+    *  str = the path to the DER encoded file
     */
     this(in string str)
     {

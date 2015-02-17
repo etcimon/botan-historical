@@ -1,8 +1,9 @@
 /*
 * TLS Alert Message
 * (C) 2004-2006,2011,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.alert;
 
@@ -62,22 +63,22 @@ public:
     }
 
     /**
-    * @return true iff this alert is non-empty
+    * Returns: true iff this alert is non-empty
     */
     bool isValid() const { return (m_type_code != NULL_ALERT); }
 
     /**
-    * @return if this alert is a fatal one or not
+    * Returns: if this alert is a fatal one or not
     */
     bool isFatal() const { return m_fatal; }
 
     /**
-    * @return type of alert
+    * Returns: type of alert
     */
     TLSAlertType type() const { return m_type_code; }
 
     /**
-    * @return type of alert
+    * Returns: type of alert
     */
     string typeString() const
     {

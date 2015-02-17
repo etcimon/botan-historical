@@ -1,8 +1,9 @@
 /*
 * GOST 28147-89
 * (C) 1999-2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.gost_28147;
 
@@ -28,7 +29,7 @@ public:
     /**
     * @param row = the row
     * @param col = the column
-    * @return sbox entry at this row/column
+    * Returns: sbox entry at this row/column
     */
     ubyte sboxEntry(size_t row, size_t col) const
     {
@@ -38,7 +39,7 @@ public:
     }
 
     /**
-    * @return name of this parameter set
+    * Returns: name of this parameter set
     */
     string paramName() const { return m_name; }
 

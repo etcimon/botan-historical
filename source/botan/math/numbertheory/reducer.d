@@ -1,8 +1,9 @@
 /*
 * Modular Reducer
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.numbertheory.reducer;
 
@@ -74,7 +75,7 @@ public:
     * Multiply mod p
     * @param x
     * @param y
-    * @return (x * y) % p
+    * Returns: (x * y) % p
     */
     BigInt multiply()(auto const ref BigInt x, auto const ref BigInt y) const
     { 
@@ -84,7 +85,7 @@ public:
     /**
     * Square mod p
     * @param x
-    * @return (x * x) % p
+    * Returns: (x * x) % p
     */
     BigInt square()(auto const ref BigInt x) const
     {
@@ -94,7 +95,7 @@ public:
     /**
     * Cube mod p
     * @param x
-    * @return (x * x * x) % p
+    * Returns: (x * x * x) % p
     */
     BigInt cube()(auto const ref BigInt x) const
     { return multiply(x, this.square(x)); }

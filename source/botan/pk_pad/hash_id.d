@@ -1,8 +1,9 @@
 /*
 * Hash Function Identification
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.hash_id;
 
@@ -14,7 +15,7 @@ import botan.utils.types;
 * Return the PKCS #1 hash identifier
 * @see RFC 3447 section 9.2
 * @param hash_name = the name of the hash function
-* @return ubyte sequence identifying the hash
+* Returns: ubyte sequence identifying the hash
 * @throw new InvalidArgument if the hash has no known PKCS #1 hash id
 */
 Vector!ubyte pkcsHashId(in string name)
@@ -59,7 +60,7 @@ Vector!ubyte pkcsHashId(in string name)
 /**
 * Return the IEEE 1363 hash identifier
 * @param hash_name = the name of the hash function
-* @return ubyte code identifying the hash, or 0 if not known
+* Returns: ubyte code identifying the hash, or 0 if not known
 */
 
 ubyte ieee1363HashId(in string name)

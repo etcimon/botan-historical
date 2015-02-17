@@ -1,8 +1,9 @@
 /*
 * Word Rotation Operations
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.rotate;
 
@@ -13,7 +14,7 @@ pure:
 * Bit rotation left
 * @param input = the input word
 * @param rot = the number of bits to rotate
-* @return input rotated left by rot bits
+* Returns: input rotated left by rot bits
 */
 T rotateLeft(T)(T input, size_t rot)
 {
@@ -26,7 +27,7 @@ T rotateLeft(T)(T input, size_t rot)
 * Bit rotation right
 * @param input = the input word
 * @param rot = the number of bits to rotate
-* @return input rotated right by rot bits
+* Returns: input rotated right by rot bits
 */
 T rotateRight(T)(T input, size_t rot)
 {

@@ -1,8 +1,9 @@
 /*
 * X.509 CRL
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509_crl;
 
@@ -79,7 +80,7 @@ public:
 
     /**
     * Get the entries of this CRL in the form of a vector.
-    * @return vector containing the entries of this CRL.
+    * Returns: vector containing the entries of this CRL.
     */
     ref const(Vector!CRLEntry) getRevoked() const
     {
@@ -88,7 +89,7 @@ public:
 
     /**
     * Get the issuer DN of this CRL.
-    * @return CRLs issuer DN
+    * Returns: CRLs issuer DN
     */
     X509DN issuerDn() const
     {
@@ -98,7 +99,7 @@ public:
 
     /**
     * Get the AuthorityKeyIdentifier of this CRL.
-    * @return this CRLs AuthorityKeyIdentifier
+    * Returns: this CRLs AuthorityKeyIdentifier
     */
     Vector!ubyte authorityKeyId() const
     {
@@ -107,7 +108,7 @@ public:
 
     /**
     * Get the serial number of this CRL.
-    * @return CRLs serial number
+    * Returns: CRLs serial number
     */
     uint crlNumber() const
     {
@@ -116,7 +117,7 @@ public:
 
     /**
     * Get the CRL's thisUpdate value.
-    * @return CRLs thisUpdate
+    * Returns: CRLs thisUpdate
     */
     const(X509Time) thisUpdate() const
     {
@@ -125,7 +126,7 @@ public:
 
     /**
     * Get the CRL's nextUpdate value.
-    * @return CRLs nextdUpdate
+    * Returns: CRLs nextdUpdate
     */
     const(X509Time) nextUpdate() const
     {
@@ -134,8 +135,12 @@ public:
 
     /**
     * Construct a CRL from a data source.
-    * @param source = the data source providing the DER or PEM encoded CRL.
-    * @param throw_on_unknown_critical_ = should we throw new an exception
+    *
+    * Params:
+    *  source = the data source providing the DER or PEM encoded CRL.
+    *
+    * Params:
+    *  throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(DataSource input, bool throw_on_unknown_critical_ = false)
@@ -147,7 +152,9 @@ public:
 
     /**
     * Construct a CRL from a file containing the DER or PEM encoded CRL.
-    * @param filename = the name of the CRL file
+    *
+    * Params:
+    *  filename = the name of the CRL file
     * @param throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */

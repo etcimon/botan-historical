@@ -1,6 +1,7 @@
 /*
 * SCAN Name Abstraction
 * (C) 2008-2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
 * Distributed under the terms of the Botan license
 */
@@ -15,15 +16,17 @@ import std.conv : to;
 import core.sync.mutex;
 import memutils.hashmap;
 import botan.constants;
+
 /**
-A class encapsulating a SCAN name (similar to JCE conventions)
-http://www.users.zetnet.co.uk/hopwood/crypto/scan/
+* A class encapsulating a SCAN name (similar to JCE conventions)
+* http://www.users.zetnet.co.uk/hopwood/crypto/scan/
 */
 struct SCANToken
 {
 public:
     /**
-    * @param algo_spec = A SCAN-format name
+    * Params:
+    *  algo_spec = A SCAN-format name
     */
     this(string algo_spec)
     {
@@ -107,17 +110,17 @@ public:
     }
     
     /**
-    * @return original input string
+    * Returns: original input string
     */
     string toString() const { return m_orig_algo_spec; }
     
     /**
-    * @return algorithm name
+    * Returns: algorithm name
     */
     @property string algoName() const { return m_alg_name; }
     
     /**
-    * @return algorithm name plus any arguments
+    * Returns: algorithm name plus any arguments
     */
     string algoNameAndArgs() const
     {
@@ -142,21 +145,25 @@ public:
     }
     
     /**
-    * @return number of arguments
+    * Returns: number of arguments
     */
     size_t argCount() const { return m_args.length; }
     
     /**
-    * @param lower = is the lower bound
-    * @param upper = is the upper bound
-    * @return if the number of arguments is between lower and upper
+    * Params:
+    *  lower = is the lower bound
+    *  upper = is the upper bound
+    * 
+    * Returns: true if the number of arguments is between lower and upper
     */
     bool argCountBetween(size_t lower, size_t upper) const
     { return ((argCount() >= lower) && (argCount() <= upper)); }
     
     /**
-    * @param i = which argument
-    * @return ith argument
+    * Params:
+    *  i = which argument
+    * 
+    * Returns: ith argument
     */
     string arg(size_t i) const
     {
@@ -166,9 +173,11 @@ public:
     }
     
     /**
-    * @param i = which argument
-    * @param def_value = the default value
-    * @return ith argument or the default value
+    * Params:
+    *  i = which argument
+    *  def_value = the default value
+    * 
+    * Returns: ith argument or the default value
     */
     string arg(size_t i, in string def_value) const
     {
@@ -178,9 +187,11 @@ public:
     }
     
     /**
-    * @param i = which argument
-    * @param def_value = the default value
-    * @return ith argument as an integer, or the default value
+    * Params:
+    *  i = which argument
+    *  def_value = the default value
+    * 
+    * Returns: ith argument as an integer, or the default value
     */
     size_t argAsInteger(size_t i, size_t def_value) const
     {
@@ -190,13 +201,13 @@ public:
     }
     
     /**
-    * @return cipher mode (if any)
+    * Returns: cipher mode (if any)
     */
     string cipherMode() const
     { return (m_mode_info.length >= 1) ? m_mode_info[0] : ""; }
     
     /**
-    * @return cipher mode padding (if any)
+    * Returns: cipher mode padding (if any)
     */
     string cipherModePad() const
     { return (m_mode_info.length >= 2) ? m_mode_info[1] : ""; }

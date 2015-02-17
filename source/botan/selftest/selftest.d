@@ -1,8 +1,9 @@
 /*
 * Startup Self Test
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.selftest.selftest;
 
@@ -121,7 +122,7 @@ void confirmStartupSelfTests(AlgorithmFactory af)
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
 * @param af = an algorithm factory
-* @returns false if a failure occured, otherwise true
+* Returns:s false if a failure occured, otherwise true
 */
 bool passesSelfTests(AlgorithmFactory af)
 {
@@ -144,7 +145,7 @@ bool passesSelfTests(AlgorithmFactory af)
 * @param vars = a set of input variables for this test, all
             hex encoded. Keys used: "input", "output", "key", and "iv"
 * @param af = an algorithm factory
-* @returns map from provider name to test result for that provider
+* Returns:s map from provider name to test result for that provider
 */
 HashMapRef!(string, bool)
     algorithmKat(in SCANToken algo_name,
@@ -167,7 +168,7 @@ HashMapRef!(string, bool)
 * @param vars = a set of input variables for this test, all
             hex encoded. Keys used: "input", "output", "key", and "iv"
 * @param af = an algorithm factory
-* @returns map from provider name to test result for that provider
+* Returns:s map from provider name to test result for that provider
 */
 HashMapRef!(string, string)
     algorithmKatDetailed(in SCANToken algo_name,

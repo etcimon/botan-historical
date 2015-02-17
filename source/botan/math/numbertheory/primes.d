@@ -1,6 +1,7 @@
 /*
 * Small Primes Table
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
 * Distributed under the terms of the Botan license
 */

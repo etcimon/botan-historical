@@ -5,7 +5,7 @@ Botan is a D library for crypto and TLS intended for vibe.d development/native c
 library [Botan](http://botan.randombit.net/), although the code is now in D. The commits are mirrored manually from 
 C++ to D for any part that has not been rewritten.
 
-*This library does not currently compile, it is being tested thoroughly.*
+Current Version: 1.11.10 (git: 455bd2557cbb1343e59eefd97cb449f06a702c28)
 
 Usage
 -----
@@ -116,17 +116,11 @@ submitted to the corresponding [Botan C++ issue tracker](https://github.com/rand
 TODO
 ----
 
-Before compilation tests:
-
-- Change naming conventions to D style
-- Add GDC/LDC inline assembly
-- Implement AltiVec SIMD operations
-- Catch up on Botan C++ commits
-- Add dub configurations for common purposes
-- Move docs/manual to a Github Wiki
-- Update API documentation in comments
-- Create `version` documentation
-- Create SSL interface for vibe.d
+- Create a vibe.d driver
+- Test Certificate OCSP with cmd/ utility
+- Test compression with cmd/ utility
+- Upgrade to 1.11.14
+- Generate DDOX
 
 License
 -------

@@ -1,8 +1,9 @@
 /*
 * PBE
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbe.pbe;
 
@@ -23,13 +24,13 @@ abstract class PBE : Filter, Filterable
 public:
     /**
     * DER encode the params (the number of iterations and the salt value)
-    * @return encoded params
+    * Returns: encoded params
     */
     abstract Vector!ubyte encodeParams() const;
 
     /**
     * Get this PBE's OID.
-    * @return object identifier
+    * Returns: object identifier
     */
     abstract OID getOid() const;
 

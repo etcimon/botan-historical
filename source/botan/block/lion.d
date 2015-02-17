@@ -1,8 +1,9 @@
 /*
 * Lion
 * (C) 1999-2007,2014 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.lion;
 

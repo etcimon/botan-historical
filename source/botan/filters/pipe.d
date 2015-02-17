@@ -1,9 +1,10 @@
 /*
 * Pipe
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *      2012 Markus Wanner
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.pipe;
 
@@ -65,7 +66,9 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the ubyte array to write
+    *
+    * Params:
+    *  input = the ubyte array to write
     * @param length = the length of the ubyte array in
     */
     void write(const(ubyte)* input, size_t length)
@@ -77,21 +80,27 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the SecureVector containing the data to write
+    *
+    * Params:
+    *  input = the SecureVector containing the data to write
     */
     void write(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
     { write(input.ptr, input.length); }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the std::vector containing the data to write
+    *
+    * Params:
+    *  input = the std::vector containing the data to write
     */
     void write(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
     { write(input.ptr, input.length); }
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the string containing the data to write
+    *
+    * Params:
+    *  input = the string containing the data to write
     */
     void write(string input)
     {
@@ -100,7 +109,9 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = the DataSource to read the data from
+    *
+    * Params:
+    *  input = the DataSource to read the data from
     */
     void write(DataSource source)
     {
@@ -114,7 +125,9 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = a single ubyte to be written
+    *
+    * Params:
+    *  input = a single ubyte to be written
     */
     void write(ubyte input)
     {
@@ -123,7 +136,9 @@ public:
 
     /**
     * Write input to the pipe, i.e. to its first filter.
-    * @param input = a ubyte array to be written
+    *
+    * Params:
+    *  input = a ubyte array to be written
     */
     void write(ubyte[] input)
     {
@@ -132,7 +147,9 @@ public:
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
-    * @param input = the ubyte array containing the data to write
+    *
+    * Params:
+    *  input = the ubyte array containing the data to write
     * @param length = the length of the ubyte array to write
     */
     void processMsg(const(ubyte)* input, size_t length)
@@ -144,7 +161,9 @@ public:
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
-    * @param input = the SecureVector containing the data to write
+    *
+    * Params:
+    *  input = the SecureVector containing the data to write
     */
     void processMsg(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
@@ -153,7 +172,9 @@ public:
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
-    * @param input = the SecureVector containing the data to write
+    *
+    * Params:
+    *  input = the SecureVector containing the data to write
     */
     void processMsg(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
@@ -162,7 +183,9 @@ public:
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
-    * @param input = the string containing the data to write
+    *
+    * Params:
+    *  input = the string containing the data to write
     */
     void processMsg(string input)
     {
@@ -171,7 +194,9 @@ public:
 
     /**
     * Perform startMsg(), write() and endMsg() sequentially.
-    * @param input = the DataSource providing the data to write
+    *
+    * Params:
+    *  input = the DataSource providing the data to write
     */
     void processMsg(DataSource input)
     {
@@ -182,9 +207,11 @@ public:
 
     /**
     * Find out how many bytes are ready to read.
-    * @param msg = the number identifying the message
+    *
+    * Params:
+    *  msg = the number identifying the message
     * for which the information is desired
-    * @return number of bytes that can still be read
+    * Returns: number of bytes that can still be read
     */
     size_t remaining(message_id msg = DEFAULT_MESSAGE) const
     {
@@ -198,7 +225,7 @@ public:
     *
     * @param output = the ubyte array to write the read bytes to
     * @param length = the length of the ubyte array output
-    * @return number of bytes actually read into output
+    * Returns: number of bytes actually read into output
     */
     size_t read(ubyte* output, size_t length)
     {
@@ -209,10 +236,12 @@ public:
     * Read a specified message from the pipe. Moves the internal
     * offset so that every call to read will return a new portion of
     * the message.
-    * @param output = the ubyte array to write the read bytes to
+    *
+    * Params:
+    *  output = the ubyte array to write the read bytes to
     * @param length = the length of the ubyte array output
     * @param msg = the number identifying the message to read from
-    * @return number of bytes actually read into output
+    * Returns: number of bytes actually read into output
     */
     size_t read(ubyte* output, size_t length, message_id msg)
     {
@@ -223,9 +252,11 @@ public:
     * Read a specified message from the pipe. Moves the internal
     * offset so that every call to read will return a new portion of
     * the message.
-    * @param output = the ubyte array to write the read bytes to
+    *
+    * Params:
+    *  output = the ubyte array to write the read bytes to
     * @param msg = the number identifying the message to read from
-    * @return number of bytes actually read into output
+    * Returns: number of bytes actually read into output
     */
     size_t read(ref ubyte[] output, message_id msg = DEFAULT_MESSAGE)
     {
@@ -239,7 +270,7 @@ public:
     *
     * @param output = the ubyte to write the result to
     * @param msg = the message to read from
-    * @return number of bytes actually read into output
+    * Returns: number of bytes actually read into output
     */
     size_t read(ref ubyte output, message_id msg = DEFAULT_MESSAGE)
     {
@@ -248,8 +279,10 @@ public:
 
     /**
     * Read the full contents of the pipe.
-    * @param msg = the number identifying the message to read from
-    * @return SecureVector holding the contents of the pipe
+    *
+    * Params:
+    *  msg = the number identifying the message to read from
+    * Returns: SecureVector holding the contents of the pipe
     */
     SecureVector!ubyte readAll(message_id msg = DEFAULT_MESSAGE)
     {
@@ -262,8 +295,10 @@ public:
 
     /**
     * Read the full contents of the pipe.
-    * @param msg = the number identifying the message to read from
-    * @return string holding the contents of the pipe
+    *
+    * Params:
+    *  msg = the number identifying the message to read from
+    * Returns: string holding the contents of the pipe
     */
     string toString(message_id msg = DEFAULT_MESSAGE)
     {
@@ -286,10 +321,12 @@ public:
     /** Read from the default message but do not modify the internal
     * offset. Consecutive calls to peek() will return portions of
     * the message starting at the same position.
-    * @param output = the ubyte array to write the peeked message part to
+    *
+    * Params:
+    *  output = the ubyte array to write the peeked message part to
     * @param length = the length of the ubyte array output
     * @param offset = the offset from the current position in message
-    * @return number of bytes actually peeked and written into output
+    * Returns: number of bytes actually peeked and written into output
     */
     size_t peek(ubyte* output, size_t length, size_t offset, message_id msg = DEFAULT_MESSAGE) const
     {
@@ -299,11 +336,13 @@ public:
     /** Read from the specified message but do not modify the
     * internal offset. Consecutive calls to peek() will return
     * portions of the message starting at the same position.
-    * @param output = the ubyte array to write the peeked message part to
+    *
+    * Params:
+    *  output = the ubyte array to write the peeked message part to
     * @param length = the length of the ubyte array output
     * @param offset = the offset from the current position in message
     * @param msg = the number identifying the message to peek from
-    * @return number of bytes actually peeked and written into output
+    * Returns: number of bytes actually peeked and written into output
     */
     size_t peek(ref ubyte[] output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
     {
@@ -313,10 +352,12 @@ public:
     /** Read a single ubyte from the specified message but do not
     * modify the internal offset. Consecutive calls to peek() will
     * return portions of the message starting at the same position.
-    * @param output = the ubyte to write the peeked message ubyte to
+    *
+    * Params:
+    *  output = the ubyte to write the peeked message ubyte to
     * @param offset = the offset from the current position in message
     * @param msg = the number identifying the message to peek from
-    * @return number of bytes actually peeked and written into output
+    * Returns: number of bytes actually peeked and written into output
     */
     size_t peek(ref ubyte output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
     {
@@ -325,8 +366,10 @@ public:
 
     /**
     * Read one ubyte.
-    * @param output = the ubyte to read to
-    * @return length in bytes that was actually read and put
+    *
+    * Params:
+    *  output = the ubyte to read to
+    * Returns: length in bytes that was actually read and put
     * into out
     */
     size_t readByte(ref ubyte output)
@@ -337,8 +380,10 @@ public:
     
     /**
     * Peek at one ubyte.
-    * @param output = an output ubyte
-    * @return length in bytes that was actually read and put
+    *
+    * Params:
+    *  output = an output ubyte
+    * Returns: length in bytes that was actually read and put
     * into out
     */
     size_t peekByte(ref ubyte output) const
@@ -350,7 +395,7 @@ public:
     /**
     * Discard the next N bytes of the data
     * @param N = the number of bytes to discard
-    * @return number of bytes actually discarded
+    * Returns: number of bytes actually discarded
     */
     size_t discardNext(size_t n)
     {
@@ -362,7 +407,7 @@ public:
     }
 
     /**
-    * @return the number of bytes read from the default message.
+    * Returns: the number of bytes read from the default message.
     */
     size_t getBytesRead() const
     {
@@ -370,7 +415,7 @@ public:
     }
 
     /**
-    * @return the number of bytes read from the specified message.
+    * Returns: the number of bytes read from the specified message.
     */
     size_t getBytesRead(message_id msg = DEFAULT_MESSAGE) const
     {
@@ -378,7 +423,7 @@ public:
     }
 
     /**
-    * @return currently set default message
+    * Returns: currently set default message
     */
     size_t defaultMsg() const { return m_default_read; }
 
@@ -396,7 +441,7 @@ public:
 
     /**
     * Get the number of messages the are in this pipe.
-    * @return number of messages the are in this pipe
+    * Returns: number of messages the are in this pipe
     */
     message_id messageCount() const
     {
@@ -406,7 +451,7 @@ public:
 
     /**
     * Test whether this pipe has any data that can be read from.
-    * @return true if there is more data to read, false otherwise
+    * Returns: true if there is more data to read, false otherwise
     */
     bool endOfData() const
     {

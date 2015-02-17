@@ -1,4 +1,12 @@
+/*
+* Unit test helper
+* (C) 2014-2015 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
+*
+* Botan is released under the Simplified BSD License (see LICENSE.md)
+*/
 module botan.cert.x509.test;
+
 /*
   Code to run the X.509v3 processing tests described in "Conformance
   Testing of Relying Party Client Certificate Path Proccessing Logic",

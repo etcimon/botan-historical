@@ -1,8 +1,9 @@
 /*
 * Number Theory Functions
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.numbertheory.numthry;
 
@@ -30,7 +31,7 @@ import std.conv : to;
 * @param a = an integer
 * @param b = an integer
 * @param c = an integer
-* @return (a*b)+c
+* Returns: (a*b)+c
 */
 /*
 * Multiply-Add Operation
@@ -64,7 +65,7 @@ BigInt mulAdd()(auto const ref BigInt a, auto const ref BigInt b, auto const ref
 * @param a = an integer
 * @param b = an integer
 * @param c = an integer
-* @return (a-b)*c
+* Returns: (a-b)*c
 */
 BigInt subMul()(auto const ref BigInt a, auto const ref BigInt b, auto const ref BigInt c)
 {
@@ -80,7 +81,7 @@ BigInt subMul()(auto const ref BigInt a, auto const ref BigInt b, auto const ref
 /**
 * Return the absolute value
 * @param n = an integer
-* @return absolute value of n
+* Returns: absolute value of n
 */
  BigInt abs()(auto const ref BigInt n) { return n.abs(); }
 
@@ -88,7 +89,7 @@ BigInt subMul()(auto const ref BigInt a, auto const ref BigInt b, auto const ref
 * Compute the greatest common divisor
 * @param x = a positive integer
 * @param y = a positive integer
-* @return gcd(x,y)
+* Returns: gcd(x,y)
 */
 BigInt gcd()(auto const ref BigInt a, auto const ref BigInt b)
 {
@@ -118,7 +119,7 @@ BigInt gcd()(auto const ref BigInt a, auto const ref BigInt b)
 * Least common multiple
 * @param x = a positive integer
 * @param y = a positive integer
-* @return z, smallest integer such that z % x == 0 and z % y == 0
+* Returns: z, smallest integer such that z % x == 0 and z % y == 0
 */
 BigInt lcm()(auto const ref BigInt a, auto const ref BigInt b)
 {
@@ -128,7 +129,7 @@ BigInt lcm()(auto const ref BigInt a, auto const ref BigInt b)
 
 /**
 * @param x = an integer
-* @return (x*x)
+* Returns: (x*x)
 */
 BigInt square()(auto const ref BigInt x)
 {
@@ -145,7 +146,7 @@ BigInt square()(auto const ref BigInt x)
 * Modular inversion
 * @param x = a positive integer
 * @param modulus = a positive integer
-* @return y st (x*y) % modulus == 1
+* Returns: y st (x*y) % modulus == 1
 */
 BigInt inverseMod()(auto const ref BigInt n, auto const ref BigInt mod)
 {
@@ -207,7 +208,7 @@ BigInt inverseMod()(auto const ref BigInt n, auto const ref BigInt mod)
 *
 * @param a = is a non-negative integer
 * @param n = is an odd integer > 1
-* @return (n / m)
+* Returns: (n / m)
 */
 int jacobi()(auto const ref BigInt a, auto const ref BigInt n)
 {
@@ -252,7 +253,7 @@ int jacobi()(auto const ref BigInt a, auto const ref BigInt n)
 * @param b = an integer base
 * @param x = a positive exponent
 * @param m = a positive modulus
-* @return (b^x) % m
+* Returns: (b^x) % m
 */
 BigInt powerMod()(auto const ref BigInt base, auto const ref BigInt exp, auto const ref BigInt mod)
 {
@@ -275,7 +276,7 @@ BigInt powerMod()(auto const ref BigInt base, auto const ref BigInt exp, auto co
 *
 * @param x = the input
 * @param p = the prime
-* @return y such that (y*y)%p == x, or -1 if no such integer
+* Returns: y such that (y*y)%p == x, or -1 if no such integer
 */
 
 /*
@@ -394,7 +395,7 @@ word montyInverse(word input)
 
 /**
 * @param x = a positive integer
-* @return count of the zero bits in x, or, equivalently, the largest
+* Returns: count of the zero bits in x, or, equivalently, the largest
 *            value of n such that 2^n divides x evenly. Returns zero if
 *            n is less than or equal to zero.
 */
@@ -427,7 +428,7 @@ size_t lowZeroBits()(auto const ref BigInt n)
 * @param rng = a random number generator
 * @param prob = chance of false positive is bounded by 1/2**prob
 * @param is_random = true if n was randomly chosen by us
-* @return true if all primality tests passed, otherwise false
+* Returns: true if all primality tests passed, otherwise false
 */
 bool isPrime()(auto const ref BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_random = false)
 {
@@ -480,7 +481,7 @@ bool verifyPrime(const ref BigInt n, RandomNumberGenerator rng)
 * @param equiv = a non-negative number that the result should be
                     equivalent to modulo equiv_mod
 * @param equiv_mod = the modulus equiv should be checked against
-* @return random prime with the specified criteria
+* Returns: random prime with the specified criteria
 */
 BigInt randomPrime()(RandomNumberGenerator rng,
                      size_t bits, const ref BigInt coprime,
@@ -560,7 +561,7 @@ BigInt randomPrime()(RandomNumberGenerator rng,
 * Return a random 'safe' prime, of the form p=2*q+1 with q prime
 * @param rng = a random number generator
 * @param bits = is how long the resulting prime should be
-* @return prime randomly chosen from safe primes of length bits
+* Returns: prime randomly chosen from safe primes of length bits
 */
 BigInt randomSafePrime(RandomNumberGenerator rng, size_t bits)
 {
@@ -582,7 +583,7 @@ BigInt randomSafePrime(RandomNumberGenerator rng, size_t bits)
 * @param q_out = where the prime q will be stored
 * @param pbits = how long p will be in bits
 * @param qbits = how long q will be in bits
-* @return random seed used to generate this parameter set
+* Returns: random seed used to generate this parameter set
 */
 Vector!ubyte generateDsaPrimes(RandomNumberGenerator rng,
                                AlgorithmFactory af,
@@ -609,7 +610,7 @@ Vector!ubyte generateDsaPrimes(RandomNumberGenerator rng,
 * @param pbits = how long p will be in bits
 * @param qbits = how long q will be in bits
 * @param seed_c = the seed used to generate the parameters
-* @return true if seed generated a valid DSA parameter set, otherwise
+* Returns: true if seed generated a valid DSA parameter set, otherwise
              false. p_out and q_out are only valid if true was returned.
 */
 bool generateDsaPrimes()(RandomNumberGenerator rng,

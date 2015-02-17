@@ -1,8 +1,9 @@
 /*
 * PK Operation Types
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pk_ops;
 
@@ -46,19 +47,19 @@ interface Signature
 public:
     /**
     * Find out the number of message parts supported by this scheme.
-    * @return number of message parts
+    * Returns: number of message parts
     */
     abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
-    * @return size of the message parts
+    * Returns: size of the message parts
     */
     abstract size_t messagePartSize() const;
 
     /**
     * Get the maximum message size in bits supported by this public key.
-    * @return maximum message in bits
+    * Returns: maximum message in bits
     */
     abstract size_t maxInputBits() const;
 
@@ -80,24 +81,24 @@ interface Verification
 public:
     /**
     * Get the maximum message size in bits supported by this public key.
-    * @return maximum message in bits
+    * Returns: maximum message in bits
     */
     abstract size_t maxInputBits() const;
 
     /**
     * Find out the number of message parts supported by this scheme.
-    * @return number of message parts
+    * Returns: number of message parts
     */
     abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
-    * @return size of the message parts
+    * Returns: size of the message parts
     */
     abstract size_t messagePartSize() const;
 
     /**
-    * @return boolean specifying if this key type supports message
+    * Returns: boolean specifying if this key type supports message
     * recovery and thus if you need to call verify() or verifyMr()
     */
     abstract bool withRecovery() const;
@@ -108,7 +109,7 @@ public:
     * @param msg_len = the length of msg in bytes
     * @param sig = the signature
     * @param sig_len = the length of sig in bytes
-    * @returns if signature is a valid one for message
+    * Returns:s if signature is a valid one for message
     */
     abstract bool verify(const(ubyte)*, size_t, const(ubyte)*, size_t);
 
@@ -117,7 +118,7 @@ public:
     * Only call this if withRecovery() returns true
     * @param msg = the message
     * @param msg_len = the length of msg in bytes
-    * @returns recovered message
+    * Returns:s recovered message
     */
     abstract SecureVector!ubyte verifyMr(const(ubyte)*, size_t);
 
@@ -133,7 +134,7 @@ public:
     * Perform a key agreement operation
     * @param w = the other key value
     * @param w_len = the length of w in bytes
-    * @returns the agreed key
+    * Returns:s the agreed key
     */
     abstract SecureVector!ubyte agree(const(ubyte)* w, size_t w_len);
 }

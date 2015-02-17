@@ -1,9 +1,10 @@
 /*
 * BigInt
 * (C) 1999-2008,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *    2007 FlexSecure
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.bigint.bigint;
 
@@ -473,7 +474,7 @@ public:
 
     /**
     * Unary negation operator
-    * @return negative this
+    * Returns: negative this
     */
     BigInt opUnary(string op)() const
         if (op == "-")
@@ -485,7 +486,7 @@ public:
 
     /**
     * bool cast
-    * @return true iff this is not zero, otherwise false
+    * Returns: true iff this is not zero, otherwise false
     */
     T opCast(T : bool)() const { return isNonzero(); }
 
@@ -694,7 +695,7 @@ public:
     /**
     * Return the word at a specified position of the internal register
     * @param n = position in the register
-    * @return value at position n
+    * Returns: value at position n
     */
     word wordAt(size_t n) const
     { return ((n < size()) ? m_reg[n] : 0); }
@@ -899,7 +900,7 @@ public:
 
     /**
     * @param base = the base to measure the size for
-    * @return size of this integer in base base
+    * Returns: size of this integer in base base
     */
     size_t encodedSize(Base base = Binary) const
     {
@@ -919,7 +920,7 @@ public:
     * @param rng = a random number generator
     * @param min = the minimum value
     * @param max = the maximum value
-    * @return random integer in [min,max)
+    * Returns: random integer in [min,max)
     */
     static BigInt randomInteger()(RandomNumberGenerator rng, auto const ref BigInt min, auto const ref BigInt max)
     {
@@ -934,7 +935,7 @@ public:
     /**
     * Create a power of two
     * @param n = the power of two to create
-    * @return bigint representing 2^n
+    * Returns: bigint representing 2^n
     */
     static BigInt powerOf2(size_t n)
     {

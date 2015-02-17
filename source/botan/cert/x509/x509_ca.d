@@ -1,8 +1,9 @@
 /*
 * X.509 Certificate Authority
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509_ca;
 
@@ -39,11 +40,13 @@ final class X509CAImpl
 public:
     /**
     * Sign a PKCS#10 Request.
-    * @param req = the request to sign
+    *
+    * Params:
+    *  req = the request to sign
     * @param rng = the rng to use
     * @param not_before = the starting time for the certificate
     * @param not_after = the expiration time for the certificate
-    * @return resulting certificate
+    * Returns: resulting certificate
     */
     X509Certificate signRequest(in PKCS10Request req,
                                   RandomNumberGenerator rng,
@@ -81,7 +84,7 @@ public:
 
     /**
     * Get the certificate of this CA.
-    * @return CA certificate
+    * Returns: CA certificate
     */
     const(X509Certificate) caCertificate() const
     {
@@ -90,10 +93,12 @@ public:
 
     /**
     * Create a new and empty CRL for this CA.
-    * @param rng = the random number generator to use
+    *
+    * Params:
+    *  rng = the random number generator to use
     * @param next_update = the time to set in next update in seconds
     * as the offset from the current time
-    * @return new CRL
+    * Returns: new CRL
     */
     X509CRL newCRL(RandomNumberGenerator rng, Duration next_update = 0.seconds) const
     {
@@ -103,7 +108,9 @@ public:
 
     /**
     * Create a new CRL by with additional entries.
-    * @param last_crl = the last CRL of this CA to add the new entries to
+    *
+    * Params:
+    *  last_crl = the last CRL of this CA to add the new entries to
     * @param new_entries = contains the new CRL entries to be added to the CRL
     * @param rng = the random number generator to use
     * @param next_update = the time to set in next update in seconds
@@ -132,7 +139,7 @@ public:
     * @param issuer_dn = the DN of the issuer
     * @param subject_dn = the DN of the subject
     * @param extensions = an optional list of certificate extensions
-    * @returns newly minted certificate
+    * Returns:s newly minted certificate
     */
     static X509Certificate makeCert(ALLOC)(ref PKSigner signer,
                                                 RandomNumberGenerator rng,
@@ -262,7 +269,7 @@ private:
 * @param key = will be the key to choose a padding scheme for
 * @param hash_fn = is the desired hash function
 * @param alg_id = will be set to the chosen scheme
-* @return A PKSigner object for generating signatures
+* Returns: A PKSigner object for generating signatures
 */
 /*
 * Choose a signing format for the key

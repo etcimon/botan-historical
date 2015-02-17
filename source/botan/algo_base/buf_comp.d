@@ -1,8 +1,12 @@
 /*
 * Buffered Computation
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* License:
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 
 module botan.algo_base.buf_comp;
@@ -21,20 +25,25 @@ public:
 
     /**
     * Add new input to process.
-    * @param input = the input to process as a ubyte array
+    * 
+    * Params:
+    *  input = the input to process as a ubyte array
     */
     final void update(in ubyte[] input) { addData(input.ptr, input.length); }
 
     /**
     * Add new input to process.
-    * @param input = the input to process as a ubyte array
-    * @param length = of param in in bytes
+    * 
+    * Params:
+    *  input = the input to process as a ubyte array
+    *  length = of param in in bytes
     */
     final void update(const(ubyte)* input, size_t length) { addData(input, length); }
 
     /**
     * Add new input to process.
-    * @param input = the input to process as a SecureVector
+    * Params:
+    *  input = the input to process as a reference type
     */
     final void update(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC)) input)
     {
@@ -43,7 +52,9 @@ public:
 
     /**
     * Add new input to process.
-    * @param input = the input to process as a Vector
+    * 
+    * Params:
+    *  input = the input to process as a $(D Vector)
     */
     final void update(T, ALLOC)(auto const ref Vector!(T, ALLOC) input)
     {
@@ -52,7 +63,9 @@ public:
 
     /**
     * Add an integer in big-endian order
-    * @param input = the value
+    * 
+    * Params:
+    *  input = the value
     */
     final void updateBigEndian(T)(in T input)
     {
@@ -65,9 +78,11 @@ public:
 
     /**
     * Add new input to process.
-    * @param str = the input to process as a string. Will be interpreted
-    * as a ubyte array based on
-    * the strings encoding.
+    * 
+    * Params:
+    *  str = The input to process as a string. 
+    * 
+    * Notes: Will be interpreted as a ubyte array based on the strings encoding.
     */
     final void update(in string str)
     {
@@ -76,15 +91,19 @@ public:
 
     /**
     * Process a single ubyte.
-    * @param input = the ubyte to process
+    * 
+    * Params:
+    *  input = the ubyte to process
     */
     final void update(ubyte input) { addData(&input, 1); }
 
     /**
-    * Complete the computation and retrieve the
-    * final result.
-    * @param output = The ubyte array to be filled with the result.
-    * Must be of length outputLength()
+    * Complete the computation and retrieve the final result.
+    * 
+    * Params:
+    *  output = The ubyte array to be filled with the result.
+    * 
+    * Notes: Must be of length outputLength()
     */
     final void flushInto(ref ubyte[] output) 
     in { assert(output.length == outputLength); }
@@ -93,15 +112,18 @@ public:
     /**
     * Complete the computation and retrieve the
     * final result.
-    * @param output = The ubyte array to be filled with the result.
-    * Must be of length outputLength()
+    * 
+    * Params:
+    *  output = The ubyte array to be filled with the result.
+    * 
+    * Notes: Must be of length outputLength()
     */
     final void flushInto(ubyte* output) { finalResult(output); }
 
     /**
-    * Complete the computation and retrieve the
-    * final result.
-    * @return SecureVector holding the result
+    * Complete the computation and retrieve the final result.
+    * 
+    * Returns: $(D SecureVector) holding the result
     */
     final SecureVector!ubyte finished()
     {
@@ -111,11 +133,14 @@ public:
     }
 
     /**
-    * Update and finalize computation. Does the same as calling update()
-    * and finished() consecutively.
-    * @param input = the input to process as a ubyte array
-    * @param length = the length of the ubyte array
-    * @result the result of the call to finished()
+    * Update and finalize computation. Does the same as calling $(D update())
+    * and $(D finished()) consecutively.
+    * 
+    * Params:
+    *  input = the input to process as a ubyte array
+    *  length = the length of the ubyte array
+    * 
+    * Returns: The result of the call to $(D finished())
     */
     final SecureVector!ubyte process(in ubyte[] input)
     {
@@ -124,11 +149,14 @@ public:
     }
 
     /**
-    * Update and finalize computation. Does the same as calling update()
-    * and finished() consecutively.
-    * @param input = the input to process as a ubyte array
-    * @param length = the length of the ubyte array
-    * @result the result of the call to finished()
+    * Update and finalize computation. Does the same as calling $(D update())
+    * and $(D finished()) consecutively.
+    * 
+    * Params:
+    *  input = the input to process as a ubyte array
+    *  length = the length of the ubyte array
+    * 
+    * Returns: The result of the call to $(D finished())
     */
     final SecureVector!ubyte process(const(ubyte)* input, size_t length)
     {
@@ -137,10 +165,12 @@ public:
     }
 
     /**
-    * Update and finalize computation. Does the same as calling update()
-    * and finished() consecutively.
-    * @param input = the input to process
-    * @result the result of the call to finished()
+    * Update and finalize computation. Does the same as calling $(D update())
+    * and $(D finished()) consecutively.
+    * Params:
+    *  input = the input to process
+    * 
+    * Returns: The result of the call to $(D finished())
     */
     final SecureVector!ubyte process(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input)
     {
@@ -149,10 +179,12 @@ public:
     }
 
     /**
-    * Update and finalize computation. Does the same as calling update()
-    * and finished() consecutively.
-    * @param input = the input to process
-    * @result the result of the call to finished()
+    * Update and finalize computation. Does the same as calling $(D update())
+    * and $(D finished()) consecutively.
+    * Params:
+    *  input = the input to process
+    * 
+    * Returns: The result of the call to $(D finished())
     */
     final SecureVector!ubyte process(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input)
     {
@@ -161,10 +193,12 @@ public:
     }
 
     /**
-    * Update and finalize computation. Does the same as calling update()
-    * and finished() consecutively.
-    * @param input = the input to process as a string
-    * @result the result of the call to finished()
+    * Update and finalize computation. Does the same as calling $(D update())
+    * and $(D finished()) consecutively.
+    * Params:
+    *  input = the input to process as a string
+    * 
+    * Returns: The result of the call to $(D finished())
     */
     final SecureVector!ubyte process(in string input)
     {
@@ -177,21 +211,25 @@ public:
     }
 
     /**
-    * @return length of the output of this function in bytes
+    * Returns: Length of the output of this function in bytes
     */
     abstract @property size_t outputLength() const;
 
 protected:
     /**
     * Add more data to the computation
-    * @param input = is an input buffer
-    * @param length = is the length of input in bytes
+    * 
+    * Params:
+    *  input = is an input buffer
+    *  length = is the length of input in bytes
     */
     abstract void addData(const(ubyte)* input, size_t length);
 
     /**
     * Write the final output to out
-    * @param output = is an output buffer of outputLength()
+    * 
+    * Params:
+    *  output = An output buffer of size $(D outputLength())
     */
     abstract void finalResult(ubyte* output);
 }

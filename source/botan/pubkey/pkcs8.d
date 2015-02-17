@@ -1,8 +1,9 @@
 /*
 * PKCS #8
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pkcs8;
 
@@ -40,7 +41,7 @@ final class PKCS8Exception : DecodingError
 /**
 * BER encode a private key
 * @param key = the private key to encode
-* @return BER encoded key
+* Returns: BER encoded key
 */
 SecureArray!ubyte BER_encode(in PrivateKey key)
 {
@@ -58,7 +59,7 @@ SecureArray!ubyte BER_encode(in PrivateKey key)
 /**
 * Get a string containing a PEM encoded private key.
 * @param key = the key to encode
-* @return encoded key
+* Returns: encoded key
 */
 string PEM_encode(in PrivateKey key)
 {
@@ -75,7 +76,7 @@ string PEM_encode(in PrivateKey key)
 * @param pbe_algo = the name of the desired password-based encryption
             algorithm; if empty ("") a reasonable (portable/secure)
             default will be chosen.
-* @return encrypted key in binary BER form
+* Returns: encrypted key in binary BER form
 */
 Vector!ubyte BER_encode(in PrivateKey key,
                         RandomNumberGenerator rng,
@@ -113,7 +114,7 @@ Vector!ubyte BER_encode(in PrivateKey key,
 * @param pbe_algo = the name of the desired password-based encryption
             algorithm; if empty ("") a reasonable (portable/secure)
             default will be chosen.
-* @return encrypted key in PEM form
+* Returns: encrypted key in PEM form
 */
 string PEM_encode(in PrivateKey key,
                   RandomNumberGenerator rng,
@@ -133,7 +134,7 @@ string PEM_encode(in PrivateKey key,
 * @param source = the data source providing the encoded key
 * @param rng = the rng to use
 * @param getPassphrase = a function that returns passphrases
-* @return loaded private key object
+* Returns: loaded private key object
 */
 PrivateKey loadKey(DataSource source,
                    RandomNumberGenerator rng,
@@ -153,7 +154,7 @@ PrivateKey loadKey(DataSource source,
 * @param rng = the rng to use
 * @param pass = the passphrase to decrypt the key. Provide an empty
 * string if the key is not encrypted
-* @return loaded private key object
+* Returns: loaded private key object
 */
 PrivateKey loadKey(DataSource source,
                    RandomNumberGenerator rng,
@@ -167,7 +168,7 @@ PrivateKey loadKey(DataSource source,
 * @param filename = the path to the file containing the encoded key
 * @param rng = the rng to use
 * @param getPassphrase = a function that returns passphrases
-* @return loaded private key object
+* Returns: loaded private key object
 */
 PrivateKey loadKey(in string filename,
                    RandomNumberGenerator rng,
@@ -182,7 +183,7 @@ PrivateKey loadKey(in string filename,
 * @param rng = the rng to use
 * @param pass = the passphrase to decrypt the key. Provide an empty
 * string if the key is not encrypted
-* @return loaded private key object
+* Returns: loaded private key object
 */
 PrivateKey loadKey(in string filename,
                    RandomNumberGenerator rng,
@@ -196,7 +197,7 @@ PrivateKey loadKey(in string filename,
 * Copy an existing encoded key object.
 * @param key = the key to copy
 * @param rng = the rng to use
-* @return new copy of the key
+* Returns: new copy of the key
 */
 PrivateKey copyKey(in PrivateKey key,
                    RandomNumberGenerator rng)

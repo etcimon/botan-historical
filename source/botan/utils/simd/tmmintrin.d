@@ -1,10 +1,10 @@
-module botan.utils.simd.tmmintrin;
 /*
-* LDC, GDC, DMD Intrinsics for SSSE 3
-* (C) 2014-. Etienne Cimon
+* tmmintrin.h style functions
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the MIT License.
+* Released under the MIT license
 */
+module botan.utils.simd.tmmintrin;
 
 import botan.constants;
 static if (BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):

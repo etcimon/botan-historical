@@ -1,8 +1,9 @@
 /*
 * Whirlpool
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.whrlpool;
 
@@ -40,7 +41,7 @@ public:
     { 
         super(64, true, true, 32);
         m_M = 8;
-        m_digest = 8;
+        m_digest.length = 8;
         clear();
     }
 protected:

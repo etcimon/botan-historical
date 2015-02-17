@@ -1,8 +1,9 @@
 /*
 * RC2
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.rc2;
 
@@ -106,7 +107,7 @@ public:
     /**
     * Return the code of the effective key bits
     * @param bits = key length
-    * @return EKB code
+    * Returns: EKB code
     */
     version(none)
     static ubyte EKBCode(size_t ekb)

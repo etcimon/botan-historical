@@ -1,8 +1,9 @@
 /*
 * Memory Operations
 * (C) 1999-2009,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.mem_ops;
 import botan.utils.types;
@@ -93,7 +94,7 @@ void setMem(T)(T* ptr, size_t n, ubyte val)
 * @param p1 = a pointer to an array
 * @param p2 = a pointer to another array
 * @param n = the number of Ts in p1 and p2
-* @return true iff p1[i] == p2[i] forall i in [0...n)
+* Returns: true iff p1[i] == p2[i] forall i in [0...n)
 */
 bool sameMem(T)(in T* p1, in T* p2, in size_t n)
 {

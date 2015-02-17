@@ -1,9 +1,10 @@
 /*
 * EAC SIGNED Object
 * (C) 2007 FlexSecure GmbH
-*      2008 Jack Lloyd
+*     2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.signed_obj;
 
@@ -26,7 +27,7 @@ import std.algorithm : splitter;
 interface SignedObject {
     /**
     * Get the TBS (to-be-signed) data in this object.
-    * @return DER encoded TBS data of this object
+    * Returns: DER encoded TBS data of this object
     */
     const(Vector!ubyte) tbsData() const;
     
@@ -34,12 +35,14 @@ interface SignedObject {
     * Get the signature of this object as a concatenation, i.e. if the
     * signature consists of multiple parts (like in the case of ECDSA)
     * these will be concatenated.
-    * @return signature as a concatenation of its parts
+    * Returns: signature as a concatenation of its parts
     */
     const(Vector!ubyte) getConcatSig() const;
     /**
     * Write this object DER encoded into a specified pipe.
-    * @param pipe = the pipe to write the encoded object to
+    *
+    * Params:
+    *  pipe = the pipe to write the encoded object to
     * @param encoding = the encoding type to use
     */
     void encode(Pipe pipe, X509Encoding encoding = PEM_) const;
@@ -66,9 +69,11 @@ public:
 
     /**
     * Check the signature of this object.
-    * @param key = the public key associated with this signed object
+    *
+    * Params:
+    *  key = the public key associated with this signed object
     * @param sig = the signature we are checking
-    * @return true if the signature was created by the private key
+    * Returns: true if the signature was created by the private key
     * associated with this public key
     */
     bool checkSignature(ALLOC)(PublicKey pub_key, auto ref Vector!(ubyte, ALLOC) sig) const
@@ -100,7 +105,7 @@ public:
 
     /**
     * BER encode this object.
-    * @return result containing the BER representation of this object.
+    * Returns: result containing the BER representation of this object.
     */
     Vector!ubyte BER_encode() const
     {
@@ -113,7 +118,7 @@ public:
 
     /**
     * PEM encode this object.
-    * @return result containing the PEM representation of this object.
+    * Returns: result containing the PEM representation of this object.
     */
     string PEM_encode() const
     {

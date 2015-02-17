@@ -1,8 +1,9 @@
 /*
 * Algorithm Lookup
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.libstate.lookup;
 
@@ -18,7 +19,7 @@ import botan.libstate.libstate;
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec = an algorithm name
-* @return constant prototype object (use clone to create usable object),
+* Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
 const(BlockCipher) retrieveBlockCipher(in string algo_spec)
@@ -30,7 +31,7 @@ const(BlockCipher) retrieveBlockCipher(in string algo_spec)
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec = an algorithm name
-* @return constant prototype object (use clone to create usable object),
+* Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
 const(StreamCipher) retrieveStreamCipher(in string algo_spec)
@@ -42,7 +43,7 @@ const(StreamCipher) retrieveStreamCipher(in string algo_spec)
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec = an algorithm name
-* @return constant prototype object (use clone to create usable object),
+* Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
 const(HashFunction) retrieveHash(in string algo_spec)
@@ -54,7 +55,7 @@ const(HashFunction) retrieveHash(in string algo_spec)
 /**
 * Retrieve an object prototype from the global factory
 * @param algo_spec = an algorithm name
-* @return constant prototype object (use clone to create usable object),
+* Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
 const(MessageAuthenticationCode) retrieveMac(in string algo_spec)
@@ -66,7 +67,7 @@ const(MessageAuthenticationCode) retrieveMac(in string algo_spec)
 /**
 * Password based key derivation function factory method
 * @param algo_spec = the name of the desired PBKDF algorithm
-* @return pointer to newly allocated object of that type
+* Returns: pointer to newly allocated object of that type
 */
 PBKDF getPbkdf(in string algo_spec)
 {
@@ -87,7 +88,7 @@ PBKDF getPbkdf(in string algo_spec)
 * @param iv = the initialization vector to be used
 * @param direction = determines whether the filter will be an encrypting
 * or decrypting filter
-* @return pointer to newly allocated encryption or decryption filter
+* Returns: pointer to newly allocated encryption or decryption filter
 */
 KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, in InitializationVector iv, CipherDir direction)
 {
@@ -107,7 +108,7 @@ KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, in Initializatio
 * the filter
 * @param direction = determines whether the filter will be an encrypting
 * or decrypting filter
-* @return pointer to the encryption or decryption filter
+* Returns: pointer to the encryption or decryption filter
 */
 KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, CipherDir direction)
 {
@@ -122,7 +123,7 @@ KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, CipherDir direct
 * @param algo_spec = the name of the desired cipher
 * @param direction = determines whether the filter will be an encrypting or
 * decrypting filter
-* @return pointer to the encryption or decryption filter
+* Returns: pointer to the encryption or decryption filter
 */
 KeyedFilter getCipher(in string algo_spec, CipherDir direction)
 {
@@ -139,7 +140,7 @@ KeyedFilter getCipher(in string algo_spec, CipherDir direction)
 /**
 * Check if an algorithm exists.
 * @param algo_spec = the name of the algorithm to check for
-* @return true if the algorithm exists, false otherwise
+* Returns: true if the algorithm exists, false otherwise
 */
 bool haveAlgorithm(in string name)
 {

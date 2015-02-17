@@ -1,8 +1,9 @@
 /*
 * IF Scheme
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.if_algo;
 
@@ -84,12 +85,12 @@ public:
     }
 
     /**
-    * @return public modulus
+    * Returns: public modulus
     */
     final ref const(BigInt) getN() const { return m_n; }
 
     /**
-    * @return public exponent
+    * Returns: public exponent
     */
     final ref const(BigInt) getE() const { return m_e; }
 
@@ -205,19 +206,19 @@ public:
 
     /**
     * Get the first prime p.
-    * @return prime p
+    * Returns: prime p
     */
     ref const(BigInt) getP() const { return m_p; }
 
     /**
     * Get the second prime q.
-    * @return prime q
+    * Returns: prime q
     */
     ref const(BigInt) getQ() const { return m_q; }
 
     /**
     * Get d with exp * d = 1 mod (p - 1, q - 1).
-    * @return d
+    * Returns: d
     */
     ref const(BigInt) getD() const { return m_d; }
 

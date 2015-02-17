@@ -1,8 +1,9 @@
 /*
 * SRP-6a (RFC 5054 compatatible)
 * (C) 2011,2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.srp6;
 
@@ -37,7 +38,7 @@ struct SRP6KeyPair {
 * @param B = is the server's public value
 * @param rng = is a random number generator
 *
-* @return (A,K) the client public key and the shared secret key
+* Returns: (A,K) the client public key and the shared secret key
 */
 SRP6KeyPair
     srp6ClientAgree(in string identifier,
@@ -101,7 +102,7 @@ BigInt generateSrp6Verifier(in string identifier,
 * exception
 * @param N = the group modulus
 * @param g = the group generator
-* @return group identifier
+* Returns: group identifier
 */
 string srp6GroupIdentifier(const ref BigInt N, const ref BigInt g)
 {
@@ -138,7 +139,7 @@ public:
     * @param group_id = the SRP group id
     * @param hash_id = the SRP hash in use
     * @param rng = a random number generator
-    * @return SRP-6 B value
+    * Returns: SRP-6 B value
     */
     ref const(BigInt) step1(const ref BigInt v,
                             in string group_id,
@@ -168,7 +169,7 @@ public:
     /**
     * Server side step 2
     * @param A = the client's value
-    * @return shared symmetric key
+    * Returns: shared symmetric key
     */
     SymmetricKey step2()(auto const ref BigInt A)
     {

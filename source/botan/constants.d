@@ -1,3 +1,10 @@
+/*
+* Compile-time constants for conditional compilation
+* (C) 2014-2015 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
+*
+* Botan is released under the Simplified BSD License (see LICENSE.md)
+*/
 module botan.constants;
 
 const LogLevel = Debug;
@@ -37,12 +44,13 @@ const SKIP_RNG_TEST = false;
 const SKIP_STREAM_CIPHER_TEST = false;
 const SKIP_TLS_TEST = false;
 
-const BOTAN_VERSION_MAJOR = 2;
-const BOTAN_VERSION_MINOR = 0;
-const BOTAN_VERSION_PATCH = 0;
-const BOTAN_VERSION_DATESTAMP = 20141030;
+// This indicates the corresponding Botan (C++) version numbers
+const BOTAN_VERSION_MAJOR = 1;
+const BOTAN_VERSION_MINOR = 11;
+const BOTAN_VERSION_PATCH = 10;
+const BOTAN_VERSION_DATESTAMP = 20150217;
 const BOTAN_VERSION_RELEASE_TYPE = "unreleased";
-const BOTAN_VERSION_VC_REVISION = "123";
+const BOTAN_VERSION_VC_REVISION = "git:455bd2557cbb1343e59eefd97cb449f06a702c28";
 const BOTAN_DISTRIBUTION_INFO = "unspecified";
 
 const BOTAN_TARGET_CPU_HAS_KNOWN_ENDIANNESS = true;

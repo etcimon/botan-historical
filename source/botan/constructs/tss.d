@@ -1,8 +1,9 @@
 /*
 * RTSS (threshold secret sharing)
 * (C) 2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.tss;
 
@@ -186,7 +187,7 @@ public:
 
 
     /**
-    * @return hex representation
+    * Returns: hex representation
     */
     string toString() const
     {
@@ -194,7 +195,7 @@ public:
     }
 
     /**
-    * @return share identifier
+    * Returns: share identifier
     */
     ubyte shareId() const
     {
@@ -205,7 +206,7 @@ public:
     }
 
     /**
-    * @return size of this share in bytes
+    * Returns: size of this share in bytes
     */
     size_t size() const { return m_contents.length; }
 
@@ -213,7 +214,7 @@ public:
     @property size_t length() const { return size(); }
 
     /**
-    * @return if this TSS share was initialized or not
+    * Returns: if this TSS share was initialized or not
     */
     bool initialized() const { return (m_contents.length > 0); }
 private:

@@ -1,8 +1,9 @@
 /*
 * An algorithm cache (used by AlgorithmFactory)
 * (C) 2008-2009,2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.algo_factory.algo_cache;
 
@@ -10,16 +11,17 @@ import botan.constants;
 import botan.utils.types;
 import memutils.hashmap;
 /**
-* @param prov_name = a provider name
-* @return weight for this provider
+* Params:
+*  prov_name = a provider name
+* 
+* Returns: weight for this provider
 */
 ubyte staticProviderWeight(in string prov_name)
 {
     /*
     * Prefer asm over D, but prefer anything over OpenSSL or GNU MP; to use
     * them, set the provider explicitly for the algorithms you want
-    */
-    
+    */    
     if (prov_name == "aes_isa") return 9;
     if (prov_name == "simd") return 8;
     if (prov_name == "asm") return 7;
@@ -41,9 +43,12 @@ final class AlgorithmCache(T)
 public:
     /**
     * Look for an algorithm implementation by a particular provider
-    * @param algo_spec = names the requested algorithm
-    * @param pref_provider = suggests a preferred provider
-    * @return prototype object, or NULL
+    * 
+    * Params:
+    *  algo_spec = names the requested algorithm
+    *  requested_provider = suggests a preferred provider
+    * 
+    * Returns: prototype object, or NULL
     */
     const(T) get(string algo_spec, string requested_provider) const
     {
@@ -86,9 +91,11 @@ public:
 
     /**
     * Add a new algorithm implementation to the cache
-    * @param algo = the algorithm prototype object
-    * @param requested_name = how this name will be requested
-    * @param providerName = is the name of the provider of this prototype
+    * 
+    * Params:
+    *  algo = the algorithm prototype object
+    *  requested_name = how this name will be requested
+    *  provider = the name of the provider of this prototype
     */
     void add(T algo,
              in string requested_name,
@@ -117,8 +124,10 @@ public:
 
     /**
     * Set the preferred provider for an algorithm
-    * @param algo_spec = names the algorithm
-    * @param provider = names the preferred provider
+    * 
+    * Params:
+    *  algo_spec = names the algorithm
+    *  provider = names the preferred provider
     */
     void setPreferredProvider(in string algo_spec,
                               in string provider)
@@ -128,9 +137,11 @@ public:
 
     /**
     * Find the providers of this algo (if any)
-    * Return the list of providers of this algorithm
-    * @param algo_name = names the algorithm
-    * @return list of providers of this algorithm
+    * 
+    * Params:
+    *  algo_name = names the algorithm
+    * 
+    * Returns: list of providers of this algorithm
     */
     Vector!string providersOf(in string algo_name)
     {
@@ -159,7 +170,6 @@ public:
             }
         }
 
-        /// Let the GC handle this
         m_algorithms.clear();
     }
 

@@ -1,8 +1,9 @@
 /*
 * Bit/Word Operations
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.bit_ops;
 
@@ -12,7 +13,7 @@ import botan.utils.types;
 /**
 * Power of 2 test. T should be an uinteger type
 * @param arg = an integer value
-* @return true iff arg is 2^n for some n > 0
+* Returns: true iff arg is 2^n for some n > 0
 */
 bool isPowerOf2(T)(T arg)
 {
@@ -23,7 +24,7 @@ bool isPowerOf2(T)(T arg)
 * Return the index of the highest set bit
 * T is an uinteger type
 * @param n = an integer value
-* @return index of the highest set bit in n
+* Returns: index of the highest set bit in n
 */
 size_t highBit(T)(T n)
 {
@@ -37,7 +38,7 @@ size_t highBit(T)(T n)
 * Return the index of the lowest set bit
 * T is an uinteger type
 * @param n = an integer value
-* @return index of the lowest set bit in n
+* Returns: index of the lowest set bit in n
 */
 size_t lowBit(T)(T n)
 {
@@ -50,7 +51,7 @@ size_t lowBit(T)(T n)
 /**
 * Return the number of significant bytes in n
 * @param n = an integer value
-* @return number of significant bytes in n
+* Returns: number of significant bytes in n
 */
 size_t significantBytes(T)(T n)
 {
@@ -63,7 +64,7 @@ size_t significantBytes(T)(T n)
 /**
 * Compute Hamming weights
 * @param n = an integer value
-* @return number of bits in n set to 1
+* Returns: number of bits in n set to 1
 */
 size_t hammingWeight(T)(T n)
 {
@@ -79,7 +80,7 @@ size_t hammingWeight(T)(T n)
 /**
 * Count the trailing zero bits in n
 * @param n = an integer value
-* @return maximum x st 2^x divides n
+* Returns: maximum x st 2^x divides n
 */
 size_t ctz(T)(T n)
 {

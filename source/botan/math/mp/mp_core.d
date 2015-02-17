@@ -1,9 +1,10 @@
 /*
 * MPI Algorithms
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *      2006 Luca Piccarreta
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.mp.mp_core;
 

@@ -1,8 +1,9 @@
 /*
 * RIPEMD-160
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.rmd160;
 
@@ -45,7 +46,7 @@ public:
     { 
         super(64, false, true);
         m_M = 16;
-        m_digest = 5;
+        m_digest.length = 5;
 
         clear(); 
     }

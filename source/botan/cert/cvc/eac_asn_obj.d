@@ -2,8 +2,9 @@
 * EAC ASN.1 Objects
 * (C) 2007-2008 FlexSecure GmbH
 *      2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.eac_asn_obj;
 
@@ -75,7 +76,7 @@ public:
 
     /**
     * Return a string representation of the time
-    * @return date string
+    * Returns: date string
     */
     override string toString() const
     {
@@ -88,7 +89,7 @@ public:
 
     /**
     * Get a this objects value as a readable formatted string.
-    * @return date string
+    * Returns: date string
     */
     string readableString() const
     {
@@ -101,7 +102,7 @@ public:
 
     /**
     * Find out whether this object's values have been set.
-    * @return true if this object's internal values are set
+    * Returns: true if this object's internal values are set
     */
     bool timeIsSet() const
     {
@@ -110,7 +111,7 @@ public:
 
     /**
     * Compare this to another EACTime object.
-    * @return -1 if this object's date is earlier than
+    * Returns: -1 if this object's date is earlier than
     * other, +1 in the opposite case, and 0 if both dates are
     * equal.
     */
@@ -176,7 +177,9 @@ public:
 
     /**
     * Add the specified number of years to this.
-    * @param years = the number of years to add
+    *
+    * Params:
+    *  years = the number of years to add
     */
     void addYears(uint years)
     {
@@ -186,7 +189,9 @@ public:
 
     /**
     * Add the specified number of months to this.
-    * @param months = the number of months to add
+    *
+    * Params:
+    *  months = the number of months to add
     */
     void addMonths(uint months)
     {
@@ -201,19 +206,19 @@ public:
 
     /**
     * Get the year value of this objects.
-    * @return year value
+    * Returns: year value
     */
     uint getYear() const { return year; }
 
     /**
     * Get the month value of this objects.
-    * @return month value
+    * Returns: month value
     */
     uint getMonth() const { return month; }
 
     /**
     * Get the day value of this objects.
-    * @return day value
+    * Returns: day value
     */
     uint getDay() const { return day; }
 
@@ -305,7 +310,9 @@ final class ASN1CedImpl : EACTimeImpl
 public:
     /**
     * Construct a CED from a string value.
-    * @param str = a string in the format "yyyy mm dd",
+    *
+    * Params:
+    *  str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
     this(in string str = "") {
@@ -321,7 +328,9 @@ public:
 
     /**
     * Copy constructor (for general EACTime objects).
-    * @param other = the object to copy from
+    *
+    * Params:
+    *  other = the object to copy from
     */
     this(in EACTime other)
     {
@@ -347,7 +356,9 @@ final class ASN1CexImpl : EACTimeImpl
 public:
     /**
     * Construct a CEX from a string value.
-    * @param str = a string in the format "yyyy mm dd",
+    *
+    * Params:
+    *  str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
     this(in string str = "") 
@@ -421,7 +432,7 @@ public:
 
     /**
     * Get this objects string value.
-    * @return string value
+    * Returns: string value
     */
     string value() const
     {
@@ -430,7 +441,7 @@ public:
 
     /**
     * Get this objects string value.
-    * @return string value in iso8859 encoding
+    * Returns: string value in iso8859 encoding
     */
     string iso8859() const
     {
@@ -498,7 +509,9 @@ final class ASN1CarImpl : ASN1EACString
 public:
     /**
     * Create a CAR with the specified content.
-    * @param str = the CAR value
+    *
+    * Params:
+    *  str = the CAR value
     */
     this(in string str = "")
     {
@@ -520,7 +533,9 @@ final class ASN1ChrImpl : ASN1EACString
 public:
     /**
     * Create a CHR with the specified content.
-    * @param str = the CHR value
+    *
+    * Params:
+    *  str = the CHR value
     */
     this(in string str = "")
     {

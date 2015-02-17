@@ -1,9 +1,10 @@
 /*
 * Common ASN.1 Objects
 * (C) 1999-2007 Jack Lloyd
-*      2007 Yves Jerschow
+* (C) 2014-2015 Etienne Cimon
+*     2007 Yves Jerschow
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.asn1.asn1_alt_name;
 

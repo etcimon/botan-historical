@@ -1,8 +1,9 @@
 /*
 * OID Registry
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.asn1.oids;
 
@@ -30,14 +31,18 @@ private static:
 
     /**
     * Register an OID to string mapping.
-    * @param oid = the oid to register
-    * @param name = the name to be associated with the oid
+    * 
+    * Params:
+    *  oid = the oid to register
+    *  name = the name to be associated with the oid
     */
     void addOid2str(in OID oid, in string name)
     {
         globalOidMap().addOid2str(oid, name);
     }
-    
+
+
+    /// ditto
     void addStr2oid(in OID oid, in string name)
     {
         globalOidMap().addStr2oid(oid, name);
@@ -46,8 +51,11 @@ private static:
 public:
     /**
     * See if an OID exists in the internal table.
-    * @param oid = the oid to check for
-    * @return true if the oid is registered
+    * 
+    * Params:
+    *  oid = the oid to check for
+    * 
+    * Returns: true if the oid is registered
     */
     bool haveOid(in string name)
     {
@@ -56,8 +64,11 @@ public:
 
     /**
     * Resolve an OID
-    * @param oid = the OID to look up
-    * @return name associated with this OID
+    * 
+    * Params:
+    *  oid = the OID to look up
+    * 
+    * Returns: name associated with this OID
     */
     string lookup(in OID oid)
     {
@@ -67,8 +78,11 @@ public:
     /**
     * Find the OID to a name. The lookup will be performed in the
     * general OID section of the configuration.
-    * @param name = the name to resolve
-    * @return OID associated with the specified name
+    * 
+    * Params:
+    *  name = the name to resolve
+    * 
+    * Returns: OID associated with the specified name
     */
     OID lookup(in string name)
     {
@@ -77,9 +91,12 @@ public:
 
     /**
     * Tests whether the specified OID stands for the specified name.
-    * @param oid = the OID to check
-    * @param name = the name to check
-    * @return true if the specified OID stands for the specified name
+    * 
+    * Params:
+    *  oid = the OID to check
+    *  name = the name to check
+    * 
+    * Returns: true if the specified OID stands for the specified name
     */
     bool nameOf(in OID oid, in string name)
     {

@@ -1,8 +1,9 @@
 /*
 * X.509 Cert Path Validation
 * (C) 2010-2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509path;
 
@@ -63,7 +64,9 @@ public:
     * @param minimum_key_strength = is the minimum strength (in terms of
     *          operations, eg 80 means 2^80) of a signature. Signatures
     *          weaker than this are rejected.
-    * @param trusted_hashes = a set of trusted hashes. Any signatures
+    *
+    * Params:
+    *  trusted_hashes = a set of trusted hashes. Any signatures
     *          created using a hash other than one of these will be
     *          rejected.
     */
@@ -106,7 +109,7 @@ public:
     alias Code = CertificateStatusCode;
 
     /**
-    * @return the set of hash functions you are implicitly
+    * Returns: the set of hash functions you are implicitly
     * trusting by trusting this result.
     */
     RBTreeRef!string trustedHashes() const
@@ -118,7 +121,7 @@ public:
     }
 
     /**
-    * @return the trust root of the validation
+    * Returns: the trust root of the validation
     */
     X509Certificate trustRoot() const
     {
@@ -127,12 +130,12 @@ public:
     }
 
     /**
-    * @return the full path from subject to trust root
+    * Returns: the full path from subject to trust root
     */
     ref const(Vector!X509Certificate) certPath() const { return m_cert_path; }
 
     /**
-    * @return true iff the validation was succesful
+    * Returns: true iff the validation was succesful
     */
     bool successfulValidation() const
     {
@@ -143,7 +146,7 @@ public:
     }
 
     /**
-    * @return overall validation result code
+    * Returns: overall validation result code
     */
     CertificateStatusCode result() const { return m_overall; }
 
@@ -154,7 +157,7 @@ public:
     { return m_all_status; }
 
     /**
-    * @return string representation of the validation result
+    * Returns: string representation of the validation result
     */
     string resultString() const
     {

@@ -1,8 +1,9 @@
 /*
 * Lightweight wrappers for SIMD operations
 * (C) 2009,2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.simd.simd_32;
 import botan.utils.types;

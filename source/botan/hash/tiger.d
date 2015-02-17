@@ -1,8 +1,9 @@
 /*
 * Tiger
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.tiger;
 
@@ -63,7 +64,7 @@ public:
     {
         super(64, false, false);
         m_X = 8;
-        m_digest = 3;
+        m_digest.length = 3;
         m_hash_len = hash_len;
         m_passes = passes;
         if (outputLength() != 16 && outputLength() != 20 && outputLength() != 24)

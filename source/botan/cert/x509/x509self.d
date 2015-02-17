@@ -1,8 +1,9 @@
 /*
 * X.509 Self-Signed Certificate
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509self;
 import botan.constants;
@@ -145,7 +146,9 @@ public:
 
     /**
     * Mark the certificate as a CA certificate and set the path limit.
-    * @param limit = the path limit to be set in the BasicConstraints extension.
+    *
+    * Params:
+    *  limit = the path limit to be set in the BasicConstraints extension.
     */
     void cAKey(size_t limit = 1)
     {
@@ -165,7 +168,9 @@ public:
 
     /**
     * Set the notAfter of the certificate.
-    * @param time = the notAfter value of the certificate
+    *
+    * Params:
+    *  time = the notAfter value of the certificate
     */
     void notAfter(in string time_string)
     {
@@ -174,7 +179,9 @@ public:
 
     /**
     * Add the key constraints of the KeyUsage extension.
-    * @param constr = the constraints to set
+    *
+    * Params:
+    *  constr = the constraints to set
     */
     void addConstraints(KeyConstraints usage)
     {
@@ -183,7 +190,9 @@ public:
 
     /**
     * Add constraints to the ExtendedKeyUsage extension.
-    * @param oid = the oid to add
+    *
+    * Params:
+    *  oid = the oid to add
     */
     void addExConstraint()(auto ref OID oid)
     {
@@ -192,7 +201,9 @@ public:
 
     /**
     * Add constraints to the ExtendedKeyUsage extension.
-    * @param name = the name to look up the oid to add
+    *
+    * Params:
+    *  name = the name to look up the oid to add
     */
     void addExConstraint(in string oid_str)
     {
@@ -203,7 +214,9 @@ public:
     * Construct a new options object
     * @param opts = define the common name of this object. An example for this
     * parameter would be "common_name/country/organization/organizational_unit".
-    * @param expire_time = the expiration time (default 1 year)
+    *
+    * Params:
+    *  expire_time = the expiration time (default 1 year)
     */
     this(in string initial_opts = "", Duration expiration_time = 365.days)
     {
@@ -237,7 +250,7 @@ public:
 * associated with this self-signed certificate
 * @param hash_fn = the hash function to use
 * @param rng = the rng to use
-* @return newly created self-signed certificate
+* Returns: newly created self-signed certificate
 */
 X509Certificate createSelfSignedCert()(auto const ref X509CertOptions opts,
                                        in PrivateKey key,
@@ -280,7 +293,7 @@ X509Certificate createSelfSignedCert()(auto const ref X509CertOptions opts,
 * @param key = the key used to sign this request
 * @param rng = the rng to use
 * @param hash_fn = the hash function to use
-* @return newly created PKCS#10 request
+* Returns: newly created PKCS#10 request
 */
 PKCS10Request createCertReq()(auto const ref X509CertOptions opts,
                               in PrivateKey key,

@@ -1,8 +1,9 @@
 /*
 * Discrete Logarithm Group
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.dl_group;
 
@@ -33,7 +34,7 @@ public:
 
     /**
     * Get the prime m_p.
-    * @return prime m_p
+    * Returns: prime m_p
     */
     ref const(BigInt) getP() const
     {
@@ -43,7 +44,7 @@ public:
 
     /**
     * Get the prime q.
-    * @return prime q
+    * Returns: prime q
     */
     ref const(BigInt) getQ() const
     {
@@ -55,7 +56,7 @@ public:
 
     /**
     * Get the base m_g.
-    * @return base m_g
+    * Returns: base m_g
     */
     ref const(BigInt) getG() const
     {
@@ -86,9 +87,11 @@ public:
 
     /**
     * Perform validity checks on the group.
-    * @param rng = the rng to use
+    *
+    * Params:
+    *  rng = the rng to use
     * @param strong = whether to perform stronger by lengthier tests
-    * @return true if the object is consistent, false otherwise
+    * Returns: true if the object is consistent, false otherwise
     */
     bool verifyGroup(RandomNumberGenerator rng, bool strong) const
     {
@@ -110,8 +113,10 @@ public:
 
     /**
     * Encode this group into a string using PEM encoding.
-    * @param format = the encoding format
-    * @return string holding the PEM encoded group
+    *
+    * Params:
+    *  format = the encoding format
+    * Returns: string holding the PEM encoded group
     */
     string PEM_encode(Format format) const
     {
@@ -129,8 +134,10 @@ public:
 
     /**
     * Encode this group into a string using DER encoding.
-    * @param format = the encoding format
-    * @return string holding the DER encoded group
+    *
+    * Params:
+    *  format = the encoding format
+    * Returns: string holding the DER encoded group
     */
     Vector!ubyte DER_encode(Format format) const
     {
@@ -174,7 +181,9 @@ public:
 
     /**
     * Decode a DER/BER encoded group into this instance.
-    * @param ber = a vector containing the DER/BER encoded group
+    *
+    * Params:
+    *  ber = a vector containing the DER/BER encoded group
     * @param format = the format of the encoded group
     */
     void BER_decode()(auto const ref Vector!ubyte data,
@@ -214,7 +223,9 @@ public:
 
     /**
     * Decode a PEM encoded group into this instance.
-    * @param pem = the PEM encoding of the group
+    *
+    * Params:
+    *  pem = the PEM encoding of the group
     */
     void PEM_decode(in string pem)
     {
@@ -233,7 +244,9 @@ public:
 
     /**
     * Construct a DL group that is registered in the configuration.
-    * @param name = the name that is configured in the global configuration
+    *
+    * Params:
+    *  name = the name that is configured in the global configuration
     * for the desired group. If no configuration file is specified,
     * the default values from the file policy.cpp will be used. For instance,
     * use "modp/ietf/768" as name.
@@ -250,14 +263,18 @@ public:
 
     /**
     * Create a new group randomly.
-    * @param rng = the random number generator to use
+    *
+    * Params:
+    *  rng = the random number generator to use
     * @param type = specifies how the creation of primes p and q shall
     * be performed. If type=Strong, then p will be determined as a
     * safe prime, and q will be chosen as (p-1)/2. If
     * type=Prime_Subgroup and qbits = 0, then the size of q will be
     * determined according to the estimated difficulty of the DL
     * problem. If type=DSA_Kosherizer, DSA primes will be created.
-    * @param pbits = the number of bits of p
+    *
+    * Params:
+    *  pbits = the number of bits of p
     * @param qbits = the number of bits of q. Leave it as 0 to have
     * the value determined according to pbits.
     */
@@ -304,7 +321,9 @@ public:
 
     /**
     * Create a DSA group with a given seed.
-    * @param rng = the random number generator to use
+    *
+    * Params:
+    *  rng = the random number generator to use
     * @param seed = the seed to use to create the random primes
     * @param pbits = the desired bit size of the prime p
     * @param qbits = the desired bit size of the prime q.
@@ -322,7 +341,9 @@ public:
 
     /**
     * Create a DL group. The prime q will be determined according to p.
-    * @param p1 = the prime p
+    *
+    * Params:
+    *  p1 = the prime p
     * @param g1 = the base m_g
     */
     this(ref BigInt p1, ref BigInt g1)
@@ -333,7 +354,9 @@ public:
 
     /**
     * Create a DL group.
-    * @param p1 = the prime m_p
+    *
+    * Params:
+    *  p1 = the prime m_p
     * @param q1 = the prime m_q
     * @param g1 = the base m_g
     */

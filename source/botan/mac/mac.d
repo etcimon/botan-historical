@@ -1,8 +1,9 @@
 /*
 * Base class for message authentiction codes
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.mac.mac;
 
@@ -19,9 +20,11 @@ interface MessageAuthenticationCode : BufferedComputation, SymmetricAlgorithm
 public:
     /**
     * Verify a MAC.
-    * @param input = the MAC to verify as a ubyte array
+    *
+    * Params:
+    *  input = the MAC to verify as a ubyte array
     * @param length = the length of param in
-    * @return true if the MAC is valid, false otherwise
+    * Returns: true if the MAC is valid, false otherwise
     */
     final bool verifyMac(const(ubyte)* mac, size_t length)
     {
@@ -40,7 +43,7 @@ public:
 
     /**
     * Get the name of this algorithm.
-    * @return name of this algorithm
+    * Returns: name of this algorithm
     */
     abstract @property string name() const;
 }

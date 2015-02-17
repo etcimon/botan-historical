@@ -1,8 +1,9 @@
 /*
 * PBKDF1
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbkdf.pbkdf1;
 
@@ -26,7 +27,9 @@ final class PKCS5_PBKDF1 : PBKDF
 public:
     /**
     * Create a PKCS #5 instance using the specified hash function.
-    * @param hash_in = pointer to a hash function object to use
+    *
+    * Params:
+    *  hash_in = pointer to a hash function object to use
     */
     this(HashFunction hash_input)
     {

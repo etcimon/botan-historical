@@ -1,8 +1,9 @@
 /*
 * Stream Cipher
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.stream.stream_cipher;
 
@@ -56,7 +57,7 @@ public:
 
     /**
     * @param iv_len = the length of the IV in bytes
-    * @return if the length is valid for this algorithm
+    * Returns: if the length is valid for this algorithm
     */
     abstract bool validIvLength(size_t iv_len) const;
     // { return (iv_len == 0); }

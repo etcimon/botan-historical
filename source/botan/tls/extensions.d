@@ -1,8 +1,9 @@
 /*
 * TLS Extensions
 * (C) 2011-2012 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Released under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.extensions;
 
@@ -51,17 +52,17 @@ interface Extension
 {
 public:
     /**
-    * @return code number of the extension
+    * Returns: code number of the extension
     */
     abstract HandshakeExtensionType type() const;
 
     /**
-    * @return serialized binary for the extension
+    * Returns: serialized binary for the extension
     */
     abstract Vector!ubyte serialize() const;
 
     /**
-    * @return if we should encode this extension or not
+    * Returns: if we should encode this extension or not
     */
     abstract @property bool empty() const;
 }
@@ -362,7 +363,7 @@ public:
     override HandshakeExtensionType type() const { return staticType(); }
 
     /**
-    * @return contents of the session ticket
+    * Returns: contents of the session ticket
     */
     ref const(Vector!ubyte) contents() const { return m_ticket; }
 

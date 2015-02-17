@@ -1,9 +1,10 @@
 /*
 * DataSource
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *      2012 Markus Wanner
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.data_src;
 
@@ -31,7 +32,7 @@ public:
     *
     * @param output = the ubyte array to write the result to
     * @param length = the length of the ubyte array out
-    * @return length in bytes that was actually read and put
+    * Returns: length in bytes that was actually read and put
     * into out
     */
     size_t read(ubyte* output, size_t length);
@@ -44,26 +45,28 @@ public:
     * @param output = the ubyte array to write the output to
     * @param length = the length of the ubyte array out
     * @param peek_offset = the offset into the stream to read at
-    * @return length in bytes that was actually read and put
+    * Returns: length in bytes that was actually read and put
     * into out
     */
     size_t peek(ubyte* output, size_t length, size_t peek_offset) const;
 
     /**
     * Test whether the source still has data that can be read.
-    * @return true if there is still data to read, false otherwise
+    * Returns: true if there is still data to read, false otherwise
     */
     bool endOfData() const;
     /**
     * return the id of this data source
-    * @return string representing the id of this data source
+    * Returns: string representing the id of this data source
     */
     string id() const;
 
     /**
     * Read one ubyte.
-    * @param output = the ubyte to read to
-    * @return length in bytes that was actually read and put
+    *
+    * Params:
+    *  output = the ubyte to read to
+    * Returns: length in bytes that was actually read and put
     * into out
     */
     final size_t readByte(ref ubyte output)
@@ -74,8 +77,10 @@ public:
 
     /**
     * Peek at one ubyte.
-    * @param output = an output ubyte
-    * @return length in bytes that was actually read and put
+    *
+    * Params:
+    *  output = an output ubyte
+    * Returns: length in bytes that was actually read and put
     * into out
     */
     final size_t peekByte(ref ubyte output) const
@@ -87,7 +92,7 @@ public:
     /**
     * Discard the next N bytes of the data
     * @param N = the number of bytes to discard
-    * @return number of bytes actually discarded
+    * Returns: number of bytes actually discarded
     */
     final size_t discardNext(size_t n)
     {
@@ -100,7 +105,7 @@ public:
 
 
     /**
-    * @return number of bytes read so far.
+    * Returns: number of bytes read so far.
     */
     size_t getBytesRead() const;
 

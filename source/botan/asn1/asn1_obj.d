@@ -1,8 +1,9 @@
 /*
 * ASN.1 Internals
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 
 module botan.asn1.asn1_obj;
@@ -67,13 +68,16 @@ interface ASN1Object
 public:
     /**
     * Encode whatever this object is into to
-    * @param to = the DEREncoder that will be written to
+    * Params:
+    *  to = the $(D DEREncoder) that will be written to
     */
     void encodeInto(ref DEREncoder to) const;
 
     /**
     * Decode whatever this object is from from
-    * @param from = the BERDecoder that will be read from
+    * 
+    * Params:
+    *  from = the BERDecoder that will be read from
     */
     void decodeFrom(ref BERDecoder from);
 }
@@ -84,7 +88,7 @@ public:
 struct BERObject
 {
 public:
-    /*
+    /**
     * Check a type invariant on BER data
     */
     void assertIsA(ASN1Tag type_tag, ASN1Tag class_tag)
@@ -99,7 +103,7 @@ public:
         return;
     }
 
-    /*
+    /**
     * Convert a BER object into a string object
     */
     string toString()
@@ -157,7 +161,7 @@ class BERBadTag : BERDecodingError
     }
 }
     
-/*
+/**
 * Put some arbitrary bytes into a ASN1Tag.SEQUENCE
 */
 Vector!ubyte putInSequence(ALLOC)(auto const ref Vector!(ubyte, ALLOC) contents)
@@ -181,7 +185,8 @@ Vector!ubyte putInSequence(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLO
 
 /**
 * Heuristics tests; is this object possibly BER?
-* @param src = a data source that will be peeked at but not modified
+* Params:
+*  src = a data source that will be peeked at but not modified
 */
 bool maybeBER(DataSource source)
 {

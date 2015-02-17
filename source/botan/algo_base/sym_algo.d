@@ -1,3 +1,11 @@
+/*
+* Symmetric Algorithm Base Class
+*
+* (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
+* 
+* Botan is released under the Simplified BSD License (see license.txt)
+*/
 module botan.algo_base.sym_algo;
 
 import botan.utils.exceptn;
@@ -13,7 +21,7 @@ interface SymmetricAlgorithm
 public:
     
     /**
-    * @return minimum allowed key length
+    * Returns: minimum allowed key length
     */
     final size_t maximumKeylength() const
     {
@@ -21,7 +29,7 @@ public:
     }
     
     /**
-    * @return maxmium allowed key length
+    * Returns: maxmium allowed key length
     */
     final size_t minimumKeylength() const
     {
@@ -30,8 +38,11 @@ public:
     
     /**
     * Check whether a given key length is valid for this algorithm.
-    * @param length = the key length to be checked.
-    * @return true if the key length is valid.
+    * 
+    * Params:
+    *  length = the key length to be checked.
+    * 
+    * Returns: true if the key length is valid.
     */
     final bool validKeylength(size_t length) const
     {
@@ -40,18 +51,22 @@ public:
     
     /**
     * Set the symmetric key of this object.
-    * @param key = the SymmetricKey to be set.
+    * 
+    * Params:
+    *  key = the $(D SymmetricKey) to be set.
     */
     final void setKey(in SymmetricKey key)
     {
         setKey(key.ptr, key.length);
     }
     
+	/// ditto
     final void setKey(Alloc)(auto const ref RefCounted!(Vector!( ubyte, Alloc ), Alloc) key)
     {
         setKey(key.ptr, key.length);
     }
 
+	/// ditto
     final void setKey(Alloc)(auto const ref Vector!( ubyte, Alloc ) key)
     {
         setKey(key.ptr, key.length);
@@ -59,8 +74,10 @@ public:
     
     /**
     * Set the symmetric key of this object.
-    * @param key = the to be set as a ubyte array.
-    * @param length = in bytes of key param
+    * 
+    * Params:
+    *  key = the to be set as a ubyte array.
+    *  length = in bytes of key param
     */
     final void setKey(const(ubyte)* key, size_t length)
     {
@@ -69,11 +86,12 @@ public:
         keySchedule(key, length);
     }
 
+	/// Clear underlying buffers
     abstract void clear();
     
     /**
-        * @return object describing limits on key size
-        */
+    * Returns: object describing limits on key size
+    */
     abstract KeyLengthSpecification keySpec() const;
 
     abstract @property string name() const;
@@ -81,8 +99,10 @@ public:
 protected:
     /**
     * Run the key schedule
-    * @param key = the key
-    * @param length = of key
+    * 
+    * Params:
+    *  key = the key
+    *  length = of key
     */
     abstract void keySchedule(const(ubyte)* key, size_t length);
 }

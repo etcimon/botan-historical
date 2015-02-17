@@ -1,8 +1,9 @@
 /*
 * Global State Management
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.libstate.global_state;
 import botan.constants;
@@ -17,9 +18,6 @@ private LibraryState g_lib_state;
 LibraryState globalState()
 {
     if (!g_lib_state) { 
-        import backtrace.backtrace;
-        import std.stdio : stdout;
-        install(stdout, PrintOptions.init, 0);
 
         g_lib_state = new LibraryState;
         /* Lazy initialization. Botan still needs to be deinitialized later

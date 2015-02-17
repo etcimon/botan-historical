@@ -1,8 +1,9 @@
 /*
 * Diffie-Hellman
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.dh;
 
@@ -41,7 +42,9 @@ public:
 
     /**
     * Construct a public key with the specified parameters.
-    * @param grp = the DL group to use in the key
+    *
+    * Params:
+    *  grp = the DL group to use in the key
     * @param y = the public value y
     */
     this(DLGroup grp, BigInt y1)
@@ -85,7 +88,9 @@ public:
 
     /**
     * Construct a private key with predetermined value.
-    * @param rng = random number generator to use
+    *
+    * Params:
+    *  rng = random number generator to use
     * @param grp = the group to be used in the key
     * @param x_args = the key's secret value (or if zero, generate a new key)
     */

@@ -1,9 +1,10 @@
 /*
 * EAC11 general CVC
 * (C) 2008 Falko Strenzke
-*      2008-2010 Jack Lloyd
+*     2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_gen_cert;
 
@@ -59,7 +60,9 @@ public:
     /**
     * Put the DER encoded version of this object into a pipe. PEM
     * is not supported.
-    * @param output = the pipe to push the DER encoded version into
+    *
+    * Params:
+    *  output = the pipe to push the DER encoded version into
     * @param encoding = the encoding to use. Must be DER.
     */
     override void encode(Pipe output, X509Encoding encoding) const
@@ -106,7 +109,9 @@ public:
 
     /**
     * Create a signed generalized CVC object.
-    * @param signer = the signer used to sign this object
+    *
+    * Params:
+    *  signer = the signer used to sign this object
     * @param tbs_bits = the body the generalized CVC object to be signed
     * @param rng = a random number generator
     * @result the DER encoded signed generalized CVC object

@@ -1,9 +1,10 @@
 /*
 * Basic Filters
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 * (C) 2013 Joel Low
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.basefilt;
 

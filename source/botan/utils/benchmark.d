@@ -1,8 +1,9 @@
 /*
 * Runtime benchmarking
 * (C) 2008-2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.benchmark.benchmark;
 
@@ -33,7 +34,7 @@ import std.datetime;
 * @param rng = the rng to use to generate random inputs
 * @param runtime = total time for the benchmark to run
 * @param buf_size = size of buffer to benchmark against, in KiB
-* @return results a map from op type to operations per second
+* Returns: results a map from op type to operations per second
 */
 HashMapRef!(string, double)
     timeAlgorithmOps(in string name,
@@ -126,7 +127,7 @@ HashMapRef!(string, double)
 * @param rng = the rng to use to generate random inputs
 * @param milliseconds = total time for the benchmark to run
 * @param buf_size = size of buffer to benchmark against, in KiB
-* @return results a map from provider to speed in mebibytes per second
+* Returns: results a map from provider to speed in mebibytes per second
 */
 HashMapRef!(string, double)
     algorithmBenchmark(in string name,

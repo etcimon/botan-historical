@@ -1,8 +1,9 @@
 /*
 * Library Internal/Global State
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.libstate.libstate;
 
@@ -139,7 +140,7 @@ public:
 
     /**
     * Return a reference to the AlgorithmFactory
-    * @return global AlgorithmFactory
+    * Returns: global AlgorithmFactory
     */
     AlgorithmFactory algorithmFactory()
     {
@@ -151,7 +152,7 @@ public:
 
     /**
     * Return a reference to the global PRNG
-    * @return global RandomNumberGenerator
+    * Returns: global RandomNumberGenerator
     */
     RandomNumberGenerator globalRng()
     {

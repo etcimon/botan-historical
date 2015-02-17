@@ -1,13 +1,14 @@
 /*
 * AES using SSSE3
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.aes_ssse3;
 
 import botan.constants;
-static if (BOTAN_HAS_AES && BOTAN_HAS_AES_SSSE3 && BOTAN_HAS_SIMD_SSE2):
+static if (BOTAN_HAS_AES_SSSE3):
 
 import std.range : iota;
 import botan.block.block_cipher;

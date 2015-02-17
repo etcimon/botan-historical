@@ -1,8 +1,9 @@
 /*
 * ASN.1 string type
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.asn1.asn1_str;
 

@@ -1,8 +1,9 @@
 /*
 * EAC11 CVC ADO
 * (C) 2008 Falko Strenzke
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_ado;
 
@@ -35,7 +36,9 @@ public:
     override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Construct a CVC ADO request from a DER encoded CVC ADO request file.
-    * @param str = the path to the DER encoded file
+    *
+    * Params:
+    *  str = the path to the DER encoded file
     */
     this(in string input)
     {
@@ -101,7 +104,9 @@ public:
 
     /**
     * Encode this object into a pipe. Only DER is supported.
-    * @param output = the pipe to encode this object into
+    *
+    * Params:
+    *  output = the pipe to encode this object into
     * @param encoding = the encoding type to use, must be DER
     */
     override void encode(Pipe output, X509Encoding encoding) const

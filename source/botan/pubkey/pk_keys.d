@@ -1,8 +1,9 @@
 /*
 * PK Key Types
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pk_keys;
 
@@ -25,7 +26,7 @@ interface PublicKey
 public:
     /**
     * Get the name of the underlying public key scheme.
-    * @return name of the public key scheme
+    * Returns: name of the public key scheme
     */
     abstract @property string algoName() const;
 
@@ -36,13 +37,13 @@ public:
     * account padding schemes, usage mistakes, etc which might reduce
     * the strength. However it does suffice to provide an upper bound.
     *
-    * @return estimated strength in bits
+    * Returns: estimated strength in bits
     */
     abstract size_t estimatedStrength() const;
 
     /**
     * Get the OID of the underlying public key scheme.
-    * @return OID of the public key scheme
+    * Returns: OID of the public key scheme
     */
     final OID getOid() const
     {
@@ -58,38 +59,40 @@ public:
 
     /**
     * Test the key values for consistency.
-    * @param rng = rng to use
+    *
+    * Params:
+    *  rng = rng to use
     * @param strong = whether to perform strong and lengthy version
     * of the test
-    * @return true if the test is passed
+    * Returns: true if the test is passed
     */
     abstract bool checkKey(RandomNumberGenerator rng, bool strong) const;
 
     /**
     * Find out the number of message parts supported by this scheme.
-    * @return number of message parts
+    * Returns: number of message parts
     */
     abstract size_t messageParts() const;
 
     /**
     * Find out the message part size supported by this scheme/key.
-    * @return size of the message parts in bits
+    * Returns: size of the message parts in bits
     */
     abstract size_t messagePartSize() const; 
 
     /**
     * Get the maximum message size in bits supported by this public key.
-    * @return maximum message size in bits
+    * Returns: maximum message size in bits
     */
     abstract size_t maxInputBits() const;
 
     /**
-    * @return X.509 AlgorithmIdentifier for this key
+    * Returns: X.509 AlgorithmIdentifier for this key
     */
     abstract AlgorithmIdentifier algorithmIdentifier() const;
 
     /**
-    * @return X.509 subject key encoding for this key object
+    * Returns: X.509 subject key encoding for this key object
     */
     abstract Vector!ubyte x509SubjectPublicKey() const;
 
@@ -111,12 +114,12 @@ interface PrivateKey : PublicKey
 {
 public:
     /**
-    * @return PKCS #8 private key encoding for this key object
+    * Returns: PKCS #8 private key encoding for this key object
     */
     abstract SecureVector!ubyte pkcs8PrivateKey() const;
 
     /**
-    * @return PKCS #8 AlgorithmIdentifier for this key
+    * Returns: PKCS #8 AlgorithmIdentifier for this key
     * Might be different from the X.509 identifier, but normally is not
     */
     abstract AlgorithmIdentifier pkcs8AlgorithmIdentifier() const;
@@ -149,7 +152,7 @@ interface PKKeyAgreementKey : PrivateKey
 {
 public:
     /*
-    * @return public component of this key
+    * Returns: public component of this key
     */
     abstract Vector!ubyte publicValue() const;
 

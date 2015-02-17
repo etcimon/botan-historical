@@ -1,9 +1,10 @@
 /*
 * EAC11 CVC
 * (C) 2008 Falko Strenzke
-*      2008 Jack Lloyd
+*     2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_cert;
 

@@ -1,8 +1,9 @@
 /*
 * PKCS #10
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.pkcs10;
 
@@ -38,7 +39,7 @@ final class PKCS10RequestImpl : X509Object
 public:
     /**
     * Get the subject public key.
-    * @return subject public key
+    * Returns: subject public key
     */
     PublicKey subjectPublicKey() const
     {
@@ -49,7 +50,7 @@ public:
 
     /**
     * Get the raw DER encoded public key.
-    * @return the public key of the requestor
+    * Returns: the public key of the requestor
     */
     Vector!ubyte rawPublicKey() const
     {
@@ -59,7 +60,7 @@ public:
 
     /**
     * Get the subject DN.
-    * @return the name of the requestor
+    * Returns: the name of the requestor
     */
     X509DN subjectDn() const
     {
@@ -68,7 +69,7 @@ public:
 
     /**
     * Get the subject alternative name.
-    * @return the alternative names of the requestor
+    * Returns: the alternative names of the requestor
     */
     AlternativeName subjectAltName() const
     {
@@ -78,7 +79,7 @@ public:
     /**
     * Get the key constraints for the key associated with this
     * PKCS#10 object.
-    * @return the key constraints (if any)
+    * Returns: the key constraints (if any)
     */
     KeyConstraints constraints() const
     {
@@ -87,7 +88,7 @@ public:
 
     /**
     * Get the extendend key constraints (if any).
-    * @return the extendend key constraints (if any)
+    * Returns: the extendend key constraints (if any)
     */
     Vector!OID exConstraints() const
     {
@@ -112,7 +113,7 @@ public:
     /**
     * Return the constraint on the path length defined
     * in the BasicConstraints extension.
-    * @return the desired path limit (if any)
+    * Returns: the desired path limit (if any)
     */
     uint pathLimit() const
     {
@@ -121,7 +122,7 @@ public:
 
     /**
     * Get the challenge password for this request
-    * @return challenge password for this request
+    * Returns: challenge password for this request
     */
     string challengePassword() const
     {
@@ -130,7 +131,9 @@ public:
 
     /**
     * Create a PKCS#10 Request from a data source.
-    * @param source = the data source providing the DER encoded request
+    *
+    * Params:
+    *  source = the data source providing the DER encoded request
     */
     this(DataSource source)
     {
@@ -140,7 +143,9 @@ public:
 
     /**
     * Create a PKCS#10 Request from a file.
-    * @param filename = the name of the file containing the DER or PEM
+    *
+    * Params:
+    *  filename = the name of the file containing the DER or PEM
     * encoded request file
     */
     this(in string input)
@@ -151,7 +156,9 @@ public:
 
     /**
     * Create a PKCS#10 Request from binary data.
-    * @param vec = a std::vector containing the DER value
+    *
+    * Params:
+    *  vec = a std::vector containing the DER value
     */
     this(ALLOC)(in Vector!(ubyte, ALLOC)* input)
     {

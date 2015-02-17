@@ -1,9 +1,10 @@
 /*
 * Load/Store Operators
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *      2007 Yves Jerschow
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.loadstor;
 
@@ -17,7 +18,7 @@ import std.bitmanip;
 * Make a ushort from two bytes
 * @param i0 = the first ubyte
 * @param i1 = the second ubyte
-* @return i0 || i1
+* Returns: i0 || i1
 */
 ushort make_ushort(ubyte i0, ubyte i1)
 {
@@ -30,7 +31,7 @@ ushort make_ushort(ubyte i0, ubyte i1)
 * @param i1 = the second ubyte
 * @param i2 = the third ubyte
 * @param i3 = the fourth ubyte
-* @return i0 || i1 || i2 || i3
+* Returns: i0 || i1 || i2 || i3
 */
 uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 {
@@ -50,7 +51,7 @@ uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 * @param i5 = the sixth ubyte
 * @param i6 = the seventh ubyte
 * @param i7 = the eighth ubyte
-* @return i0 || i1 || i2 || i3 || i4 || i5 || i6 || i7
+* Returns: i0 || i1 || i2 || i3 || i4 || i5 || i6 || i7
 */
 ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
                   ubyte i4, ubyte i5, ubyte i6, ubyte i7)
@@ -69,7 +70,7 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 * Load a big-endian word
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th T of in, as a big-endian value
+* Returns: off'th T of in, as a big-endian value
 */
 T loadBigEndian(T)(const(ubyte)* input, size_t off)
 {
@@ -84,7 +85,7 @@ T loadBigEndian(T)(const(ubyte)* input, size_t off)
 * Load a little-endian word
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th T of in, as a litte-endian value
+* Returns: off'th T of in, as a litte-endian value
 */
 T loadLittleEndian(T)(const(ubyte)* input, size_t off)
 {
@@ -99,7 +100,7 @@ T loadLittleEndian(T)(const(ubyte)* input, size_t off)
 * Load a big-endian ushort
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th ushort of in, as a big-endian value
+* Returns: off'th ushort of in, as a big-endian value
 */
 ushort loadBigEndian(T : ushort)(const(ubyte)* input, size_t off)
 {
@@ -110,7 +111,7 @@ ushort loadBigEndian(T : ushort)(const(ubyte)* input, size_t off)
 * Load a little-endian ushort
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th ushort of in, as a little-endian value
+* Returns: off'th ushort of in, as a little-endian value
 */
 ushort loadLittleEndian(T : ushort)(const(ubyte)* input, size_t off)
 {
@@ -121,7 +122,7 @@ ushort loadLittleEndian(T : ushort)(const(ubyte)* input, size_t off)
 * Load a big-endian uint
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th uint of in, as a big-endian value
+* Returns: off'th uint of in, as a big-endian value
 */
 uint loadBigEndian(T : uint)(const(ubyte)* input, size_t off)
 {
@@ -132,7 +133,7 @@ uint loadBigEndian(T : uint)(const(ubyte)* input, size_t off)
 * Load a little-endian uint
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th uint of in, as a little-endian value
+* Returns: off'th uint of in, as a little-endian value
 */
 
 uint loadLittleEndian(T : uint)(const(ubyte)* input, size_t off)
@@ -144,7 +145,7 @@ uint loadLittleEndian(T : uint)(const(ubyte)* input, size_t off)
 * Load a big-endian ulong
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th ulong of in, as a big-endian value
+* Returns: off'th ulong of in, as a big-endian value
 */
 ulong loadBigEndian(T : ulong)(const(ubyte)* input, size_t off)
 {
@@ -156,7 +157,7 @@ ulong loadBigEndian(T : ulong)(const(ubyte)* input, size_t off)
 * Load a little-endian ulong
 * @param input = a pointer to some bytes
 * @param off = an offset into the array
-* @return off'th ulong of in, as a little-endian value
+* Returns: off'th ulong of in, as a little-endian value
 */
 ulong loadLittleEndian(T : ulong)(const(ubyte)* input, size_t off)
 {

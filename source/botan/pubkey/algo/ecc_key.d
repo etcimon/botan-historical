@@ -3,8 +3,9 @@
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
 *             Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.ecc_key;
 
@@ -135,7 +136,9 @@ public:
 
     /**
     * Set the domain parameter encoding to be used when encoding this key.
-    * @param enc = the encoding to use
+    *
+    * Params:
+    *  enc = the encoding to use
     */
     final void setParameterEncoding(ECGroupEncoding form)
     {
@@ -168,7 +171,7 @@ public:
     }
 
     /**
-    * @return public point value
+    * Returns: public point value
     */
     Vector!ubyte publicValue() const
     { return unlock(EC2OSP(publicPoint(), PointGFp.UNCOMPRESSED)); }

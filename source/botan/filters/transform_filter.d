@@ -1,8 +1,9 @@
 /*
 * Filter interface for Transformations
 * (C) 2013 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.transform_filter;
 
@@ -130,12 +131,12 @@ public:
 
 protected:
     /**
-    * @return block size of inputs
+    * Returns: block size of inputs
     */
     size_t bufferedBlockSize() const { return m_main_block_mod; }
     
     /**
-    * @return current position in the buffer
+    * Returns: current position in the buffer
     */
     size_t currentPosition() const { return m_buffer_pos; }
     

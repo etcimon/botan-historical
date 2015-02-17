@@ -1,8 +1,9 @@
 /*
 * OpenPGP Codec
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.codec.openpgp;
 
@@ -71,7 +72,7 @@ string PGP_encode(const(ubyte)* input, size_t length, in string type)
 * @param source = the input source
 * @param label = is set to the human-readable label
 * @param headers = is set to any headers
-* @return decoded output as raw binary
+* Returns: decoded output as raw binary
 */
 SecureVector!ubyte PGP_decode(DataSource source,
                             ref string label,
@@ -195,7 +196,7 @@ SecureVector!ubyte PGP_decode(DataSource source,
 /**
 * @param source = the input source
 * @param label = is set to the human-readable label
-* @return decoded output as raw binary
+* Returns: decoded output as raw binary
 */
 SecureVector!ubyte PGP_decode(DataSource source, ref string label)
 {

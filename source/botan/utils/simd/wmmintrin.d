@@ -1,3 +1,9 @@
+/*
+* wmmintrin.h style functions
+* (C) 2014-2015 Etienne Cimon
+*
+* Released under the MIT license
+*/
 module botan.utils.simd.wmmintrin;
 /*
 * LDC, GDC, DMD Intrinsics for SSSE 3

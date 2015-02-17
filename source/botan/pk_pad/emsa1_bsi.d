@@ -1,9 +1,10 @@
 /*
 * EMSA1 BSI Variant
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *      2007 FlexSecure GmbH
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.emsa1_bsi;
 

@@ -1,8 +1,9 @@
 /*
 * EME Classes
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.eme;
 
@@ -17,7 +18,7 @@ public:
     /**
     * Return the maximum input size in bytes we can support
     * @param keybits = the size of the key in bits
-    * @return upper bound of input in bytes
+    * Returns: upper bound of input in bytes
     */
     abstract size_t maximumInputSize(size_t keybits) const;
 
@@ -27,7 +28,7 @@ public:
     * @param msg_len = length of plaintext in bytes
     * @param key_bits = length of the key in bits
     * @param rng = a random number generator
-    * @return encoded plaintext
+    * Returns: encoded plaintext
     */
     final SecureVector!ubyte encode(const(ubyte)* msg, size_t msg_len,
                                     size_t key_bits,
@@ -41,7 +42,7 @@ public:
     * @param msg = the plaintext
     * @param key_bits = length of the key in bits
     * @param rng = a random number generator
-    * @return encoded plaintext
+    * Returns: encoded plaintext
     */
     final SecureVector!ubyte encode(const ref SecureVector!ubyte msg, size_t key_bits, RandomNumberGenerator rng) const
     {
@@ -53,7 +54,7 @@ public:
     * @param msg = the encoded plaintext
     * @param msg_len = length of encoded plaintext in bytes
     * @param key_bits = length of the key in bits
-    * @return plaintext
+    * Returns: plaintext
     */
     final SecureVector!ubyte decode(const(ubyte)* msg, size_t msg_len, size_t key_bits) const
     {
@@ -65,7 +66,7 @@ public:
     * Decode an input
     * @param msg = the encoded plaintext
     * @param key_bits = length of the key in bits
-    * @return plaintext
+    * Returns: plaintext
     */
     final SecureVector!ubyte decode(const ref SecureVector!ubyte msg, size_t key_bits) const
     {
@@ -80,7 +81,7 @@ protected:
     * @param in_length = length of plaintext in bytes
     * @param key_length = length of the key in bits
     * @param rng = a random number generator
-    * @return encoded plaintext
+    * Returns: encoded plaintext
     */
     abstract SecureVector!ubyte pad(const(ubyte)* input,
                                      size_t in_length,
@@ -92,7 +93,7 @@ protected:
     * @param input = the encoded plaintext
     * @param in_length = length of encoded plaintext in bytes
     * @param key_length = length of the key in bits
-    * @return plaintext
+    * Returns: plaintext
     */
     abstract SecureVector!ubyte unpad(const(ubyte)* input, size_t in_length, size_t key_length) const;
 }

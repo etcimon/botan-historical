@@ -2,8 +2,9 @@
 * ECDSA Signature
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.ecdsa_sig;
 

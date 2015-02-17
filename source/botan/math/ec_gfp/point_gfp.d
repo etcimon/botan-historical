@@ -3,8 +3,9 @@
 *
 * (C) 2007 Martin Doering, Christoph Ludwig, Falko Strenzke
 *      2008-2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.ec_gfp.point_gfp;
 
@@ -146,7 +147,7 @@ public:
     * Multiplication Operator
     * @param scalar = the scalar value
     * @param point = the point value
-    * @return scalar*point on the curve
+    * Returns: scalar*point on the curve
     */
     PointGFp opBinary(string op)(auto const ref BigInt scalar) const
         if (op == "*")
@@ -292,7 +293,7 @@ public:
 
     /**
     * Negate this point
-    * @return this
+    * Returns: this
     */
     ref PointGFp negate()
     {
@@ -352,7 +353,7 @@ public:
     /**
     * Checks whether the point is to be found on the underlying
     * curve; used to prevent fault attacks.
-    * @return if the point is on the curve
+    * Returns: if the point is on the curve
     */
     bool onTheCurve() const
     {

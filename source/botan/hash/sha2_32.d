@@ -1,9 +1,10 @@
 /*
 * SHA-{224,256}
 * (C) 1999-2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *      2007 FlexSecure GmbH
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.sha2_32;
 
@@ -49,7 +50,7 @@ public:
     this()
     { 
         super(64, true, true);
-        m_digest = 8;
+        m_digest.length = 8;
         clear(); 
     }
 
@@ -106,7 +107,7 @@ public:
     this()
     { 
         super(64, true, true);
-        m_digest = 8;
+        m_digest.length = 8;
         clear();
     }
 protected:

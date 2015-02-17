@@ -1,8 +1,9 @@
 /*
 * Hash Function Base Class
 * (C) 1999-2008 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.hash;
 
@@ -16,7 +17,7 @@ interface HashFunction : BufferedComputation
 {
 public:
     /**
-    * @return new object representing the same algorithm as this
+    * Returns: new object representing the same algorithm as this
     */
     HashFunction clone() const;
 
@@ -25,7 +26,7 @@ public:
     @property string name() const;
 
     /**
-    * @return hash block size as defined for this algorithm
+    * Returns: hash block size as defined for this algorithm
     */
     @property size_t hashBlockSize() const;
 }

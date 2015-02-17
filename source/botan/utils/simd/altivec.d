@@ -1,11 +1,10 @@
-module botan.utils.simd.altivec;
-
 /*
-* LDC, GDC, DMD Intrinsics for SSE 2
-* (C) 2014-. Etienne Cimon
+* altivec style functions
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the MIT License.
+* Released under the MIT license
 */
+module botan.utils.simd.altivec;
  
 import botan.constants;
 static if (BOTAN_HAS_SIMD_ALTIVEC):
@@ -20,7 +19,7 @@ alias vector_uint = uint4;
 alias vector_byte = byte16;
 
 // todo: LDC & DMD
-
+// warning: untested
 version(GDC) {
     // GDC <--> immintrin => gcc/gcc/config/i386/immintrin.h
     static import gcc.attribute;

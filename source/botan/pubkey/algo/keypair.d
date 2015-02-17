@@ -1,8 +1,9 @@
 /*
 * Keypair Checks
 * (C) 1999-2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.keypair;
 
@@ -20,7 +21,7 @@ import botan.utils.mem_ops;
 * @param rng = the rng to use
 * @param key = the key to test
 * @param padding = the encryption padding method to use
-* @return true if consistent otherwise false
+* Returns: true if consistent otherwise false
 */
 bool encryptionConsistencyCheck(RandomNumberGenerator rng,
                                 in PrivateKey key,
@@ -53,7 +54,7 @@ bool encryptionConsistencyCheck(RandomNumberGenerator rng,
 * @param rng = the rng to use
 * @param key = the key to test
 * @param padding = the signature padding method to use
-* @return true if consistent otherwise false
+* Returns: true if consistent otherwise false
 */
 bool signatureConsistencyCheck(RandomNumberGenerator rng,
                                in PrivateKey key,

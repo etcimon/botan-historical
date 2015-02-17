@@ -1,8 +1,9 @@
 /*
 * Block Cipher Base Class
 * (C) 1999-2009 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.block_cipher;
 
@@ -18,17 +19,17 @@ interface BlockCipher : SymmetricAlgorithm
 public:
 
     /**
-    * @return block size of this algorithm
+    * Returns: block size of this algorithm
     */
     abstract size_t blockSize() const;
 
     /**
-    * @return native parallelism of this cipher in blocks
+    * Returns: native parallelism of this cipher in blocks
     */
     abstract @property size_t parallelism() const;
 
     /**
-    * @return prefererred parallelism of this cipher in bytes
+    * Returns: prefererred parallelism of this cipher in bytes
     */
     final size_t parallelBytes() const
     {
@@ -37,10 +38,12 @@ public:
 
     /**
     * Encrypt a block.
-    * @param input = The plaintext block to be encrypted as a ubyte array.
-    * Must be of length blockSize().
-    * @param output = The ubyte array designated to hold the encrypted block.
-    * Must be of length blockSize().
+    * 
+    * Params:
+    *  input = The plaintext block to be encrypted as a ubyte array.
+    *  output = The ubyte array designated to hold the encrypted block.
+    * 
+    * Notes: Both arguments must be of length blockSize().
     */
     final void encrypt(const(ubyte)* input, ubyte* output)
     { encryptN(input, output, 1); }
@@ -173,7 +176,7 @@ public:
     abstract void decryptN(const(ubyte)* input, ubyte* output, size_t blocks);
 
     /**
-    * @return new object representing the same algorithm as this
+    * Returns: new object representing the same algorithm as this
     */
     abstract BlockCipher clone() const;
 }

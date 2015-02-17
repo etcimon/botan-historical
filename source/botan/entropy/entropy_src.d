@@ -1,8 +1,9 @@
 /*
 * EntropySource
 * (C) 2008-2009,2014 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.entropy.entropy_src;
 
@@ -32,7 +33,7 @@ public:
     * overhead to polls)
     *
     * @param size = requested size for the I/O buffer
-    * @return cached I/O buffer for repeated polls
+    * Returns: cached I/O buffer for repeated polls
     */
     ref SecureVector!ubyte getIoBuffer(size_t size)
     {
@@ -42,7 +43,7 @@ public:
     }
 
     /**
-    * @return if our polling goal has been achieved
+    * Returns: if our polling goal has been achieved
     */
     bool pollingGoalAchieved() const { return m_done; }
 
@@ -82,7 +83,7 @@ interface EntropySource
 {
 public:
     /**
-    * @return name identifying this entropy source
+    * Returns: name identifying this entropy source
     */
     @property string name() const;
 

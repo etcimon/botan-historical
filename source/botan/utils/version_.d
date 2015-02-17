@@ -1,8 +1,9 @@
 /*
 * Version Information
 * (C) 1999-2011 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.version_;
 
@@ -17,17 +18,16 @@ import botan.utils.parsing;
 /**
 * Get a human-readable string identifying the version of Botan.
 * No particular format should be assumed.
-* @return version string
+* Returns: version string
 */
 string versionString()
-{
-        
+{        
     /*
     It is intentional that this string is a compile-time constant;
     it makes it much easier to find in binaries.
     */
     return "Botan " ~ BOTAN_VERSION_MAJOR.to!string ~ "."
-        ~ BOTAN_VERSION_MINOR.to!string ~ "." 
+            ~ BOTAN_VERSION_MINOR.to!string ~ "." 
             ~ BOTAN_VERSION_PATCH.to!string ~ " ("
             ~ BOTAN_VERSION_RELEASE_TYPE.to!string
             ~ ", dated " ~ BOTAN_VERSION_DATESTAMP.to!string
@@ -41,25 +41,25 @@ string versionString()
 * would return the integer 20130521. If the currently running version
 * is not an official release, this function will return 0 instead.
 *
-* @return release date, or zero if unreleased
+* Returns: release date, or zero if unreleased
 */
 uint versionDatestamp() { return BOTAN_VERSION_DATESTAMP; }
 
 /**
 * Get the major version number.
-* @return major version number
+* Returns: major version number
 */
 uint versionMajor() { return BOTAN_VERSION_MAJOR; }
 
 /**
 * Get the minor version number.
-* @return minor version number
+* Returns: minor version number
 */
 uint versionMinor() { return BOTAN_VERSION_MINOR; }
 
 /**
 * Get the patch number.
-* @return patch number
+* Returns: patch number
 */
 uint versionPatch() { return BOTAN_VERSION_PATCH; }
 

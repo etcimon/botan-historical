@@ -1,8 +1,9 @@
 /*
 * Key Derivation Function interfaces
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.kdf.kdf;
 
@@ -123,7 +124,7 @@ protected:
 /**
 * Factory method for KDF (key derivation function)
 * @param algo_spec = the name of the KDF to create
-* @return pointer to newly allocated object of that type
+* Returns: pointer to newly allocated object of that type
 */
 KDF getKdf(in string algo_spec)
 {

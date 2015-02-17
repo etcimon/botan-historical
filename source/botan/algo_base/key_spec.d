@@ -1,8 +1,9 @@
 /*
 * Symmetric Key Length Specification
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.algo_base.key_spec;
 
@@ -15,7 +16,9 @@ struct KeyLengthSpecification
 public:
     /**
     * Constructor for fixed length keys
-    * @param keylen = the supported key length
+    * 
+    * Params:
+    *  keylen = the supported key length
     */
     this(size_t keylen)
     {
@@ -26,9 +29,11 @@ public:
 
     /**
     * Constructor for variable length keys
-    * @param min_k = the smallest supported key length
-    * @param max_k = the largest supported key length
-    * @param k_mod = the number of bytes the key must be a multiple of
+    * 
+    * Params:
+    *  min_k = the smallest supported key length
+    *  max_k = the largest supported key length
+    *  k_mod = the number of bytes the key must be a multiple of
     */
     this(size_t min_k,
          size_t max_k,
@@ -40,8 +45,10 @@ public:
     }
 
     /**
-    * @param length = is a key length in bytes
-    * @return true iff this length is a valid length for this algo
+    * Params:
+    *  length = is a key length in bytes
+    * 
+    * Returns: true iff this length is a valid length for this algo
     */
     bool validKeylength(size_t length) const
     {
@@ -51,7 +58,7 @@ public:
     }
 
     /**
-    * @return minimum key length in bytes
+    * Returns: minimum key length in bytes
     */
     size_t minimumKeylength() const
     {
@@ -59,7 +66,7 @@ public:
     }
 
     /**
-    * @return maximum key length in bytes
+    * Returns: maximum key length in bytes
     */
     size_t maximumKeylength() const
     {
@@ -67,7 +74,7 @@ public:
     }
 
     /**
-    * @return key length multiple in bytes
+    * Returns: key length multiple in bytes
     */
     size_t keylengthMultiple() const
     {

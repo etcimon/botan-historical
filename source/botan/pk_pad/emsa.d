@@ -1,8 +1,9 @@
 /*
 * EMSA Classes
 * (C) 1999-2007 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.emsa;
 
@@ -22,7 +23,7 @@ public:
     abstract void update(const(ubyte)* input, size_t length);
 
     /**
-    * @return raw hash
+    * Returns: raw hash
     */
     abstract SecureVector!ubyte rawData();
 
@@ -31,7 +32,7 @@ public:
     * @param msg = the result of rawData()
     * @param output_bits = the desired output bit size
     * @param rng = a random number generator
-    * @return encoded signature
+    * Returns: encoded signature
     */
     abstract SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
                                            size_t output_bits,
@@ -50,7 +51,7 @@ public:
     * @param coded = the received (coded) message representative
     * @param raw = the computed (local, uncoded) message representative
     * @param key_bits = the size of the key in bits
-    * @return true if coded is a valid encoding of raw, otherwise false
+    * Returns: true if coded is a valid encoding of raw, otherwise false
     */
     abstract bool verify(const ref SecureVector!ubyte coded,
                          const ref SecureVector!ubyte raw,

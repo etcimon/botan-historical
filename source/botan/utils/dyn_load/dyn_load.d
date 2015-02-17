@@ -1,8 +1,9 @@
 /*
 * Dynamically Loaded Object
 * (C) 2010 Jack Lloyd
+* (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the botan license.
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.dyn_load.dyn_load;
 //todo : Mac OSX
@@ -72,7 +73,7 @@ public:
     /**
     * Load a symbol (or fail with an exception)
     * @param symbol = names the symbol to load
-    * @return address of the loaded symbol
+    * Returns: address of the loaded symbol
     */
     void* resolveSymbol(in string symbol)
     {
@@ -91,7 +92,7 @@ public:
     /**
     * Convenience function for casting symbol to the right type
     * @param symbol = names the symbol to load
-    * @return address of the loaded symbol
+    * Returns: address of the loaded symbol
     */
     T resolve(T)(in string symbol)
     {
