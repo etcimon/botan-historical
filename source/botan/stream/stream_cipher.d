@@ -1,8 +1,11 @@
-/*
+/**
 * Stream Cipher
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.stream.stream_cipher;
@@ -17,23 +20,26 @@ interface StreamCipher : SymmetricAlgorithm
 public:
     /**
     * Encrypt or decrypt a message
-    * @param input = the plaintext
-    * @param output = the ubyte array to hold the output, i.e. the ciphertext
-    * @param len = the length of both in and out in bytes
+    * Params:
+    *  input = the plaintext
+    *  output = the ubyte array to hold the output, i.e. the ciphertext
+    *  len = the length of both in and out in bytes
     */
     abstract void cipher(const(ubyte)* input, ubyte* output, size_t len);
 
     /**
     * Encrypt or decrypt a message
-    * @param buf = the plaintext / ciphertext
-    * @param len = the length of buf in bytes
+    * Params:
+    *  buf = the plaintext / ciphertext
+    *  len = the length of buf in bytes
     */
     final void cipher1(const(ubyte)* buf, size_t len)
     { cipher(buf, cast(ubyte*)buf, len); }
 
     /**
     * Encrypt or decrypt a message
-    * @param buf = the plaintext / ciphertext
+    * Params:
+    *  buf = the plaintext / ciphertext
     */
     final void cipher1(ref ubyte[] buf)
     { cipher(buf.ptr, buf.ptr, buf.length); }
@@ -49,14 +55,16 @@ public:
 
     /**
     * Resync the cipher using the IV
-    * @param iv = the initialization vector
-    * @param iv_len = the length of the IV in bytes
+    * Params:
+    *  iv = the initialization vector
+    *  iv_len = the length of the IV in bytes
     */
     abstract void setIv(const(ubyte)*, size_t iv_len);
     // { if (iv_len) throw new InvalidArgument("The stream cipher " ~ name ~ " does not support resyncronization"); }
 
     /**
-    * @param iv_len = the length of the IV in bytes
+    * Params:
+    *  iv_len = the length of the IV in bytes
     * Returns: if the length is valid for this algorithm
     */
     abstract bool validIvLength(size_t iv_len) const;

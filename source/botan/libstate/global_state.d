@@ -1,8 +1,11 @@
-/*
+/**
 * Global State Management
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.libstate.global_state;
@@ -13,7 +16,7 @@ private LibraryState g_lib_state;
 
 /**
 * Access the global library state
-* @return reference to the global library state
+* Returns: reference to the global library state
 */
 LibraryState globalState()
 {
@@ -35,7 +38,8 @@ LibraryState globalState()
 
 /**
 * Set the global state object
-* @param state = the new global state to use
+* Params:
+*  state = the new global state to use
 */
 void setGlobalState(LibraryState new_state)
 {
@@ -46,8 +50,9 @@ void setGlobalState(LibraryState new_state)
 
 /**
 * Set the global state object unless it is already set
-* @param state = the new global state to use
-* @return true if the state parameter is now being used as the global
+* Params:
+*  state = the new global state to use
+* Returns: true if the state parameter is now being used as the global
 *            state, or false if one was already set, in which case the
 *            parameter was deleted immediately
 */
@@ -66,7 +71,7 @@ bool setGlobalStateUnlessSet(LibraryState new_state)
 
 /**
 * Query if the library is currently initialized
-* @return true iff the library is initialized
+* Returns: true iff the library is initialized
 */
 bool globalStateExists()
 {

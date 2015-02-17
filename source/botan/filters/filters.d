@@ -1,8 +1,11 @@
-/*
+/**
 * Filters
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.filters;
@@ -39,8 +42,9 @@ public:
 
     /**
     * Write input data
-    * @param input = data
-    * @param input_len = length of input in bytes
+    * Params:
+    *  input = data
+    *  input_len = length of input in bytes
     */
     override void write(const(ubyte)* input, size_t length)
     {
@@ -95,8 +99,8 @@ public:
     * Construct a stream cipher filter.
     *
     * Params:
-    *  cipher_obj = a cipher object to use
-    * @param key = the key to use inside this filter
+    *  stream_cipher = a cipher object to use
+    *  key = the key to use inside this filter
     */
     this(StreamCipher stream_cipher, in SymmetricKey key)
     {
@@ -109,7 +113,7 @@ public:
     * Construct a stream cipher filter.
     *
     * Params:
-    *  cipher = the name of the desired cipher
+    *  sc_name = the name of the desired cipher
     */
     this(in string sc_name)
         
@@ -123,8 +127,8 @@ public:
     * Construct a stream cipher filter.
     *
     * Params:
-    *  cipher = the name of the desired cipher
-    * @param key = the key to use inside this filter
+    *  sc_name = the name of the desired cipher
+    *  key = the key to use inside this filter
     */
     this(in string sc_name, in SymmetricKey key)
     {
@@ -171,7 +175,7 @@ public:
     *
     * Params:
     *  hash_fun = the hash function to use
-    * @param len = the output length of this filter. Leave the default
+    *  len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the hashfunction
     * hash. Otherwise, specify a smaller value here so that the
     * output of the hash algorithm will be cut off.
@@ -186,8 +190,8 @@ public:
     * Construct a hash filter.
     *
     * Params:
-    *  request = the name of the hash algorithm to use
-    * @param len = the output length of this filter. Leave the default
+    *  algo_spec = the name of the hash algorithm to use
+    *  len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the hashfunction
     * hash. Otherwise, specify a smaller value here so that the
     * output of the hash algorithm will be cut off.
@@ -249,7 +253,7 @@ public:
     *
     * Params:
     *  mac_obj = the MAC to use
-    * @param out_len = the output length of this filter. Leave the default
+    *  out_len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
     * MAC. Otherwise, specify a smaller value here so that the
     * output of the MAC will be cut off.
@@ -265,8 +269,8 @@ public:
     *
     * Params:
     *  mac_obj = the MAC to use
-    * @param key = the MAC key to use
-    * @param out_len = the output length of this filter. Leave the default
+    *  key = the MAC key to use
+    *  out_len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
     * MAC. Otherwise, specify a smaller value here so that the
     * output of the MAC will be cut off.
@@ -283,7 +287,7 @@ public:
     *
     * Params:
     *  mac = the name of the MAC to use
-    * @param len = the output length of this filter. Leave the default
+    *  len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
     * MAC. Otherwise, specify a smaller value here so that the
     * output of the MAC will be cut off.
@@ -300,8 +304,8 @@ public:
     *
     * Params:
     *  mac = the name of the MAC to use
-    * @param key = the MAC key to use
-    * @param len = the output length of this filter. Leave the default
+    *  key = the MAC key to use
+    *  len = the output length of this filter. Leave the default
     * value 0 if you want to use the full output of the
     * MAC. Otherwise, specify a smaller value here so that the
     * output of the MAC will be cut off.

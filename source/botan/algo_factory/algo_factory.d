@@ -1,9 +1,12 @@
-/*
+/**
 * Algorithm Factory
+* 
+* Copyright:
 * (C) 2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the Botan license
+* License:
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.algo_factory.algo_factory;
 
@@ -139,8 +142,9 @@ public:
     
     /**
     * Add a new block cipher
-    * @param algo = the algorithm to add
-    * @param provider = the provider of this algorithm
+    * Params:
+    *  algo = the algorithm to add
+    *  provider = the provider of this algorithm
     */
     void addBlockCipher(BlockCipher block_cipher, in string provider = "")
     {

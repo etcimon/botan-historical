@@ -1,8 +1,11 @@
-/*
+/**
 * PSSR
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.pssr;
@@ -26,7 +29,8 @@ class PSSR : EMSA
 public:
 
     /**
-    * @param hash = the hash object to use
+    * Params:
+    *  hash = the hash object to use
     */
     this(HashFunction hash)
     {
@@ -35,8 +39,9 @@ public:
     }
 
     /**
-    * @param hash = the hash object to use
-    * @param salt_size = the size of the salt to use in bytes
+    * Params:
+    *  hash = the hash object to use
+    *  salt_size = the size of the salt to use in bytes
     */
     this(HashFunction hash, size_t salt_size)
     {

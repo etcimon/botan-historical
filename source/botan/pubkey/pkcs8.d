@@ -1,8 +1,11 @@
-/*
+/**
 * PKCS #8
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pkcs8;
@@ -40,7 +43,8 @@ final class PKCS8Exception : DecodingError
 
 /**
 * BER encode a private key
-* @param key = the private key to encode
+* Params:
+*  key = the private key to encode
 * Returns: BER encoded key
 */
 SecureArray!ubyte BER_encode(in PrivateKey key)
@@ -58,7 +62,8 @@ SecureArray!ubyte BER_encode(in PrivateKey key)
 
 /**
 * Get a string containing a PEM encoded private key.
-* @param key = the key to encode
+* Params:
+*  key = the key to encode
 * Returns: encoded key
 */
 string PEM_encode(in PrivateKey key)
@@ -69,11 +74,12 @@ string PEM_encode(in PrivateKey key)
 
 /**
 * Encrypt a key using PKCS #8 encryption
-* @param key = the key to encode
-* @param rng = the rng to use
-* @param pass = the password to use for encryption
-* @param dur = number of time to run the password derivation
-* @param pbe_algo = the name of the desired password-based encryption
+* Params:
+*  key = the key to encode
+*  rng = the rng to use
+*  pass = the password to use for encryption
+*  dur = number of time to run the password derivation
+*  pbe_algo = the name of the desired password-based encryption
             algorithm; if empty ("") a reasonable (portable/secure)
             default will be chosen.
 * Returns: encrypted key in binary BER form
@@ -107,11 +113,12 @@ Vector!ubyte BER_encode(in PrivateKey key,
 /**
 * Get a string containing a PEM encoded private key, encrypting it with a
 * password.
-* @param key = the key to encode
-* @param rng = the rng to use
-* @param pass = the password to use for encryption
-* @param msec = number of milliseconds to run the password derivation
-* @param pbe_algo = the name of the desired password-based encryption
+* Params:
+*  key = the key to encode
+*  rng = the rng to use
+*  pass = the password to use for encryption
+*  msec = number of milliseconds to run the password derivation
+*  pbe_algo = the name of the desired password-based encryption
             algorithm; if empty ("") a reasonable (portable/secure)
             default will be chosen.
 * Returns: encrypted key in PEM form
@@ -131,9 +138,10 @@ string PEM_encode(in PrivateKey key,
 
 /**
 * Load a key from a data source.
-* @param source = the data source providing the encoded key
-* @param rng = the rng to use
-* @param getPassphrase = a function that returns passphrases
+* Params:
+*  source = the data source providing the encoded key
+*  rng = the rng to use
+*  get_pass = a function that returns passphrases
 * Returns: loaded private key object
 */
 PrivateKey loadKey(DataSource source,
@@ -150,9 +158,10 @@ PrivateKey loadKey(DataSource source,
 }
 
 /** Load a key from a data source.
-* @param source = the data source providing the encoded key
-* @param rng = the rng to use
-* @param pass = the passphrase to decrypt the key. Provide an empty
+* Params:
+*  source = the data source providing the encoded key
+*  rng = the rng to use
+*  pass = the passphrase to decrypt the key. Provide an empty
 * string if the key is not encrypted
 * Returns: loaded private key object
 */
@@ -165,9 +174,10 @@ PrivateKey loadKey(DataSource source,
 
 /**
 * Load a key from a file.
-* @param filename = the path to the file containing the encoded key
-* @param rng = the rng to use
-* @param getPassphrase = a function that returns passphrases
+* Params:
+*  filename = the path to the file containing the encoded key
+*  rng = the rng to use
+*  get_pass = a function that returns passphrases
 * Returns: loaded private key object
 */
 PrivateKey loadKey(in string filename,
@@ -179,9 +189,10 @@ PrivateKey loadKey(in string filename,
 }
 
 /** Load a key from a file.
-* @param filename = the path to the file containing the encoded key
-* @param rng = the rng to use
-* @param pass = the passphrase to decrypt the key. Provide an empty
+* Params:
+*  filename = the path to the file containing the encoded key
+*  rng = the rng to use
+*  pass = the passphrase to decrypt the key. Provide an empty
 * string if the key is not encrypted
 * Returns: loaded private key object
 */
@@ -195,8 +206,9 @@ PrivateKey loadKey(in string filename,
 
 /**
 * Copy an existing encoded key object.
-* @param key = the key to copy
-* @param rng = the rng to use
+* Params:
+*  key = the key to copy
+*  rng = the rng to use
 * Returns: new copy of the key
 */
 PrivateKey copyKey(in PrivateKey key,
@@ -227,7 +239,7 @@ SecureVector!ubyte PKCS8_extract(DataSource source,
 /*
 * PEM decode and/or decrypt a private key
 */
-SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassphrase, ref AlgorithmIdentifier pk_alg_id)
+SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase get_pass, ref AlgorithmIdentifier pk_alg_id)
 {
     auto pbe_alg_id = AlgorithmIdentifier();
     SecureVector!ubyte key_data, key;
@@ -275,7 +287,7 @@ SecureVector!ubyte PKCS8_decode(DataSource source, SingleShotPassphrase getPassp
             
             if (is_encrypted)
             {
-                Pair!(bool, string) pass = getPassphrase();
+                Pair!(bool, string) pass = get_pass();
                 
                 if (pass.first == false)
                     break;

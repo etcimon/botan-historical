@@ -1,8 +1,11 @@
-/*
+/**
 * Integer Rounding Functions
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.rounding;
@@ -11,8 +14,9 @@ import botan.utils.types;
 
 /**
 * Round up
-* @param n = an integer
-* @param align_to = the alignment boundary
+* Params:
+*  n = an integer
+*  align_to = the alignment boundary
 * Returns: n rounded up to a multiple of align_to
 */
 T roundUp(T)(T n, T align_to)
@@ -27,8 +31,9 @@ T roundUp(T)(T n, T align_to)
 
 /**
 * Round down
-* @param n = an integer
-* @param align_to = the alignment boundary
+* Params:
+*  n = an integer
+*  align_to = the alignment boundary
 * Returns: n rounded down to a multiple of align_to
 */
 T roundDown(T)(T n, T align_to)

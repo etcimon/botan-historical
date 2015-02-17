@@ -1,9 +1,12 @@
-/*
+/**
 * EAC11 general CVC
+* 
+* Copyright:
 * (C) 2008 Falko Strenzke
 *     2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_gen_cert;
@@ -32,7 +35,7 @@ public:
     override const(Vector!ubyte) getConcatSig() const { return super.getConcatSig(); }
     /**
     * Get this certificates public key.
-    * @result this certificates public key
+    * Returns: this certificates public key
     */
     final const(PublicKey) subjectPublicKey() const
     {
@@ -41,7 +44,7 @@ public:
 
     /**
     * Find out whether this object is self signed.
-    * @result true if this object is self signed
+    * Returns: true if this object is self signed
     */
     final bool isSelfSigned() const
     {
@@ -51,7 +54,7 @@ public:
 
     /**
     * Get the CHR of the certificate.
-    * @result the CHR of the certificate
+    * Returns: the CHR of the certificate
     */
     final const(ASN1Chr) getChr() const {
         return m_chr;
@@ -63,7 +66,7 @@ public:
     *
     * Params:
     *  output = the pipe to push the DER encoded version into
-    * @param encoding = the encoding to use. Must be DER.
+    *  encoding = the encoding to use. Must be DER.
     */
     override void encode(Pipe output, X509Encoding encoding) const
     {
@@ -86,7 +89,7 @@ public:
 
     /**
     * Get the to-be-signed (TBS) data of this object.
-    * @result the TBS data of this object
+    * Returns: the TBS data of this object
     */
     override const(Vector!ubyte) tbsData() const
     {
@@ -96,8 +99,9 @@ public:
 
     /**
     * Build the DER encoded certifcate body of an object
-    * @param tbs = the data to be signed
-    * @result the correctly encoded body of the object
+    * Params:
+    *  tbs = the data to be signed
+    * Returns: the correctly encoded body of the object
     */
     static Vector!ubyte buildCertBody(ALLOC)(auto const ref Vector!(ubyte, ALLOC) tbs)
     {
@@ -112,13 +116,13 @@ public:
     *
     * Params:
     *  signer = the signer used to sign this object
-    * @param tbs_bits = the body the generalized CVC object to be signed
-    * @param rng = a random number generator
-    * @result the DER encoded signed generalized CVC object
+    *  tbs_bits = the body the generalized CVC object to be signed
+    *  rng = a random number generator
+    * Returns: the DER encoded signed generalized CVC object
     */
     static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
-                                            auto const ref Vector!(ubyte, ALLOC) tbs_bits,
-                                            RandomNumberGenerator rng)
+                                          auto const ref Vector!(ubyte, ALLOC) tbs_bits,
+                                          RandomNumberGenerator rng)
     {
         const auto concat_sig = signer.signMessage(tbs_bits, rng);
         return DEREncoder()

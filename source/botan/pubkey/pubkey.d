@@ -1,8 +1,11 @@
-/*
+/**
 * Public Key Interface
+* 
+* Copyright:
 * (C) 1999-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pubkey;
@@ -60,8 +63,8 @@ public:
     *
     * Params:
     *  input = the message as a ubyte array
-    * @param length = the length of the above ubyte array
-    * @param rng = the random number source to use
+    *  length = the length of the above ubyte array
+    *  rng = the random number source to use
     * Returns: encrypted message
     */
     final Vector!ubyte encrypt(const(ubyte)* input, size_t length, RandomNumberGenerator rng) const
@@ -103,7 +106,7 @@ public:
     *
     * Params:
     *  input = the ciphertext as a ubyte array
-    * @param length = the length of the above ubyte array
+    *  length = the length of the above ubyte array
     * Returns: decrypted message
     */
     final SecureVector!ubyte decrypt(const(ubyte)* input, size_t length) const
@@ -140,8 +143,8 @@ public:
     *
     * Params:
     *  msg = the message to sign as a ubyte array
-    * @param length = the length of the above ubyte array
-    * @param rng = the rng to use
+    *  length = the length of the above ubyte array
+    *  rng = the rng to use
     * Returns: signature
     */
     Vector!ubyte signMessage(const(ubyte)* msg, size_t length, RandomNumberGenerator rng)
@@ -177,7 +180,7 @@ public:
     *
     * Params:
     *  input = the message part to add as a ubyte array
-    * @param length = the length of the above ubyte array
+    *  length = the length of the above ubyte array
     */
     void update(const(ubyte)* input, size_t length)
     {
@@ -244,12 +247,9 @@ public:
     *
     * Params:
     *  key = the key to use inside this signer
-    * @param emsa = the EMSA to use
-    * An example would be "EMSA1(SHA-224)".
-    *
-    * Params:
+    *  emsa_name = the EMSA to use, e.g. "EMSA1(SHA-224)".
     *  format = the signature format to use
-    * @param prot = says if fault protection should be enabled
+    *  prot = says if fault protection should be enabled
     */
     this(in PrivateKey key, in string emsa_name,
          SignatureFormat format = IEEE_1363,
@@ -328,9 +328,9 @@ public:
     *
     * Params:
     *  msg = the message that the signature belongs to, as a ubyte array
-    * @param msg_length = the length of the above ubyte array msg
-    * @param sig = the signature as a ubyte array
-    * @param sig_length = the length of the above ubyte array sig
+    *  msg_length = the length of the above ubyte array msg
+    *  sig = the signature as a ubyte array
+    *  sig_length = the length of the above ubyte array sig
     * Returns: true if the signature is valid
     */
     bool verifyMessage(const(ubyte)* msg, size_t msg_length,
@@ -346,7 +346,7 @@ public:
     *
     * Params:
     *  msg = the message that the signature belongs to
-    * @param sig = the signature
+    *  sig = the signature
     * Returns: true if the signature is valid
     */
     bool verifyMessage(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) msg, 
@@ -377,7 +377,7 @@ public:
     *
     * Params:
     *  msg_part = the new message part as a ubyte array
-    * @param length = the length of the above ubyte array
+    *  length = the length of the above ubyte array
     */
     void update(const(ubyte)* input, size_t length)
     {
@@ -400,7 +400,7 @@ public:
     *
     * Params:
     *  sig = the signature to be verified as a ubyte array
-    * @param length = the length of the above ubyte array
+    *  length = the length of the above ubyte array
     * Returns: true if the signature is valid, false otherwise
     */
     bool checkSignature(const(ubyte)* sig, size_t length)
@@ -465,8 +465,8 @@ public:
     *
     * Params:
     *  pub_key = the public key to verify against
-    * @param emsa = the EMSA to use (eg "EMSA3(SHA-1)")
-    * @param format = the signature format to use
+    *  emsa_name = the EMSA to use (eg "EMSA3(SHA-1)")
+    *  format = the signature format to use
     */
     this(in PublicKey key, in string emsa_name, SignatureFormat format = IEEE_1363)
     {
@@ -517,11 +517,12 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len = the desired key output size
-    * @param input = the other parties key
-    * @param in_len = the length of in in bytes
-    * @param params = extra derivation params
-    * @param params_len = the length of params in bytes
+    * Params:
+    *  key_len = the desired key output size
+    *  input = the other parties key
+    *  in_len = the length of in in bytes
+    *  params = extra derivation params
+    *  params_len = the length of params in bytes
     */
     SymmetricKey deriveKey(size_t key_len, const(ubyte)* input,
                            size_t in_len, const(ubyte)* params,
@@ -537,11 +538,12 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len = the desired key output size
-    * @param input = the other parties key
-    * @param in_len = the length of in in bytes
-    * @param params = extra derivation params
-    * @param params_len = the length of params in bytes
+    * Params:
+    *  key_len = the desired key output size
+    *  input = the other parties key
+    *  in_len = the length of in in bytes
+    *  params = extra derivation params
+    *  params_len = the length of params in bytes
     */
     SymmetricKey deriveKey()(size_t key_len, auto const ref Vector!ubyte input, 
                              const(ubyte)* params, size_t params_len) const
@@ -551,10 +553,11 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len = the desired key output size
-    * @param input = the other parties key
-    * @param in_len = the length of in in bytes
-    * @param params = extra derivation params
+    * Params:
+    *  key_len = the desired key output size
+    *  input = the other parties key
+    *  in_len = the length of in in bytes
+    *  params = extra derivation params
     */
     SymmetricKey deriveKey(size_t key_len, const(ubyte)* input, size_t in_len, in string params = "") const
     {
@@ -563,9 +566,10 @@ public:
 
     /*
     * Perform Key Agreement Operation
-    * @param key_len = the desired key output size
-    * @param input = the other parties key
-    * @param params = extra derivation params
+    * Params:
+    *  key_len = the desired key output size
+    *  input = the other parties key
+    *  params = extra derivation params
     */
     SymmetricKey deriveKey()(size_t key_len,
                              auto const ref Vector!ubyte input,
@@ -581,7 +585,7 @@ public:
     *
     * Params:
     *  key = the key to use
-    * @param kdf_name = name of the KDF to use (or 'Raw' for no KDF)
+    *  kdf_name = name of the KDF to use (or 'Raw' for no KDF)
     */
     this(in PKKeyAgreementKey key, in string kdf_name)
     {
@@ -627,7 +631,7 @@ public:
     *
     * Params:
     *  key = the key to use inside the decryptor
-    * @param eme = the EME to use
+    *  eme_name = the EME to use
     */
     this(in PublicKey key, in string eme_name)
     {
@@ -684,7 +688,7 @@ public:
     *
     * Params:
     *  key = the key to use inside the encryptor
-    * @param eme = the EME to use
+    *  eme_name = the EME to use
     */
     this(in PrivateKey key, in string eme_name)
     {

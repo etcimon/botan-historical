@@ -1,8 +1,11 @@
-/*
+/**
 * XOR operations
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.xor_buf;
@@ -12,9 +15,10 @@ import botan.utils.types;
 pure {
     /**
     * XOR arrays. Postcondition output[i] = input[i] ^ output[i] forall i = 0...length
-    * @param output = the input/output buffer
-    * @param input = the read-only input buffer
-    * @param length = the length of the buffers
+    * Params:
+    *  output = the input/output buffer
+    *  input = the read-only input buffer
+    *  length = the length of the buffers
     */
     void xorBuf(T)(T* output, const(T)* input, size_t length)
     {
@@ -30,10 +34,11 @@ pure {
 
     /**
     * XOR arrays. Postcondition output[i] = input[i] ^ in2[i] forall i = 0...length
-    * @param output = the output buffer
-    * @param input = the first input buffer
-    * @param in2 = the second output buffer
-    * @param length = the length of the three buffers
+    * Params:
+    *  output = the output buffer
+    *  input = the first input buffer
+    *  input2 = the second output buffer
+    *  length = the length of the three buffers
     */
     void xorBuf(T)(T* output,
                    const(T)* input,

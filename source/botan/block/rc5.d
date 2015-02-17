@@ -1,8 +1,11 @@
-/*
+/**
 * RC5
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.rc5;
@@ -111,7 +114,8 @@ public:
 
     /**
     * RC5 Constructor
-    * @param rounds = the number of RC5 rounds to run. Must be between
+    * Params:
+    *  rounds = the number of RC5 rounds to run. Must be between
     * 8 and 32 and a multiple of 4.
     */
     this(size_t r)

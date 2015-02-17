@@ -1,10 +1,13 @@
-/*
+/**
 * ECDSA
+* 
+* Copyright:
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
-*             Manuel Hartl, FlexSecure GmbH
+*          Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.ecc_key;
@@ -91,9 +94,9 @@ public:
 
     /**
     * Get the public point of this key.
-    * @throw new InvalidState is thrown if the
+    * Throws: $(D InvalidState) is thrown if the
     * domain parameters of this point are not set
-    * @result the public point of this key
+    * Returns: the public point of this key
     */
     final ref const(PointGFp) publicPoint() const { return m_public_key; }
 
@@ -128,9 +131,8 @@ public:
 
     /**
     * Get the domain parameters of this key.
-    * @throw new InvalidState is thrown if the
-    * domain parameters of this point are not set
-    * @result the domain parameters of this key
+    * Throws: $(D InvalidState) is thrown if the domain parameters of this point are not set
+    * Returns: the domain parameters of this key
     */
     final ref const(ECGroup) domain() const { return m_domain_params; }
 
@@ -161,7 +163,7 @@ public:
 
     /**
     * Get the domain parameter encoding to be used when encoding this key.
-    * @result the encoding to use
+    * Returns: the encoding to use
     */
     ECGroupEncoding domainFormat() const { return m_domain_encoding; }
 
@@ -271,7 +273,7 @@ public:
 
     /**
     * Get the private key value of this key object.
-    * @result the private key value of this key object
+    * Returns: the private key value of this key object
     */
     ref const(BigInt) privateValue() const
     {

@@ -1,8 +1,11 @@
-/*
+/**
 * Pipe I/O for Unix
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.fd_unix;
@@ -11,12 +14,15 @@ import botan.filters.pipe;
 import botan.utils.exceptn;
 import core.sys.posix.unistd;
 
+// TODO: make this work?
 
-/**
+
+/*
 * Stream output operator; dumps the results from pipe's default
 * message to the output stream.
-* @param output = file descriptor for an open output stream
-* @param pipe = the pipe
+* Params:
+*  output = file descriptor for an open output stream
+*  pipe = the pipe
 */
 /*int operator<<(int fd, Pipe& pipe)
 {
@@ -37,11 +43,12 @@ import core.sys.posix.unistd;
     return fd;
 }*/
 
-/**
+/*
 * File descriptor input operator; dumps the remaining bytes of input
 * to the (assumed open) pipe message.
-* @param input = file descriptor for an open input stream
-* @param pipe = the pipe
+* Params:
+*  input = file descriptor for an open input stream
+*  pipe = the pipe
 */
 /*int opBinary(string op)(int fd, ref Pipe pipe)
 {

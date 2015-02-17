@@ -1,8 +1,11 @@
-/*
+/**
 * RSA
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.rsa;
@@ -96,14 +99,11 @@ public:
     *
     * Params:
     *  rng = a random number generator
-    * @param p = the first prime
-    * @param q = the second prime
-    * @param e = the exponent
-    * @param d = if specified, this has to be d with
-    * exp * d = 1 mod (p - 1, q - 1). Leave it as 0 if you wish to
+    *  p = the first prime
+    *  q = the second prime
+    *  e = the exponent
+    *  d = if specified, this has to be d with exp * d = 1 mod (p - 1, q - 1). Leave it as 0 if you wish 
     * the constructor to calculate it.
-    *
-    * Params:
     *  n = if specified, this must be n = p * q. Leave it as 0
     * if you wish to the constructor to calculate it.
     */
@@ -114,9 +114,10 @@ public:
 
     /**
     * Create a new private key with the specified bit length
-    * @param rng = the random number generator to use
-    * @param bits = the desired bit length of the private key
-    * @param exp = the public exponent to be used
+    * Params:
+    *  rng = the random number generator to use
+    *  bits = the desired bit length of the private key
+    *  exp = the public exponent to be used
     */
     this(RandomNumberGenerator rng, size_t bits, size_t exp = 65537)
     {

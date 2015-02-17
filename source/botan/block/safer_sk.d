@@ -1,8 +1,11 @@
-/*
+/**
 * SAFER-SK
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.safer_sk;
@@ -141,7 +144,8 @@ public:
     }
 
     /**
-    * @param rounds = the number of rounds to use - must be between 1
+    * Params:
+    *  rounds = the number of rounds to use - must be between 1
     * and 13
     */
     this(size_t r)

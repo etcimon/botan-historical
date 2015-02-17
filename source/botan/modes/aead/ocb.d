@@ -1,8 +1,11 @@
-/*
+/**
 * OCB Mode
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.modes.aead.ocb;
@@ -89,8 +92,9 @@ public:
     override size_t defaultNonceLength() const { return super.defaultNonceLength(); }
 protected:
     /**
-    * @param cipher = the 128-bit block cipher to use
-    * @param tag_size = is how big the auth tag will be
+    * Params:
+    *  cipher = the 128-bit block cipher to use
+    *  tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size)
     {     
@@ -176,8 +180,9 @@ final class OCBEncryption : OCBMode, Transformation
 {
 public:
     /**
-    * @param cipher = the 128-bit block cipher to use
-    * @param tag_size = is how big the auth tag will be
+    * Params:
+    *  cipher = the 128-bit block cipher to use
+    *  tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 16)
     {
@@ -291,8 +296,9 @@ final class OCBDecryption : OCBMode, Transformation
 {
 public:
     /**
-    * @param cipher = the 128-bit block cipher to use
-    * @param tag_size = is how big the auth tag will be
+    * Params:
+    *  cipher = the 128-bit block cipher to use
+    *  tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 16)
     {

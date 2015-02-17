@@ -1,8 +1,11 @@
-/*
+/**
 * 64x64.128 bit multiply operation
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.mul128;
@@ -11,7 +14,7 @@ import botan.utils.types;
 
 /**
 * Perform a 64x64.128 bit multiplication
-* fixme: Optimize this
+* TODO: Optimize this further
 */
 void mul64x64_128(ulong a, ulong b, ref ulong[2] res) pure
 {

@@ -1,8 +1,11 @@
-/*
+/**
 * Number Theory Functions
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.numbertheory.numthry;
@@ -28,9 +31,10 @@ import std.conv : to;
 
 /**
 * Fused multiply-add
-* @param a = an integer
-* @param b = an integer
-* @param c = an integer
+* Params:
+*  a = an integer
+*  b = an integer
+*  c = an integer
 * Returns: (a*b)+c
 */
 /*
@@ -62,9 +66,10 @@ BigInt mulAdd()(auto const ref BigInt a, auto const ref BigInt b, auto const ref
 
 /**
 * Fused subtract-multiply
-* @param a = an integer
-* @param b = an integer
-* @param c = an integer
+* Params:
+*  a = an integer
+*  b = an integer
+*  c = an integer
 * Returns: (a-b)*c
 */
 BigInt subMul()(auto const ref BigInt a, auto const ref BigInt b, auto const ref BigInt c)
@@ -80,15 +85,17 @@ BigInt subMul()(auto const ref BigInt a, auto const ref BigInt b, auto const ref
 
 /**
 * Return the absolute value
-* @param n = an integer
+* Params:
+*  n = an integer
 * Returns: absolute value of n
 */
  BigInt abs()(auto const ref BigInt n) { return n.abs(); }
 
 /**
 * Compute the greatest common divisor
-* @param x = a positive integer
-* @param y = a positive integer
+* Params:
+*  x = a positive integer
+*  y = a positive integer
 * Returns: gcd(x,y)
 */
 BigInt gcd()(auto const ref BigInt a, auto const ref BigInt b)
@@ -117,8 +124,9 @@ BigInt gcd()(auto const ref BigInt a, auto const ref BigInt b)
 
 /**
 * Least common multiple
-* @param x = a positive integer
-* @param y = a positive integer
+* Params:
+*  x = a positive integer
+*  y = a positive integer
 * Returns: z, smallest integer such that z % x == 0 and z % y == 0
 */
 BigInt lcm()(auto const ref BigInt a, auto const ref BigInt b)
@@ -128,7 +136,8 @@ BigInt lcm()(auto const ref BigInt a, auto const ref BigInt b)
 
 
 /**
-* @param x = an integer
+* Params:
+*  x = an integer
 * Returns: (x*x)
 */
 BigInt square()(auto const ref BigInt x)
@@ -144,8 +153,9 @@ BigInt square()(auto const ref BigInt x)
 
 /**
 * Modular inversion
-* @param x = a positive integer
-* @param modulus = a positive integer
+* Params:
+*  x = a positive integer
+*  modulus = a positive integer
 * Returns: y st (x*y) % modulus == 1
 */
 BigInt inverseMod()(auto const ref BigInt n, auto const ref BigInt mod)
@@ -206,8 +216,9 @@ BigInt inverseMod()(auto const ref BigInt n, auto const ref BigInt mod)
 * to the Legendre symbol.
 * @see http://mathworld.wolfram.com/JacobiSymbol.html
 *
-* @param a = is a non-negative integer
-* @param n = is an odd integer > 1
+* Params:
+*  a = is a non-negative integer
+*  n = is an odd integer > 1
 * Returns: (n / m)
 */
 int jacobi()(auto const ref BigInt a, auto const ref BigInt n)
@@ -250,9 +261,10 @@ int jacobi()(auto const ref BigInt a, auto const ref BigInt n)
 
 /**
 * Modular exponentation
-* @param b = an integer base
-* @param x = a positive exponent
-* @param m = a positive modulus
+* Params:
+*  b = an integer base
+*  x = a positive exponent
+*  m = a positive modulus
 * Returns: (b^x) % m
 */
 BigInt powerMod()(auto const ref BigInt base, auto const ref BigInt exp, auto const ref BigInt mod)
@@ -274,8 +286,9 @@ BigInt powerMod()(auto const ref BigInt base, auto const ref BigInt exp, auto co
 * Compute the square root of x modulo a prime using the
 * Shanks-Tonnelli algorithm
 *
-* @param x = the input
-* @param p = the prime
+* Params:
+*  x = the input
+*  p = the prime
 * Returns: y such that (y*y)%p == x, or -1 if no such integer
 */
 
@@ -394,7 +407,8 @@ word montyInverse(word input)
 }
 
 /**
-* @param x = a positive integer
+* Params:
+*  x = a positive integer
 * Returns: count of the zero bits in x, or, equivalently, the largest
 *            value of n such that 2^n divides x evenly. Returns zero if
 *            n is less than or equal to zero.
@@ -424,10 +438,11 @@ size_t lowZeroBits()(auto const ref BigInt n)
 
 /**
 * Check for primality using Miller-Rabin
-* @param n = a positive integer to test for primality
-* @param rng = a random number generator
-* @param prob = chance of false positive is bounded by 1/2**prob
-* @param is_random = true if n was randomly chosen by us
+* Params:
+*  n = a positive integer to test for primality
+*  rng = a random number generator
+*  prob = chance of false positive is bounded by 1/2**prob
+*  is_random = true if n was randomly chosen by us
 * Returns: true if all primality tests passed, otherwise false
 */
 bool isPrime()(auto const ref BigInt n, RandomNumberGenerator rng, size_t prob = 56, bool is_random = false)
@@ -475,12 +490,13 @@ bool verifyPrime(const ref BigInt n, RandomNumberGenerator rng)
 
 /**
 * Randomly generate a prime
-* @param rng = a random number generator
-* @param bits = how large the resulting prime should be in bits
-* @param coprime = a positive integer the result should be coprime to
-* @param equiv = a non-negative number that the result should be
+* Params:
+*  rng = a random number generator
+*  bits = how large the resulting prime should be in bits
+*  coprime = a positive integer the result should be coprime to
+*  equiv = a non-negative number that the result should be
                     equivalent to modulo equiv_mod
-* @param equiv_mod = the modulus equiv should be checked against
+*  equiv_mod = the modulus equiv should be checked against
 * Returns: random prime with the specified criteria
 */
 BigInt randomPrime()(RandomNumberGenerator rng,
@@ -559,8 +575,9 @@ BigInt randomPrime()(RandomNumberGenerator rng,
 
 /**
 * Return a random 'safe' prime, of the form p=2*q+1 with q prime
-* @param rng = a random number generator
-* @param bits = is how long the resulting prime should be
+* Params:
+*  rng = a random number generator
+*  bits = is how long the resulting prime should be
 * Returns: prime randomly chosen from safe primes of length bits
 */
 BigInt randomSafePrime(RandomNumberGenerator rng, size_t bits)
@@ -577,12 +594,13 @@ BigInt randomSafePrime(RandomNumberGenerator rng, size_t bits)
 
 /**
 * Generate DSA parameters using the FIPS 186 kosherizer
-* @param rng = a random number generator
-* @param af = an algorithm factory
-* @param p_out = where the prime p will be stored
-* @param q_out = where the prime q will be stored
-* @param pbits = how long p will be in bits
-* @param qbits = how long q will be in bits
+* Params:
+*  rng = a random number generator
+*  af = an algorithm factory
+*  p_out = where the prime p will be stored
+*  q_out = where the prime q will be stored
+*  pbits = how long p will be in bits
+*  qbits = how long q will be in bits
 * Returns: random seed used to generate this parameter set
 */
 Vector!ubyte generateDsaPrimes(RandomNumberGenerator rng,
@@ -603,13 +621,14 @@ Vector!ubyte generateDsaPrimes(RandomNumberGenerator rng,
 
 /**
 * Generate DSA parameters using the FIPS 186 kosherizer
-* @param rng = a random number generator
-* @param af = an algorithm factory
-* @param p_out = where the prime p will be stored
-* @param q_out = where the prime q will be stored
-* @param pbits = how long p will be in bits
-* @param qbits = how long q will be in bits
-* @param seed_c = the seed used to generate the parameters
+* Params:
+*  rng = a random number generator
+*  af = an algorithm factory
+*  p_out = where the prime p will be stored
+*  q_out = where the prime q will be stored
+*  pbits = how long p will be in bits
+*  qbits = how long q will be in bits
+*  seed_c = the seed used to generate the parameters
 * Returns: true if seed generated a valid DSA parameter set, otherwise
              false. p_out and q_out are only valid if true was returned.
 */

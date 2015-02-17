@@ -1,9 +1,12 @@
-/*
+/**
 * EAC11 CVC Request
+* 
+* Copyright:
 * (C) 2008 Falko Strenzke
 *     2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_req;
@@ -32,7 +35,8 @@ public:
 
     /**
     * Compare for equality with other
-    * @param other = compare for equality with this object
+    * Params:
+    *  other = compare for equality with this object
     */
     bool opEquals(in EAC11Req rhs) const
     {

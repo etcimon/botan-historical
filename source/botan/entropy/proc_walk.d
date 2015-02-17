@@ -1,8 +1,11 @@
-/*
+/**
 * File Tree Walking EntropySource
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.entropy.proc_walk;

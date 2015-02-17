@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 Self-Signed Certificate
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509self;
@@ -159,7 +162,8 @@ public:
 
     /**
     * Set when the certificate should become valid
-    * @param time = the notBefore value of the certificate
+    * Params:
+    *  time = the notBefore value of the certificate
     */
     void notBefore(in string time_string)
     {
@@ -212,7 +216,8 @@ public:
 
     /**
     * Construct a new options object
-    * @param opts = define the common name of this object. An example for this
+    * Params:
+    *  opts = define the common name of this object. An example for this
     * parameter would be "common_name/country/organization/organizational_unit".
     *
     * Params:
@@ -245,11 +250,12 @@ public:
 
 /**
 * Create a self-signed X.509 certificate.
-* @param opts = the options defining the certificate to create
-* @param key = the private key used for signing, i.e. the key
+* Params:
+*  opts = the options defining the certificate to create
+*  key = the private key used for signing, i.e. the key
 * associated with this self-signed certificate
-* @param hash_fn = the hash function to use
-* @param rng = the rng to use
+*  hash_fn = the hash function to use
+*  rng = the rng to use
 * Returns: newly created self-signed certificate
 */
 X509Certificate createSelfSignedCert()(auto const ref X509CertOptions opts,
@@ -289,10 +295,11 @@ X509Certificate createSelfSignedCert()(auto const ref X509CertOptions opts,
 
 /**
 * Create a PKCS#10 certificate request.
-* @param opts = the options defining the request to create
-* @param key = the key used to sign this request
-* @param rng = the rng to use
-* @param hash_fn = the hash function to use
+* Params:
+*  opts = the options defining the request to create
+*  key = the key used to sign this request
+*  hash_fn = the hash function to use
+*  rng = the rng to use
 * Returns: newly created PKCS#10 request
 */
 PKCS10Request createCertReq()(auto const ref X509CertOptions opts,

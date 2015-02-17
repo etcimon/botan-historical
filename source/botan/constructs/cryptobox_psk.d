@@ -1,8 +1,11 @@
-/*
+/**
 * Cryptobox Message Routines
+* 
+* Copyright:
 * (C) 2009,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.cryptobox_psk;
@@ -25,10 +28,11 @@ struct CryptoBox {
 
     /**
     * Encrypt a message using a shared secret key
-    * @param input = the input data
-    * @param input_len = the length of input in bytes
-    * @param key = the key used to encrypt the message
-    * @param rng = a ref to a random number generator, such as AutoSeededRNG
+    * Params:
+    *  input = the input data
+    *  input_len = the length of input in bytes
+    *  key = the key used to encrypt the message
+    *  rng = a ref to a random number generator, such as AutoSeededRNG
     */
     static Vector!ubyte encrypt(const(ubyte)* input, size_t input_len,
                                 in SymmetricKey master_key,
@@ -68,10 +72,11 @@ struct CryptoBox {
 
     /**
     * Encrypt a message using a shared secret key
-    * @param input = the input data
-    * @param input_len = the length of input in bytes
-    * @param key = the key used to encrypt the message
-    * @param rng = a ref to a random number generator, such as AutoSeededRNG
+    * Params:
+    *  input = the input data
+    *  input_len = the length of input in bytes
+    *  key = the key used to encrypt the message
+    *  rng = a ref to a random number generator, such as AutoSeededRNG
     */
     static SecureVector!ubyte decrypt(const(ubyte)* input, size_t input_len, in SymmetricKey master_key)
     {

@@ -1,8 +1,11 @@
-/*
+/**
 * Division
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.bigint.divide;
@@ -16,10 +19,11 @@ import botan.constants;
 
 /**
 * BigInt Division
-* @param x = an integer
-* @param y = a non-zero integer
-* @param q = will be set to x / y
-* @param r = will be set to x % y
+* Params:
+*  x = an integer
+*  y = a non-zero integer
+*  q = will be set to x / y
+*  r = will be set to x % y
 */
 void divide()(auto const ref BigInt x, auto const ref BigInt y_arg, ref BigInt q, ref BigInt r)
 {

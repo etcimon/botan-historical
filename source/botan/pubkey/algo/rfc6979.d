@@ -1,8 +1,11 @@
-/*
+/**
 * RFC 6979 Deterministic Nonce Generator
+* 
+* Copyright:
 * (C) 2014 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.rfc6979;
@@ -16,10 +19,11 @@ import botan.rng.hmac_drbg;
 import botan.utils.types;
 
 /**
-* @param x = the secret (EC)DSA key
-* @param q = the group order
-* @param h = the message hash already reduced mod q
-* @param hash = the hash function used to generate h
+* Params:
+*  x = the secret (EC)DSA key
+*  q = the group order
+*  h = the message hash already reduced mod q
+*  hash = the hash function used to generate h
 */
 BigInt generateRfc6979Nonce(const ref BigInt x, const ref BigInt q, const ref BigInt h, in string hash)
 {

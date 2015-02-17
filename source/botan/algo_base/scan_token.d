@@ -1,9 +1,12 @@
-/*
+/**
 * SCAN Name Abstraction
+* 
+* Copyright:
 * (C) 2008-2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
-* Distributed under the terms of the Botan license
+* License:
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.algo_base.scan_token;
 

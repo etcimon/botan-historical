@@ -1,8 +1,11 @@
-/*
+/**
 * EAC11 objects
+* 
+* Copyright:
 * (C) 2008 Falko Strenzke
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.eac_obj;
@@ -27,7 +30,7 @@ abstract class EAC11obj(Derived) : EACSignedObject, SignedObject
 public:
     /**
     * Return the signature as a concatenation of the encoded parts.
-    * @result the concatenated signature
+    * Returns: the concatenated signature
     */
     override const(Vector!ubyte) getConcatSig() const { return m_sig.getConcatenation(); }
 

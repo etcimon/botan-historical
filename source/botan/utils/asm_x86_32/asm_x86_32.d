@@ -1,8 +1,11 @@
-/*
-* Assembly Macros for 32-bit x86
+/**
+* Assembly CTFE Helpers for 32-bit x86
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.asm_x86_32.asm_x86_32;

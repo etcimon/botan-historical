@@ -1,8 +1,11 @@
-/*
+/**
 * SQLite3 TLS Session Manager
+* 
+* Copyright:
 * (C) 2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.session_manager_sqlite;
@@ -23,7 +26,8 @@ import std.datetime;
 * An implementation of TLSSessionManager that saves values in a SQLite3
 * database file, with the session data encrypted using a passphrase.
 *
-* @warning For clients, the hostnames associated with the saved
+* Notes:
+* For clients, the hostnames associated with the saved
 * sessions are stored in the database in plaintext. This may be a
 * serious privacy risk in some situations.
 */
@@ -31,15 +35,15 @@ final class TLSSessionManagerSQLite : TLSSessionManager
 {
 public:
     /**
-    * @param passphrase = used to encrypt the session data
-    * @param rng = a random number generator
-    * @param db_filename = filename of the SQLite database file.
+    * Params:
+    *  passphrase = used to encrypt the session data
+    *  rng = a random number generator
+    *  db_filename = filename of the SQLite database file.
                 The table names tls_sessions and tls_sessions_metadata
                 will be used
-    * @param max_sessions = a hint on the maximum number of sessions
+    *  max_sessions = a hint on the maximum number of sessions
     *          to keep in memory at any one time. (If zero, don't cap)
-    * @param session_lifetime = sessions are expired after this many
-    *          seconds have elapsed from initial handshake.
+    *  session_lifetime = sessions are expired after this duration has elapsed from initial handshake.
     */
     this(in string passphrase,
            RandomNumberGenerator rng,

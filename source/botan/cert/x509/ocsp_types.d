@@ -1,8 +1,11 @@
-/*
+/**
 * OCSP subtypes
+* 
+* Copyright:
 * (C) 2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.ocsp_types;

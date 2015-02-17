@@ -1,8 +1,11 @@
-/*
+/**
 * The Skein-512 hash function
+* 
+* Copyright:
 * (C) 2009,2014 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.skein_512;
@@ -28,8 +31,9 @@ final class Skein512 : HashFunction
 {
 public:
     /**
-    * @param m_output_bits = the output size of Skein in bits
-    * @param arg_personalization = is a string that will paramaterize the
+    * Params:
+    *  m_output_bits = the output size of Skein in bits
+    *  arg_personalization = is a string that will paramaterize the
     * hash output
     */
     this(size_t arg_output_bits = 512, string arg_personalization = "") 

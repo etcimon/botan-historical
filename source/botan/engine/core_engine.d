@@ -1,8 +1,11 @@
-/*
+/**
 * Core Engine
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.engine.core_engine;
@@ -680,10 +683,11 @@ public:
 
 /**
 * Create a cipher mode filter object
-* @param block_cipher = a block cipher object
-* @param direction = are we encrypting or decrypting?
-* @param mode = the name of the cipher mode to use
-* @param padding = the mode padding to use (only used for ECB, CBC)
+* Params:
+*  block_cipher = a block cipher object
+*  direction = are we encrypting or decrypting?
+*  mode = the name of the cipher mode to use
+*  padding = the mode padding to use (only used for ECB, CBC)
 */
 KeyedFilter getCipherMode(const BlockCipher block_cipher,
                           CipherDir direction,

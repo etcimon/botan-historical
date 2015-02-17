@@ -1,8 +1,11 @@
-/*
+/**
 * OpenPGP Codec
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.codec.openpgp;
@@ -18,10 +21,11 @@ import memutils.hashmap;
 import botan.utils.types;
 
 /**
-* @param input = the input data
-* @param length = length of input in bytes
-* @param label = the human-readable label
-* @param headers = a set of key/value pairs included in the header
+* Params:
+*  input = the input data
+*  length = length of input in bytes
+*  label = the human-readable label
+*  headers = a set of key/value pairs included in the header
 */
 string PGP_encode(const(ubyte)* input, size_t length, in string label,
                   in HashMapRef!(string, string) headers)
@@ -58,9 +62,10 @@ string PGP_encode(const(ubyte)* input, size_t length, in string label,
 }
 
 /**
-* @param input = the input data
-* @param length = length of input in bytes
-* @param type = the human-readable label
+* Params:
+*  input = the input data
+*  length = length of input in bytes
+*  type = the human-readable label
 */
 string PGP_encode(const(ubyte)* input, size_t length, in string type)
 {
@@ -69,9 +74,10 @@ string PGP_encode(const(ubyte)* input, size_t length, in string type)
 }
 
 /**
-* @param source = the input source
-* @param label = is set to the human-readable label
-* @param headers = is set to any headers
+* Params:
+*  source = the input source
+*  label = is set to the human-readable label
+*  headers = is set to any headers
 * Returns: decoded output as raw binary
 */
 SecureVector!ubyte PGP_decode(DataSource source,
@@ -194,8 +200,9 @@ SecureVector!ubyte PGP_decode(DataSource source,
 }
 
 /**
-* @param source = the input source
-* @param label = is set to the human-readable label
+* Params:
+*  source = the input source
+*  label = is set to the human-readable label
 * Returns: decoded output as raw binary
 */
 SecureVector!ubyte PGP_decode(DataSource source, ref string label)

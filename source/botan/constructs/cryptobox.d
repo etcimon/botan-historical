@@ -1,8 +1,11 @@
-/*
+/**
 * Cryptobox Message Routines
+* 
+* Copyright:
 * (C) 2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.cryptobox;
@@ -30,10 +33,11 @@ struct CryptoBox {
 
     /**
     * Encrypt a message using a passphrase
-    * @param input = the input data
-    * @param input_len = the length of input in bytes
-    * @param passphrase = the passphrase used to encrypt the message
-    * @param rng = a ref to a random number generator, such as AutoSeededRNG
+    * Params:
+    *  input = the input data
+    *  input_len = the length of input in bytes
+    *  passphrase = the passphrase used to encrypt the message
+    *  rng = a ref to a random number generator, such as AutoSeededRNG
     */
     static string encrypt(const(ubyte)* input, size_t input_len,
                           in string passphrase,
@@ -84,9 +88,10 @@ struct CryptoBox {
 
     /**
     * Decrypt a message encrypted with CryptoBox::encrypt
-    * @param input = the input data
-    * @param input_len = the length of input in bytes
-    * @param passphrase = the passphrase used to encrypt the message
+    * Params:
+    *  input = the input data
+    *  input_len = the length of input in bytes
+    *  passphrase = the passphrase used to encrypt the message
     */
     static string decrypt(const(ubyte)* input, size_t input_len, in string passphrase)
     {
@@ -136,8 +141,9 @@ struct CryptoBox {
 
     /**
     * Decrypt a message encrypted with CryptoBox::encrypt
-    * @param input = the input data
-    * @param passphrase = the passphrase used to encrypt the message
+    * Params:
+    *  input = the input data
+    *  passphrase = the passphrase used to encrypt the message
     */
     static string decrypt(in string input, in string passphrase)
     {

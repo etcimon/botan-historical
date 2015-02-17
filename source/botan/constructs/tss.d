@@ -1,8 +1,11 @@
-/*
+/**
 * RTSS (threshold secret sharing)
+* 
+* Copyright:
 * (C) 2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.tss;
@@ -29,12 +32,13 @@ struct RTSS
 {
 public:
     /**
-    * @param M = the number of shares needed to reconstruct
-    * @param N = the number of shares generated
-    * @param secret = the secret to split
-    * @param secret_len = the length of the secret
-    * @param identifier = the 16 ubyte share identifier
-    * @param rng = the random number generator to use
+    * Params:
+    *  M = the number of shares needed to reconstruct
+    *  N = the number of shares generated
+    *  secret = the secret to split
+    *  secret_len = the length of the secret
+    *  identifier = the 16 ubyte share identifier
+    *  rng = the random number generator to use
     */
     static Vector!RTSS split(ubyte M, ubyte N,
                              const(ubyte)* S, size_t S_len,
@@ -95,7 +99,8 @@ public:
 
 
     /**
-    * @param shares = the list of shares
+    * Params:
+    *  shares = the list of shares
     */
 
     static SecureVector!ubyte reconstruct()(auto const ref Vector!RTSS shares)
@@ -178,7 +183,8 @@ public:
 
 
     /**
-    * @param hex_input = the share encoded in hexadecimal
+    * Params:
+    *  hex_input = the share encoded in hexadecimal
     */
     this(in string hex_input)
     {

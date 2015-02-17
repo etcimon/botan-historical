@@ -1,8 +1,11 @@
-/*
+/**
 * Passhash9 Password Hashing
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.passhash.passhash9;
@@ -22,10 +25,11 @@ import std.string : toStringz;
 
 /**
 * Create a password hash using PBKDF2
-* @param password = the password
-* @param rng = a random number generator
-* @param work_factor = how much work to do to slow down guessing attacks
-* @param alg_id = specifies which PRF to use with PBKDF2
+* Params:
+*  password = the password
+*  rng = a random number generator
+*  work_factor = how much work to do to slow down guessing attacks
+*  alg_id = specifies which PRF to use with PBKDF2
 *          0 is HMAC(SHA-1)
 *          1 is HMAC(SHA-256)
 *          2 is CMAC(Blowfish)
@@ -69,8 +73,9 @@ string generatePasshash9(in string pass,
 
 /**
 * Check a previously created password hash
-* @param password = the password to check against
-* @param hash = the stored hash to check against
+* Params:
+*  password = the password to check against
+*  hash = the stored hash to check against
 */
 bool checkPasshash9(in string password, in string hash)
 {

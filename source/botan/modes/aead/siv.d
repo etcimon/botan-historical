@@ -1,8 +1,11 @@
-/*
+/**
 * SIV Mode
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.modes.aead.siv;
@@ -181,7 +184,8 @@ final class SIVEncryption : SIVMode, Transformation
 {
 public:
     /**
-    * @param cipher = a block cipher
+    * Params:
+    *  cipher = a block cipher
     */
     this(BlockCipher cipher)
     {
@@ -233,7 +237,8 @@ final class SIVDecryption : SIVMode, Transformation
 {
 public:
     /**
-    * @param cipher = a 128-bit block cipher
+    * Params:
+    *  cipher = a 128-bit block cipher
     */
     this(BlockCipher cipher)
     {

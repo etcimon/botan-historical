@@ -1,8 +1,11 @@
-/*
+/**
 * Base class for message authentiction codes
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.mac.mac;
@@ -22,8 +25,8 @@ public:
     * Verify a MAC.
     *
     * Params:
-    *  input = the MAC to verify as a ubyte array
-    * @param length = the length of param in
+    *  mac = the MAC to verify as a ubyte array
+    *  length = the length of param in
     * Returns: true if the MAC is valid, false otherwise
     */
     final bool verifyMac(const(ubyte)* mac, size_t length)

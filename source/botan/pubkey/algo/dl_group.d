@@ -1,8 +1,11 @@
-/*
+/**
 * Discrete Logarithm Group
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.dl_group;
@@ -90,7 +93,7 @@ public:
     *
     * Params:
     *  rng = the rng to use
-    * @param strong = whether to perform stronger by lengthier tests
+    *  strong = whether to perform stronger by lengthier tests
     * Returns: true if the object is consistent, false otherwise
     */
     bool verifyGroup(RandomNumberGenerator rng, bool strong) const
@@ -183,8 +186,8 @@ public:
     * Decode a DER/BER encoded group into this instance.
     *
     * Params:
-    *  ber = a vector containing the DER/BER encoded group
-    * @param format = the format of the encoded group
+    *  data = a vector containing the DER/BER encoded group
+    *  format = the format of the encoded group
     */
     void BER_decode()(auto const ref Vector!ubyte data,
                       Format format)
@@ -266,17 +269,13 @@ public:
     *
     * Params:
     *  rng = the random number generator to use
-    * @param type = specifies how the creation of primes p and q shall
-    * be performed. If type=Strong, then p will be determined as a
-    * safe prime, and q will be chosen as (p-1)/2. If
-    * type=Prime_Subgroup and qbits = 0, then the size of q will be
-    * determined according to the estimated difficulty of the DL
+    *  type = specifies how the creation of primes p and q shall
+    * be performed. If $(D type=Strong), then p will be determined as a
+    * safe prime, and q will be chosen as (p-1)/2. If $(D type=Prime_Subgroup) and $(D qbits = 0), 
+    * then the size of q will be determined according to the estimated difficulty of the DL
     * problem. If type=DSA_Kosherizer, DSA primes will be created.
-    *
-    * Params:
     *  pbits = the number of bits of p
-    * @param qbits = the number of bits of q. Leave it as 0 to have
-    * the value determined according to pbits.
+    *  qbits = the number of bits of q. Leave it as 0 to have the value determined according to pbits.
     */
     this(RandomNumberGenerator rng, PrimeType type, size_t pbits, size_t qbits = 0)
     {
@@ -324,9 +323,9 @@ public:
     *
     * Params:
     *  rng = the random number generator to use
-    * @param seed = the seed to use to create the random primes
-    * @param pbits = the desired bit size of the prime p
-    * @param qbits = the desired bit size of the prime q.
+    *  seed = the seed to use to create the random primes
+    *  pbits = the desired bit size of the prime p
+    *  qbits = the desired bit size of the prime q.
     */
     this()(RandomNumberGenerator rng, auto const ref Vector!ubyte seed, size_t pbits = 1024, size_t qbits = 0)
     {
@@ -344,7 +343,7 @@ public:
     *
     * Params:
     *  p1 = the prime p
-    * @param g1 = the base m_g
+    *  g1 = the base g
     */
     this(ref BigInt p1, ref BigInt g1)
     {
@@ -356,9 +355,9 @@ public:
     * Create a DL group.
     *
     * Params:
-    *  p1 = the prime m_p
-    * @param q1 = the prime m_q
-    * @param g1 = the base m_g
+    *  p1 = the prime p
+    *  q1 = the prime q
+    *  g1 = the base g
     */
     this(ref BigInt p1, ref BigInt q1, ref  BigInt g1)
     {

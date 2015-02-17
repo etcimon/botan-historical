@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Session
+* 
+* Copyright:
 * (C) 2011-2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.session;
@@ -134,8 +137,7 @@ public:
 
     /**
     * Encode this session data for storage
-    * @warning if the master secret is compromised so is the
-    * session traffic
+    * Notes: if the master secret is compromised so is the session traffic
     */
     SecureVector!ubyte DER_encode() const
     {
@@ -177,9 +179,10 @@ public:
 
     /**
     * Decrypt a session created by encrypt
-    * @param ctext = the ciphertext returned by encrypt
-    * @param ctext_size = the size of ctext in bytes
-    * @param key = the same key used by the encrypting side
+    * Params:
+    *  ctext = the ciphertext returned by encrypt
+    *  ctext_size = the size of ctext in bytes
+    *  key = the same key used by the encrypting side
     */
     static TLSSession decrypt(const(ubyte)* buf, size_t buf_len, in SymmetricKey master_key)
     {
@@ -197,8 +200,9 @@ public:
 
     /**
     * Decrypt a session created by encrypt
-    * @param ctext = the ciphertext returned by encrypt
-    * @param key = the same key used by the encrypting side
+    * Params:
+    *  ctext = the ciphertext returned by encrypt
+    *  key = the same key used by the encrypting side
     */
     static TLSSession decrypt(const ref Vector!ubyte ctext, in SymmetricKey key)
     {
@@ -207,8 +211,7 @@ public:
 
     /**
     * Encode this session data for storage
-    * @warning if the master secret is compromised so is the
-    * session traffic
+    * Notes: if the master secret is compromised so is the session traffic
     */
     string PEM_encode() const
     {

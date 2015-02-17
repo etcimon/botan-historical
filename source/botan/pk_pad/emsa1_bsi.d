@@ -1,9 +1,12 @@
-/*
+/**
 * EMSA1 BSI Variant
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *      2007 FlexSecure GmbH
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.emsa1_bsi;
@@ -23,7 +26,8 @@ final class EMSA1BSI : EMSA1, EMSA
 {
 public:
     /**
-    * @param hash = the hash object to use
+    * Params:
+    *  hash = the hash object to use
     */
     this(HashFunction hash)
     {

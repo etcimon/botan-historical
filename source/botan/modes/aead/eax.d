@@ -1,8 +1,11 @@
-/*
+/**
 * EAX Mode
+* 
+* Copyright:
 * (C) 1999-2007,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.modes.aead.eax;
@@ -94,8 +97,9 @@ protected:
     }
 
     /**
-    * @param cipher = the cipher to use
-    * @param tag_size = is how big the auth tag will be
+    * Params:
+    *  cipher = the cipher to use
+    *  tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size) 
     {
@@ -127,8 +131,9 @@ final class EAXEncryption : EAXMode, Transformation
 {
 public:
     /**
-    * @param cipher = a 128-bit block cipher
-    * @param tag_size = is how big the auth tag will be
+    * Params:
+    *  cipher = a 128-bit block cipher
+    *  tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 0) 
     {
@@ -178,8 +183,9 @@ final class EAXDecryption : EAXMode, Transformation
 {
 public:
     /**
-    * @param cipher = a 128-bit block cipher
-    * @param tag_size = is how big the auth tag will be
+    * Params:
+    *  cipher = a 128-bit block cipher
+    *  tag_size = is how big the auth tag will be
     */
     this(BlockCipher cipher, size_t tag_size = 0) 
     {

@@ -1,8 +1,11 @@
-/*
+/**
 * ECB/CBC Padding Methods
+* 
+* Copyright:
 * (C) 1999-2008,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.modes.mode_pad;
@@ -26,14 +29,16 @@ public:
     abstract void addPadding(ref SecureVector!ubyte buffer, size_t final_block_bytes, size_t block_size) const;
 
     /**
-    * @param block = the last block
-    * @param size = the of the block
+    * Params:
+    *  block = the last block
+    *  size = the of the block
     */
     abstract size_t unpad(const(ubyte)* block,
                                 size_t size) const;
 
     /**
-    * @param block_size = of the cipher
+    * Params:
+    *  block_size = of the cipher
     * Returns: valid block size for this padding mode
     */
     abstract bool validBlocksize(size_t block_size) const;

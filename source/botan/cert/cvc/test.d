@@ -1,11 +1,13 @@
-/*
+/**
 * CVC EAC1.1 tests
 *
+* Copyright:
 * (C) 2008 Falko Strenzke (strenzke@flexsecure.de)
 *     2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 * 
-* Botan is released under the Simplified BSD License (see license.txt)
+* License:
+* Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.test;
 

@@ -1,8 +1,11 @@
-/*
+/**
 * CRL Entry
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.crl_ent;
@@ -126,7 +129,7 @@ public:
     *
     * Params:
     *  cert = the certificate to revoke
-    * @param reason = the reason code to set in the entry
+    *  reason = the reason code to set in the entry
     */
     this(in X509CertificateImpl cert, CRLCode why = UNSPECIFIED)
     {

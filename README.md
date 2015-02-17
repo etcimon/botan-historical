@@ -1,9 +1,9 @@
 Botan Crypto Library
 ====================
 
-Botan is a D library for crypto and TLS intended for vibe.d development/native compilation. It is a fork of the C++ 
-library [Botan](http://botan.randombit.net/), although the code is now in D. The commits are mirrored manually from 
-C++ to D for any part that has not been rewritten.
+Botan is a D library for crypto and TLS intended for vibe.d development/native compilation. It is a translation of the C++ 
+library [Botan](http://botan.randombit.net/), although the code is now in D and uses the [memutils](https://github.com/etcimon/memutils) library
+as a replacement for the C++ STL. The commits are mirrored manually from C++ to D for future version invrements.
 
 Current Version: 1.11.10 (git: 455bd2557cbb1343e59eefd97cb449f06a702c28)
 
@@ -120,9 +120,8 @@ TODO
 - Test Certificate OCSP with cmd/ utility
 - Test compression with cmd/ utility
 - Upgrade to 1.11.14
-- Generate DDOX
 
 License
 -------
 
-Botan is released under the permissive 2-clause BSD license (see LICENSE.md for the specifics).
+Botan is released under the Simplified BSD License (see LICENSE.md for the specifics).

@@ -1,9 +1,12 @@
-/*
+/**
 * Filter
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 * (C) 2013 Joel Low
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.filter;
@@ -25,7 +28,7 @@ public:
     *
     * Params:
     *  input = the input as a ubyte array
-    * @param length = the length of the ubyte array input
+    *  length = the length of the ubyte array input
     */
     void write(const(ubyte)* input, size_t length);
     
@@ -48,8 +51,9 @@ public:
     bool attachable();
 
     /**
-    * @param filters = the filters to set
-    * @param count = number of items in filters
+    * Params:
+    *  filters = the filters to set
+    *  count = number of items in filters
     */
     void setNext(Filter* filters, size_t size);
 
@@ -72,8 +76,9 @@ public:
     abstract void write(const(ubyte)* input, size_t length);
 
     /**
-    * @param input = some input for the filter
-    * @param length = the length of in
+    * Params:
+    *  input = some input for the filter
+    *  length = the length of in
     */
     void send(const(ubyte)* input, size_t length)
     {
@@ -98,23 +103,27 @@ public:
 
 
     /**
-    * @param input = some input for the filter
+    * Params:
+    *  input = some input for the filter
     */
     final void send(ubyte input) { send(&input, 1); }
 
     /**
-    * @param input = some input for the filter
+    * Params:
+    *  input = some input for the filter
     */
     final void send(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input) { send(input.ptr, input.length); }
 
     /**
-    * @param input = some input for the filter
+    * Params:
+    *  input = some input for the filter
     */
     final void send(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input) { send(input.ptr, input.length); }
 
     /**
-    * @param input = some input for the filter
-    * @param length = the number of bytes of in to send
+    * Params:
+    *  input = some input for the filter
+    *  length = the number of bytes of in to send
     */
     final void send(ALLOC)(auto const ref Vector!(ubyte, ALLOC) input, size_t length)
     {
@@ -122,8 +131,9 @@ public:
     }
 
     /**
-    * @param input = some input for the filter
-    * @param length = the number of bytes of in to send
+    * Params:
+    *  input = some input for the filter
+    *  length = the number of bytes of in to send
     */
     final void send(ALLOC)(auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) input, size_t length)
     {
@@ -177,7 +187,8 @@ public:
 
     /**
     * Set the active port
-    * @param new_port = the new value
+    * Params:
+    *  new_port = the new value
     */
     void setPort(size_t new_port)
     {
@@ -190,7 +201,8 @@ public:
 
     /**
     * Attach another filter to this one
-    * @param f = filter to attach
+    * Params:
+    *  f = filter to attach
     */
     void attach(Filter new_filter)
     {
@@ -204,8 +216,9 @@ public:
     }
 
     /**
-    * @param filters = the filters to set
-    * @param count = number of items in filters
+    * Params:
+    *  filters = the filters to set
+    *  count = number of items in filters
     */
     override void setNext(Filter* filters, size_t size)
     {

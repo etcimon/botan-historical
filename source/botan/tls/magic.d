@@ -1,8 +1,11 @@
-/*
+/**
 * SSL/TLS Protocol Constants
+* 
+* Copyright:
 * (C) 2004-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.magic;

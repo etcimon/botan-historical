@@ -1,9 +1,12 @@
-/*
+/**
 * EAC ASN.1 Objects
+* 
+* Copyright:
 * (C) 2007-2008 FlexSecure GmbH
 *      2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.eac_asn_obj;
@@ -135,7 +138,8 @@ public:
 
     /**
     * Set this' value by a human readable string
-    * @param str = a string in the format "yyyy mm dd",
+    * Params:
+    *  str = a string in the format "yyyy mm dd",
     * e.g. "2007 08 01"
     */
     void setTo(in string time_str = "")

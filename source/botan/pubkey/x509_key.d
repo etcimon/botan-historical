@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 Public Key
+* 
+* Copyright:
 * (C) 1999-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.x509_key;
@@ -30,7 +33,8 @@ enum : X509Encoding { RAW_BER, PEM_ }
 
 /**
 * BER encode a key
-* @param key = the public key to encode
+* Params:
+*  key = the public key to encode
 * Returns: BER encoding of this key
 */
 Vector!ubyte BER_encode(in PublicKey key)
@@ -45,7 +49,8 @@ Vector!ubyte BER_encode(in PublicKey key)
 
 /**
 * PEM encode a public key into a string.
-* @param key = the key to encode
+* Params:
+*  key = the key to encode
 * Returns: PEM encoded key
 */
 string PEM_encode(in PublicKey key)
@@ -55,7 +60,8 @@ string PEM_encode(in PublicKey key)
 
 /**
 * Create a public key from a data source.
-* @param source = the source providing the DER or PEM encoded key
+* Params:
+*  source = the source providing the DER or PEM encoded key
 * Returns: new public key object
 */
 PublicKey loadKey(DataSource source)
@@ -98,7 +104,8 @@ PublicKey loadKey(DataSource source)
 
 /**
 * Create a public key from a file
-* @param filename = pathname to the file to load
+* Params:
+*  filename = pathname to the file to load
 * Returns: new public key object
 */
 PublicKey loadKey(in string filename)
@@ -110,7 +117,8 @@ PublicKey loadKey(in string filename)
 
 /**
 * Create a public key from a memory region.
-* @param enc = the memory region containing the DER or PEM encoded key
+* Params:
+*  enc = the memory region containing the DER or PEM encoded key
 * Returns: new public key object
 */
 PublicKey loadKey(ALLOC)(auto const ref Vector!(ubyte, ALLOC) enc)
@@ -121,7 +129,8 @@ PublicKey loadKey(ALLOC)(auto const ref Vector!(ubyte, ALLOC) enc)
 
 /**
 * Copy a key.
-* @param key = the public key to copy
+* Params:
+*  key = the public key to copy
 * Returns: new public key object
 */
 PublicKey copyKey(in PublicKey key)

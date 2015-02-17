@@ -1,8 +1,11 @@
-/*
+/**
 * PBKDF2
+* 
+* Copyright:
 * (C) 1999-2007,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbkdf.pbkdf2;
@@ -129,7 +132,8 @@ public:
 
     /**
     * Create a PKCS #5 instance using the specified message auth code
-    * @param mac_fn = the MAC object to use as PRF
+    * Params:
+    *  mac_fn = the MAC object to use as PRF
     */
     this(MessageAuthenticationCode mac_fn) 
     {

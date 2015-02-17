@@ -1,10 +1,13 @@
-/*
+/**
 * ECDSA
+* 
+* Copyright:
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
-*             Manuel Hartl, FlexSecure GmbH
+*          Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.ecdsa;
@@ -52,7 +55,7 @@ public:
     *
     * Params:
     *  dom_par = the domain parameters associated with this key
-    * @param public_point = the public point defining this key
+    *  public_point = the public point defining this key
     */
     this(in ECGroup dom_par, in PointGFp public_point) 
     {
@@ -88,8 +91,9 @@ public:
 
     /**
     * Load a private key
-    * @param alg_id = the X.509 algorithm identifier
-    * @param key_bits = PKCS #8 structure
+    * Params:
+    *  alg_id = the X.509 algorithm identifier
+    *  key_bits = PKCS #8 structure
     */
     this(const ref AlgorithmIdentifier alg_id, const ref SecureVector!ubyte key_bits)
     {
@@ -98,9 +102,10 @@ public:
 
     /**
     * Generate a new private key
-    * @param rng = a random number generator
-    * @param domain = parameters to used for this key
-    * @param x = the private key (if zero, generate a ney random key)
+    * Params:
+    *  rng = a random number generator
+    *  domain = parameters to used for this key
+    *  x = the private key (if zero, generate a ney random key)
     */
     this()(RandomNumberGenerator rng, auto const ref ECGroup domain, BigInt x = 0)
     {

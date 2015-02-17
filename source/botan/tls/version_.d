@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Protocol Version Management
+* 
+* Copyright:
 * (C) 2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.version_;
@@ -45,7 +48,8 @@ public:
     }
 
     /**
-    * @param named_version = a specific named version of the protocol
+    * Params:
+    *  named_version = a specific named version of the protocol
     */
     this(VersionCode named_version = 0)
     {
@@ -53,8 +57,9 @@ public:
     }
 
     /**
-    * @param major = the major version
-    * @param minor = the minor version
+    * Params:
+    *  major = the major version
+    *  minor = the minor version
     */
     this(ubyte major, ubyte minor)
     {

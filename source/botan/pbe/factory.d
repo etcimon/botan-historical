@@ -1,8 +1,11 @@
-/*
+/**
 * PBE Lookup
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbe.factory;
@@ -25,10 +28,11 @@ static if (BOTAN_HAS_PBE_PKCS_V20) {
 
 /**
 * Factory function for PBEs.
-* @param algo_spec = the name of the PBE algorithm to retrieve
-* @param passphrase = the passphrase to use for encryption
-* @param msec = how many milliseconds to run the PBKDF
-* @param rng = a random number generator
+* Params:
+*  algo_spec = the name of the PBE algorithm to retrieve
+*  passphrase = the passphrase to use for encryption
+*  dur = how many milliseconds to run the PBKDF
+*  rng = a random number generator
 * Returns: pointer to a PBE with randomly created parameters
 */
 PBE getPbe(in string algo_spec,
@@ -80,9 +84,10 @@ PBE getPbe(in string algo_spec,
 
 /**
 * Factory function for PBEs.
-* @param pbe_oid = the oid of the desired PBE
-* @param params = a DataSource providing the DER encoded parameters to use
-* @param passphrase = the passphrase to use for decryption
+* Params:
+*  pbe_oid = the oid of the desired PBE
+*  params = a DataSource providing the DER encoded parameters to use
+*  passphrase = the passphrase to use for decryption
 * Returns: pointer to the PBE with the specified parameters
 */
 PBE getPbe()(in OID pbe_oid, auto const ref Vector!ubyte params, in string passphrase)

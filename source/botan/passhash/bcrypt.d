@@ -1,8 +1,11 @@
-/*
+/**
 * Bcrypt Password Hashing
+* 
+* Copyright:
 * (C) 2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.passhash.bcrypt;
@@ -21,9 +24,10 @@ import std.conv : to;
 
 /**
 * Create a password hash using Bcrypt
-* @param password = the password
-* @param rng = a random number generator
-* @param work_factor = how much work to do to slow down guessing attacks
+* Params:
+*  password = the password
+*  rng = a random number generator
+*  work_factor = how much work to do to slow down guessing attacks
 *
 * @see http://www.usenix.org/events/usenix99/provos/provos_html/
 */
@@ -36,8 +40,9 @@ string generateBcrypt(in string password,
 
 /**
 * Check a previously created password hash
-* @param password = the password to check against
-* @param hash = the stored hash to check against
+* Params:
+*  password = the password to check against
+*  hash = the stored hash to check against
 */
 bool checkBcrypt(in string password, in string hash)
 {

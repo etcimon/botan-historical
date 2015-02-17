@@ -1,10 +1,12 @@
-/*
+/**
 * Elliptic curves over GF(p)
 *
+* Copyright:
 * (C) 2007 Martin Doering, Christoph Ludwig, Falko Strenzke
-*      2010-2011,2012 Jack Lloyd
+*     2010-2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.ec_gfp.curve_gfp;
@@ -23,9 +25,10 @@ struct CurveGFp
 {
     /**
     * Construct the elliptic curve E: y^2 = x^3 + ax + b over GF(p)
-    * @param p = prime number of the field
-    * @param a = first coefficient
-    * @param b = second coefficient
+    * Params:
+    *  p = prime number of the field
+    *  a = first coefficient
+    *  b = second coefficient
     */
     this()(auto const ref BigInt p, auto const ref BigInt a, auto const ref BigInt b)
     {
@@ -83,7 +86,8 @@ struct CurveGFp
 
     /**
     * swaps the states of this and other, does not throw
-    * @param other = curve to swap values with
+    * Params:
+    *  other = curve to swap values with
     */
     void swap()(auto ref CurveGFp other)
     {
@@ -99,7 +103,8 @@ struct CurveGFp
 
     /**
     * Equality operator
-    * @param other = curve to compare with
+    * Params:
+    *  other = curve to compare with
     * Returns: true iff this is the same curve as other
     */
     bool opEquals(const ref CurveGFp other) const
@@ -111,8 +116,9 @@ struct CurveGFp
 
     /**
     * Equality operator
-    * @param lhs = a curve
-    * @param rhs = a curve
+    * Params:
+    *  lhs = a curve
+    *  rhs = a curve
     * Returns: true iff lhs is not the same as rhs
     */
     int opCmp(ref CurveGFp rhs) const

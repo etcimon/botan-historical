@@ -1,8 +1,11 @@
-/*
+/**
 * Base64 Encoder/Decoder
+* 
+* Copyright:
 * (C) 1999-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.b64_filt;
@@ -28,7 +31,7 @@ public:
     *
     * Params:
     *  input = the message to input as a ubyte array
-    * @param length = the length of the ubyte array input
+    *  length = the length of the ubyte array input
     */
     override void write(const(ubyte)* input, size_t length)
     {
@@ -69,8 +72,8 @@ public:
     *
     * Params:
     *  breaks = whether to use line breaks in the output
-    * @param length = the length of the lines of the output
-    * @param t_n = whether to use a trailing newline
+    *  length = the length of the lines of the output
+    *  t_n = whether to use a trailing newline
     */
     this(bool breaks = false, size_t length = 72, bool t_n = false) 
     {
@@ -156,7 +159,7 @@ public:
     *
     * Params:
     *  input = the message to input as a ubyte array
-    * @param length = the length of the ubyte array input
+    *  length = the length of the ubyte array input
     */
     override void write(const(ubyte)* input, size_t length)
     {

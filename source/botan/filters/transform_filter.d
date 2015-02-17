@@ -1,8 +1,11 @@
-/*
+/**
 * Filter interface for Transformations
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.transform_filter;
@@ -70,8 +73,9 @@ public:
     /**
     * Write bytes into the buffered filter, which will them emit them
     * in calls to bufferedBlock in the subclass
-    * @param input = the input bytes
-    * @param input_size = of input in bytes
+    * Params:
+    *  input = the input bytes
+    *  input_size = of input in bytes
     */
     override void write(const(ubyte)* input, size_t input_size)
     {
@@ -185,8 +189,9 @@ private:
 
     /**
     * The block processor, implemented by subclasses
-    * @param input = some input bytes
-    * @param length = the size of input, guaranteed to be a multiple
+    * Params:
+    *  input = some input bytes
+    *  length = the size of input, guaranteed to be a multiple
     *          of block_size
     */
     final void bufferedBlock(const(ubyte)* input, size_t input_length)
@@ -206,8 +211,9 @@ private:
 
     /**
     * The final block, implemented by subclasses
-    * @param input = some input bytes
-    * @param length = the size of input, guaranteed to be at least
+    * Params:
+    *  input = some input bytes
+    *  length = the size of input, guaranteed to be at least
     *          final_minimum bytes
     */
     final void bufferedFinal(const(ubyte)* input, size_t input_length)

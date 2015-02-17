@@ -1,10 +1,13 @@
-/*
+/**
 * Lzma Compressor
+* 
+* Copyright:
 * (C) 2001 Peter J Jones
-*      2001-2007 Jack Lloyd
+*     2001-2007 Jack Lloyd
+*     2012 Vojtech Kral
 * (C) 2014-2015 Etienne Cimon
-*      2012 Vojtech Kral
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.lzma;
@@ -120,7 +123,8 @@ public:
     }
 
     /**
-    * @param level = how much effort to use on compressing (0 to 9);
+    * Params:
+    *  level = how much effort to use on compressing (0 to 9);
     *          higher levels are slower but tend to give better
     *          compression
     */

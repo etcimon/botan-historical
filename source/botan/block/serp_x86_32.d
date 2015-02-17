@@ -1,8 +1,11 @@
-/*
+/**
 * Serpent in x86-32 asm
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.serp_x86_32;
@@ -72,9 +75,10 @@ protected:
 
 /**
 * Entry point for Serpent encryption in x86 asm
-* @param input = the input block
-* @param output = the output block
-* @param ks = the key schedule
+* Params:
+*  input = the input block
+*  output = the output block
+*  ks = the key schedule
 */
 extern(C)
 void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* ks ) pure
@@ -145,9 +149,10 @@ void botan_serpent_x86_32_encrypt(const(ubyte)* input, ubyte* output, in uint* k
 
 /**
 * Entry point for Serpent decryption in x86 asm
-* @param input = the input block
-* @param output = the output block
-* @param ks = the key schedule
+* Params:
+*  input = the input block
+*  output = the output block
+*  ks = the key schedule
 */
 extern(C)
 void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* ks) pure
@@ -220,7 +225,8 @@ void botan_serpent_x86_32_decrypt(const(ubyte)* input, ubyte* output, in uint* k
 
 /**
 * Entry point for Serpent key schedule in x86 asm
-* @param ks = holds the initial working key (padded), and is set to the
+* Params:
+*  ks = holds the initial working key (padded), and is set to the
             final key schedule
 */
 extern(C)

@@ -1,8 +1,11 @@
-/*
+/**
 * Lion
+* 
+* Copyright:
 * (C) 1999-2007,2014 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.lion;
@@ -128,9 +131,10 @@ public:
 
 
     /**
-    * @param hash = the hash to use internally
-    * @param cipher = the stream cipher to use internally
-    * @param block_size = the size of the block to use
+    * Params:
+    *  hash = the hash to use internally
+    *  cipher = the stream cipher to use internally
+    *  block_size = the size of the block to use
     */
     this(HashFunction hash, StreamCipher cipher, size_t block_size) 
     {

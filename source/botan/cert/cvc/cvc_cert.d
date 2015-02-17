@@ -1,9 +1,12 @@
-/*
+/**
 * EAC11 CVC
+* 
+* Copyright:
 * (C) 2008 Falko Strenzke
 *     2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_cert;
@@ -31,7 +34,7 @@ final class EAC11CVCImpl : EAC11genCVC!EAC11CVCImpl, SignedObject
 public:
     /**
     * Get the CAR of the certificate.
-    * @result the CAR of the certificate
+    * Returns: the CAR of the certificate
     */
     const(ASN1Car) getCar() const
     {
@@ -40,7 +43,7 @@ public:
 
     /**
     * Get the CED of this certificate.
-    * @result the CED this certificate
+    * Returns: the CED this certificate
     */
     const(ASN1Ced) getCed() const
     {
@@ -49,7 +52,7 @@ public:
 
     /**
     * Get the CEX of this certificate.
-    * @result the CEX this certificate
+    * Returns: the CEX this certificate
     */
     const(ASN1Cex) getCex() const
     {
@@ -58,7 +61,7 @@ public:
 
     /**
     * Get the CHAT value.
-    * @result the CHAT value
+    * Returns: the CHAT value
     */
     ubyte getChatValue() const
     {
@@ -82,7 +85,8 @@ public:
 
     /**
     * Construct a CVC from a data source
-    * @param source = the data source
+    * Params:
+    *  source = the data source
     */
     this(DataSource input)
     {
@@ -93,7 +97,8 @@ public:
 
     /**
     * Construct a CVC from a file
-    * @param str = the path to the certificate file
+    * Params:
+    *  str = the path to the certificate file
     */
     this(in string input)
     {
@@ -105,7 +110,8 @@ public:
 
     /**
     * Construct a CVC from the copy of another CVC
-    * @param other = the other CVC
+    * Params:
+    *  other = the other CVC
     */
     this(const ref EAC11CVC other) {
         m_sig = other.m_sig.dup;
@@ -127,7 +133,8 @@ public:
 
     /**
     * Assign references to another CVC object
-    * @param other = the other CVC object
+    * Params:
+    *  other = the other CVC object
     */
     void opAssign(ref EAC11CVC other) {
         m_sig = other.m_sig;
@@ -200,16 +207,17 @@ protected:
 /**
 * Create an arbitrary EAC 1.1 CVC.
 * The desired key encoding must be set within the key (if applicable).
-* @param signer = the signer used to sign the certificate
-* @param public_key = the DER encoded public key to appear in
+* Params:
+*  signer = the signer used to sign the certificate
+*  public_key = the DER encoded public key to appear in
 * the certificate
-* @param car = the CAR of the certificate
-* @param chr = the CHR of the certificate
-* @param holder_auth_templ = the holder authorization value ubyte to
+*  car = the CAR of the certificate
+*  chr = the CHR of the certificate
+*  holder_auth_templ = the holder authorization value ubyte to
 * appear in the CHAT of the certificate
-* @param ced = the CED to appear in the certificate
-* @param cex = the CEX to appear in the certificate
-* @param rng = a random number generator
+*  ced = the CED to appear in the certificate
+*  cex = the CEX to appear in the certificate
+*  rng = a random number generator
 */
 EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
                                 const ref Vector!(ubyte, ALLOC) public_key,
@@ -245,6 +253,7 @@ EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
     return EAC11CVC(cast(DataSource)source);
 }
 
+/// ditto
 EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
                             auto const ref RefCounted!(Vector!(ubyte, ALLOC), ALLOC) public_key,
                             in ASN1Car car,
@@ -254,7 +263,7 @@ EAC11CVC makeCvcCert(ALLOC)(ref PKSigner signer,
                             in ASN1Cex cex,
                             RandomNumberGenerator rng)
 {
-    return makeCvcCert(signer, **public_key, car, chr, holder_auth_templ, ced, cex, rng);
+    return makeCvcCert(signer, *public_key, car, chr, holder_auth_templ, ced, cex, rng);
 }
 /**
 * Decode an EAC encoding ECDSA key

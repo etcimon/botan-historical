@@ -1,8 +1,11 @@
-/*
+/**
 * ANSI X9.31 RNG
+* 
+* Copyright:
 * (C) 1999-2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.rng.x931_rng;
@@ -82,8 +85,9 @@ public:
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
 
     /**
-    * @param cipher = the block cipher to use in this PRNG
-    * @param rng = the underlying PRNG for generating inputs
+    * Params:
+    *  cipher = the block cipher to use in this PRNG
+    *  rng = the underlying PRNG for generating inputs
     * (eg, an HMAC_RNG)
     */
     this(BlockCipher cipher,

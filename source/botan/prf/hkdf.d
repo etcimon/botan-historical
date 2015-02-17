@@ -1,8 +1,11 @@
-/*
+/**
 * HKDF
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.prf.hkdf;
@@ -52,7 +55,8 @@ public:
 
     /**
     * Only call after extract
-    * @param output_len = must be less than 256*hashlen
+    * Params:
+    *  output_len = must be less than 256*hashlen
     */
     void expand(ubyte* output, size_t output_len,
                 const(ubyte)* info, size_t info_len)

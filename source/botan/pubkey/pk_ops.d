@@ -1,8 +1,11 @@
-/*
+/**
 * PK Operation Types
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pk_ops;
@@ -65,9 +68,10 @@ public:
 
     /*
     * Perform a signature operation
-    * @param msg = the message
-    * @param msg_len = the length of msg in bytes
-    * @param rng = a random number generator
+    * Params:
+    *  msg = the message
+    *  msg_len = the length of msg in bytes
+    *  rng = a random number generator
     */
     abstract SecureVector!ubyte sign(const(ubyte)* msg, size_t msg_len, RandomNumberGenerator rng);
 
@@ -105,22 +109,24 @@ public:
 
     /*
     * Perform a signature check operation
-    * @param msg = the message
-    * @param msg_len = the length of msg in bytes
-    * @param sig = the signature
-    * @param sig_len = the length of sig in bytes
-    * Returns:s if signature is a valid one for message
+    * Params:
+    *  msg = the message
+    *  msg_len = the length of msg in bytes
+    *  sig = the signature
+    *  sig_len = the length of sig in bytes
+    * Returns: true if signature is a valid one for message
     */
-    abstract bool verify(const(ubyte)*, size_t, const(ubyte)*, size_t);
+    abstract bool verify(const(ubyte)* msg, size_t msg_len, const(ubyte)* sig, size_t sig_len);
 
     /*
     * Perform a signature operation (with message recovery)
     * Only call this if withRecovery() returns true
-    * @param msg = the message
-    * @param msg_len = the length of msg in bytes
+    * Params:
+    *  msg = the message
+    *  msg_len = the length of msg in bytes
     * Returns:s recovered message
     */
-    abstract SecureVector!ubyte verifyMr(const(ubyte)*, size_t);
+    abstract SecureVector!ubyte verifyMr(const(ubyte)* msg, size_t msg_len);
 
 }
 
@@ -132,8 +138,9 @@ interface KeyAgreement
 public:
     /*
     * Perform a key agreement operation
-    * @param w = the other key value
-    * @param w_len = the length of w in bytes
+    * Params:
+    *  w = the other key value
+    *  w_len = the length of w in bytes
     * Returns:s the agreed key
     */
     abstract SecureVector!ubyte agree(const(ubyte)* w, size_t w_len);

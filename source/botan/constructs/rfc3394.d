@@ -1,8 +1,11 @@
-/*
+/**
 * AES Key Wrap (RFC 3394)
+* 
+* Copyright:
 * (C) 2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.rfc3394;
@@ -24,9 +27,10 @@ import botan.utils.types;
 * Encrypt a key under a key encryption key using the algorithm
 * described in RFC 3394
 *
-* @param key = the plaintext key to encrypt
-* @param kek = the key encryption key
-* @param af = an algorithm factory
+* Params:
+*  key = the plaintext key to encrypt
+*  kek = the key encryption key
+*  af = an algorithm factory
 * Returns: key encrypted under kek
 */
 SecureVector!ubyte rfc3394Keywrap()(auto const ref SecureVector!ubyte key,
@@ -75,9 +79,10 @@ SecureVector!ubyte rfc3394Keywrap()(auto const ref SecureVector!ubyte key,
 * Decrypt a key under a key encryption key using the algorithm
 * described in RFC 3394
 *
-* @param key = the encrypted key to decrypt
-* @param kek = the key encryption key
-* @param af = an algorithm factory
+* Params:
+*  key = the encrypted key to decrypt
+*  kek = the key encryption key
+*  af = an algorithm factory
 * Returns: key decrypted under kek
 */
 SecureVector!ubyte rfc3394Keyunwrap()(auto const ref SecureVector!ubyte key,

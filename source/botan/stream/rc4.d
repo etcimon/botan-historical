@@ -1,8 +1,11 @@
-/*
+/**
 * RC4
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.stream.rc4;
@@ -68,7 +71,8 @@ public:
     }
 
     /**
-    * @param skip = skip this many initial bytes in the keystream
+    * Params:
+    *  skip = skip this many initial bytes in the keystream
     */
     this(size_t s = 0) { m_SKIP = s; }
 

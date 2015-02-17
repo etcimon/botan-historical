@@ -1,8 +1,11 @@
-/*
+/**
 * RandomNumberGenerator
+* 
+* Copyright:
 * (C) 1999-2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.rng.rng;
@@ -54,7 +57,8 @@ public:
 
     /**
     * Return a random vector
-    * @param bytes = number of bytes in the result
+    * Params:
+    *  bytes = number of bytes in the result
     * Returns: randomized vector of length bytes
     */
     abstract SecureVector!ubyte randomVec(size_t bytes)

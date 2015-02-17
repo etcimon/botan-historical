@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Messages
+* 
+* Copyright:
 * (C) 2004-2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.messages;
@@ -1266,8 +1269,9 @@ public:
 
     /**
     * Check the signature on a certificate verify message
-    * @param cert = the purported certificate
-    * @param state = the handshake state
+    * Params:
+    *  cert = the purported certificate
+    *  state = the handshake state
     */
     bool verify(const X509Certificate cert,
                 const HandshakeState state) const

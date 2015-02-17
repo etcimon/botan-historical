@@ -1,8 +1,11 @@
-/*
+/**
 * Hooks for application level policies on TLS connections
+* 
+* Copyright:
 * (C) 2004-2006,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.policy;
@@ -182,8 +185,9 @@ public:
     * Allow renegotiation even if the counterparty doesn't
     * support the secure renegotiation extension.
     *
-    * @warning Changing this to true exposes you to injected
-    * plaintext attacks. Read RFC 5746 for background.
+    * Notes:
+    *  Changing this to true exposes you to injected plaintext attacks. 
+    *  Read RFC 5746 for background.
     */
     bool allowInsecureRenegotiation() const { return false; }
 

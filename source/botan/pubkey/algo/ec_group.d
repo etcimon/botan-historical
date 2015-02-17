@@ -1,10 +1,12 @@
-/*
+/**
 * ECC Domain Parameters
 *
+* Copyright:
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
-*      2008-2010 Jack Lloyd
+*     2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.ec_group;
@@ -42,10 +44,11 @@ public:
 
     /**
     * Construct Domain paramers from specified parameters
-    * @param curve = elliptic curve
-    * @param base_point = a base point
-    * @param order = the order of the base point
-    * @param cofactor = the cofactor
+    * Params:
+    *  curve = elliptic curve
+    *  base_point = a base point
+    *  order = the order of the base point
+    *  cofactor = the cofactor
     */
     this()(auto const ref CurveGFp curve, auto const ref PointGFp base_point, 
            auto const ref BigInt order, auto const ref BigInt cofactor, in string oid = "") 
@@ -59,7 +62,8 @@ public:
 
     /**
     * Decode a BER encoded ECC domain parameter set
-    * @param ber_data = the bytes of the BER encoding
+    * Params:
+    *  ber_data = the bytes of the BER encoding
     */
     this()(auto const ref Vector!ubyte ber_data)
     {
@@ -74,7 +78,8 @@ public:
 
     /**
     * Create an EC domain by OID (or throw new if unknown)
-    * @param oid = the OID of the EC domain to create
+    * Params:
+    *  oid = the OID of the EC domain to create
     */
     this(in OID domain_oid)
     {
@@ -97,7 +102,8 @@ public:
     /**
     * Create an EC domain from PEM encoding (as from PEM_encode), or
     * from an OID name (eg "secp256r1", or "1.2.840.10045.3.1.7")
-    * @param pem_or_oid = PEM-encoded data, or an OID
+    * Params:
+    *  pem_or_oid = PEM-encoded data, or an OID
     */
     this(in string pem_or_oid = "")
     {
@@ -179,8 +185,9 @@ public:
 
     /**
     * Create the DER encoding of this domain
-    * @param form = of encoding to use
-    * Returns:s bytes encododed as DER
+    * Params:
+    *  form = of encoding to use
+    * Returns: bytes encoded as DER
     */
     Vector!ubyte DER_encode(ECGroupEncoding form) const
     {
@@ -228,25 +235,25 @@ public:
 
     /**
     * Return domain parameter curve
-    * @result domain parameter curve
+    * Returns: domain parameter curve
     */
     ref const(CurveGFp) getCurve() const { return m_curve; }
 
     /**
     * Return domain parameter curve
-    * @result domain parameter curve
+    * Returns: domain parameter curve
     */
     ref const(PointGFp) getBasePoint() const { return m_base_point; }
 
     /**
     * Return the order of the base point
-    * @result order of the base point
+    * Returns: order of the base point
     */
     ref const(BigInt) getOrder() const { return m_order; }
 
     /**
     * Return the cofactor
-    * @result the cofactor
+    * Returns: the cofactor
     */
     ref const(BigInt) getCofactor() const { return m_cofactor; }
 
@@ -254,7 +261,7 @@ public:
 
     /**
     * Return the OID of these domain parameters
-    * @result the OID
+    * Returns: the OID
     */
     string getOid() const { return m_oid; }
 

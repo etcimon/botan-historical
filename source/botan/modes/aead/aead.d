@@ -1,8 +1,11 @@
-/*
+/**
 * Interface for AEAD modes
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.modes.aead.aead;
@@ -40,8 +43,9 @@ public:
     * between messages. Thus, if the AD does not change, calling
     * once (after setKey) is the optimum.
     *
-    * @param ad = the associated data
-    * @param ad_len = length of add in bytes
+    * Params:
+    *  ad = the associated data
+    *  ad_len = length of add in bytes
     */
     abstract void setAssociatedData(const(ubyte)* ad, size_t ad_len);
 

@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 SIGNED Object
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509_obj;
@@ -80,9 +83,9 @@ public:
     *
     * Params:
     *  signer = the signer used to sign the object
-    * @param rng = the random number generator to use
-    * @param alg_id = the algorithm identifier of the signature scheme
-    * @param tbs = the tbs bits to be signed
+    *  rng = the random number generator to use
+    *  algo= the algorithm identifier of the signature scheme
+    *  tbs_bits = the tbs bits to be signed
     * Returns: signed X509 object
     */
     static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
@@ -111,7 +114,8 @@ public:
 
     /**
     * Check the signature on this data
-    * @param key = the public key purportedly used to sign this data
+    * Params:
+    *  key = the public key purportedly used to sign this data
     * Returns: true if the signature is valid, otherwise false
     */
     final bool checkSignature(in PublicKey pub_key) const

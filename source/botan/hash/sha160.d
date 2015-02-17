@@ -1,8 +1,11 @@
-/*
+/**
 * SHA-160
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.sha160;
@@ -55,7 +58,8 @@ protected:
     * Set a custom size for the W array. Normally 80, but some
     * subclasses need slightly more for best performance/internal
     * constraints
-    * @param W_size = how big to make W
+    * Params:
+    *  W_size = how big to make W
     */
     this(size_t W_size) 
     {

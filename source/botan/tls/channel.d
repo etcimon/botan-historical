@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Channel
+* 
+* Copyright:
 * (C) 2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.channel;
@@ -312,7 +315,8 @@ public:
 
     /**
     * Attempt to renegotiate the session
-    * @param force_full_renegotiation = if true, require a full renegotiation,
+    * Params:
+    *  force_full_renegotiation = if true, require a full renegotiation,
     *                                            otherwise allow session resumption
     */
     void renegotiate(bool force_full_renegotiation = false)
@@ -349,8 +353,9 @@ public:
 
     /**
     * Attempt to send a heartbeat message (if negotiated with counterparty)
-    * @param payload = will be echoed back
-    * @param payload_size = size of payload in bytes
+    * Params:
+    *  payload = will be echoed back
+    *  payload_size = size of payload in bytes
     */
     void heartbeat(const(ubyte)* payload, size_t payload_size)
     {
@@ -379,9 +384,10 @@ public:
 
     /**
     * Key material export (RFC 5705)
-    * @param label = a disambiguating label string
-    * @param context = a per-association context value
-    * @param length = the length of the desired key in bytes
+    * Params:
+    *  label = a disambiguating label string
+    *  context = a per-association context value
+    *  length = the length of the desired key in bytes
     * Returns: key of length bytes
     */
     const(SymmetricKey) keyMaterialExport(in string label,

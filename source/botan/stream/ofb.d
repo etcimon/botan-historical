@@ -1,8 +1,11 @@
-/*
+/**
 * OFB Mode
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.stream.ofb;
@@ -72,7 +75,8 @@ public:
     }
 
     /**
-    * @param cipher = the underlying block cipher to use
+    * Params:
+    *  cipher = the underlying block cipher to use
     */
     this(BlockCipher cipher)
     {

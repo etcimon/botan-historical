@@ -1,8 +1,11 @@
-/*
+/**
 * HMAC RNG
+* 
+* Copyright:
 * (C) 2008,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.rng.hmac_rng;
@@ -162,8 +165,9 @@ public:
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
 
     /**
-    * @param extractor = a MAC used for extracting the entropy
-    * @param prf = a MAC used as a PRF using HKDF construction
+    * Params:
+    *  extractor = a MAC used for extracting the entropy
+    *  prf = a MAC used as a PRF using HKDF construction
     */
     this(MessageAuthenticationCode extractor, MessageAuthenticationCode prf)
     {

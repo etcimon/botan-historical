@@ -1,9 +1,12 @@
-/*
+/**
 * DataSource
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
-*      2012 Markus Wanner
+*     2012 Markus Wanner
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.data_src;
@@ -30,8 +33,9 @@ public:
     * Read from the source. Moves the internal offset so that every
     * call to read will return a new portion of the source.
     *
-    * @param output = the ubyte array to write the result to
-    * @param length = the length of the ubyte array out
+    * Params:
+    *  output = the ubyte array to write the result to
+    *  length = the length of the ubyte array out
     * Returns: length in bytes that was actually read and put
     * into out
     */
@@ -42,9 +46,10 @@ public:
     * offset. Consecutive calls to peek() will return portions of
     * the source starting at the same position.
     *
-    * @param output = the ubyte array to write the output to
-    * @param length = the length of the ubyte array out
-    * @param peek_offset = the offset into the stream to read at
+    * Params:
+    *  output = the ubyte array to write the output to
+    *  length = the length of the ubyte array out
+    *  peek_offset = the offset into the stream to read at
     * Returns: length in bytes that was actually read and put
     * into out
     */
@@ -91,7 +96,8 @@ public:
 
     /**
     * Discard the next N bytes of the data
-    * @param N = the number of bytes to discard
+    * Params:
+    *  N = the number of bytes to discard
     * Returns: number of bytes actually discarded
     */
     final size_t discardNext(size_t n)
@@ -151,7 +157,8 @@ public:
 
     /**
     * Construct a memory source that reads from a string
-    * @param input = the string to read from
+    * Params:
+    *  input = the string to read from
     */
     this(in string input) 
     {
@@ -162,8 +169,9 @@ public:
 
     /**
     * Construct a memory source that reads from a ubyte array
-    * @param input = the ubyte array to read from
-    * @param length = the length of the ubyte array
+    * Params:
+    *  input = the ubyte array to read from
+    *  length = the length of the ubyte array
     */
     this(const(ubyte)* input, size_t length)
     {
@@ -173,7 +181,8 @@ public:
 
     /**
     * Construct a memory source that reads from a referenced vector
-    * @param input = the MemoryRegion to read from
+    * Params:
+    *  input = the MemoryRegion to read from
     */
     this(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALLOC), ALLOC) input)
     {
@@ -183,7 +192,8 @@ public:
 
     /**
     * Construct a memory source that reads from a vector
-    * @param input = the MemoryRegion to read from
+    * Params:
+    *  input = the MemoryRegion to read from
     */
     this(T, ALLOC)(auto const ref Vector!(T, ALLOC) input) {
         m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
@@ -192,7 +202,8 @@ public:
 
     /**
     * Construct a memory source that reads from a vector*
-    * @param input = the MemoryRegion to read from
+    * Params:
+    *  input = the MemoryRegion to read from
     */
     this(T, ALLOC)(const Vector!(T, ALLOC)* input) {
         m_source = SecureVector!ubyte(input.ptr[0 .. input.length]);
@@ -293,8 +304,9 @@ public:
 
     /**
     * Construct a Stream-Based DataSource from file
-    * @param file = the name of the file
-    * @param use_binary = whether to treat the file as binary or not
+    * Params:
+    *  file = the name of the file
+    *  use_binary = whether to treat the file as binary or not
     */
     this(in string path, bool use_binary = false)
     {

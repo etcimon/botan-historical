@@ -1,8 +1,11 @@
-/*
+/**
 * Tiger
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.tiger;
@@ -57,8 +60,9 @@ public:
     }
 
     /**
-    * @param hash_len = specifies the output length; can be 16, 20, or 24
-    * @param passes = to make in the algorithm
+    * Params:
+    *  hash_len = specifies the output length; can be 16, 20, or 24
+    *  passes = to make in the algorithm
     */
     this(size_t hash_len = 24, size_t passes = 3)
     {

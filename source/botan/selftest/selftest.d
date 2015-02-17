@@ -1,8 +1,11 @@
-/*
+/**
 * Startup Self Test
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.selftest.selftest;
@@ -30,8 +33,9 @@ import botan.utils.types;
 
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
-* @param af = an algorithm factory
-* @throws SelfTestFailure if a failure occured
+* Params:
+*  af = an algorithm factory
+* Throws: $(D SelfTestFailure) if a failure occured
 */
 /*
 * Perform Self Tests
@@ -121,7 +125,8 @@ void confirmStartupSelfTests(AlgorithmFactory af)
 
 /**
 * Run a set of self tests on some basic algorithms like AES and SHA-1
-* @param af = an algorithm factory
+* Params:
+*  af = an algorithm factory
 * Returns:s false if a failure occured, otherwise true
 */
 bool passesSelfTests(AlgorithmFactory af)
@@ -141,11 +146,12 @@ bool passesSelfTests(AlgorithmFactory af)
 
 /**
 * Run a set of algorithm KATs (known answer tests)
-* @param algo_name = the algorithm we are testing
-* @param vars = a set of input variables for this test, all
+* Params:
+*  algo_name = the algorithm we are testing
+*  vars = a set of input variables for this test, all
             hex encoded. Keys used: "input", "output", "key", and "iv"
-* @param af = an algorithm factory
-* Returns:s map from provider name to test result for that provider
+*  af = an algorithm factory
+* Returns: map from provider name to test result for that provider
 */
 HashMapRef!(string, bool)
     algorithmKat(in SCANToken algo_name,
@@ -164,10 +170,11 @@ HashMapRef!(string, bool)
 
 /**
 * Run a set of algorithm KATs (known answer tests)
-* @param algo_name = the algorithm we are testing
-* @param vars = a set of input variables for this test, all
+* Params:
+*  algo_name = the algorithm we are testing
+*  vars = a set of input variables for this test, all
             hex encoded. Keys used: "input", "output", "key", and "iv"
-* @param af = an algorithm factory
+*  af = an algorithm factory
 * Returns:s map from provider name to test result for that provider
 */
 HashMapRef!(string, string)

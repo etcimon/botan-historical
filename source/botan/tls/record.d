@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Record Handling
+* 
+* Copyright:
 * (C) 2004-2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.record;
@@ -186,14 +189,15 @@ private:
 
 /**
 * Create a TLS record
-* @param output = the output record is placed here
-* @param msg_type = is the type of the message (handshake, alert, ...)
-* @param msg = is the plaintext message
-* @param msg_length = is the length of msg
-* @param _version = is the protocol version
-* @param msg_sequence = is the sequence number
-* @param cipherstate = is the writing cipher state
-* @param rng = is a random number generator
+* Params:
+*  output = the output record is placed here
+*  msg_type = is the type of the message (handshake, alert, ...)
+*  msg = is the plaintext message
+*  msg_length = is the length of msg
+*  _version = is the protocol version
+*  msg_sequence = is the sequence number
+*  cipherstate = is the writing cipher state
+*  rng = is a random number generator
 * Returns: number of bytes written to write_buffer
 */
 void writeRecord(ref SecureVector!ubyte output,

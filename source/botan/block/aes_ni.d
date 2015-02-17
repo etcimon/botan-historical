@@ -1,8 +1,11 @@
-/*
+/**
 * AES using AES-NI instructions
+* 
+* Copyright:
 * (C) 2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.aes_ni;

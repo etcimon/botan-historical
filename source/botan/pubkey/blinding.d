@@ -1,8 +1,11 @@
-/*
+/**
 * Blinding for public key operations
+* 
+* Copyright:
 * (C) 1999-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.blinding;
@@ -47,9 +50,10 @@ public:
 
     /**
     * Construct a blinder
-    * @param e = the forward (blinding) mask
-    * @param d = the inverse of mask (depends on algo)
-    * @param n = modulus of the group operations are performed in
+    * Params:
+    *  e = the forward (blinding) mask
+    *  d = the inverse of mask (depends on algo)
+    *  n = modulus of the group operations are performed in
     */
     this()(auto const ref BigInt e, 
            auto const ref BigInt d, 

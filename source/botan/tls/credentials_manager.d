@@ -1,8 +1,11 @@
-/*
+/**
 * Credentials Manager
+* 
+* Copyright:
 * (C) 2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.credentials_manager;
@@ -34,9 +37,10 @@ public:
     * Return a list of the certificates of CAs that we trust in this
     * type/context.
     *
-    * @param type = specifies the type of operation occuring
+    * Params:
+    *  type = specifies the type of operation occuring
     *
-    * @param context = specifies a context relative to type. For instance
+    *  context = specifies a context relative to type. For instance
     *          for type "tls-client", context specifies the servers name.
     */
     abstract Vector!CertificateStore 
@@ -51,12 +55,13 @@ public:
     * consistent with the leaf certificate.
     *
     * This function should throw new an exception derived from
-    * std::exception with an informative what() result if the
+    * $(D Exception) with an informative what() result if the
     * certificate chain cannot be verified.
 
-    * @param type = specifies the type of operation occuring
-    * @param hostname = specifies the purported hostname
-    * @param cert_chain = specifies a certificate chain leading to a
+    * Params:
+    *  type = specifies the type of operation occuring
+    *  purported_hostname = specifies the purported hostname
+    *  cert_chain = specifies a certificate chain leading to a
     *          trusted root CA certificate.
     */
     abstract void verifyCertificateChain(in string type,
@@ -91,13 +96,14 @@ public:
     * It is assumed that the caller can get the private key of the
     * leaf with Private_Keyfor
     *
-    * @param cert_key_types = specifies the key types desired ("RSA",
+    * Params:
+    *  cert_key_types = specifies the key types desired ("RSA",
     *                              "DSA", "ECDSA", etc), or empty if there
     *                              is no preference by the caller.
     *
-    * @param type = specifies the type of operation occuring
+    *  type = specifies the type of operation occuring
     *
-    * @param context = specifies a context relative to type.
+    *  context = specifies a context relative to type.
     */
     abstract Vector!X509Certificate certChain(const ref Vector!string cert_key_types,
                                               in string type,
@@ -119,12 +125,13 @@ public:
     * It is assumed that the caller can get the private key of the
     * leaf with Private_Keyfor
     *
-    * @param cert_key_type = specifies the type of key requested
+    * Params:
+    *  cert_key_type = specifies the type of key requested
     *                             ("RSA", "DSA", "ECDSA", etc)
     *
-    * @param type = specifies the type of operation occuring
+    *  type = specifies the type of operation occuring
     *
-    * @param context = specifies a context relative to type.
+    *  context = specifies a context relative to type.
     */
     abstract Vector!X509Certificate certChainSingleType(in string cert_key_type,
                                                         in string type,
@@ -136,9 +143,16 @@ public:
     }
 
     /**
+    * 
+    * Params: 
+    *  cert = as returned by cert_chain
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
+    * 
     * Returns: private key associated with this certificate if we should
-    *            use it with this context. cert was returned by cert_chain
-    * @note this object should retain ownership of the returned key;
+    *            use it with this context. 
+    * 
+    * Notes: this object should retain ownership of the returned key;
     *         it should not be deleted by the caller.
     */
     abstract PrivateKey privateKeyFor(in X509Certificate cert, in string type, in string context)
@@ -147,8 +161,9 @@ public:
     }
 
     /**
-    * @param type = specifies the type of operation occuring
-    * @param context = specifies a context relative to type.
+    * Params:
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
     * Returns: true if we should attempt SRP authentication
     */
     abstract bool attemptSrp(in string type, in string context)
@@ -157,8 +172,9 @@ public:
     }
 
     /**
-    * @param type = specifies the type of operation occuring
-    * @param context = specifies a context relative to type.
+    * Params:
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
     * Returns: identifier for client-side SRP auth, if available
                  for this type/context. Should return empty string
                  if password auth not desired/available.
@@ -169,8 +185,9 @@ public:
     }
 
     /**
-    * @param type = specifies the type of operation occuring
-    * @param context = specifies a context relative to type.
+    * Params:
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
     *
     * Params:
     *  identifier = specifies what identifier we want the
@@ -201,8 +218,9 @@ public:
     }
 
     /**
-    * @param type = specifies the type of operation occuring
-    * @param context = specifies a context relative to type.
+    * Params:
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
     * Returns: the PSK identity hint for this type/context
     */
     abstract string pskIdentityHint(in string type, in string context)
@@ -211,10 +229,9 @@ public:
     }
 
     /**
-    * @param type = specifies the type of operation occuring
-    * @param context = specifies a context relative to type.
-    *
     * Params:
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
     *  identity_hint = was passed by the server (but may be empty)
     * Returns: the PSK identity we want to use
     */
@@ -224,10 +241,9 @@ public:
     }
 
     /**
-    * @param type = specifies the type of operation occuring
-    * @param context = specifies a context relative to type.
-    *
     * Params:
+    *  type = specifies the type of operation occuring
+    *  context = specifies a context relative to type.
     *  identity = is a PSK identity previously returned by
                 psk_identity for the same type and context.
     * Returns: the PSK used for identity, or throw new an exception if no

@@ -1,9 +1,12 @@
-/*
+/**
 * Pipe
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
-*      2012 Markus Wanner
+*     2012 Markus Wanner
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.pipe;
@@ -46,8 +49,9 @@ public:
     class InvalidMessageNumber : InvalidArgument
     {
         /**
-        * @param where = the error occured
-        * @param msg = the invalid message id that was used
+        * Params:
+        *  where = the error occured
+        *  msg = the invalid message id that was used
         */
         this(in string where, message_id msg) {
             super("Pipe:" ~ where ~ ": Invalid message number " ~ to!string(msg));
@@ -69,7 +73,7 @@ public:
     *
     * Params:
     *  input = the ubyte array to write
-    * @param length = the length of the ubyte array in
+    *  length = the length of the ubyte array in
     */
     void write(const(ubyte)* input, size_t length)
     {
@@ -150,7 +154,7 @@ public:
     *
     * Params:
     *  input = the ubyte array containing the data to write
-    * @param length = the length of the ubyte array to write
+    *  length = the length of the ubyte array to write
     */
     void processMsg(const(ubyte)* input, size_t length)
     {
@@ -223,8 +227,9 @@ public:
     * offset so that every call to read will return a new portion of
     * the message.
     *
-    * @param output = the ubyte array to write the read bytes to
-    * @param length = the length of the ubyte array output
+    * Params:
+    *  output = the ubyte array to write the read bytes to
+    *  length = the length of the ubyte array output
     * Returns: number of bytes actually read into output
     */
     size_t read(ubyte* output, size_t length)
@@ -239,8 +244,8 @@ public:
     *
     * Params:
     *  output = the ubyte array to write the read bytes to
-    * @param length = the length of the ubyte array output
-    * @param msg = the number identifying the message to read from
+    *  length = the length of the ubyte array output
+    *  msg = the number identifying the message to read from
     * Returns: number of bytes actually read into output
     */
     size_t read(ubyte* output, size_t length, message_id msg)
@@ -255,7 +260,7 @@ public:
     *
     * Params:
     *  output = the ubyte array to write the read bytes to
-    * @param msg = the number identifying the message to read from
+    *  msg = the number identifying the message to read from
     * Returns: number of bytes actually read into output
     */
     size_t read(ref ubyte[] output, message_id msg = DEFAULT_MESSAGE)
@@ -268,8 +273,9 @@ public:
     * that every call to read will return a new portion of the
     * message.
     *
-    * @param output = the ubyte to write the result to
-    * @param msg = the message to read from
+    * Params:
+    *  output = the ubyte to write the result to
+    *  msg = the message to read from
     * Returns: number of bytes actually read into output
     */
     size_t read(ref ubyte output, message_id msg = DEFAULT_MESSAGE)
@@ -324,8 +330,8 @@ public:
     *
     * Params:
     *  output = the ubyte array to write the peeked message part to
-    * @param length = the length of the ubyte array output
-    * @param offset = the offset from the current position in message
+    *  length = the length of the ubyte array output
+    *  offset = the offset from the current position in message
     * Returns: number of bytes actually peeked and written into output
     */
     size_t peek(ubyte* output, size_t length, size_t offset, message_id msg = DEFAULT_MESSAGE) const
@@ -339,9 +345,9 @@ public:
     *
     * Params:
     *  output = the ubyte array to write the peeked message part to
-    * @param length = the length of the ubyte array output
-    * @param offset = the offset from the current position in message
-    * @param msg = the number identifying the message to peek from
+    *  length = the length of the ubyte array output
+    *  offset = the offset from the current position in message
+    *  msg = the number identifying the message to peek from
     * Returns: number of bytes actually peeked and written into output
     */
     size_t peek(ref ubyte[] output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
@@ -355,8 +361,8 @@ public:
     *
     * Params:
     *  output = the ubyte to write the peeked message ubyte to
-    * @param offset = the offset from the current position in message
-    * @param msg = the number identifying the message to peek from
+    *  offset = the offset from the current position in message
+    *  msg = the number identifying the message to peek from
     * Returns: number of bytes actually peeked and written into output
     */
     size_t peek(ref ubyte output, size_t offset, message_id msg = DEFAULT_MESSAGE) const
@@ -394,7 +400,8 @@ public:
     
     /**
     * Discard the next N bytes of the data
-    * @param N = the number of bytes to discard
+    * Params:
+    *  N = the number of bytes to discard
     * Returns: number of bytes actually discarded
     */
     size_t discardNext(size_t n)
@@ -429,7 +436,8 @@ public:
 
     /**
     * Set the default message
-    * @param msg = the number identifying the message which is going to
+    * Params:
+    *  msg = the number identifying the message which is going to
     * be the new default message
     */
     void setDefaultMsg(message_id msg)
@@ -494,7 +502,8 @@ public:
 
     /**
     * Insert a new filter at the front of the pipe
-    * @param filt = the new filter to insert
+    * Params:
+    *  filt = the new filter to insert
     */
     void prepend(Filter filter)
     {
@@ -515,7 +524,8 @@ public:
 
     /**
     * Insert a new filter at the back of the pipe
-    * @param filt = the new filter to insert
+    * Params:
+    *  filt = the new filter to insert
     */
     void append(Filter filter)
     {
@@ -589,7 +599,8 @@ public:
 
     /**
     * Construct a Pipe from a list of filters
-    * @param filters = the set of filters to use
+    * Params:
+    *  filters = the set of filters to use
     */
     this(Filter[] filters)
     {

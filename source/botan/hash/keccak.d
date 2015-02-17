@@ -1,8 +1,11 @@
-/*
+/**
 * Keccak
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.keccak;
@@ -29,7 +32,8 @@ final class Keccak1600 : HashFunction
 public:
 
     /**
-    * @param output_bits = the size of the hash output; must be one of
+    * Params:
+    *  output_bits = the size of the hash output; must be one of
     *                          224, 256, 384, or 512
     */
     this(size_t output_bits = 512) 

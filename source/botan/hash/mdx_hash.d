@@ -1,8 +1,11 @@
-/*
+/**
 * MDx Hash Function
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.mdx_hash;
@@ -20,10 +23,11 @@ class MDxHashFunction : HashFunction
 {
 public:
     /**
-    * @param block_len = is the number of bytes per block
-    * @param byte_end = specifies if the hash uses big-endian bytes
-    * @param bit_end = specifies if the hash uses big-endian bits
-    * @param cnt_size = specifies the size of the counter var in bytes
+    * Params:
+    *  block_len = is the number of bytes per block
+    *  byte_end = specifies if the hash uses big-endian bytes
+    *  bit_end = specifies if the hash uses big-endian bits
+    *  cnt_size = specifies the size of the counter var in bytes
     */
     this(size_t block_len, bool byte_end, bool bit_end, size_t cnt_size = 8)
     {
@@ -89,8 +93,9 @@ protected:
 
     /**
     * Run the hash's compression function over a set of blocks
-    * @param blocks = the input
-    * @param block_n = the number of blocks
+    * Params:
+    *  blocks = the input
+    *  block_n = the number of blocks
     */
     abstract void compressN(const(ubyte)* blocks, size_t block_n);
 
@@ -105,13 +110,15 @@ protected:
 
     /**
     * Copy the output to the buffer
-    * @param buffer = to put the output into
+    * Params:
+    *  buffer = to put the output into
     */
     abstract void copyOut(ubyte* buffer);
 
     /**
     * Write the count, if used, to this spot
-    * @param output = where to write the counter to
+    * Params:
+    *  output = where to write the counter to
     */
     final void writeCount(ubyte* output)
     {

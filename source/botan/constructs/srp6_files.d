@@ -1,8 +1,11 @@
-/*
+/**
 * SRP-6a File Handling
+* 
+* Copyright:
 * (C) 2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.srp6_files;
@@ -24,7 +27,8 @@ final class SRP6AuthenticatorFile
 {
 public:
     /**
-    * @param filename = will be opened and processed as a SRP
+    * Params:
+    *  filename = will be opened and processed as a SRP
     * authenticator file
     */
     this(in string filename)

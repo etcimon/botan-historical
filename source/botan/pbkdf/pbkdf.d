@@ -1,8 +1,11 @@
-/*
+/**
 * PBKDF
+* 
+* Copyright:
 * (C) 1999-2007,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbkdf.pbkdf;
@@ -30,11 +33,12 @@ public:
 
     /**
     * Derive a key from a passphrase
-    * @param output_len = the desired length of the key to produce
-    * @param passphrase = the password to derive the key from
-    * @param salt = a randomly chosen salt
-    * @param salt_len = length of salt in bytes
-    * @param iterations = the number of iterations to use (use 10K or more)
+    * Params:
+    *  output_len = the desired length of the key to produce
+    *  passphrase = the password to derive the key from
+    *  salt = a randomly chosen salt
+    *  salt_len = length of salt in bytes
+    *  iterations = the number of iterations to use (use 10K or more)
     */
     final OctetString deriveKey(size_t output_len,
                                 in string passphrase,
@@ -56,10 +60,11 @@ public:
 
     /**
     * Derive a key from a passphrase
-    * @param output_len = the desired length of the key to produce
-    * @param passphrase = the password to derive the key from
-    * @param salt = a randomly chosen salt
-    * @param iterations = the number of iterations to use (use 10K or more)
+    * Params:
+    *  output_len = the desired length of the key to produce
+    *  passphrase = the password to derive the key from
+    *  salt = a randomly chosen salt
+    *  iterations = the number of iterations to use (use 10K or more)
     */
     final OctetString deriveKey(Alloc)(size_t output_len,
                                        in string passphrase,
@@ -71,12 +76,13 @@ public:
 
     /**
     * Derive a key from a passphrase
-    * @param output_len = the desired length of the key to produce
-    * @param passphrase = the password to derive the key from
-    * @param salt = a randomly chosen salt
-    * @param salt_len = length of salt in bytes
-    * @param loop_for = is how long to run the PBKDF
-    * @param iterations = is set to the number of iterations used
+    * Params:
+    *  output_len = the desired length of the key to produce
+    *  passphrase = the password to derive the key from
+    *  salt = a randomly chosen salt
+    *  salt_len = length of salt in bytes
+    *  loop_for = is how long to run the PBKDF
+    *  iterations = is set to the number of iterations used
     */
     final OctetString deriveKey(size_t output_len,
                            in string passphrase,
@@ -93,11 +99,12 @@ public:
 
     /**
     * Derive a key from a passphrase using a certain amount of time
-    * @param output_len = the desired length of the key to produce
-    * @param passphrase = the password to derive the key from
-    * @param salt = a randomly chosen salt
-    * @param loop_for = is how long to run the PBKDF
-    * @param iterations = is set to the number of iterations used
+    * Params:
+    *  output_len = the desired length of the key to produce
+    *  passphrase = the password to derive the key from
+    *  salt = a randomly chosen salt
+    *  loop_for = is how long to run the PBKDF
+    *  iterations = is set to the number of iterations used
     */
     final OctetString deriveKey(Alloc)(size_t output_len,
                                        in string passphrase,
@@ -113,12 +120,13 @@ public:
     * specified by either iterations or if iterations == 0 then
     * running until seconds time has elapsed.
     *
-    * @param output_len = the desired length of the key to produce
-    * @param passphrase = the password to derive the key from
-    * @param salt = a randomly chosen salt
-    * @param salt_len = length of salt in bytes
-    * @param iterations = the number of iterations to use (use 10K or more)
-    * @param loop_for = if iterations is zero, then instead the PBKDF is
+    * Params:
+    *  output_len = the desired length of the key to produce
+    *  passphrase = the password to derive the key from
+    *  salt = a randomly chosen salt
+    *  salt_len = length of salt in bytes
+    *  iterations = the number of iterations to use (use 10K or more)
+    *  loop_for = if iterations is zero, then instead the PBKDF is
     *          run until duration has passed.
     * Returns: the number of iterations performed and the derived key
     */

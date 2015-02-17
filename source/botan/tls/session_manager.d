@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Session Manager
+* 
+* Copyright:
 * (C) 2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.session_manager;
@@ -35,8 +38,9 @@ interface TLSSessionManager
 public:
     /**
     * Try to load a saved session (using session ID)
-    * @param session_id = the session identifier we are trying to resume
-    * @param session = will be set to the saved session data (if found),
+    * Params:
+    *  session_id = the session identifier we are trying to resume
+    *  session = will be set to the saved session data (if found),
                 or not modified if not found
     * Returns: true if session was modified
     */
@@ -44,8 +48,9 @@ public:
 
     /**
     * Try to load a saved session (using info about server)
-    * @param info = the information about the server
-    * @param session = will be set to the saved session data (if found),
+    * Params:
+    *  info = the information about the server
+    *  session = will be set to the saved session data (if found),
                 or not modified if not found
     * Returns: true if session was modified
     */
@@ -63,7 +68,8 @@ public:
     * not an error. Caller cannot assume that calling save followed
     * immediately by load_from_* will result in a successful lookup.
     *
-    * @param session = to save
+    * Params:
+    *  session = to save
     */
     abstract void save(const ref TLSSession session);
 
@@ -104,10 +110,11 @@ final class TLSSessionManagerInMemory : TLSSessionManager
 {
 public:
     /**
-    * @param max_sessions = a hint on the maximum number of sessions
+    * Params:
+    *  rng = a random number generator
+    *  max_sessions = a hint on the maximum number of sessions
     *          to keep in memory at any one time. (If zero, don't cap)
-    * @param session_lifetime = sessions are expired after this many
-    *          seconds have elapsed from initial handshake.
+    *  session_lifetime = sessions are expired after this duration has elapsed from initial handshake.
     */
     this(RandomNumberGenerator rng, size_t max_sessions = 1000, Duration session_lifetime = 7200.seconds) 
     {

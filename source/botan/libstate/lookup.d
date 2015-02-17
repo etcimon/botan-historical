@@ -1,8 +1,11 @@
-/*
+/**
 * Algorithm Lookup
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.libstate.lookup;
@@ -18,7 +21,8 @@ import botan.libstate.libstate;
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec = an algorithm name
+* Params:
+*  algo_spec = an algorithm name
 * Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -30,7 +34,8 @@ const(BlockCipher) retrieveBlockCipher(in string algo_spec)
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec = an algorithm name
+* Params:
+*  algo_spec = an algorithm name
 * Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -42,7 +47,8 @@ const(StreamCipher) retrieveStreamCipher(in string algo_spec)
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec = an algorithm name
+* Params:
+*  algo_spec = an algorithm name
 * Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -54,7 +60,8 @@ const(HashFunction) retrieveHash(in string algo_spec)
 
 /**
 * Retrieve an object prototype from the global factory
-* @param algo_spec = an algorithm name
+* Params:
+*  algo_spec = an algorithm name
 * Returns: constant prototype object (use clone to create usable object),
              library retains ownership
 */
@@ -66,7 +73,8 @@ const(MessageAuthenticationCode) retrieveMac(in string algo_spec)
 
 /**
 * Password based key derivation function factory method
-* @param algo_spec = the name of the desired PBKDF algorithm
+* Params:
+*  algo_spec = the name of the desired PBKDF algorithm
 * Returns: pointer to newly allocated object of that type
 */
 PBKDF getPbkdf(in string algo_spec)
@@ -82,11 +90,12 @@ PBKDF getPbkdf(in string algo_spec)
 /**
 * Get a cipher object.
 * Factory method for general symmetric cipher filters.
-* @param algo_spec = the name of the desired cipher
-* @param key = the key to be used for encryption/decryption performed by
+* Params:
+*  algo_spec = the name of the desired cipher
+*  key = the key to be used for encryption/decryption performed by
 * the filter
-* @param iv = the initialization vector to be used
-* @param direction = determines whether the filter will be an encrypting
+*  iv = the initialization vector to be used
+*  direction = determines whether the filter will be an encrypting
 * or decrypting filter
 * Returns: pointer to newly allocated encryption or decryption filter
 */
@@ -103,10 +112,11 @@ KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, in Initializatio
 
 /**
 * Factory method for general symmetric cipher filters.
-* @param algo_spec = the name of the desired cipher
-* @param key = the key to be used for encryption/decryption performed by
+* Params:
+*  algo_spec = the name of the desired cipher
+*  key = the key to be used for encryption/decryption performed by
 * the filter
-* @param direction = determines whether the filter will be an encrypting
+*  direction = determines whether the filter will be an encrypting
 * or decrypting filter
 * Returns: pointer to the encryption or decryption filter
 */
@@ -120,8 +130,9 @@ KeyedFilter getCipher(in string algo_spec, in SymmetricKey key, CipherDir direct
 * Factory method for general symmetric cipher filters. No key will be
 * set in the filter.
 *
-* @param algo_spec = the name of the desired cipher
-* @param direction = determines whether the filter will be an encrypting or
+* Params:
+*  algo_spec = the name of the desired cipher
+*  direction = determines whether the filter will be an encrypting or
 * decrypting filter
 * Returns: pointer to the encryption or decryption filter
 */
@@ -139,7 +150,8 @@ KeyedFilter getCipher(in string algo_spec, CipherDir direction)
 
 /**
 * Check if an algorithm exists.
-* @param algo_spec = the name of the algorithm to check for
+* Params:
+*  algo_spec = the name of the algorithm to check for
 * Returns: true if the algorithm exists, false otherwise
 */
 bool haveAlgorithm(in string name)

@@ -1,8 +1,11 @@
-/*
+/**
 * PKCS #5 v2.0 PBE
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pbe.pbes2;
@@ -110,8 +113,9 @@ public:
 
     /**
     * Load a PKCS #5 v2.0 encrypted stream
-    * @param params = the PBES2 parameters
-    * @param passphrase = the passphrase to use for decryption
+    * Params:
+    *  params = the PBES2 parameters
+    *  passphrase = the passphrase to use for decryption
     */
     this(const ref Vector!ubyte params, in string passphrase) 
     {
@@ -176,11 +180,12 @@ public:
     }
 
     /**
-    * @param cipher = the block cipher to use
-    * @param mac = the MAC to use
-    * @param passphrase = the passphrase to use for encryption
-    * @param msec = how many milliseconds to run the PBKDF
-    * @param rng = a random number generator
+    * Params:
+    *  cipher = the block cipher to use
+    *  mac = the MAC to use
+    *  passphrase = the passphrase to use for encryption
+    *  msec = how many milliseconds to run the PBKDF
+    *  rng = a random number generator
     */
     this(BlockCipher cipher,
          MessageAuthenticationCode mac,

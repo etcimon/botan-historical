@@ -1,8 +1,11 @@
-/*
+/**
 * SRP-6a (RFC 5054 compatatible)
+* 
+* Copyright:
 * (C) 2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.srp6;
@@ -30,13 +33,14 @@ struct SRP6KeyPair {
 
 /**
 * SRP6a Client side
-* @param username = the username we are attempting login for
-* @param password = the password we are attempting to use
-* @param group_id = specifies the shared SRP group
-* @param hash_id = specifies a secure hash function
-* @param salt = is the salt value sent by the server
-* @param B = is the server's public value
-* @param rng = is a random number generator
+* Params:
+*  username = the username we are attempting login for
+*  password = the password we are attempting to use
+*  group_id = specifies the shared SRP group
+*  hash_id = specifies a secure hash function
+*  salt = is the salt value sent by the server
+*  B = is the server's public value
+*  rng = is a random number generator
 *
 * Returns: (A,K) the client public key and the shared secret key
 */
@@ -78,11 +82,12 @@ SRP6KeyPair
 
 /**
 * Generate a new SRP-6 verifier
-* @param identifier = a username or other client identifier
-* @param password = the secret used to authenticate user
-* @param salt = a randomly chosen value, at least 128 bits long
-* @param group_id = specifies the shared SRP group
-* @param hash_id = specifies a secure hash function
+* Params:
+*  identifier = a username or other client identifier
+*  password = the secret used to authenticate user
+*  salt = a randomly chosen value, at least 128 bits long
+*  group_id = specifies the shared SRP group
+*  hash_id = specifies a secure hash function
 */
 BigInt generateSrp6Verifier(in string identifier,
                               in string password,
@@ -100,8 +105,9 @@ BigInt generateSrp6Verifier(in string identifier,
 /**
 * Return the group id for this SRP param set, or else thrown an
 * exception
-* @param N = the group modulus
-* @param g = the group generator
+* Params:
+*  N = the group modulus
+*  g = the group generator
 * Returns: group identifier
 */
 string srp6GroupIdentifier(const ref BigInt N, const ref BigInt g)
@@ -135,10 +141,11 @@ final class SRP6ServerSession
 public:
     /**
     * Server side step 1
-    * @param v = the verification value saved from client registration
-    * @param group_id = the SRP group id
-    * @param hash_id = the SRP hash in use
-    * @param rng = a random number generator
+    * Params:
+    *  v = the verification value saved from client registration
+    *  group_id = the SRP group id
+    *  hash_id = the SRP hash in use
+    *  rng = a random number generator
     * Returns: SRP-6 B value
     */
     ref const(BigInt) step1(const ref BigInt v,
@@ -168,7 +175,8 @@ public:
 
     /**
     * Server side step 2
-    * @param A = the client's value
+    * Params:
+    *  A = the client's value
     * Returns: shared symmetric key
     */
     SymmetricKey step2()(auto const ref BigInt A)

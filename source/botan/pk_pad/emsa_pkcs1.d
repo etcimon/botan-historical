@@ -1,8 +1,11 @@
-/*
+/**
 * PKCS #1 v1.5 signature padding
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.emsa_pkcs1;
@@ -27,7 +30,8 @@ final class EMSAPKCS1v15 : EMSA
 {
 public:
     /**
-    * @param hash = the hash object to use
+    * Params:
+    *  hash = the hash object to use
     */
     this(HashFunction hash)
     {

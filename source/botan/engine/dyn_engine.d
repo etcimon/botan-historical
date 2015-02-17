@@ -1,8 +1,11 @@
 /**
 * Dynamically Loaded Engine
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.engine.dyn_engine;
@@ -22,7 +25,8 @@ private:
     Engine m_engine;
 public:
     /**
-    * @param lib_path = full pathname to DLL to load
+    * Params:
+    *  lib_path = full pathname to DLL to load
     */
     this(in string library_path) 
     {

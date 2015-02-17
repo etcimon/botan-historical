@@ -1,8 +1,11 @@
-/*
+/**
 * Memory Operations
+* 
+* Copyright:
 * (C) 1999-2009,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.mem_ops;
@@ -24,7 +27,8 @@ RefCounted!(Vector!T) unlock(T, ALLOC)(auto const ref RefCounted!(Vector!(T, ALL
 
 /**
 * Zeroise the values then free the memory
-* @param vec = the vector to zeroise and free
+* Params:
+*  vec = the vector to zeroise and free
 */
 void zap(T, Alloc)(ref Vector!(T, Alloc) vec)
 {
@@ -56,8 +60,9 @@ pure:
 
 /**
 * Zeroise memory
-* @param ptr = a pointer to an array
-* @param n = the number of Ts pointed to by ptr
+* Params:
+*  ptr = a pointer to an array
+*  n = the number of Ts pointed to by ptr
 */
 void clearMem(T)(T* ptr, size_t n)
 {
@@ -66,9 +71,10 @@ void clearMem(T)(T* ptr, size_t n)
 
 /**
 * Copy memory
-* @param output = the destination array
-* @param input = the source array
-* @param n = the number of elements of in/out
+* Params:
+*  output = the destination array
+*  input = the source array
+*  n = the number of elements of in/out
 */
 void copyMem(T)(T* output, in T* input, in size_t n)
 {
@@ -78,9 +84,10 @@ void copyMem(T)(T* output, in T* input, in size_t n)
 
 /**
 * Set memory to a fixed value
-* @param ptr = a pointer to an array
-* @param n = the number of Ts pointed to by ptr
-* @param val = the value to set each ubyte to
+* Params:
+*  ptr = a pointer to an array
+*  n = the number of Ts pointed to by ptr
+*  val = the value to set each ubyte to
 */
 void setMem(T)(T* ptr, size_t n, ubyte val)
 {
@@ -91,9 +98,10 @@ void setMem(T)(T* ptr, size_t n, ubyte val)
 
 /**
 * Memory comparison, input insensitive
-* @param p1 = a pointer to an array
-* @param p2 = a pointer to another array
-* @param n = the number of Ts in p1 and p2
+* Params:
+*  p1 = a pointer to an array
+*  p2 = a pointer to another array
+*  n = the number of Ts in p1 and p2
 * Returns: true iff p1[i] == p2[i] forall i in [0...n)
 */
 bool sameMem(T)(in T* p1, in T* p2, in size_t n)
@@ -104,7 +112,8 @@ bool sameMem(T)(in T* p1, in T* p2, in size_t n)
 
 /**
 * Zeroise the values; length remains unchanged
-* @param vec = the vector to zeroise
+* Params:
+*  vec = the vector to zeroise
 */
 void zeroise(T, Alloc)(ref Vector!(T, Alloc) vec)
 {

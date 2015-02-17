@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Cipher Suites
+* 
+* Copyright:
 * (C) 2004-2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.ciphersuite;
@@ -24,7 +27,8 @@ struct TLSCiphersuite
 public:
     /**
     * Convert an SSL/TLS ciphersuite to algorithm fields
-    * @param suite = the ciphersuite code number
+    * Params:
+    *  suite = the ciphersuite code number
     * Returns: ciphersuite object
     */
     static TLSCiphersuite byId(ushort suite)
@@ -484,7 +488,8 @@ public:
 
     /**
     * Lookup a ciphersuite by name
-    * @param name = the name (eg TLS_RSA_WITH_RC4_128_SHA)
+    * Params:
+    *  name = the name (eg TLS_RSA_WITH_RC4_128_SHA)
     * Returns: ciphersuite object
     */
     static TLSCiphersuite byName(in string name)

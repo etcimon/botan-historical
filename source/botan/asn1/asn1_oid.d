@@ -1,8 +1,11 @@
-/*
+/**
 * ASN.1 OID
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.asn1.asn1_oid;
@@ -95,19 +98,19 @@ public:
 
     /**
     * Find out whether this OID is empty
-    * @return true is no OID value is set
+    * Returns: true is no OID value is set
     */
     @property bool empty() const { return m_id.length == 0; }
 
     /**
     * Get this OID as list (vector) of its components.
-    * @return vector representing this OID
+    * Returns: vector representing this OID
     */
     ref const(Vector!uint) getId() const { return m_id; }
 
     /**
     * Get this OID as a string
-    * @return string representing this OID
+    * Returns: string representing this OID
     */
     override string toString() const
     {
@@ -127,7 +130,7 @@ public:
 
     /**
     * Compare two OIDs.
-    * @return true if they are equal, false otherwise
+    * Returns: true if they are equal, false otherwise
     */
     bool opEquals(in OIDImpl oid) const
     {

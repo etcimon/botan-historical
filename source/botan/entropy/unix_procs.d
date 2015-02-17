@@ -1,8 +1,11 @@
-/*
+/**
 * Unix EntropySource
+* 
+* Copyright:
 * (C) 1999-2009,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.entropy.unix_procs;
@@ -122,7 +125,8 @@ public:
 
 
     /**
-    * @param trusted_paths = is a list of directories that are assumed
+    * Params:
+    *  trusted_paths = is a list of directories that are assumed
     *          to contain only 'safe' binaries. If an attacker can write
     *          an executable to one of these directories then we will
     *          run arbitrary code.

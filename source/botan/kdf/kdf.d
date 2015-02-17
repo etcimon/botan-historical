@@ -1,8 +1,11 @@
-/*
+/**
 * Key Derivation Function interfaces
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.kdf.kdf;
@@ -34,9 +37,10 @@ public:
 
     /**
     * Derive a key
-    * @param key_len = the desired output length in bytes
-    * @param secret = the secret input
-    * @param salt = a diversifier
+    * Params:
+    *  key_len = the desired output length in bytes
+    *  secret = the secret input
+    *  salt = a diversifier
     */
     SecureVector!ubyte deriveKey()(size_t key_len,
                                    auto const ref SecureVector!ubyte secret,
@@ -49,9 +53,10 @@ public:
 
     /**
     * Derive a key
-    * @param key_len = the desired output length in bytes
-    * @param secret = the secret input
-    * @param salt = a diversifier
+    * Params:
+    *  key_len = the desired output length in bytes
+    *  secret = the secret input
+    *  salt = a diversifier
     */
     
     SecureVector!ubyte deriveKey(Alloc)(size_t key_len,
@@ -63,10 +68,11 @@ public:
 
     /**
     * Derive a key
-    * @param key_len = the desired output length in bytes
-    * @param secret = the secret input
-    * @param salt = a diversifier
-    * @param salt_len = size of salt in bytes
+    * Params:
+    *  key_len = the desired output length in bytes
+    *  secret = the secret input
+    *  salt = a diversifier
+    *  salt_len = size of salt in bytes
     */
     SecureVector!ubyte deriveKey()(size_t key_len,
                                    auto const ref SecureVector!ubyte secret,
@@ -80,10 +86,11 @@ public:
 
     /**
     * Derive a key
-    * @param key_len = the desired output length in bytes
-    * @param secret = the secret input
-    * @param secret_len = size of secret in bytes
-    * @param salt = a diversifier
+    * Params:
+    *  key_len = the desired output length in bytes
+    *  secret = the secret input
+    *  secret_len = size of secret in bytes
+    *  salt = a diversifier
     */
     SecureVector!ubyte deriveKey(size_t key_len,
                                  const(ubyte)* secret,
@@ -97,11 +104,12 @@ public:
 
     /**
     * Derive a key
-    * @param key_len = the desired output length in bytes
-    * @param secret = the secret input
-    * @param secret_len = size of secret in bytes
-    * @param salt = a diversifier
-    * @param salt_len = size of salt in bytes
+    * Params:
+    *  key_len = the desired output length in bytes
+    *  secret = the secret input
+    *  secret_len = size of secret in bytes
+    *  salt = a diversifier
+    *  salt_len = size of salt in bytes
     */
     SecureVector!ubyte deriveKey(size_t key_len,
                                  const(ubyte)* secret,
@@ -123,7 +131,8 @@ protected:
 
 /**
 * Factory method for KDF (key derivation function)
-* @param algo_spec = the name of the KDF to create
+* Params:
+*  algo_spec = the name of the KDF to create
 * Returns: pointer to newly allocated object of that type
 */
 KDF getKdf(in string algo_spec)

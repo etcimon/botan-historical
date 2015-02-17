@@ -1,8 +1,11 @@
-/*
+/**
 * EAC11 CVC ADO
+* 
+* Copyright:
 * (C) 2008 Falko Strenzke
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.cvc_ado;
@@ -49,7 +52,8 @@ public:
 
     /**
     * Construct a CVC ADO request from a data source
-    * @param source = the data source
+    * Params:
+    *  source = the data source
     */
     this(DataSource input)
     {
@@ -59,9 +63,10 @@ public:
 
     /**
     * Create a signed CVC ADO request from to be signed (TBS) data
-    * @param signer = the signer used to sign the CVC ADO request
-    * @param tbs_bits = the TBS data to sign
-    * @param rng = a random number generator
+    * Params:
+    *  signer = the signer used to sign the CVC ADO request
+    *  tbs_bits = the TBS data to sign
+    *  rng = a random number generator
     */
     static Vector!ubyte makeSigned(ALLOC)(ref PKSigner signer,
                                                 auto const ref Vector!(ubyte, ALLOC) tbs_bits,
@@ -86,7 +91,7 @@ public:
 
     /**
     * Get the CAR of this CVC ADO request
-    * @result the CAR of this CVC ADO request
+    * Returns: the CAR of this CVC ADO request
     */
     const(ASN1Car) getCar() const
     {
@@ -95,7 +100,7 @@ public:
 
     /**
     * Get the CVC request contained in this object.
-    * @result the CVC request inside this CVC ADO request
+    * Returns: the CVC request inside this CVC ADO request
     */    
     const(EAC11Req) getRequest() const
     {
@@ -107,7 +112,7 @@ public:
     *
     * Params:
     *  output = the pipe to encode this object into
-    * @param encoding = the encoding type to use, must be DER
+    *  encoding = the encoding type to use, must be DER
     */
     override void encode(Pipe output, X509Encoding encoding) const
     {
@@ -133,7 +138,7 @@ public:
 
     /**
     * Get the TBS data of this CVC ADO request.
-    * @result the TBS data
+    * Returns: the TBS data
     */
     override const(Vector!ubyte) tbsData() const
     {
@@ -150,7 +155,8 @@ public:
 
     /**
     * Construct a CVC ADO request from a copy of another ADO object
-    * @param other = the other object
+    * Params:
+    *  other = the other object
     */
     this(ref EAC11ADO other)
     {
@@ -165,7 +171,8 @@ public:
 
     /**
     * Replace this ADO request with references to another one
-    * @param other = the other object
+    * Params:
+    *  other = the other object
     */
     void opAssign(ref EAC11ADO other)
     {

@@ -1,8 +1,11 @@
-/*
+/**
 * Block Cipher Base Class
+* 
+* Copyright:
 * (C) 1999-2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.block_cipher;
@@ -50,34 +53,37 @@ public:
 
     /**
     * Decrypt a block.
-    * @param input = The ciphertext block to be decypted as a ubyte array.
-    * Must be of length blockSize().
-    * @param output = The ubyte array designated to hold the decrypted block.
-    * Must be of length blockSize().
+    * Params:
+    *  input = The ciphertext block to be decypted as a ubyte array.
+    *  output = The ubyte array designated to hold the decrypted block.
+    * Notes: Both parameters must be of length blockSize().
     */
     final void decrypt(const(ubyte)* input, ubyte* output)
     { decryptN(input, output, 1); }
 
     /**
     * Encrypt a block.
-    * @param block = the plaintext block to be encrypted
-    * Must be of length blockSize(). Will hold the result when the function
+    * Params:
+    *  block = the plaintext block to be encrypted
+    * Notes: Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
     final void encrypt(ubyte* block) { encryptN(cast(const(ubyte)*)block, block, 1); }
     
     /**
     * Decrypt a block.
-    * @param block = the ciphertext block to be decrypted
-    * Must be of length blockSize(). Will hold the result when the function
+    * Params:
+    *  block = the ciphertext block to be decrypted
+    * Notes: Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
     final void decrypt(ubyte* block) { decryptN(cast(const(ubyte)*)block, block, 1); }
 
     /**
     * Encrypt a block.
-    * @param block = the plaintext block to be encrypted
-    * Must be of length blockSize(). Will hold the result when the function
+    * Params:
+    *  block = the plaintext block to be encrypted
+    * Notes: Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
     final void encrypt(ref ubyte[] block) 
@@ -86,8 +92,9 @@ public:
     
     /**
     * Decrypt a block.
-    * @param block = the ciphertext block to be decrypted
-    * Must be of length blockSize(). Will hold the result when the function
+    * Params:
+    *  block = the ciphertext block to be decrypted
+    * Notes: Must be of length blockSize(). Will hold the result when the function
     * has finished.
     */
     final void decrypt(ref ubyte[] block) 
@@ -96,7 +103,8 @@ public:
 
     /**
     * Encrypt one or more blocks
-    * @param block = the input/output buffer (multiple of blockSize())
+    * Params:
+    *  block = the input/output buffer (multiple of blockSize())
     */
     final void encrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
     in { assert(block.length >= this.blockSize()); }
@@ -106,7 +114,8 @@ public:
 
     /**
     * Decrypt one or more blocks
-    * @param block = the input/output buffer (multiple of blockSize())
+    * Params:
+    *  block = the input/output buffer (multiple of blockSize())
     */
     final void decrypt(Alloc)(ref Vector!( ubyte, Alloc ) block)
     in { assert(block.length >= this.blockSize()); }
@@ -116,8 +125,9 @@ public:
 
     /**
     * Encrypt one or more blocks
-    * @param input = the input buffer (multiple of blockSize())
-    * @param output = the output buffer (same size as input)
+    * Params:
+    *  input = the input buffer (multiple of blockSize())
+    *  output = the output buffer (same size as input)
     */
     final void encrypt(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
@@ -128,8 +138,9 @@ public:
     
     /**
     * Decrypt one or more blocks
-    * @param input = the input buffer (multiple of blockSize())
-    * @param output = the output buffer (same size as input)
+    * Params:
+    *  input = the input buffer (multiple of blockSize())
+    *  output = the output buffer (same size as input)
     */
     final void decrypt(Alloc, Alloc2)(auto const ref Vector!( ubyte, Alloc ) input,
                                               ref Vector!( ubyte, Alloc2 ) output)
@@ -139,8 +150,9 @@ public:
     }
     /**
     * Encrypt one or more blocks
-    * @param input = the input buffer (multiple of blockSize())
-    * @param output = the output buffer (same size as input)
+    * Params:
+    *  input = the input buffer (multiple of blockSize())
+    *  output = the output buffer (same size as input)
     */
     final void encrypt(ubyte[] input, ref ubyte[] output)
     in { assert(input.length >= this.blockSize()); }
@@ -150,8 +162,9 @@ public:
     
     /**
     * Decrypt one or more blocks
-    * @param input = the input buffer (multiple of blockSize())
-    * @param output = the output buffer (same size as input)
+    * Params:
+    *  input = the input buffer (multiple of blockSize())
+    *  output = the output buffer (same size as input)
     */
     final void decrypt(ubyte[] input, ref ubyte[] output)
     in { assert(input.length >= this.blockSize()); }
@@ -161,17 +174,19 @@ public:
 
     /**
     * Encrypt one or more blocks
-    * @param input = the input buffer (multiple of blockSize())
-    * @param output = the output buffer (same size as input)
-    * @param blocks = the number of blocks to process
+    * Params:
+    *  input = the input buffer (multiple of blockSize())
+    *  output = the output buffer (same size as input)
+    *  blocks = the number of blocks to process
     */
     abstract void encryptN(const(ubyte)* input, ubyte* output, size_t blocks);
 
     /**
     * Decrypt one or more blocks
-    * @param input = the input buffer (multiple of blockSize())
-    * @param output = the output buffer (same size as input)
-    * @param blocks = the number of blocks to process
+    * Params:
+    *  input = the input buffer (multiple of blockSize())
+    *  output = the output buffer (same size as input)
+    *  blocks = the number of blocks to process
     */
     abstract void decryptN(const(ubyte)* input, ubyte* output, size_t blocks);
 

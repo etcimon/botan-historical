@@ -1,8 +1,11 @@
-/*
+/**
 * PK Key Types
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.pk_keys;
@@ -62,7 +65,7 @@ public:
     *
     * Params:
     *  rng = rng to use
-    * @param strong = whether to perform strong and lengthy version
+    *  strong = whether to perform strong and lengthy version
     * of the test
     * Returns: true if the test is passed
     */
@@ -98,7 +101,8 @@ public:
 
     /**
     * Self-test after loading a key
-    * @param rng = a random number generator
+    * Params:
+    *  rng = a random number generator
     */
     final void loadCheck(RandomNumberGenerator rng) const
     {
@@ -126,7 +130,8 @@ public:
 
     /**
     * Self-test after loading a key
-    * @param rng = a random number generator
+    * Params:
+    *  rng = a random number generator
     */
     final void loadCheck(RandomNumberGenerator rng) const
     {
@@ -136,7 +141,8 @@ public:
 
     /**
     * Self-test after generating a key
-    * @param rng = a random number generator
+    * Params:
+    *  rng = a random number generator
     */
     final void genCheck(RandomNumberGenerator rng) const
     {

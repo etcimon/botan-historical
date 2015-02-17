@@ -1,8 +1,11 @@
-/*
+/**
 * EntropySource
+* 
+* Copyright:
 * (C) 2008-2009,2014 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.entropy.entropy_src;
@@ -18,7 +21,8 @@ struct EntropyAccumulator
 public:
     /**
     * Initialize an EntropyAccumulator
-    * @param goal = is how many bits we would like to collect
+    * Params:
+    *  goal = is how many bits we would like to collect
     */
     this(bool delegate(const(ubyte)*, size_t len, double) accum)
     {
@@ -32,7 +36,8 @@ public:
     * Get a cached I/O buffer (purely for minimizing allocation
     * overhead to polls)
     *
-    * @param size = requested size for the I/O buffer
+    * Params:
+    *  size = requested size for the I/O buffer
     * Returns: cached I/O buffer for repeated polls
     */
     ref SecureVector!ubyte getIoBuffer(size_t size)
@@ -49,9 +54,10 @@ public:
 
     /**
     * Add entropy to the accumulator
-    * @param bytes = the input bytes
-    * @param length = specifies how many bytes the input is
-    * @param entropy_bits_per_byte = is a best guess at how much
+    * Params:
+    *  bytes = the input bytes
+    *  length = specifies how many bytes the input is
+    *  entropy_bits_per_byte = is a best guess at how much
     * entropy per ubyte is in this input
     */
     void add(const void* bytes, size_t length, double entropy_bits_per_byte)
@@ -62,8 +68,9 @@ public:
 
     /**
     * Add entropy to the accumulator
-    * @param v = is some value
-    * @param entropy_bits_per_byte = is a best guess at how much
+    * Params:
+    *  v = is some value
+    *  entropy_bits_per_byte = is a best guess at how much
     * entropy per ubyte is in this input
     */
     void add(T)(in T v, double entropy_bits_per_byte)
@@ -89,7 +96,8 @@ public:
 
     /**
     * Perform an entropy gathering poll
-    * @param accum = is an accumulator object that will be given entropy
+    * Params:
+    *  accum = is an accumulator object that will be given entropy
     */
     void poll(ref EntropyAccumulator accum);
 }

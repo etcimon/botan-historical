@@ -1,8 +1,11 @@
-/*
+/**
 * HMAC_DRBG (SP800-90A)
+* 
+* Copyright:
 * (C) 2014 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.rng.hmac_drbg;
@@ -88,8 +91,9 @@ public:
 
     override SecureVector!ubyte randomVec(size_t bytes) { return super.randomVec(bytes); }
     /**
-    * @param mac = the underlying mac function (eg HMAC(SHA-512))
-    * @param underlying_rng = RNG used generating inputs (eg HMAC_RNG)
+    * Params:
+    *  mac = the underlying mac function (eg HMAC(SHA-512))
+    *  underlying_rng = RNG used generating inputs (eg HMAC_RNG)
     */
     this(MessageAuthenticationCode mac,
          RandomNumberGenerator prng)

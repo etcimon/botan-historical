@@ -1,8 +1,11 @@
-/*
+/**
 * Hex Encoder/Decoder
+* 
+* Copyright:
 * (C) 1999-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.hex_filt;
@@ -86,9 +89,9 @@ public:
     * Create a hex encoder.
     *
     * Params:
-    *  newlines = should newlines be used
-    * @param line_length = if newlines are used, how long are lines
-    * @param the_case = the case to use in the encoded strings
+    *  new_lines = should newlines be used
+    *  line_length = if newlines are used, how long are lines
+    *  the_case = the case to use in the encoded strings
     */
     this(bool newlines = false, size_t line_length = 72, Case the_case = Uppercase)
     {
@@ -211,9 +214,9 @@ public:
     * Params:
     *  checking = the checking to use during decoding.
     */
-    this(DecoderChecking c = NONE)
+    this(DecoderChecking checking = NONE)
     {
-        m_checking = c;
+        m_checking = checking;
         m_input.resize(HEX_CODEC_BUFFER_SIZE);
         m_output.resize(HEX_CODEC_BUFFER_SIZE / 2);
         m_position = 0;

@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 CRL
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509_crl;
@@ -155,7 +158,7 @@ public:
     *
     * Params:
     *  filename = the name of the CRL file
-    * @param throw_on_unknown_critical_ = should we throw new an exception
+    *  throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(in string filename,
@@ -168,8 +171,9 @@ public:
 
     /**
     * Construct a CRL from a binary vector
-    * @param vec = the binary (DER) representation of the CRL
-    * @param throw_on_unknown_critical_ = should we throw new an exception
+    * Params:
+    *  vec = the binary (DER) representation of the CRL
+    *  throw_on_unknown_critical_ = should we throw new an exception
     * if an unknown CRL extension marked as critical is encountered.
     */
     this(const ref Vector!ubyte vec, bool throw_on_unknown_critical_ = false)

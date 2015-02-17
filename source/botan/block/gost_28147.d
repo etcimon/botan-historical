@@ -1,8 +1,11 @@
-/*
+/**
 * GOST 28147-89
+* 
+* Copyright:
 * (C) 1999-2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.gost_28147;
@@ -27,8 +30,9 @@ final class GOST_28147_89_Params
 {
 public:
     /**
-    * @param row = the row
-    * @param col = the column
+    * Params:
+    *  row = the row
+    *  col = the column
     * Returns: sbox entry at this row/column
     */
     ubyte sboxEntry(size_t row, size_t col) const
@@ -48,7 +52,9 @@ public:
     * testing purposes; these sboxes are also used by Crypto++, and,
     * at least according to Wikipedia, the Central Bank of Russian
     * Federation
-    * @param name = of the parameter set
+    * 
+    * Params:
+    *  name = of the parameter set
     */
     this(in string name = "R3411_94_TestParam") 
     {
@@ -185,7 +191,8 @@ public:
     }
 
     /**
-    * @param params = the sbox parameters to use
+    * Params:
+    *  params = the sbox parameters to use
     */
     this(in GOST_28147_89_Params param)
     {

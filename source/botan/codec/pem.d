@@ -1,8 +1,11 @@
-/*
+/**
 * PEM Encoding/Decoding
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 
@@ -51,8 +54,9 @@ struct PEM
 
     /**
     * Decode PEM data
-    * @param pem = a datasource containing PEM encoded data
-    * @param label = is set to the PEM label found for later inspection
+    * Params:
+    *  pem = a datasource containing PEM encoded data
+    *  label = is set to the PEM label found for later inspection
     */
     /*
     * Decode PEM down to raw BER/DER
@@ -118,8 +122,9 @@ struct PEM
 
     /**
     * Decode PEM data
-    * @param pem = a string containing PEM encoded data
-    * @param label = is set to the PEM label found for later inspection
+    * Params:
+    *  pem = a string containing PEM encoded data
+    *  label = is set to the PEM label found for later inspection
     */
     static SecureVector!ubyte decode(in string pem, ref string label)
     {
@@ -128,8 +133,9 @@ struct PEM
     }
     /**
     * Decode PEM data
-    * @param pem = a datasource containing PEM encoded data
-    * @param label = is what we expect the label to be
+    * Params:
+    *  pem = a datasource containing PEM encoded data
+    *  label = is what we expect the label to be
     */
     static SecureVector!ubyte decodeCheckLabel(DataSource source, in string label_want)
     {
@@ -142,8 +148,9 @@ struct PEM
 
     /**
     * Decode PEM data
-    * @param pem = a string containing PEM encoded data
-    * @param label = is what we expect the label to be
+    * Params:
+    *  pem = a string containing PEM encoded data
+    *  label = is what we expect the label to be
     */
     static SecureVector!ubyte decodeCheckLabel(in string pem,
                                                in string label_want)

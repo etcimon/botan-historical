@@ -1,9 +1,12 @@
-/*
+/**
 * SecureQueue
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
-*      2012 Markus Wanner
+*     2012 Markus Wanner
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.secqueue;
@@ -151,7 +154,8 @@ public:
 
     /**
     * SecureQueue copy constructor
-    * @param other = the queue to copy
+    * Params:
+    *  other = the queue to copy
     */
     this(SecureQueue input)
     {

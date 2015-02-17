@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Handshake State
+* 
+* Copyright:
 * (C) 2004-2006,2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.handshake_state;
@@ -48,7 +51,8 @@ public:
 
     /**
     * Return true iff we have received a particular message already
-    * @param msg_type = the message type
+    * Params:
+    *  msg_type = the message type
     */
     bool receivedHandshakeMsg(HandshakeType handshake_msg) const
     {
@@ -59,7 +63,8 @@ public:
 
     /**
     * Confirm that we were expecting this message type
-    * @param msg_type = the message type
+    * Params:
+    *  msg_type = the message type
     */
     void confirmTransitionTo(HandshakeType handshake_msg)
     {
@@ -84,7 +89,8 @@ public:
 
     /**
     * Record that we are expecting a particular message type next
-    * @param msg_type = the message type
+    * Params:
+    *  msg_type = the message type
     */
     void setExpectedNext(HandshakeType handshake_msg)
     {

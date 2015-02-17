@@ -1,8 +1,11 @@
-/*
+/**
 * HMAC
+* 
+* Copyright:
 * (C) 1999-2007,2014 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.mac.hmac;
@@ -57,7 +60,8 @@ public:
     }
 
     /**
-    * @param hash = the hash to use for HMACing
+    * Params:
+    *  hash = the hash to use for HMACing
     */
     this(HashFunction hash) 
     {

@@ -1,10 +1,12 @@
-/*
+/**
 * Point arithmetic on elliptic curves over GF(p)
 *
+* Copyright:
 * (C) 2007 Martin Doering, Christoph Ludwig, Falko Strenzke
 *      2008-2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.math.ec_gfp.point_gfp;
@@ -57,7 +59,8 @@ public:
 
     /**
     * Construct the zero point
-    * @param curve = The base curve
+    * Params:
+    *  curve = The base curve
     */
     this()(auto const ref CurveGFp curve) 
     {
@@ -90,9 +93,10 @@ public:
 
     /**
     * Construct a point from its affine coordinates
-    * @param curve = the base curve
-    * @param x = affine x coordinate
-    * @param y = affine y coordinate
+    * Params:
+    *  curve = the base curve
+    *  x = affine x coordinate
+    *  y = affine y coordinate
     */
     this(const ref CurveGFp curve, const ref BigInt x, const ref BigInt y)
     { 
@@ -106,8 +110,9 @@ public:
 
     /**
     * += Operator
-    * @param rhs = the PointGFp to add to the local value
-    * @result resulting PointGFp
+    * Params:
+    *  rhs = the PointGFp to add to the local value
+    * Returns: resulting PointGFp
     */
     void opOpAssign(string op)(const ref PointGFp rhs)
         if (op == "+")
@@ -118,8 +123,9 @@ public:
 
     /**
     * -= Operator
-    * @param rhs = the PointGFp to subtract from the local value
-    * @result resulting PointGFp
+    * Params:
+    *  rhs = the PointGFp to subtract from the local value
+    * Returns: resulting PointGFp
     */
     void opOpAssign(string op)(const ref PointGFp rhs)
         if (op == "-")
@@ -134,8 +140,9 @@ public:
 
     /**
     * *= Operator
-    * @param scalar = the PointGFp to multiply with this
-    * @result resulting PointGFp
+    * Params:
+    *  scalar = the PointGFp to multiply with this
+    * Returns: resulting PointGFp
     */
     void opOpAssign(string op)(auto const ref BigInt scalar)
         if (op == "*")
@@ -145,8 +152,9 @@ public:
 
     /**
     * Multiplication Operator
-    * @param scalar = the scalar value
-    * @param point = the point value
+    * Params:
+    *  scalar = the scalar value
+    *  point = the point value
     * Returns: scalar*point on the curve
     */
     PointGFp opBinary(string op)(auto const ref BigInt scalar) const
@@ -252,11 +260,12 @@ public:
 
     /**
     * Multiexponentiation
-    * @param p1 = a point
-    * @param z1 = a scalar
-    * @param p2 = a point
-    * @param z2 = a scalar
-    * @result (p1 * z1 + p2 * z2)
+    * Params:
+    *  p1 = a point
+    *  z1 = a scalar
+    *  p2 = a point
+    *  z2 = a scalar
+    * Returns: (p1 * z1 + p2 * z2)
     */
     static PointGFp multiExponentiate(const ref PointGFp p1, const ref BigInt z1,
                                       const ref PointGFp p2, const ref BigInt z2)
@@ -304,13 +313,13 @@ public:
 
     /**
     * Return base curve of this point
-    * @result the curve over GF(p) of this point
+    * Returns: the curve over GF(p) of this point
     */
     ref const(CurveGFp) getCurve() const { return m_curve; }
 
     /**
     * get affine x coordinate
-    * @result affine x coordinate
+    * Returns: affine x coordinate
     */
     BigInt getAffineX() const
     {
@@ -328,7 +337,7 @@ public:
 
     /**
     * get affine y coordinate
-    * @result affine y coordinate
+    * Returns: affine y coordinate
     */
     BigInt getAffineY() const
     {
@@ -345,7 +354,7 @@ public:
 
     /**
     * Is this the point at infinity?
-    * @result true, if this point is at infinity, false otherwise.
+    * Returns: true, if this point is at infinity, false otherwise.
     */
     bool isZero() const
     { return (m_coord_x.isZero() && m_coord_z.isZero()); }
@@ -398,7 +407,8 @@ public:
 
     /**
     * swaps the states of this and other, does not throw!
-    * @param other = the object to swap values with
+    * Params:
+    *  other = the object to swap values with
     */
     void swap()(auto ref PointGFp other)
     {
@@ -439,9 +449,9 @@ private:
 
     /**
     * Montgomery multiplication/reduction
-    * @param x = first multiplicand
-    * @param y = second multiplicand
-    * @param workspace = temp space
+    * Params:
+    *   x = first multiplicand
+    *   y = second multiplicand
     */
     BigInt montyMult()(auto const ref BigInt x, auto const ref BigInt y) const
     {
@@ -452,10 +462,11 @@ private:
 
     /**
     * Montgomery multiplication/reduction
-    * @warning z cannot alias x or y
-    * @param z = output
-    * @param x = first multiplicand
-    * @param y = second multiplicand
+    * Notes: z cannot alias x or y
+    * Params:
+    *  z = output
+    *  x = first multiplicand
+    *  y = second multiplicand
     */
     void montyMult()(ref BigInt z, auto const ref BigInt x, auto const ref BigInt y) const
     {
@@ -484,7 +495,8 @@ private:
     
     /**
     * Montgomery squaring/reduction
-    * @param x = multiplicand
+    * Params:
+    *   x = multiplicand
     */
     BigInt montySqr()(auto const ref BigInt x) const
     {
@@ -495,9 +507,10 @@ private:
 
     /**
     * Montgomery squaring/reduction
-    * @warning z cannot alias x
-    * @param z = output
-    * @param x = multiplicand
+    * Notes: z cannot alias x
+    * Params:
+    *  z = output
+    *  x = multiplicand
     */
     void montySqr()(ref BigInt z, auto const ref BigInt x) const
     {
@@ -524,7 +537,8 @@ private:
 
     /**
     * Point addition
-    * @param workspace = temp space, at least 11 elements
+    * Params:
+    *  workspace = temp space, at least 11 elements
     */
     void add()(auto const ref PointGFp rhs, ref Vector!(RefCounted!BigInt) ws_bn)
     {
@@ -608,7 +622,8 @@ private:
 
     /**
     * Point doubling
-    * @param workspace = temp space, at least 9 elements
+    * Params:
+    *  workspace = temp space, at least 9 elements
     */
     void mult2(ref Vector!(RefCounted!BigInt) ws_bn)
     {

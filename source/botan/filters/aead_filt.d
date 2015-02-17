@@ -1,8 +1,11 @@
-/*
+/**
 * Filter interface for AEAD Modes
+* 
+* Copyright:
 * (C) 2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.aead_filt;
@@ -28,8 +31,9 @@ public:
     * that should be authenticated. Must be called after setKey
     * and before endMsg.
     *
-    * @param ad = the associated data
-    * @param ad_len = length of add in bytes
+    * Params:
+    *  ad = the associated data
+    *  ad_len = length of add in bytes
     */
     void setAssociatedData(const(ubyte)* ad, size_t ad_len)
     {

@@ -1,9 +1,12 @@
-/*
+/**
 * EAC SIGNED Object
+* 
+* Copyright:
 * (C) 2007 FlexSecure GmbH
 *     2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.cvc.signed_obj;
@@ -43,7 +46,7 @@ interface SignedObject {
     *
     * Params:
     *  pipe = the pipe to write the encoded object to
-    * @param encoding = the encoding type to use
+    *  encoding = the encoding type to use
     */
     void encode(Pipe pipe, X509Encoding encoding = PEM_) const;
 protected:
@@ -60,7 +63,7 @@ public:
 
     /**
     * Get the signature algorithm identifier used to sign this object.
-    * @result the signature algorithm identifier
+    * Returns: the signature algorithm identifier
     */
     const(AlgorithmIdentifier) signatureAlgorithm() const
     {
@@ -72,7 +75,7 @@ public:
     *
     * Params:
     *  key = the public key associated with this signed object
-    * @param sig = the signature we are checking
+    *  sig = the signature we are checking
     * Returns: true if the signature was created by the private key
     * associated with this public key
     */

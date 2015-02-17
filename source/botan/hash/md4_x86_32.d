@@ -1,8 +1,11 @@
-/*
+/**
 * MD4 (x86-32)
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.md4_x86_32;
@@ -39,9 +42,10 @@ protected:
 private:
 /**
 * MD4 compression function in x86-32 asm
-* @param digest = the current digest
-* @param input = the input block
-* @param M = the message buffer
+* Params:
+*  digest = the current digest
+*  input = the input block
+*  M = the message buffer
 */
 extern(C)
 void botan_md4_x86_32_compress(uint* digest, const(ubyte)* input, uint* M)

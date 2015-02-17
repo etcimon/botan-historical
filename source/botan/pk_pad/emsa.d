@@ -1,8 +1,11 @@
-/*
+/**
 * EMSA Classes
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pk_pad.emsa;
@@ -17,8 +20,9 @@ interface EMSA
 public:
     /**
     * Add more data to the signature computation
-    * @param input = some data
-    * @param length = length of input in bytes
+    * Params:
+    *  input = some data
+    *  length = length of input in bytes
     */
     abstract void update(const(ubyte)* input, size_t length);
 
@@ -29,9 +33,10 @@ public:
 
     /**
     * Return the encoding of a message
-    * @param msg = the result of rawData()
-    * @param output_bits = the desired output bit size
-    * @param rng = a random number generator
+    * Params:
+    *  msg = the result of rawData()
+    *  output_bits = the desired output bit size
+    *  rng = a random number generator
     * Returns: encoded signature
     */
     abstract SecureVector!ubyte encodingOf(const ref SecureVector!ubyte msg,
@@ -48,9 +53,10 @@ public:
 
     /**
     * Verify the encoding
-    * @param coded = the received (coded) message representative
-    * @param raw = the computed (local, uncoded) message representative
-    * @param key_bits = the size of the key in bits
+    * Params:
+    *  coded = the received (coded) message representative
+    *  raw = the computed (local, uncoded) message representative
+    *  key_bits = the size of the key in bits
     * Returns: true if coded is a valid encoding of raw, otherwise false
     */
     abstract bool verify(const ref SecureVector!ubyte coded,

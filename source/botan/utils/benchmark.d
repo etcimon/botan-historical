@@ -1,8 +1,11 @@
-/*
+/**
 * Runtime benchmarking
+* 
+* Copyright:
 * (C) 2008-2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.benchmark.benchmark;
@@ -28,12 +31,13 @@ import std.datetime;
 
 /**
 * Time aspects of an algorithm/provider
-* @param name = the name of the algorithm to test
-* @param af = the algorithm factory used to create objects
-* @param provider = the provider to use
-* @param rng = the rng to use to generate random inputs
-* @param runtime = total time for the benchmark to run
-* @param buf_size = size of buffer to benchmark against, in KiB
+* Params:
+*  name = the name of the algorithm to test
+*  af = the algorithm factory used to create objects
+*  provider = the provider to use
+*  rng = the rng to use to generate random inputs
+*  runtime = total time for the benchmark to run
+*  buf_size = size of buffer to benchmark against, in KiB
 * Returns: results a map from op type to operations per second
 */
 HashMapRef!(string, double)
@@ -122,11 +126,12 @@ HashMapRef!(string, double)
 
 /**
 * Algorithm benchmark
-* @param name = the name of the algorithm to test (cipher, hash, or MAC)
-* @param af = the algorithm factory used to create objects
-* @param rng = the rng to use to generate random inputs
-* @param milliseconds = total time for the benchmark to run
-* @param buf_size = size of buffer to benchmark against, in KiB
+* Params:
+*  name = the name of the algorithm to test (cipher, hash, or MAC)
+*  af = the algorithm factory used to create objects
+*  rng = the rng to use to generate random inputs
+*  milliseconds = total time for the benchmark to run
+*  buf_size = size of buffer to benchmark against, in KiB
 * Returns: results a map from provider to speed in mebibytes per second
 */
 HashMapRef!(string, double)

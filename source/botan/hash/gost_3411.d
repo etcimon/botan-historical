@@ -1,8 +1,11 @@
-/*
+/**
 * GOST 34.11
+* 
+* Copyright:
 * (C) 2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.gost_3411;

@@ -1,9 +1,12 @@
-/*
+/**
 * Basic Filters
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 * (C) 2013 Joel Low
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.basefilt;
@@ -58,8 +61,9 @@ public:
 
     /**
     * Construct a chain from range of filters
-    * @param filter_arr = the list of filters
-    * @param length = how many filters
+    * Params:
+    *  filter_arr = the list of filters
+    *  length = how many filters
     */
     this(Filter* filter_arr, size_t length) {
         foreach (size_t j; 0 .. length) {
@@ -105,8 +109,9 @@ public:
 
     /**
     * Construct a Fork from range of filters
-    * @param filter_arr = the list of filters
-    * @param length = how many filters
+    * Params:
+    *  filter_arr = the list of filters
+    *  length = how many filters
     */    
     this(Filter* filter_arr, size_t length)
     {
@@ -146,8 +151,9 @@ public:
 
     /**
     * Construct a Threaded_Fork from range of filters
-    * @param filter_arr = the list of filters
-    * @param length = how many filters
+    * Params:
+    *  filter_arr = the list of filters
+    *  length = how many filters
     */
     this(Filter* filter_arr, size_t length)
     {

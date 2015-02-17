@@ -1,7 +1,10 @@
-/*
+/**
 * tmmintrin.h style functions
+* 
+* Copyright:
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Released under the MIT license
 */
 module botan.utils.simd.tmmintrin;

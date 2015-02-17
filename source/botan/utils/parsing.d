@@ -1,8 +1,11 @@
-/*
+/**
 * Various string utils and parsing functions
+* 
+* Copyright:
 * (C) 1999-2007,2013 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.parsing;
@@ -18,7 +21,8 @@ import botan.utils.get_byte;
 import memutils.hashmap;
 /**
 * Parse a SCAN-style algorithm name
-* @param scan_name = the name
+* Params:
+*  scan_name = the name
 * Returns: the name components
 */
 /*
@@ -82,8 +86,9 @@ Vector!string parseAlgorithmName(in string scan_name)
 
 /**
 * Split a string
-* @param str = the input string
-* @param delim = the delimitor
+* Params:
+*  str = the input string
+*  delim = the delimitor
 * Returns: string split by delim
 */
 Vector!string splitter(in string str, char delim)
@@ -92,7 +97,8 @@ Vector!string splitter(in string str, char delim)
 }
 /**
 * Split a string on a character predicate
-* @param str = the input string
+* Params:
+*  str = the input string
 */
 Vector!string splitOnPred(in string str,
                          bool delegate(char) pred)
@@ -139,9 +145,10 @@ string eraseChars(in string str, in char[] chars)
 
 /**
 * Replace a character in a string
-* @param str = the input string
-* @param from_char = the character to replace
-* @param to_char = the character to replace it with
+* Params:
+*  str = the input string
+*  from_char = the character to replace
+*  to_char = the character to replace it with
 * Returns: str with all instances of from_char replaced by to_char
 */
 string replaceChar(in string str, in char from_char, in char to_char)
@@ -156,9 +163,10 @@ string replaceChar(in string str, in char from_char, in char to_char)
 
 /**
 * Replace a character in a string
-* @param str = the input string
-* @param from_chars = the characters to replace
-* @param to_char = the character to replace it with
+* Params:
+*  str = the input string
+*  from_chars = the characters to replace
+*  to_char = the character to replace it with
 * Returns: str with all instances of from_chars replaced by to_char
 */
 
@@ -177,8 +185,9 @@ string replaceChars(in string str,
 
 /**
 * Join a string
-* @param strs = strings to join
-* @param delim = the delimitor
+* Params:
+*  strs = strings to join
+*  delim = the delimitor
 * Returns: string joined by delim
 */
 string stringJoin(const ref Vector!string strs, char delim)
@@ -190,7 +199,8 @@ string stringJoin(const ref Vector!string strs, char delim)
 
 /**
 * Parse an ASN.1 OID
-* @param oid = the OID in string form
+* Params:
+*  oid = the OID in string form
 * Returns: OID components
 */
 Vector!uint parseAsn1Oid(in string oid)
@@ -226,8 +236,9 @@ Vector!uint parseAsn1Oid(in string oid)
 
 /**
 * Compare two names using the X.509 comparison algorithm
-* @param name1 = the first name
-* @param name2 = the second name
+* Params:
+*  name1 = the first name
+*  name2 = the second name
 * Returns: true if name1 is the same as name2 by the X.509 comparison rules
 */
 bool x500NameCmp(in string name1, in string name2)
@@ -268,7 +279,8 @@ bool x500NameCmp(in string name1, in string name2)
 
 /**
 * Convert a string representation of an IPv4 address to a number
-* @param ip_str = the string representation
+* Params:
+*  ip_str = the string representation
 * Returns: integer IPv4 address
 */
 uint stringToIpv4(in string str)
@@ -295,7 +307,8 @@ uint stringToIpv4(in string str)
 
 /**
 * Convert an IPv4 address to a string
-* @param ip_addr = the IPv4 address to convert
+* Params:
+*  ip_addr = the IPv4 address to convert
 * Returns: string representation of the IPv4 address
 */
 string ipv4ToString(uint ip)

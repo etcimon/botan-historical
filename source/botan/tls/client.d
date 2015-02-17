@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Client
+* 
+* Copyright:
 * (C) 2004-2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.client;
@@ -28,28 +31,29 @@ public:
     /**
     * Set up a new TLS client session
     *
-    * @param socket_output_fn = is called with data for the outbound socket
+    * Params:
+    *  socket_output_fn = is called with data for the outbound socket
     *
-    * @param proc_cb = is called when new application data is received
+    *  proc_cb = is called when new application data is received
     *
-    * @param alert_cb = is called when a TLS alert is received
+    *  alert_cb = is called when a TLS alert is received
     *
-    * @param handshake_cb = is called when a handshake is completed
+    *  handshake_cb = is called when a handshake is completed
     *
-    * @param session_manager = manages session state
+    *  session_manager = manages session state
     *
-    * @param creds = manages application/user credentials
+    *  creds = manages application/user credentials
     *
-    * @param policy = specifies other connection policy information
+    *  policy = specifies other connection policy information
     *
-    * @param rng = a random number generator
+    *  rng = a random number generator
     *
-    * @param server_info = is identifying information about the TLS server
+    *  server_info = is identifying information about the TLS server
     *
-    * @param offer_version = specifies which version we will offer
+    *  offer_version = specifies which version we will offer
     *          to the TLS server.
     *
-    * @param next_protocol = allows the client to specify what the next
+    *  next_protocol = allows the client to specify what the next
     *          protocol will be. For more information read
     *          http://technotes.googlecode.com/git/nextprotoneg.html.
     *
@@ -58,7 +62,7 @@ public:
     *          called with the list of protocols the server advertised;
     *          the client should return the protocol it would like to use.
     *
-    * @param reserved_io_buffer_size = This many bytes of memory will
+    *  reserved_io_buffer_size = This many bytes of memory will
     *          be preallocated for the read and write buffers. Smaller
     *          values just mean reallocations and copies are more likely.
     */

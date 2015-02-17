@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 Certificate Authority
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509_ca;
@@ -43,9 +46,9 @@ public:
     *
     * Params:
     *  req = the request to sign
-    * @param rng = the rng to use
-    * @param not_before = the starting time for the certificate
-    * @param not_after = the expiration time for the certificate
+    *  rng = the rng to use
+    *  not_before = the starting time for the certificate
+    *  not_after = the expiration time for the certificate
     * Returns: resulting certificate
     */
     X509Certificate signRequest(in PKCS10Request req,
@@ -96,7 +99,7 @@ public:
     *
     * Params:
     *  rng = the random number generator to use
-    * @param next_update = the time to set in next update in seconds
+    *  next_update = the time to set in next update in seconds
     * as the offset from the current time
     * Returns: new CRL
     */
@@ -111,9 +114,9 @@ public:
     *
     * Params:
     *  last_crl = the last CRL of this CA to add the new entries to
-    * @param new_entries = contains the new CRL entries to be added to the CRL
-    * @param rng = the random number generator to use
-    * @param next_update = the time to set in next update in seconds
+    *  new_revoked = contains the new CRL entries to be added to the CRL
+    *  rng = the random number generator to use
+    *  next_update = the time to set in next update in seconds
     * as the offset from the current time
     */
     X509CRL updateCRL()(in X509CRL crl,
@@ -130,26 +133,27 @@ public:
 
     /**
     * Interface for creating new certificates
-    * @param signer = a signing object
-    * @param rng = a random number generator
-    * @param sig_algo = the signature algorithm identifier
-    * @param pub_key = the serialized public key
-    * @param not_before = the start time of the certificate
-    * @param not_after = the end time of the certificate
-    * @param issuer_dn = the DN of the issuer
-    * @param subject_dn = the DN of the subject
-    * @param extensions = an optional list of certificate extensions
+    * Params:
+    *  signer = a signing object
+    *  rng = a random number generator
+    *  sig_algo = the signature algorithm identifier
+    *  pub_key = the serialized public key
+    *  not_before = the start time of the certificate
+    *  not_after = the end time of the certificate
+    *  issuer_dn = the DN of the issuer
+    *  subject_dn = the DN of the subject
+    *  extensions = an optional list of certificate extensions
     * Returns:s newly minted certificate
     */
     static X509Certificate makeCert(ALLOC)(ref PKSigner signer,
-                                                RandomNumberGenerator rng,
-                                                in AlgorithmIdentifier sig_algo,
-                                                auto const ref Vector!(ubyte, ALLOC) pub_key,
-                                                in X509Time not_before,
-                                                in X509Time not_after,
-                                                in X509DN issuer_dn,
-                                                in X509DN subject_dn,
-                                                in X509Extensions extensions)
+                                           RandomNumberGenerator rng,
+                                           in AlgorithmIdentifier sig_algo,
+                                           auto const ref Vector!(ubyte, ALLOC) pub_key,
+                                           in X509Time not_before,
+                                           in X509Time not_after,
+                                           in X509DN issuer_dn,
+                                           in X509DN subject_dn,
+                                           in X509Extensions extensions)
     {
         __gshared immutable size_t X509_CERT_VERSION = 3;
         __gshared immutable size_t SERIAL_BITS = 128;
@@ -188,9 +192,10 @@ public:
 
     /**
     * Create a new CA object. Load the certificate and private key
-    * @param ca_certificate = the certificate of the CA
-    * @param key = the private key of the CA
-    * @param hash_fn = name of a hash function to use for signing
+    * Params:
+    *  ca_certificate = the certificate of the CA
+    *  key = the private key of the CA
+    *  hash_fn = name of a hash function to use for signing
     */
     this(X509Certificate c,
          in PrivateKey key,
@@ -266,9 +271,10 @@ private:
 /**
 * Choose the default signature format for a certain public key signature
 * scheme.
-* @param key = will be the key to choose a padding scheme for
-* @param hash_fn = is the desired hash function
-* @param alg_id = will be set to the chosen scheme
+* Params:
+*  key = will be the key to choose a padding scheme for
+*  hash_fn = is the desired hash function
+*  alg_id = will be set to the chosen scheme
 * Returns: A PKSigner object for generating signatures
 */
 /*

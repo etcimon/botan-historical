@@ -1,10 +1,13 @@
-/*
+/**
 * GOST 34.10-2001
+* 
+* Copyright:
 * (C) 2007 Falko Strenzke, FlexSecure GmbH
 *             Manuel Hartl, FlexSecure GmbH
 * (C) 2008-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.gost_3410;
@@ -76,7 +79,7 @@ public:
     *
     * Params:
     *  dom_par = the domain parameters associated with this key
-    * @param public_point = the public point defining this key
+    *  public_point = the public point defining this key
     */
     this(const ref ECGroup dom_par, const ref PointGFp public_point) 
     {
@@ -140,9 +143,10 @@ public:
 
     /**
     * Generate a new private key
-    * @param rng = a random number generator
-    * @param domain = parameters to used for this key
-    * @param x = the private key; if zero, a new random key is generated
+    * Params:
+    *  rng = a random number generator
+    *  domain = parameters to used for this key
+    *  x = the private key; if zero, a new random key is generated
     */
     this(RandomNumberGenerator rng, const ref ECGroup domain, BigInt x = 0)
     {

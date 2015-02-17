@@ -1,8 +1,11 @@
-/*
+/**
 * Dynamically Loaded Object
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.dyn_load.dyn_load;
@@ -27,7 +30,8 @@ class DynamicallyLoadedLibrary
 public:
     /**
     * Load a DLL (or fail with an exception)
-    * @param lib_name = name or path to a library
+    * Params:
+    *  lib_name = name or path to a library
     *
     * If you don't use a full path, the search order will be defined
     * by whatever the system linker does by default. Always using fully
@@ -59,7 +63,8 @@ public:
 
     /**
     * Unload the DLL
-    * @warning Any pointers returned by resolve()/resolveSymbol()
+    * Notes:
+    * Any pointers returned by resolve()/resolveSymbol()
     * should not be used after this destructor runs.
     */
     ~this()
@@ -72,7 +77,8 @@ public:
 
     /**
     * Load a symbol (or fail with an exception)
-    * @param symbol = names the symbol to load
+    * Params:
+    *  symbol = names the symbol to load
     * Returns: address of the loaded symbol
     */
     void* resolveSymbol(in string symbol)
@@ -91,7 +97,8 @@ public:
 
     /**
     * Convenience function for casting symbol to the right type
-    * @param symbol = names the symbol to load
+    * Params:
+    *  symbol = names the symbol to load
     * Returns: address of the loaded symbol
     */
     T resolve(T)(in string symbol)

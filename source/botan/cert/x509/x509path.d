@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 Cert Path Validation
+* 
+* Copyright:
 * (C) 2010-2011 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.x509path;
@@ -39,8 +42,9 @@ struct PathValidationRestrictions
 {
 public:
     /**
-    * @param require_rev = if true, revocation information is required
-    * @param minimum_key_strength = is the minimum strength (in terms of
+    * Params:
+    *  require_rev = if true, revocation information is required
+    *  minimum_key_strength = is the minimum strength (in terms of
     *          operations, eg 80 means 2^80) of a signature. Signatures
     *          weaker than this are rejected. If more than 80, SHA-1
     *          signatures are also rejected.
@@ -60,8 +64,9 @@ public:
     }
 
     /**
-    * @param require_rev = if true, revocation information is required
-    * @param minimum_key_strength = is the minimum strength (in terms of
+    * Params:
+    *  require_rev = if true, revocation information is required
+    *  minimum_key_strength = is the minimum strength (in terms of
     *          operations, eg 80 means 2^80) of a signature. Signatures
     *          weaker than this are rejected.
     *

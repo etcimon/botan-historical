@@ -1,8 +1,11 @@
-/*
+/**
 * Format Preserving Encryption (FE1 scheme)
+* 
+* Copyright:
 * (C) 2009 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.constructs.fpe_fe1;
@@ -30,10 +33,12 @@ struct FPE {
     * (http://eprint.iacr.org/2009/251)
     *
     * Encrypt X from and onto the group Z_n using key and tweak
-    * @param n = the modulus
-    * @param X = the plaintext as a BigInt
-    * @param key = a random key
-    * @param tweak = will modify the ciphertext (think of as an IV)
+    * 
+    * Params:
+    *  n = the modulus
+    *  X = the plaintext as a BigInt
+    *  key = a random key
+    *  tweak = will modify the ciphertext (think of as an IV)
     */
     static BigInt fe1Encrypt(const ref BigInt n0, const ref BigInt X0,
                              in SymmetricKey key,
@@ -63,10 +68,11 @@ struct FPE {
 
     /**
     * Decrypt X from and onto the group Z_n using key and tweak
-    * @param n = the modulus
-    * @param X = the ciphertext as a BigInt
-    * @param key = is the key used for encryption
-    * @param tweak = the same tweak used for encryption
+    * Params:
+    *  n = the modulus
+    *  X = the ciphertext as a BigInt
+    *  key = is the key used for encryption
+    *  tweak = the same tweak used for encryption
     */
     static BigInt fe1Decrypt(const ref BigInt n0, const ref BigInt X0, in SymmetricKey key, const ref Vector!ubyte tweak)
     {

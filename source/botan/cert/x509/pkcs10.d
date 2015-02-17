@@ -1,8 +1,11 @@
-/*
+/**
 * PKCS #10
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.pkcs10;
@@ -102,7 +105,7 @@ public:
 
     /**
     * Find out whether this is a CA request.
-    * @result true if it is a CA request, false otherwise.
+    * Returns: true if it is a CA request, false otherwise.
     */
     bool isCA() const
     {

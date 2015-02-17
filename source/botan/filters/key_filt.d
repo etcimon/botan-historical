@@ -1,8 +1,11 @@
-/*
+/**
 * KeyedFilter
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.key_filt;
@@ -17,14 +20,16 @@ abstract class KeyedFilter : Filter
 public:
     /**
     * Set the key of this filter
-    * @param key = the key to use
+    * Params:
+    *  key = the key to use
     */
     abstract void setKey(in SymmetricKey key);
 
     /**
     * Set the initialization vector of this filter. Note: you should
     * call setIv() only after you have called setKey()
-    * @param iv = the initialization vector to use
+    * Params:
+    *  iv = the initialization vector to use
     */
     void setIv(in InitializationVector iv)
     {
@@ -34,7 +39,8 @@ public:
 
     /**
     * Check whether a key length is valid for this filter
-    * @param length = the key length to be checked for validity
+    * Params:
+    *  length = the key length to be checked for validity
     * Returns: true if the key length is valid, false otherwise
     */
     bool validKeylength(size_t length) const
@@ -49,7 +55,8 @@ public:
 
     /**
     * Check whether an IV length is valid for this filter
-    * @param length = the IV length to be checked for validity
+    * Params:
+    *  length = the IV length to be checked for validity
     * Returns: true if the IV length is valid, false otherwise
     */
     abstract bool validIvLength(size_t length) const;

@@ -1,8 +1,11 @@
-/*
+/**
 * Enumerations
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.cert.x509.key_constraint;
@@ -32,9 +35,10 @@ enum KeyConstraints {
 
 /**
 * Create the key constraints for a specific public key.
-* @param pub_key = the public key from which the basic set of
+* Params:
+*  pub_key = the public key from which the basic set of
 * constraints to be placed in the return value is derived
-* @param limits = additional limits that will be incorporated into the
+*  limits = additional limits that will be incorporated into the
 * return value
 * Returns: combination of key type specific constraints and
 * additional limits

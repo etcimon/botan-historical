@@ -1,9 +1,12 @@
-/*
+/**
 * Zlib Compressor
+* 
+* Copyright:
 * (C) 2001 Peter J Jones
-*      2001-2007 Jack Lloyd
+*     2001-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.filters.zlib;
@@ -113,10 +116,11 @@ public:
     }
 
     /**
-    * @param level = how much effort to use on compressing (0 to 9);
+    * Params:
+    *  level = how much effort to use on compressing (0 to 9);
     *          higher levels are slower but tend to give better
     *          compression
-    * @param raw_deflate = if true no m_zlib header/trailer will be used
+    *  raw_deflate = if true no m_zlib header/trailer will be used
     */
     this(size_t level = 6, bool raw_deflate = false)
     {

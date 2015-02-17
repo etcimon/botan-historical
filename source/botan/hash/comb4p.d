@@ -1,8 +1,11 @@
-/*
+/**
 * Comb4P hash combiner
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.hash.comb4p;
@@ -24,8 +27,9 @@ class Comb4P : HashFunction
 {
 public:
     /**
-    * @param h1 = the first hash
-    * @param h2 = the second hash
+    * Params:
+    *  h1 = the first hash
+    *  h2 = the second hash
     */
     this(HashFunction h1, HashFunction h2)
     {

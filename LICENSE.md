@@ -4,7 +4,7 @@ License
 Botan (http://botan.randombit.net/) is distributed under these terms:
 
 ```
-  Copyright (C) 1999-2013,2014 Jack Lloyd
+  Copyright (C) 1999-2015 Jack Lloyd
                 2001 Peter J Jones
                 2004-2007 Justin Karneges
                 2004 Vaclav Ovsik
@@ -23,7 +23,7 @@ Botan (http://botan.randombit.net/) is distributed under these terms:
                 2012 Vojtech Kral
                 2012-2014 Markus Wanner
                 2013 Joel Low
-				2014 Etienne Cimon
+                2014-2015 Etienne Cimon
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without

@@ -1,8 +1,11 @@
-/*
+/**
 * X.509 Distinguished Name
+* 
+* Copyright:
 * (C) 1999-2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.asn1.x509_dn;

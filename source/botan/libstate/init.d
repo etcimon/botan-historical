@@ -1,8 +1,11 @@
-/*
+/**
 * Library Initialization
+* 
+* Copyright:
 * (C) 1999-2008 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.libstate.init;
@@ -21,7 +24,8 @@ struct LibraryInitializer
 public:
     /**
     * Initialize the library
-    * @param options = a string listing initialization options
+    * Params:
+    *  options = a string listing initialization options
     */
     static void initialize()
     {
@@ -48,7 +52,8 @@ public:
 
     /**
     * Initialize the library
-    * @param options = a string listing initialization options
+    * Params:
+    *  options = a string listing initialization options
     */
     this(string options = "")  { LibraryInitializer.initialize(); }
 

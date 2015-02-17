@@ -1,8 +1,11 @@
-/*
+/**
 * Block Cipher Cascade
+* 
+* Copyright:
 * (C) 2010 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.block.cascade;
@@ -64,8 +67,9 @@ public:
 
     /**
     * Create a cascade of two block ciphers
-    * @param cipher1 = the first cipher
-    * @param cipher2 = the second cipher
+    * Params:
+    *  cipher1 = the first cipher
+    *  cipher2 = the second cipher
     */
     this(BlockCipher c1, BlockCipher c2) 
     {

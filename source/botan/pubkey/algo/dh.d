@@ -1,8 +1,11 @@
-/*
+/**
 * Diffie-Hellman
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.pubkey.algo.dh;
@@ -45,7 +48,7 @@ public:
     *
     * Params:
     *  grp = the DL group to use in the key
-    * @param y = the public value y
+    *  y1 = the public value y
     */
     this(DLGroup grp, BigInt y1)
     {
@@ -71,9 +74,10 @@ public:
 
     /**
     * Load a DH private key
-    * @param alg_id = the algorithm id
-    * @param key_bits = the subject public key
-    * @param rng = a random number generator
+    * Params:
+    *  alg_id = the algorithm id
+    *  key_bits = the subject public key
+    *  rng = a random number generator
     */
     this()(in AlgorithmIdentifier alg_id,
            auto const ref SecureVector!ubyte key_bits,
@@ -91,8 +95,8 @@ public:
     *
     * Params:
     *  rng = random number generator to use
-    * @param grp = the group to be used in the key
-    * @param x_args = the key's secret value (or if zero, generate a new key)
+    *  grp = the group to be used in the key
+    *  x_args = the key's secret value (or if zero, generate a new key)
     */
     this(RandomNumberGenerator rng, DLGroup grp, BigInt x_arg = 0)
     {

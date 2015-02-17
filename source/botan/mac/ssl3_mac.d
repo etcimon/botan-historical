@@ -1,8 +1,11 @@
-/*
+/**
 * SSL3-MAC
+* 
+* Copyright:
 * (C) 1999-2004 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.mac.ssl3_mac;
@@ -54,7 +57,8 @@ public:
     }
 
     /**
-    * @param hash = the underlying hash to use
+    * Params:
+    *  hash = the underlying hash to use
     */
     this(HashFunction hash)
     {

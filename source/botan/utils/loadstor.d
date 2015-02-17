@@ -1,9 +1,12 @@
-/*
+/**
 * Load/Store Operators
+* 
+* Copyright:
 * (C) 1999-2007 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *      2007 Yves Jerschow
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.utils.loadstor;
@@ -16,8 +19,9 @@ import std.bitmanip;
 
 /**
 * Make a ushort from two bytes
-* @param i0 = the first ubyte
-* @param i1 = the second ubyte
+* Params:
+*  i0 = the first ubyte
+*  i1 = the second ubyte
 * Returns: i0 || i1
 */
 ushort make_ushort(ubyte i0, ubyte i1)
@@ -27,10 +31,11 @@ ushort make_ushort(ubyte i0, ubyte i1)
 
 /**
 * Make a uint from four bytes
-* @param i0 = the first ubyte
-* @param i1 = the second ubyte
-* @param i2 = the third ubyte
-* @param i3 = the fourth ubyte
+* Params:
+*  i0 = the first ubyte
+*  i1 = the second ubyte
+*  i2 = the third ubyte
+*  i3 = the fourth ubyte
 * Returns: i0 || i1 || i2 || i3
 */
 uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
@@ -43,14 +48,15 @@ uint make_uint(ubyte i0, ubyte i1, ubyte i2, ubyte i3)
 
 /**
 * Make a ulong from eight bytes
-* @param i0 = the first ubyte
-* @param i1 = the second ubyte
-* @param i2 = the third ubyte
-* @param i3 = the fourth ubyte
-* @param i4 = the fifth ubyte
-* @param i5 = the sixth ubyte
-* @param i6 = the seventh ubyte
-* @param i7 = the eighth ubyte
+* Params:
+*  i0 = the first ubyte
+*  i1 = the second ubyte
+*  i2 = the third ubyte
+*  i3 = the fourth ubyte
+*  i4 = the fifth ubyte
+*  i5 = the sixth ubyte
+*  i6 = the seventh ubyte
+*  i7 = the eighth ubyte
 * Returns: i0 || i1 || i2 || i3 || i4 || i5 || i6 || i7
 */
 ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
@@ -68,8 +74,9 @@ ulong make_ulong(ubyte i0, ubyte i1, ubyte i2, ubyte i3,
 
 /**
 * Load a big-endian word
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th T of in, as a big-endian value
 */
 T loadBigEndian(T)(const(ubyte)* input, size_t off)
@@ -83,8 +90,9 @@ T loadBigEndian(T)(const(ubyte)* input, size_t off)
 
 /**
 * Load a little-endian word
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th T of in, as a litte-endian value
 */
 T loadLittleEndian(T)(const(ubyte)* input, size_t off)
@@ -98,8 +106,9 @@ T loadLittleEndian(T)(const(ubyte)* input, size_t off)
 
 /**
 * Load a big-endian ushort
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th ushort of in, as a big-endian value
 */
 ushort loadBigEndian(T : ushort)(const(ubyte)* input, size_t off)
@@ -109,8 +118,9 @@ ushort loadBigEndian(T : ushort)(const(ubyte)* input, size_t off)
 
 /**
 * Load a little-endian ushort
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th ushort of in, as a little-endian value
 */
 ushort loadLittleEndian(T : ushort)(const(ubyte)* input, size_t off)
@@ -120,8 +130,9 @@ ushort loadLittleEndian(T : ushort)(const(ubyte)* input, size_t off)
 
 /**
 * Load a big-endian uint
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th uint of in, as a big-endian value
 */
 uint loadBigEndian(T : uint)(const(ubyte)* input, size_t off)
@@ -131,8 +142,9 @@ uint loadBigEndian(T : uint)(const(ubyte)* input, size_t off)
 
 /**
 * Load a little-endian uint
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th uint of in, as a little-endian value
 */
 
@@ -143,8 +155,9 @@ uint loadLittleEndian(T : uint)(const(ubyte)* input, size_t off)
 
 /**
 * Load a big-endian ulong
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th ulong of in, as a big-endian value
 */
 ulong loadBigEndian(T : ulong)(const(ubyte)* input, size_t off)
@@ -155,8 +168,9 @@ ulong loadBigEndian(T : ulong)(const(ubyte)* input, size_t off)
 
 /**
 * Load a little-endian ulong
-* @param input = a pointer to some bytes
-* @param off = an offset into the array
+* Params:
+*  input = a pointer to some bytes
+*  off = an offset into the array
 * Returns: off'th ulong of in, as a little-endian value
 */
 ulong loadLittleEndian(T : ulong)(const(ubyte)* input, size_t off)
@@ -166,9 +180,10 @@ ulong loadLittleEndian(T : ulong)(const(ubyte)* input, size_t off)
 
 /**
 * Load two little-endian words
-* @param input = a pointer to some bytes
-* @param x0 = where the first word will be written
-* @param x1 = where the second word will be written
+* Params:
+*  input = a pointer to some bytes
+*  x0 = where the first word will be written
+*  x1 = where the second word will be written
 */
 void loadLittleEndian(T)(const(ubyte)* input, ref T x0, ref T x1)
 {
@@ -178,11 +193,12 @@ void loadLittleEndian(T)(const(ubyte)* input, ref T x0, ref T x1)
 
 /**
 * Load four little-endian words
-* @param input = a pointer to some bytes
-* @param x0 = where the first word will be written
-* @param x1 = where the second word will be written
-* @param x2 = where the third word will be written
-* @param x3 = where the fourth word will be written
+* Params:
+*  input = a pointer to some bytes
+*  x0 = where the first word will be written
+*  x1 = where the second word will be written
+*  x2 = where the third word will be written
+*  x3 = where the fourth word will be written
 */
 void loadLittleEndian(T)(const(ubyte)* input,
                 ref T x0, ref T x1, ref T x2, ref T x3)
@@ -195,15 +211,16 @@ void loadLittleEndian(T)(const(ubyte)* input,
 
 /**
 * Load eight little-endian words
-* @param input = a pointer to some bytes
-* @param x0 = where the first word will be written
-* @param x1 = where the second word will be written
-* @param x2 = where the third word will be written
-* @param x3 = where the fourth word will be written
-* @param x4 = where the fifth word will be written
-* @param x5 = where the sixth word will be written
-* @param x6 = where the seventh word will be written
-* @param x7 = where the eighth word will be written
+* Params:
+*  input = a pointer to some bytes
+*  x0 = where the first word will be written
+*  x1 = where the second word will be written
+*  x2 = where the third word will be written
+*  x3 = where the fourth word will be written
+*  x4 = where the fifth word will be written
+*  x5 = where the sixth word will be written
+*  x6 = where the seventh word will be written
+*  x7 = where the eighth word will be written
 */
 void loadLittleEndian(T)(const(ubyte)* input,
                   ref T x0, ref T x1, ref T x2, ref T x3,
@@ -221,9 +238,10 @@ void loadLittleEndian(T)(const(ubyte)* input,
 
 /**
 * Load a variable number of little-endian words
-* @param output = the output array of words
-* @param input = the input array of bytes
-* @param count = how many words are in in
+* Params:
+*  output = the output array of words
+*  input = the input array of bytes
+*  count = how many words are in in
 */
 void loadLittleEndian(T)(T* output, const(ubyte)* input, size_t count)
 {
@@ -233,9 +251,10 @@ void loadLittleEndian(T)(T* output, const(ubyte)* input, size_t count)
 
 /**
 * Load two big-endian words
-* @param input = a pointer to some bytes
-* @param x0 = where the first word will be written
-* @param x1 = where the second word will be written
+* Params:
+*  input = a pointer to some bytes
+*  x0 = where the first word will be written
+*  x1 = where the second word will be written
 */
 void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1)
 {
@@ -245,11 +264,12 @@ void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1)
 
 /**
 * Load four big-endian words
-* @param input = a pointer to some bytes
-* @param x0 = where the first word will be written
-* @param x1 = where the second word will be written
-* @param x2 = where the third word will be written
-* @param x3 = where the fourth word will be written
+* Params:
+*  input = a pointer to some bytes
+*  x0 = where the first word will be written
+*  x1 = where the second word will be written
+*  x2 = where the third word will be written
+*  x3 = where the fourth word will be written
 */
 void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1, ref T x2, ref T x3)
 {
@@ -261,15 +281,16 @@ void loadBigEndian(T)(const(ubyte)* input, ref T x0, ref T x1, ref T x2, ref T x
 
 /**
 * Load eight big-endian words
-* @param input = a pointer to some bytes
-* @param x0 = where the first word will be written
-* @param x1 = where the second word will be written
-* @param x2 = where the third word will be written
-* @param x3 = where the fourth word will be written
-* @param x4 = where the fifth word will be written
-* @param x5 = where the sixth word will be written
-* @param x6 = where the seventh word will be written
-* @param x7 = where the eighth word will be written
+* Params:
+*  input = a pointer to some bytes
+*  x0 = where the first word will be written
+*  x1 = where the second word will be written
+*  x2 = where the third word will be written
+*  x3 = where the fourth word will be written
+*  x4 = where the fifth word will be written
+*  x5 = where the sixth word will be written
+*  x6 = where the seventh word will be written
+*  x7 = where the eighth word will be written
 */
 void loadBigEndian(T)(const(ubyte)* input,
                       ref T x0, ref T x1, ref T x2, ref T x3,
@@ -287,9 +308,10 @@ void loadBigEndian(T)(const(ubyte)* input,
 
 /**
 * Load a variable number of big-endian words
-* @param output = the output array of words
-* @param input = the input array of bytes
-* @param count = how many words are in in
+* Params:
+*  output = the output array of words
+*  input = the input array of bytes
+*  count = how many words are in in
 */
 void loadBigEndian(T)(T* output, const(ubyte)* input, size_t count)
 {
@@ -299,8 +321,9 @@ void loadBigEndian(T)(T* output, const(ubyte)* input, size_t count)
 
 /**
 * Store a big-endian ushort
-* @param input = the input ushort
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input ushort
+*  output = the ubyte array to write to
 */
 void storeBigEndian(ushort input, ubyte[2]* output)
 {
@@ -310,8 +333,9 @@ void storeBigEndian(ushort input, ubyte[2]* output)
 
 /**
 * Store a little-endian ushort
-* @param input = the input ushort
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input ushort
+*  output = the ubyte array to write to
 */
 void storeLittleEndian(ushort input, ubyte[2]* output)
 {
@@ -321,8 +345,9 @@ void storeLittleEndian(ushort input, ubyte[2]* output)
 
 /**
 * Store a big-endian uint
-* @param input = the input uint
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input uint
+*  output = the ubyte array to write to
 */
 void storeBigEndian(uint input, ubyte[4]* output)
 {
@@ -332,8 +357,9 @@ void storeBigEndian(uint input, ubyte[4]* output)
 
 /**
 * Store a little-endian uint
-* @param input = the input uint
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input uint
+*  output = the ubyte array to write to
 */
 void storeLittleEndian(uint input, ubyte[4]* output)
 {
@@ -343,8 +369,9 @@ void storeLittleEndian(uint input, ubyte[4]* output)
 
 /**
 * Store a big-endian ulong
-* @param input = the input ulong
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input ulong
+*  output = the ubyte array to write to
 */
 void storeBigEndian(ulong input, ubyte[8]* output)
 {
@@ -353,8 +380,9 @@ void storeBigEndian(ulong input, ubyte[8]* output)
 
 /**
 * Store a little-endian ulong
-* @param input = the input ulong
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input ulong
+*  output = the ubyte array to write to
 */
 void storeLittleEndian(in ulong input, ubyte[8]* output)
 {
@@ -363,8 +391,9 @@ void storeLittleEndian(in ulong input, ubyte[8]* output)
 
 /**
 * Store a little-endian ulong
-* @param input = the input ulong
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input ulong
+*  output = the ubyte array to write to
 */
 void storeLittleEndian(T)(in T input, ubyte* output)
 {
@@ -373,8 +402,9 @@ void storeLittleEndian(T)(in T input, ubyte* output)
 
 /**
 * Store a big-endian ulong
-* @param input = the input ulong
-* @param output = the ubyte array to write to
+* Params:
+*  input = the input ulong
+*  output = the ubyte array to write to
 */
 void storeBigEndian(T)(in T input, ubyte* output)
 {
@@ -383,9 +413,10 @@ void storeBigEndian(T)(in T input, ubyte* output)
 
 /**
 * Store two little-endian words
-* @param output = the output ubyte array
-* @param x0 = the first word
-* @param x1 = the second word
+* Params:
+*  output = the output ubyte array
+*  x0 = the first word
+*  x1 = the second word
 */
 void storeLittleEndian(T)(ubyte* output, T x0, T x1)
 {
@@ -395,9 +426,10 @@ void storeLittleEndian(T)(ubyte* output, T x0, T x1)
 
 /**
 * Store two big-endian words
-* @param output = the output ubyte array
-* @param x0 = the first word
-* @param x1 = the second word
+* Params:
+*  output = the output ubyte array
+*  x0 = the first word
+*  x1 = the second word
 */
 void storeBigEndian(T)(ubyte* output, T x0, T x1)
 {
@@ -407,11 +439,12 @@ void storeBigEndian(T)(ubyte* output, T x0, T x1)
 
 /**
 * Store four little-endian words
-* @param output = the output ubyte array
-* @param x0 = the first word
-* @param x1 = the second word
-* @param x2 = the third word
-* @param x3 = the fourth word
+* Params:
+*  output = the output ubyte array
+*  x0 = the first word
+*  x1 = the second word
+*  x2 = the third word
+*  x3 = the fourth word
 */
 void storeLittleEndian(T)(ubyte* output, T x0, T x1, T x2, T x3)
 {
@@ -423,11 +456,12 @@ void storeLittleEndian(T)(ubyte* output, T x0, T x1, T x2, T x3)
 
 /**
 * Store four big-endian words
-* @param output = the output ubyte array
-* @param x0 = the first word
-* @param x1 = the second word
-* @param x2 = the third word
-* @param x3 = the fourth word
+* Params:
+*  output = the output ubyte array
+*  x0 = the first word
+*  x1 = the second word
+*  x2 = the third word
+*  x3 = the fourth word
 */
 void storeBigEndian(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 {
@@ -439,15 +473,16 @@ void storeBigEndian(T)(ref ubyte* output, T x0, T x1, T x2, T x3)
 
 /**
 * Store eight little-endian words
-* @param output = the output ubyte array
-* @param x0 = the first word
-* @param x1 = the second word
-* @param x2 = the third word
-* @param x3 = the fourth word
-* @param x4 = the fifth word
-* @param x5 = the sixth word
-* @param x6 = the seventh word
-* @param x7 = the eighth word
+* Params:
+*  output = the output ubyte array
+*  x0 = the first word
+*  x1 = the second word
+*  x2 = the third word
+*  x3 = the fourth word
+*  x4 = the fifth word
+*  x5 = the sixth word
+*  x6 = the seventh word
+*  x7 = the eighth word
 */
 void storeLittleEndian(T)(ubyte* output, T x0, T x1, T x2, T x3,
                                 T x4, T x5, T x6, T x7)
@@ -464,15 +499,16 @@ void storeLittleEndian(T)(ubyte* output, T x0, T x1, T x2, T x3,
 
 /**
 * Store eight big-endian words
-* @param output = the output ubyte array
-* @param x0 = the first word
-* @param x1 = the second word
-* @param x2 = the third word
-* @param x3 = the fourth word
-* @param x4 = the fifth word
-* @param x5 = the sixth word
-* @param x6 = the seventh word
-* @param x7 = the eighth word
+* Params:
+*  output = the output ubyte array
+*  x0 = the first word
+*  x1 = the second word
+*  x2 = the third word
+*  x3 = the fourth word
+*  x4 = the fifth word
+*  x5 = the sixth word
+*  x6 = the seventh word
+*  x7 = the eighth word
 */
 void storeBigEndian(T)(ubyte* output, T x0, T x1, T x2, T x3,
                                 T x4, T x5, T x6, T x7)

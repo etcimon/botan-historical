@@ -1,8 +1,11 @@
-/*
+/**
 * TLS Alert Message
+* 
+* Copyright:
 * (C) 2004-2006,2011,2012 Jack Lloyd
 * (C) 2014-2015 Etienne Cimon
 *
+* License:
 * Botan is released under the Simplified BSD License (see LICENSE.md)
 */
 module botan.tls.alert;
@@ -168,7 +171,8 @@ public:
 
     /**
     * Deserialize an TLSAlert message
-    * @param buf = the serialized alert
+    * Params:
+    *  buf = the serialized alert
     */
     this(const ref SecureVector!ubyte buf)
     {
@@ -187,8 +191,9 @@ public:
 
     /**
     * Create a new TLSAlert
-    * @param type_code = the type of alert
-    * @param fatal = specifies if this is a fatal alert
+    * Params:
+    *  type_code = the type of alert
+    *  fatal = specifies if this is a fatal alert
     */
     this(TLSAlertType type_code = NULL_ALERT, bool fatal = false)
     {
